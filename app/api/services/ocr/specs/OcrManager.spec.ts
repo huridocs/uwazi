@@ -2,8 +2,6 @@
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
 import { files, storage } from 'api/files';
-import * as filesApi from 'api/files/filesystem';
-import * as processDocumentApi from 'api/files/processDocument';
 import { tenants } from 'api/tenants/tenantContext';
 import settings from 'api/settings/settings';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -33,24 +31,7 @@ class Mocks {
       'storage.fileContents': jest
         .spyOn(storage, 'fileContents')
         .mockResolvedValue(Buffer.from('file_content')),
-      'storage.storeFile': jest.spyOn(storage, 'storeFile').mockResolvedValue(),
-      'filesApi.generateFileName': jest
-        .spyOn(filesApi, 'generateFileName')
-        .mockReturnValue('generatedUwaziFilename'),
       'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve()),
-      'processDocumentApi.processDocument': jest
-        .spyOn(processDocumentApi, 'processDocument')
-        .mockResolvedValue({
-          __v: 0,
-          _id: fixturesFactory.id('resultFile'),
-          originalname: 'ocr_sourceFileName.pdf',
-          entity: 'parentEntity',
-          filename: 'generatedfilename.pdf',
-          mimetype: 'pdf',
-          size: 42,
-          language: 'en',
-          type: 'document',
-        }),
       'date.now': jest.spyOn(Date, 'now').mockReturnValue(1000),
       'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => {}),
       'handleError.handleError': jest
@@ -159,8 +140,6 @@ describe('OcrManager', () => {
     describe('when there are results', () => {
       beforeAll(async () => {
         mocks.jestMocks['date.now'].mockReturnValue(1001);
-        mocks.jestMocks['storage.storeFile'].mockRestore();
-        await filesApi.deleteFile('/tmp/generatedUwaziFilename');
         await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       });
 
@@ -168,28 +147,15 @@ describe('OcrManager', () => {
         expect(fetchMock.lastUrl()).toBe('protocol://link/to/result/file');
       });
 
-      it('should save the file with a generated filename', async () => {
-        expect(filesApi.generateFileName).toHaveBeenCalled();
-        mocks.jestMocks['storage.fileContents'].mockRestore();
-        expect((await storage.fileContents('generatedUwaziFilename', 'document')).toString()).toBe(
-          'resultFileContent'
-        );
-      });
-
-      it('should run the file processing and tmp file should exist', async () => {
-        expect(await filesApi.fileExistsOnPath('/tmp/generatedUwaziFilename'));
-        expect(processDocumentApi.processDocument).toHaveBeenCalledWith(
-          'parentEntity',
-          expect.objectContaining({
-            destination: '/tmp',
-            filename: 'generatedUwaziFilename',
-            language: 'eng',
-            mimetype: 'some/mimetype',
-            originalname: 'ocr_sourceFileOriginalName.pdf',
-            type: 'document',
-          }),
-          false
-        );
+      it('should create a ProcessingPDF file in database', async () => {
+        const resultFiles = await files.get({ entity: 'parentEntity', type: 'document' });
+        const ocrResultFile = resultFiles.find(f => f.originalname?.startsWith('ocr_'));
+        expect(ocrResultFile).toBeDefined();
+        expect(ocrResultFile).toMatchObject({
+          type: 'document',
+          status: 'processing',
+          entity: 'parentEntity',
+        });
       });
 
       it('should move the original file to the attachments', async () => {
@@ -203,13 +169,20 @@ describe('OcrManager', () => {
         });
         expect(matchingRecords).toHaveLength(1);
         const [record] = matchingRecords;
+
+        const resultFiles = await files.get({ entity: 'parentEntity', type: 'document' });
+        const ocrResultFile = resultFiles.find(f => f.originalname?.startsWith('ocr_'));
+        expect(ocrResultFile).toBeDefined();
+
         expect(record).toMatchObject({
           status: 'withOCR',
           sourceFile: fixturesFactory.id('sourceFile'),
           language: 'eng',
-          resultFile: fixturesFactory.id('resultFile'),
           lastUpdated: 1001,
         });
+
+        const resultFileId = record.resultFile?.toString();
+        expect(resultFileId).toBe(ocrResultFile!._id.toString());
       });
 
       it('should emit through the sockets', async () => {
@@ -292,14 +265,15 @@ describe('OcrManager', () => {
     it('should do nothing when record is missing', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       mocks.clearJestMocks();
-      mocks.jestMocks['storage.storeFile'] = jest.spyOn(storage, 'storeFile').mockResolvedValue();
 
+      const fileCountBefore = await files.get({});
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
 
       const records = await OcrModel.get({});
       expect(records).toHaveLength(3);
-      expect(storage.storeFile).not.toHaveBeenCalled();
-      expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
+
+      const fileCountAfter = await files.get({});
+      expect(fileCountAfter.length).toBe(fileCountBefore.length);
     });
   });
 
@@ -368,6 +342,68 @@ describe('OcrManager', () => {
       await cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
       records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
       expect(records).toHaveLength(0);
+    });
+  });
+
+  describe('user context for V2 operations', () => {
+    it('should fail gracefully when entity has no user', async () => {
+      mocks.jestMocks['date.now'].mockReturnValue(1003);
+      await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+
+      const entitiesCollection = testingEnvironment.db.getCollection('entities');
+      await entitiesCollection!.updateOne({ sharedId: 'parentEntity' }, { $unset: { user: '' } });
+
+      const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+      await ocrManager.addToQueue(sourceFile);
+
+      await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
+
+      const matchingRecords = await OcrModel.get({
+        sourceFile: fixturesFactory.id('sourceFile'),
+      });
+      expect(matchingRecords).toHaveLength(1);
+      expect(matchingRecords[0].status).toBe(OcrStatus.ERROR);
+
+      expect(handleError.handleError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('entity parentEntity has no user'),
+        })
+      );
+
+      await entitiesCollection!.updateOne(
+        { sharedId: 'parentEntity' },
+        { $set: { user: fixturesFactory.id('user1') } }
+      );
+    });
+
+    it('should fail gracefully when entity does not exist', async () => {
+      mocks.jestMocks['date.now'].mockReturnValue(1004);
+      await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+
+      const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+      await files.save({ _id: sourceFile._id, entity: 'nonExistentEntity' });
+
+      await ocrManager.addToQueue(sourceFile);
+
+      const [updatedFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+      await mocks.taskManagerMock.trigger({
+        ...mockedMessageFromRedis,
+        params: { ...mockedMessageFromRedis.params, filename: updatedFile.filename },
+      });
+
+      const matchingRecords = await OcrModel.get({
+        sourceFile: fixturesFactory.id('sourceFile'),
+      });
+      expect(matchingRecords).toHaveLength(1);
+      expect(matchingRecords[0].status).toBe(OcrStatus.ERROR);
+
+      expect(handleError.handleError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('entity nonExistentEntity not found'),
+        })
+      );
+
+      await files.save({ _id: sourceFile._id, entity: 'parentEntity' });
     });
   });
 });

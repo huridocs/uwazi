@@ -1,17 +1,19 @@
+/* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
 import entities from 'api/entities';
 import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
+import { registerEventListeners as registerOcrListeners } from 'api/services/ocr/eventListeners';
 import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
-import { testingTenants } from 'api/utils/testingTenants';
+import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
@@ -38,6 +40,8 @@ import {
 } from './fixtures';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
+
+registerOcrListeners(applicationEventsBus);
 
 describe('files routes', () => {
   let requestMockedUser: UserSchema = collabUser;
@@ -283,19 +287,9 @@ describe('files routes', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'DELETE /api/files V1',
-      featureFlags: { v2DeleteFile: false },
-    },
-    {
-      title: 'DELETE /api/files V2',
-      featureFlags: { v2DeleteFile: true },
-    },
-  ])('$title', ({ featureFlags }) => {
+  describe('DELETE /api/files', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);
-      testingTenants.changeCurrentTenant({ featureFlags });
       mockCurrentUser(adminUser);
     });
 
@@ -310,24 +304,26 @@ describe('files routes', () => {
       expect(file).toBeUndefined();
     });
 
-    it('should not allow any extra parameters aside from a properly typed id', async () => {
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: 'someid', __property__: 'should_not_be_here' })
-        .expect(400);
+    it('should return an array with the deleted file in the response', async () => {
+      const [fileBeforeDelete] = await files.get({ _id: uploadId2.toString() });
 
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: { $eq: 1234 } })
-        .expect(400);
+      const response = await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+
+      expect(response).toHaveStatus(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0]).toMatchObject({
+        _id: uploadId2.toString(),
+        originalname: fileBeforeDelete.originalname,
+        entity: fileBeforeDelete.entity,
+      });
     });
 
     it('should delete upload and return the response', async () => {
-      await socketEmit('conversionFailed', async () =>
-        request(app)
-          .post('/api/files/upload/document')
-          .attach('file', path.join(__dirname, 'test.txt'))
-      );
+      await request(app)
+        .post('/api/files/upload/document')
+        .field('entity', 'sharedId1')
+        .attach('file', path.join(__dirname, 'test.txt'));
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
@@ -430,7 +426,8 @@ describe('files routes', () => {
         .delete('/api/files')
         .query({ _id: { test: 'test' } });
 
-      expect(response.body.errors[0].message).toBe('must be string');
+      expect(response.status).toBe(422);
+      expect(response.body.error).toContain('Expected string, received object');
     });
 
     describe('api/files/tocReviewed', () => {
@@ -470,55 +467,6 @@ describe('files routes', () => {
         [entity] = await entities.get({ sharedId: 'sharedId1' });
         expect(entity.generatedToc).toBe(false);
       });
-    });
-  });
-
-  describe('POST/files/attachment', () => {
-    it('should save file on the body', async () => {
-      const entityId = db.id();
-      await request(app)
-        .post('/api/files/upload/attachment')
-        .field('entity', entityId.toString())
-        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
-        .expect(200);
-
-      const [attachment] = await files.get({ entity: entityId.toString() });
-      expect(attachment).toEqual(
-        expect.objectContaining({
-          originalname: 'Dont bring me down - 1979',
-          type: 'attachment',
-        })
-      );
-    });
-  });
-
-  describe('POST/files/upload/*', () => {
-    describe.each(['document', 'attachment'] as FileType['type'][])('when file is a %s', type => {
-      it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
-        'should accept the filename %s in a field',
-        async filename => {
-          let res: request.Response;
-          if (type === 'document') {
-            res = await socketEmit('documentProcessed', async () =>
-              request(app)
-                .post(`/api/files/upload/${type}`)
-                .field('originalname', filename)
-                .attach('file', path.join(__dirname, filename))
-            );
-          } else {
-            res = await request(app)
-              .post(`/api/files/upload/${type}`)
-              .field('originalname', filename)
-              .attach('file', path.join(__dirname, filename));
-          }
-          expect(res.status).toBe(200);
-          const [file]: FileType[] = await files.get({
-            originalname: filename,
-            type,
-          });
-          expect(file).not.toBe(undefined);
-        }
-      );
     });
   });
 

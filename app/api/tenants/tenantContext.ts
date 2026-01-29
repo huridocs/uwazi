@@ -20,12 +20,9 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     v2CreateEntity?: boolean;
-    v2BulkDeleteEntity?: boolean;
     fileCacheHeaders?: boolean;
-    v2UploadFile?: boolean;
-    v2DeleteFile?: boolean;
     v2CSVImport?: boolean;
-    v2CreateThesaurus?: boolean;
+    v2UpdateThesaurus?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

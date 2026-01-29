@@ -364,22 +364,4 @@ describe('entities', () => {
       expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
     });
   });
-
-  describe('POST /api/entities/bulkdelete', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(entities, 'deleteMultiple')
-        .mockImplementation(async () => Promise.resolve({ json: 'ok' }));
-    });
-
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/entities/bulkdelete')).toMatchSnapshot();
-    });
-
-    it('should use entities to delete it', async () => {
-      const req = { body: { sharedIds: [123, 456] } };
-      await routes.post('/api/entities/bulkdelete', req);
-      expect(entities.deleteMultiple).toHaveBeenCalledWith([123, 456]);
-    });
-  });
 });

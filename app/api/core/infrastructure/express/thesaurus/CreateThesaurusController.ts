@@ -1,5 +1,7 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import { CreateThesaurusUseCaseInput } from 'api/core/application/CreateThesaurus';
+import { CSVLoader } from 'api/csv';
+import { ObjectId } from 'mongodb';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 import { CreateThesaurusUseCaseFactory } from '../../factories/CreateThesaurusUseCaseFactory';
 import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO';
@@ -16,7 +18,9 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
 
     try {
       const startTime = Date.now();
-      const output = await useCase.execute(this.request?.body);
+      const output = await useCase.execute(
+        this.request.file ? JSON.parse((this.request.body as any)?.thesauri) : this.request?.body
+      );
       logger.info('Thesaurus Creation executed successfully', {
         namespace: 'Thesaurus_Creation',
         success: true,
@@ -25,9 +29,25 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
         durationMs: Date.now() - startTime,
       });
 
-      const response: ResponseDto = MongoThesaurusMapper.toDBO(output);
+      let response: ResponseDto = MongoThesaurusMapper.toDBO(output);
 
-      this.response.status(201).json(response);
+      if (this.request.file) {
+        /**
+         * Note: Import Thesaurus values from CSV file
+         *  1. Feature seems to be very fragile from UI/UX to backend architecture.
+         *  2. This feature needs proper re-design and re-implementation.
+         * 3. Validations, tracking etc..
+         */
+
+        const loader = new CSVLoader();
+
+        response = (await loader.loadThesauri(this.request.file.path, new ObjectId(output.id), {
+          language: this.language,
+        })) as ThesaurusDBO;
+      }
+
+      this.response.json(response);
+      this.request.sockets.emitToCurrentTenant('thesauriChange', response);
     } catch (error: unknown) {
       logger.info(
         `Thesaurus Creation execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

@@ -100,4 +100,96 @@ describe('CreateTranslationsService', () => {
       });
     });
   });
+
+  describe('updateContext()', () => {
+    describe('when renaming a key that does not exist in the database', () => {
+      it('should create the missing key with the value from the new key name', async () => {
+        const contextId = 'template123';
+        const context = { type: 'Entity' as const, label: 'Template', id: contextId };
+
+        await collectionInDb().insertMany([
+          createTranslationDBO('Property A', 'Property A', 'en', context),
+          createTranslationDBO('Property A', 'Propiedad A', 'es', context),
+          createTranslationDBO('Property B', 'Property B', 'en', context),
+          createTranslationDBO('Property B', 'Propiedad B', 'es', context),
+        ]);
+
+        await createService().updateContext(
+          context,
+          { 'Thematic pillar': 'Thematic Pillar' },
+          {
+            'Thematic Pillar': 'Thematic Pillar',
+            'Property A': 'Property A',
+            'Property B': 'Property B',
+          },
+          []
+        );
+
+        const allTranslations = await collectionInDb()
+          .find({ 'context.id': contextId })
+          .sort({ key: 1, language: 1 })
+          .toArray();
+
+        const newKeyTranslations = allTranslations.filter(t => t.key === 'Thematic Pillar');
+        const oldKeyTranslations = allTranslations.filter(t => t.key === 'Thematic pillar');
+
+        expect(newKeyTranslations).toHaveLength(2);
+        expect(newKeyTranslations).toMatchObject([
+          { key: 'Thematic Pillar', value: 'Thematic Pillar', language: 'en' },
+          { key: 'Thematic Pillar', value: 'Thematic Pillar', language: 'es' },
+        ]);
+
+        expect(oldKeyTranslations).toHaveLength(0);
+      });
+
+      it('should handle multiple renamed keys that are missing from the database', async () => {
+        const contextId = 'template456';
+        const context = { type: 'Entity' as const, label: 'Template', id: contextId };
+
+        await collectionInDb().insertMany([
+          createTranslationDBO('Existing Property', 'Existing Property', 'en', context),
+          createTranslationDBO('Existing Property', 'Propiedad Existente', 'es', context),
+        ]);
+
+        await createService().updateContext(
+          context,
+          {
+            'old name one': 'New Name One',
+            'old name two': 'New Name Two',
+          },
+          {
+            'New Name One': 'New Name One',
+            'New Name Two': 'New Name Two',
+            'Existing Property': 'Existing Property',
+          },
+          []
+        );
+
+        const translationsInDb = await collectionInDb()
+          .find({ 'context.id': contextId })
+          .sort({ key: 1, language: 1 })
+          .toArray();
+
+        const newNameOneTranslations = translationsInDb.filter(t => t.key === 'New Name One');
+        const newNameTwoTranslations = translationsInDb.filter(t => t.key === 'New Name Two');
+        const oldNameOneTranslations = translationsInDb.filter(t => t.key === 'old name one');
+        const oldNameTwoTranslations = translationsInDb.filter(t => t.key === 'old name two');
+
+        expect(newNameOneTranslations).toHaveLength(2);
+        expect(newNameOneTranslations).toMatchObject([
+          { key: 'New Name One', value: 'New Name One', language: 'en' },
+          { key: 'New Name One', value: 'New Name One', language: 'es' },
+        ]);
+
+        expect(newNameTwoTranslations).toHaveLength(2);
+        expect(newNameTwoTranslations).toMatchObject([
+          { key: 'New Name Two', value: 'New Name Two', language: 'en' },
+          { key: 'New Name Two', value: 'New Name Two', language: 'es' },
+        ]);
+
+        expect(oldNameOneTranslations).toHaveLength(0);
+        expect(oldNameTwoTranslations).toHaveLength(0);
+      });
+    });
+  });
 });

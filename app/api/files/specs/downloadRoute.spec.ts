@@ -63,8 +63,6 @@ describe('files routes download', () => {
     { file: downloadFixtures.publicEntityFile, endpoint: '/files' },
 
     { file: downloadFixtures.thumbnail, endpoint: '/files/thumbnails' },
-
-    { file: downloadFixtures.customPDF, endpoint: '/assets' },
   ])('Get $endpoint, $file.filename', ({ file, endpoint }) => {
     it('should get the file', async () => {
       const response = await request(app).get(path.join(endpoint, file.filename));
@@ -142,11 +140,6 @@ describe('files routes download', () => {
       endpoint: '/files/thumbnails',
       desc: 'when not the type allowed',
     },
-    {
-      file: downloadFixtures.mainDoc,
-      endpoint: '/assets',
-      desc: 'when not the type allowed',
-    },
   ])('GET $endpoint $file.filename, $desc', ({ file, endpoint }) => {
     it('should respond with 404', async () => {
       app = setAppWithUser(uploadRoutes, collabUser);
@@ -217,7 +210,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set "public, no-cache" for documents from published entities accessed without authentication $endpoint',
         async ({ endpoint, file }) => {
@@ -234,7 +226,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set Last-Modified header based on file creationDate ($endpoint)',
         async ({ endpoint, file }) => {
@@ -244,6 +235,22 @@ describe('files routes download', () => {
 
           expect(response).toHaveStatus(200);
           await expect(response.get('Last-Modified')).toMatch(/GMT$/);
+        }
+      );
+
+      it.each([
+        { endpoint: deprecatedEndpoint },
+        { endpoint: '/files' },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+      ])(
+        'should set X-Cache-Policy to "yes-store" for public unauthenticated access ($endpoint)',
+        async ({ endpoint, file }) => {
+          const response = await request(app).get(
+            path.join(endpoint, file?.filename || fileOnPublicEntity)
+          );
+
+          expect(response).toHaveStatus(200);
+          expect(response.get('X-Cache-Policy')).toBe('yes-store');
         }
       );
     });
@@ -261,7 +268,6 @@ describe('files routes download', () => {
         { endpoint: '/files', file: downloadFixtures.attachment },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
         { endpoint: deprecatedEndpoint, file: downloadFixtures.customPDF },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set Last-Modified and "private, max-age=3600" ($endpoint/$file.filename)',
         async ({ endpoint, file }) => {
@@ -270,6 +276,125 @@ describe('files routes download', () => {
           expect(response).toHaveStatus(200);
           expect(response.get('Cache-Control')).toBe('private, max-age=3600');
           expect(response.get('Last-Modified')).toBeDefined();
+        }
+      );
+
+      it.each([
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.mainDoc },
+        { endpoint: '/files', file: downloadFixtures.mainDoc },
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.attachment },
+        { endpoint: '/files', file: downloadFixtures.attachment },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.customPDF },
+      ])(
+        'should set X-Cache-Policy to "no-store" for authenticated users ($endpoint/$file.filename)',
+        async ({ endpoint, file }) => {
+          const response = await request(app).get(path.join(endpoint, file.filename));
+
+          expect(response).toHaveStatus(200);
+          expect(response.get('X-Cache-Policy')).toBe('no-store');
+        }
+      );
+    });
+
+    describe('Conditional GET / 304 Not Modified', () => {
+      beforeEach(async () => {
+        await settings.save({ private: false });
+        testingEnvironment.userInContextMockFactory.mock(undefined);
+        app = setUpApp(uploadRoutes);
+      });
+
+      it.each([
+        { endpoint: deprecatedEndpoint },
+        { endpoint: '/files' },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+      ])(
+        'should return 304 when If-Modified-Since matches Last-Modified ($endpoint)',
+        async ({ endpoint, file }) => {
+          const firstResponse = await request(app).get(
+            path.join(endpoint, file?.filename || fileOnPublicEntity)
+          );
+          const lastModified = firstResponse.get('Last-Modified');
+
+          expect(lastModified).toBeDefined();
+
+          const secondResponse = await request(app)
+            .get(path.join(endpoint, file?.filename || fileOnPublicEntity))
+            .set('If-Modified-Since', lastModified!);
+
+          expect(secondResponse).toHaveStatus(304);
+          expect(secondResponse.body).toEqual({});
+          expect(secondResponse.get('Last-Modified')).toBe(lastModified);
+          expect(secondResponse.get('Cache-Control')).toBe('public, no-cache');
+          expect(secondResponse.get('X-Cache-Policy')).toBe('yes-store');
+        }
+      );
+
+      it.each([
+        { endpoint: deprecatedEndpoint },
+        { endpoint: '/files' },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+      ])(
+        'should return 304 when If-Modified-Since is after Last-Modified ($endpoint)',
+        async ({ endpoint, file }) => {
+          const firstResponse = await request(app).get(
+            path.join(endpoint, file?.filename || fileOnPublicEntity)
+          );
+          const lastModified = firstResponse.get('Last-Modified');
+
+          expect(lastModified).toBeDefined();
+
+          const futureDate = new Date(new Date(lastModified!).getTime() + 1000 * 60 * 60);
+
+          const secondResponse = await request(app)
+            .get(path.join(endpoint, file?.filename || fileOnPublicEntity))
+            .set('If-Modified-Since', futureDate.toUTCString());
+
+          expect(secondResponse).toHaveStatus(304);
+          expect(secondResponse.body).toEqual({});
+          expect(secondResponse.get('Cache-Control')).toBe('public, no-cache');
+          expect(secondResponse.get('X-Cache-Policy')).toBe('yes-store');
+        }
+      );
+
+      it.each([
+        { endpoint: deprecatedEndpoint },
+        { endpoint: '/files' },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+      ])(
+        'should return 200 when If-Modified-Since is before Last-Modified ($endpoint)',
+        async ({ endpoint, file }) => {
+          const firstResponse = await request(app).get(
+            path.join(endpoint, file?.filename || fileOnPublicEntity)
+          );
+          const lastModified = firstResponse.get('Last-Modified');
+
+          expect(lastModified).toBeDefined();
+
+          const pastDate = new Date(new Date(lastModified!).getTime() - 1000 * 60 * 60);
+
+          const secondResponse = await request(app)
+            .get(path.join(endpoint, file?.filename || fileOnPublicEntity))
+            .set('If-Modified-Since', pastDate.toUTCString());
+
+          expect(secondResponse).toHaveStatus(200);
+          expect(secondResponse.body instanceof Buffer).toBe(true);
+        }
+      );
+
+      it.each([
+        { endpoint: deprecatedEndpoint },
+        { endpoint: '/files' },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+      ])(
+        'should return 200 when no If-Modified-Since header is sent ($endpoint)',
+        async ({ endpoint, file }) => {
+          const response = await request(app).get(
+            path.join(endpoint, file?.filename || fileOnPublicEntity)
+          );
+
+          expect(response).toHaveStatus(200);
+          expect(response.body instanceof Buffer).toBe(true);
         }
       );
     });
@@ -289,7 +414,6 @@ describe('files routes download', () => {
         { endpoint: '/files', file: downloadFixtures.mainDoc },
         { endpoint: '/files', file: downloadFixtures.attachment },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])('should respond unauthorized 401 ($endpoint)', async ({ endpoint, file }) => {
         const response = await request(app).get(path.join(endpoint, file.filename));
         expect(response).toHaveStatus(401);
@@ -310,7 +434,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should not set Cache-Control and Last-Modifeid headers ($endpoint)',
         async ({ endpoint, file }) => {
@@ -321,6 +444,22 @@ describe('files routes download', () => {
           expect(response).toHaveStatus(200);
           expect(response.get('Cache-Control')).toBeUndefined();
           expect(response.get('Last-Modified')).toBeUndefined();
+        }
+      );
+
+      it.each([
+        { endpoint: deprecatedEndpoint },
+        { endpoint: '/files' },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+      ])(
+        'should not set X-Cache-Policy header when feature flag disabled ($endpoint)',
+        async ({ endpoint, file }) => {
+          const response = await request(app).get(
+            path.join(endpoint, file?.filename || mainDocument1)
+          );
+
+          expect(response).toHaveStatus(200);
+          expect(response.get('X-Cache-Policy')).toBeUndefined();
         }
       );
     });

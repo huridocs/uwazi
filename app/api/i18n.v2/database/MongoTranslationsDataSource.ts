@@ -6,6 +6,7 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import {
   BulkDeleteKeysByContext,
   TranslationsDataSource,
+  UpdateKeysByContextProps,
 } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
 import { Translation } from '../model/Translation';
@@ -101,6 +102,30 @@ export class MongoTranslationsDataSource
       );
     }, Promise.resolve());
     await stream.flush();
+  }
+
+  async updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void> {
+    await this.getCollection().bulkWrite(
+      Object.entries(props.keyChanges).map(([from, to]) => ({
+        updateMany: {
+          filter: {
+            'context.id': props.contextId,
+            key: from,
+          },
+          update: [
+            {
+              $set: {
+                key: to,
+                value: {
+                  $cond: [{ $eq: ['$language', props.defaultLanguage] }, to, '$value'],
+                },
+              },
+            },
+          ],
+          upsert: false,
+        },
+      }))
+    );
   }
 
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {

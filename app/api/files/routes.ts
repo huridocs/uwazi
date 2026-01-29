@@ -1,18 +1,15 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
-import { DocumentUploadController } from 'api/core/infrastructure/express/files/DocumentUploadController';
+import { EntityFileUploadController } from 'api/core/infrastructure/express/files/EntityFileUploadController';
 import { FileDeleteController } from 'api/core/infrastructure/express/files/FileDeleteController';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import entities from 'api/entities';
-import { convertPDF, createProcessingFile } from 'api/files/processDocument';
-import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { withTransaction } from 'api/utils/withTransaction';
-import { Application, Request } from 'express';
+import { Application } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
@@ -73,76 +70,29 @@ export default (app: Application) => {
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) => {
-      if (tenants.current().featureFlags?.v2UploadFile) {
-        await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(
-          req,
-          res,
-          next
-        );
-      } else {
-        await uploadMiddleware('document')(req, res, next);
-      }
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next);
     },
     async (req, res) => {
       req.emitToSessionSocket('conversionStart', req.body.entity);
-      if (tenants.current().featureFlags?.v2UploadFile) {
-        await DocumentUploadController.createHandler()(req, res);
-      } else {
-        if (!req.file) {
-          throw new Error('File is not available on request object');
-        }
-        const savedFile = await createProcessingFile(req.body.entity, req.file);
-        res.json(savedFile);
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        convertPDF(
-          savedFile,
-          req.body.entity,
-          req.file,
-          true,
-          processedFile => {
-            req.emitToSessionSocket('documentProcessed', req.body.entity, processedFile);
-          },
-          (_e, failedFile) => {
-            req.emitToSessionSocket('conversionFailed', req.body.entity, failedFile);
-          }
-        );
-      }
+      await EntityFileUploadController.forDocument()(req, res);
     },
     activitylogMiddleware
   );
 
   app.post(
-    '/api/files/upload/custom',
-    needsAuthorization(['admin']),
-    uploadMiddleware('custom'),
-    activitylogMiddleware,
-    (req, res, next) => {
-      files
-        .save({ ...req.file, type: 'custom' })
-        .then(saved => {
-          res.json(saved);
-        })
-        .catch(next);
-    }
-  );
-
-  app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware('attachment'),
-    activitylogMiddleware,
-    (req, res, next) => {
-      files
-        .save({
-          ...req.file,
-          ...req.body,
-          type: 'attachment',
-        })
-        .then(saved => {
-          res.json(saved);
-        })
-        .catch(next);
-    }
+    async (req, res, next) => {
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload('attachment')(
+        req,
+        res,
+        next
+      );
+    },
+    async (req, res) => {
+      await EntityFileUploadController.forAttachment()(req, res);
+    },
+    activitylogMiddleware
   );
 
   app.post(
@@ -189,7 +139,6 @@ export default (app: Application) => {
     }
   );
 
-  app.get('/assets/:filename', DownloadFileController.customHandler(['custom']));
   app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
   app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
 
@@ -209,42 +158,7 @@ export default (app: Application) => {
   app.delete(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          required: ['_id'],
-          additionalProperties: false,
-          properties: {
-            _id: { type: 'string' },
-          },
-        },
-      },
-    }),
-    async (req: Request<{}, {}, {}, { _id: string }>, res) => {
-      if (tenants.current().featureFlags?.v2DeleteFile) {
-        await FileDeleteController.createHandler()(req, res);
-      } else {
-        const [fileToDelete] = await files.get({ _id: req.query._id });
-        if (
-          !fileToDelete ||
-          !(await checkEntityPermission(
-            fileToDelete,
-            permissionsContext.getUserInContext(),
-            'write'
-          ))
-        ) {
-          throw createError('file not found', 404);
-        }
-        await withTransaction(async () => {
-          const [deletedFile] = await files.delete({ _id: req.query._id });
-          const thumbnailFileName = `${deletedFile._id}.jpg`;
-          await files.delete({ filename: thumbnailFileName });
-          res.json([deletedFile]);
-        }, 'DELETE /api/files');
-      }
-    }
+    FileDeleteController.createHandler()
   );
 
   app.get(

@@ -9,11 +9,9 @@ import { PermissionType } from 'api/core/domain/entity/PermissionType';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
@@ -26,8 +24,9 @@ import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
+import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
 import { CreateEntityUseCase } from '../CreateEntity';
-import { EntitiesService } from '../EntitiesService';
 import { FilesService } from '../FilesService';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 
@@ -203,8 +202,7 @@ const createSut = (props: CreateSutProps = {}) => {
   const transactionManager = TransactionManagerFactory.default();
   const idGenerator = IdGeneratorFactory.default();
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
   const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
@@ -228,11 +226,10 @@ const createSut = (props: CreateSutProps = {}) => {
     eventBus: applicationEventsBus,
   });
 
-  const entitiesService = new EntitiesService({
+  const entitiesService = EntitiesServiceFactory.default({
     entitiesDS,
     eventBus,
     settingsDS,
-    templatesDS,
     transactionManager,
     dispatcher: jobsDispatcher,
   });
