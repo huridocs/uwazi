@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { Entity } from 'api/core/domain/entity/Entity';
 import { NumericProperty } from 'api/core/domain/template/NumericProperty';
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
@@ -7,8 +8,8 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource';
 import { Template } from 'api/core/domain/template/Template';
+import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource';
 
 const factory = getFixturesFactory();
 
@@ -43,6 +44,22 @@ const createSampleTemplate = (name: string = 'Template') =>
       new NumericProperty({
         id: 'numeric',
         template: new ObjectId().toString(),
+        label: 'Numeric',
+      }),
+    ])
+    .build();
+
+const createTemplateWithId = (id: string, name: string = 'Template') =>
+  TemplateBuilder.aTemplate({ id, name })
+    .withProperties([
+      new TextProperty({
+        id: 'text',
+        template: id,
+        label: 'Text',
+      }),
+      new NumericProperty({
+        id: 'numeric',
+        template: id,
         label: 'Numeric',
       }),
     ])
@@ -226,6 +243,57 @@ describe('MongoMultiLanguageEntityDataSource', () => {
 
       const dbEntities = await testingEnvironment.db.getAllFrom('entities');
       expect(dbEntities.length).toBe(0);
+    });
+  });
+
+  describe('getSharedIdsByTemplateAndTitles', () => {
+    it('should return sharedIds for matching titles within the template', async () => {
+      const db = getConnection();
+      const transactionManager = TransactionManagerFactory.default();
+      const ds = new MongoMultiLanguageEntityDataSource(db, transactionManager);
+
+      const templateId = new ObjectId().toString();
+      const otherTemplateId = new ObjectId().toString();
+      const template = createTemplateWithId(templateId);
+      const otherTemplate = createTemplateWithId(otherTemplateId);
+
+      const entity1 = createEntity(['en'], template);
+      entity1.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Alpha' }] }),
+      ]);
+      const entity2 = createEntity(['en'], template);
+      entity2.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Beta' }] }),
+      ]);
+      const entity3 = createEntity(['en'], template);
+      entity3.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Gamma' }] }),
+      ]);
+
+      const entityOtherTemplate = createEntity(['en'], otherTemplate);
+      entityOtherTemplate.setPropertyAssignmentsInAllLanguages([
+        otherTemplate.createPropertyAssignment('title', { value: [{ value: 'Alpha' }] }),
+      ]);
+      const entityOtherTemplate2 = createEntity(['en'], otherTemplate);
+      entityOtherTemplate2.setPropertyAssignmentsInAllLanguages([
+        otherTemplate.createPropertyAssignment('title', { value: [{ value: 'Delta' }] }),
+      ]);
+
+      await ds.bulkInsert([entity1, entity2, entity3, entityOtherTemplate, entityOtherTemplate2]);
+
+      const results = await ds.getSharedIdsByTemplateAndTitles(templateId, [
+        'Alpha',
+        'Beta',
+        'Delta',
+      ]);
+
+      expect(results).toHaveLength(2);
+      expect(results).toEqual(
+        expect.arrayContaining([
+          { title: 'Alpha', sharedId: entity1.sharedId },
+          { title: 'Beta', sharedId: entity2.sharedId },
+        ])
+      );
     });
   });
 });

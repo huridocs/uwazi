@@ -36,6 +36,20 @@ export class CsvPreflightRelationshipsJobHandler extends UserAwareDispatchable<P
               { importId }
             );
           },
+          onProgress: info => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            heartbeat();
+            this.deps.sockets.emitToTenantAdmins(
+              tenantName,
+              'csvImport:preflight:relationships:progress',
+              {
+                importId: info.importId,
+                processedRows: info.processedRows,
+                totalRows: info.totalRows,
+                createdEntities: info.createdEntities,
+              }
+            );
+          },
           onSuccess: ({ importId }) => {
             this.deps.sockets.emitToTenantAdmins(
               tenantName,

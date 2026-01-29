@@ -22,8 +22,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 #### 3.1 Pipeline gaps
 
-- Relationships preflight stage now exists but is a dummy stage (no logic yet).
-- Pipeline chaining is now complete: thesauri create → relationships preflight → entities import.
+- Relationships preflight stage now exists and performs real work (no longer dummy).
+- Pipeline chaining is complete: thesauri create → relationships preflight → entities import.
 - Entities import stage is implemented and wired into the pipeline.
 
 #### 3.2 V1 parity gaps (deferred)
@@ -61,11 +61,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 ### 4) Immediate next steps (agreed direction)
 
-1. **Implement real relationships preflight logic**
-   - Read staged rows, collect relationship titles per template, and create missing entities.
-   - Keep the stage idempotent and transaction-aware.
-
-2. **Keep future work scoped**
+1. **Keep future work scoped**
    - Files/attachments remain intentionally deferred.
 
 ### 5) Follow-up work (after the dummy stage is in place)
@@ -73,17 +69,27 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - Replace legacy thesauri/translations adapters with v2 data sources.
 - Remove v1 imports from v2 services.
 - Add the missing integration tests and finalizer/cleanup job.
+- **TODO:** Relationship resolution is **not wired into entities import yet**.
+  Preflight creates missing entities, but `CsvImportEntitiesJob` still ignores relationship
+  assignments. This must be connected later once relationship parsing logic is finalized.
+- **Refactor TODO**: remove ESLint/TS disables in `CsvPreflightRelationshipsJob` by
+  extracting smaller helpers and simplifying control flow (do not do this yet).
 
 ### 6) What was completed in this iteration (Jan 2026)
 
-1. **Dummy relationships preflight stage added**
-   - New job: `app/api/csv.v2/application/jobs/CsvPreflightRelationshipsJob.ts`.
-   - New handler: `app/api/csv.v2/infrastructure/jobHandlers/CsvPreflightRelationshipsJobHandler.ts`.
-   - Statuses added to `CsvImportStatus`:
+1. **Relationships preflight stage implemented**
+   - Job: `app/api/csv.v2/application/jobs/CsvPreflightRelationshipsJob.ts`.
+   - Handler: `app/api/csv.v2/infrastructure/jobHandlers/CsvPreflightRelationshipsJobHandler.ts`.
+   - Reads staged rows, collects relationship titles (split by `|`), and creates
+     missing related entities using entities.v2.
+   - Only creates entities for relationship properties that specify `content` (template id),
+     matching v1 behavior.
+   - Uses title-only entity creation (no required-property validation; entities.v2 allows this).
+   - Statuses in `CsvImportStatus`:
      - `preflight:relationships`
      - `preflight:relationships:done`
    - Emits tenant-admin events:
-     - `csvImport:preflight:relationships:start|success|error`
+     - `csvImport:preflight:relationships:start|progress|success|error`
 
 2. **Pipeline chaining completed**
    - `CsvCreateThesauriValuesJob` now dispatches `CsvPreflightRelationshipsJobHandler`
@@ -107,6 +113,18 @@ It is also a handoff guide: a new agent should be able to continue by reading th
    - `CsvCreateThesauriValuesJob.spec.ts` updated with a `jobsDispatcher` mock and
      added `tenantName`/`userId` to `execute` input.
 
+6. **Core entities DS additions**
+   - Added `getSharedIdsByTemplateAndTitles` to `MultiLanguageEntityDataSource` and
+     implemented it in `MongoMultiLanguageEntityDataSource`.
+   - Added unit test coverage in `MongoMultiLanguageEntityDataSource.spec.ts`.
+
+7. **Relationships preflight batching improvements**
+   - Added a configurable, top-of-file constant in `CsvPreflightRelationshipsJob`:
+     `RELATIONSHIP_TITLES_CHUNK_SIZE`.
+   - Title lookups are now chunked to avoid large `$in` queries.
+   - Creation runs in the same chunk size and updates an in-memory `knownTitles` set to
+     prevent duplicates across chunks during the same import.
+
 ### 7) Agent-specific notes (handoff)
 
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -114,9 +132,9 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - **Dispatcher awareness**:
   `DefaultDispatcher(tenant, ...)` only namespaces the queue; it does NOT inject
   tenant/user into job params. Always include them explicitly.
-- **Dummy relationships stage is intentional**:
-  Do not add real logic until the team is ready; the current stage just updates status and
-  chains into entities import.
+- **Relationships stage now has real logic**:
+  Keep it idempotent and transaction-aware; only create entities for relationship
+  properties with `content` (template id), matching v1 behavior.
 - **All CSV v2 jobs emit to tenant admins only** (`emitToTenantAdmins`), never to sessions.
 - **Tests**:
   Only one unit test currently covers `CsvCreateThesauriValuesJob`. There are no pipeline
