@@ -1,0 +1,250 @@
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { Entity } from 'api/core/domain/entity/Entity';
+import { Template } from 'api/core/domain/template/Template';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
+import {
+  CsvImportRelationshipValue,
+  CsvImportRelationshipValues,
+} from '../../domain/CsvImportRelationshipValues';
+
+type RelationshipColumn = {
+  property: V1RelationshipProperty;
+  index: number;
+};
+
+type CollectTitlesParams = {
+  rowsDS: CsvImportRowsDataSource;
+  importId: string;
+  template: Template;
+  sanitizedHeaders: string[];
+  totalRows: number;
+  batchSize: number;
+  onProgress: (info: { processedRows: number; totalRows: number }) => void;
+};
+
+type CreateMissingEntitiesParams = {
+  entitiesDS: MultiLanguageEntityDataSource;
+  templatesDS: TemplatesDataSource;
+  titlesByTemplate: Map<string, Set<string>>;
+  defaultLanguage: LanguageISO6391;
+  userId: string;
+  chunkSize: number;
+  transactionManager: TransactionManager;
+};
+
+type BuildAppliedValuesParams = {
+  entitiesDS: MultiLanguageEntityDataSource;
+  importId: string;
+  titlesByTemplate: Map<string, Set<string>>;
+  chunkSize: number;
+};
+
+const MULTI_VALUE_SEPARATOR = '|';
+
+const splitRelationshipValues = (rawValue: unknown) => {
+  if (rawValue === null || rawValue === undefined) {
+    return [];
+  }
+  const stringValue = String(rawValue);
+  return stringValue
+    .split(MULTI_VALUE_SEPARATOR)
+    .filter(value => value.trim() !== '')
+    .filter((value, index, list) => list.indexOf(value) === index);
+};
+
+const buildRelationshipColumnMap = (params: { template: Template; sanitizedHeaders: string[] }) => {
+  const { template, sanitizedHeaders } = params;
+  return template.allProperties
+    .filter(
+      (property): property is V1RelationshipProperty => property instanceof V1RelationshipProperty
+    )
+    .map(property => ({
+      property,
+      index: sanitizedHeaders.findIndex(header => header === property.name),
+    }))
+    .filter(({ index }) => index >= 0);
+};
+
+const addTitlesForRow = (params: {
+  rowValues: string[];
+  columns: RelationshipColumn[];
+  titlesByTemplate: Map<string, Set<string>>;
+}) => {
+  const { rowValues, columns, titlesByTemplate } = params;
+  columns.forEach(({ property, index }) => {
+    const templateId = property.content;
+    if (!templateId) {
+      return;
+    }
+    const titles = splitRelationshipValues(rowValues[index]);
+    if (!titles.length) {
+      return;
+    }
+    const set = titlesByTemplate.get(templateId) || new Set<string>();
+    titles.forEach(title => set.add(title));
+    titlesByTemplate.set(templateId, set);
+  });
+};
+
+const chunkList = <T>(items: T[], size: number) => {
+  if (!items.length) {
+    return [];
+  }
+  const chunkSize = Math.max(1, size);
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += chunkSize) {
+    chunks.push(items.slice(index, index + chunkSize));
+  }
+  return chunks;
+};
+
+const mergeKnownTitles = (known: Set<string>, incoming: string[]) => {
+  incoming.forEach(title => known.add(title));
+};
+const buildMissingTitles = (titles: string[], known: Set<string>) =>
+  titles.filter(title => !known.has(title));
+
+const collectKnownTitles = async (params: {
+  entitiesDS: MultiLanguageEntityDataSource;
+  templateId: string;
+  titles: string[];
+  chunkSize: number;
+}) => {
+  const { entitiesDS, templateId, titles, chunkSize } = params;
+  const knownTitles = new Set<string>();
+  const chunks = chunkList(titles, chunkSize);
+  for (const chunk of chunks) {
+    // eslint-disable-next-line no-await-in-loop
+    const existing = await entitiesDS.getSharedIdsByTemplateAndTitles(templateId, chunk);
+    mergeKnownTitles(
+      knownTitles,
+      existing.map(entry => entry.title)
+    );
+  }
+  return knownTitles;
+};
+
+// eslint-disable-next-line max-statements
+const collectRelationshipTitlesForImport = async (params: CollectTitlesParams) => {
+  const { rowsDS, importId, template, sanitizedHeaders, totalRows, batchSize, onProgress } = params;
+  const relationshipColumns = buildRelationshipColumnMap({ template, sanitizedHeaders });
+  const titlesByTemplate = new Map<string, Set<string>>();
+
+  let processedRows = 0;
+  for (let offset = 0; offset < totalRows; offset += batchSize) {
+    // eslint-disable-next-line no-await-in-loop
+    const rows = await rowsDS.getByImport(importId, offset, batchSize);
+    if (!rows.length) {
+      break;
+    }
+    rows.forEach(row =>
+      addTitlesForRow({
+        rowValues: row.values,
+        columns: relationshipColumns,
+        titlesByTemplate,
+      })
+    );
+    processedRows = Math.min(totalRows, offset + rows.length);
+    onProgress({ processedRows, totalRows });
+  }
+
+  return titlesByTemplate;
+};
+
+// eslint-disable-next-line max-statements
+const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParams) => {
+  const { entitiesDS, templatesDS, titlesByTemplate, defaultLanguage, userId, chunkSize } = params;
+  let createdEntities = 0;
+  const templateCache = new Map<string, Template>();
+
+  for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
+    const titles = Array.from(titlesSet);
+    if (titles.length) {
+      const chunks = chunkList(titles, chunkSize);
+      // eslint-disable-next-line no-await-in-loop
+      const knownTitles = await collectKnownTitles({
+        entitiesDS,
+        templateId,
+        titles,
+        chunkSize,
+      });
+      let targetTemplate = templateCache.get(templateId);
+      if (!targetTemplate) {
+        // eslint-disable-next-line no-await-in-loop
+        targetTemplate = (await templatesDS.getById(templateId)).getDataOrThrow();
+        templateCache.set(templateId, targetTemplate);
+      }
+      for (const chunk of chunks) {
+        const missingTitles = buildMissingTitles(chunk, knownTitles);
+        if (missingTitles.length) {
+          const entities = missingTitles.map(title => {
+            const entity = Entity.create({
+              languages: [defaultLanguage],
+              template: targetTemplate!,
+              userId,
+            });
+            entity.setPropertyAssignmentsInAllLanguages([
+              targetTemplate!.createPropertyAssignment('title', {
+                value: [{ value: title }],
+              }),
+            ]);
+            return entity;
+          });
+          // eslint-disable-next-line no-await-in-loop
+          await params.transactionManager.run(async () => {
+            await entitiesDS.bulkInsert(entities);
+          });
+          mergeKnownTitles(knownTitles, missingTitles);
+          createdEntities += entities.length;
+        }
+      }
+    }
+  }
+
+  return createdEntities;
+};
+
+// eslint-disable-next-line max-statements
+const buildRelationshipAppliedValues = async (params: BuildAppliedValuesParams) => {
+  const { entitiesDS, importId, titlesByTemplate, chunkSize } = params;
+  const docs: CsvImportRelationshipValues[] = [];
+
+  for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
+    const titles = Array.from(titlesSet);
+    if (titles.length) {
+      const chunks = chunkList(titles, chunkSize);
+      const values: CsvImportRelationshipValue[] = [];
+      const seen = new Set<string>();
+      for (const chunk of chunks) {
+        // eslint-disable-next-line no-await-in-loop
+        const existing = await entitiesDS.getSharedIdsByTemplateAndTitles(templateId, chunk);
+        existing.forEach(entry => {
+          if (seen.has(entry.sharedId)) {
+            return;
+          }
+          seen.add(entry.sharedId);
+          values.push({ label: entry.title, sharedId: entry.sharedId });
+        });
+      }
+      docs.push(
+        CsvImportRelationshipValues.create({
+          importId,
+          templateId,
+          values,
+          createdAt: Date.now(),
+        })
+      );
+    }
+  }
+
+  return docs;
+};
+export {
+  buildRelationshipAppliedValues,
+  collectRelationshipTitlesForImport,
+  createMissingEntitiesForTitles,
+};

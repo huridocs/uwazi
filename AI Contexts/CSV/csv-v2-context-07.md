@@ -72,10 +72,9 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - **TODO:** Relationship resolution is **not wired into entities import yet**.
   Preflight creates missing entities, but `CsvImportEntitiesJob` still ignores relationship
   assignments. This must be connected later once relationship parsing logic is finalized.
-- **Refactor TODO**: remove ESLint/TS disables in `CsvPreflightRelationshipsJob` by
-  extracting smaller helpers and simplifying control flow (do not do this yet).
-- **Refactor TODO**: `CsvPreflightRelationshipsJob` is now 460+ lines and needs to be split
-  into helper modules/services to keep it readable and testable.
+9. **Relationships preflight refactor (done)**
+   - Extracted helper logic into `CsvPreflightRelationshipsService`.
+   - Removed ESLint/TS disables from `CsvPreflightRelationshipsJob`.
 
 ### 6) What was completed in this iteration (Jan 2026)
 

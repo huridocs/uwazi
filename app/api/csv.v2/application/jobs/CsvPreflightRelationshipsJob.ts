@@ -1,15 +1,12 @@
-/* eslint-disable max-lines */
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { Entity } from 'api/core/domain/entity/Entity';
-import { Template } from 'api/core/domain/template/Template';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { Template } from 'api/core/domain/template/Template';
 import { CsvImportEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvImportEntitiesJobHandler';
 import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
 import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper';
@@ -18,10 +15,12 @@ import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
 import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
+import { CsvImportRelationshipValues } from '../../domain/CsvImportRelationshipValues';
 import {
-  CsvImportRelationshipValue,
-  CsvImportRelationshipValues,
-} from '../../domain/CsvImportRelationshipValues';
+  buildRelationshipAppliedValues,
+  collectRelationshipTitlesForImport,
+  createMissingEntitiesForTitles,
+} from '../services/CsvPreflightRelationshipsService';
 
 type RelationshipsProgress = {
   importId: string;
@@ -56,235 +55,6 @@ type Deps = {
 const DEFAULT_BATCH_SIZE = 1000;
 const RELATIONSHIP_TITLES_CHUNK_SIZE = 250;
 
-const MULTI_VALUE_SEPARATOR = '|';
-
-const splitRelationshipValues = (rawValue: unknown) => {
-  if (rawValue === null || rawValue === undefined) {
-    return [];
-  }
-  const stringValue = String(rawValue);
-  return stringValue
-    .split(MULTI_VALUE_SEPARATOR)
-    .filter(value => value.trim() !== '')
-    .filter((value, index, list) => list.indexOf(value) === index);
-};
-
-type RelationshipColumn = {
-  property: V1RelationshipProperty;
-  index: number;
-};
-
-const buildRelationshipColumnMap = (params: { template: Template; sanitizedHeaders: string[] }) => {
-  const { template, sanitizedHeaders } = params;
-  return template.allProperties
-    .filter(
-      (property): property is V1RelationshipProperty => property instanceof V1RelationshipProperty
-    )
-    .map(property => ({
-      property,
-      index: sanitizedHeaders.findIndex(header => header === property.name),
-    }))
-    .filter(({ index }) => index >= 0);
-};
-
-const addTitlesForRow = (params: {
-  rowValues: string[];
-  columns: RelationshipColumn[];
-  titlesByTemplate: Map<string, Set<string>>;
-}) => {
-  const { rowValues, columns, titlesByTemplate } = params;
-  columns.forEach(({ property, index }) => {
-    const templateId = property.content;
-    if (!templateId) {
-      return;
-    }
-    const titles = splitRelationshipValues(rowValues[index]);
-    if (!titles.length) {
-      return;
-    }
-    const set = titlesByTemplate.get(templateId) || new Set<string>();
-    titles.forEach(title => set.add(title));
-    titlesByTemplate.set(templateId, set);
-  });
-};
-
-const chunkList = <T>(items: T[], size: number) => {
-  if (!items.length) {
-    return [];
-  }
-  const chunkSize = Math.max(1, size);
-  const chunks: T[][] = [];
-  for (let index = 0; index < items.length; index += chunkSize) {
-    chunks.push(items.slice(index, index + chunkSize));
-  }
-  return chunks;
-};
-
-const mergeKnownTitles = (known: Set<string>, incoming: string[]) => {
-  incoming.forEach(title => known.add(title));
-};
-
-const buildMissingTitles = (titles: string[], known: Set<string>) =>
-  titles.filter(title => !known.has(title));
-
-const collectKnownTitles = async (params: {
-  deps: Deps;
-  templateId: string;
-  titles: string[];
-  chunkSize: number;
-}) => {
-  const { deps, templateId, titles, chunkSize } = params;
-  const knownTitles = new Set<string>();
-  const chunks = chunkList(titles, chunkSize);
-  for (const chunk of chunks) {
-    // eslint-disable-next-line no-await-in-loop
-    const existing = await deps.entitiesDS.getSharedIdsByTemplateAndTitles(templateId, chunk);
-    mergeKnownTitles(
-      knownTitles,
-      existing.map(entry => entry.title)
-    );
-  }
-  return knownTitles;
-};
-
-// eslint-disable-next-line max-statements
-const collectRelationshipTitlesForImport = async (params: {
-  deps: Deps;
-  importId: string;
-  template: Template;
-  sanitizedHeaders: string[];
-  totalRows: number;
-  callbacks: Callbacks;
-  batchSize: number;
-}) => {
-  const { deps, importId, template, sanitizedHeaders, totalRows, callbacks, batchSize } = params;
-  const relationshipColumns = buildRelationshipColumnMap({ template, sanitizedHeaders });
-  const titlesByTemplate = new Map<string, Set<string>>();
-
-  let processedRows = 0;
-  for (let offset = 0; offset < totalRows; offset += batchSize) {
-    // eslint-disable-next-line no-await-in-loop
-    const rows = await deps.rowsDS.getByImport(importId, offset, batchSize);
-    if (!rows.length) {
-      break;
-    }
-    rows.forEach(row =>
-      addTitlesForRow({
-        rowValues: row.values,
-        columns: relationshipColumns,
-        titlesByTemplate,
-      })
-    );
-    processedRows = Math.min(totalRows, offset + rows.length);
-    callbacks.onProgress({
-      importId,
-      processedRows,
-      totalRows,
-      createdEntities: 0,
-    });
-  }
-
-  return titlesByTemplate;
-};
-
-// eslint-disable-next-line max-statements
-const createMissingEntitiesForTitles = async (params: {
-  deps: Deps;
-  titlesByTemplate: Map<string, Set<string>>;
-  defaultLanguage: LanguageISO6391;
-  userId: string;
-}) => {
-  const { deps, titlesByTemplate, defaultLanguage, userId } = params;
-  let createdEntities = 0;
-  const templateCache = new Map<string, Template>();
-
-  for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
-    const titles = Array.from(titlesSet);
-    if (titles.length) {
-      const chunks = chunkList(titles, RELATIONSHIP_TITLES_CHUNK_SIZE);
-      // eslint-disable-next-line no-await-in-loop
-      const knownTitles = await collectKnownTitles({
-        deps,
-        templateId,
-        titles,
-        chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
-      });
-      let targetTemplate = templateCache.get(templateId);
-      if (!targetTemplate) {
-        // eslint-disable-next-line no-await-in-loop
-        targetTemplate = (await deps.templatesDS.getById(templateId)).getDataOrThrow();
-        templateCache.set(templateId, targetTemplate);
-      }
-      for (const chunk of chunks) {
-        const missingTitles = buildMissingTitles(chunk, knownTitles);
-        if (missingTitles.length) {
-          const entities = missingTitles.map(title => {
-            const entity = Entity.create({
-              languages: [defaultLanguage],
-              template: targetTemplate!,
-              userId,
-            });
-            entity.setPropertyAssignmentsInAllLanguages([
-              targetTemplate!.createPropertyAssignment('title', {
-                value: [{ value: title }],
-              }),
-            ]);
-            return entity;
-          });
-          // eslint-disable-next-line no-await-in-loop
-          await deps.transactionManager.run(async () => {
-            await deps.entitiesDS.bulkInsert(entities);
-          });
-          mergeKnownTitles(knownTitles, missingTitles);
-          createdEntities += entities.length;
-        }
-      }
-    }
-  }
-
-  return createdEntities;
-};
-
-// eslint-disable-next-line max-statements
-const buildRelationshipAppliedValues = async (params: {
-  deps: Deps;
-  importId: string;
-  titlesByTemplate: Map<string, Set<string>>;
-  chunkSize: number;
-}) => {
-  const { deps, importId, titlesByTemplate, chunkSize } = params;
-  const docs: CsvImportRelationshipValues[] = [];
-
-  for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
-    const titles = Array.from(titlesSet);
-    if (titles.length) {
-      const chunks = chunkList(titles, chunkSize);
-      const values: CsvImportRelationshipValue[] = [];
-      const seen = new Set<string>();
-      for (const chunk of chunks) {
-        // eslint-disable-next-line no-await-in-loop
-        const existing = await deps.entitiesDS.getSharedIdsByTemplateAndTitles(templateId, chunk);
-        existing.forEach(entry => {
-          if (seen.has(entry.sharedId)) {
-            return;
-          }
-          seen.add(entry.sharedId);
-          values.push({ label: entry.title, sharedId: entry.sharedId });
-        });
-      }
-      docs.push(
-        CsvImportRelationshipValues.create({
-          importId,
-          templateId,
-          values,
-          createdAt: Date.now(),
-        })
-      );
-    }
-  }
-
-  return docs;
-};
 class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
   private getBatchSize() {
     return Math.max(1, this.deps.batchSize ?? DEFAULT_BATCH_SIZE);
@@ -367,9 +137,19 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
     callbacks: Callbacks;
   }) {
     return collectRelationshipTitlesForImport({
-      ...params,
-      deps: this.deps,
+      rowsDS: this.deps.rowsDS,
+      importId: params.importId,
+      template: params.template,
+      sanitizedHeaders: params.sanitizedHeaders,
+      totalRows: params.totalRows,
       batchSize: this.getBatchSize(),
+      onProgress: info =>
+        params.callbacks.onProgress({
+          importId: params.importId,
+          processedRows: info.processedRows,
+          totalRows: info.totalRows,
+          createdEntities: 0,
+        }),
     });
   }
 
@@ -379,8 +159,13 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
     userId: string;
   }) {
     return createMissingEntitiesForTitles({
-      ...params,
-      deps: this.deps,
+      entitiesDS: this.deps.entitiesDS,
+      templatesDS: this.deps.templatesDS,
+      titlesByTemplate: params.titlesByTemplate,
+      defaultLanguage: params.defaultLanguage,
+      userId: params.userId,
+      chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
+      transactionManager: this.deps.transactionManager,
     });
   }
 
@@ -408,7 +193,36 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
     });
   }
 
-  // eslint-disable-next-line max-statements
+  private async runPreflight(importId: string, callbacks: Callbacks) {
+    const context = await this.loadContext(importId);
+    const titlesByTemplate = await this.collectRelationshipTitles({
+      importId,
+      template: context.template,
+      sanitizedHeaders: context.sanitizedHeaders,
+      totalRows: context.totalRows,
+      callbacks,
+    });
+    const createdEntities = await this.createMissingEntities({
+      titlesByTemplate,
+      defaultLanguage: context.defaultLanguage,
+      userId: context.csvImport.createdBy,
+    });
+    const relationshipDocs = await buildRelationshipAppliedValues({
+      entitiesDS: this.deps.entitiesDS,
+      importId,
+      titlesByTemplate,
+      chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
+    });
+    callbacks.onProgress({
+      importId,
+      processedRows: context.totalRows,
+      totalRows: context.totalRows,
+      createdEntities,
+    });
+
+    return { context, createdEntities, relationshipDocs };
+  }
+
   async execute(input: Input): Promise<void> {
     const { importId, tenantName, userId, callbacks } = input;
 
@@ -416,31 +230,7 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
     await this.setStatus(importId, CsvImportStatus.PreflightRelationships);
 
     try {
-      const context = await this.loadContext(importId);
-      const titlesByTemplate = await this.collectRelationshipTitles({
-        importId,
-        template: context.template,
-        sanitizedHeaders: context.sanitizedHeaders,
-        totalRows: context.totalRows,
-        callbacks,
-      });
-      const createdEntities = await this.createMissingEntities({
-        titlesByTemplate,
-        defaultLanguage: context.defaultLanguage,
-        userId: context.csvImport.createdBy,
-      });
-      const relationshipDocs = await buildRelationshipAppliedValues({
-        deps: this.deps,
-        importId,
-        titlesByTemplate,
-        chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
-      });
-      callbacks.onProgress({
-        importId,
-        processedRows: context.totalRows,
-        totalRows: context.totalRows,
-        createdEntities,
-      });
+      const { context, relationshipDocs } = await this.runPreflight(importId, callbacks);
       await this.finalizeSuccess({
         csvImport: context.csvImport,
         relationshipDocs,
