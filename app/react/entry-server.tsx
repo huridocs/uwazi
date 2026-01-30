@@ -2,12 +2,11 @@
 /* eslint-disable max-lines */
 import { Request as ExpressRequest, Response } from 'express';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { join } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 import {
   createStaticHandler,
   createStaticRouter,
@@ -121,8 +120,9 @@ const getAssets = async () => {
     return Promise.resolve();
   }
 
+  const resolvedPath = join(process.cwd(), 'prod', 'dist', 'webpack-assets.json');
   return new Promise((resolve, reject) => {
-    fs.readFile(`${__dirname}/../../dist/webpack-assets.json`, (err, data) => {
+    fs.readFile(resolvedPath, 'utf8', (err, data) => {
       if (err) {
         reject(
           new Error(`${err}\nwebpack-assets.json do not exists or is malformed !,
@@ -169,13 +169,13 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          api.get('user', requestParams),
-          api.get('settings', requestParams),
-          api.get('templates', requestParams),
-          api.get('dictionaries', requestParams),
-          api.get('relationTypes', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
-        ])
+        api.get('user', requestParams),
+        api.get('settings', requestParams),
+        api.get('templates', requestParams),
+        api.get('dictionaries', requestParams),
+        api.get('relationTypes', requestParams),
+        Promise.resolve({ json: { rows: translations } }),
+      ])
       : [];
 
   const reduxData = {

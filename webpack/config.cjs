@@ -14,15 +14,15 @@ const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
 
 module.exports = production => {
-  let stylesName = 'CSS/[name].css';
-  let rtlStylesName = 'CSS/rtl-[name].css';
+  let stylesName = '[name].css';
+  let rtlStylesName = 'rtl-[name].css';
   let jsChunkHashName = '';
   let outputPath = path.join(rootPath, 'dist');
 
   if (production) {
     outputPath = path.join(rootPath, 'prod/dist');
-    stylesName = 'CSS/[name].[chunkhash].css';
-    rtlStylesName = 'CSS/rtl-[name].[fullhash].css';
+    stylesName = '[name].[chunkhash].css';
+    rtlStylesName = 'rtl-[name].[fullhash].css';
     jsChunkHashName = '.[chunkhash]';
   }
 
@@ -36,7 +36,7 @@ module.exports = production => {
         config: [__filename],
         tsconfig: [path.resolve(rootPath, 'tsconfig.json')],
         babel: [path.resolve(rootPath, 'babel.config.json')],
-        postcss: [path.resolve(rootPath, 'postcss.config.js')],
+        postcss: [path.resolve(rootPath, 'postcss.config.cjs')],
       },
     },
     entry: {
@@ -50,7 +50,11 @@ module.exports = production => {
       chunkFilename: `[name]${jsChunkHashName}.bundle.js`,
     },
     resolve: {
-      extensions: ['.*', '.webpack.js', '.web.js', '.js', '.jsx', '.tsx', '.ts'],
+      extensions: ['.*', '.webpack.js', '.web.js', '.tsx', '.ts', '.jsx', '.js'],
+      extensionAlias: {
+        '.js': ['.tsx', '.ts', '.jsx', '.js'],
+        '.jsx': ['.tsx', '.jsx'],
+      },
       alias: {
         'api': path.join(rootPath, 'app/api'),
         'app': path.join(rootPath, 'app/react'),
@@ -79,14 +83,9 @@ module.exports = production => {
               return chunk.name && !chunk.name.match(/LazyLoad/);
             },
           },
-          vendorStyles: {
-            name: 'vendor',
-            test: /[\\/]node_modules[\\/].*\.(css|scss|sass)$/,
-            chunks: 'all',
-            enforce: true,
-          },
         },
       },
+      runtimeChunk: false,
     },
     module: {
       rules: [
@@ -117,7 +116,7 @@ module.exports = production => {
               loader: 'postcss-loader',
               options: {
                 postcssOptions: {
-                  config: path.resolve(__dirname, '../postcss.config.js'),
+                  config: path.resolve(__dirname, '../postcss.config.cjs'),
                 },
               },
             },
@@ -133,23 +132,7 @@ module.exports = production => {
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
-            {
-              loader: 'postcss-loader',
-              options: {
-                postcssOptions: {
-                  config: path.resolve(__dirname, '../postcss.config.js'),
-                },
-              },
-            },
-            {
-              loader: 'sass-loader',
-              options: {
-                sourceMap: true,
-                sassOptions: {
-                  includePaths: [path.join(rootPath, 'app/react/App/scss')],
-                },
-              },
-            },
+            { loader: 'sass-loader', options: { sourceMap: true } },
           ],
         },
         {
@@ -179,6 +162,7 @@ module.exports = production => {
               loader: 'postcss-loader',
               options: {
                 postcssOptions: {
+                  config: false,
                   plugins: {
                     'postcss-prefix-selector': {
                       prefix: '.tw-datepicker',
@@ -200,7 +184,7 @@ module.exports = production => {
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: stylesName,
-        chunkFilename: stylesName.replace('[name]', '[id]'),
+        chunkFilename: '[name]' + (production ? '.[contenthash]' : '') + '.css',
       }),
       new RtlCssPlugin({
         filename: rtlStylesName,
@@ -227,78 +211,6 @@ module.exports = production => {
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
-      // Custom plugin to handle # prefixed imports and relative .js/.jsx imports
-      new (class {
-        apply(compiler) {
-          compiler.hooks.normalModuleFactory.tap('HashPrefixPlugin', (nmf) => {
-            nmf.hooks.beforeResolve.tap('HashPrefixPlugin', (resolveData) => {
-              if (!resolveData.request) return;
-              
-              const fs = require('fs');
-              const request = resolveData.request;
-              let newRequest = request;
-              
-              if (request.startsWith('#')) {
-                if (request.startsWith('#app/')) {
-                  newRequest = request.replace('#app/', path.join(rootPath, 'app/react/'));
-                } else if (request.startsWith('#api/')) {
-                  newRequest = request.replace('#api/', path.join(rootPath, 'app/api/'));
-                } else if (request.startsWith('#shared/')) {
-                  newRequest = request.replace('#shared/', path.join(rootPath, 'app/shared/'));
-                } else if (request.startsWith('#UI/')) {
-                  newRequest = request.replace('#UI/', path.join(rootPath, 'app/react/UI/'));
-                } else if (request.startsWith('#V2/')) {
-                  newRequest = request.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
-                }
-              } else if ((request.startsWith('./') || request.startsWith('../')) && resolveData.context) {
-                newRequest = path.resolve(resolveData.context, request);
-              } else if (request.startsWith(rootPath) && (request.includes('/app/react/') || request.includes('/app/shared/') || request.includes('/app/api/'))) {
-                newRequest = request;
-              }
-              
-              if (newRequest && newRequest !== request || (request.startsWith('./') || request.startsWith('../')) || (request.startsWith(rootPath))) {
-                const ext = path.extname(newRequest);
-                if (fs.existsSync(newRequest)) {
-                  resolveData.request = newRequest;
-                } else if (ext === '.js' || ext === '.jsx' || !ext) {
-                  const basePath = ext ? newRequest.slice(0, -ext.length) : newRequest;
-                  const tsxPath = basePath + '.tsx';
-                  const tsPath = basePath + '.ts';
-                  const jsxPath = basePath + '.jsx';
-                  const jsPath = basePath + '.js';
-                  if (fs.existsSync(tsxPath)) {
-                    resolveData.request = tsxPath;
-                  } else if (fs.existsSync(tsPath)) {
-                    resolveData.request = tsPath;
-                  } else if (fs.existsSync(jsxPath)) {
-                    resolveData.request = jsxPath;
-                  } else if (fs.existsSync(jsPath)) {
-                    resolveData.request = jsPath;
-                  } else {
-                    const indexTsx = path.join(basePath, 'index.tsx');
-                    const indexTs = path.join(basePath, 'index.ts');
-                    const indexJsx = path.join(basePath, 'index.jsx');
-                    const indexJs = path.join(basePath, 'index.js');
-                    if (fs.existsSync(indexTsx)) {
-                      resolveData.request = indexTsx;
-                    } else if (fs.existsSync(indexTs)) {
-                      resolveData.request = indexTs;
-                    } else if (fs.existsSync(indexJsx)) {
-                      resolveData.request = indexJsx;
-                    } else if (fs.existsSync(indexJs)) {
-                      resolveData.request = indexJs;
-                    } else {
-                      resolveData.request = newRequest;
-                    }
-                  }
-                } else {
-                  resolveData.request = newRequest;
-                }
-              }
-            });
-          });
-        }
-      })(),
     ],
   };
 };

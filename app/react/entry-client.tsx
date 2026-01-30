@@ -14,24 +14,18 @@ import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import './App/sockets';
-import 'react-widgets/dist/css/react-widgets.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'nprogress/nprogress.css';
-import 'flag-icons/sass/flag-icons.scss';
-import 'flowbite/dist/flowbite.min.css';
-import '#app/App/styles/tailwind.css';
-import '#app/App/scss/styles.scss';
 import CustomProvider from '#app/App/Provider.js';
 import { atomStore } from '#V2/atoms/index.js';
 import { store } from '#app/store.js';
-import { routes } from '#app/appRoutes.js';
+import { getAppRoutes } from '#app/appRoutes.js';
 
 window.__entryClientExecuting = true;
 console.log('[entry-client] Starting execution');
 if (typeof document !== 'undefined') {
   const testDiv = document.createElement('div');
   testDiv.id = '__entryClientTest';
-  testDiv.style.cssText = 'position:fixed;top:10px;right:10px;background:green;color:white;padding:10px;z-index:99999;font-family:monospace;';
+  testDiv.style.cssText =
+    'position:fixed;top:10px;right:10px;background:green;color:white;padding:10px;z-index:99999;font-family:monospace;';
   testDiv.textContent = '✅ entry-client executing';
   document.body.appendChild(testDiv);
   setTimeout(() => testDiv.remove(), 3000);
@@ -57,7 +51,7 @@ if (window.SENTRY_APP_DSN) {
   });
 }
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(getAppRoutes());
 console.log('[entry-client] Router created');
 window.__entryClientRouterCreated = true;
 if (typeof document !== 'undefined') {

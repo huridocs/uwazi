@@ -29,7 +29,12 @@ const __dirname = path.dirname(__filename);
     publicPath: webpackConfig.default.output.publicPath,
     headers: { 'Access-Control-Allow-Origin': '*' },
     stats: 'errors-warnings',
-    writeToDisk: false,
+    writeToDisk: (filePath) => {
+      const normalizedPath = filePath.replace(/\\/g, '/');
+      return normalizedPath.endsWith('.css') ||
+        normalizedPath.includes('webpack-assets.json') ||
+        normalizedPath.includes('/CSS/');
+    },
   });
 
   app.use(middleware);

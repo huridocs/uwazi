@@ -1,5 +1,5 @@
 import { clickOnEditEntity, grantPermission, shareSearchTerm } from '../helpers/entities.js';
-import { selectRestrictedEntities } from '../helpers/index.js';
+import { selectPublishedEntities, selectRestrictedEntities } from '../helpers/index.js';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 
 describe('Share Entities', () => {

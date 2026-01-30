@@ -134,7 +134,11 @@ if (app.get('env') === 'production') {
 }
 
 app.use(compression());
-app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
+const distPath =
+  app.get('env') === 'production'
+    ? path.resolve(process.cwd(), 'prod/dist')
+    : path.resolve(__dirname, '../dist');
+app.use(express.static(distPath, { maxage }));
 app.use('/public', express.static(config.publicAssets));
 
 app.use(appContextMiddleware);

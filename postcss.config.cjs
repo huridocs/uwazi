@@ -2,13 +2,17 @@ const postcss = require('postcss');
 const tailwindcss = require('@tailwindcss/postcss');
 const prefixWrap = require('postcss-prefixwrap');
 const postcssNesting = require('postcss-nesting');
-const legacyOverrides = require('./app/react/App/styles/legacyOverrides');
+const legacyOverrides = require('./app/react/App/styles/legacyOverrides.cjs');
 
 module.exports = ctx => {
   const filePath = ctx?.file?.dirname
     ? `${ctx.file.dirname}/${ctx.file.basename || ''}`
     : ctx?.file?.path || ctx?.file || '';
   const isTailwindFile = /app\/react\/App\/styles\/tailwind\.css$/.test(filePath);
+
+  if (filePath && (filePath.includes('tailwind') || filePath.includes('.css'))) {
+    console.log('[postcss]', filePath, '| isTailwind:', isTailwindFile);
+  }
 
   const plugins = [];
 

@@ -35,6 +35,7 @@
     },
     "production": {
       "plugins": [
+        "./babel-plugin-ignore-scss.cjs",
         [
           "babel-plugin-module-resolver",
           {

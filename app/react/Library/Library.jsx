@@ -10,7 +10,7 @@ import {
 } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { withRouter } from '#app/componentWrappers.js';
-import { routes as appRoutes } from '#app/appRoutes.js';
+import { getAppRoutes } from '#app/appRoutes.js';
 
 class LibraryRootComponent extends RouteHandler {
   constructor(props, context) {
@@ -64,7 +64,7 @@ class LibraryRootComponent extends RouteHandler {
 
   componentWillUnmount() {
     const nextLocation = window?.location?.pathname;
-    const matchedRoute = this.findMatchingRoute(nextLocation, appRoutes);
+    const matchedRoute = this.findMatchingRoute(nextLocation, getAppRoutes());
     if (!matchedRoute && !nextLocation.includes('library')) {
       this.emptyState();
     }

@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const config = require('./config.cjs')();
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const rootPath = `${__dirname}/../`;
 const RtlCssPlugin = require('rtlcss-webpack-plugin');
@@ -11,7 +12,16 @@ config['infrastructureLogging'] = {
   level: 'error',
 };
 
-config.plugins = config.plugins.filter(plugin => !(plugin instanceof RtlCssPlugin));
+config.plugins = config.plugins.filter(plugin =>
+  !(plugin instanceof RtlCssPlugin) && !(plugin instanceof MiniCssExtractPlugin)
+);
+config.plugins.push(
+  new MiniCssExtractPlugin({
+    filename: 'CSS/[name].css',
+    chunkFilename: 'CSS/[name].css',
+  })
+);
+
 config.plugins = config.plugins.concat([
   new webpack.HotModuleReplacementPlugin(),
   // enable HMR globally
@@ -20,15 +30,11 @@ config.plugins = config.plugins.concat([
 
 config.optimization.moduleIds = 'named';
 config.optimization.emitOnErrors = false;
-config.optimization.splitChunks = false;
-config.optimization.runtimeChunk = false;
-config.optimization.chunkIds = 'named';
 
 config.output = {
-  ...config.output,
+  path: path.join(rootPath, 'dist'),
   publicPath: 'http://localhost:8080/',
   filename: '[name].js',
-  chunkFilename: '[name].bundle.js',
 };
 
 config.entry.main = [

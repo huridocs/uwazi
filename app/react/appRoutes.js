@@ -1,18 +1,10 @@
-const isClient = typeof window !== 'undefined';
+import { getRoutes } from '#app/Routes.js';
+import { settingsAtom, atomStore, userAtom } from '#V2/atoms/index.js';
 
-let routesCache = null;
-
-const initializeRoutes = async () => {
-  if (routesCache === null) {
-    if (isClient) {
-      const { settingsAtom, atomStore, userAtom } = await import('#V2/atoms/index.js');
-      const { getRoutes } = await import('#app/Routes.js');
-      routesCache = getRoutes(atomStore.get(settingsAtom), atomStore.get(userAtom)?._id);
-    } else {
-      routesCache = [];
-    }
+let _routes;
+export const getAppRoutes = () => {
+  if (!_routes) {
+    _routes = getRoutes?.(atomStore.get(settingsAtom), atomStore.get(userAtom)?._id);
   }
-  return routesCache;
+  return _routes;
 };
-
-export const routes = await initializeRoutes();

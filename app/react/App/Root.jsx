@@ -8,17 +8,54 @@ import { availableLanguages } from '#shared/language/index.js';
 const determineHotAssets = query => ({
   JS: [
     'http://localhost:8080/nprogress.js',
+    'http://localhost:8080/vendor.js',
     'http://localhost:8080/main.js',
   ],
   CSS: [
+    `http://localhost:8080/CSS/vendor.css${query}`,
     `http://localhost:8080/CSS/main.css${query}`,
   ],
 });
 
-const determineAssets = (assets, languageData) => ({
-  JS: [assets.nprogress.js, assets.vendor.js, assets.main.js],
-  CSS: [assets.vendor.css[languageData.rtl ? 1 : 0], assets.main.css[languageData.rtl ? 1 : 0]],
-});
+const determineAssets = (assets, languageData) => {
+  if (!assets) {
+    return { JS: [], CSS: [] };
+  }
+  const rtlIndex = languageData?.rtl ? 1 : 0;
+  const vendorCss = assets.vendor?.css;
+  const mainCss = assets.main?.css;
+  const emptyKeyCss = assets['']?.css;
+  const cssArray = [];
+  if (vendorCss) {
+    if (Array.isArray(vendorCss)) {
+      cssArray.push(vendorCss[rtlIndex] || vendorCss[0]);
+    } else {
+      cssArray.push(vendorCss);
+    }
+  }
+  if (mainCss) {
+    if (Array.isArray(mainCss)) {
+      cssArray.push(mainCss[rtlIndex] || mainCss[0]);
+    } else {
+      cssArray.push(mainCss);
+    }
+  }
+  if (emptyKeyCss && Array.isArray(emptyKeyCss)) {
+    emptyKeyCss.forEach(cssFile => {
+      if (cssFile && typeof cssFile === 'string' && cssFile.endsWith('.css') && !cssFile.includes('rtl-')) {
+        cssArray.push(cssFile);
+      }
+    });
+  }
+  return {
+    JS: [
+      assets.nprogress?.js,
+      assets.vendor?.js,
+      assets.main?.js
+    ].filter(Boolean),
+    CSS: cssArray.filter(Boolean),
+  };
+};
 
 const googelFonts = (
   <link

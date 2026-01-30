@@ -9,6 +9,7 @@ import { uploadDocument } from '#app/Uploads/actions/uploadsActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { socket } from '#app/socket.js';
 import { Translate } from '#app/I18N/index.js';
+import { updateMainDocument } from '#app/Uploads/actions/uploadsActions.js';
 
 const renderProgress = progress => (
   <div className="upload-button btn btn-default btn-disabled">
