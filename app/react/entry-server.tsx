@@ -169,13 +169,13 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   ] =
     !settings.private || req.user
       ? await Promise.all([
-        api.get('user', requestParams),
-        api.get('settings', requestParams),
-        api.get('templates', requestParams),
-        api.get('dictionaries', requestParams),
-        api.get('relationTypes', requestParams),
-        Promise.resolve({ json: { rows: translations } }),
-      ])
+          api.get('user', requestParams),
+          api.get('settings', requestParams),
+          api.get('templates', requestParams),
+          api.get('dictionaries', requestParams),
+          api.get('relationTypes', requestParams),
+          Promise.resolve({ json: { rows: translations } }),
+        ])
       : [];
 
   const reduxData = {

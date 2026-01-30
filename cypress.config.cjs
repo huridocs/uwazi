@@ -1,22 +1,23 @@
-import fs from 'fs';
-import { defineConfig } from 'cypress';
-import webpackConfig from './webpack.config';
-import cypressFailFast from 'cypress-fail-fast/plugin';
+const fs = require('fs');
+const { defineConfig } = require('cypress');
+const cypressFailFast = require('cypress-fail-fast/plugin');
+const configFactory = require('./webpack/config.cjs');
+const { initPlugin } = require('cypress-plugin-snapshots/plugin');
+
+const webpackConfig = configFactory(false);
 
 const cypressWebpackConfig = {
   ...webpackConfig,
-  cache: false, // disable cache for Cypress component testing
+  cache: false,
   optimization: {
     ...webpackConfig.optimization,
-    minimize: false, // disable minification for Cypress (keeps debugging easier)
-    moduleIds: 'named', // CRITICAL FIX: use named module IDs instead of deterministic for cypress-axe
-    chunkIds: 'named', // CRITICAL FIX: use named chunk IDs instead of deterministic for cypress-axe
-    // Keep other optimizations like splitChunks for better performance
+    minimize: false,
+    moduleIds: 'named',
+    chunkIds: 'named',
   },
   module: {
     ...webpackConfig.module,
     rules: webpackConfig.module.rules.map(rule => {
-      // Remove thread-loader from Cypress builds (can cause module resolution issues)
       if (rule.use && Array.isArray(rule.use)) {
         return {
           ...rule,
@@ -33,20 +34,17 @@ const cypressWebpackConfig = {
   },
   resolve: {
     ...webpackConfig.resolve,
-    // Ensure cypress-axe can resolve its files properly
     fallback: {
       ...webpackConfig.resolve.fallback,
-      fs: false, // disable fs fallback for cypress-axe
-      path: false, // disable path fallback for cypress-axe
+      fs: false,
+      path: false,
     },
   },
 };
 
-const { initPlugin } = require('cypress-plugin-snapshots/plugin');
-
 const retries = process.env.CYPRESS_RETRIES ? parseInt(process.env.CYPRESS_RETRIES, 10) : 0;
 
-export default defineConfig({
+module.exports = defineConfig({
   viewportWidth: 1280,
   viewportHeight: 768,
   defaultCommandTimeout: 12000,
@@ -69,7 +67,6 @@ export default defineConfig({
       initPlugin(on, config);
       cypressFailFast(on, config);
 
-      // Add logging tasks for accessibility violations
       on('task', {
         log(message) {
           console.log(message);
@@ -81,21 +78,19 @@ export default defineConfig({
         },
       });
 
-      on('after:spec', (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
+      on('after:spec', (spec, results) => {
         if (results && results.video) {
-          // Do we have failures for any retry attempts?
           const failures = results.tests.some(test =>
             test.attempts.some(attempt => attempt.state === 'failed')
           );
           if (!failures) {
-            // delete the video if the spec passed and no tests retried
             fs.unlinkSync(results.video);
           }
         }
       });
+
       on('before:browser:launch', (browser, launchOptions) => {
         if (browser.name === 'chrome' || browser.name === 'chromium' || browser.name === 'edge') {
-          // Ensure consistent viewport and stable CI runs for Chromium-family browsers in both headed and headless modes
           launchOptions.args.push('--window-size=1280,768');
           launchOptions.args.push('--force-device-scale-factor=1');
           launchOptions.args.push('--disable-dev-shm-usage');
