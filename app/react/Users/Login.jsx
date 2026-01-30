@@ -86,10 +86,7 @@ class LoginComponent extends RouteHandler {
   }
 
   componentDidMount() {
-    console.log('[Login] componentDidMount executing');
-    window.__loginComponentDidMount = true;
     this.setState({ render: true });
-    console.log('[Login] componentDidMount complete, render set to true');
   }
 
   render() {
