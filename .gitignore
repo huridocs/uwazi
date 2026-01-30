@@ -4,6 +4,7 @@ node_modules
 .vscode/*
 .history/*
 stats.json
+debug-css-modules.txt
 coverage
 /dist
 /prod

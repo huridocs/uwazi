@@ -10,10 +10,6 @@ module.exports = ctx => {
     : ctx?.file?.path || ctx?.file || '';
   const isTailwindFile = /app\/react\/App\/styles\/tailwind\.css$/.test(filePath);
 
-  if (filePath && (filePath.includes('tailwind') || filePath.includes('.css'))) {
-    console.log('[postcss]', filePath, '| isTailwind:', isTailwindFile);
-  }
-
   const plugins = [];
 
   plugins.push(postcssNesting());
