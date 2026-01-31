@@ -43,6 +43,9 @@ import createReduxStore from '#app/store.js';
 import { ProtectedRoute } from '#app/ProtectedRoute.js';
 import { isMobileDevice } from '#shared/detectDevice.js';
 import { tenants } from '#api/tenants/index.js';
+import { loadIcons } from '#UI/Icon/library.js';
+
+loadIcons();
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
@@ -167,13 +170,13 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          api.get('user', requestParams),
-          api.get('settings', requestParams),
-          api.get('templates', requestParams),
-          api.get('dictionaries', requestParams),
-          api.get('relationTypes', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
-        ])
+        api.get('user', requestParams),
+        api.get('settings', requestParams),
+        api.get('templates', requestParams),
+        api.get('dictionaries', requestParams),
+        api.get('relationTypes', requestParams),
+        Promise.resolve({ json: { rows: translations } }),
+      ])
       : [];
 
   const reduxData = {
