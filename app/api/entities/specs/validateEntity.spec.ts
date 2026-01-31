@@ -1,30 +1,19 @@
 /* eslint-disable max-lines,max-statements */
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { ErrorObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error.js';
-
 import db from '#api/utils/testing_db.js';
-
 import { propertyTypes } from '#shared/propertyTypes.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-
 import templates from '#api/core/v1_layer/templates/index.js';
-
 import { TemplateSchema } from '#shared/types/templateType.js';
-
 import * as entitiesIndex from '#api/search/entitiesIndex.js';
-import fixtures, {
-  templateId,
-  simpleTemplateId,
-  nonExistentId,
-} from '#api/entities/specs/validatorFixtures.js';
-
-import { customErrorMessages } from '#api/entities/validation/metadataValidators.js';
-import { validateEntity } from '#api/entities/validateEntity.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures.js';
+
+import { customErrorMessages } from '../validation/metadataValidators.js';
+import { validateEntity } from '../validateEntity.js';
 
 describe('validateEntity', () => {
   beforeEach(async () => {

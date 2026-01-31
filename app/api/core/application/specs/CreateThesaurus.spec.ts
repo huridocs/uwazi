@@ -14,7 +14,7 @@ import { tenants } from '#api/tenants/index.js';
 import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
-import { ThesauriService } from '../ThesauriService';
+import { ThesauriService } from '../ThesauriService.js';
 
 const factory = getFixturesFactory();
 

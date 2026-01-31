@@ -18,7 +18,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { tenants } from '../tenants';
+import { tenants } from '../tenants/index.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {
