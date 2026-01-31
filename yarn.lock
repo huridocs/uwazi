@@ -2736,10 +2736,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.3.tgz#4a2868d75d6d6963e423bcf90b7fd1be343409d3"
   integrity sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==
 
-"@huridocs/react-text-selection-handler@^0.3.0":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@huridocs/react-text-selection-handler/-/react-text-selection-handler-0.3.1.tgz#f201eac484d6bc75dd8aed0c24c6465e6a122134"
-  integrity sha512-Un16Qv1kpFglRB/Hg0T/QOM91/rmLgWks6X3FWg7nXpw6NJkQi/R7IHwRMHwH282m78MP9iDB41uZ/WIEaAxfQ==
+"@huridocs/react-text-selection-handler@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@huridocs/react-text-selection-handler/-/react-text-selection-handler-0.3.2.tgz#46078d98d3597413dec80c3ea7c18662b4a2c29e"
+  integrity sha512-bMbIcLl72PtWUcY9kVnlsJ9yNIwDjzmg6TuA0VrDFhroC18QgrI1bBbSHgC6shAq4qWML7/830c0m9KQb876Zg==
 
 "@huridocs/rison@^2.1.2":
   version "2.1.2"

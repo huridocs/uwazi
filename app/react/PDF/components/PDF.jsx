@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-// import { SelectionRegion } from '@huridocs/react-text-selection-handler/dist/SelectionRegion.js';
-// import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist/HandleTextSelection.js';
+import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import PDFPage from '#app/PDF/components/PDFPage.js';
 import { isClient } from '#app/utils/index.js';
@@ -152,10 +151,10 @@ class PDF extends Component {
 
   render() {
     return (
-      // <HandleTextSelection
-      //   onSelect={this.props.onTextSelection}
-      //   onDeselect={this.props.onTextDeselection}
-      // >
+      <HandleTextSelection
+        onSelect={this.props.onTextSelection}
+        onDeselect={this.props.onTextDeselection}
+      >
         <div
           ref={ref => {
             this.pdfContainer = ref;
@@ -168,7 +167,7 @@ class PDF extends Component {
             for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
               pages.push(
                 <div key={page}>
-                  {/* <SelectionRegion regionId={page.toString()}> */}
+                  <SelectionRegion regionId={page.toString()}>
                     <PDFPage
                       onUnload={this.pageUnloaded}
                       onLoading={this.pageLoading}
@@ -179,14 +178,14 @@ class PDF extends Component {
                       highlightReference={this.props.highlightReference}
                       containerWidth={this.containerWidth}
                     />
-                  {/* </SelectionRegion> */}
+                  </SelectionRegion>
                 </div>
               );
             }
             return pages;
           })()}
         </div>
-      // </HandleTextSelection>
+      </HandleTextSelection>
     );
   }
 }

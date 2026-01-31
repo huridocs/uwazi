@@ -9,7 +9,7 @@ import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js'
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { PlainText } from '#V2/Routes/Entity/Components/PlainText.js';
 import { OCRButton } from '#V2/Routes/Entity/Components/OCRButton.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '#V2/Routes/Entity/urlParams.js';

@@ -5,7 +5,7 @@ import { IStore } from '#app/istore.js';
 
 import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { createSelector } from 'reselect';
-// import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight.js';
+import { Highlight } from '@huridocs/react-text-selection-handler';
 
 import { unique } from '#shared/filterUnique.js';
 
@@ -79,7 +79,7 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
             onClick={handleClick(reference)}
           >
             <div style={{ pointerEvents: props.enableClickAction ? 'auto' : 'none' }}>
-              {/* <Highlight textSelection={highlight} color={color} /> */}
+              <Highlight textSelection={highlight} color={color} />
             </div>
           </div>
         );

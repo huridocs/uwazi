@@ -3,9 +3,9 @@ import { uploadMiddleware } from '#api/files/index.js';
 
 import { CreateThesaurusController } from '#api/core/infrastructure/express/thesaurus/CreateThesaurusController.js';
 import { UpdateThesaurusController } from '#api/core/infrastructure/express/thesaurus/UpdateThesaurusController.js';
-import { tenants } from '#api/tenants.js';
-import { CSVLoader } from '#api/csv.js';
-import { validation } from '../utils.js';
+import { tenants } from '#api/tenants/index.js';
+import { CSVLoader } from '#api/csv/index.js';
+import { validation } from '../utils/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import thesauri from './thesauri.js';
 

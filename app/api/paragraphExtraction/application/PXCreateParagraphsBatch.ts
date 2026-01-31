@@ -8,6 +8,7 @@ import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { UseCase } from '#api/core/libs/UseCase.js';
 import relationshipsDS from '#api/relationships/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -63,8 +64,9 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
         userId: user._id.toString(),
       });
 
-      const validParagraphs = [mainParagraph, ...otherParagraphs].filter(p =>
-        entity.languages.includes(p.language)
+      const validParagraphs = [mainParagraph, ...otherParagraphs].filter(
+        (p): p is typeof p & { language: LanguageISO6391 } =>
+          !!p.language && entity.languages.includes(p.language as LanguageISO6391)
       );
 
       await ArrayUtils.sequentialFor(validParagraphs, async paragraphData => {

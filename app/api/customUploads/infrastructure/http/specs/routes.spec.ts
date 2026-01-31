@@ -6,7 +6,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { files } from '#api/files/files.js';
 import { FileType } from '#shared/types/fileType.js';
-import { customUploadsPath } from '#api/files.js';
+import { customUploadsPath } from '#api/files/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import customUploadsRoutes from '../routes.js';

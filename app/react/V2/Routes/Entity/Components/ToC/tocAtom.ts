@@ -1,7 +1,7 @@
 import { atom, useAtomValue, useAtom } from 'jotai';
 import { atomWithReset, useResetAtom } from 'jotai/utils';
 import { TocSchema } from '#shared/types/commonTypes.js';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { sortTocEntries } from '#V2/Routes/Entity/Components/ToC/ToC.js';
 import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/utils.js';
 

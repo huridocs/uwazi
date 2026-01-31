@@ -1,4 +1,4 @@
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 import { Highlights } from '#V2/Routes/Settings/IX/types.js';

@@ -4,7 +4,7 @@
 import React from 'react';
 import { mount, shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight.js';
+import { Highlight } from '@huridocs/react-text-selection-handler';
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 
@@ -27,7 +27,7 @@ describe('FormConfigInput', () => {
     pdfScale = 1;
   });
 
-  afterEach(() => {});
+  afterEach(() => { });
 
   const store = mockStoreCreator({
     documentViewer: {
