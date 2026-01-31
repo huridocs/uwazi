@@ -22,6 +22,8 @@ import { DenormalizeThesaurusEntitiesHandler } from 'api/core/infrastructure/job
 import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { DenormalizeEntityUpdatedListener } from 'api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener';
+import { ProcessRelationshipAfterEntityUpdatedListener } from 'api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
@@ -315,4 +317,14 @@ export function registerJobs(
 
     return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
   });
+
+  register(
+    DenormalizeEntityUpdatedListener.asJob(),
+    async () => new DenormalizeEntityUpdatedListener()
+  );
+
+  register(
+    ProcessRelationshipAfterEntityUpdatedListener.asJob(),
+    async () => new ProcessRelationshipAfterEntityUpdatedListener()
+  );
 }

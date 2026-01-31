@@ -57,7 +57,7 @@ const EntityIconSchema = z.object({
   type: z.string().optional(),
 });
 
-const CreateEntitySchema = z.object({
+const MutateEntitySchema = z.object({
   title: z.string().min(1),
   template: z.string().optional(),
   icon: EntityIconSchema.optional(),
@@ -73,6 +73,15 @@ const CreateEntitySchema = z.object({
     .optional(),
 });
 
-export { CreateEntitySchema };
+const CreateEntitySchema = MutateEntitySchema;
+
+const UpdateEntitySchema = MutateEntitySchema.extend({
+  _id: z.string(),
+  sharedId: z.string(),
+  language: z.string().min(2).max(2),
+});
+
+export { CreateEntitySchema, UpdateEntitySchema };
 
 export type CreateEntityDTO = z.infer<typeof CreateEntitySchema>;
+export type UpdateEntityRequest = z.infer<typeof UpdateEntitySchema>;

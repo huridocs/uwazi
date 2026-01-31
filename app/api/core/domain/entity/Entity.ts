@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
 import { Template } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
@@ -15,6 +16,7 @@ import {
   EntityTranslation,
   EntityTranslationProps,
 } from 'api/core/domain/entity/EntityTranslation';
+import date from 'api/utils/date';
 import { AccessGrant, EntityPermission } from './EntityPermission';
 import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
@@ -43,6 +45,12 @@ type Props = {
   sharedId?: string;
   icon?: Icon;
   permissions?: AccessGrant[];
+  generatedToc?: boolean;
+};
+
+type UpdateProps = {
+  icon?: Icon;
+  generatedToc?: boolean;
 };
 
 class Entity {
@@ -58,9 +66,11 @@ class Entity {
 
   icon?: Icon;
 
+  generatedToc?: boolean;
+
   permissions: EntityPermission;
 
-  constructor(props: Props) {
+  constructor(private props: Props) {
     this.userId = props.userId;
     this.template = props.template;
     this.icon = props.icon;
@@ -69,6 +79,7 @@ class Entity {
     this.published = props.published || false;
     this.permissions = new EntityPermission(props.permissions);
 
+    this.generatedToc = props?.generatedToc;
     this.translations = this.createTranslations(props.translations);
   }
 
@@ -88,6 +99,35 @@ class Entity {
     );
   }
 
+  private validatePropertyAssignments(shouldValidateForRequired = false) {
+    this.template.allProperties.forEach(property =>
+      this.getPropertyAssignments(property.name).forEach(pa => {
+        property.validatePropertyAssignment(pa, shouldValidateForRequired);
+      })
+    );
+  }
+
+  private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
+    if (value.isTranslatable) {
+      this.setValueInLanguage(value, targetLanguage);
+    } else {
+      this.setValueInAllLanguages(value);
+    }
+  }
+
+  private setValueInAllLanguages(value: PropertyAssignment) {
+    this.translationsList.forEach(([_language, translation]) => translation.setValue(value));
+  }
+
+  private setValueInLanguage(value: PropertyAssignment, language: LanguageISO6391) {
+    this.getTranslation(language).setValue(value);
+  }
+
+  private refreshEditDate() {
+    const now = date.currentUTC();
+    this.translationsList.forEach(([_language, translation]) => translation.refreshEditDate(now));
+  }
+
   static create(input: CreateInput) {
     const { languages, userId, template, icon } = input;
 
@@ -104,12 +144,20 @@ class Entity {
     return instance;
   }
 
+  get prevState() {
+    return new Entity(this.props);
+  }
+
   get translationsList() {
     return Object.entries(this.translations);
   }
 
   get languages(): LanguageISO6391[] {
     return Object.keys(this.translations) as LanguageISO6391[];
+  }
+
+  getProps() {
+    return this.props;
   }
 
   getTranslation(language: LanguageISO6391) {
@@ -195,28 +243,23 @@ class Entity {
     this.validatePropertyAssignments(shouldValidateForRequired);
   }
 
-  private validatePropertyAssignments(shouldValidateForRequired = false) {
-    this.template.allProperties.forEach(property =>
-      this.getPropertyAssignments(property.name).forEach(pa => {
-        property.validatePropertyAssignment(pa, shouldValidateForRequired);
-      })
+  changeTemplate(template: Template) {
+    this.template = template;
+
+    const defaultPropertyAssignments = template.createDefaultPropertyAssignments();
+
+    this.translationsList.forEach(([_language, translation]) =>
+      translation.mergeMetadata(defaultPropertyAssignments)
     );
+
+    this.refreshEditDate();
   }
 
-  private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
-    if (value.isTranslatable) {
-      this.setValueInLanguage(value, targetLanguage);
-    } else {
-      this.setValueInAllLanguages(value);
-    }
-  }
+  update(props: UpdateProps) {
+    this.icon = 'icon' in props ? props.icon : this.icon;
+    this.generatedToc = props.generatedToc ?? this.generatedToc;
 
-  private setValueInAllLanguages(value: PropertyAssignment) {
-    this.translationsList.forEach(([_language, translation]) => translation.setValue(value));
-  }
-
-  private setValueInLanguage(value: PropertyAssignment, language: LanguageISO6391) {
-    this.getTranslation(language).setValue(value);
+    this.refreshEditDate();
   }
 
   createMetadataValuesFromRelationships(
@@ -279,4 +322,4 @@ class Entity {
 }
 
 export { Entity };
-export type { Icon as EntityIcon };
+export type { Icon as EntityIcon, Props as EntityProps };

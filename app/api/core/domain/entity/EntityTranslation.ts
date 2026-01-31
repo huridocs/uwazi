@@ -52,6 +52,19 @@ class EntityTranslation {
     return this.getValue<DateEntry>('editDate');
   }
 
+  mergeMetadata(newMetadata: Record<string, PropertyAssignment>) {
+    Object.values(this.metadata).forEach(propertyAssignment => {
+      const ofSameName = newMetadata[propertyAssignment.name];
+      const differentType = ofSameName?.type !== propertyAssignment.type;
+
+      if ((ofSameName && differentType) || !ofSameName) {
+        delete this.metadata[propertyAssignment.name];
+      }
+    });
+
+    this.metadata = { ...newMetadata, ...this.metadata };
+  }
+
   setValue(propertyValue: PropertyAssignment) {
     const currentValue = this.metadata[propertyValue.name];
     if (!currentValue) {
@@ -79,7 +92,11 @@ class EntityTranslation {
     }
 
     this.metadata[propertyValue.name] = propertyValue;
-    this.editDate.value = [{ value: date.currentUTC() }];
+    this.refreshEditDate();
+  }
+
+  refreshEditDate(value = date.currentUTC()) {
+    this.editDate.value = [{ value }];
   }
 
   getValue<Value = PropertyValue>(name: string): PropertyAssignment<Value> {

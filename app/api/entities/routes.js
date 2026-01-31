@@ -1,11 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { saveEntity } from 'api/entities/entitySavingManager';
 import { uploadMiddleware } from 'api/files';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
-import { withTransaction } from 'api/utils/withTransaction';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { BulkDeleteEntityController } from 'api/core/infrastructure/express/entity/BulkDeleteEntityController';
@@ -13,6 +11,7 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
 import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
+import { UpdateEntityController } from 'api/core/infrastructure/express/entity/UpdateEntityController';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -119,29 +118,31 @@ export default app => {
         return;
       }
 
-      try {
-        const result = await withTransaction(async ({ abort }) => {
-          const saveResult = await saveEntity(entityToSave, {
-            user: req.user,
-            language: req.language,
-            socketEmiter: req.emitToSessionSocket,
-            files: req.files,
-          });
-          const { entity, errors } = saveResult;
-          await updateThesauriWithEntity(entity, req);
-          if (errors.length) {
-            await abort();
-          }
-          return req.body.entity ? saveResult : entity;
-        }, 'POST /api/entities');
-        res.json(result);
-        req.emitToSessionSocket(
-          'documentProcessed',
-          req.body.entity ? result.entity.sharedId : result.sharedId
-        );
-      } catch (e) {
-        next(e);
-      }
+      return UpdateEntityController.createHandler()(req, res, next);
+
+      // try {
+      //   const result = await withTransaction(async ({ abort }) => {
+      //     const saveResult = await saveEntity(entityToSave, {
+      //       user: req.user,
+      //       language: req.language,
+      //       socketEmiter: req.emitToSessionSocket,
+      //       files: req.files,
+      //     });
+      //     const { entity, errors } = saveResult;
+      //     await updateThesauriWithEntity(entity, req);
+      //     if (errors.length) {
+      //       await abort();
+      //     }
+      //     return req.body.entity ? saveResult : entity;
+      //   }, 'POST /api/entities');
+      //   res.json(result);
+      //   req.emitToSessionSocket(
+      //     'documentProcessed',
+      //     req.body.entity ? result.entity.sharedId : result.sharedId
+      //   );
+      // } catch (e) {
+      //   next(e);
+      // }
     }
   );
 

@@ -1373,4 +1373,245 @@ describe('Entity', () => {
       );
     });
   });
+
+  describe('Update method', () => {
+    const sampleEntity = () =>
+      Entity.create({
+        template: createSampleTemplate(),
+        languages: ['en'],
+      });
+
+    it('should update icon', () => {
+      const entity = sampleEntity();
+
+      const icon = { id: 'icon-id', label: 'icon-label', type: 'emoji' };
+
+      entity.update({ icon });
+
+      expect(entity.icon).toEqual(icon);
+
+      entity.update({});
+
+      expect(entity.icon).toEqual(icon);
+
+      entity.update({ icon: undefined });
+
+      expect(entity.icon).toEqual(undefined);
+      expect(entity.generatedToc).toEqual(undefined);
+    });
+
+    it('should update generatedToc', () => {
+      const entity = sampleEntity();
+
+      entity.update({ generatedToc: true });
+
+      expect(entity.generatedToc).toEqual(true);
+
+      entity.update({ generatedToc: false });
+
+      expect(entity.generatedToc).toEqual(false);
+
+      expect(entity.icon).toEqual(undefined);
+    });
+
+    it('should update editDate for all translations when update is called', async () => {
+      const entity = Entity.create({
+        languages: ['en', 'pt'],
+        template: createSampleTemplate(),
+        userId: 'user-456',
+      });
+
+      const firstEditDateEn = entity.getTranslation('en').editDate.value[0].value;
+      const firstEditDatePt = entity.getTranslation('pt').editDate.value[0].value;
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      entity.update({ icon: { id: 'new-icon', label: 'label', type: 'emoji' } });
+
+      expect(entity.getTranslation('en').editDate.value[0].value).toBeGreaterThan(firstEditDateEn);
+      expect(entity.getTranslation('pt').editDate.value[0].value).toBeGreaterThan(firstEditDatePt);
+    });
+  });
+
+  describe('Changing Template', () => {
+    it('should handle metadata migration when changing templates', () => {
+      const originalTemplate = TemplateBuilder.aTemplate({ id: 'old-template' })
+        .withProperties([
+          new TextProperty({
+            id: 'common_text',
+            template: 'old-template',
+            label: 'Common Text',
+          }),
+          new NumericProperty({
+            id: 'common_numeric',
+            template: 'old-template',
+            label: 'Common Numeric',
+          }),
+          new TextProperty({
+            id: 'old_only_text',
+            template: 'old-template',
+            label: 'Old Only Text',
+          }),
+          new NumericProperty({
+            id: 'type_change_property',
+            template: 'old-template',
+            label: 'Type Change Property',
+          }),
+        ])
+        .build();
+
+      const newTemplate = TemplateBuilder.aTemplate({ id: 'new-template' })
+        .withProperties([
+          new TextProperty({
+            id: 'common_text',
+            template: 'new-template',
+            label: 'Common Text',
+          }),
+          new NumericProperty({
+            id: 'common_numeric',
+            template: 'new-template',
+            label: 'Common Numeric',
+          }),
+          new TextProperty({
+            id: 'type_change_property',
+            template: 'new-template',
+            label: 'Type Change Property',
+          }),
+          new SelectProperty({
+            id: 'select_new',
+            template: 'new-template',
+            label: 'New Select',
+            content: 'thes-1',
+          }),
+        ])
+        .build();
+
+      const entity = Entity.create({
+        languages: ['en', 'es'],
+        template: originalTemplate,
+      });
+
+      entity.setPropertyAssignmentsInAllLanguages([
+        entity.template.createPropertyAssignment('title', {
+          value: [{ value: 'Entity Title' }],
+        }),
+        entity.template.createPropertyAssignment('common_text', {
+          value: [{ value: 'Common text value' }],
+        }),
+        entity.template.createPropertyAssignment('common_numeric', {
+          value: [{ value: 42 }],
+        }),
+        entity.template.createPropertyAssignment('old_only_text', {
+          value: [{ value: 'This will be removed' }],
+        }),
+        entity.template.createPropertyAssignment('type_change_property', {
+          value: [{ value: 100 }],
+        }),
+      ]);
+
+      entity.changeTemplate(newTemplate);
+
+      expect(entity.translations).toEqual({
+        en: {
+          id: expect.any(Object),
+          language: 'en',
+          metadata: {
+            title: {
+              name: 'title',
+              value: [{ value: 'Entity Title' }],
+              type: 'text',
+              isTranslatable: true,
+            },
+            creationDate: {
+              name: 'creationDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            editDate: {
+              name: 'editDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            common_text: {
+              name: 'common_text',
+              type: 'text',
+              value: [{ value: 'Common text value' }],
+              isTranslatable: true,
+            },
+            common_numeric: {
+              name: 'common_numeric',
+              value: [{ value: 42 }],
+              type: 'numeric',
+              isTranslatable: false,
+            },
+            type_change_property: {
+              name: 'type_change_property',
+              value: [],
+              type: 'text',
+              isTranslatable: true,
+            },
+            new_select: {
+              name: 'new_select',
+              type: 'select',
+              language: 'n/a',
+              value: [],
+              isTranslatable: false,
+            },
+          },
+        },
+        es: {
+          id: expect.any(Object),
+          language: 'es',
+          metadata: {
+            title: {
+              name: 'title',
+              value: [{ value: 'Entity Title' }],
+              type: 'text',
+              isTranslatable: true,
+            },
+            creationDate: {
+              name: 'creationDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            editDate: {
+              name: 'editDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            common_text: {
+              name: 'common_text',
+              type: 'text',
+              value: [{ value: 'Common text value' }],
+              isTranslatable: true,
+            },
+            common_numeric: {
+              name: 'common_numeric',
+              value: [{ value: 42 }],
+              type: 'numeric',
+              isTranslatable: false,
+            },
+            type_change_property: {
+              name: 'type_change_property',
+              value: [],
+              type: 'text',
+              isTranslatable: true,
+            },
+            new_select: {
+              name: 'new_select',
+              type: 'select',
+              language: 'n/a',
+              value: [],
+              isTranslatable: false,
+            },
+          },
+        },
+      });
+    });
+  });
 });

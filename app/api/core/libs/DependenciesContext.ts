@@ -3,6 +3,7 @@ import { TransactionManager } from '../application/contracts/TransactionManager'
 import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher';
 import { IdGenerator } from '../application/contracts/IdGenerator';
 import { EventEmitter } from './eventEmitter/EventEmitter';
+import { AbstractUseCase } from './UseCase';
 
 type Dependencies = {
   eventEmitter: EventEmitter;
@@ -42,6 +43,18 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     }
 
     return this.getStore()!.eventEmitter;
+  }
+
+  attachContext<T extends AbstractUseCase<any, any, any, any>>(
+    useCase: T,
+    deps: Dependencies
+  ): void {
+    const originalExecute = useCase.execute.bind(useCase);
+
+    // eslint-disable-next-line no-param-reassign
+    useCase.execute = (async (...args: any[]) =>
+      //@ts-ignore
+      this.run(deps, async () => originalExecute(...args))) as T['execute'];
   }
 }
 
