@@ -38,9 +38,9 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
 
   const currentSelections: Selection[] = entityDocument.get('extractedMetadata')?.size
     ? entityDocument.toJS().extractedMetadata!.map((currentSelection: Selection) => ({
-      ...currentSelection,
-      isCurrent: true,
-    }))
+        ...currentSelection,
+        isCurrent: true,
+      }))
     : [];
 
   const selections = uniqueSelections(currentSelections, newSelections);
