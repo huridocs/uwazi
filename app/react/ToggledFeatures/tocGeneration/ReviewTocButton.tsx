@@ -21,7 +21,6 @@ type ComponentProps = ReviewTocButtonProps & MappedProps;
 
 const ReviewTocButton = ({ file, onClick, children }: ComponentProps) => (
   <FeatureToggle feature="tocGeneration">
-    comment to see the full error message
     {file.generatedToc && (
       <button type="button" onClick={() => onClick(file._id)} className="edit-toc btn btn-success">
         <Icon icon="tasks" />

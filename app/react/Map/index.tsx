@@ -6,7 +6,7 @@ import { Map, Layer } from '#app/Map/MapContainer.js';
 import * as helper from '#app/Map/helper.js';
 
 const LMap = loadable(async () => {
-  const { LMap: LMapComponent } = await import(/* webpackChunkName: "LazyLoadMap" */ './LMap');
+  const { LMap: LMapComponent } = await import(/* webpackChunkName: "LazyLoadMap" */ './LMap.js');
   return (props: any) => <LMapComponent {...props} />;
 });
 

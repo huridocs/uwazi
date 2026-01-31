@@ -36,7 +36,6 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
         <Translate>Language</Translate>: {language?.localized_label}
       </div>
       <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
-        this comment to see the full error message
         <Translate>Document</Translate>: {sourceDocument?.originalname}
       </div>
       <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">

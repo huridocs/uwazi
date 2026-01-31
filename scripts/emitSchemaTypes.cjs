@@ -82,10 +82,10 @@ const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to 
 const customImports = {
   '../app/shared/types/commonSchemas.ts': [
     "import { ObjectId } from 'mongodb';",
-    "import { TraverseInputType } from '../app/shared/types/relationshipsQueryTypes.js'",
+    "import { TraverseInputType } from './relationshipsQueryTypes.js'",
   ],
   '../app/api/common.v2/database/schemas/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
-  '../app/shared/types/connectionSchema.ts': ["import { FileType } from '../app/shared/types/fileType.js';"],
+  '../app/shared/types/connectionSchema.ts': ["import { FileType } from './fileType.js';"],
 };
 
 const dryCheck = !!process.argv[2] && process.argv[2] === '--check';
@@ -93,24 +93,51 @@ const dryCheck = !!process.argv[2] && process.argv[2] === '--check';
 const firstUp = name => name.charAt(0).toUpperCase() + name.slice(1);
 const typesFileName = file =>
   file.replace('Schema', 'Type').replace('.js', '.ts').replace('.ts', '.d.ts');
-const typeImportRegex = /import[^;]*from '(.*Schemas?)';/;
-const typeImportFindRegex = /import[^;]*from '(.*Schemas?)';/g;
+const typeImportRegex = /import\s*\{[^}]*\}\s*from\s*'([^']*Schemas?)\.js';/;
+const typeImportFindRegex = /import\s*\{[^}]*\}\s*from\s*'([^']*Schemas?)\.js';/g;
+
+const resolveSchemaPath = importPath => {
+  let resolved = importPath;
+  if (resolved.endsWith('.js')) resolved = resolved.slice(0, -3);
+
+  if (resolved.startsWith('#shared/')) {
+    resolved = path.join(projectRoot, 'app/shared', resolved.slice(8));
+  } else if (resolved.startsWith('#api/')) {
+    resolved = path.join(projectRoot, 'app/api', resolved.slice(5));
+  } else if (resolved.startsWith('#app/')) {
+    resolved = path.join(projectRoot, 'app/react', resolved.slice(5));
+  } else {
+    resolved = path.join(`${rootPath}/app`, resolved);
+  }
+
+  const extensions = ['.ts', '.tsx', '.js', '.jsx', ''];
+  for (const ext of extensions) {
+    if (fs.existsSync(resolved + ext)) return resolved + ext;
+  }
+  return resolved;
+};
 
 const typeImports = matches => {
   if (!(matches && matches.length)) {
     return '';
   }
   return matches.reduce((res, match) => {
-    const file = match.match(typeImportRegex)[1];
-    const typeFile = typesFileName(file);
-    const schemas = require(path.join(`${rootPath}/app`, file));
-    let final = match.replace(file, typeFile);
-    Object.entries(schemas).forEach(([name, schema]) => {
-      if (name.match(/Schema/)) {
-        final = final.replace(name, schema.title || firstUp(name));
-      }
-    });
-    return `${res}\n${final}\n`;
+    try {
+      const file = match.match(typeImportRegex)[1];
+      const typeFile = typesFileName(file);
+      const resolvedPath = resolveSchemaPath(file);
+      const schemas = require(resolvedPath);
+      let final = match.replace(file, typeFile);
+      Object.entries(schemas).forEach(([name, schema]) => {
+        if (name.match(/Schema/)) {
+          final = final.replace(name, schema.title || firstUp(name));
+        }
+      });
+      return `${res}\n${final}\n`;
+    } catch (e) {
+      console.warn(`Warning: Could not process import ${match}: ${e.message}`);
+      return res;
+    }
   }, '');
 };
 
@@ -165,7 +192,7 @@ const writeSchema = async (schemas, file) => {
 
 const emitSchemaTypes = async file => {
   try {
-    if (file.match(/spec/)) {
+    if (file.match(/spec/) || file.match(/\.d\.ts$/) || file.match(/Validator\.ts$/)) {
       return;
     }
 

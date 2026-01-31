@@ -1,6 +1,8 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+
 export interface UserSchema {
   _id?: ObjectIdSchema;
   __v?: number;

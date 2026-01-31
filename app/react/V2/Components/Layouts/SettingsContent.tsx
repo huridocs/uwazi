@@ -65,7 +65,6 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
       ))}
       {title !== undefined && (
         <Breadcrumb.Item>
-          this comment to see the full error message
           <SettingsHeaderTitle title={title} contextId={contextId} />
         </Breadcrumb.Item>
       )}

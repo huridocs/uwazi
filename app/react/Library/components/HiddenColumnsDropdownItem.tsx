@@ -25,7 +25,6 @@ const ColumnItem = ({ item }: { item: SelectableColumn }) => (
       checked={!item.hidden}
       onChange={() => {}}
     />
-    comment to see the full error message
     <Translate context={item.translationContext}>{item.label}</Translate>
   </>
 );

@@ -38,7 +38,7 @@ import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/sel
 import { SidepanelProps } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
-const TextProperty = loadable(async () => (await import('../TextProperty')).TextProperty);
+const TextProperty = loadable(async () => (await import('../TextProperty.js')).TextProperty);
 
 // eslint-disable-next-line max-statements
 const PropertySidepanel = ({
@@ -200,7 +200,6 @@ const PropertySidepanel = ({
                 </div>
               }
             >
-              Remove this comment to see the full error message
               <SidepanelForms
                 property={property}
                 extractor={extractor}

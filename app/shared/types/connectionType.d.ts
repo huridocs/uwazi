@@ -1,6 +1,10 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
-import { FileType } from '../app/shared/types/fileType.js';
+import { FileType } from './fileType.js';
+
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+
+import { EntitySchema } from '#shared/types/entityType.js';
 
 export interface ConnectionSchema {
   _id?: ObjectIdSchema;

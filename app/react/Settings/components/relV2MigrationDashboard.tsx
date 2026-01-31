@@ -298,7 +298,6 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               <div>
                 {index + 1}---------------------------:{records.hubId}
               </div>
-              Remove this comment to see the full error message
               {records.connections.map(connection => (
                 <div key={`unusedConnection_${records.hubId}_${connection.id}`}>
                   &emsp;
@@ -433,7 +432,6 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               >
                 {this.templatesNameSorted.map(t => (
                   <option key={`sourceDropdown_${t._id}`} value={t._id}>
-                    'ClientTemp... Remove this comment to see the full error message
                     {t.name}
                   </option>
                 ))}
@@ -454,7 +452,6 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               >
                 {this.templatesNameSorted.map(t => (
                   <option key={`targetDropdown_${t._id}`} value={t._id}>
-                    'ClientTemp... Remove this comment to see the full error message
                     {t.name}
                   </option>
                 ))}

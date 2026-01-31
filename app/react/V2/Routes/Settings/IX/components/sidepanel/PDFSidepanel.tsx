@@ -270,7 +270,6 @@ const PDFSidepanel = ({
                 </div>
               }
             >
-              Remove this comment to see the full error message
               <SidepanelForms
                 property={property}
                 suggestion={suggestion}

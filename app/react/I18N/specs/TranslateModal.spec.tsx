@@ -36,7 +36,6 @@ describe('TranslateModal', () => {
           [notificationAtom, {}],
         ]}
       >
-        this comment to see the full error message
         <TranslateModal />
         <NotificationsContainer />
       </TestAtomStoreProvider>

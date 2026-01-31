@@ -1,6 +1,8 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+
 export interface IXModelType {
   _id?: ObjectIdSchema;
   extractorId: ObjectIdSchema;

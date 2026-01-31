@@ -44,14 +44,12 @@ export const DropdownMenu = ({ link, position, hideMobileMenu }: DropdownMenuPro
               rel="noreferrer"
               onClick={hideMenu}
             >
-              Remove this comment to see the full error message
               <Translate context="Menu">{sublink?.get('title') as string}</Translate>
             </a>
           </li>
         ) : (
           <li key={index}>
             <I18NLink to={url} className="btn dropdown-item" onClick={hideMenu}>
-              Remove this comment to see the full error message
               <Translate context="Menu">{sublink?.get('title') as string}</Translate>
             </I18NLink>
           </li>
