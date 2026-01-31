@@ -12,12 +12,14 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
 import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
 import { UpdateEntityController } from 'api/core/infrastructure/express/entity/UpdateEntityController';
+import { withTransaction } from 'api/utils/withTransaction';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
 import date from '../utils/date';
 import entities from './entities';
+import { saveEntity } from './entitySavingManager';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -93,6 +95,10 @@ export default app => {
         return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
       }
 
+      if (tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave?.sharedId) {
+        return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
+      }
+
       return uploadMiddleware.multiple()(req, res, next);
     },
     activitylogMiddleware,
@@ -118,31 +124,33 @@ export default app => {
         return;
       }
 
-      return UpdateEntityController.createHandler()(req, res, next);
+      if (tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave?.sharedId) {
+        return UpdateEntityController.createHandler()(req, res, next);
+      }
 
-      // try {
-      //   const result = await withTransaction(async ({ abort }) => {
-      //     const saveResult = await saveEntity(entityToSave, {
-      //       user: req.user,
-      //       language: req.language,
-      //       socketEmiter: req.emitToSessionSocket,
-      //       files: req.files,
-      //     });
-      //     const { entity, errors } = saveResult;
-      //     await updateThesauriWithEntity(entity, req);
-      //     if (errors.length) {
-      //       await abort();
-      //     }
-      //     return req.body.entity ? saveResult : entity;
-      //   }, 'POST /api/entities');
-      //   res.json(result);
-      //   req.emitToSessionSocket(
-      //     'documentProcessed',
-      //     req.body.entity ? result.entity.sharedId : result.sharedId
-      //   );
-      // } catch (e) {
-      //   next(e);
-      // }
+      try {
+        const result = await withTransaction(async ({ abort }) => {
+          const saveResult = await saveEntity(entityToSave, {
+            user: req.user,
+            language: req.language,
+            socketEmiter: req.emitToSessionSocket,
+            files: req.files,
+          });
+          const { entity, errors } = saveResult;
+          await updateThesauriWithEntity(entity, req);
+          if (errors.length) {
+            await abort();
+          }
+          return req.body.entity ? saveResult : entity;
+        }, 'POST /api/entities');
+        res.json(result);
+        req.emitToSessionSocket(
+          'documentProcessed',
+          req.body.entity ? result.entity.sharedId : result.sharedId
+        );
+      } catch (e) {
+        next(e);
+      }
     }
   );
 
