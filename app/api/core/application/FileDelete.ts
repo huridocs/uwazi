@@ -16,14 +16,14 @@ type Deps = {
   entityPermissions: EntityPermissionChecker;
 };
 
-const fileUploadInputSchema = z.object({
+const InputSchema = z.object({
   fileId: z.string(),
 });
 
-type Input = z.infer<typeof fileUploadInputSchema>;
+type Input = z.infer<typeof InputSchema>;
 
 class FileDelete extends AbstractUseCase<Input, Output, Deps> {
-  static inputSchema = fileUploadInputSchema;
+  static InputSchema = InputSchema;
 
   async execute({ fileId }: Input): Promise<Output> {
     const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();

@@ -3,11 +3,9 @@ import {
   BulkDeleteEntityInput,
   BulkDeleteEntityUseCase,
 } from '#api/core/application/BulkDeleteEntity.js';
-import { tenants } from '#api/tenants/index.js';
-import entities from '#api/entities/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { BulkDeleteEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
 
 type RequestDto = BulkDeleteEntityInput;
 
@@ -16,46 +14,39 @@ type ResponseDto = string;
 
 class BulkDeleteEntityController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
-    if (tenants.current()?.featureFlags?.v2BulkDeleteEntity) {
-      const logger = LoggerFactory.default();
-      const useCase = BulkDeleteEntityUseCaseFactory.default();
+    const logger = LoggerFactory.default();
+    const useCase = BulkDeleteEntityUseCaseFactory.default();
 
-      try {
-        const startTime = Date.now();
-        const parsed = BulkDeleteEntityUseCase.InputSchema.parse({
-          sharedIds: ArrayUtils.deduplicate(this.request?.body?.sharedIds || [], s => s),
-        });
+    try {
+      const startTime = Date.now();
+      const parsed = BulkDeleteEntityUseCase.InputSchema.parse({
+        sharedIds: ArrayUtils.deduplicate(this.request?.body?.sharedIds || [], s => s),
+      });
 
-        await useCase.execute(parsed);
+      await useCase.execute(parsed);
 
-        logger.info('Bulk delete executed successfully', {
+      logger.info('Bulk delete executed successfully', {
+        namespace: 'Bulk_Delete_Entity',
+        success: true,
+
+        deletedCount: parsed.sharedIds.length,
+        durationMs: Date.now() - startTime,
+      });
+      this.response.json('ok');
+    } catch (error: unknown) {
+      logger.info(
+        `Bulk delete execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        {
           namespace: 'Bulk_Delete_Entity',
-          success: true,
+          success: false,
 
-          deletedCount: this.request.body.sharedIds.length,
-          durationMs: Date.now() - startTime,
-        });
-        this.response.json('ok');
-        return;
-      } catch (error: unknown) {
-        logger.info(
-          `Bulk delete execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          {
-            namespace: 'Bulk_Delete_Entity',
-            success: false,
+          dto: JSON.stringify(this.request?.body || {}),
+          error: JSON.stringify(error),
+        }
+      );
 
-            dto: JSON.stringify(this.request?.body || {}),
-            error: JSON.stringify(error),
-          }
-        );
-
-        throw error;
-      }
+      throw error;
     }
-
-    await entities.deleteMultiple(this.request.body?.sharedIds);
-
-    this.response.json('ok');
   }
 }
 

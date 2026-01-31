@@ -1,41 +1,24 @@
 /* eslint-disable max-statements */
 import { WithId } from 'mongodb';
-
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,
 } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
-
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-
 import { FileType } from '#shared/types/fileType.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-
 import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
-
 import { ConnectionSchema } from '#shared/types/connectionType.js';
-
 import { TemplateSchema } from '#shared/types/templateType.js';
-
 import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
-import {
-  f,
-  createBaseFixtures,
-  sourceTemplate,
-  targetTemplate,
-  extractorId,
-} from '#api/paragraphExtraction/jobs/specs/fixtures.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures.js';
 
 const TEST_SPECIFIC_BATCH_SIZE = 2;
 
@@ -62,19 +45,14 @@ const setUpJob = (mockDispatcher: JobsDispatcher) => {
 const mockHeartbeat = async () => Promise.resolve();
 
 describe('CreateParagraphExtractionEntityStatusesJob', () => {
-  let mockDispatcher: JobsDispatcher & {
-    deleteByParams: jest.Mock;
-    dispatch: jest.Mock;
-    dispatchMany: jest.Mock;
-  };
+  let mockDispatcher: jest.Mocked<JobsDispatcher>;
 
   beforeEach(async () => {
     await testingEnvironment.setUp(createBaseFixtures());
-    mockDispatcher = {
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
+    mockDispatcher = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
-    };
+    }) as jest.Mocked<JobsDispatcher>;
   });
 
   afterAll(async () => {

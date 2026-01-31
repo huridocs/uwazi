@@ -14,6 +14,7 @@ import {
   PropertyDoesNotExistError,
   PropertyTypeMismatchOnSetError,
 } from '#api/core/domain/entity/errors.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 type Props = {
   language: LanguageISO6391;
@@ -90,6 +91,10 @@ class EntityTranslation {
     }
 
     return this.metadata[name] as unknown as PropertyAssignment<Value>;
+  }
+
+  getByType(type: PropertyType[]): PropertyAssignment[] {
+    return Object.values(this.metadata).filter(pa => type.includes(pa.type));
   }
 }
 

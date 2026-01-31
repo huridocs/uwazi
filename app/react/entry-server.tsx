@@ -1,12 +1,10 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { Request as ExpressRequest, Response } from 'express';
-import { fileURLToPath } from 'url';
 import { join } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
-const __filename = fileURLToPath(import.meta.url);
 import {
   createStaticHandler,
   createStaticRouter,

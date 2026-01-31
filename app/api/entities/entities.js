@@ -16,21 +16,21 @@ import ID from '#shared/uniqueID.js';
 
 import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
 import settings from '#api/settings/index.js';
-import { denormalizeMetadata, denormalizeRelated } from '#api/entities/denormalize.js';
-import model from '#api/entities/entitiesModel.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
-import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { saveSelections } from '#api/entities/metadataExtraction/saveSelections.js';
+import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';
+import model from './entitiesModel.js';
+import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';
+import { EntityDeletedEvent } from './events/EntityDeletedEvent.js';
+import { EntityUpdatedEvent } from './events/EntityUpdatedEvent.js';
+import { saveSelections } from './metadataExtraction/saveSelections.js';
 import {
   deleteRelatedNewRelationships,
   denormalizeAfterEntityCreation,
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   updateNewRelationships,
-} from '#api/entities/v2_support.js';
-import { validateEntity } from '#api/entities/validateEntity.js';
-import { MetadataUtils } from '#api/entities/MetadataUtils.js';
+} from './v2_support.js';
+import { validateEntity } from './validateEntity.js';
+import { MetadataUtils } from './MetadataUtils.js';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -629,23 +629,6 @@ export default {
     return this.count({ sharedId: { $in: sharedIds } }).then(totalRows =>
       deleteIndexBatch(0, totalRows)
     );
-  },
-
-  async deleteMultiple(sharedIds) {
-    let entitiesDeleted = [];
-
-    try {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const sharedId of sharedIds) {
-        // eslint-disable-next-line no-await-in-loop
-        entitiesDeleted = entitiesDeleted.concat(await this.delete(sharedId, false));
-      }
-    } catch (e) {
-      await search.bulkDelete(entitiesDeleted);
-      throw e;
-    }
-
-    await search.bulkDelete(entitiesDeleted);
   },
 
   async delete(sharedId, deleteIndex = true) {

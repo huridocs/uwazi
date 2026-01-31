@@ -20,10 +20,8 @@ class FileDeleteController extends AbstractController {
     try {
       const startTime = Date.now();
 
-      this.response.json(
-        await this.useCase().execute(
-          FileDelete.inputSchema.parse({ fileId: this.request.query._id })
-        )
+      const output = await this.useCase().execute(
+        FileDelete.InputSchema.parse({ fileId: this.request.query._id })
       );
 
       logger.info('File delete executed successfully', {
@@ -31,6 +29,8 @@ class FileDeleteController extends AbstractController {
         success: true,
         durationMs: Date.now() - startTime,
       });
+
+      this.response.json([output]);
     } catch (error: unknown) {
       logger.info(
         `File delete execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

@@ -45,6 +45,19 @@ beforeEach(async () => {
         ]),
       ],
       dictionaries: [fixturesFactory.thesauri('thesauri1', ['value1', 'value2'])],
+      translationsV2: [
+        {
+          _id: fixturesFactory.id('translation1'),
+          language: 'en',
+          key: 'value1',
+          value: 'value1',
+          context: {
+            type: 'Thesaurus',
+            label: 'thesauri1',
+            id: fixturesFactory.id('thesauri1').toString(),
+          },
+        },
+      ],
       entities: [
         fixturesFactory.entity(
           'entity1',

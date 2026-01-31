@@ -1,11 +1,13 @@
-import { CSVLoader } from '#api/csv/index.js';
+/* eslint-disable max-statements */
 import { uploadMiddleware } from '#api/files/index.js';
 
-import { tenants } from '#api/tenants/index.js';
 import { CreateThesaurusController } from '#api/core/infrastructure/express/thesaurus/CreateThesaurusController.js';
-import { validation } from '#api/utils/index.js';
-import needsAuthorization from '#api/auth/authMiddleware.js';
-import thesauri from '#api/thesauri/thesauri.js';
+import { UpdateThesaurusController } from '#api/core/infrastructure/express/thesaurus/UpdateThesaurusController.js';
+import { tenants } from '#api/tenants.js';
+import { CSVLoader } from '#api/csv.js';
+import { validation } from '../utils.js';
+import needsAuthorization from '../auth/authMiddleware.js';
+import thesauri from './thesauri.js';
 
 const routes = app => {
   app.post(
@@ -14,47 +16,16 @@ const routes = app => {
 
     uploadMiddleware(),
 
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          anyOf: [
-            {
-              type: 'object',
-              properties: {
-                _id: { type: 'string' },
-                __v: { type: 'number' },
-                name: { type: 'string' },
-                values: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      id: { type: 'string' },
-                      label: { type: 'string' },
-                      values: { type: 'array', items: { type: 'object' } },
-                    },
-                    required: ['label'],
-                  },
-                },
-              },
-              required: ['name', 'values'],
-            },
-            {
-              type: 'object',
-              properties: {
-                thesauri: { type: 'string' },
-              },
-              required: ['thesauri'],
-            },
-          ],
-        },
-      },
-      required: ['body'],
-    }),
     async (req, res, next) => {
-      if (tenants.current()?.featureFlags?.v2CreateThesaurus && !req?.file && !req?.body?._id) {
+      const dto = req.file ? JSON.parse(req.body?.thesauri) : req.body;
+
+      if (!dto?._id) {
         await CreateThesaurusController.createHandler()(req, res);
+        return;
+      }
+
+      if (tenants.current()?.featureFlags?.v2UpdateThesaurus && dto?._id) {
+        await UpdateThesaurusController.createHandler()(req, res);
         return;
       }
 

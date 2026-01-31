@@ -1,6 +1,8 @@
 import { Id } from '#api/core/libs/Id.js';
 import { z } from 'zod';
 import uuid from 'node-uuid';
+import { InvalidThesaurusValueIdsError } from './errors.js';
+import { ThesaurusDiff } from './ThesaurusDiff.js';
 
 type ThesaurusValue = {
   id: string;
@@ -22,6 +24,11 @@ type ThesaurusValueCreateProps = {
 type CreateProps = {
   name: string;
   values?: ThesaurusValueCreateProps[];
+};
+
+type UpdateProps = {
+  name?: string;
+  values?: (ThesaurusValueCreateProps | ThesaurusValue)[];
 };
 
 const getDuplicatedLabels = (values: { label: string }[] | undefined): string[] => {
@@ -88,16 +95,67 @@ class Thesaurus {
 
   values: ThesaurusValue[];
 
-  constructor(props: Props) {
-    const parsed = Schema.parse(props);
+  private before?: Thesaurus;
+
+  private hashedValuesById = new Map<string, ThesaurusValue>();
+
+  private hashedValuesByLabel = new Map<string, ThesaurusValue>();
+
+  constructor(props: Props, validate = true) {
+    const parsed = validate ? Schema.parse(props) : props;
 
     this.id = parsed.id;
     this.name = parsed.name;
     this.values = parsed.values;
+
+    this.createHashById();
+    this.createHashByLabel();
+  }
+
+  private createHashById() {
+    this.values.forEach(value => {
+      if (value.values) {
+        value.values.forEach(subValue => this.hashedValuesById.set(subValue.id, subValue));
+      }
+
+      this.hashedValuesById.set(value.id, value);
+    });
+  }
+
+  private createHashByLabel() {
+    this.values.forEach(value => {
+      if (value.values) {
+        value.values.forEach(subValue => this.hashedValuesByLabel.set(subValue.label, subValue));
+      }
+
+      this.hashedValuesByLabel.set(value.label, value);
+    });
+  }
+
+  getDiff() {
+    if (!this.before) {
+      throw new Error('Diff is not available for this Thesaurus instance');
+    }
+
+    return new ThesaurusDiff({ before: this.before, after: this });
   }
 
   getValueByLabel(label: string): ThesaurusValue | undefined {
-    return this.values.find(v => v.label === label);
+    return this.hashedValuesByLabel.get(label);
+  }
+
+  getValueById(id: string): ThesaurusValue | undefined {
+    return this.hashedValuesById.get(id);
+  }
+
+  getGroupByThesaurusValueId(id: string): ThesaurusValue | undefined {
+    for (const value of this.values) {
+      if (value.values && value.values.some(subValue => subValue.id === id)) {
+        return value;
+      }
+    }
+
+    return undefined;
   }
 
   addValues(props: ThesaurusValueCreateProps[]): Thesaurus {
@@ -106,7 +164,8 @@ class Thesaurus {
 
     this.values.forEach(existingValue => {
       if (!existingValue.values) {
-        return parsed.push(existingValue);
+        parsed.push(existingValue);
+        return;
       }
 
       const existingToAdd = thesauriValues.find(v => v.label === existingValue.label);
@@ -134,12 +193,47 @@ class Thesaurus {
     });
   }
 
+  update({ name, values }: UpdateProps): Thesaurus {
+    if (values) {
+      const unknownIds = values
+        .filter(v => 'id' in v && !this.hashedValuesById.has(v.id))
+        .map(v => (v as ThesaurusValue).id);
+
+      if (unknownIds.length > 0) {
+        throw new InvalidThesaurusValueIdsError(unknownIds);
+      }
+    }
+
+    const updated = values?.map(value => this.processValue(value));
+
+    return this.clone({ name, values: updated });
+  }
+
+  private processValue(value: ThesaurusValueCreateProps | ThesaurusValue): ThesaurusValue {
+    if ('id' in value) {
+      // Value has an ID (existing or from spread)
+      const nestedValues = value.values?.map(nestedValue => this.processValue(nestedValue));
+
+      return {
+        id: value.id,
+        label: value.label,
+        values: nestedValues,
+      };
+    }
+
+    return Thesaurus.createThesaurusValue(value);
+  }
+
   private clone(props: Partial<Props>): Thesaurus {
-    return new Thesaurus({
+    const after = new Thesaurus({
       id: this.id,
       name: props.name ?? this.name,
       values: props.values ?? structuredClone(this.values),
     });
+
+    after.before = this;
+
+    return after;
   }
 
   private static createThesaurusValue(value: ThesaurusValueCreateProps): ThesaurusValue {
@@ -165,4 +259,8 @@ class Thesaurus {
 }
 
 export { Thesaurus };
-export type { CreateProps as CreateThesaurusProps };
+export type {
+  CreateProps as CreateThesaurusProps,
+  UpdateProps as UpdateThesaurusProps,
+  ThesaurusValue,
+};

@@ -9,11 +9,9 @@ import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
 import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
@@ -26,10 +24,11 @@ import { tenants } from '#api/tenants/index.js';
 import { ObjectId } from 'mongodb';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { CreateEntityUseCase } from '#api/core/application/CreateEntity.js';
-import { EntitiesService } from '#api/core/application/EntitiesService.js';
-import { FilesService } from '#api/core/application/FilesService.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { CreateEntityUseCase } from '../CreateEntity.js';
+import { FilesService } from '../FilesService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 
 const factory = getFixturesFactory();
 
@@ -203,8 +202,7 @@ const createSut = (props: CreateSutProps = {}) => {
   const transactionManager = TransactionManagerFactory.default();
   const idGenerator = IdGeneratorFactory.default();
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
   const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
@@ -228,11 +226,10 @@ const createSut = (props: CreateSutProps = {}) => {
     eventBus: applicationEventsBus,
   });
 
-  const entitiesService = new EntitiesService({
+  const entitiesService = EntitiesServiceFactory.default({
     entitiesDS,
     eventBus,
     settingsDS,
-    templatesDS,
     transactionManager,
     dispatcher: jobsDispatcher,
   });

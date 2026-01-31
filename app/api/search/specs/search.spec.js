@@ -1,17 +1,13 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { elastic } from '#api/search/index.js';
-import { search } from '#api/search/index.js';
+import { search } from '#api/search/search.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import * as searchLimitsConfig from '#shared/config.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import elasticResult from '#api/search/specs/elasticResult.js';
-import {
-  fixtures as elasticFixtures,
-  fixturesTimeOut,
-  ids,
-} from '#api/search/specs/fixtures_elastic.js';
+import elasticResult from './elasticResult.js';
+import { fixtures as elasticFixtures, fixturesTimeOut, ids } from './fixtures_elastic.js';
 
 const editorUser = { _id: 'userId', role: 'editor' };
 
@@ -296,6 +292,22 @@ describe('search', () => {
     );
     expect(response.aggregations.all.groupedDictionary.buckets[1].values.map(b => b.label)).toEqual(
       ['China', 'Japan']
+    );
+  });
+
+  it('should return the label with the aggregations (es)', async () => {
+    userFactory.mock(undefined);
+    const response = await search.search(
+      { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
+      'es'
+    );
+
+    expect(response.aggregations.all.groupedDictionary.buckets.map(b => b.label)).toEqual([
+      'Europa',
+      'Any',
+    ]);
+    expect(response.aggregations.all.groupedDictionary.buckets[0].values.map(b => b.label)).toEqual(
+      ['Alemania', 'Italia', 'Portugal']
     );
   });
 

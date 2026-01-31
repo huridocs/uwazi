@@ -10,7 +10,7 @@ import { closeImportProgress } from '#app/Uploads/actions/uploadsActions.js';
 import Immutable from 'immutable';
 import StackTrace from '#app/components/Elements/StackTrace.js';
 
-export class ImportProgress extends Component {
+class ImportProgress extends Component {
   render() {
     const {
       close,
@@ -46,7 +46,7 @@ export class ImportProgress extends Component {
               <div className="alert">
                 {importRowExceptions.entrySeq().map(([key, warnings]) => (
                   <div key={key}>
-                    <Translate>{key}:</Translate>
+                    <Translate>{key}</Translate>:
                     {warnings.map((w, i) => (
                       <div className="item-info" key={`${key}-${w.get('index')}-${i}`}>
                         <strong>
@@ -112,7 +112,7 @@ ImportProgress.propTypes = {
   close: PropTypes.func.isRequired,
 };
 
-export const mapStateToProps = state => ({
+const mapStateToProps = state => ({
   importState: state.importEntities,
 });
 
@@ -120,4 +120,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ close: closeImportProgress }, dispatch);
 }
 
+export { ImportProgress, mapDispatchToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(ImportProgress);

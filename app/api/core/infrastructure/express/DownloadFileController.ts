@@ -65,6 +65,11 @@ class DownloadFileController extends AbstractController {
 
     if (tenants.current().featureFlags?.fileCacheHeaders) {
       await this.addFileCacheHeaders(file);
+
+      if (this.checkNotModified(file)) {
+        this.response.status(304).end();
+        return;
+      }
     }
 
     this.addContentHeaders(file.originalname || file.filename, query, file.mimetype);
@@ -107,14 +112,29 @@ class DownloadFileController extends AbstractController {
   private async addFileCacheHeaders(file: BaseFile) {
     if (this.request.user) {
       this.response.setHeader('Cache-Control', 'private, max-age=3600');
+      this.response.setHeader('X-Cache-Policy', 'no-store');
     } else {
       this.response.setHeader('Cache-Control', 'public, no-cache');
+      this.response.setHeader('X-Cache-Policy', 'yes-store');
     }
 
     if (file.creationDate) {
       const lastModified = timestampToHTTPDate(file.creationDate);
       this.response.setHeader('Last-Modified', lastModified);
     }
+  }
+
+  private checkNotModified(file: BaseFile): boolean {
+    const ifModifiedSince = this.request.headers['if-modified-since'];
+
+    if (!ifModifiedSince || !file.creationDate) {
+      return false;
+    }
+
+    const clientDateSeconds = Math.floor(new Date(ifModifiedSince).getTime() / 1000);
+    const fileDateSeconds = Math.floor(file.creationDate / 1000);
+
+    return fileDateSeconds <= clientDateSeconds;
   }
 
   private addContentHeaders(

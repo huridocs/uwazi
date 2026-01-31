@@ -1,10 +1,16 @@
 // eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import { stat } from 'fs/promises';
+import path from 'path';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
+import { generateFileName, temporalFilesPath } from '#api/files/filesystem.js';
 import date from '#api/utils/date.js';
-import path from 'path';
+import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
 import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
@@ -30,11 +36,11 @@ type CreateUrlAttachmentProps = {
 export class InputFile {
   private _metadata: FileMetadata;
 
-  private type: 'document' | 'attachment' | 'url_attachment' | 'raw';
+  private type: 'document' | 'attachment' | 'url_attachment' | 'custom' | 'raw';
 
   constructor(
     metadata: FileMetadata,
-    type: 'document' | 'attachment' | 'url_attachment' | 'raw' = 'raw'
+    type: 'document' | 'attachment' | 'url_attachment' | 'custom' | 'raw' = 'raw'
   ) {
     this._metadata = metadata;
     this.type = type;
@@ -105,6 +111,17 @@ export class InputFile {
     }
   }
 
+  toCustomFile(id: string) {
+    if (this.type !== 'custom') {
+      throw new Error('toCustomFile can only be called on custom type InputFiles');
+    }
+    return new CustomUpload({
+      id,
+      creationDate: date.currentUTC(),
+      ...this.fileProps(),
+    });
+  }
+
   static createUrlAttachment({ originalname, url }: CreateUrlAttachmentProps) {
     return new InputFile(
       {
@@ -120,6 +137,43 @@ export class InputFile {
         size: 0,
       },
       'url_attachment'
+    );
+  }
+
+  static async fromStream({
+    stream,
+    originalname,
+    mimetype,
+    type = 'attachment',
+    fieldname = 'file',
+  }: {
+    stream: Readable;
+    originalname: string;
+    mimetype?: string;
+    type?: 'document' | 'attachment';
+    fieldname?: string;
+  }): Promise<InputFile> {
+    const filename = generateFileName({ originalname });
+    const destination = temporalFilesPath();
+    const filepath = path.join(destination, filename);
+
+    const writeStream = createWriteStream(filepath);
+    await pipeline(stream, writeStream);
+
+    const stats = await stat(filepath);
+
+    return new InputFile(
+      {
+        fieldname,
+        originalname,
+        encoding: '',
+        mimetype: mimetype || mimeTypeFromUrl(originalname),
+        destination,
+        filename,
+        path: filepath,
+        size: stats.size,
+      },
+      type
     );
   }
 }

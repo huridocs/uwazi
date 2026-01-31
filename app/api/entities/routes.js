@@ -256,30 +256,9 @@ export default app => {
     }
   );
 
-  const bulkDeleteValidationSchema = validation.validateRequest({
-    type: 'object',
-    properties: {
-      body: {
-        type: 'object',
-        properties: {
-          sharedIds: { type: 'array', items: { type: 'string' } },
-        },
-        required: ['sharedIds'],
-      },
-    },
-    required: ['body'],
-  });
-
   app.post(
     '/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
-    async (req, res, next) => {
-      if (tenants.current()?.featureFlags?.v2BulkDeleteEntity) {
-        return next();
-      }
-      return bulkDeleteValidationSchema(req, res, next);
-    },
-    bulkDeleteValidationSchema,
     BulkDeleteEntityController.createHandler()
   );
 };

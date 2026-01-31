@@ -1,9 +1,11 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { CreateThesaurusUseCaseInput } from '#api/core/application/CreateThesaurus.js';
-import { CreateThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/CreateThesaurusUseCaseFactory.js';
-import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
-import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { CSVLoader } from '#api/csv/index.js';
+import { ObjectId } from 'mongodb';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { CreateThesaurusUseCaseFactory } from '../../factories/CreateThesaurusUseCaseFactory.js';
+import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO.js';
+import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper.js';
 
 type RequestDto = CreateThesaurusUseCaseInput;
 
@@ -16,7 +18,9 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
 
     try {
       const startTime = Date.now();
-      const output = await useCase.execute(this.request?.body);
+      const output = await useCase.execute(
+        this.request.file ? JSON.parse((this.request.body as any)?.thesauri) : this.request?.body
+      );
       logger.info('Thesaurus Creation executed successfully', {
         namespace: 'Thesaurus_Creation',
         success: true,
@@ -25,9 +29,25 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
         durationMs: Date.now() - startTime,
       });
 
-      const response: ResponseDto = MongoThesaurusMapper.toDBO(output);
+      let response: ResponseDto = MongoThesaurusMapper.toDBO(output);
 
-      this.response.status(201).json(response);
+      if (this.request.file) {
+        /**
+         * Note: Import Thesaurus values from CSV file
+         *  1. Feature seems to be very fragile from UI/UX to backend architecture.
+         *  2. This feature needs proper re-design and re-implementation.
+         * 3. Validations, tracking etc..
+         */
+
+        const loader = new CSVLoader();
+
+        response = (await loader.loadThesauri(this.request.file.path, new ObjectId(output.id), {
+          language: this.language,
+        })) as ThesaurusDBO;
+      }
+
+      this.response.json(response);
+      this.request.sockets.emitToCurrentTenant('thesauriChange', response);
     } catch (error: unknown) {
       logger.info(
         `Thesaurus Creation execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

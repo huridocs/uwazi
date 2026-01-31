@@ -1,39 +1,21 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
-
 import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-
 import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { DBFixture } from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-
 import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
 
-import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
-
-import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
-
-import {
-  PXCreateParagraphs,
-  PXCreateParagraphsInput,
-} from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PXCreateParagraphsInput } from '../PXCreateParagraphs.js';
 
 const factory = getFixturesFactory();
 
@@ -140,23 +122,9 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
-const setUpUseCase = () => {
-  const connection = getConnection();
-  const mongoTransactionManager = TransactionManagerFactory.default();
-  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-
-  const createParagraphs = new PXCreateParagraphs({
-    extractorsDS,
-    entitiesStatusDS,
-  });
-  (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
+const setUpUseCase = (batchSize?: number) => {
+  const createParagraphs = PXCreateParagraphsFactory.createDefault(batchSize);
+  (createParagraphs.createParagraphsBatch as any).dependencies.logger = createMockLogger();
 
   return { createParagraphs };
 };
@@ -191,7 +159,7 @@ const createExpectedParagraph = (
 
 describe('PXCreateParagraphs', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp(createFixtures());
+    await testingEnvironment.setUp(createFixtures(), true);
   });
 
   afterAll(async () => {
@@ -780,8 +748,8 @@ describe('PXCreateParagraphs', () => {
     });
   });
 
-  it('should execute onParagraphCreated callback on each paragraph creation', async () => {
-    const { createParagraphs } = setUpUseCase();
+  it('should execute onParagraphBatchCreated callback on each batch creation', async () => {
+    const { createParagraphs } = setUpUseCase(1);
 
     const input: PXCreateParagraphsInput = {
       entityStatusId: mongoEntityStatus._id.toString(),
@@ -834,11 +802,11 @@ describe('PXCreateParagraphs', () => {
           ],
         },
       ],
-      onParagraphCreated: jest.fn(),
+      onParagraphBatchCreated: jest.fn(),
     };
 
     await createParagraphs.execute(input);
 
-    expect(input.onParagraphCreated).toHaveBeenCalledTimes(input.paragraphs.length);
+    expect(input.onParagraphBatchCreated).toHaveBeenCalledTimes(input.paragraphs.length);
   });
 });

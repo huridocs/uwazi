@@ -11,10 +11,10 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
-import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
-import { CsvImportRow } from '#api/csv.v2/domain/CsvImportRow.js';
-import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js';
+import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
+import { CsvImportRow } from '../../../domain/CsvImportRow.js';
+import { CsvPreflightJob } from '../CsvPreflightJob.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -71,10 +71,10 @@ const buildUseCase = () => {
   const thesauriValuesDS =
     CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
   const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-  const jobsDispatcher: JobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
+  const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
     dispatchMany: jest.fn().mockResolvedValue(undefined),
-  });
+  }) as jest.Mocked<JobsDispatcher>;
   const useCase = new CsvPreflightJob({
     csvImportsDS,
     rowsDS,

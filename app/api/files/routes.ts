@@ -1,24 +1,21 @@
-import { Application, Request } from 'express';
-
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
+import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
+import { EntityFileUploadController } from '#api/core/infrastructure/express/files/EntityFileUploadController.js';
+import { FileDeleteController } from '#api/core/infrastructure/express/files/FileDeleteController.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import entities from '#api/entities/index.js';
-import { createProcessingFile, convertPDF } from '#api/files/processDocument.js';
-import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { Application } from 'express';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { fileSchema } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { createError, validation } from '#api/utils/index.js';
-import { files } from '#api/files/files.js';
-import { withTransaction } from '#api/utils/withTransaction.js';
-import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
-import { DocumentUploadController } from '#api/core/infrastructure/express/files/DocumentUploadController.js';
-import { FileDeleteController } from '#api/core/infrastructure/express/files/FileDeleteController.js';
-import { tenants } from '#api/tenants/index.js';
-import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { createError, validation } from '../utils/index.js';
+import { files } from './files.js';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -73,76 +70,29 @@ export default (app: Application) => {
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) => {
-      if (tenants.current().featureFlags?.v2UploadFile) {
-        await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(
-          req,
-          res,
-          next
-        );
-      } else {
-        await uploadMiddleware('document')(req, res, next);
-      }
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next);
     },
     async (req, res) => {
       req.emitToSessionSocket('conversionStart', req.body.entity);
-      if (tenants.current().featureFlags?.v2UploadFile) {
-        await DocumentUploadController.createHandler()(req, res);
-      } else {
-        if (!req.file) {
-          throw new Error('File is not available on request object');
-        }
-        const savedFile = await createProcessingFile(req.body.entity, req.file);
-        res.json(savedFile);
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        convertPDF(
-          savedFile,
-          req.body.entity,
-          req.file,
-          true,
-          processedFile => {
-            req.emitToSessionSocket('documentProcessed', req.body.entity, processedFile);
-          },
-          (_e, failedFile) => {
-            req.emitToSessionSocket('conversionFailed', req.body.entity, failedFile);
-          }
-        );
-      }
+      await EntityFileUploadController.forDocument()(req, res);
     },
     activitylogMiddleware
   );
 
   app.post(
-    '/api/files/upload/custom',
-    needsAuthorization(['admin']),
-    uploadMiddleware('custom'),
-    activitylogMiddleware,
-    (req, res, next) => {
-      files
-        .save({ ...req.file, type: 'custom' })
-        .then(saved => {
-          res.json(saved);
-        })
-        .catch(next);
-    }
-  );
-
-  app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware('attachment'),
-    activitylogMiddleware,
-    (req, res, next) => {
-      files
-        .save({
-          ...req.file,
-          ...req.body,
-          type: 'attachment',
-        })
-        .then(saved => {
-          res.json(saved);
-        })
-        .catch(next);
-    }
+    async (req, res, next) => {
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload('attachment')(
+        req,
+        res,
+        next
+      );
+    },
+    async (req, res) => {
+      await EntityFileUploadController.forAttachment()(req, res);
+    },
+    activitylogMiddleware
   );
 
   app.post(
@@ -189,7 +139,6 @@ export default (app: Application) => {
     }
   );
 
-  app.get('/assets/:filename', DownloadFileController.customHandler(['custom']));
   app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
   app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
 
@@ -209,42 +158,7 @@ export default (app: Application) => {
   app.delete(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          required: ['_id'],
-          additionalProperties: false,
-          properties: {
-            _id: { type: 'string' },
-          },
-        },
-      },
-    }),
-    async (req: Request<{}, {}, {}, { _id: string }>, res) => {
-      if (tenants.current().featureFlags?.v2DeleteFile) {
-        await FileDeleteController.createHandler()(req, res);
-      } else {
-        const [fileToDelete] = await files.get({ _id: req.query._id });
-        if (
-          !fileToDelete ||
-          !(await checkEntityPermission(
-            fileToDelete,
-            permissionsContext.getUserInContext(),
-            'write'
-          ))
-        ) {
-          throw createError('file not found', 404);
-        }
-        await withTransaction(async () => {
-          const [deletedFile] = await files.delete({ _id: req.query._id });
-          const thumbnailFileName = `${deletedFile._id}.jpg`;
-          await files.delete({ filename: thumbnailFileName });
-          res.json([deletedFile]);
-        }, 'DELETE /api/files');
-      }
-    }
+    FileDeleteController.createHandler()
   );
 
   app.get(

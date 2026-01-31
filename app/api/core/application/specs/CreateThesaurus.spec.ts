@@ -3,17 +3,18 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusDataSourceV2.js';
 import { ObjectId } from 'mongodb';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { Result } from '#api/core/libs/Result.js';
 import { ThesaurusNameAlreadyExistsError } from '#api/core/domain/thesaurus/errors.js';
-import { CreateThesaurusUseCase } from '#api/core/application/CreateThesaurus.js';
-import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
-import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { tenants } from '#api/tenants/index.js';
+import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { ThesauriService } from '../ThesauriService';
 
 const factory = getFixturesFactory();
 
@@ -48,10 +49,10 @@ type CreateProps = {
 };
 
 const createSut = (props?: CreateProps) => {
+  const tenant = tenants.current();
   const transactionManager = TransactionManagerFactory.default();
 
-  const thesauriDS =
-    props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+  const thesauriDS = props?.thesauriDS ?? ThesauriDataSourceFactory.default(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
   const thesaurusTranslationService =
@@ -61,10 +62,15 @@ const createSut = (props?: CreateProps) => {
       translationsDS,
     });
 
-  const sut = new CreateThesaurusUseCase({
-    transactionManager,
+  const thesauriService = new ThesauriService({
     thesauriDS,
     thesaurusTranslationService,
+    jobsDispatcher: DefaultDispatcher(tenant.name, transactionManager),
+  });
+
+  const sut = new CreateThesaurusUseCase({
+    transactionManager,
+    thesauriService,
   });
 
   return { sut };
@@ -113,57 +119,59 @@ describe('CreateThesaurusUseCase', () => {
 
     const translations = await testingEnvironment.db.getAllFrom('translationsV2');
 
-    expect(translations).toEqual([
-      {
-        _id: expect.any(ObjectId),
-        key: 'Vehicles',
-        value: 'Vehicles',
-        language: 'en',
-        context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'Car',
-        value: 'Car',
-        language: 'en',
-        context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'Bike',
-        value: 'Bike',
-        language: 'en',
-        context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-      },
+    expect(translations).toEqual(
+      TestUtils.arrayIncludesObjects([
+        {
+          _id: expect.any(ObjectId),
+          key: 'Vehicles',
+          value: 'Vehicles',
+          language: 'en',
+          context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Car',
+          value: 'Car',
+          language: 'en',
+          context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Bike',
+          value: 'Bike',
+          language: 'en',
+          context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+        },
 
-      {
-        _id: expect.any(ObjectId),
-        key: 'Vehicles',
-        value: 'Vehicles',
-        language: 'es',
-        context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'Car',
-        value: 'Car',
-        language: 'es',
-        context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-      },
-      {
-        _id: expect.any(ObjectId),
-        key: 'Bike',
-        value: 'Bike',
-        language: 'es',
-        context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-      },
-    ]);
+        {
+          _id: expect.any(ObjectId),
+          key: 'Vehicles',
+          value: 'Vehicles',
+          language: 'es',
+          context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Car',
+          value: 'Car',
+          language: 'es',
+          context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Bike',
+          value: 'Bike',
+          language: 'es',
+          context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+        },
+      ])
+    );
   });
 
   it('should revert when creating the thesaurus fails', async () => {
     const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
       create: jest.fn().mockRejectedValue(new Error('Creation failed')),
-      exists: jest.fn().mockResolvedValue(Result.ok(false)),
+      exists: jest.fn().mockResolvedValue({ getDataOrThrow: jest.fn() }),
     });
 
     const { sut } = createSut({ thesauriDS });

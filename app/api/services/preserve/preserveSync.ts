@@ -1,45 +1,30 @@
 import entities from '#api/entities/entities.js';
-
-import { files, generateFileName, storage } from '#api/files/index.js';
-
-import { legacyLogger } from '#api/log/legacyLogger.js';
-
+import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
-
-import settings from '#api/settings/settings.js';
-
+import settings from '#api/settings/index.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
-
+import { newThesauriId } from '#api/utils/templateUtils.js';
 import { tenants } from '#api/tenants/index.js';
-
 import thesauri from '#api/thesauri/thesauri.js';
-
 import dictionariesModel from '#api/thesauri/dictionariesModel.js';
-
 import users from '#api/users/users.js';
-
 import { appContext } from '#api/utils/AppContext.js';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
-
 import request from '#shared/JSONRequest.js';
-
 import { propertyTypes } from '#shared/propertyTypes.js';
-
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-
 import { PreserveConfig } from '#shared/types/settingsType.js';
-
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
-import { preserveSyncModel } from '#api/services/preserve/preserveSyncModel.js';
-import { newThesauriId } from '#api/utils/templateUtils.js';
-
-type PreserveDownload = { path: string };
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { preserveSyncModel } from './preserveSyncModel.js';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
   const [value] = await dictionariesModel.db.aggregate([
@@ -134,24 +119,34 @@ const saveEvidence =
         { language: 'en', user: user || {} }
       );
       await Promise.all(
-        evidence.attributes.downloads.map(async (download: PreserveDownload) => {
-          const fileName = generateFileName({ originalname: path.basename(download.path) });
+        evidence.attributes.downloads.map(async (download: any) => {
           const fileStream = (
             await fetch(new URL(path.join(host, download.path)).toString(), {
               headers: { Authorization: config.token },
             })
           ).body as unknown as Readable;
-          if (fileStream) {
-            await storage.storeFile(fileName, fileStream, 'attachment');
 
-            await files.save({
-              entity: sharedId,
-              type: 'attachment',
-              filename: fileName,
-              originalname: path.basename(download.path),
-              mimetype: mimetypes.lookup(path.extname(fileName)) || 'application/octet-stream',
-            });
+          if (!fileStream) {
+            throw new Error(`Failed to fetch file from: ${download.path}`);
           }
+
+          const inputFile = await InputFile.fromStream({
+            stream: fileStream,
+            originalname: path.basename(download.path),
+            mimetype: mimetypes.lookup(path.extname(download.path)) || 'application/octet-stream',
+            type: 'attachment',
+          });
+
+          const fileId = IdGeneratorFactory.default().generate();
+          const attachment = inputFile.toEntityFile(sharedId, fileId);
+
+          const transactionManager = TransactionManagerFactory.default();
+          const filesService = FilesServiceFactory.default(transactionManager);
+          await filesService.storeFiles([attachment]);
+
+          await transactionManager.run(async () => {
+            await filesService.insert([attachment]);
+          });
         })
       );
     } catch (error) {

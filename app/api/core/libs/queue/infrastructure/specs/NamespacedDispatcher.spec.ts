@@ -4,8 +4,10 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { MongoQueueAdapter } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
-import { NamespacedDispatcher } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { JobDBO, MongoQueueAdapter } from '../MongoQueueAdapter.js';
+import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
 
 class TestJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
@@ -80,5 +82,55 @@ describe('dispatchMany', () => {
     });
 
     expect(noMoreJobs).toBe(null);
+  });
+
+  describe('deleteByParams', () => {
+    const factory = getFixturesFactory();
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures({
+        jobs: [
+          {
+            _id: factory.id('job1_1'),
+            namespace: 'namespace_1',
+            queue: 'queue1',
+            name: 'TestJob',
+            params: { aNumber: 1 },
+          },
+          {
+            _id: factory.id('job1_3'),
+            namespace: 'namespace_1',
+            queue: 'queue1',
+            name: 'TestJob',
+            params: { aNumber: 1 },
+            lockedUntil: Date.now() + 10000,
+          },
+          {
+            _id: factory.id('job1_2'),
+            namespace: 'namespace_2',
+            queue: 'queue1',
+            name: 'TestJob',
+            params: { aNumber: 1 },
+          },
+        ] as JobDBO[],
+      });
+    });
+
+    it('should delete by params only on the specified namespace', async () => {
+      const dispatcher = new NamespacedDispatcher('namespace_1', 'queue name', adapter);
+
+      await dispatcher.deleteByParams(TestJob, { aNumber: 1 });
+
+      const job = await testingEnvironment.db.getAllFrom('jobs');
+
+      expect(job).toEqual(
+        TestUtils.arrayIncludesObjects([
+          { _id: factory.id('job1_2') },
+          {
+            _id: factory.id('job1_3'),
+          },
+        ])
+      );
+    });
   });
 });

@@ -37,6 +37,9 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
+import { DenormalizeThesaurusEntitiesChunkHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesChunkHandler.js';
+import { DenormalizeThesaurusEntitiesHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesHandler.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -297,4 +300,19 @@ export function registerJobs(
     DeleteFileFromStorageJobHandler,
     async () => new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() })
   );
+
+  register(
+    DenormalizeThesaurusEntitiesChunkHandler,
+    async () =>
+      new DenormalizeThesaurusEntitiesChunkHandler({ DenormalizeThesaurusEntitiesUseCaseFactory })
+  );
+
+  register(DenormalizeThesaurusEntitiesHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+
+    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+    const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+
+    return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
+  });
 }

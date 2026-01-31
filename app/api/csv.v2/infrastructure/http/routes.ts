@@ -4,11 +4,11 @@ import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
 import { handleError } from '#api/utils/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CSVLoader } from '#api/csv/index.js';
-import multer from 'multer';
-import { generateFileName } from '#api/files/filesystem.js';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { RegisterCsvImportController } from '#api/csv.v2/infrastructure/http/RegisterCsvImportController.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const csvImportRoutes = (app: Application) => {
   // eslint-disable-next-line max-statements
@@ -60,19 +60,8 @@ const csvImportRoutes = (app: Application) => {
     needsAuthorization(['admin']),
 
     async (req, res, next) => {
-      if (tenants.current().featureFlags?.v2UploadFile) {
-        const defaultStorage = multer.diskStorage({
-          filename(_req, file: Express.Multer.File, cb) {
-            cb(null, generateFileName(file));
-          },
-        });
-        await new Promise<void>((resolve, reject) => {
-          multer({ storage: defaultStorage }).single('file')(req, res, err => {
-            if (!err) resolve();
-            reject(err);
-          });
-        });
-        next();
+      if (tenants.current().featureFlags?.v2CSVImport) {
+        await new UploadMiddleware(LoggerFactory.default()).singleUpload()(req, res, next);
       } else {
         await uploadMiddleware()(req, res, next);
       }

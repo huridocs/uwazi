@@ -101,33 +101,35 @@ const ThesauriValueFormSidepanel = ({
             </div>
           )}
           {fields.map((localValue, index) => (
-            <Card title={<Translate>Item</Translate>} key={localValue.rowId}>
-              <div className="flex flex-col gap-4">
-                <InputField
-                  id="item-name"
-                  data-testid="thesauri-form-item-name"
-                  label={<Translate>Title</Translate>}
-                  {...register(`newValues.${index}.label`)}
-                />
-                {groups && (
-                  <Select
-                    id="item-group"
-                    data-testid="thesauri-form-item-group"
-                    label={<Translate>Group</Translate>}
-                    {...register(`newValues.${index}.groupId`)}
-                    disabled={value.length > 0}
-                    options={[
-                      { value: '', label: 'No Group', key: '0' },
-                      ...groups.map(group => ({
-                        value: group.rowId,
-                        label: group.label,
-                        key: group.rowId,
-                      })),
-                    ]}
+            <div className="mt-2" key={localValue.rowId}>
+              <Card title={<Translate>Item</Translate>}>
+                <div className="flex flex-col gap-4">
+                  <InputField
+                    id="item-name"
+                    data-testid="thesauri-form-item-name"
+                    label={<Translate>Title</Translate>}
+                    {...register(`newValues.${index}.label`)}
                   />
-                )}
-              </div>
-            </Card>
+                  {groups && (
+                    <Select
+                      id="item-group"
+                      data-testid="thesauri-form-item-group"
+                      label={<Translate>Group</Translate>}
+                      {...register(`newValues.${index}.groupId`)}
+                      disabled={value.length > 0}
+                      options={[
+                        { value: '', label: 'No Group', key: '0' },
+                        ...groups.map(group => ({
+                          value: group.rowId,
+                          label: group.label,
+                          key: group.rowId,
+                        })),
+                      ]}
+                    />
+                  )}
+                </div>
+              </Card>
+            </div>
           ))}
         </Sidepanel.Body>
         <Sidepanel.Footer className="bottom-0 px-4 py-3">

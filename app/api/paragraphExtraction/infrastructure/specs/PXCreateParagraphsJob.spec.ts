@@ -112,7 +112,7 @@ describe('ExtractionUseCase', () => {
       userId: extractionKey.userId,
       entityStatusId: extractionKey.entityStatusId,
       paragraphs: getParagraphsResultOutput.paragraphs,
-      onParagraphCreated: heartBeatCallBack,
+      onParagraphBatchCreated: heartBeatCallBack,
     });
   });
 

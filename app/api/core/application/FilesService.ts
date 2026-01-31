@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
@@ -22,6 +23,7 @@ import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -52,6 +54,40 @@ class FilesService {
     );
   }
 
+  /**
+   * Inserts files into the database and dispatches processing jobs.
+   *
+   * IMPORTANT: This method automatically emits FileCreatedEvent for each file
+   * after the transaction commits. Callers do NOT need to emit events manually.
+   *
+   * This method should be called within a transaction context using
+   * transactionManager.run(). Events are emitted only after the transaction
+   * successfully commits to ensure data consistency.
+   *
+   * @param files - Array of BaseFile domain objects to insert
+   * @throws {Error} If PDFPostProcess is dispatched but no user context exists
+   *
+   * @example
+   * // For use cases (typical pattern):
+   * await this.transactionManager.run(async () => {
+   *   await this.deps.filesService.insert([file]);
+   * });
+   * // FileCreatedEvent is emitted automatically after commit
+   *
+   * @example
+   * // For external integrations (PreserveSync, etc.):
+   * const transactionManager = TransactionManagerFactory.default();
+   * const filesService = FilesServiceFactory.default(transactionManager);
+   *
+   * // 1. Store files to disk first
+   * await filesService.storeFiles([attachment]);
+   *
+   * // 2. Insert within transaction
+   * await transactionManager.run(async () => {
+   *   await filesService.insert([attachment]);
+   * });
+   * // FileCreatedEvent is emitted automatically after commit
+   */
   async insert(files: BaseFile[]) {
     if (isNonEmptyArray<BaseFile>(files)) {
       await this.deps.filesDS.bulkCreate(files);
@@ -69,6 +105,17 @@ class FilesService {
               userId,
             });
           }
+        });
+      });
+
+      this.deps.transactionManager.onCommitted(async () => {
+        await ArrayUtils.sequentialFor(files, async file => {
+          const dto = file.toDTO();
+          await this.deps.eventBus.emit(
+            new FileCreatedEvent({
+              newFile: { ...dto, _id: new ObjectId(dto._id) },
+            })
+          );
         });
       });
     }

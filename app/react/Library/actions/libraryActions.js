@@ -424,7 +424,7 @@ function getAggregationSuggestions(storeKey, property, searchTerm) {
   const state = store.getState()[storeKey];
   const { search, filters } = state;
 
-  const query = processFilters(search, filters.toJS(), { limit: 0 });
+  const query = processFilters(search, filters.toJS(), { limit: 0, encoding: false });
   query.searchTerm = search.searchTerm;
   if (storeKey === 'uploads') {
     query.unpublished = true;

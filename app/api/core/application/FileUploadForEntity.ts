@@ -2,8 +2,6 @@
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
-import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { FilesService } from '#api/core/application/FilesService.js';
@@ -32,18 +30,14 @@ export class FileUploadForEntity extends AbstractUseCase<Input, Output, Deps> {
       throw new EntityNotFoundError(entityId);
     }
 
-    const document = uploadedFile.toEntityFile(entityId, this.idGenerator.generate());
+    const file = uploadedFile.toEntityFile(entityId, this.idGenerator.generate());
 
-    await this.deps.filesService.storeFiles([document]);
+    await this.deps.filesService.storeFiles([file]);
 
     await this.transactionManager.run(async () => {
-      await this.deps.filesService.insert([document]);
+      await this.deps.filesService.insert([file]);
     });
 
-    const dto = document.toDTO();
-    await this.eventBus.emit(
-      new FileCreatedEvent({ newFile: { ...dto, _id: new ObjectId(dto._id) } })
-    );
-    return dto;
+    return file.toDTO();
   }
 }

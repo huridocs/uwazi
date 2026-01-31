@@ -5,17 +5,17 @@ import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { SelectPropertyAssignmentCreatorService } from '#api/core/application/propertyAssignmentCreatorService/SelectPropertyAssignmentCreatorService.js';
-import { ThesauriDataSource } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
-import { RelationshipPropertyAssignmentCreatorService } from '#api/core/application/propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.js';
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
+import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService.js';
+import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService.js';
 import {
   PropertyAssignmentCreatorService,
   PropertyAssignmentInput,
-} from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
-import { DefaultPropertyAssignmentCreatorService } from '#api/core/application/propertyAssignmentCreatorService/DefaultPropertyAssignmentCreatorService.js';
-import { ImagePropertyAssignmentCreatorService } from '#api/core/application/propertyAssignmentCreatorService/ImagePropertyAssignmentCreatorService.js';
-import { MediaPropertyAssignmentCreatorService } from '#api/core/application/propertyAssignmentCreatorService/MediaPropertyAssignmentCreatorService.js';
+} from './PropertyAssignmentCreatorService.js';
+import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService.js';
+import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService.js';
+import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
@@ -46,7 +46,6 @@ class PropertyAssignmentCreatorServiceStrategy {
         return this.props.image;
       case 'media':
         return this.props.media;
-
       default:
         return this.props.default;
     }
@@ -55,7 +54,7 @@ class PropertyAssignmentCreatorServiceStrategy {
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,
-    attachments: InputFile[]
+    attachments: InputFile[] = []
   ): Promise<PropertyAssignment[]> {
     const created = await ArrayUtils.sequentialFor(
       propertyAssignments,

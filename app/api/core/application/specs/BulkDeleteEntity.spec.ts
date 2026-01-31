@@ -3,26 +3,20 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
 import { elastic, search } from '#api/search/index.js';
 import { Collection, ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
-import {
-  getConnection,
-  getSharedConnection,
-} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import {
   BulkDeleteEntityInput,
   BulkDeleteEntityUseCase,
 } from '#api/core/application/BulkDeleteEntity.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -117,24 +111,15 @@ const fixtures: DBFixture = {
 
 type CreateSutProps = {
   search?: typeof search;
-  jobsDispatcher?: JobsDispatcher;
+  dispatcher?: JobsDispatcher;
   actor?: UserSchema;
   entitiesDS?: MultiLanguageEntityDataSource;
 };
 
 const createSut = (props?: CreateSutProps) => {
   const transactionManager = TransactionManagerFactory.default();
-  const idGenerator = IdGeneratorFactory.default();
-  const jobsDispatcher =
-    props?.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
-  const searchInstance = props?.search ?? search;
-  const entityPermissionChecker = new MongoEntityPermissionChecker(
-    getConnection(),
-    transactionManager
-  );
-  const entitiesDS =
-    props?.entitiesDS ??
-    new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+
+  const entitiesService = EntitiesServiceFactory.default({ ...props, transactionManager });
 
   const actor =
     props?.actor ??
@@ -148,12 +133,8 @@ const createSut = (props?: CreateSutProps) => {
 
   const sut = new BulkDeleteEntityUseCase(
     {
-      search: searchInstance,
-      entityPermissionChecker,
-      jobsDispatcher,
-      idGenerator,
       transactionManager,
-      entitiesDS,
+      entitiesService,
     },
     {
       actor,
@@ -257,11 +238,11 @@ describe('BulkDeleteEntityUseCase', () => {
   });
 
   it('should revert when dispatching of jobs fails', async () => {
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
+    const dispatcher = TestUtils.mockClass<JobsDispatcher>({
       dispatchMany: jest.fn().mockRejectedValue(new Error('Dispatch failed')),
     });
 
-    const { sut } = createSut({ jobsDispatcher });
+    const { sut } = createSut({ dispatcher });
 
     const entitiesDBBefore = await testingEnvironment.db.getAllFrom('entities');
     const elasticBefore = await elastic.search({ size: 100 });

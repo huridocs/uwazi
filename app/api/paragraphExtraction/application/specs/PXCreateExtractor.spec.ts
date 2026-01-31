@@ -1,9 +1,11 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -20,16 +22,13 @@ import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/Mon
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 
-import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
-import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-import {
-  Input,
-  PXCreateExtractor,
-} from '#api/paragraphExtraction/application/PXCreateExtractor.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob.js';
+
+import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource.js';
+import { Input, PXCreateExtractor } from '../PXCreateExtractor.js';
 
 const f = getFixturesFactory();
 

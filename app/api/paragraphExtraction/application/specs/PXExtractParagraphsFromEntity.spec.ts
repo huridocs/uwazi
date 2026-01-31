@@ -1,39 +1,29 @@
 /* eslint-disable max-statements */
-import { ApiResponse } from '@elastic/elasticsearch';
 import { ObjectId } from 'mongodb';
 
-import { search } from '#api/search/index.js';
-
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
-import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-
-import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
-
-import { DBFixture } from '#api/utils/testing_db.js';
-
-import { tenants } from '#api/tenants/index.js';
-
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-
+import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
-
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { tenants } from '#api/tenants/index.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { PXExtractParagraphsFromEntity } from '#api/paragraphExtraction/application/PXExtractParagraphsFromEntity.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { search } from '#api/search/index.js';
+import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity.js';
 import {
   defaultTemplate,
   entity1,
@@ -67,8 +57,7 @@ import {
   sourceTemplate,
   targetTemplate,
   userId,
-} from '#api/paragraphExtraction/application/specs/fixtures.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+} from './fixtures.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -99,7 +88,7 @@ const setUpUseCase = () => {
 
   const connection = getConnection();
   const mongoTransactionManager = TransactionManagerFactory.default();
-  const entityDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
+  const entitiesDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
   const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
@@ -115,18 +104,30 @@ const setUpUseCase = () => {
   const idGenerator = MongoIdHandler;
   const tenantName = tenants.current().name;
 
-  const extractParagraphs = new PXExtractParagraphsFromEntity({
-    entitiesDS: entityDS,
-    extractorsDS,
-    filesDS,
-    settingsDS,
-    extractionService,
-    fileStorage,
-    entitiesStatusDS,
-    idGenerator,
-    logger: createMockLogger(),
-    tenantName,
+  const entitiesService = EntitiesServiceFactory.default({
+    transactionManager: mongoTransactionManager,
+    search: TestUtils.mockClass<typeof search>({
+      bulkDeleteBySharedId: jest.fn(),
+    }),
   });
+
+  const extractParagraphs = new PXExtractParagraphsFromEntity(
+    {
+      transactionManager: mongoTransactionManager,
+      entitiesService,
+      entitiesDS,
+      extractorsDS,
+      filesDS,
+      settingsDS,
+      extractionService,
+      fileStorage,
+      entitiesStatusDS,
+      idGenerator,
+      logger: createMockLogger(),
+      tenantName,
+    },
+    { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+  );
 
   return {
     tenantName,
@@ -137,13 +138,12 @@ const setUpUseCase = () => {
 };
 
 describe('PXExtractParagraphsFromEntity', () => {
+  beforeAll(async () =>
+    testingEnvironment.setUp(createFixtures(), 'px_extract_paragraphs_from_entity')
+  );
+
   beforeEach(async () => {
-    jest
-      .spyOn(search, 'delete')
-      .mockImplementation(
-        async () => Promise.resolve() as any as ApiResponse<Record<string, any>, unknown>
-      );
-    await testingEnvironment.setUp(createFixtures());
+    await testingEnvironment.setFixtures(createFixtures());
   });
 
   afterAll(async () => {
@@ -343,15 +343,12 @@ describe('PXExtractParagraphsFromEntity', () => {
     });
 
     const entities = await testingEnvironment.db.getAllFrom('entities');
-    const connections = await testingEnvironment.db.getAllFrom('connections');
 
+    // Entities (paragraphs) should be deleted synchronously
     expect(entities).toMatchObject([entity1, entity2, entity3, paragraph4, paragraph5]);
-    expect(connections).toMatchObject([
-      relationshipE2Hub1,
-      relationshipE2Hub2,
-      relationshipP4Hub1,
-      relationshipP5Hub2,
-    ]);
+
+    // Note: Connections are deleted asynchronously via BulkCleanupEntityJob,
+    // so they won't be deleted immediately after execute() returns
   });
 
   it('should throw if Extractor does not exist', async () => {

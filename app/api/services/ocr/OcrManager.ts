@@ -1,8 +1,7 @@
+import { ObjectId } from 'mongodb';
+import { Readable } from 'stream';
+import urljoin from 'url-join';
 import { files, storage } from '#api/files/index.js';
-
-import { generateFileName, temporalFilesPath } from '#api/files/filesystem.js';
-
-import { processDocument } from '#api/files/processDocument.js';
 
 import relationships from '#api/relationships/index.js';
 
@@ -17,18 +16,21 @@ import createError from '#api/utils/Error.js';
 import { handleError } from '#api/utils/handleError.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream, createWriteStream } from 'fs';
-
 import request from '#shared/JSONRequest.js';
 
 import { FileType } from '#shared/types/fileType.js';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
-import urljoin from 'url-join';
+import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import users from '#api/users/users.js';
 import { EnforcedWithId } from '#api/odm/model.js';
 import { OcrRecord, OcrStatus } from '#api/services/ocr/ocrModel.js';
-import { tenants } from '#api/tenants/index.js';
 import {
   createForFile,
   getForSourceFile,
@@ -77,6 +79,32 @@ const fetchSupportedLanguages = async (ocrSettings: { url: string }) => {
   return body.supported_languages as string[];
 };
 
+const setUserContextForFile = async (file: FileType): Promise<void> => {
+  if (!file.entity) {
+    throw new Error(`OCR cannot process file ${file.filename}: file has no entity association`);
+  }
+
+  const db = getConnection();
+  const entity = await db
+    .collection<EntityDBO>('entities')
+    .findOne({ sharedId: file.entity }, { projection: { user: 1, sharedId: 1 } });
+
+  if (!entity) {
+    throw new Error(`OCR cannot process file ${file.filename}: entity ${file.entity} not found`);
+  }
+
+  if (!entity.user) {
+    throw new Error(`OCR cannot process file ${file.filename}: entity ${file.entity} has no user`);
+  }
+
+  const user = await users.getById(entity.user.toString(), '-password', true);
+  if (!user) {
+    throw new Error(`OCR cannot process file ${file.filename}: user ${entity.user} not found`);
+  }
+
+  permissionsContext.setUserInContext(user);
+};
+
 const saveResultFile = async (message: ResultsMessage, originalFile: FileType) => {
   const fileResponse = await fetch(message.file_url!);
   const fileStream = fileResponse.body as unknown as Readable;
@@ -86,28 +114,30 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
     );
   }
 
-  const newFileName = generateFileName(originalFile);
+  const inputFile = await InputFile.fromStream({
+    stream: fileStream,
+    originalname: `ocr_${originalFile.originalname}`,
+    mimetype: fileResponse.headers.get('Content-Type')!,
+    type: 'document',
+  });
 
-  await pipeline(fileStream, createWriteStream(temporalFilesPath(newFileName)));
+  const fileId = IdGeneratorFactory.default().generate();
+  const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as ProcessingPDF;
 
-  await storage.storeFile(
-    newFileName,
-    createReadStream(temporalFilesPath(newFileName)),
-    'document'
-  );
-  return processDocument(
-    originalFile.entity!,
-    {
-      originalname: `ocr_${originalFile.originalname}`,
-      filename: newFileName,
-      mimetype: fileResponse.headers.get('Content-Type')!,
-      size: parseInt(fileResponse.headers.get('Content-Length')!, 10),
-      language: originalFile.language,
-      type: 'document',
-      destination: temporalFilesPath(),
-    },
-    false
-  );
+  const transactionManager = TransactionManagerFactory.default();
+  const filesService = FilesServiceFactory.default(transactionManager);
+
+  await filesService.storeFiles([processingPDF]);
+
+  await transactionManager.run(async () => {
+    await filesService.insert([processingPDF]);
+  });
+
+  return {
+    ...processingPDF.toDTO(),
+    _id: new ObjectId(processingPDF.id),
+    __v: 0,
+  };
 };
 
 const processFiles = async (
@@ -115,13 +145,22 @@ const processFiles = async (
   message: ResultsMessage,
   originalFile: EnforcedWithId<FileType>
 ) => {
-  const resultFile = await saveResultFile(message, originalFile);
-  await files.save({ ...originalFile, type: 'attachment' });
-  await markReady(record, resultFile as EnforcedWithId<FileType>);
-  await relationships.swapTextReferencesFile(
-    originalFile._id.toHexString(),
-    resultFile._id.toHexString()
-  );
+  try {
+    await setUserContextForFile(originalFile);
+
+    const resultFile = await saveResultFile(message, originalFile);
+
+    await files.save({ _id: originalFile._id, type: 'attachment' });
+
+    await markReady(record, resultFile as EnforcedWithId<FileType>);
+    await relationships.swapTextReferencesFile(
+      originalFile._id.toHexString(),
+      resultFile._id.toHexString()
+    );
+  } catch (error) {
+    await markError(record);
+    throw error;
+  }
 };
 
 const handleOcrError = async (

@@ -27,3 +27,26 @@ export class ThesaurusNameAlreadyExistsError extends ValidationError {
     };
   }
 }
+
+export class InvalidThesaurusValueIdsError extends ValidationError {
+  readonly invalidIds: string[];
+
+  constructor(invalidIds: string[]) {
+    const message =
+      invalidIds.length === 1
+        ? `Value ID "${invalidIds[0]}" does not exist in the current thesaurus. Cannot update thesaurus with IDs that don't exist.`
+        : `Value IDs [${invalidIds.map(id => `"${id}"`).join(', ')}] do not exist in the current thesaurus. Cannot update thesaurus with IDs that don't exist.`;
+
+    super(message, 'thesaurus.invalid_value_ids_error');
+
+    this.invalidIds = invalidIds;
+  }
+
+  asAJV(): AJVObject {
+    return {
+      message: this.message,
+      keyword: 'thesaurus.invalid_value_ids_error',
+      instancePath: '',
+    };
+  }
+}

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
+import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories.js';
 
 const RequestSchema = z.object({
   template: z.string(),
@@ -12,7 +11,7 @@ type RequestBody = z.infer<typeof RequestSchema>;
 export class RegisterCsvImportController extends AbstractController<RequestBody> {
   protected async handle(): Promise<void> {
     const { template } = RequestSchema.parse(this.request.body || {});
-    if (!this.request.file) throw new Error('File is not available on request object');
+    if (!this.request.inputFile) throw new Error('File is not available on request object');
 
     const userId = this.user?._id;
     if (!userId) {
@@ -23,7 +22,7 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
     const useCase = CSVImportEntitiesFactories.default();
     const response = await useCase.execute({
       template,
-      file: new InputFile(this.request.file),
+      file: this.request.inputFile,
       userId: userId.toString(),
     });
     this.jsonResponse(response);

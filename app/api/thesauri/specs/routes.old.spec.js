@@ -1,11 +1,10 @@
-import translations from '#api/i18n/translations.js';
 import '#api/utils/jasmineHelpers';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
-import instrumentRoutes from '#api/utils/instrumentRoutes.js';
-import thesauriRoute from '#api/thesauri/routes.js';
-import thesauri from '#api/thesauri/thesauri.js';
-import { fixtures } from '#api/thesauri/specs/fixtures.js';
+import { ObjectId } from 'mongodb';
+import instrumentRoutes from '../../utils/instrumentRoutes.js';
+import thesauriRoute from '../routes.js';
+import thesauri from '../thesauri.js';
+import { fixtures } from './fixtures.js';
 
 describe('thesauri routes', () => {
   let routes;
@@ -84,16 +83,18 @@ describe('thesauri routes', () => {
   });
 
   describe('POST', () => {
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/thesauris')).toMatchSnapshot();
-    });
-
     it('should create a thesauri', async () => {
-      jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
-      const req = { body: { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] } };
+      const req = {
+        body: { name: 'Batman wish list', values: [{ label: 'Joker BFF' }] },
+        sockets: { emitToCurrentTenant: jest.fn().mockResolvedValue() },
+      };
       const response = await routes.post('/api/thesauris', req);
-      expect(response.values[0].id).toEqual('1');
-      expect(response.values[0].label).toEqual('Joker BFF');
+
+      expect(response).toEqual({
+        _id: expect.any(ObjectId),
+        name: 'Batman wish list',
+        values: [{ label: 'Joker BFF', id: expect.any(String) }],
+      });
     });
   });
 });

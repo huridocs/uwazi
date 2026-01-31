@@ -1,38 +1,29 @@
+/* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import entities from '#api/entities/index.js';
-
-import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
-
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
-
+import entities from '#api/entities/index.js';
+import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
 import connections from '#api/relationships/index.js';
-
 import { search } from '#api/search/index.js';
-
 import * as ocrRecords from '#api/services/ocr/ocrRecords.js';
-
+import { registerEventListeners as registerOcrListeners } from '#api/services/ocr/eventListeners.js';
 import { appContext } from '#api/utils/AppContext.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { setUpApp, socketEmit } from '#api/utils/testingRoutes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-
 import db from '#api/utils/testing_db.js';
-
 import { FileType } from '#shared/types/fileType.js';
-
 import { UserSchema } from '#shared/types/userType.js';
-import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
-import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
-import { files } from '#api/files/files.js';
-import jsRoutes from '#api/files/jsRoutes.js';
-import uploadRoutes from '#api/files/routes.js';
-import { storage } from '#api/files/storage.js';
+import { FileCreatedEvent } from '../events/FileCreatedEvent.js';
+import { FileUpdatedEvent } from '../events/FileUpdatedEvent.js';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent.js';
+import { files } from '../files.js';
+import jsRoutes from '../jsRoutes.js';
+import uploadRoutes from '../routes.js';
+import { storage } from '../storage.js';
 import {
   adminUser,
   allowedPublicTemplate,
@@ -49,6 +40,8 @@ import {
 } from '#api/files/specs/fixtures.js';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
+
+registerOcrListeners(applicationEventsBus);
 
 describe('files routes', () => {
   let requestMockedUser: UserSchema = collabUser;
@@ -294,19 +287,9 @@ describe('files routes', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'DELETE /api/files V1',
-      featureFlags: { v2DeleteFile: false },
-    },
-    {
-      title: 'DELETE /api/files V2',
-      featureFlags: { v2DeleteFile: true },
-    },
-  ])('$title', ({ featureFlags }) => {
+  describe('DELETE /api/files', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);
-      testingTenants.changeCurrentTenant({ featureFlags });
       mockCurrentUser(adminUser);
     });
 
@@ -321,24 +304,26 @@ describe('files routes', () => {
       expect(file).toBeUndefined();
     });
 
-    it('should not allow any extra parameters aside from a properly typed id', async () => {
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: 'someid', __property__: 'should_not_be_here' })
-        .expect(400);
+    it('should return an array with the deleted file in the response', async () => {
+      const [fileBeforeDelete] = await files.get({ _id: uploadId2.toString() });
 
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: { $eq: 1234 } })
-        .expect(400);
+      const response = await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+
+      expect(response).toHaveStatus(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0]).toMatchObject({
+        _id: uploadId2.toString(),
+        originalname: fileBeforeDelete.originalname,
+        entity: fileBeforeDelete.entity,
+      });
     });
 
     it('should delete upload and return the response', async () => {
-      await socketEmit('conversionFailed', async () =>
-        request(app)
-          .post('/api/files/upload/document')
-          .attach('file', path.join(__dirname, 'test.txt'))
-      );
+      await request(app)
+        .post('/api/files/upload/document')
+        .field('entity', 'sharedId1')
+        .attach('file', path.join(__dirname, 'test.txt'));
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
@@ -441,7 +426,8 @@ describe('files routes', () => {
         .delete('/api/files')
         .query({ _id: { test: 'test' } });
 
-      expect(response.body.errors[0].message).toBe('must be string');
+      expect(response.status).toBe(422);
+      expect(response.body.error).toContain('Expected string, received object');
     });
 
     describe('#api/files/tocReviewed', () => {

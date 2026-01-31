@@ -1,29 +1,19 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-
 import entities from '#api/entities/entities.js';
-
 import v1EntitiesModel from '#api/entities/entitiesModel.js';
-
 import { search } from '#api/search/index.js';
-
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
-
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { Db, ObjectId } from 'mongodb';
-
 import { MetadataSchema } from '#shared/types/commonTypes.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { Entity, EntityMetadata, MetadataValue } from '#api/entities.v2/model/Entity.js';
-import { EntityMappers } from '#api/entities.v2/database/EntityMapper.js';
-import { EntityDBO, EntityJoinTemplate } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
+import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
+import { EntityMappers } from './EntityMapper.js';
+import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes.js';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -31,14 +21,14 @@ export class MongoEntitiesDataSource
 {
   protected collectionName = 'entities';
 
-  private settingsDS: MongoSettingsDataSource;
+  private settingsDS: SettingsDataSource;
 
   protected templatesDS: MongoTemplatesDataSource;
 
   constructor(
     db: Db,
     templatesDS: MongoTemplatesDataSource,
-    settingsDS: MongoSettingsDataSource,
+    settingsDS: SettingsDataSource,
     transactionManager: MongoTransactionManager
   ) {
     super(db, transactionManager);

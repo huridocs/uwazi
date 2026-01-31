@@ -10,8 +10,6 @@ import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
@@ -23,13 +21,12 @@ import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/M
 import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
 import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { tenants } from '#api/tenants/index.js';
 import { ObjectId } from 'mongodb';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { EntitiesService } from '#api/core/application/EntitiesService.js';
 import { FilesService } from '#api/core/application/FilesService.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -55,10 +52,6 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const idGenerator = IdGeneratorFactory.default();
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
   const filesDS = FilesDataSourceFactory.default(transactionManager);
 
@@ -80,12 +73,12 @@ const createSut = () => {
   });
 
   jest.spyOn(jobsDispatcher, 'dispatch').mockResolvedValue();
+  jest.spyOn(jobsDispatcher, 'dispatchMany').mockImplementation(async callback => {
+    await callback(jest.fn());
+  });
 
-  const sut = new EntitiesService({
-    entitiesDS,
+  const sut = EntitiesServiceFactory.default({
     eventBus,
-    settingsDS,
-    templatesDS,
     transactionManager,
     dispatcher: jobsDispatcher,
   });
@@ -143,10 +136,11 @@ describe('EntitiesService', () => {
       const { sut, eventBus, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      await transactionManager.run(async () => {
+        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      });
 
       const [entityCreated] = await testingEnvironment.db.getAllFrom('entities');
-      await transactionManager.executeOnCommitHandlers(undefined);
 
       expect(entityCreated.sharedId).toEqual(entity.sharedId);
 
@@ -161,21 +155,24 @@ describe('EntitiesService', () => {
     it('should emit an EntityCreatedEvent inside onCommit handler', async () => {
       const { sut, transactionManager, eventBus } = createSut();
       const entity = createEntitySample();
+      let emitCalledDuringTransaction = false;
 
-      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      await transactionManager.run(async () => {
+        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+        emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
+      });
 
-      expect(eventBus.emit).not.toHaveBeenCalled();
-
-      await transactionManager.executeOnCommitHandlers(undefined);
-
+      expect(emitCalledDuringTransaction).toBe(false);
       expect(eventBus.emit).toHaveBeenCalled();
     });
 
     it('should dispatch a RelationshipSyncJob', async () => {
-      const { sut, dispatcher } = createSut();
+      const { sut, dispatcher, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      await transactionManager.run(async () => {
+        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      });
 
       expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
         sharedId: entity.sharedId,
@@ -184,6 +181,141 @@ describe('EntitiesService', () => {
         tenantName: 'tenantName',
         userId: 'actorId',
       });
+    });
+  });
+
+  describe('when bulk inserting Entities', () => {
+    it('should insert multiple entities into the database', async () => {
+      const { sut, transactionManager } = createSut();
+      const entity1 = createEntitySample();
+      const entity2 = createEntitySample();
+      const entity3 = createEntitySample();
+
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2, entity3], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
+      });
+
+      const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
+
+      expect(entitiesCreated.length).toBe(3);
+
+      const sharedIds = entitiesCreated.map(e => e.sharedId);
+      expect(sharedIds).toContain(entity1.sharedId);
+      expect(sharedIds).toContain(entity2.sharedId);
+      expect(sharedIds).toContain(entity3.sharedId);
+    });
+
+    it('should dispatch RelationshipSyncJob for each entity with correct context', async () => {
+      const { sut, dispatcher, transactionManager } = createSut();
+      const entity1 = createEntitySample();
+      const entity2 = createEntitySample();
+      const entity3 = createEntitySample();
+
+      const dispatchMock = jest.fn();
+      jest.spyOn(dispatcher, 'dispatchMany').mockImplementation(async callback => {
+        await callback(dispatchMock);
+      });
+
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2, entity3], {
+          actorId: 'testActor',
+          tenantName: 'testTenant',
+        });
+      });
+
+      expect(dispatcher.dispatchMany).toHaveBeenCalledTimes(1);
+      expect(dispatchMock).toHaveBeenCalledTimes(3);
+
+      expect(dispatchMock).toHaveBeenCalledWith(RelationshipSyncJob, {
+        sharedId: entity1.sharedId,
+        targetLanguage: entity1.languages[0],
+        templateId: entity1.template.id,
+        tenantName: 'testTenant',
+        userId: 'testActor',
+      });
+
+      expect(dispatchMock).toHaveBeenCalledWith(RelationshipSyncJob, {
+        sharedId: entity2.sharedId,
+        targetLanguage: entity2.languages[0],
+        templateId: entity2.template.id,
+        tenantName: 'testTenant',
+        userId: 'testActor',
+      });
+
+      expect(dispatchMock).toHaveBeenCalledWith(RelationshipSyncJob, {
+        sharedId: entity3.sharedId,
+        targetLanguage: entity3.languages[0],
+        templateId: entity3.template.id,
+        tenantName: 'testTenant',
+        userId: 'testActor',
+      });
+    });
+
+    it('should emit EntityCreatedEvent for each entity on commit', async () => {
+      const { sut, eventBus, transactionManager } = createSut();
+      const entity1 = createEntitySample();
+      const entity2 = createEntitySample();
+
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
+      });
+
+      expect(eventBus.emit).toHaveBeenCalledTimes(2);
+
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        new EntityCreatedEvent({
+          entities: MongoEntityMapper.toDBO(entity1) as any,
+          targetLanguageKey: entity1.languages[0],
+        })
+      );
+
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        new EntityCreatedEvent({
+          entities: MongoEntityMapper.toDBO(entity2) as any,
+          targetLanguageKey: entity2.languages[0],
+        })
+      );
+    });
+
+    it('should NOT emit events before transaction commit', async () => {
+      const { sut, eventBus, transactionManager } = createSut();
+      const entity1 = createEntitySample();
+      const entity2 = createEntitySample();
+      let emitCalledDuringTransaction = false;
+
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
+        emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
+      });
+
+      expect(emitCalledDuringTransaction).toBe(false);
+      expect(eventBus.emit).toHaveBeenCalledTimes(2);
+    });
+
+    it('should handle empty array gracefully', async () => {
+      const { sut, dispatcher, eventBus, transactionManager } = createSut();
+
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
+      });
+
+      const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
+      expect(entitiesCreated.length).toBe(0);
+
+      expect(dispatcher.dispatchMany).toHaveBeenCalledTimes(1);
+      expect(eventBus.emit).not.toHaveBeenCalled();
     });
   });
 

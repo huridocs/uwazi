@@ -1,6 +1,7 @@
 import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { AbstractSelectProperty } from '#api/core/domain/template/select/AbstractSelectProperty.js';
 import { IndexTypes } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { SharedId } from '#api/core/domain/entity/SharedId.js';
@@ -8,6 +9,7 @@ import {
   PropertyAssignment,
   PropertyValue,
   RelationshipEntry,
+  SelectionEntry,
   TextPropertyValue,
 } from '#api/core/domain/template/PropertyValue.js';
 import {
@@ -129,6 +131,37 @@ class Entity {
     return this.translationsList.map(([_language, translation]) => translation.metadata[name]);
   }
 
+  getRelationshipAssignmentsInheritingFromSelect(
+    targetLanguage?: LanguageISO6391
+  ): PropertyAssignment<SelectionEntry>[] {
+    const language = targetLanguage || this.languages[0];
+
+    const selectProperties = this.template.properties.filter(
+      p =>
+        p instanceof V1RelationshipProperty &&
+        ['select', 'multiselect'].includes(p.inherit?.type || '')
+    );
+
+    return selectProperties.map(property =>
+      this.getTranslation(language).getValue<SelectionEntry>(property.name)
+    );
+  }
+
+  getSelectAssignmentsByThesaurusId(
+    thesaurusId: string,
+    targetLanguage?: LanguageISO6391
+  ): PropertyAssignment<SelectionEntry>[] {
+    const language = targetLanguage || this.languages[0];
+
+    const selectProperties = this.template.properties.filter(
+      p => p instanceof AbstractSelectProperty && p.content === thesaurusId
+    );
+
+    return selectProperties.map(property =>
+      this.getTranslation(language).getValue<SelectionEntry>(property.name)
+    );
+  }
+
   addGrantForCreator(creatorId: string) {
     this.permissions = new EntityPermission([
       { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
@@ -145,6 +178,14 @@ class Entity {
     this.validatePropertyAssignments(shouldValidateForRequired);
   }
 
+  /**
+   * Sets property assignments across all language translations of the entity.
+   *
+   * This method synchronizes the provided property assignments to all entity translations.
+   *
+   * @param propertyAssignments - Array of property assignments to set across all languages
+   * @param shouldValidateForRequired - If true, validates that required properties have values. Defaults to false
+   */
   setPropertyAssignmentsInAllLanguages(
     propertyAssignments: PropertyAssignment[],
     shouldValidateForRequired = false

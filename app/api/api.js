@@ -53,4 +53,5 @@ export default async (app, server) => {
   (await import('./testing_errors/routes.js')).default(app);
   (await import('./paragraphExtraction/adapters/PXRoutes.js')).paragraphExtractionRoutes(app);
   (await import('./csv.v2/infrastructure/http/routes.js')).csvImportRoutes(app);
+  (await import('./customUploads/infrastructure/http/routes.js')).customUploadsRoutes(app);
 };

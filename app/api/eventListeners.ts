@@ -9,6 +9,7 @@ import { Suggestions } from '#api/suggestions/suggestions.js';
 
 const registerEventListeners = (eventsBus: EventsBus) => {
   Suggestions.registerEventListeners(eventsBus);
+  registerOcrListeners(eventsBus);
   registerSegmentationListeners(eventsBus);
   AutomaticTranslationFactory.defaultATEntityCreationListener(eventsBus).start();
   new PXFileUpdatedListener(eventsBus).start();

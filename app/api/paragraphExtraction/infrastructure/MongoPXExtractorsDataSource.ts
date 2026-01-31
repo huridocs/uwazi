@@ -1,28 +1,18 @@
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { Db, ObjectId } from 'mongodb';
 
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-
-import entities from '#api/entities/index.js';
-
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-
-import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
+import { PXExtractor } from '../domain/PXExtractor.js';
 import {
-  DeleteParagraphsInput,
   ExistsInput,
+  GetParagraphsIdsInput,
   PXExtractorsDataSource,
-} from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
-import {
-  MongoPXDenormalizedExtractorDBO,
-  MongoPXExtractorDBO,
-} from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
-import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
+} from '../domain/PXExtractorDataSource.js';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
+import { PXValidationError } from '../domain/PXValidationError.js';
+import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource.js';
+import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO.js';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -133,7 +123,10 @@ export class MongoPXExtractorsDataSource
     });
   }
 
-  async deleteParagraphs({ entitySharedId, extractorId }: DeleteParagraphsInput): Promise<void> {
+  async getParagraphsIds({
+    entitySharedId,
+    extractorId,
+  }: GetParagraphsIdsInput): Promise<string[]> {
     const paragraphs = await this.extractorsQueryService
       .getEntityParagraphRelationships({
         extractorId,
@@ -141,7 +134,7 @@ export class MongoPXExtractorsDataSource
       })
       .all();
 
-    await ArrayUtils.sequentialFor(paragraphs, async p => entities.delete(p.entitySharedId));
+    return paragraphs.map(p => p.entitySharedId);
   }
 
   static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {

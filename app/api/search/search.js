@@ -17,13 +17,14 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { inspect } from 'util';
-import documentQueryBuilder from '#api/search/documentQueryBuilder.js';
-import { elastic } from '#api/search/elastic.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
-import templatesModel from '#api/core/v1_layer/templates/index.js';
-import { bulkIndex, indexEntities, updateMapping } from '#api/search/entitiesIndex.js';
-import thesauri from '#api/thesauri/index.js';
-import * as v2 from '#api/search/v2_support.js';
+import translations from '#api/i18n/translations.js';
+import documentQueryBuilder from './documentQueryBuilder.js';
+import { elastic } from './elastic.js';
+import entitiesModel from '../entities/entitiesModel.js';
+import templatesModel from '../core/v1_layer/templates/index.js';
+import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
+import thesauri from '../thesauri/index.js';
+import * as v2 from './v2_support.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -257,9 +258,10 @@ const _sanitizeAgregationNames = aggregations =>
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 
-const indexedDictionaryValues = dictionary =>
+const indexedDictionaryValues = (dictionary, dictionaryTranslations) =>
   dictionary.values
     .reduce((values, v) => {
+      v.label = dictionaryTranslations?.[v.label] || v.label;
       if (v.values) {
         return values.concat(v.values, [v]);
       }
@@ -267,6 +269,7 @@ const indexedDictionaryValues = dictionary =>
       return values;
     }, [])
     .reduce((v, value) => {
+      value.label = dictionaryTranslations?.[value.label] || value.label;
       // eslint-disable-next-line no-param-reassign
       v[value.id] = value;
       return v;
@@ -301,7 +304,17 @@ const _getAggregationDictionary = async (
   const propContent = property.content.toString();
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
-    const dictionaryValues = indexedDictionaryValues(dictionary);
+    const dictionaryTranslations =
+      (
+        await translations.get({
+          locale: language,
+          context: dictionary._id.toString(),
+        })
+      )
+        .find(translation => translation.locale === language)
+        ?.contexts?.find(context => context.id === dictionary._id.toString())?.values || {};
+
+    const dictionaryValues = indexedDictionaryValues(dictionary, dictionaryTranslations);
     dictionaryCache[propContent] = [dictionary, dictionaryValues];
   }
   return dictionaryCache[propContent];
