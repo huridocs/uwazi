@@ -82,10 +82,10 @@ const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to 
 const customImports = {
   '../app/shared/types/commonSchemas.ts': [
     "import { ObjectId } from 'mongodb';",
-    "import { TraverseInputType } from '../app/shared/types/relationshipsQueryTypes.js'",
+    "import { TraverseInputType } from './relationshipsQueryTypes.js'",
   ],
   '../app/api/common.v2/database/schemas/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
-  '../app/shared/types/connectionSchema.ts': ["import { FileType } from '../app/shared/types/fileType.js';"],
+  '../app/shared/types/connectionSchema.ts': ["import { FileType } from './fileType.js';"],
 };
 
 const dryCheck = !!process.argv[2] && process.argv[2] === '--check';
@@ -165,7 +165,7 @@ const writeSchema = async (schemas, file) => {
 
 const emitSchemaTypes = async file => {
   try {
-    if (file.match(/spec/)) {
+    if (file.match(/spec/) || file.match(/\.d\.ts$/)) {
       return;
     }
 
