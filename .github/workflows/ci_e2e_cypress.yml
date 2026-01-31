@@ -286,7 +286,7 @@ jobs:
         with:
           browser: chrome
           component: false
-          config-file: cypress.config.ts
+          config-file: cypress.config.cjs
           spec: ${{ matrix.spec }}
           install: false
           # node_modules already installed, binary is cached

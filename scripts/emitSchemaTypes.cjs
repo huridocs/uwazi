@@ -1,9 +1,69 @@
 /* eslint-disable import/first,global-require,import/no-dynamic-require,no-console */
-require('dotenv').config();
-require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
-
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
+
+require('dotenv').config();
+
+const projectRoot = path.resolve(__dirname, '..');
+
+function resolvePath(sourcePath, currentFile, opts) {
+  let resolvedPath = sourcePath;
+
+  if (resolvedPath.endsWith('.js')) {
+    resolvedPath = resolvedPath.slice(0, -3);
+  } else if (resolvedPath.endsWith('.jsx')) {
+    resolvedPath = resolvedPath.slice(0, -4);
+  }
+
+  if (resolvedPath.startsWith('#api/') || resolvedPath.startsWith('#api')) {
+    resolvedPath = resolvedPath.replace(/^#api\/?/, path.join(projectRoot, 'app/api') + '/');
+  } else if (resolvedPath.startsWith('#shared/') || resolvedPath.startsWith('#shared')) {
+    resolvedPath = resolvedPath.replace(/^#shared\/?/, path.join(projectRoot, 'app/shared') + '/');
+  } else if (resolvedPath.startsWith('#app/') || resolvedPath.startsWith('#app')) {
+    resolvedPath = resolvedPath.replace(/^#app\/?/, path.join(projectRoot, 'app/react') + '/');
+  } else if (resolvedPath.startsWith('#V2/') || resolvedPath.startsWith('#V2')) {
+    resolvedPath = resolvedPath.replace(/^#V2\/?/, path.join(projectRoot, 'app/react/V2') + '/');
+  } else if (resolvedPath.startsWith('#UI/') || resolvedPath.startsWith('#UI')) {
+    resolvedPath = resolvedPath.replace(/^#UI\/?/, path.join(projectRoot, 'app/react/UI') + '/');
+  }
+
+  if (!path.isAbsolute(resolvedPath) && (resolvedPath.startsWith('./') || resolvedPath.startsWith('../'))) {
+    const currentDir = path.dirname(currentFile);
+    resolvedPath = path.resolve(currentDir, resolvedPath);
+  }
+
+  const extensions = ['.ts', '.tsx', '.js', '.jsx', ''];
+  for (const ext of extensions) {
+    const fullPath = resolvedPath + ext;
+    if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+      return fullPath;
+    }
+    const indexPath = path.join(resolvedPath, 'index' + ext);
+    if (fs.existsSync(indexPath) && fs.statSync(indexPath).isFile()) {
+      return indexPath;
+    }
+  }
+
+  return undefined;
+}
+
+require('@babel/register')({
+  extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  presets: [
+    ['@babel/preset-env', { targets: { node: 'current' }, modules: 'cjs' }],
+    '@babel/preset-typescript',
+  ],
+  plugins: [
+    [
+      'babel-plugin-module-resolver',
+      {
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+        resolvePath,
+      },
+    ],
+  ],
+});
+
 const { compile } = require('json-schema-to-typescript');
 
 const rootPath = '..';

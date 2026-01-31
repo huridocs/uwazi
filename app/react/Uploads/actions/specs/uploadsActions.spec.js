@@ -4,7 +4,7 @@ import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 import { APIURL } from '#app/config.js';
-import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
+import { actions as basicActions } from '#app/BasicReducer/index.js';
 import { actions as metadataActions } from '#app/Metadata/index.js';
 import * as actions from '#app/Uploads/actions/uploadsActions.js';
 import * as libraryTypes from '#app/Library/actions/actionTypes.js';

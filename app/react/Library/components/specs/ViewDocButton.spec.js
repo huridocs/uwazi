@@ -1,11 +1,11 @@
 import React from 'react';
 
+import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 
-import { actions } from '#app/V2/BasicReducer/reducer.js';
+import { actions } from '#app/BasicReducer/index.js';
 
-import { ViewDocButton, mapDispatchToProps } from '#app/Library/components/ViewDocButton.jsx';
-import Immutable from 'immutable';
+import { ViewDocButton, mapDispatchToProps } from '../ViewDocButton.jsx';
 
 describe('ViewDocButton', () => {
   let props;

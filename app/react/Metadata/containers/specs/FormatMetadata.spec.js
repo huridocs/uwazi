@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { FormatMetadata } from '#app/Metadata/containers/FormatMetadata.jsx';
-import { metadataSelectors } from '#app/selectors';
+import { FormatMetadata } from '../FormatMetadata.jsx';
+import { metadataSelectors } from '../../selectors.js';
 
 describe('FormatMetadata', () => {
   it('should render Metadata component passing the formatted metadata', () => {

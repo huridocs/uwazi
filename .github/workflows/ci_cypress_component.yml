@@ -73,6 +73,6 @@ jobs:
         with:
           browser: chrome
           component: true
-          config-file: cypress.config.ts
+          config-file: cypress.config.cjs
           headed: false
         timeout-minutes: 15

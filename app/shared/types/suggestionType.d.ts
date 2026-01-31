@@ -1,12 +1,6 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import {
-  ObjectIdSchema,
-  PropertyValueSchema,
-  SelectionRectanglesSchema,
-} from '#shared/types/commonTypes.js';
-
 export interface CommonSuggestion {
   tenant: string;
   id: string;

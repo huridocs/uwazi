@@ -4,7 +4,7 @@
 import React from 'react';
 import RouteHandler from '#app/App/RouteHandler.jsx';
 import { shallow } from 'enzyme';
-import { actions } from '#app/V2/BasicReducer/reducer.js';
+import { actions } from '#app/BasicReducer/index.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
 import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
@@ -13,8 +13,8 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
 import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
-import PageView from '#app/Pages/PageView.jsx';
-import * as assetsUtils from '#app/utils/getPageAssets';
+import PageView from '../PageView.jsx';
+import * as assetsUtils from '../utils/getPageAssets';
 
 describe('PageView', () => {
   let component;

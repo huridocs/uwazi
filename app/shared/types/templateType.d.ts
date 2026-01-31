@@ -1,8 +1,6 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
-
 export interface TemplateSchema {
   _id?: ObjectIdSchema;
   name: string;

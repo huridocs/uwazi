@@ -1,9 +1,9 @@
 import Immutable from 'immutable';
-import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
+import { actions as basicActions } from '#app/BasicReducer/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import api from '#app/SemanticSearch/SemanticSearchAPI.js';
-import * as actions from '#app/SemanticSearch/actions/actions.js';
+import api from '../../SemanticSearchAPI.js';
+import * as actions from '../actions.js';
 
 describe('Semantic Search actions', () => {
   let dispatch;

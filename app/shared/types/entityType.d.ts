@@ -1,12 +1,6 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, MetadataSchema } from '#shared/types/commonTypes.js';
-
-import { FileType } from '#shared/types/fileType.js';
-
-import { PermissionSchema } from './types/permissionType.js';
-
 export interface EntitySchema {
   _id?: ObjectIdSchema;
   sharedId?: string;
