@@ -90,7 +90,9 @@ jobs:
         run: yarn install
       
       - name: Fix FontAwesome for ESM
-        run: .github/scripts/fix-fontawesome-esm.sh
+        run: |
+          chmod +x .github/scripts/fix-fontawesome-esm.sh
+          .github/scripts/fix-fontawesome-esm.sh
       
       - name: Clone dummy services
         if: matrix.needs_setup
