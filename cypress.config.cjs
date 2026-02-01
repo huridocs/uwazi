@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { defineConfig } = require('cypress');
 const cypressFailFast = require('cypress-fail-fast/plugin');
+const webpackPreprocessor = require('@cypress/webpack-preprocessor');
 const configFactory = require('./webpack/config.cjs');
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
@@ -66,6 +67,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       initPlugin(on, config);
       cypressFailFast(on, config);
+      on('file:preprocessor', webpackPreprocessor({ webpackOptions: cypressWebpackConfig }));
 
       on('task', {
         log(message) {
