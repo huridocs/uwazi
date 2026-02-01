@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import Dropzone, { DropzoneOptions } from 'react-dropzone';
+import Dropzone, { DropzoneOptions } from 'react-dropzone-esm';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 import { Translate } from '#app/I18N/index.js';

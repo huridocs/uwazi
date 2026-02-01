@@ -110,15 +110,6 @@ PYTHON_SCRIPT
 EXPORTS_TIME=$(($(date +%s) - EXPORTS_START))
 echo "  ✅ FontAwesome exports added in ${EXPORTS_TIME}s"
 
-echo "🔧 Step 5.6: Fixing react-dropzone imports for ESM..."
-DROPZONE_START=$(date +%s)
-if [ -f "prod/node_modules/react-dropzone/dist/es/index.js" ]; then
-	sed -i "s|from ['\"]\.\/utils\/index['\"]|from './utils/index.js'|g; s|from ['\"]\.\/utils['\"]|from './utils/index.js'|g" prod/node_modules/react-dropzone/dist/es/index.js
-	echo "  ✅ Fixed react-dropzone imports"
-fi
-DROPZONE_TIME=$(($(date +%s) - DROPZONE_START))
-echo "  ✅ react-dropzone imports fixed in ${DROPZONE_TIME}s"
-
 echo "🖥️  Step 6: Copying server files..."
 SERVER_FILES_START=$(date +%s)
 cp ./server.js ./prod/server.js

@@ -5,7 +5,7 @@
 import Immutable from 'immutable';
 import { act } from 'react-dom/test-utils';
 import { LocalForm } from '#app/Forms/Form.js';
-import Dropzone from 'react-dropzone';
+import Dropzone from 'react-dropzone-esm';
 import { MetadataFormFields } from '#app/Metadata/index.js';
 import { Captcha } from '#app/ReactReduxForms/index.jsx';
 import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';

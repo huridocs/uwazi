@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import Dropzone from 'react-dropzone';
+import Dropzone from 'react-dropzone-esm';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
@@ -32,7 +32,7 @@ const AttachmentsModalCmp = ({
   getPercentage,
 }: AttachmentsModalProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  let formDispatch: Function = () => {};
+  let formDispatch: Function = () => { };
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {

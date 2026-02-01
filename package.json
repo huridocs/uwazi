@@ -30,6 +30,7 @@
     "#V2/*": "./app/react/V2/*"
   },
   "scripts": {
+    "postinstall": "npx patch-package",
     "check-app-types": "tsc --noEmit --pretty",
     "check-cy-types": "tsc --noEmit --pretty --project cypress",
     "check-types": "yarn check-cy-types && yarn check-app-types",
@@ -131,7 +132,6 @@
     "@types/franc": "^5.0.1",
     "@types/lodash": "^4.14.170",
     "@types/mime-types": "^2.1.1",
-    "@types/react-dropzone": "^4.2.2",
     "@types/redis": "^2.8.31",
     "@types/redlock": "^4.0.2",
     "@types/url-join": "^4.0.1",
@@ -215,7 +215,7 @@
     "react-dnd-html5-backend-old": "yarn:react-dnd-html5-backend@^15.1.2",
     "react-dnd-old": "yarn:react-dnd@2.6.0",
     "react-dom": "^18.3.1",
-    "react-dropzone": "14.2.10",
+    "react-dropzone-esm": "15.2.0",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.62.0",
     "react-image-gallery": "^1.4.0",
