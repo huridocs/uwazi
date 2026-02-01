@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { defineConfig } = require('cypress');
 const cypressFailFast = require('cypress-fail-fast/plugin');
 const webpackPreprocessor = require('@cypress/webpack-preprocessor');
@@ -20,7 +21,7 @@ const cypressWebpackConfig = {
     ...webpackConfig.module,
     rules: webpackConfig.module.rules.map(rule => {
       if (rule.use && Array.isArray(rule.use)) {
-        return {
+        const newRule = {
           ...rule,
           use: rule.use.filter(loader => {
             if (typeof loader === 'object' && loader.loader === 'thread-loader') {
@@ -29,6 +30,10 @@ const cypressWebpackConfig = {
             return true;
           }),
         };
+        if (rule.test && rule.test.toString().includes('ts')) {
+          newRule.include = [rule.include, path.join(__dirname, 'cypress')].filter(Boolean);
+        }
+        return newRule;
       }
       return rule;
     }),
