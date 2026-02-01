@@ -76,6 +76,10 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+      
+      - name: Fix packages for ESM
+        run: .github/scripts/fix-fontawesome-esm.sh
+      
       - run: yarn blank-state
         id: blank-state-attempt1
         continue-on-error: true
