@@ -7,10 +7,9 @@ process.on('unhandledRejection', error => {
 
 process.stdout.write('Starting migrations...\r\n');
 runMigration()
-  .then(result => {
+  .then(async result => {
     if (result.reindex) {
-      // eslint-disable-next-line import/no-dynamic-require,global-require
-      require(`${__dirname}/../database/reindex_elastic.js`);
+      await import('../database/reindex_elastic.js');
     }
   })
   .catch(async e => {

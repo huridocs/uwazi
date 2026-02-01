@@ -1,10 +1,9 @@
-import { config } from '../app/api/config.js';
-import { DB } from '../app/api/odm/index.js';
-import { IndexError } from '../app/api/search/entitiesIndex.js';
-import { tenants } from '../app/api/tenants/tenantContext.js';
-
-import { elastic } from '../app/api/search/index.js';
-import { legacyLogger } from '../app/api/log.js';
+import { config } from '#api/config.js';
+import { DB } from '#api/odm/index.js';
+import { IndexError } from '#api/search/entitiesIndex.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { elastic } from '#api/search/index.js';
+import { legacyLogger } from '#api/log/index.js';
 
 const setIndexSettings = async numberOfReplicas => {
   const body = { index: { number_of_replicas: numberOfReplicas } };

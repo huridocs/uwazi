@@ -2,7 +2,7 @@ import { detectLanguage } from '#shared/detectLanguage.js';
 import entities from '#api/entities/index.js';
 import { legacyLogger } from '#api/log/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
-import PromisePool from '@supercharge/promise-pool';
+import { PromisePool } from '@supercharge/promise-pool';
 import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

@@ -1,15 +1,14 @@
-import { config } from '../app/api/config.js';
-import { DB } from '../app/api/odm/index.js';
-import { permissionsContext } from '../app/api/permissions/permissionsContext.js';
-import { elastic, search } from '../app/api/search/index.js';
-import { IndexError } from '../app/api/search/entitiesIndex.js';
-import { tenants } from '../app/api/tenants/tenantContext.js';
-import elasticMapping from './elastic_mapping/elastic_mapping.js';
-
-import { legacyLogger } from '../app/api/log.js';
-import templatesModel from '../app/api/core/v1_layer/templates.js';
-import elasticMapFactory from './elastic_mapping/elasticMapFactory.js';
+import { config } from '#api/config.js';
+import { DB } from '#api/odm/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { elastic, search } from '#api/search/index.js';
+import { IndexError } from '#api/search/entitiesIndex.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { legacyLogger } from '#api/log/index.js';
+import templatesModel from '#api/core/v1_layer/templates/templates.js';
 import { tenantsModel } from '#api/tenants/tenantsModel.js';
+import elasticMapping from './elastic_mapping/elastic_mapping.js';
+import elasticMapFactory from './elastic_mapping/elasticMapFactory.js';
 
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
   elastic.indices.putSettings({
