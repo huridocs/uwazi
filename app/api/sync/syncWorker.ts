@@ -1,4 +1,4 @@
-import '#api/entities';
+import '#api/entities/index.js';
 import urljoin from 'url-join';
 import request from '#shared/JSONRequest.js';
 import { SettingsSyncSchema } from '#shared/types/settingsType.js';
