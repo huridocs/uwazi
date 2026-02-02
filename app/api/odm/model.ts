@@ -10,9 +10,9 @@ import mongoose, {
 } from 'mongoose';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { inspect } from 'util';
-import { MongooseModelWrapper } from '#api/odm/MongooseModelWrapper.js';
-import { UpdateLogger, createUpdateLogHelper } from '#api/odm/logHelper.js';
-import { ModelBulkWriteStream } from '#api/odm/modelBulkWriteStream.js';
+import { MongooseModelWrapper } from './MongooseModelWrapper.js';
+import { UpdateLogger, createUpdateLogHelper } from './logHelper.js';
+import { ModelBulkWriteStream } from './modelBulkWriteStream.js';
 
 /** Ideas!
  *  T is the actual model-specific document Schema!

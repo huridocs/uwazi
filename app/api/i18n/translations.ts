@@ -28,7 +28,7 @@ import {
   updateContextV2,
   upsertTranslationEntries,
   upsertTranslationsV2,
-} from '#api/i18n/v2_support.js';
+} from './v2_support.js';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },

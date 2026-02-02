@@ -2,34 +2,34 @@
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { testingDB } from '#api/utils/testing_db.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { FileType } from '#shared/types/fileType.js';
-import { UserRole } from '#shared/types/userSchema.js';
-import { UserSchema } from '#shared/types/userType.js';
-import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import {
-  PropertySchema,
-  MetadataSchema,
-  PropertyValueSchema,
-  MetadataObjectSchema,
-  ExtractedMetadataSchema,
-} from '#shared/types/commonTypes.js';
-import { UpdateLog } from '#api/updatelogs/index.js';
-import { IXExtractorType } from '#shared/types/extractorType.js';
-import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { WithId } from '#api/odm/model.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
 import { getV2FixturesFactoryElements } from '#api/common.v2/testing/fixturesFactory.js';
-import { IXModelType } from '#shared/types/IXModelType.js';
-import { PermissionSchema } from '#shared/types/permissionType.js';
-import { LanguageUtils } from '#shared/language/index.js';
-import { ConnectionSchema } from '#shared/types/connectionType.js';
 import {
   ProcessedPDFDBO,
   ThumbnailDBO,
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder.js';
+import { WithId } from '#api/odm/model.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
+import { testingDB } from '#api/utils/testing_db.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import {
+  ExtractedMetadataSchema,
+  MetadataObjectSchema,
+  MetadataSchema,
+  PropertySchema,
+  PropertyValueSchema,
+} from '#shared/types/commonTypes.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { UserSchema } from '#shared/types/userType.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;

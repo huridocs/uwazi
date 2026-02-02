@@ -1,9 +1,8 @@
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
-
 import { User } from '#api/users.v2/model/User.js';
-import { PermissionsDataSource } from '#api/authorization.v2/contracts/PermissionsDataSource.js';
-import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
-import { EntityPermissions } from '#api/authorization.v2/model/EntityPermissions.js';
+import { PermissionsDataSource } from '../contracts/PermissionsDataSource.js';
+import { UnauthorizedError } from '../errors/UnauthorizedError.js';
+import { EntityPermissions } from '../model/EntityPermissions.js';
 
 type AccessLevels = 'read' | 'write';
 

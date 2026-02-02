@@ -17,7 +17,6 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { inspect } from 'util';
-import translations from '#api/i18n/translations.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
 import { elastic } from './elastic.js';
 import entitiesModel from '../entities/entitiesModel.js';
@@ -25,6 +24,7 @@ import templatesModel from '../core/v1_layer/templates/index.js';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
 import thesauri from '../thesauri/index.js';
 import * as v2 from './v2_support.js';
+import translations from '#api/i18n/translations.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {

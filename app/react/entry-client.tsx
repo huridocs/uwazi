@@ -1,7 +1,6 @@
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/react';
-
 import {
   RouterProvider,
   createBrowserRouter,

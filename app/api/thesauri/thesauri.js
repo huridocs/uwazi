@@ -15,8 +15,8 @@ import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js
 import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import model from '#api/thesauri/dictionariesModel.js';
-import { validateThesauri } from '#api/thesauri/validateThesauri.js';
+import model from './dictionariesModel.js';
+import { validateThesauri } from './validateThesauri.js';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);

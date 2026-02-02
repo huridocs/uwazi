@@ -1,21 +1,20 @@
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
-
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { CommonPropertyFactory } from '#api/core/domain/template/CommonPropertyFactory.js';
-import { PropertyCreatorServiceStrategy } from '../application/propertyCreatorService/PropertyCreatorServiceStrategy.js';
-import { ThesauriDataSource } from '../application/propertyCreatorService/SelectPropertyCreatorService.js';
-import { TranslationService } from '#api/core/domain/template/TranslationService.js';
-import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { UpdateTemplateDTO } from '#api/core/application/TemplateDTOs.js';
-import { TemplatePostProcessService } from '#api/core/application/TemplatePostProcessService.js';
-import { TemplateDiff } from '#api/core/domain/template/TemplateDiff.js';
-import { InheritedPropertyCanNotBeDeleted } from '#api/core/domain/template/errors.js';
+import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
+import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors.js';
+import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';
+import { TemplateDiff } from '../domain/template/TemplateDiff.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { TranslationService } from '../domain/template/TranslationService.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
+import { UpdateTemplateDTO } from './TemplateDTOs.js';
+import { TemplatePostProcessService } from './TemplatePostProcessService.js';
+import { Template } from '../domain/template/Template.js';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper.js';
 
 type Input = UpdateTemplateDTO;
 type Output = Template;

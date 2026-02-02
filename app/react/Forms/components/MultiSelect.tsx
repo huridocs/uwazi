@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
 import ShowIf from '#app/App/ShowIf.js';
-
 import { filterOptions } from '#shared/optionsUtils.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { TriStateSelectValue } from '#app/istore.js';

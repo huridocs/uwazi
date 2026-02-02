@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
+import { Application } from 'express';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
@@ -9,7 +10,6 @@ import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/U
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import entities from '#api/entities/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { Application } from 'express';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { fileSchema } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';

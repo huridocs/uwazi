@@ -20,8 +20,9 @@ type Dependencies = {
 };
 
 class PXGetEntityParagraphs
-  implements UseCase<PXGetEntityParagraphsInput, GetExtractedParagraphsOutput> {
-  constructor(private dependencies: Dependencies) { }
+  implements UseCase<PXGetEntityParagraphsInput, GetExtractedParagraphsOutput>
+{
+  constructor(private dependencies: Dependencies) {}
 
   async execute(input: PXGetEntityParagraphsInput): Promise<GetExtractedParagraphsOutput> {
     const { extractorsQueryService, settingsDS, extractorsDS } = this.dependencies;

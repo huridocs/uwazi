@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
-import _ from 'lodash';
+import groupBy from 'lodash/groupBy.js';
 
+import translations from '../i18n/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
 import templates from '#api/core/v1_layer/templates/index.js';
@@ -14,14 +15,13 @@ import { LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
-import { arrangeThesauri } from '#api/csv/arrangeThesauri.js';
-import csv, { CSVRow, validateFormat, ValidateFormatOptions } from '#api/csv/csv.js';
-import { extractEntity, toSafeName } from '#api/csv/entityRow.js';
-import { FullyIndexedTranslations, importEntity, translateEntity } from '#api/csv/importEntity.js';
-import importFile from '#api/csv/importFile.js';
-import { thesauriFromStream } from '#api/csv/importThesauri.js';
-import { validateColumns } from '#api/csv/validateColumns.js';
-import translations from '../i18n/index.js';
+import { arrangeThesauri } from './arrangeThesauri.js';
+import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv.js';
+import { extractEntity, toSafeName } from './entityRow.js';
+import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity.js';
+import importFile from './importFile.js';
+import { thesauriFromStream } from './importThesauri.js';
+import { validateColumns } from './validateColumns.js';
 
 const readResources = async (
   templateId: ObjectId | string
@@ -158,7 +158,7 @@ export class CSVLoader extends EventEmitter {
       .read();
 
     if (warnings.length > 0) {
-      const groupedWarnings = _.groupBy(warnings, warning => warning.reason);
+      const groupedWarnings = groupBy(warnings, warning => warning.reason);
       Object.keys(groupedWarnings).forEach(key => {
         groupedWarnings[key] = groupedWarnings[key].map(warning => ({
           index: warning.index,

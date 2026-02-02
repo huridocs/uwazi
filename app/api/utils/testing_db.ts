@@ -1,12 +1,16 @@
-import { setupTestUploadedPaths } from '#api/files/filesystem.js';
-import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
-import { DB } from '#api/odm/index.js';
-import { models } from '#api/odm/model.js';
-import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { Db, ObjectId } from 'mongodb';
 import mongoose, { Connection } from 'mongoose';
 import path from 'path';
+
+import { setupTestUploadedPaths } from '#api/files/filesystem.js';
+import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { config } from '#api/config.js';
+import { DB } from '#api/odm/index.js';
+import { models } from '#api/odm/model.js';
+import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
 import { PageType } from '#shared/types/pageType.js';
@@ -14,11 +18,8 @@ import { Settings } from '#shared/types/settingsType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
-import uniqueID from '#shared/uniqueID.js';
-import { config } from '#api/config.js';
-import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserSchema } from '#shared/types/userType.js';
+import uniqueID from '#shared/uniqueID.js';
 
 mongoose.Promise = Promise;
 let connected = false;

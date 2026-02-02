@@ -1,19 +1,18 @@
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { CommonPropertyFactory } from '#api/core/domain/template/CommonPropertyFactory.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
+import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors.js';
+import { PageService } from '../domain/template/PageService.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { TranslationService } from '../domain/template/TranslationService.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
 import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
-import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
-import { TranslationService } from '#api/core/domain/template/TranslationService.js';
-import { CreateTemplateDTO } from '#api/core/application/TemplateDTOs.js';
-import { PageService } from '#api/core/domain/template/PageService.js';
+import { CreateTemplateDTO } from './TemplateDTOs.js';
+import { Template } from '../domain/template/Template.js';
 
 type Input = CreateTemplateDTO;
+
 type Output = Template;
 
 type Deps = {
@@ -23,8 +22,6 @@ type Deps = {
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
   pageService: PageService;
-  idGenerator: IdGenerator;
-  transactionManager: TransactionManager;
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {

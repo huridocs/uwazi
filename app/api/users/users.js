@@ -11,11 +11,11 @@ import {
   updateUserMemberships,
   removeUsersFromAllGroups,
 } from '#api/usergroups/userGroupsMembers.js';
-import mailer from '#api/utils/mailer.js';
-import model from '#api/users/usersModel.js';
-import passwordRecoveriesModel from '#api/users/passwordRecoveriesModel.js';
-import settings from '#api/settings/settings.js';
-import { generateUnlockCode } from '#api/users/generateUnlockCode.js';
+import mailer from '../utils/mailer.js';
+import model from './usersModel.js';
+import passwordRecoveriesModel from './passwordRecoveriesModel.js';
+import settings from '../settings/settings.js';
+import { generateUnlockCode } from './generateUnlockCode.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 

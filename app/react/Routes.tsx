@@ -2,21 +2,17 @@
 import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-
+import { App } from '#app/App/App.js';
 import LibraryRoot from '#app/Library/Library.js';
-
+import { LibraryMap } from '#app/Library/LibraryMap.js';
 import { LibraryCards } from '#app/Library/LibraryCards.js';
-
 import { LibraryTable } from '#app/Library/LibraryTable.js';
 import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from '#V2/Routes/Settings/Settings.js';
-
 import { Login } from '#app/Users/Login.js';
 import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
-
 import ViewerRoute from '#app/Viewer/ViewerRoute.js';
-
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
   TranslationsList,
@@ -28,14 +24,12 @@ import {
   editTranslationsAction,
 } from '#V2/Routes/Settings/Translations/EditTranslations.js';
 import { Dashboard, dashboardLoader } from '#V2/Routes/Settings/Dashboard/Dashboard.js';
-
 import {
   EditThesaurus,
   thesauriLoader,
   ThesauriList,
   editThesaurusLoader,
 } from '#V2/Routes/Settings/Thesauri/index.js';
-
 import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
   RelationshipTypes,
@@ -76,6 +70,7 @@ import {
   TemplatesEditor,
   templatesEditorLoader,
 } from '#V2/Routes/Settings/Templates/index.js';
+import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -87,9 +82,6 @@ import { PageView } from '#app/Pages/PageView.js';
 import ResetPassword from '#app/Users/ResetPassword.js';
 import ConnectedUnlockAccount from '#app/Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from '#app/Settings/components/relV2MigrationDashboard.js';
-import { LibraryMap } from '#app/Library/LibraryMap.js';
-import { App } from '#app/App/App.js';
-import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,

@@ -1,20 +1,13 @@
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
-
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-
 import { Entity } from '#api/entities.v2/model/Entity.js';
-
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-
 import { RelationshipType } from '#api/relationshiptypes.v2/model/RelationshipType.js';
-
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-
 import { Template } from '#api/core/domain/template/Template.js';
-
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
-import { Relationship, ReadableRelationship } from '#api/relationships.v2/model/Relationship.js';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
+import { Relationship, ReadableRelationship } from '../model/Relationship.js';
 
 const resolveNames = (
   allowedEntities: Entity[],

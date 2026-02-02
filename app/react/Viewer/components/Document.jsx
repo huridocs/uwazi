@@ -7,13 +7,13 @@ import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 
 import { Loader } from '#app/components/Elements/Loader.js';
-import PDF from '#app/PDF/components/PDF.js';
+import { PDF } from '#app/PDF/index.js';
 import Immutable from 'immutable';
 import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { atomStore, pdfScaleAtom } from '#V2/atoms/index.js';
 
-import determineDirection from '#app/Viewer/utils/determineDirection.js';
+import determineDirection from '../utils/determineDirection.js';
 
 import { APIURL } from '#app/config.js';
 

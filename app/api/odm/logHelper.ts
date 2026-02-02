@@ -6,7 +6,7 @@ import { model as updatelogsModel } from '#api/updatelogs/index.js';
 import mongoose from 'mongoose';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
-import { DataType, UwaziFilterQuery, models } from '#api/odm/model.js';
+import { DataType, UwaziFilterQuery, models } from './model.js';
 
 const getBatchSteps = async <T, U>(
   model: SyncDBDataSource<T, U>,

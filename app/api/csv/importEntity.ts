@@ -4,19 +4,18 @@ import { createReadStream } from 'fs';
 import entities from '#api/entities/index.js';
 import { search } from '#api/search/index.js';
 import { processDocument } from '#api/files/processDocument.js';
-import { RawEntity } from '#api/csv/entityRow.js';
+import { RawEntity } from './entityRow.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { MetadataObjectSchema, MetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { ImportFile } from '#api/csv/importFile.js';
+import { ImportFile } from './importFile.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { ensure } from '#shared/tsUtils.js';
-
 import { files, generateFileName, storage } from '#api/files/index.js';
 import { generateID } from '#shared/IDGenerator.js';
 
-import typeParsers from '#api/csv/typeParsers.js';
-import { csvConstants } from '#api/csv/csvDefinitions.js';
+import typeParsers from './typeParsers.js';
+import { csvConstants } from './csvDefinitions.js';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) => {
   const parser = typeParsers[prop.type] || typeParsers.text;

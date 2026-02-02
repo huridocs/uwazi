@@ -1,17 +1,12 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-
 import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
-
 import { Entity } from '#api/entities.v2/model/Entity.js';
-import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
-import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
-import { RelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
+import { MatchQueryNode } from '../model/MatchQueryNode.js';
+import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;

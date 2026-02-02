@@ -2,12 +2,12 @@ import set from 'lodash/set.js';
 import entities from '#api/entities/entities.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { UserSchema } from '#shared/types/userType.js';
+import { isValidUrl, sanitizeUrl } from '#shared/urlValidationUtils.js';
 import {
   handleAttachmentInMetadataProperties,
   processFiles,
   saveFiles,
-} from '#api/entities/managerFunctions.js';
-import { isValidUrl, sanitizeUrl } from '#shared/urlValidationUtils.js';
+} from './managerFunctions.js';
 
 const validateAndSanitizeUrls = (entity: EntityWithFilesSchema): EntityWithFilesSchema => {
   if (!entity.metadata) return entity;

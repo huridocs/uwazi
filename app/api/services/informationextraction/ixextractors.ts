@@ -2,25 +2,17 @@
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
-
 import templates from '#api/core/v1_layer/templates/templates.js';
-
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
 } from '#api/suggestions/blankSuggestions.js';
-
 import { Subset } from '#shared/tsUtils.js';
-
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { IXExtractorModel as model } from '#api/services/informationextraction/IXExtractorModel.js';
-import {
-  IXErrorCode,
-  IXValidationError,
-} from '#api/services/informationextraction/IXValidationError.js';
+import { IXExtractorModel as model } from './IXExtractorModel.js';
+import { IXErrorCode, IXValidationError } from './IXValidationError.js';
 
 type AllowedPropertyTypes =
   | Subset<

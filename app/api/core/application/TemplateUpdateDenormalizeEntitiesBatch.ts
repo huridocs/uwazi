@@ -37,7 +37,7 @@ type Dependencies = {
 };
 
 export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Output> {
-  constructor(private dependencies: Dependencies) { }
+  constructor(private dependencies: Dependencies) {}
 
   async execute({
     entitiesIds,

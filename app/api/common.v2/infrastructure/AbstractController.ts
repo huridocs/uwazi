@@ -1,7 +1,6 @@
 import { ValidationError as AJVValidationError } from 'ajv';
 import { ZodError } from 'zod';
 import type { Request, Response } from 'express';
-
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users/usersModel.js';

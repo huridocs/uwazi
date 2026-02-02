@@ -1,4 +1,4 @@
-import { SuperAgentHttpClient } from '#api/common.v2/infrastructure/SuperAgentHttpClient.js';
+import { SuperAgentHttpClient } from './SuperAgentHttpClient.js';
 
 export class HttpClientFactory {
   static createDefault() {

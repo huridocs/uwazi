@@ -1,10 +1,7 @@
 import { files } from '#api/files/index.js';
-import _ from 'lodash';
-
+import uniqBy from 'lodash/uniqBy.js';
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-
 import { FileType } from '#shared/types/fileType.js';
 
 interface EntityWithExtractedMetadata extends EntitySchema {
@@ -16,7 +13,7 @@ const updateSelections = (
   storedSelections: ExtractedMetadataSchema[]
 ) => {
   const merged = newSelections.concat(storedSelections);
-  const selections = _.uniqBy(merged, 'name');
+  const selections = uniqBy(merged, 'name');
   return selections;
 };
 

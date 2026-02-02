@@ -15,8 +15,7 @@ import {
   LanguageISO6391,
 } from '#shared/types/commonTypes.js';
 import { isString } from 'util';
-
-import model from '#api/entities/entitiesModel.js';
+import model from './entitiesModel.js';
 
 interface DenormalizationUpdate {
   propertyName: string;

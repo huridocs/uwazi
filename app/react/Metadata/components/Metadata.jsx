@@ -2,16 +2,17 @@
 /* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import { t } from '#app/I18N/index.js';
+import flattenDeep from 'lodash/flattenDeep.js';
+import { t, Translate } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.js';
+import { ClockIcon } from '@heroicons/react/24/outline/index.js';
 import MarkdownViewer from '#app/Markdown/index.js';
 import { GroupedGeolocationViewer } from '#app/Metadata/components/GroupedGeolocationViewer.js';
 import { MediaPlayer } from '#V2/Components/UI/index.js';
-import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.js';
-import { RelationshipLink } from '#app/Metadata/components/RelationshipLink.js';
-import ValueList from '#app/Metadata/components/ValueList.js';
-import { ImageViewer } from '#app/Metadata/components/ImageViewer.js';
+import GeolocationViewer from './GeolocationViewer.js';
+import { RelationshipLink } from './RelationshipLink.js';
+import ValueList from './ValueList.js';
+import { ImageViewer } from './ImageViewer.js';
 
 const getMediaUrlAndName = fileUrl => {
   let url = fileUrl;

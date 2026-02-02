@@ -26,8 +26,9 @@ type Dependencies = {
 };
 
 class PXGetExtractorStatuses
-  implements UseCase<GetExtractorStatusesInput, PXGetExtractorStatusesOutput> {
-  constructor(private dependencies: Dependencies) { }
+  implements UseCase<GetExtractorStatusesInput, PXGetExtractorStatusesOutput>
+{
+  constructor(private dependencies: Dependencies) {}
 
   async execute(input: GetExtractorStatusesInput): Promise<PXGetExtractorStatusesOutput> {
     const { extractorsQueryService, settingsDS, filesDS } = this.dependencies;

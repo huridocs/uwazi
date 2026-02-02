@@ -10,8 +10,8 @@ import {
   permissionsUsersAgreggations,
   propertyToAggregation,
   publishingStatusAgreggations,
-} from '#api/search/metadataAggregations.js';
-import filterToMatch, { multiselectFilter } from '#api/search/metadataMatchers.js';
+} from './metadataAggregations.js';
+import filterToMatch, { multiselectFilter } from './metadataMatchers.js';
 
 const nested = (filters, path) => ({
   nested: {

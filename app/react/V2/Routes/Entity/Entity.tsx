@@ -24,8 +24,8 @@ import {
   SearchResults,
   ToCPanel,
   FileList,
-} from '#V2/Routes/Entity/Components/index.js';
-import { LoaderResponse } from '#V2/Routes/Entity/types.js';
+} from './Components/index.js';
+import { LoaderResponse } from './types.js';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',

@@ -1,7 +1,7 @@
 import { parseQuery, validation } from '#api/utils/index.js';
 import { userSchema } from '#shared/types/userSchema.js';
-import { needsAuthorization, validatePasswordMiddleWare } from '#api/auth/index.js';
-import users from '#api/users/users.js';
+import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
+import users from './users.js';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
 export default app => {

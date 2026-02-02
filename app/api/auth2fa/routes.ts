@@ -3,7 +3,6 @@ import needsAuthorization from '#api/auth/authMiddleware.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { validation } from '#api/utils/index.js';
 import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
-
 import { validatePasswordMiddleWare } from '#api/auth/index.js';
 
 export default (app: Application) => {

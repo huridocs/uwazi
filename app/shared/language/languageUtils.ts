@@ -4,7 +4,7 @@ import {
   LanguageCode,
   availableLanguages,
   otherLanguageSchema,
-} from '#shared/language/availableLanguages.js';
+} from './availableLanguages.js';
 import { LanguageISO6393 } from './languageISO639_3.js';
 
 class LanguageUtils {

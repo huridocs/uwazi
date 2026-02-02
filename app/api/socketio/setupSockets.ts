@@ -1,17 +1,17 @@
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter } from '@socket.io/redis-emitter';
 import { config } from '#api/config.js';
+import { tenants } from '#api/tenants/index.js';
 import { handleError } from '#api/utils/index.js';
+import MongoStore from 'connect-mongo';
 import * as cookie from 'cookie';
 import type { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import session, { type SessionData, type Store as SessionStore } from 'express-session';
-import MongoStore from 'connect-mongo';
 import { DB } from '#api/odm/index.js';
 import { RedisClient } from 'redis';
 import { Server as SocketIoServer } from 'socket.io';
 import users from '#api/users/users.js';
-import { tenants } from '#api/tenants/index.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {

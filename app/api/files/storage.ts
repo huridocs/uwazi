@@ -5,16 +5,11 @@ import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { access, readdir } from 'fs/promises';
 import path from 'path';
-
-import { config } from '#api/config.js';
-import { legacyLogger } from '#api/log/index.js';
-import { tenants } from '#api/tenants/index.js';
-import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-
-import { FileNotFound } from '#api/files/FileNotFound.js';
 import { buildS3Client } from '#api/infrastructure/S3Client.js';
+import { config } from '#api/config.js';
+import { FileNotFound } from '#api/files/FileNotFound.js';
 import {
   activityLogPath,
   attachmentsPath,
@@ -24,6 +19,9 @@ import {
   uploadsPath,
 } from '#api/files/filesystem.js';
 import { S3Error, S3Storage } from '#api/files/S3Storage.js';
+import { legacyLogger } from '#api/log/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { FileType } from '#shared/types/fileType.js';
 
 let s3Instance: S3Storage;
 

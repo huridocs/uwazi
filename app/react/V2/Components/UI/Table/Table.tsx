@@ -22,23 +22,15 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-
 import { Translate } from '#app/I18N/index.js';
-import {
-  DraggableRow,
-  RowDragHandleCell,
-  DnDHeader,
-} from '#V2/Components/UI/Table/DnDComponents.js';
-import {
-  IndeterminateCheckboxHeader,
-  IndeterminateCheckboxRow,
-} from '#V2/Components/UI/Table/RowSelectComponents.js';
-import { dndSortHandler, getRowIds } from '#V2/Components/UI/Table/helpers.js';
-import { SortingChevrons } from '#V2/Components/UI/Table/SortingChevrons.js';
-import { GroupCell, GroupHeader } from '#V2/Components/UI/Table/GroupComponents.js';
-import { NoDataRow } from '#V2/Components/UI/Table/NoDataRow.js';
-import { DefaultNoDataMessage } from '#V2/Components/UI/Table/DefaultNoDataMessage.js';
-import { Button } from '#V2/Components/UI/Button.js';
+import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents.js';
+import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents.js';
+import { dndSortHandler, getRowIds } from './helpers.js';
+import { SortingChevrons } from './SortingChevrons.js';
+import { GroupCell, GroupHeader } from './GroupComponents.js';
+import { NoDataRow } from './NoDataRow.js';
+import { DefaultNoDataMessage } from './DefaultNoDataMessage.js';
+import { Button } from '../Button.js';
 
 type TableRow<T> = {
   rowId: string;

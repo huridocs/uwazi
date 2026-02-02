@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 
 import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import { LanguageISO6391Schema } from '#shared/types/commonSchemas.js';
-import relationships from '#api/relationships/relationships.js';
+import relationships from './relationships.js';
 import { validation } from '#api/utils/index.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 

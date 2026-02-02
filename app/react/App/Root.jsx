@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
-
 import { availableLanguages } from '#shared/language/index.js';
 
 const determineHotAssets = query => ({

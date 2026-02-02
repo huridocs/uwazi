@@ -1,10 +1,10 @@
 import uniqueID from '#shared/uniqueID.js';
 import dotenv from 'dotenv';
+import { Tenant } from './tenants/tenantContext.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import { readFileSync } from 'fs';
-import { Tenant } from '#api/tenants/tenantContext.js';
 
 dotenv.config();
 

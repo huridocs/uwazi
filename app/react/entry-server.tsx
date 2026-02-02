@@ -4,7 +4,6 @@ import { Request as ExpressRequest, Response } from 'express';
 import { join } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
-
 import {
   createStaticHandler,
   createStaticRouter,
@@ -19,17 +18,14 @@ import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
 import _ from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
-
 import api from '#app/utils/api.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js';
 import settingsApi from '#api/settings/settings.js';
 import { config } from '#api/config.js';
+import { tenants } from '#api/tenants/index.js';
 import CustomProvider from '#app/App/Provider.js';
 import Root from '#app/App/Root.js';
 import RouteHandler from '#app/App/RouteHandler.js';
@@ -42,7 +38,6 @@ import { getRoutes } from '#app/Routes.js';
 import createReduxStore from '#app/store.js';
 import { ProtectedRoute } from '#app/ProtectedRoute.js';
 import { isMobileDevice } from '#shared/detectDevice.js';
-import { tenants } from '#api/tenants/index.js';
 import { loadIcons } from '#UI/Icon/library.js';
 
 loadIcons();
