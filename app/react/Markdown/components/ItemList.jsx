@@ -10,7 +10,7 @@ import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Slider from '#app/Markdown/components/slider.js';
+import Slider from './slider.js';
 import Immutable from 'immutable';
 class ItemList extends Component {
   render() {

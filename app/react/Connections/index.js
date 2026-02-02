@@ -1,5 +1,5 @@
-import CreateConnectionPanel from '#app/Connections/components/CreateConnectionPanel.js';
-import * as actions from '#app/Connections/actions/actions.js';
-import * as uiActions from '#app/Connections/actions/uiActions.js';
+import CreateConnectionPanel from './components/CreateConnectionPanel.js';
+import * as actions from './actions/actions.js';
+import * as uiActions from './actions/uiActions.js';
 
 export { CreateConnectionPanel, actions, uiActions };

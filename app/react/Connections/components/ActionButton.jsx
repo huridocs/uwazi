@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Immutable from 'immutable';
 
 import Icon from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
-import { saveConnection, selectRangedTarget } from '#app/Connections/actions/actions.js';
-import Immutable from 'immutable';
+import { saveConnection, selectRangedTarget } from '../actions/actions.js';
 
 
 class ActionButton extends Component {

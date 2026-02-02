@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Icon from '#UI/Icon/Icon.js';
-import { removeNotification } from '#app/Notifications/actions/notificationsActions.js';
+import { removeNotification } from '../actions/notificationsActions.js';
 
 export class Notification extends Component {
   close() {

@@ -6,7 +6,7 @@ import {
   DateMetadataProperty,
   EntityTemplate,
   EntityReference,
-} from '#V2/domain/entities/types.js';
+} from './types.js';
 
 export interface Entity {
   readonly _id: string;

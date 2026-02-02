@@ -6,8 +6,8 @@ import { debounce } from '#app/utils/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { t } from '#app/I18N/index.js';
 
-import * as types from '#app/Connections/actions/actionTypes.js';
-import * as uiActions from '#app/Connections/actions/uiActions.js';
+import * as types from './actionTypes.js';
+import * as uiActions from './uiActions.js';
 
 export function immediateSearch(dispatch, searchString, connectionType) {
   dispatch(uiActions.searching());

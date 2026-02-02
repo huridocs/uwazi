@@ -1,8 +1,8 @@
 import loadable from '@loadable/component';
 
-import colorScheme, { light } from '#app/Charts/utils/colorScheme.js';
-import arrayUtils from '#app/Charts/utils/arrayUtils.js';
-import ExtendedTooltip from '#app/Charts/components/ExtendedTooltip.js';
+import colorScheme from './utils/colorScheme.js';
+import arrayUtils from './utils/arrayUtils.js';
+import ExtendedTooltip from './components/ExtendedTooltip.js';
 
 const Bar = loadable(
   async () => import(/* webpackChunkName: "LazyLoadBar" */ './components/Bar.js')
@@ -31,5 +31,4 @@ export {
   StackedDualBarChart,
   colorScheme,
   arrayUtils,
-  light,
 };

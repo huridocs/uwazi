@@ -1,7 +1,7 @@
-import * as viewerTypes from '#app/Viewer/actions/actionTypes.js';
-
-import * as types from '#app/Connections/actions/actionTypes.js';
 import Immutable from 'immutable';
+
+import * as viewerTypes from '#app/Viewer/actions/actionTypes.js';
+import * as types from '../actions/actionTypes.js';
 
 const initialState = {
   template: '',

@@ -1,4 +1,4 @@
-import * as types from '#app/Connections/actions/actionTypes.js';
+import * as types from './actionTypes.js';
 
 export function openPanel(connectionType, sourceDocument) {
   return {

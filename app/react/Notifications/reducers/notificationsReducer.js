@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as actions from '#app/Notifications/actions/actionTypes.js';
+import * as actions from '../actions/actionTypes.js';
 
 const initialState = [];
 
