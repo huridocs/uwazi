@@ -1,6 +1,6 @@
 import cejilChart001 from './components/cejilChart001.js';
 import CejilChart002 from './components/CejilChart002.js';
-import cejilHero from './components/cejilHero.jsx';
+import cejilHero from './components/cejilHero.js';
 
 export default {
   cejilChart001,
