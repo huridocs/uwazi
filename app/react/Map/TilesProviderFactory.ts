@@ -6,9 +6,9 @@ const DEFAULT_MAPBOX_TOKEN =
   'pk.eyJ1Ijoibnd5dSIsImEiOiJjazlta3liaWowMHBkM2pwaHFiaG0wcDBqIn0.47wbPKb2A4u3iCt34qrSRw';
 
 const mapBoxStyles: { [k: string]: string } = {
-  Streets: 'mapbox/streets-v11',
+  Streets: 'mapbox/streets-v12',
   Satellite: 'mapbox/satellite-v9',
-  Hybrid: 'mapbox/satellite-streets-v11',
+  Hybrid: 'mapbox/satellite-streets-v12',
   Dark: 'mapbox/dark-v11',
 };
 
