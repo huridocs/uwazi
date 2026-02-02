@@ -399,6 +399,7 @@ describe('UpdateEntityUseCase', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
+    EventEmitterFactory.default().reset();
   });
 
   it('should update basic entity data', async () => {
@@ -406,7 +407,7 @@ describe('UpdateEntityUseCase', () => {
 
     const entitiesBefore = await getAllEntities('entity1');
 
-    await sut.execute({ sharedId: 'entity1', language: 'en', icon, generatedToc: true });
+    await sut.execute({ sharedId: 'entity1', language: 'en', icon });
 
     const entities = await getAllEntities('entity1');
     expect(entitiesBefore).toMatchObject([
@@ -584,7 +585,6 @@ describe('UpdateEntityUseCase', () => {
               {
                 value: 'related_entity_2',
                 label: 'Related Entity 2 EN',
-                icon: null,
                 type: 'entity',
                 inheritedType: 'text',
                 inheritedValue: [{ value: 'Related Text 2 EN' }],
@@ -594,13 +594,14 @@ describe('UpdateEntityUseCase', () => {
             media: [],
           },
           language: 'en',
-          creationDate: null,
           editDate: expect.any(Number),
-          icon: null,
+          icon: {
+            _id: null,
+            type: 'Empty',
+          },
           obsoleteMetadata: [],
           permissions: [],
           published: false,
-          user: null,
         },
         {
           sharedId: 'full_entity',
@@ -629,7 +630,6 @@ describe('UpdateEntityUseCase', () => {
               {
                 value: 'related_entity_2',
                 label: 'Related Entity 2 PT',
-                icon: null,
                 type: 'entity',
                 inheritedType: 'text',
                 inheritedValue: [{ value: 'Related Text 2 PT' }],
@@ -637,13 +637,14 @@ describe('UpdateEntityUseCase', () => {
             ],
           },
           language: 'pt',
-          creationDate: null,
           editDate: expect.any(Number),
-          icon: null,
+          icon: {
+            _id: null,
+            type: 'Empty',
+          },
           obsoleteMetadata: [],
           permissions: [],
           published: false,
-          user: null,
         },
       ]);
     });

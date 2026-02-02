@@ -1414,6 +1414,8 @@ describe('Entity', () => {
         userId: 'user-456',
       });
 
+      entity.update({ icon: { id: 'icon-id', label: 'label', type: 'emoji' } });
+
       const firstEditDateEn = entity.getTranslation('en').editDate.value[0].value;
       const firstEditDatePt = entity.getTranslation('pt').editDate.value[0].value;
 

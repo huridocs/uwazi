@@ -10,6 +10,10 @@ class AsyncEventEmitter implements EventEmitter {
     this.events = new Map();
   }
 
+  reset(): void {
+    this.events = new Map();
+  }
+
   async emit(event: Event<any>): Promise<void> {
     const listeners = this.events.get(event.constructor.name);
 
