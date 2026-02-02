@@ -14,10 +14,9 @@ type Input = {
   language: LanguageISO6391;
 
   icon?: EntityIcon;
-  generatedToc?: boolean;
   templateId?: string;
   propertyAssignments?: PropertyAssignmentInput[];
-  inputFiles?: InputFile[];
+  uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
 };
 
@@ -36,10 +35,9 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     entity.update({
       icon: input.icon,
-      generatedToc: input.generatedToc,
     });
 
-    const templateHasChanged = input.templateId && entity.template.id !== input.templateId;
+    const templateHasChanged = !!input.templateId && entity.template.id !== input.templateId;
     if (templateHasChanged) {
       const newTemplate = (await this.deps.templatesDS.getById(input.templateId!)).getDataOrThrow();
 
@@ -49,12 +47,12 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
       input.propertyAssignments || [],
       entity.template,
-      input?.inputFiles?.filter(f => f.isAttachment()) || []
+      input?.uploadedFiles?.filter(f => f.isAttachment()) || []
     );
 
     entity.setPropertyAssignments(propertyAssignments, input.language, true);
 
-    const filesCreated = (input.inputFiles || []).map(f =>
+    const filesCreated = (input.uploadedFiles || []).map(f =>
       f.toEntityFile(entity.sharedId, this.idGenerator.generate())
     );
 

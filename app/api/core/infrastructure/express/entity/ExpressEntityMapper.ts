@@ -29,7 +29,7 @@ class ExpressEntityMapper {
     };
 
     if (props?.inputFiles) {
-      input.inputFiles = props.inputFiles;
+      input.uploadedFiles = props.inputFiles;
     }
 
     if (props.dto?.attachments?.length) {
@@ -43,10 +43,10 @@ class ExpressEntityMapper {
         })
       );
 
-      if (input.inputFiles) {
-        input.inputFiles.push(...urlAttachments);
+      if (input.uploadedFiles) {
+        input.uploadedFiles.push(...urlAttachments);
       } else {
-        input.inputFiles = urlAttachments;
+        input.uploadedFiles = urlAttachments;
       }
     }
 

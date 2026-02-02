@@ -22,6 +22,7 @@ import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
 import { EntityTranslationDoesNotExistError } from './errors';
 import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty';
+import { EntityDTO } from './EntityDTO';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -84,19 +85,19 @@ class Entity {
   }
 
   private createTranslations(props: EntityTranslationProps[]) {
-    return props.reduce(
-      (acc, translation) => ({
+    return props.reduce((acc, translation) => {
+      const entityTranslation = new EntityTranslation({
+        ...translation,
+        metadata: translation.metadata,
+      });
+
+      entityTranslation.mergeMetadata(this.template.createDefaultPropertyAssignments());
+
+      return {
         ...acc,
-        [translation.language]: new EntityTranslation({
-          ...translation,
-          metadata: {
-            ...this.template.createDefaultPropertyAssignments(),
-            ...translation.metadata,
-          },
-        }),
-      }),
-      {}
-    );
+        [translation.language]: entityTranslation,
+      };
+    }, {});
   }
 
   private validatePropertyAssignments(shouldValidateForRequired = false) {
@@ -144,7 +145,21 @@ class Entity {
     return instance;
   }
 
-  get prevState() {
+  get asDTO(): EntityDTO {
+    return {
+      sharedId: this.sharedId,
+      templateId: this.template.id,
+      published: this.published,
+      userId: this.userId,
+      icon: this.icon,
+      generatedToc: this.generatedToc,
+
+      permissions: this.permissions.accessGrants,
+      translations: this.translationsList.map(([_language, translation]) => translation.asDTO),
+    };
+  }
+
+  get previousVersion() {
     return new Entity(this.props);
   }
 
@@ -154,10 +169,6 @@ class Entity {
 
   get languages(): LanguageISO6391[] {
     return Object.keys(this.translations) as LanguageISO6391[];
-  }
-
-  getProps() {
-    return this.props;
   }
 
   getTranslation(language: LanguageISO6391) {
@@ -256,10 +267,12 @@ class Entity {
   }
 
   update(props: UpdateProps) {
+    if (props.icon !== this.icon || props.generatedToc !== this.generatedToc) {
+      this.refreshEditDate();
+    }
+
     this.icon = 'icon' in props ? props.icon : this.icon;
     this.generatedToc = props.generatedToc ?? this.generatedToc;
-
-    this.refreshEditDate();
   }
 
   createMetadataValuesFromRelationships(

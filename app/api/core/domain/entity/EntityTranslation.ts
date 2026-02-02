@@ -52,6 +52,14 @@ class EntityTranslation {
     return this.getValue<DateEntry>('editDate');
   }
 
+  get asDTO(): Required<Props> {
+    return {
+      id: this.id.value,
+      language: this.language,
+      metadata: this.metadata,
+    };
+  }
+
   mergeMetadata(newMetadata: Record<string, PropertyAssignment>) {
     Object.values(this.metadata).forEach(propertyAssignment => {
       const ofSameName = newMetadata[propertyAssignment.name];

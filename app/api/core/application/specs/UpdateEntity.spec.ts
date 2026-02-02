@@ -770,7 +770,7 @@ describe('UpdateEntityUseCase', () => {
       await sut.execute({
         language: 'en',
         sharedId: 'entity1',
-        inputFiles: [
+        uploadedFiles: [
           new InputFile(
             {
               fieldname: 'documents[0]',
@@ -840,7 +840,7 @@ describe('UpdateEntityUseCase', () => {
             value: [{ value: '', attachment: 0 }],
           },
         ],
-        inputFiles: [
+        uploadedFiles: [
           new InputFile(
             {
               fieldname: 'attachments[0]',
@@ -876,7 +876,7 @@ describe('UpdateEntityUseCase', () => {
             value: [{ value: '', attachment: 0 }],
           },
         ],
-        inputFiles: [
+        uploadedFiles: [
           new InputFile(
             {
               fieldname: 'attachments[0]',
@@ -912,7 +912,7 @@ describe('UpdateEntityUseCase', () => {
             value: [{ value: '', attachment: 0, timeLinks: '{"start": 10, "end": 20}' }],
           },
         ],
-        inputFiles: [
+        uploadedFiles: [
           new InputFile(
             {
               fieldname: 'attachments[0]',
@@ -952,7 +952,7 @@ describe('UpdateEntityUseCase', () => {
             value: [{ value: '', attachment: 1, timeLinks: '{"label": "intro"}' }],
           },
         ],
-        inputFiles: [
+        uploadedFiles: [
           new InputFile(
             {
               fieldname: 'attachments[0]',

@@ -5,12 +5,18 @@ import { Entity } from 'api/core/domain/entity/Entity';
 import relationships from 'api/relationships';
 import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper';
 import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper';
+import { TemplatesDataSourceFactory } from '../factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
 
 class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdatedEvent> {
   static eventName = EntityUpdatedEvent.name;
 
   protected async handle(): Promise<void> {
-    const afterEntity = new Entity(this.params.after);
+    const templateDS = TemplatesDataSourceFactory.default(TransactionManagerFactory.default());
+
+    const template = (await templateDS.getById(this.params.after.templateId)).getDataOrThrow();
+
+    const afterEntity = new Entity({ template, ...this.params.after });
 
     const afterEntityDbos = MongoEntityMapper.toDBO(afterEntity);
 
@@ -24,12 +30,10 @@ class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdat
       );
     }
 
-    const template = MongoTemplateMapper.toSchema(afterEntity.template);
-
     await relationships.saveEntityBasedReferences(
       targetEntityDboAfter,
       this.params.targetLanguage,
-      template
+      MongoTemplateMapper.toSchema(afterEntity.template)
     );
   }
 }

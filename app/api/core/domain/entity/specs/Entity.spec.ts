@@ -1381,37 +1381,30 @@ describe('Entity', () => {
         languages: ['en'],
       });
 
-    it('should update icon', () => {
+    it('should update common fields', () => {
       const entity = sampleEntity();
 
       const icon = { id: 'icon-id', label: 'icon-label', type: 'emoji' };
 
-      entity.update({ icon });
+      entity.update({ icon, generatedToc: true });
 
       expect(entity.icon).toEqual(icon);
+      expect(entity.generatedToc).toEqual(true);
 
       entity.update({});
 
       expect(entity.icon).toEqual(icon);
-
-      entity.update({ icon: undefined });
-
-      expect(entity.icon).toEqual(undefined);
-      expect(entity.generatedToc).toEqual(undefined);
-    });
-
-    it('should update generatedToc', () => {
-      const entity = sampleEntity();
-
-      entity.update({ generatedToc: true });
-
       expect(entity.generatedToc).toEqual(true);
 
       entity.update({ generatedToc: false });
 
+      expect(entity.icon).toEqual(icon);
       expect(entity.generatedToc).toEqual(false);
 
+      entity.update({ icon: undefined });
+
       expect(entity.icon).toEqual(undefined);
+      expect(entity.generatedToc).toEqual(false);
     });
 
     it('should update editDate for all translations when update is called', async () => {
@@ -1431,6 +1424,28 @@ describe('Entity', () => {
 
       expect(entity.getTranslation('en').editDate.value[0].value).toBeGreaterThan(firstEditDateEn);
       expect(entity.getTranslation('pt').editDate.value[0].value).toBeGreaterThan(firstEditDatePt);
+    });
+
+    it('should NOT update editDate when update is called with no changes', async () => {
+      const entity = Entity.create({
+        languages: ['en', 'pt'],
+        template: createSampleTemplate(),
+        userId: 'user-456',
+      });
+
+      const icon = { id: 'icon-id', label: 'icon-label', type: 'emoji' };
+      entity.update({ icon });
+
+      const editDateEnBefore = entity.getTranslation('en').editDate.value[0].value;
+      const editDatePtBefore = entity.getTranslation('pt').editDate.value[0].value;
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      entity.update({ icon });
+
+      expect(entity.getTranslation('en').editDate.value[0].value).toEqual(editDateEnBefore);
+      expect(entity.getTranslation('pt').editDate.value[0].value).toEqual(editDatePtBefore);
     });
   });
 
@@ -1611,6 +1626,65 @@ describe('Entity', () => {
             },
           },
         },
+      });
+    });
+  });
+
+  describe('Entity previous version', () => {
+    it('should return the correct previous version of the Entity', () => {
+      const entity = new Entity({
+        template: createSampleTemplate(),
+        icon: { id: 'id', label: 'label', type: 'emoji' },
+        generatedToc: true,
+        published: true,
+        sharedId: 'sharedId',
+        userId: 'userId',
+        permissions: [],
+        translations: [
+          { language: 'en', id: 'id_1', metadata: {} },
+          { language: 'es', id: 'id_1', metadata: {} },
+        ],
+      });
+
+      entity.update({ icon: undefined, generatedToc: false });
+
+      entity.setPropertyAssignments(
+        [
+          entity.template.createPropertyAssignment('text', {
+            value: [{ value: 'New text value' }],
+          }),
+        ],
+        'en'
+      );
+
+      expect(entity.asDTO).toMatchObject({ icon: undefined, generatedToc: false });
+      expect(entity.getTranslation('en').metadata.text).toEqual({
+        name: 'text',
+        value: [{ value: 'New text value' }],
+        type: 'text',
+        isTranslatable: true,
+      });
+
+      expect(entity.previousVersion.asDTO.translations).toMatchObject([
+        {
+          id: 'id_1',
+          language: 'en',
+          metadata: {
+            text: { name: 'text', value: [], type: 'text', isTranslatable: true },
+          },
+        },
+        {
+          id: 'id_1',
+          language: 'es',
+          metadata: {
+            text: { name: 'text', value: [], type: 'text', isTranslatable: true },
+          },
+        },
+      ]);
+
+      expect(entity.previousVersion).toMatchObject({
+        icon: { id: 'id', label: 'label', type: 'emoji' },
+        generatedToc: true,
       });
     });
   });

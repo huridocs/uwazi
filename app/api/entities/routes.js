@@ -88,20 +88,17 @@ export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    activitylogMiddleware,
     (req, res, next) => {
-      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
-
-      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
-        return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
-      }
-
-      if (tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave?.sharedId) {
+      if (
+        tenants.current()?.featureFlags?.v2CreateEntity ||
+        tenants.current()?.featureFlags?.v2UpdateEntity
+      ) {
         return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
       }
 
       return uploadMiddleware.multiple()(req, res, next);
     },
-    activitylogMiddleware,
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
@@ -125,7 +122,8 @@ export default app => {
       }
 
       if (tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave?.sharedId) {
-        return UpdateEntityController.createHandler()(req, res, next);
+        await UpdateEntityController.createHandler()(req, res, next);
+        return;
       }
 
       try {

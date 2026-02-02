@@ -47,7 +47,8 @@ export class MongoMultiLanguageEntityDataSource
     const dbos = MongoEntityMapper.toDBO(entity);
 
     await this.getCollection().bulkWrite(
-      dbos.map(dbo => ({ updateOne: { filter: { _id: dbo._id }, update: { $set: dbo } } }))
+      dbos.map(dbo => ({ updateOne: { filter: { _id: dbo._id }, update: { $set: dbo } } })),
+      { ignoreUndefined: true }
     );
 
     this.modifiedSharedIds.add(entity.sharedId);
