@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 import Modal from '#app/Layout/Modal.js';
 import Icon from '#UI/Icon/Icon.js';
-import { saveRelationType } from '#app/RelationTypes/actions/relationTypeActions.js';
+import { saveRelationType } from '../actions/relationTypeActions.js';
 
 type FormInputs = {
   relationshipType: string;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
+import range from 'lodash/range.js';
 import { t, Translate } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.js';
 
@@ -12,7 +12,7 @@ interface PaginationProps {
 
 const computeVisiblePages = (activePage: number, totalPages: number) => {
   if (totalPages < 6) {
-    return _.range(1, totalPages + 1);
+    return range(1, totalPages + 1);
   }
   if (activePage % 5 >= 0 && activePage > 4 && activePage + 2 < totalPages) {
     return [1, activePage - 1, activePage, activePage + 1, totalPages];

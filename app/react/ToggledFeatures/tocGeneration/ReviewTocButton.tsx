@@ -4,7 +4,7 @@ import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { ClientFile } from '#app/istore.js';
-import { tocGenerationActions } from '#app/ToggledFeatures/tocGeneration/actions.js';
+import { tocGenerationActions } from './actions.js';
 
 interface ReviewTocButtonProps {
   file: ClientFile;

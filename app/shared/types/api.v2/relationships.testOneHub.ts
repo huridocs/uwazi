@@ -1,8 +1,5 @@
-import { MigrationPlan, MigrationResponse } from '#shared/types/api.v2/relationships.migrate.js';
-import {
-  EntityReference,
-  TextReference,
-} from '#shared/types/api.v2/relationships.createRelationshipsRequest.js';
+import { MigrationPlan, MigrationResponse } from './relationships.migrate.js';
+import { EntityReference, TextReference } from './relationships.createRelationshipsRequest.js';
 
 type TestOneHubRequest = {
   hubId: string;

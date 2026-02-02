@@ -76,12 +76,12 @@ import {
   adminsOnlyRoute,
   privateRoute,
   ProtectedRoute,
-} from '#app/ProtectedRoute.js';
-import { getIndexElement } from '#app/getIndexElement.js';
-import { PageView } from '#app/Pages/PageView.js';
-import ResetPassword from '#app/Users/ResetPassword.js';
-import ConnectedUnlockAccount from '#app/Users/UnlockAccount.js';
-import { NewRelMigrationDashboard } from '#app/Settings/components/relV2MigrationDashboard.js';
+} from './ProtectedRoute.js';
+import { getIndexElement } from './getIndexElement.js';
+import { PageView } from './Pages/PageView.js';
+import ResetPassword from './Users/ResetPassword.js';
+import ConnectedUnlockAccount from './Users/UnlockAccount.js';
+import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,

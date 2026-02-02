@@ -9,9 +9,9 @@ import { AccessLevels, MixedAccessLevels, PermissionType } from '#shared/types/p
 import { saveEntitiesPermissions } from '#app/Permissions/actions/actions.js';
 import { connect } from 'react-redux';
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
-import { UserGroupsLookupField } from '#app/Permissions/components/UserGroupsLookupField.js';
-import { MembersList } from '#app/Permissions/components/MembersList.js';
-import { loadGrantedPermissions, searchCollaborators } from '#app/Permissions/PermissionsAPI.js';
+import { UserGroupsLookupField } from './UserGroupsLookupField.js';
+import { MembersList } from './MembersList.js';
+import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI.js';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
@@ -81,9 +81,9 @@ export const ShareEntityModalComponent = ({
         const publicPermission = findPublicPermission(permissions);
         setOriginalPublicLevel(publicPermission?.level || false);
 
-        searchAndLoadCollabs('', loadedAssignments).catch(() => {});
+        searchAndLoadCollabs('', loadedAssignments).catch(() => { });
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => {
       setAssignments([]);

@@ -1,4 +1,4 @@
-import { ResponseElement } from '#shared/types/api.v2/relationshipMigrationField.get.js';
+import { ResponseElement } from './relationshipMigrationField.get.js';
 
 type CreateRelationshipMigRationFieldResponse = ResponseElement;
 

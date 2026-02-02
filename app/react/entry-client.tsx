@@ -13,10 +13,10 @@ import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import './App/sockets';
-import CustomProvider from '#app/App/Provider.js';
+import CustomProvider from './App/Provider.js';
 import { atomStore } from '#V2/atoms/index.js';
-import { store } from '#app/store.js';
-import { getAppRoutes } from '#app/appRoutes.js';
+import { store } from './store.js';
+import { getAppRoutes } from './appRoutes.js';
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({

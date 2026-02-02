@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Navigate, Outlet } from 'react-router';
 import { store } from '#app/store.js';
-import { ClientSettings } from './apiResponseTypes.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 
 const ProtectedRoute = ({
   children,

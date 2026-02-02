@@ -16,27 +16,28 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
-import _ from 'lodash';
+import omit from 'lodash/omit.js';
+import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
-import api from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import api from './utils/api.js';
+import { RequestParams } from './utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { ClientSettings } from '#app/apiResponseTypes.js';
+import { ClientSettings } from './apiResponseTypes.js';
 import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js';
 import settingsApi from '#api/settings/settings.js';
 import { config } from '#api/config.js';
 import { tenants } from '#api/tenants/index.js';
-import CustomProvider from '#app/App/Provider.js';
-import Root from '#app/App/Root.js';
-import RouteHandler from '#app/App/RouteHandler.js';
+import CustomProvider from './App/Provider.js';
+import Root from './App/Root.js';
+import RouteHandler from './App/RouteHandler.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import { ClientFeatureFlags } from '#V2/shared/types.js';
 import { atomStore, hydrateAtomStore } from '#V2/atoms/index.js';
-import { I18NUtils } from '#app/I18N/index.js';
+import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
-import { getRoutes } from '#app/Routes.js';
-import createReduxStore from '#app/store.js';
-import { ProtectedRoute } from '#app/ProtectedRoute.js';
+import { getRoutes } from './Routes.js';
+import createReduxStore from './store.js';
+import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '#shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
 
@@ -176,9 +177,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const reduxData = {
     user: userApiResponse.json,
-    templates: _.sortBy(templatesApiResponse.json.rows, 'name'),
+    templates: sortBy(templatesApiResponse.json.rows, 'name'),
     thesauris: thesaurisApiResponse.json.rows,
-    relationTypes: _.sortBy(relationTypesApiResponse.json.rows, 'name'),
+    relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
     translations: translationsApiResponse.json.rows,
     settings: {
       collection: { ...settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
@@ -199,7 +200,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       templates: templatesApiResponse.json.rows,
       user: userApiResponse.json,
       translations: translationsApiResponse.json.rows,
-      relationTypes: _.sortBy(relationTypesApiResponse.json.rows, 'name'),
+      relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
   };
@@ -238,7 +239,7 @@ const setReduxState = async (
       tenant: req.get('tenant'),
     };
     const requestParams = new RequestParams<{ q?: string }>(
-      { ...req.query, ..._.omit(routeParams, 'lang') },
+      { ...req.query, ...omit(routeParams, 'lang') },
       headers
     );
 

@@ -1,10 +1,9 @@
 import urljoin from 'url-join';
 
+import request from '#shared/JSONRequest.js';
 import { storage } from '#api/files/index.js';
 import { DataType } from '#api/odm/index.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
-
-import request from '#shared/JSONRequest.js';
 import { FileType } from '#shared/types/fileType.js';
 
 const uploadFile = async (
@@ -13,9 +12,9 @@ const uploadFile = async (
   cookie: string,
   type: FileType['type'] = 'document'
 ) => {
-  let apiEndpoint = '#api/sync/upload';
+  let apiEndpoint = 'api/sync/upload';
   if (type === 'custom') {
-    apiEndpoint = '#api/sync/upload/custom';
+    apiEndpoint = 'api/sync/upload/custom';
   }
 
   const file = await storage.fileContents(filename, type);
@@ -45,7 +44,7 @@ export const synchronizer = {
     action: keyof typeof request
   ) {
     await request[action](
-      urljoin(url, '#api/sync'),
+      urljoin(url, 'api/sync'),
       { namespace: change.namespace, data },
       { cookie }
     );

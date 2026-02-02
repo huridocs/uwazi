@@ -4,7 +4,7 @@ import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { ElasticHit } from './elasticTypes.js';
+import type { ElasticHit } from './elasticTypes.js';
 
 async function checkFeatureEnabled() {
   const db = getConnection();

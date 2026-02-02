@@ -1,11 +1,11 @@
 /* eslint-disable import/no-mutable-exports,prefer-destructuring,global-require */
 
-import { isClient } from '#app/utils/index.js';
+import { isClient } from './utils/index.js';
 import thunkModule from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { applyMiddleware, createStore, Store, Middleware } from 'redux';
 
-import reducer from '#app/reducer.js';
+import reducer from './reducer.js';
 import { IStore } from './istore.js';
 
 const thunk: Middleware = ((thunkModule as { default?: Middleware }).default ||

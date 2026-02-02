@@ -1,11 +1,9 @@
 import { Translate } from '#app/I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
 import Icon from '#UI/Icon/Icon.js';
-
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-
 import { debounce } from '#app/utils/index.js';
-import { MemberListItemInfo } from '#app/Permissions/components/MemberListItemInfo.js';
+import { MemberListItemInfo } from './MemberListItemInfo.js';
 
 interface UserGroupsLookupFieldProps {
   onChange: (search: string) => void;

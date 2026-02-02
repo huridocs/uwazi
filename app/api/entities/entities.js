@@ -15,7 +15,7 @@ import { AccessLevels } from '#shared/types/permissionSchema.js';
 import ID from '#shared/uniqueID.js';
 
 import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
-import settings from '#api/settings/index.js';
+import settings from '../settings/index.js';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';
 import model from './entitiesModel.js';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';

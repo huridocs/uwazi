@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
 import { filesModel } from '#api/files/filesModel.js';
 import { DataType, models, WithId } from '#api/odm/index.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
+import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
 import { ensure } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';

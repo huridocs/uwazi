@@ -1,4 +1,4 @@
-import model from '#api/entities/entitiesModel.js';
+import model from './entitiesModel.js';
 
-export { default } from '#api/entities/entities.js';
+export { default } from './entities.js';
 export { model };

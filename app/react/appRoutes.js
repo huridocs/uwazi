@@ -1,4 +1,4 @@
-import { getRoutes } from '#app/Routes.js';
+import { getRoutes } from './Routes.js';
 import { settingsAtom, atomStore, userAtom } from '#V2/atoms/index.js';
 
 let _routes;
