@@ -1,5 +1,4 @@
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
-
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
@@ -9,16 +8,16 @@ import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateD
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { Suggestions } from '#api/suggestions/suggestions.js';
-import { AfterFileUpdatedListener } from '#api/suggestions/listeners/afterFileCreatedListener.js';
-import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
-import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
-import { AfterEntityUpdatedListener } from '#api/suggestions/listeners/afterEntityUpdatedListener.js';
-import { UpdateSuggestionsAfterEntityUpdate } from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
-import { ProcessSuggestionsAfterTemplateChanged } from '#api/suggestions/useCases/processSuggestionsAfterTemplateChanged.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { Suggestions } from './suggestions.js';
+import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener.js';
+import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument.js';
+import { SuggestionFactory } from './suggestionFactory.js';
+import { AfterEntityUpdatedListener } from './listeners/afterEntityUpdatedListener.js';
+import { UpdateSuggestionsAfterEntityUpdate } from './useCases/updateSuggestionsAfterEntityUpdate.js';
+import { ProcessSuggestionsAfterTemplateChanged } from './useCases/processSuggestionsAfterTemplateChanged.js';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();

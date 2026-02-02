@@ -1,4 +1,5 @@
 import util from 'util';
+
 import Ajv, { JTDSchemaType } from 'ajv/dist/jtd.js';
 import { ValidationError } from './ValidationError.js';
 

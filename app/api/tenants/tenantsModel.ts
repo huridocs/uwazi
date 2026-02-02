@@ -5,7 +5,7 @@ import { DB } from '#api/odm/DB.js';
 import { handleError } from '#api/utils/index.js';
 import { ChangeStream, MongoError } from 'mongodb';
 
-import { Tenant } from '#api/tenants/tenantContext.js';
+import { Tenant } from './tenantContext.js';
 
 const schemaValidator = {
   $jsonSchema: {

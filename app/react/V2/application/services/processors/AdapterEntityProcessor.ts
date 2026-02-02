@@ -19,19 +19,19 @@ import {
   ProcessingContext,
   ProcessingError,
   PropertyTypeProcessor,
-} from '#V2/application/services/processors/types.js';
-import { AdapterTemplateProcessor } from '#V2/application/services/processors/AdapterTemplateProcessor.js';
-import { DatePropertyProcessor } from '#V2/application/services/processors/DatePropertyProcessor.js';
-import { SelectPropertyProcessor } from '#V2/application/services/processors/SelectPropertyProcessor.js';
-import { GeolocationProcessor } from '#V2/application/services/processors/GeolocationProcessor.js';
-import { RelationshipProcessor } from '#V2/application/services/processors/RelationshipProcessor.js';
-import { ImagePropertyProcessor } from '#V2/application/services/processors/ImagePropertyProcessor.js';
-import { MediaPropertyProcessor } from '#V2/application/services/processors/MediaPropertyProcessor.js';
-import { DefaultPropertyProcessor } from '#V2/application/services/processors/DefaultPropertyProcessor.js';
-import { LinkPropertyProcessor } from '#V2/application/services/processors/LinkPropertyProcessor.js';
-import { PreviewPropertyProcessor } from '#V2/application/services/processors/PreviewPropertyProcessor.js';
-import { SupportingFilesProcessor } from '#V2/application/services/processors/SupportingFilesProcessor.js';
-import { ReferencesProcessor } from '#V2/application/services/processors/ReferencesProcessor.js';
+} from './types.js';
+import { AdapterTemplateProcessor } from './AdapterTemplateProcessor.js';
+import { DatePropertyProcessor } from './DatePropertyProcessor.js';
+import { SelectPropertyProcessor } from './SelectPropertyProcessor.js';
+import { GeolocationProcessor } from './GeolocationProcessor.js';
+import { RelationshipProcessor } from './RelationshipProcessor.js';
+import { ImagePropertyProcessor } from './ImagePropertyProcessor.js';
+import { MediaPropertyProcessor } from './MediaPropertyProcessor.js';
+import { DefaultPropertyProcessor } from './DefaultPropertyProcessor.js';
+import { LinkPropertyProcessor } from './LinkPropertyProcessor.js';
+import { PreviewPropertyProcessor } from './PreviewPropertyProcessor.js';
+import { SupportingFilesProcessor } from './SupportingFilesProcessor.js';
+import { ReferencesProcessor } from './ReferencesProcessor.js';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;

@@ -1,6 +1,6 @@
 import { CreateEntityUseCaseInput } from '#api/core/application/CreateEntity.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { CreateEntityDTO } from '#api/core/infrastructure/express/entity/Schemas.js';
+import { CreateEntityDTO } from './Schemas.js';
 
 type ToEntityCreateInputProps = {
   dto: CreateEntityDTO;

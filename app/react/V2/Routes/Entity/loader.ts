@@ -7,9 +7,9 @@ import { snippets } from '#V2/api/search/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { getEntityCompositionUseCase } from '#V2/application/container/singletons.js';
 import { fullDetailOptions } from '#V2/application/optionsPresets.js';
-import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
-import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from '#V2/Routes/Entity/Components/index.js';
-import { LoaderResponse } from '#V2/Routes/Entity/types.js';
+import { entityLoaderCache } from './EntityLoaderCache.js';
+import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
+import { LoaderResponse } from './types.js';
 
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

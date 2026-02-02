@@ -10,14 +10,11 @@ import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
-import { PlainText } from '#V2/Routes/Entity/Components/PlainText.js';
-import { OCRButton } from '#V2/Routes/Entity/Components/OCRButton.js';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '#V2/Routes/Entity/urlParams.js';
-import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
-import {
-  useTocActions,
-  convertTextSelectionToTocEntry,
-} from '#V2/Routes/Entity/Components/ToC/tocAtom.js';
+import { PlainText } from './PlainText.js';
+import { OCRButton } from './OCRButton.js';
+import { PAGE_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
+import { scrollToPage } from './functions.js';
+import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom.js';
 
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {

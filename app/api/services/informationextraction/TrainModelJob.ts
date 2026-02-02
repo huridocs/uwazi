@@ -8,17 +8,10 @@ import {
 import { tenants } from '#api/tenants/index.js';
 
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { ExtractorNotFound, Extractors } from '#api/services/informationextraction/ixextractors.js';
-import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
-import {
-  NoEntitiesForTraining,
-  TrainModelForText,
-} from '#api/services/informationextraction/TrainModelForText.js';
-import {
-  NoFilesForTraining,
-  NoLabeledEntities,
-  NoSegmentedFiles,
-} from '#api/services/informationextraction/ixMaterials.js';
+import { ExtractorNotFound, Extractors } from './ixextractors.js';
+import { TrainModelForPDF } from './TrainModelForPDF.js';
+import { NoEntitiesForTraining, TrainModelForText } from './TrainModelForText.js';
+import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './ixMaterials.js';
 
 type CustomParams = {
   extractorId: string;

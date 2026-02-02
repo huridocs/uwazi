@@ -12,7 +12,7 @@ import ModalTips from '#app/App/ModalTips.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
-import SnippetList from '#app/Documents/components/SnippetList.js';
+import SnippetList from './SnippetList.js';
 
 class SearchText extends Component {
   constructor(props) {

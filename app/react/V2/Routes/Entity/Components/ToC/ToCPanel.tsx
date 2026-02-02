@@ -12,16 +12,12 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
-import { BlankState } from '#V2/Routes/Entity/Components/BlankState.js';
-import {
-  ToC,
-  type ProcessedTocEntry,
-  sortTocEntries,
-} from '#V2/Routes/Entity/Components/ToC/ToC.js';
-import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
-import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
-import { useToc, useTocActions } from '#V2/Routes/Entity/Components/ToC/tocAtom.js';
-import { getPageNumber } from '#V2/Routes/Entity/Components/ToC/utils.js';
+import { BlankState } from '../BlankState.js';
+import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
+import { scrollToPage } from '../functions.js';
+import { entityLoaderCache } from '../../EntityLoaderCache.js';
+import { useToc, useTocActions } from './tocAtom.js';
+import { getPageNumber } from './utils.js';
 
 const ToCPanel = ({
   toc,

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
 
 type Input = {
   extractorId: string;

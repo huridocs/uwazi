@@ -18,7 +18,7 @@ import entitiesModel from '#api/entities/entitiesModel.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import ixmodels from './ixmodels.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
@@ -40,8 +40,8 @@ import { IXExtractorType } from '#shared/types/extractorType.js';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { Extractors } from '#api/services/informationextraction/ixextractors.js';
-import { IXServices } from '#api/services/informationextraction/IXServices.js';
+import { Extractors } from './ixextractors.js';
+import { IXServices } from './IXServices.js';
 import { deriveTrainingPropertyValue } from './propertyValue.js';
 
 const BATCH_SIZE_FOR_PDF = 50;

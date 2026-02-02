@@ -3,10 +3,10 @@ import {
   ProcessingPDFDTO,
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BaseFile, BaseFileProps, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
-import { fullTextProp, ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
+import { FileContents } from './FileContents.js';
+import { FileWithContents } from './FileWithContents.js';
+import { fullTextProp, ProcessedPDF } from './ProcessedPDF.js';
 
 type Props = BaseFileProps & {
   entity: string;

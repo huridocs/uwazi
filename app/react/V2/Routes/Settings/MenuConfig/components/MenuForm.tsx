@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { Button, Card } from '#V2/Components/UI/index.js';
 
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { createRowId, Link } from '#V2/Routes/Settings/MenuConfig/shared.js';
+import { createRowId, Link } from '../shared.js';
 
 interface MenuFormProps {
   closePanel: () => void;

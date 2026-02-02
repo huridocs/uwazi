@@ -4,8 +4,8 @@ import { t } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { SiteName } from '#app/App/SiteName.js';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { Dropdown, DropdownItem } from '#V2/Components/UI/Header/Dropdown.js';
-import { MobileMenuDropdown } from '#V2/Components/UI/Header/MobileMenuDropdown.js';
+import { Dropdown, DropdownItem } from './Dropdown.js';
+import { MobileMenuDropdown } from './MobileMenuDropdown.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 
 const createDropdownItems = (link: any): DropdownItem[] => {

@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Translate } from '#app/I18N/index.js';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 

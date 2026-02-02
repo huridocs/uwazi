@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox } from 'flowbite-react';
-import isString from 'lodash/isString.js';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
-
+import isString from 'lodash/isString.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { Pill } from '#V2/Components/UI/index.js';
 

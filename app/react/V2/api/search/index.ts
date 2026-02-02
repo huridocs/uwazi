@@ -1,12 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
-
 import api from '#app/utils/api.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
-
 import { EntityResponse, EntitySearchResponse, SnippetsSearchResponse } from '../types.js';
 
 const lookup = async (

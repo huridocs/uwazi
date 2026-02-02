@@ -7,8 +7,7 @@ import { InputField } from '#V2/Components/Forms/index.js';
 import { useForm } from 'react-hook-form';
 
 import { Button, Card } from '#V2/Components/UI/index.js';
-
-import { Relationships } from '#V2/Routes/Settings/RelationshipTypes/components/TableComponents.js';
+import { Relationships } from './TableComponents.js';
 
 interface FormProps {
   closePanel: () => void;

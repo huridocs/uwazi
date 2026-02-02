@@ -5,7 +5,7 @@ import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Bars3BottomLeftIcon, Bars3BottomRightIcon } from '@heroicons/react/24/outline';
 import { availableLanguages } from '#shared/language/index.js';
 import { localeAtom, settingsAtom } from '#V2/atoms/index.js';
-import { BaseDropdown } from '#V2/Components/UI/Header/BaseDropdown.js';
+import { BaseDropdown } from './BaseDropdown.js';
 
 interface MobileMenuDropdownProps {
   links: any[] | undefined;

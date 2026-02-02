@@ -1,7 +1,7 @@
-import needsAuthorization from '#api/auth/authMiddleware.js';
-import captchaAuthorization from '#api/auth/captchaMiddleware.js';
-import { CaptchaModel } from '#api/auth/CaptchaModel.js';
+import needsAuthorization from './authMiddleware.js';
+import captchaAuthorization from './captchaMiddleware.js';
+import { CaptchaModel } from './CaptchaModel.js';
 
 export { needsAuthorization, captchaAuthorization, CaptchaModel };
-export { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
-export { validatePasswordMiddleWare } from '#api/auth/validatePasswordMiddleWare.js';
+export { comparePasswords, encryptPassword } from './encryptPassword.js';
+export { validatePasswordMiddleWare } from './validatePasswordMiddleWare.js';

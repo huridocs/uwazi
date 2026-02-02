@@ -1,6 +1,6 @@
-import { Template } from '#api/core/domain/template/Template.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { Template } from '../domain/template/Template.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
 
 type Input = {
   templateId: string;

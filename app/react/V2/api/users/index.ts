@@ -1,9 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
-
-import api from '#app/utils/api.js';
 import UsersAPI from '#app/Users/UsersAPI.js';
+import api from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 import { ClientUserGroupSchema, ClientUserSchema } from '#app/apiResponseTypes.js';
 
 const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {

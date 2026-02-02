@@ -1,5 +1,5 @@
 import { availableLanguages } from '#shared/language/index.js';
-import { typeParsers } from '#api/activitylog/migrationsParser.js';
+import { typeParsers } from './migrationsParser.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import entities from '#api/entities/entities.js';
 import users from '#api/users/users.js';

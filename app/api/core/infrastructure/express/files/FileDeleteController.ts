@@ -3,16 +3,16 @@ import { FileDelete } from '#api/core/application/FileDelete.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
-import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
+import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { FileStorageFactory } from '../../files/FileStorageFactory.js';
+import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
+import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker.js';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {

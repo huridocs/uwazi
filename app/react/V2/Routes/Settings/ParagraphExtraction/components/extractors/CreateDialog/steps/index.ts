@@ -1,6 +1,6 @@
-import { TargetTemplateStep } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/TargetTemplate/index.js';
-import { SourceTemplateStep } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/SourceTemplate/index.js';
-import { ExtractionConfigurationStep } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/ExtractionConfiguration/index.js';
+import { TargetTemplateStep } from './TargetTemplate/index.js';
+import { SourceTemplateStep } from './SourceTemplate/index.js';
+import { ExtractionConfigurationStep } from './ExtractionConfiguration/index.js';
 
 const AddExtractorSteps: Record<
   number,

@@ -10,7 +10,7 @@ import { config } from '#api/config.js';
 import cors from 'cors';
 import request from '#shared/JSONRequest.js';
 import { randomSleep } from '#shared/tsUtils.js';
-import { CaptchaModel } from '#api/auth/CaptchaModel.js';
+import { CaptchaModel } from './CaptchaModel.js';
 
 import { validation } from '#api/utils/index.js';
 

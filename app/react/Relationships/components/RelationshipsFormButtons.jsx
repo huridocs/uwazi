@@ -7,7 +7,7 @@ import { NeedAuthorization } from '#app/Auth/index.js';
 import { t } from '#app/I18N/index.js';
 import { Icon } from '#UI/index.js';
 
-import * as actions from '#app/Relationships/actions/actions.js';
+import * as actions from '../actions/actions.js';
 
 class RelationshipsFormButtons extends Component {
   constructor(props) {

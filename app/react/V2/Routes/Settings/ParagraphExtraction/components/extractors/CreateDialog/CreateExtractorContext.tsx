@@ -2,9 +2,8 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { useAtomValue } from 'jotai';
-
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
-import { AddExtractorSteps } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/index.js';
+import { AddExtractorSteps } from './steps/index.js';
 import { formatTemplatesToOptions } from '#V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
 import { filterPXQualifiedTemplates } from '#V2/Routes/Settings/ParagraphExtraction/utils/filterPXQualifiedTemplates.js';
 

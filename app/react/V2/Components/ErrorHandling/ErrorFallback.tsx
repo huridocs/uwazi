@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Translate } from '#app/I18N/index.js';
 import type { RequestError } from '#V2/shared/errorUtils.js';
 

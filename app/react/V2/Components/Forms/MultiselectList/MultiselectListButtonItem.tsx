@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Translate } from '#app/I18N/index.js';
 import { MultiselectListOption } from '#V2/Components/Forms/MultiselectList/MultiselectList.js';
 import { Pill } from '#V2/Components/UI/Pill.js';

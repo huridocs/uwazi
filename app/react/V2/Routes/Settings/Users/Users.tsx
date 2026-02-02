@@ -2,11 +2,9 @@
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
-
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal, Table, Tabs } from '#V2/Components/UI/index.js';
 import * as usersAPI from '#V2/api/users/index.js';
-
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import {
   UserFormSidepanel,
@@ -14,9 +12,9 @@ import {
   getUsersColumns,
   getGroupsColumns,
   ListOfItems,
-} from '#V2/Routes/Settings/Users/components/index.js';
-import { FormIntent, User, Group } from '#V2/Routes/Settings/Users/types.js';
-import { useHandleNotifications } from '#V2/Routes/Settings/Users/useHandleNotifications.js';
+} from './components/index.js';
+import { useHandleNotifications } from './useHandleNotifications.js';
+import { FormIntent, User, Group } from './types.js';
 
 type ActiveTab = 'Groups' | 'Users';
 

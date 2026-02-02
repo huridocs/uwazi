@@ -1,9 +1,8 @@
 import React from 'react';
 import { Button } from '#V2/Components/UI/index.js';
-
 import { Translate } from '#app/I18N/index.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Footer = () => {
   const { targetTemplateId, setStep, setShowModal } = useCreateExtractorContext();

@@ -5,10 +5,9 @@ import React, { Component } from 'react';
 
 import Icon from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
-import * as actions from '#app/Relationships/actions/actions.js';
-
-import LeftRelationship from '#app/Relationships/components/LeftRelationship.js';
-import RightRelationship from '#app/Relationships/components/RightRelationship.js';
+import * as actions from '../actions/actions.js';
+import LeftRelationship from './LeftRelationship.js';
+import RightRelationship from './RightRelationship.js';
 import Immutable from 'immutable';
 
 

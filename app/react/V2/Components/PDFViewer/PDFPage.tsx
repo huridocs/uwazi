@@ -6,8 +6,8 @@ import { useAtom } from 'jotai';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
 import { EventBus, PDFJSViewer, PDFJS } from './pdfjs.js';
 import { TextHighlight } from './types.js';
-import { calculateScaling } from '#V2/Components/PDFViewer/functions/calculateScaling.js';
-import { adjustSelectionsToScale } from '#V2/Components/PDFViewer/functions/handleTextSelection.js';
+import { calculateScaling } from './functions/calculateScaling.js';
+import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { pdfEventBus } from './events.js';
 
 interface PDFPageProps {

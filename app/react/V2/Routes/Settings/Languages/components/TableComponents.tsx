@@ -5,7 +5,7 @@ import { StarIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { CellContext } from '@tanstack/react-table';
-import { TableLanguages } from '#V2/Routes/Settings/Languages/LanguagesList.js';
+import { TableLanguages } from '../LanguagesList.js';
 
 const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) => (
   <Button

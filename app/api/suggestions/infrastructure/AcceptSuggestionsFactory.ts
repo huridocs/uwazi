@@ -1,11 +1,9 @@
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-
-import { tenants } from '#api/tenants/index.js';
-import { AcceptSuggestionsUseCase } from '#api/suggestions/application/AcceptSuggestionsUseCase.js';
-import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { tenants } from '#api/tenants/index.js';
+import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase.js';
+import { AcceptSuggestionsJob } from '../jobs/AcceptSuggestionsJob.js';
 
 type Props = { tenantName?: string; batchSize?: number };
 

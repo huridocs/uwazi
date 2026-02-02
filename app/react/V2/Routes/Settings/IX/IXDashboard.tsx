@@ -10,14 +10,14 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { ClientTemplateSchema } from '#app/istore.js';
 import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
-
 import { Translate, t } from '#app/I18N/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
-import { ExtractorModal } from '#V2/Routes/Settings/IX/components/ExtractorModal.js';
-import { extractorsTableColumns } from '#V2/Routes/Settings/IX/components/TableElements.js';
-import { List } from '#V2/Routes/Settings/IX/components/List.js';
-import { TableExtractor } from '#V2/Routes/Settings/IX/types.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { ExtractorModal } from './components/ExtractorModal.js';
+import { extractorsTableColumns } from './components/TableElements.js';
+import { List } from './components/List.js';
+import { TableExtractor } from './types.js';
 
 const formatExtractors = (
   extractors: ClientIXExtractorType[],
@@ -95,11 +95,7 @@ const IXDashboard = () => {
         text: <Translate>Extractor/s deleted</Translate>,
       });
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
+      handleUnexpectedError(error, 'Error deleting extractors');
     } finally {
       setIsSaving(false);
     }
@@ -116,11 +112,7 @@ const IXDashboard = () => {
         text: <Translate>Saved successfully.</Translate>,
       });
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
+      handleUnexpectedError(error, 'Error saving extractor');
     } finally {
       setIsSaving(false);
     }

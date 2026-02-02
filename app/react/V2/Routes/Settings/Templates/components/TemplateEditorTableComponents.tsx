@@ -11,7 +11,7 @@ import { Pill } from '#V2/Components/UI/index.js';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
 import { thesauriAtom, templatesAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
-import { translationsKeys } from '#V2/Routes/Settings/Templates/helpers.js';
+import { translationsKeys } from '../helpers.js';
 
 type PropertyRow = PropertySchema & {
   rowId: string;

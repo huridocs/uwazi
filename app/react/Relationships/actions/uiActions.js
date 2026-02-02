@@ -1,4 +1,4 @@
-import * as types from '#app/Relationships/actions/actionTypes.js';
+import * as types from './actionTypes.js';
 
 export function openPanel() {
   return { type: types.OPEN_RELATIONSHIPS_PANEL };

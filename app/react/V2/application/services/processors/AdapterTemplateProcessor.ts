@@ -2,11 +2,7 @@ import has from 'lodash/has.js';
 import { ClientThesaurusValue, Template } from '#app/apiResponseTypes.js';
 import { ClientTranslationContextSchema } from '#app/istore.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import {
-  AdapterEntityTemplate,
-  AdapterMetadataProperty,
-  ProcessingContext,
-} from '#V2/application/services/processors/types.js';
+import { AdapterEntityTemplate, AdapterMetadataProperty, ProcessingContext } from './types.js';
 import { ExtendedPropertyInfo, InheritedPropertyInfo } from '#V2/domain/entities/types.js';
 
 export class AdapterTemplateProcessor {

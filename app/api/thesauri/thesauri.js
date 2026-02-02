@@ -1,5 +1,7 @@
 /* eslint-disable max-lines */
-import _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep.js';
+import partition from 'lodash/partition.js';
+import flatMapDeep from 'lodash/flatMapDeep.js';
 import {
   generateIds,
   getUpdatedIds,
@@ -172,10 +174,10 @@ function calcNewLabels(originals, news) {
 }
 
 function calcNewValues(originalValues, newValues) {
-  const values = _.cloneDeep(originalValues);
+  const values = cloneDeep(originalValues);
   const roots = values.filter(v => !v.values);
   const groups = values.filter(v => v.values);
-  const [newRoots, newGroups] = _.partition(newValues, v => !v.values);
+  const [newRoots, newGroups] = partition(newValues, v => !v.values);
 
   const finalNewRoots = calcNewLabels(roots, newRoots);
   values.push(...finalNewRoots);
@@ -307,13 +309,13 @@ const thesauri = {
 
 const flatThesaurusValues = (thesaurus, includeRoots = false) =>
   includeRoots
-    ? _.flatMapDeep(thesaurus?.values, tv => {
+    ? flatMapDeep(thesaurus?.values, tv => {
         const { values = [], ...root } = tv;
         const valuesCopy = Array.from(values);
         valuesCopy.push(root);
         return valuesCopy;
       })
-    : _.flatMapDeep(thesaurus?.values, tv => tv.values || tv);
+    : flatMapDeep(thesaurus?.values, tv => tv.values || tv);
 
 export default thesauri;
 export { thesauri, flatThesaurusValues, normalizeThesaurusLabel };

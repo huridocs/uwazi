@@ -8,7 +8,7 @@ import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
 
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
-import { User, Group } from '#V2/Routes/Settings/Users/types.js';
+import { User, Group } from '../types.js';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;

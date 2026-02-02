@@ -1,7 +1,6 @@
 import React, { ReactEventHandler } from 'react';
 import { Radio, Label } from 'flowbite-react';
 import isString from 'lodash/isString.js';
-
 import { Translate } from '#app/I18N/index.js';
 import { Option } from '#V2/Components/Forms/SelectTypes.js';
 

@@ -10,7 +10,7 @@ import {
   optimizeTextForDisplay,
   calculateOptimalContextLength,
   analyzeContentForTruncation,
-} from '#V2/Routes/Settings/IX/helpers/contextHelpers.js';
+} from '../helpers/contextHelpers.js';
 
 const ixContextClassnames: { [key: string]: string } = {
   ix_paragraph: 'ix_paragraph text-gray-500',

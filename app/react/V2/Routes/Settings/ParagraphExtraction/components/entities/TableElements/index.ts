@@ -1,1 +1,1 @@
-export { columns } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/columns.js';
+export { columns } from './columns.js';

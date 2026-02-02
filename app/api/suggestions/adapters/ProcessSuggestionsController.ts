@@ -3,14 +3,13 @@ import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
-
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import {
   PROCESS_MODES,
   AUTO_ACCEPT_SOURCES,
   OVERWRITE_MODES,
 } from '#api/suggestions/contracts/ProcessSuggestionsContracts.js';
-import { ProcessSuggestions } from '#api/suggestions/useCases/ProcessSuggestions.js';
+import { ProcessSuggestions } from '../useCases/ProcessSuggestions.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
 

@@ -1,1 +1,1 @@
-export { default } from '#api/i18n/translations.js';
+export { default } from './translations.js';

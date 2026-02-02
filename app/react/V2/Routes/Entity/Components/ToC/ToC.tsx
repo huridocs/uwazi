@@ -1,9 +1,9 @@
 /* eslint-disable max-lines, react/require-default-props */
 import React, { useMemo, useEffect } from 'react';
 import { TocSchema } from '#shared/types/commonTypes.js';
-import { ToCItem } from '#V2/Routes/Entity/Components/ToC/ToCItem.js';
-import type { ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/types.js';
-import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/utils.js';
+import { ToCItem } from './ToCItem.js';
+import type { ProcessedTocEntry } from './types.js';
+import { normalizeToc, findItemsWithChildren } from './utils.js';
 
 // Sort ToC entries by page, then by position (top, then left)
 const sortTocEntries = (toc: TocSchema[]): TocSchema[] => {
@@ -84,4 +84,4 @@ ToC.displayName = 'ToC';
 
 export { ToC, sortTocEntries };
 export type { ToCProps };
-export type { ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/types.js';
+export type { ProcessedTocEntry } from './types.js';

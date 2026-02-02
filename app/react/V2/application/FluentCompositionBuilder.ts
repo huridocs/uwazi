@@ -5,9 +5,9 @@ import {
   CompositionOptions,
   CompositionResult,
   ProcessingContext,
-} from '#V2/application/services/processors/types.js';
-import { AdapterEntityProcessor } from '#V2/application/services/processors/AdapterEntityProcessor.js';
-import { EntityCompositionUseCase } from '#V2/application/useCases/EntityCompositionUseCase.js';
+} from './services/processors/types.js';
+import { AdapterEntityProcessor } from './services/processors/AdapterEntityProcessor.js';
+import { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase.js';
 
 export class FluentCompositionBuilder {
   private options: CompositionOptions = {};

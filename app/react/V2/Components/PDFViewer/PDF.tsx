@@ -6,16 +6,12 @@ import {
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
 import { PDFDocumentProxy } from 'pdfjs-dist';
-
 import { Translate } from '#app/I18N/index.js';
 import { PDFJS, CMAP_URL, EventBus } from './pdfjs.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { pdfEventBus } from './events.js';
-import {
-  highlightSnippetInPage,
-  clearSnippets,
-} from '#V2/Components/PDFViewer/functions/snippetToHighlight.js';
+import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight.js';
 
 const PDFPage = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage

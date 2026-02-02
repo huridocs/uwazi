@@ -10,7 +10,7 @@ import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchem
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
 import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
-import needsAuthorization from '#api/auth/authMiddleware.js';
+import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
 
 const addLanguage = async (language: LanguageSchema) => {

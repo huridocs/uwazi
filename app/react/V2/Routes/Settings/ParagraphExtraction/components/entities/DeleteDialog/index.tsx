@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
-
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';

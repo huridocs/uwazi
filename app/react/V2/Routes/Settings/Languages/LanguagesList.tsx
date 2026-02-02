@@ -20,7 +20,7 @@ import { useApiCaller } from '#V2/CustomHooks/useApiCaller.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { InstallLanguagesModal } from '#V2/Routes/Settings/Languages/components/InstallLanguagesModal.js';
+import { InstallLanguagesModal } from './components/InstallLanguagesModal.js';
 import {
   DefaultHeader,
   LabelHeader,
@@ -30,7 +30,7 @@ import {
   ResetButton,
   UninstallButton,
   LanguageLabel,
-} from '#V2/Routes/Settings/Languages/components/TableComponents.js';
+} from './components/TableComponents.js';
 
 type TableLanguages = LanguageSchema & { rowId: string };
 const columnHelper = createColumnHelper<TableLanguages>();

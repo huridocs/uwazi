@@ -3,7 +3,6 @@
 /* eslint-disable max-statements */
 import urljoin from 'url-join';
 import { ObjectId } from 'mongodb';
-import moment from 'moment';
 
 import { storage } from '#api/files/index.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
@@ -39,6 +38,7 @@ import { IXExtractorType } from '#shared/types/extractorType.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ParagraphSchema } from '#shared/types/segmentationType.js';
+import moment from 'moment';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';

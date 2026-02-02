@@ -9,7 +9,7 @@ import {
 } from '#V2/Components/Forms/index.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
-import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Body = () => {
   const { extractors = [] } = useLoaderData() as {

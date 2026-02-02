@@ -9,12 +9,9 @@ import {
   RelationshipPropertyAssignment,
   SelectPropertyAssignment,
   TextPropertyValue,
-} from '#api/core/domain/template/PropertyValue.js';
-import {
-  PropertyDoesNotExistError,
-  PropertyTypeMismatchOnSetError,
-} from '#api/core/domain/entity/errors.js';
-import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+} from '../template/PropertyValue.js';
+import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors.js';
+import { PropertyType } from '../template/PropertyType.js';
 
 type Props = {
   language: LanguageISO6391;

@@ -11,12 +11,9 @@ import dictionatiesModel from '#api/thesauri/dictionariesModel.js';
 import _ from 'lodash';
 
 import { EnforcedWithId } from '#api/odm/index.js';
-import {
-  IXTaskManager,
-  TaskParameters,
-} from '#api/services/informationextraction/InformationExtraction.js';
-import { propertyTypeIsSelectOrMultiSelect } from '#api/services/informationextraction/ixMaterials.js';
-import { IXServices } from '#api/services/informationextraction/IXServices.js';
+import { IXTaskManager, TaskParameters } from './InformationExtraction.js';
+import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials.js';
+import { IXServices } from './IXServices.js';
 
 type Props = {
   taskManager: IXTaskManager;

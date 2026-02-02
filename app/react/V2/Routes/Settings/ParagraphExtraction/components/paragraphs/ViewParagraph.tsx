@@ -10,7 +10,7 @@ import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from '#V2/shared/ParagraphExtractionTypes.js';
-import { DisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/components/DisplayPills.js';
+import { DisplayPill } from '../DisplayPills.js';
 
 const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagraphRow }) => {
   const { sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;

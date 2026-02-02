@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
-
 import api from '#app/utils/api.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 import {
+  TablePXEntityRow,
   PXEntityQuery,
   PXEntityRows,
-  TablePXEntityRow,
+  EntityStatus,
 } from '#V2/shared/ParagraphExtractionTypes.js';
 
 const get = async (

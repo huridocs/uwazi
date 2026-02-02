@@ -4,8 +4,8 @@ import { BookOpenIcon, Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outlin
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Translate } from '#app/I18N/index.js';
 import { userAtom, settingsAtom } from '#V2/atoms/index.js';
-import { LanguageDropdown } from '#V2/Components/UI/Header/LanguageDropdown.js';
-import { MenuLinks } from '#V2/Components/UI/Header/MenuLinks.js';
+import { LanguageDropdown } from './LanguageDropdown.js';
+import { MenuLinks } from './MenuLinks.js';
 
 // No props needed - using Jotai atoms directly
 

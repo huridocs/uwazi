@@ -5,21 +5,21 @@ import {
 import { UpdateTemplateUseCaseContext } from '#api/core/application/UpdateTemplate.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { CreateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/CreateTemplateUseCaseFactory.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
-import { UpdateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTemplateUseCaseFactory.js';
-import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { CreateTemplateUseCaseFactory } from '../factories/CreateTemplateUseCaseFactory.js';
+import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO.js';
+import { UpdateTemplateUseCaseFactory } from '../factories/UpdateTemplateUseCaseFactory.js';
+import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
 import {
   DeleteTemplateRequestDto,
   DeleteTemplateSchema,
-} from '#api/core/infrastructure/express/template/DeleteTemplateController/DTO.js';
-import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
+} from '../express/template/DeleteTemplateController/DTO.js';
+import { DeleteTemplateUseCaseFactory } from '../factories/DeleteTemplateUseCaseFactory.js';
 import {
   SetTemplateAsDefaultRequestDto,
   SetTemplateAsDefaultSchema,
-} from '#api/core/infrastructure/express/template/SetTemplateAsDefaultController/DTO.js';
-import { SetTemplateAsDefaultUseCaseFactory } from '#api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory.js';
-import { ExpressTemplateMapper } from '#api/core/infrastructure/express/template/ExpressTemplateMapper.js';
+} from '../express/template/SetTemplateAsDefaultController/DTO.js';
+import { SetTemplateAsDefaultUseCaseFactory } from '../factories/SetTemplateAsDefaultUseCaseFactory.js';
+import { ExpressTemplateMapper } from '../express/template/ExpressTemplateMapper.js';
 
 type CreateDTO = Omit<TemplateDBO, '_id'>;
 type UpdateDTO = TemplateDBO & { reindex: boolean };

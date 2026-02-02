@@ -4,9 +4,7 @@ import { Info } from 'luxon';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-
 import uniqueID from '#shared/uniqueID.js';
-
 import { t } from '#app/I18N/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
 import { InputError } from '#V2/Components/Forms/InputError.js';
@@ -169,7 +167,7 @@ const DatePickerComponent = React.forwardRef(
 
     return (
       <div className="tw-content">
-        <div id=" w-container" className={`absolute z-50 ${className} tw-datepicker`} />
+        <div id="tw-container" className={`absolute z-50 ${className} tw-datepicker`} />
         <div className="tw-datepicker">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}

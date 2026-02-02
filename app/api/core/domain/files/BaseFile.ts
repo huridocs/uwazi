@@ -1,6 +1,6 @@
 import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { FileTypes } from '#api/files/storage.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileContents } from './FileContents.js';
 
 type Props = {
   id: string;

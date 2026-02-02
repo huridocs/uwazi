@@ -1,6 +1,6 @@
 import { Location } from 'react-router';
-import isArray from 'lodash/isArray.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
+import isArray from 'lodash/isArray.js';
 
 const validateHomePageRoute = (route: string) => {
   const queryParams = '(\\?.*)?)';

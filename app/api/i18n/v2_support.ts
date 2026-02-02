@@ -1,6 +1,6 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTranslationsSyncDataSource } from '#api/i18n.v2/database/MongoTranslationsSyncDataSource.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { Translation } from '#api/i18n.v2/model/Translation.js';
@@ -13,10 +13,10 @@ import { GetTranslationsService } from '#api/i18n.v2/services/GetTranslationsSer
 import { UpsertTranslationsService } from '#api/i18n.v2/services/UpsertTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { EnforcedWithId, models } from '#api/odm/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { IndexedContextValues } from '#api/i18n/translations.js';
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { IndexedContextValues } from './translations.js';
 
 models.translationsV2 = () =>
   new MongoTranslationsSyncDataSource(getConnection(), TransactionManagerFactory.default());

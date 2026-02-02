@@ -1,11 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import uniq from 'lodash/uniq.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-
 import { t, Translate } from '#app/I18N/index.js';
-
 import { ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
 import { InputField } from '#V2/Components/Forms/InputField.js';
@@ -16,7 +14,7 @@ import {
   getAvailableSources,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
-} from '#V2/Routes/Settings/IX/helpers/index.js';
+} from '../helpers/index.js';
 
 const SUPPORTED_PROPERTIES = [
   'text',
@@ -162,7 +160,7 @@ const ExtractorModal = ({
           name,
           source: extractorSource,
           property: getPropertyNameFromExtractPair(values[0]),
-          templates: _.uniq(values.map(value => getTemplateFromExtractPair(value))),
+          templates: uniq(values.map(value => getTemplateFromExtractPair(value))),
         } as ClientIXExtractorType)
       : null;
 
@@ -199,7 +197,7 @@ const ExtractorModal = ({
           placeholder={t('System', 'Extractor name', null, false)}
           hasErrors={hasNameError}
           value={name}
-          onChange={(event: any) => {
+          onChange={event => {
             setName(event.target.value);
             setNameError(false);
           }}
@@ -244,7 +242,7 @@ const ExtractorModal = ({
               <RadioSelect
                 name="pdf"
                 options={getAvailableSources(templates, values, extractor)}
-                onChange={(selected: any) => {
+                onChange={selected => {
                   setSource(selected.currentTarget.value);
                 }}
               />

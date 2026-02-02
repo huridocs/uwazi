@@ -6,8 +6,8 @@ import React, { Component } from 'react';
 import Icon from '#UI/Icon/Icon.js';
 import Doc from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList.js';
-import * as actions from '#app/Relationships/actions/actions.js';
-import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.js';
+import * as actions from '../actions/actions.js';
+import HubRelationshipMetadata from './HubRelationshipMetadata.js';
 import Immutable from 'immutable';
 
 

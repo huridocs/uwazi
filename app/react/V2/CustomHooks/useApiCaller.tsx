@@ -3,7 +3,6 @@ import { useSetAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 interface ApiCallerResult {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { CreateExtractorProvider } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
-import { Dialog } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/Dialog.js';
+import { CreateExtractorProvider } from './CreateExtractorContext.js';
+import { Dialog } from './Dialog.js';
 
 const CreateDialog = ({
   isOpen = false,

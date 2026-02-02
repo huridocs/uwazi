@@ -1,6 +1,6 @@
 import { CustomDBO, CustomDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import { BaseFile, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
+import { BaseFile, FileContentLoader } from './BaseFile.js';
+import { FileWithContents } from './FileWithContents.js';
 
 export class CustomUpload extends FileWithContents {
   protected _type = 'custom' as const;

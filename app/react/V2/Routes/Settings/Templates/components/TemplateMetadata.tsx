@@ -8,8 +8,7 @@ import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 
 import { Select, OptionSchema } from '#V2/Components/Forms/Select.js';
 
-import { Translate } from '#app/I18N/Translate.js';
-import { t } from '#app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 
 const templateColors = [
   '#628ccf',

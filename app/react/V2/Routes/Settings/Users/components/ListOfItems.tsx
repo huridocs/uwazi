@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Group } from '#V2/Routes/Settings/Users/types.js';
+import { User, Group } from '../types.js';
 
 const ListOfItems = ({ items }: { items: User[] | Group[] }) => (
   <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">

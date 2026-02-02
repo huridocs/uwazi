@@ -17,8 +17,8 @@ import {
 import { PermissionSchema, PermissionsDataSchema } from '#shared/types/permissionType.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
+import { permissionsContext } from './permissionsContext.js';
+import { PUBLIC_PERMISSION } from './publicPermission.js';
 
 type PermissionUpdate = WithId<Pick<EntitySchema, '_id' | 'permissions' | 'published'>>;
 

@@ -1,15 +1,13 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams } from 'react-router';
-import _ from 'lodash';
+import has from 'lodash/has.js';
 
 import Footer from '#app/App/Footer.js';
-
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
-
 import { t } from '#app/I18N/index.js';
 import { handledErrors } from '#V2/shared/errorUtils.js';
-import { ErrorFallback } from '#V2/Components/ErrorHandling/ErrorFallback.js';
+import { ErrorFallback } from './ErrorFallback.js';
 
 const GeneralError = () => {
   const { errorCode } = useParams();
@@ -17,7 +15,7 @@ const GeneralError = () => {
 
   const { requestId } = searchParamsFromSearchParams(searchParams);
   const { status } =
-    errorCode && _.has(handledErrors, errorCode) ? handledErrors[errorCode] : handledErrors[404];
+    errorCode && has(handledErrors, errorCode) ? handledErrors[errorCode] : handledErrors[404];
   const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
   const error = handledErrors[status!];
   error.requestId = safeRequestId ? safeRequestId[0] : undefined;

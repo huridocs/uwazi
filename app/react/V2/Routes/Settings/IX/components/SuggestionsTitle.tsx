@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Translate, t } from '#app/I18N/index.js';
 import { Pill } from '#V2/Components/UI/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';

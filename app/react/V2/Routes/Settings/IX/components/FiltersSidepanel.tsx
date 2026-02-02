@@ -8,8 +8,8 @@ import { useSearchParams } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
-import { StatsTooltip } from '#V2/Routes/Settings/IX/components/Tooltip.js';
-import { IXFilters } from '#V2/Routes/Settings/IX/types.js';
+import { StatsTooltip } from './Tooltip.js';
+import { IXFilters } from '../types.js';
 
 type Aggregations = {
   total: number;
@@ -107,7 +107,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Labeled</Translate>}
                 {...register('labeled')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'labeled');
                 }}
               />
@@ -118,7 +118,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Non-labeled</Translate>}
                 {...register('nonLabeled')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'nonLabeled');
                 }}
               />
@@ -146,7 +146,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Non processed</Translate>}
                 {...register('nonProcessed')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'nonProcessed');
                 }}
               />
@@ -157,7 +157,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Obsolete</Translate>}
                 {...register('obsolete')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'obsolete');
                 }}
               />
@@ -168,7 +168,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Error</Translate>}
                 {...register('error')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'error');
                 }}
               />
@@ -185,7 +185,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Match</Translate>}
                 {...register('match')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'match');
                 }}
               />
@@ -196,7 +196,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Mismatch</Translate>}
                 {...register('mismatch')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'mismatch');
                 }}
               />
@@ -207,7 +207,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">No context</Translate>}
                 {...register('noContext')}
-                onChange={(e: any) => {
+                onChange={e => {
                   checkOption(e, 'noContext');
                 }}
               />

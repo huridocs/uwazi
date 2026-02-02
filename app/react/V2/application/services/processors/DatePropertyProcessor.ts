@@ -5,11 +5,8 @@ import {
   DateRangeMetadataProperty,
 } from '#V2/domain/entities/types.js';
 import { DateRangeSchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
-import {
-  ProcessingContext,
-  AdapterMetadataProperty,
-} from '#V2/application/services/processors/types.js';
-import { BasePropertyProcessor } from '#V2/application/services/processors/BasePropertyProcessor.js';
+import { ProcessingContext, AdapterMetadataProperty } from './types.js';
+import { BasePropertyProcessor } from './BasePropertyProcessor.js';
 
 export class DatePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DatePropertyProcessor';

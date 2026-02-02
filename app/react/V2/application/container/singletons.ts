@@ -1,6 +1,6 @@
 import { EntityRepositoryImpl } from '#V2/infrastructure/index.js';
-import { CompositionServiceFactory } from '#V2/application/services/CompositionServiceFactory.js';
-import { EntityCompositionUseCase } from '#V2/application/useCases/EntityCompositionUseCase.js';
+import { CompositionServiceFactory } from '../services/CompositionServiceFactory.js';
+import { EntityCompositionUseCase } from '../useCases/EntityCompositionUseCase.js';
 
 let _entityCompositionUseCase: EntityCompositionUseCase | null = null;
 let _initializationPromise: Promise<EntityCompositionUseCase> | null = null;

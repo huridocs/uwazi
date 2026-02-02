@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
-
 import { Translate } from '#app/I18N/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
-import {
-  EntityStatus,
-  type PXEntityLoaderResponse,
-  type TablePXEntityRow,
+import type {
+  PXEntityLoaderResponse,
+  TablePXEntityRow,
 } from '#V2/shared/ParagraphExtractionTypes.js';
+import { EntityStatus } from '#V2/shared/ParagraphExtractionTypes.js';
 import * as entitiesAPI from '#V2/api/paragraphExtractor/entities.js';
-import { EntitiesTable } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/Table.js';
-import { generateDisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateDisplayPill.js';
-import { ExtractEntitiesDialog } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/ExtractEntitiesDialog/index.js';
-import { EntityFilterSidepanel } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/EntityFilterSidepanel.js';
-import { filterSidepanelStatusAtom } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/filterSidepanelAtom.js';
+import { EntitiesTable } from './components/entities/Table.js';
+import { generateDisplayPill } from './utils/generateDisplayPill.js';
+import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog/index.js';
+import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel.js';
+import { filterSidepanelStatusAtom } from './components/FilterSidePanel/filterSidepanelAtom.js';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',

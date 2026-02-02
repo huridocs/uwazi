@@ -1,4 +1,4 @@
-import { formatter } from '#api/log/infoFormat.js';
+import { formatter } from './infoFormat.js';
 
 const createLegacyLogger = (logger: (message: string) => void) => {
   const DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';

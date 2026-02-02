@@ -8,7 +8,7 @@ import { Translate } from '#app/I18N/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { notificationAtom } from '#V2/atoms/index.js';
-import { FormIntent } from '#V2/Routes/Settings/Users/types.js';
+import { FormIntent } from './types.js';
 
 const useHandleNotifications = () => {
   const fetchers = useFetchers();

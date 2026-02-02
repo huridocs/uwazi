@@ -1,16 +1,11 @@
 import { ObjectId } from 'mongodb';
-
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-
+import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
-
-import { Suggestions } from '#api/suggestions/suggestions.js';
-
+import { Suggestions } from '../suggestions.js';
+import { DataType, UwaziFilterQuery } from '#api/odm/model.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-
-import { updateStates } from '#api/suggestions/updateState.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { UwaziFilterQuery, DataType } from '#api/odm/model.js';
+import { updateStates } from '../updateState.js';
 
 type Input = { extractorId: string; batchSize: number; tenantName?: string };
 

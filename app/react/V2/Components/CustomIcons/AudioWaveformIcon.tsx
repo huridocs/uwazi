@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomIconProps } from '#V2/Components/CustomIcons/types.js';
+import { CustomIconProps } from './types.js';
 
 const AudioWaveformIcon = ({ className, color = '#9ca3af' }: CustomIconProps) => {
   const bars = 60;

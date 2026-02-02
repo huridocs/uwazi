@@ -17,10 +17,10 @@ import {
   MAX_TRAINING_FILES_NUMBER,
   MAX_TRAINING_ENTITIES_NUMBER,
   PropertyValue,
-} from '#api/services/informationextraction/ixMaterials.js';
-import { IXServices } from '#api/services/informationextraction/IXServices.js';
-import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
-import { deriveTrainingPropertyValue } from '#api/services/informationextraction/propertyValue.js';
+} from './ixMaterials.js';
+import { IXServices } from './IXServices.js';
+import { IXModelsModel } from './IXModelsModel.js';
+import { deriveTrainingPropertyValue } from './propertyValue.js';
 
 // Stage A — fetch marked for training
 async function getMarkedEntityPairs(extractorId: ObjectId) {

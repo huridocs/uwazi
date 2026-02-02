@@ -10,9 +10,7 @@ import { Button, Pill } from '#V2/Components/UI/index.js';
 import { EmbededButton } from '#V2/Components/UI/EmbededButton.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { propertyIcons } from '#V2/Components/UI/Icons.js';
-
 import { ClientPropertySchema } from '#app/istore.js';
-
 import { Translate } from '#app/I18N/index.js';
 import {
   TableExtractor,
@@ -20,12 +18,12 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
   SuggestionValue,
-} from '#V2/Routes/Settings/IX/types.js';
-import { Dot } from '#V2/Routes/Settings/IX/components/Dot.js';
-import { SuggestedValue } from '#V2/Routes/Settings/IX/components/SuggestedValue.js';
-import { acceptedSuggestions } from '#V2/Routes/Settings/IX/components/atoms/index.js';
-import { ContextCell } from '#V2/Routes/Settings/IX/components/ContextCell.js';
-import { calculateOptimalProportions } from '#V2/Routes/Settings/IX/helpers/contextHelpers.js';
+} from '../types.js';
+import { Dot } from './Dot.js';
+import { SuggestedValue } from './SuggestedValue.js';
+import { acceptedSuggestions } from './atoms/index.js';
+import { ContextCell } from './ContextCell.js';
+import { calculateOptimalProportions } from '../helpers/contextHelpers.js';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();

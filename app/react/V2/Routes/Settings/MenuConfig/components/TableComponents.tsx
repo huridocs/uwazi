@@ -6,7 +6,7 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 
 import { Button } from '#V2/Components/UI/index.js';
 
-import { Link } from '#V2/Routes/Settings/MenuConfig/shared.js';
+import { Link } from '../shared.js';
 
 const EditButton = ({ cell, column }: CellContext<Link, string>) => (
   <Button

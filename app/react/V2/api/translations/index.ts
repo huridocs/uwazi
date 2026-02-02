@@ -1,19 +1,12 @@
 import { Params } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-
 import api from '#app/utils/api.js';
-
 import { I18NApi } from '#app/I18N/index.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { ClientTranslationSchema, ClientTranslationContextSchema } from '#app/istore.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { TranslationValue } from '#V2/shared/types.js';
-
 import { httpRequest } from '#shared/superagent.js';
-
 import loadingBar from '#app/App/LoadingProgressBar.js';
 
 const filterTranslationsByContext = (

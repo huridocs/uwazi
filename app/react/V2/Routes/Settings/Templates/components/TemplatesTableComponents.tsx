@@ -6,7 +6,7 @@ import { StarIcon } from '@heroicons/react/20/solid';
 
 import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import { Tooltip } from 'flowbite-react';
-import { TemplateRow } from '#V2/Routes/Settings/Templates/types.js';
+import { TemplateRow } from '../types.js';
 
 const columnHelper = createColumnHelper<TemplateRow>();
 

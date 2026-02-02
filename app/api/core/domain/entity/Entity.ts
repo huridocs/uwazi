@@ -1,7 +1,6 @@
 import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { AbstractSelectProperty } from '#api/core/domain/template/select/AbstractSelectProperty.js';
 import { IndexTypes } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { SharedId } from '#api/core/domain/entity/SharedId.js';
@@ -16,10 +15,11 @@ import {
   EntityTranslation,
   EntityTranslationProps,
 } from '#api/core/domain/entity/EntityTranslation.js';
-import { AccessGrant, EntityPermission } from '#api/core/domain/entity/EntityPermission.js';
-import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
-import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
-import { EntityTranslationDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import { AccessGrant, EntityPermission } from './EntityPermission.js';
+import { PermissionType } from './PermissionType.js';
+import { AccessLevel } from './AccessLevel.js';
+import { EntityTranslationDoesNotExistError } from './errors.js';
+import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
 
 type CreateInput = {
   languages: LanguageISO6391[];

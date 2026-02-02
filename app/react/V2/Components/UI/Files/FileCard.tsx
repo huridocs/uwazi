@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
-import { FilePreview } from '#V2/Components/UI/Files/FilePreview.js';
+import { FilePreview } from './FilePreview.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { formatBytes, formatDuration, getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { FileType } from '#shared/types/fileType.js';

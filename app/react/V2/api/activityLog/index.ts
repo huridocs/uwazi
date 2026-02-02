@@ -1,9 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
-
 import api from '#app/utils/api.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
 interface ActivityLogResponse {

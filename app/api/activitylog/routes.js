@@ -2,7 +2,7 @@ import { ActivityLogGetRequestSchema } from '#shared/types/activityLogApiSchemas
 
 import { parseQuery, validation } from '#api/utils/index.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
-import activitylog from '#api/activitylog/activitylog.js';
+import activitylog from './activitylog.js';
 
 export default app => {
   app.get(

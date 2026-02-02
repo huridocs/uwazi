@@ -5,7 +5,6 @@ import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-
 import uniqueID from '#shared/uniqueID.js';
 import { Label } from '#V2/Components/Forms/Label.js';
 import { InputError } from '#V2/Components/Forms/InputError.js';

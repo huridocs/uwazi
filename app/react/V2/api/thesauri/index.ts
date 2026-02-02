@@ -1,10 +1,7 @@
 import api from '#app/utils/api.js';
-
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';
-
 import { httpRequest } from '#shared/superagent.js';
 
 const get = async (

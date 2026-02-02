@@ -1,5 +1,5 @@
-import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { Entity, EntityIcon } from '../domain/entity/Entity.js';
+import { InputFile } from '../infrastructure/files/InputFile.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { EntitiesService } from './EntitiesService.js';
 import { FilesService } from './FilesService.js';

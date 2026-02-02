@@ -2,12 +2,12 @@ import React from 'react';
 import loadable from '@loadable/component';
 
 import { Translate } from '#app/I18N/index.js';
-import { CodeEditorProps } from '#V2/Components/CodeEditor/CodeEditorComponent.js';
+import { CodeEditorProps } from './CodeEditorComponent.js';
 
 const CodeEditorComponent = loadable(
   async () => {
     const { CodeEditorComponent: Component } = await import(
-      /* webpackChunkName: "LazyLoadMonacoEditor" */ './CodeEditorComponent'
+      /* webpackChunkName: "LazyLoadMonacoEditor" */ './CodeEditorComponent.js'
     );
     return Component;
   },

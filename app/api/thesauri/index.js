@@ -1,1 +1,1 @@
-export { default } from '#api/thesauri/thesauri.js';
+export { default } from './thesauri.js';

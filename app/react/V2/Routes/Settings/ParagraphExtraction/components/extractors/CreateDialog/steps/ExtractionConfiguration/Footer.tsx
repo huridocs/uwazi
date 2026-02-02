@@ -2,15 +2,13 @@
 
 import React from 'react';
 import { Button } from '#V2/Components/UI/index.js';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { captureException } from '@sentry/react';
 import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 import { isClient } from '#app/utils/index.js';
 
 const Footer = () => {

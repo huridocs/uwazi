@@ -3,16 +3,13 @@ import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import get from 'lodash/get.js';
 import isArray from 'lodash/isArray.js';
-
 import { ClientTemplateSchema } from '#app/istore.js';
-
 import { Translate } from '#app/I18N/index.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
 import { Truncate } from '#V2/Components/UI/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
-
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { EntitySuggestion } from '#V2/Routes/Settings/IX/types.js';
+import { EntitySuggestion } from '../types.js';
 
 // eslint-disable-next-line max-statements
 const SuggestedValue = ({

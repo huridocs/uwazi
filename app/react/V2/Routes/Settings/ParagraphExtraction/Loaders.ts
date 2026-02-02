@@ -13,7 +13,6 @@ import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from '#V2/shared/ParagraphExtractionTypes.js';
-
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 import { ClientEntitySchema } from '#app/istore.js';
 

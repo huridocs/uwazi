@@ -1,7 +1,5 @@
-import { Pill } from '#V2/Components/UI/index.js';
-
 import React from 'react';
-
+import { Pill } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { EntityStatus } from '#V2/shared/ParagraphExtractionTypes.js';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';

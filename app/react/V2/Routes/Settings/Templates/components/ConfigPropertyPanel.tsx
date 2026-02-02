@@ -21,13 +21,13 @@ import {
   FilterField,
   StyleField,
   FullWidthField,
-} from '#V2/Routes/Settings/Templates/components/fields/index.js';
-import { ThesaurusField } from '#V2/Routes/Settings/Templates/components/fields/ThesaurusField.js';
-import { RelationshipFields } from '#V2/Routes/Settings/Templates/components/fields/RelationshipFields.js';
-import { MatchingPropertiesTable } from '#V2/Routes/Settings/Templates/components/MatchingPropertiesTable.js';
-import { translationsKeys } from '#V2/Routes/Settings/Templates/helpers.js';
-import { PropertyRow } from '#V2/Routes/Settings/Templates/types.js';
-import { GeneratedIdField } from '#V2/Routes/Settings/Templates/components/fields/GeneratedIdField.js';
+} from './fields/index.js';
+import { ThesaurusField } from './fields/ThesaurusField.js';
+import { RelationshipFields } from './fields/RelationshipFields.js';
+import { MatchingPropertiesTable } from './MatchingPropertiesTable.js';
+import { translationsKeys } from '../helpers.js';
+import { PropertyRow } from '../types.js';
+import { GeneratedIdField } from './fields/GeneratedIdField.js';
 import { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 
 interface ConfigPropertyPanelProps {

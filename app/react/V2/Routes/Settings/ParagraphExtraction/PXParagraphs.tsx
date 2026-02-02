@@ -7,9 +7,9 @@ import type {
   TablePXEntityParagraphRow,
 } from '#V2/shared/ParagraphExtractionTypes.js';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { ParagraphsTable } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/Table.js';
-import { ViewParagraphSidePanel } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/ViewParagraphSidePanel.js';
-import { PDFSidepanel } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/PDFSidepanel.js';
+import { ParagraphsTable } from './components/paragraphs/Table.js';
+import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel.js';
+import { PDFSidepanel } from './components/paragraphs/PDFSidepanel.js';
 
 const PXParagraphDashboard = () => {
   const { extractorId } = useParams();

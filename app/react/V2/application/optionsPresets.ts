@@ -1,4 +1,4 @@
-import { CompositionOptions } from '#V2/application/services/processors/types.js';
+import { CompositionOptions } from './services/processors/types.js';
 
 export const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
 

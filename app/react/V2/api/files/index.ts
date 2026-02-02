@@ -1,10 +1,7 @@
 import api from '#app/utils/api.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { FileType } from '#shared/types/fileType.js';
 
 enum OcrStatus {
@@ -96,5 +93,5 @@ const getOcrStatus = async (
 };
 
 export { OcrStatus };
-export { UploadService } from '#V2/api/files/UploadService.js';
+export { UploadService } from './UploadService.js';
 export { getById, getByType, update, remove, getPagePlaintext, postToOcr, getOcrStatus };

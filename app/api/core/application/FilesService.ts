@@ -1,29 +1,29 @@
+import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
-import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
 import date from '#api/utils/date.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ObjectId } from 'mongodb';
 import { BaseFile } from '../domain/files/BaseFile.js';
+import { ProcessingPDF } from '../domain/files/ProcessingPDF.js';
+import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
+import { Thumbnail } from '../domain/files/Thumbnail.js';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO.js';
+import { PathManager } from '../infrastructure/files/PathManager.js';
 import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { DeleteFileFromStorageJobHandler } from '../infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { PDFService } from '../infrastructure/services/PDFService.js';
 import { EventsBus } from '../libs/eventsbus/index.js';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher.js';
 import { Result } from '../libs/Result.js';
+import { FilesDataSource } from './contracts/FilesDataSource.js';
+import { FileStorage } from './contracts/FileStorage.js';
 import { IdGenerator } from './contracts/IdGenerator.js';
 import { TransactionManager } from './contracts/TransactionManager.js';
-import { DeleteFileFromStorageJobHandler } from '../infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
-import { PathManager } from '../infrastructure/files/PathManager.js';
 
 type Deps = {
   idGenerator: IdGenerator;
