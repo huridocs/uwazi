@@ -1,4 +1,4 @@
-import { UseCase } from '#api/common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import {
@@ -20,9 +20,8 @@ type Dependencies = {
 };
 
 class PXGetEntityParagraphs
-  implements UseCase<PXGetEntityParagraphsInput, GetExtractedParagraphsOutput>
-{
-  constructor(private dependencies: Dependencies) {}
+  implements UseCase<PXGetEntityParagraphsInput, GetExtractedParagraphsOutput> {
+  constructor(private dependencies: Dependencies) { }
 
   async execute(input: PXGetEntityParagraphsInput): Promise<GetExtractedParagraphsOutput> {
     const { extractorsQueryService, settingsDS, extractorsDS } = this.dependencies;

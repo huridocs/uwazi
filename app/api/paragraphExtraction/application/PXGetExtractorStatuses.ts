@@ -1,6 +1,6 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { UseCase } from '#api/common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
@@ -26,9 +26,8 @@ type Dependencies = {
 };
 
 class PXGetExtractorStatuses
-  implements UseCase<GetExtractorStatusesInput, PXGetExtractorStatusesOutput>
-{
-  constructor(private dependencies: Dependencies) {}
+  implements UseCase<GetExtractorStatusesInput, PXGetExtractorStatusesOutput> {
+  constructor(private dependencies: Dependencies) { }
 
   async execute(input: GetExtractorStatusesInput): Promise<PXGetExtractorStatusesOutput> {
     const { extractorsQueryService, settingsDS, filesDS } = this.dependencies;

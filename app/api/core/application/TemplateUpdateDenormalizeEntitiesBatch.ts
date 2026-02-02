@@ -1,5 +1,5 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { UseCase } from '#api/common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
@@ -37,7 +37,7 @@ type Dependencies = {
 };
 
 export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Output> {
-  constructor(private dependencies: Dependencies) {}
+  constructor(private dependencies: Dependencies) { }
 
   async execute({
     entitiesIds,

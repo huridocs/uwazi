@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 
-import { UseCase } from '#api/common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
 
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 
@@ -50,7 +50,7 @@ type SendMaterialsToServiceInput = {
 };
 
 export class TrainModelForPDF implements UseCase<Input, Output> {
-  constructor(private props: Dependencies) {}
+  constructor(private props: Dependencies) { }
 
   async execute({ extractor }: Input): Promise<Output> {
     try {

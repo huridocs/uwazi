@@ -1,4 +1,4 @@
-import { UseCase } from '#api/common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
 
