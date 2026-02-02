@@ -1,20 +1,12 @@
 /* eslint-disable max-statements */
-
 import { UseCase } from '#api/core/libs/UseCase.js';
-
 import { emitToTenant } from '#api/socketio/setupSockets.js';
-
 import { storage } from '#api/files/index.js';
 import urljoin from 'url-join';
-
 import request from '#shared/JSONRequest.js';
-
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
-
 import { EnforcedWithId } from '#api/odm/index.js';
-
 import { IXExtractorType } from '#shared/types/extractorType.js';
-
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import {
   FileWithAggregation,

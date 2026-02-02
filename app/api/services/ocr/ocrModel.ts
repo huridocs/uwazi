@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 import { instanceModel } from '#api/odm/index.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 

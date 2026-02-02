@@ -1,12 +1,9 @@
 /* eslint-disable max-statements */
-
 import {
   Dispatchable,
   HeartbeatCallback,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-
 import { tenants } from '#api/tenants/index.js';
-
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { ExtractorNotFound, Extractors } from './ixextractors.js';
 import { TrainModelForPDF } from './TrainModelForPDF.js';

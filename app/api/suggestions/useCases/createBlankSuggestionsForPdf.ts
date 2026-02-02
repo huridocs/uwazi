@@ -6,7 +6,7 @@ import { files } from '#api/files/index.js';
 
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { CreateBlankSuggestionsInput } from '#api/suggestions/useCases/createBlankSuggestionStrategy.js';
+import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy.js';
 import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 
 type Input = CreateBlankSuggestionsInput;

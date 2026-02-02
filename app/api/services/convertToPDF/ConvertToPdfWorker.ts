@@ -1,13 +1,8 @@
 import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd.js';
-
 import { files, generateFileName, storage } from '#api/files/index.js';
-
 import { processDocument } from '#api/files/processDocument.js';
-
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-
 import { emitToTenant } from '#api/socketio/setupSockets.js';
-
 import { tenants } from '#api/tenants/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
@@ -15,7 +10,7 @@ import * as os from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { convertToPDFService } from '#api/services/convertToPDF/convertToPdfService.js';
+import { convertToPDFService } from './convertToPdfService.js';
 
 const ajv = new Ajv();
 

@@ -22,7 +22,7 @@ import ixmodels from './ixmodels.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
+import templatesModel from '#api/core/v1_layer/templates/templates.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 

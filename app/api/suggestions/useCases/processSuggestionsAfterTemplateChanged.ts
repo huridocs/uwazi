@@ -10,7 +10,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { CreateBlankSuggestionStrategy } from '#api/suggestions/useCases/createBlankSuggestionStrategy.js';
+import { CreateBlankSuggestionStrategy } from './createBlankSuggestionStrategy.js';
 
 type Input = {
   oldTemplateId: ObjectId;

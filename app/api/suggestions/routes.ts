@@ -1,7 +1,7 @@
 import type { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from '#api/suggestions/suggestions.js';
+import { Suggestions } from './suggestions.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';
 
@@ -15,10 +15,10 @@ import {
   IXSuggestionsQuery,
 } from '#shared/types/suggestionType.js';
 import { handleError } from '#api/utils/index.js';
-import { serviceMiddleware } from '#api/suggestions/serviceMiddleware.js';
-import { GetSuggestionsForTableQuery } from '#api/suggestions/getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
-import { ProcessSuggestionsController } from '#api/suggestions/adapters/ProcessSuggestionsController.js';
-import { TrainingSetController } from '#api/suggestions/adapters/TrainingSetController.js';
+import { serviceMiddleware } from './serviceMiddleware.js';
+import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController.js';
+import { TrainingSetController } from './adapters/TrainingSetController.js';
 
 const IX = new InformationExtraction();
 

@@ -1,24 +1,3 @@
-import { ObjectId } from 'mongodb';
-import { Readable } from 'stream';
-import urljoin from 'url-join';
-import { files, storage } from '#api/files/index.js';
-
-import relationships from '#api/relationships/index.js';
-
-import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-
-import settings from '#api/settings/settings.js';
-
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-
-import createError from '#api/utils/Error.js';
-
-import { handleError } from '#api/utils/handleError.js';
-
-import { LanguageUtils } from '#shared/language/index.js';
-import request from '#shared/JSONRequest.js';
-
-import { FileType } from '#shared/types/fileType.js';
 import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
@@ -26,18 +5,31 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { files, storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import relationships from '#api/relationships/index.js';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import settings from '#api/settings/settings.js';
+import { emitToTenant } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import users from '#api/users/users.js';
+import createError from '#api/utils/Error.js';
+import { handleError } from '#api/utils/handleError.js';
+import { ObjectId } from 'mongodb';
+import request from '#shared/JSONRequest.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { FileType } from '#shared/types/fileType.js';
+import { Readable } from 'stream';
+import urljoin from 'url-join';
 import { EnforcedWithId } from '#api/odm/model.js';
-import { OcrRecord, OcrStatus } from '#api/services/ocr/ocrModel.js';
+import { OcrRecord, OcrStatus } from './ocrModel.js';
 import {
   createForFile,
   getForSourceFile,
   getForSourceOrTargetFile,
   markError,
   markReady,
-} from '#api/services/ocr/ocrRecords.js';
+} from './ocrRecords.js';
 
 interface OcrSettings {
   url: string;

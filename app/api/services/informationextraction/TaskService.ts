@@ -1,15 +1,10 @@
 import { IXExtractorType } from '#shared/types/extractorType.js';
-
 import { PropertySchema } from '#shared/types/commonTypes.js';
-
 import settings from '#api/settings/index.js';
 import { ObjectId } from 'mongodb';
-
 import entities from '#api/entities/index.js';
-
 import dictionatiesModel from '#api/thesauri/dictionariesModel.js';
 import _ from 'lodash';
-
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXTaskManager, TaskParameters } from './InformationExtraction.js';
 import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials.js';
@@ -29,7 +24,7 @@ export class IXTaskService {
 
   // eslint-disable-next-line max-statements
   async createModelTask({ extractor }: CreateModelTaskInput) {
-    const targetProperty = (await IXServices.getTargetProperty({ extractor })) as PropertySchema;
+    const targetProperty = await IXServices.getTargetProperty({ extractor });
 
     const params: TaskParameters = {
       id: extractor._id.toString(),

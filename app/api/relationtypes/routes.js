@@ -1,4 +1,4 @@
-import relationtypes from '#api/relationtypes/relationtypes.js';
+import relationtypes from './relationtypes.js';
 import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import { validation } from '#api/utils/index.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';

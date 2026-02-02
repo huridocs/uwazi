@@ -11,8 +11,8 @@ import {
   formatCreationDate,
   formatDocuments,
   formatAttachments,
-} from '#api/csv/typeFormatters.js';
-import { EntitySchema } from '#shared/types/entityType';
+} from './typeFormatters.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 export type SearchResults = {
   rows: any[];

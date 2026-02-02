@@ -1,4 +1,4 @@
-import contact from '#api/contact/contact.js';
+import contact from './contact.js';
 import { captchaAuthorization } from '#api/auth/index.js';
 import { validation } from '#api/utils/index.js';
 

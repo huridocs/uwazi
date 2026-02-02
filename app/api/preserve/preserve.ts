@@ -1,5 +1,4 @@
 import { WithId } from '#api/odm/index.js';
-
 import settings from '#api/settings/index.js';
 import request from '#shared/JSONRequest.js';
 import createError from '#api/utils/Error.js';
@@ -10,13 +9,13 @@ import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
-import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
-import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '../tenants/index.js';
 

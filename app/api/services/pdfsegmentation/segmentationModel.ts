@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
-
 import { instanceModel } from '#api/odm/index.js';
-
 import { SegmentationType } from '#shared/types/segmentationType.js';
 
 const props = {

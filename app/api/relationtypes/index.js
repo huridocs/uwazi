@@ -1,3 +1,3 @@
-import relationtypes from '#api/relationtypes/relationtypes.js';
+import relationtypes from './relationtypes.js';
 
 export default relationtypes;

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable max-lines */
-import Ajv, { Schema } from 'ajv';
+import Ajv from 'ajv';
 
 import date from '#api/utils/date.js';
 
@@ -42,7 +42,7 @@ type TitleAsProperty = {
   type: 'title';
 };
 
-const createAjvValidator = (schema: Schema) => {
+const createAjvValidator = (schema: any) => {
   const ajv = new Ajv({ allErrors: true });
   ajv.addVocabulary(['tsType']);
   return syncWrapValidator(ajv.compile(schema));

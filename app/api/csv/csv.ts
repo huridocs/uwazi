@@ -1,7 +1,7 @@
 import csvtojson from 'csvtojson';
 
 import { Readable } from 'stream';
-import importFile, { ImportFile } from '#api/csv/importFile.js';
+import importFile, { ImportFile } from './importFile.js';
 
 type CSVRow = { [k: string]: string };
 

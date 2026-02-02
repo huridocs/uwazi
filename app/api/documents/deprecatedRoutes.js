@@ -1,7 +1,7 @@
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { legacyLogger } from '#api/log/index.js';
 import { validation } from '#api/utils/index.js';
-import documents from '#api/documents/documents.js';
+import documents from './documents.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 

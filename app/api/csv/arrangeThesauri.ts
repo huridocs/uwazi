@@ -16,13 +16,13 @@ import { DoubleIndexedObject } from '#shared/data_utils/DoubleIndexedObject.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
-import csv, { CSVRow } from '#api/csv/csv.js';
-import { toSafeName } from '#api/csv/entityRow.js';
-import { LabelInfo, splitMultiselectLabels } from '#api/csv/typeParsers/multiselect.js';
-import { determineParentChildRelationship } from '#api/csv/typeParsers/select.js';
-import { headerWithLanguage } from '#api/csv/csvDefinitions.js';
-import { sanitizeStringValue } from '#api/csv/sanitizationUtils.js';
-import { LabelInfoBase } from '#api/csv/typeParsers/shared.js';
+import csv, { CSVRow } from './csv.js';
+import { toSafeName } from './entityRow.js';
+import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect.js';
+import { determineParentChildRelationship } from './typeParsers/select.js';
+import { headerWithLanguage } from './csvDefinitions.js';
+import { sanitizeStringValue } from './sanitizationUtils.js';
+import { LabelInfoBase } from './typeParsers/shared.js';
 
 class ArrangeThesauriError extends Error {
   row: CSVRow;

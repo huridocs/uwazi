@@ -1,12 +1,8 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-
 import { FileType } from '#shared/types/fileType.js';
-
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { inspect } from 'util';
-
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
 import { IXValidationError } from '#api/suggestions/ixValidationError.js';

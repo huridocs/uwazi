@@ -8,7 +8,7 @@ import { UserSchema } from '#shared/types/userType.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { createUpdateLogHelper } from '#api/odm/logHelper.js';
+import { createUpdateLogHelper } from './logHelper.js';
 import {
   DataType,
   OdmModel,
@@ -16,7 +16,7 @@ import {
   UwaziFilterQuery,
   UwaziQueryOptions,
   EnforcedWithId,
-} from '#api/odm/model.js';
+} from './model.js';
 
 type WithPermissions<T> = T & { published?: boolean; permissions?: PermissionSchema[] };
 type WithPermissionsDataType<T> = DataType<WithPermissions<T>>;

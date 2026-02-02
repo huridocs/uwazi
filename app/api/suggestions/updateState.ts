@@ -9,13 +9,13 @@ import {
 import { propertyIsMultiselect, propertyIsRelationship } from '#shared/propertyTypes.js';
 import { LanguagesListSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { IXExtractorModel } from '#api/services/informationextraction/IXExtractorModel.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsModel } from './IXSuggestionsModel.js';
 import {
   getCurrentValueStage,
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
-} from '#api/suggestions/pipelineStages.js';
+} from './pipelineStages.js';
 
 type SuggestionsAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
   _id: any;

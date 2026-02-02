@@ -1,10 +1,8 @@
 import { IXExtractorType } from '#shared/types/extractorType.js';
-
 import { PropertySchema } from '#shared/types/commonTypes.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-import { CreateBlankSuggestionsForPdf } from '#api/suggestions/useCases/createBlankSuggestionsForPdf.js';
-import { CreateBlankSuggestionsForProperty } from '#api/suggestions/useCases/createBlankSuggestionsForProperty.js';
+import { CreateBlankSuggestionsForPdf } from './createBlankSuggestionsForPdf.js';
+import { CreateBlankSuggestionsForProperty } from './createBlankSuggestionsForProperty.js';
 
 export type CreateBlankSuggestionsInput = {
   extractor: IXExtractorType;

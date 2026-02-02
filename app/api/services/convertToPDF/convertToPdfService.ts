@@ -1,9 +1,6 @@
 import { storage } from '#api/files/index.js';
-
 import { tenants } from '#api/tenants/index.js';
-
 import JSONRequest from '#shared/JSONRequest.js';
-
 import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 
