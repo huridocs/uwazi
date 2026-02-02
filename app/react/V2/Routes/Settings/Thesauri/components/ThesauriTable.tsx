@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 import { Table } from '#V2/Components/UI/index.js';
 
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
-import { columnsThesauri } from '#V2/Routes/Settings/Thesauri/components/TableComponents.js';
+import { columnsThesauri } from './TableComponents.js';
 
 interface ThesauriRow extends ClientThesaurus {
   rowId: string;

@@ -15,10 +15,8 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 
 import entities from '#api/entities/entities.js';
-
 import thesauris, { flatThesaurusValues } from '#api/thesauri/thesauri.js';
-
-import { validators, customErrorMessages } from '#api/entities/validation/metadataValidators.js';
+import { validators, customErrorMessages } from './metadataValidators.js';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 

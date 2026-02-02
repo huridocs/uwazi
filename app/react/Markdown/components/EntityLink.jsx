@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { I18NLink } from '#app/I18N/index.js';
-import PagesContext from '#app/Markdown/components/Context.js';
+import PagesContext from './Context.js';
 
 export default class EntityLink extends Component {
   render() {

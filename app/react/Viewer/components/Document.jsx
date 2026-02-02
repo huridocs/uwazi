@@ -9,7 +9,7 @@ import React, { Component, createRef } from 'react';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { PDF } from '#app/PDF/index.js';
 import Immutable from 'immutable';
-import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
+import { highlightSnippet } from '../actions/uiActions.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { atomStore, pdfScaleAtom } from '#V2/atoms/index.js';
 

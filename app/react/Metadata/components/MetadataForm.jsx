@@ -12,14 +12,14 @@ import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import Icon from '#UI/Icon/Icon.js';
 import { wrapEntityMetadata } from '#app/Metadata/index.js';
-import defaultTemplate from '#app/Metadata/helpers/defaultTemplate.js';
-import validator from '#app/Metadata/helpers/validator.js';
-import { IconField } from '#app/Metadata/components/IconField.js';
-import MetadataFormFields from '#app/Metadata/components/MetadataFormFields.js';
-import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.js';
-import { SupportingFiles } from '#app/Metadata/components/SupportingFiles.js';
-import { PDFUpload } from '#app/Metadata/components/PDFUpload.js';
-import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.js';
+import defaultTemplate from '../helpers/defaultTemplate.js';
+import validator from '../helpers/validator.js';
+import { IconField } from './IconField.js';
+import MetadataFormFields from './MetadataFormFields.js';
+import { MetadataExtractor } from './MetadataExtractor.js';
+import { SupportingFiles } from './SupportingFiles.js';
+import { PDFUpload } from './PDFUpload.js';
+import { DeleteSelectionButton } from './DeleteSelectionButton.js';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 

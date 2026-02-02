@@ -4,8 +4,8 @@ import { model as updateLog, UpdateLog } from '#api/updatelogs/index.js';
 import { explicitOrdering } from '#shared/data_utils/arrayUtils.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
-import { ProcessNamespaces } from '#api/sync/processNamespaces.js';
-import syncsModel from '#api/sync/syncsModel.js';
+import { ProcessNamespaces } from './processNamespaces.js';
+import syncsModel from './syncsModel.js';
 
 const removeDeletedTemplatesFromConfig = async (config: SyncConfig['config']) => {
   const newConfig = { ...config };

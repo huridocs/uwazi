@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import omit from 'lodash/omit.js';
 import api from '#app/utils/api.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
@@ -58,7 +58,7 @@ export function loadDefaultViewerMenu() {
   };
 }
 export function saveDocument(doc, fileID) {
-  const updateDoc = _.omit(doc, 'fullText', 'defaultDoc');
+  const updateDoc = omit(doc, 'fullText', 'defaultDoc');
   return async (dispatch, getState) => {
     const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
     const entityFileId = fileID || getState().documentViewer.doc.toJS().defaultDoc._id;

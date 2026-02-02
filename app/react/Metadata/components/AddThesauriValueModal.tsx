@@ -1,8 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { useForm } from 'react-hook-form';
-import Modal from '#app/Layout/Modal.js';
-
+import Modal from '../../Layout/Modal.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 
 interface AddThesauriValueModalProps {

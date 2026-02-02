@@ -1,7 +1,7 @@
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import userGroups from '#api/usergroups/userGroups.js';
-import model from '#api/usergroups/userGroupsModel.js';
+import model from './userGroupsModel.js';
 
 export const getByMemberIdList = async (userIds: ObjectIdSchema[]) =>
   model.get({ 'members.refId': { $in: userIds } });

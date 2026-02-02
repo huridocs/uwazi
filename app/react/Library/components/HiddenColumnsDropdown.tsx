@@ -1,9 +1,10 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-
+import Immutable from 'immutable';
 import { DropdownList } from '#app/Forms/index.js';
-
+import { TableViewColumn, IStore } from '#app/istore.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import {
   ColumnItem,
   ValueItem,
@@ -13,12 +14,8 @@ import {
   setTableViewColumnHidden,
   setTableViewAllColumnsHidden,
 } from '#app/Library/actions/libraryActions.js';
-
 import { IImmutable } from '#shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
-import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
-import { TableViewColumn, IStore } from '#app/istore.js';
-import Immutable from 'immutable';
 
 interface HideColumnsComponentProps {
   columns: Immutable.List<IImmutable<TableViewColumn>>;

@@ -1,4 +1,4 @@
-import * as types from '#app/Viewer/actions/actionTypes.js';
+import * as types from './actionTypes.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { actions } from '#app/BasicReducer/index.js';
@@ -6,7 +6,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { actions as connectionsActions } from '#app/Connections/index.js';
 import { reloadRelationships } from '#app/Relationships/actions/actions.js';
-import * as uiActions from '#app/Viewer/actions/uiActions.js';
+import * as uiActions from './uiActions.js';
 
 export function setReferences(references) {
   return {

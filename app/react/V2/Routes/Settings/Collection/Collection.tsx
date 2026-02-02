@@ -5,29 +5,21 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import _ from 'lodash';
+import isUndefined from 'lodash/isUndefined.js';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
-
 import { notificationAtom } from '#V2/atoms/index.js';
-
 import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
-
 import { Button, Card } from '#V2/Components/UI/index.js';
-
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-
 import { Translate, t } from '#app/I18N/index.js';
-
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import * as tips from '#V2/Routes/Settings/Collection/collectionSettingsTips.js';
-import { CollectionOptionToggle } from '#V2/Routes/Settings/Collection/CollectionOptionToggle.js';
+import * as tips from './collectionSettingsTips.js';
+import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -100,7 +92,7 @@ const Collection = () => {
   });
 
   const submit = async (data: ClientSettings) => {
-    if (!_.isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
+    if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
       delete data.newNameGeneration;
     }
     data.private = !data.private;

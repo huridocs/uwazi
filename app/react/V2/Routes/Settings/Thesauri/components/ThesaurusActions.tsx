@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 
-import { ConfirmationCallback } from '#V2/Routes/Settings/Thesauri/helpers.js';
+import { ConfirmationCallback } from '../helpers.js';
 
 interface DeletionModalProps {
   confirmCallback: ConfirmationCallback;

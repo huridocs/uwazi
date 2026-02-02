@@ -9,12 +9,12 @@ import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { FavoriteBanner } from '#app/Favorites/index.js';
 import helpers from '#app/Documents/helpers.js';
 import { Translate } from '#app/I18N/index.js';
-import { RowList, ItemFooter } from '#app/Layout/Lists.js';
-import DocumentLanguage from '#app/Layout/DocumentLanguage.js';
-import Icon from '#app/Layout/Icon.js';
-import Tip from '#app/Layout/Tip.js';
-import ItemSnippet from '#app/Layout/ItemSnippet.js';
-import TemplateLabel from '#app/Layout/TemplateLabel.js';
+import { RowList, ItemFooter } from './Lists.js';
+import DocumentLanguage from './DocumentLanguage.js';
+import Icon from './Icon.js';
+import Tip from './Tip.js';
+import ItemSnippet from './ItemSnippet.js';
+import TemplateLabel from './TemplateLabel.js';
 
 class Item extends Component {
   getSearchSnipett(doc) {

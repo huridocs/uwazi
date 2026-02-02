@@ -13,9 +13,9 @@ import { validateSettings } from '#shared/types/settingsSchema.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { settingsModel } from './settingsModel.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
-import { settingsModel } from './settingsModel.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 

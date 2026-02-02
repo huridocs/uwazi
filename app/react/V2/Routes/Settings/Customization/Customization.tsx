@@ -11,9 +11,7 @@ import { Translate } from '#app/I18N/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
-import { Button, Tabs } from '#V2/Components/UI/index.js';
-
-import { ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { Button, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 
 import { notificationAtom } from '#V2/atoms/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';

@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Immutable from 'immutable';
 
 import SearchBar from '#app/ConnectionsList/components/SearchBar.js';
 import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraphEdit.js';
@@ -7,7 +8,6 @@ import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreR
 import DocumentsList from '#app/Layout/DocumentsList.js';
 import { SortButtons } from '#app/Library/components/SortButtons.js';
 import { searchReferences } from '#app/ConnectionsList/actions/actions.js';
-import Immutable from 'immutable';
 export function mapStateToProps({ relationships }) {
   const documents = relationships.list.searchResults;
 

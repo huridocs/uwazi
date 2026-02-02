@@ -6,9 +6,9 @@ import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
 import { bindActionCreators } from 'redux';
-import { postToOcr, getOcrStatus } from '#app/Viewer/actions/ocrActions.js';
-import { reloadDocument } from '#app/Viewer/actions/documentActions.js';
-import { ocrStatusTips } from '#app/Viewer/utils/ocrStatusTips.js';
+import { postToOcr, getOcrStatus } from '../actions/ocrActions.js';
+import { reloadDocument } from '../actions/documentActions.js';
+import { ocrStatusTips } from '../utils/ocrStatusTips.js';
 
 type OCRStatusProps = {
   file: FileType;

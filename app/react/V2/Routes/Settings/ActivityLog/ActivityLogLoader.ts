@@ -2,15 +2,15 @@
 import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
-
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
-
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import * as activityLogAPI from '#V2/api/activityLog/index.js';
 import type { ActivityLogResponse } from '#V2/api/activityLog/index.js';
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
-const { isArray, isEqual, isObject } = _;
+const isArray = _.isArray;
+const isEqual = _.isEqual;
+const isObject = _.isObject;
 const ITEMS_PER_PAGE = 100;
 
 type LogEntry = ActivityLogEntryType & { rowId: string };

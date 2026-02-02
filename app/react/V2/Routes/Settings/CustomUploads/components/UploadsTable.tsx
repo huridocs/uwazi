@@ -4,7 +4,7 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
 import { Button, FileIcon } from '#V2/Components/UI/index.js';
-import { CustomUpload } from '#V2/Routes/Settings/CustomUploads/CustomUploads.js';
+import { CustomUpload } from '../CustomUploads.js';
 
 const columnHelper = createColumnHelper<CustomUpload>();
 

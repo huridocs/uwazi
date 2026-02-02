@@ -7,7 +7,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.js';
 import { ClockIcon } from '@heroicons/react/24/outline/index.js';
 import MarkdownViewer from '#app/Markdown/index.js';
-import { GroupedGeolocationViewer } from '#app/Metadata/components/GroupedGeolocationViewer.js';
+import { GroupedGeolocationViewer } from './GroupedGeolocationViewer.js';
 import { MediaPlayer } from '#V2/Components/UI/index.js';
 import GeolocationViewer from './GeolocationViewer.js';
 import { RelationshipLink } from './RelationshipLink.js';
@@ -126,7 +126,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
       break;
     default:
       if (prop.value && prop.value.map) {
-        const propValue = _.flattenDeep(
+        const propValue = flattenDeep(
           prop.value.map(_value =>
             _value.parent && Array.isArray(_value.value)
               ? flattenDeep(

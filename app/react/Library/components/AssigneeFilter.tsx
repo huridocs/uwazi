@@ -8,7 +8,7 @@ import { Translate } from '#app/I18N/index.js';
 import { MultiSelect } from '#app/Forms/index.js';
 import { Control } from 'react-redux-form';
 import { Switcher } from '#app/ReactReduxForms/index.js';
-import { FiltrableLevel } from '#app/Library/components/FiltrablePermissionsLevels.js';
+import { FiltrableLevel } from './FiltrablePermissionsLevels.js';
 
 interface PermissionsValue {
   level: FiltrableLevel;

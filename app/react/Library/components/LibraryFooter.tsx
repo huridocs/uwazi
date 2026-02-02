@@ -1,8 +1,6 @@
 import { Translate } from '#app/I18N/index.js';
-
 import { wrapDispatch } from '#app/Multireducer/index.js';
-
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {
@@ -10,10 +8,9 @@ import {
   showImportPanel as showImportPanelAction,
 } from '#app/Uploads/actions/uploadsActions.js';
 import { connect } from 'react-redux';
-
 import { NeedAuthorization } from '#app/Auth/index.js';
-import Export from '#app/Library/components/ExportButton.js';
-import { PDFUploadButton } from '#app/Library/components/PDFUploadButton.js';
+import Export from './ExportButton.js';
+import { PDFUploadButton } from './PDFUploadButton.js';
 
 interface LibraryFooterOwnProps {
   storeKey: string;

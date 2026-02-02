@@ -26,7 +26,7 @@ import {
   UploadProgress,
   DropzoneModal,
   EditFileSidepanel,
-} from '#V2/Routes/Settings/CustomUploads/components/index.js';
+} from './components/index.js';
 
 type CustomUpload = FileType & { rowId: string };
 

@@ -17,7 +17,7 @@ import { httpRequest } from '#shared/superagent.js';
 import uniqueID from '#shared/uniqueID.js';
 
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/TableComponents.js';
+import { ThesaurusRow } from './components/TableComponents.js';
 
 const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>
   item.rowId === searchedItem.rowId ? item : undefined;

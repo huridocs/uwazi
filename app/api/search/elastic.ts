@@ -8,12 +8,7 @@ import {
 import { config } from '#api/config.js';
 import { tenants } from '#api/tenants/index.js';
 import { EntitySchema } from '#shared/types/entityType.js';
-import {
-  IndicesCreate,
-  IndicesDelete,
-  IndicesPutMapping,
-  SearchResponse,
-} from '#api/search/elasticTypes.js';
+import { IndicesCreate, IndicesDelete, IndicesPutMapping, SearchResponse } from './elasticTypes.js';
 
 const elasticClient = new elasticSearch.Client({
   nodes: config.elasticsearch.nodes,

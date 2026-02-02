@@ -3,11 +3,9 @@ import { Translate } from '#app/I18N/index.js';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
-import Icon from '#UI/Icon/Icon.js';
-
+import { Icon } from '#UI/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { SortDropdown } from '#app/Library/components/SortDropdown.js';
 import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
@@ -18,9 +16,8 @@ import {
 } from '#app/Library/actions/libraryActions.js';
 import { showFilters as showFiltersAction } from '#app/Entities/actions/uiActions.js';
 import { IStore } from '#app/istore.js';
-
 import { IImmutable } from '#shared/types/Immutable.js';
-import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.js';
+import { HiddenColumnsDropdown } from './HiddenColumnsDropdown.js';
 
 interface LibraryHeaderOwnProps {
   counter: React.ReactElement;

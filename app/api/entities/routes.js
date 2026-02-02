@@ -1,5 +1,5 @@
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
-import { saveEntity } from '#api/entities/entitySavingManager.js';
+import { saveEntity } from './entitySavingManager.js';
 import { uploadMiddleware } from '#api/files/index.js';
 import { search } from '#api/search/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -16,7 +16,7 @@ import templates from '#api/core/v1_layer/templates/templates.js';
 import { thesauri } from '#api/thesauri/thesauri.js';
 import { parseQuery, validation } from '#api/utils/index.js';
 import date from '#api/utils/date.js';
-import entities from '#api/entities/entities.js';
+import entities from './entities.js';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);

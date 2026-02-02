@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NeedAuthorization } from '#app/Auth/index.js';
@@ -7,12 +7,11 @@ import ShowIf from '#app/App/ShowIf.js';
 import { t } from '#app/I18N/index.js';
 import UploadEntityStatus from '#app/Library/components/UploadEntityStatus.js';
 import ViewDocButton from '#app/Library/components/ViewDocButton.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/index.js';
 import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
 
 import { Item } from '#app/Layout/index.js';
 import helpers from '#app/Documents/helpers.js';
-import Immutable from 'immutable';
 
 
 class Doc extends Component {
@@ -125,7 +124,7 @@ Doc.propTypes = {
   className: PropTypes.string,
   additionalText: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   storeKey: PropTypes.string,
-  targetReference: PropTypes.instanceOf(Immutable.Map),
+  targetReference: PropTypes.instanceOf(Map),
 };
 
 function mapStateToProps(state, ownProps) {

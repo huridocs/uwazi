@@ -22,7 +22,7 @@ import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
-import { DropdownMenu } from '#app/App/DropdownMenu.js';
+import { DropdownMenu } from './DropdownMenu.js';
 import Immutable from 'immutable';
 
 interface MenuProps {

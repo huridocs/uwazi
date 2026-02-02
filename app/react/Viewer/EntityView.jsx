@@ -10,7 +10,7 @@ import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import EntityViewer from '#app/Entities/components/EntityViewer.js';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
-import { prepareAssets } from '#app/Viewer/pageAssets.js';
+import { prepareAssets } from './pageAssets.js';
 
 class Entity extends Component {
   static async requestState(requestParams, state) {

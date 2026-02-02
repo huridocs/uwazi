@@ -13,7 +13,7 @@ import modals from '#app/Modals/index.js';
 import EntityForm from '#app/Library/containers/EntityForm.js';
 
 import { getDocumentReferences, saveDocument } from '#app/Library/actions/libraryActions.js';
-import semanticSearchActions from '#app/SemanticSearch/actions/index.js';
+import semanticSearchActions from '../actions/index.js';
 
 export const mapStateToProps = ({ semanticSearch, library, templates }) => ({
   open: !semanticSearch.selectedDocument.isEmpty(),

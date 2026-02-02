@@ -1,7 +1,3 @@
-import { tenants } from '#api/tenants/tenantContext.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { FileType } from '#shared/types/fileType.js';
-import ID from '#shared/uniqueID.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
@@ -10,6 +6,10 @@ import mimetypes from 'mime-types';
 import path, { dirname } from 'path';
 import { Readable } from 'stream';
 import { fileURLToPath } from 'url';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { FileType } from '#shared/types/fileType.js';
+import ID from '#shared/uniqueID.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

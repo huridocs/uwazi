@@ -8,10 +8,10 @@ import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { showTab } from '#app/Entities/actions/uiActions.js';
 import { trackPage } from '#app/App/GoogleAnalytics.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
-import { PDFViewComponent } from '#app/Viewer/PDFView.js';
-import EntityView from '#app/Viewer/EntityView.js';
-import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
-import { setReferences } from '#app/Viewer/actions/referencesActions.js';
+import { PDFViewComponent } from './PDFView.js';
+import EntityView from './EntityView.js';
+import { ViewerComponent } from './components/ViewerComponent.js';
+import { setReferences } from './actions/referencesActions.js';
 
 class ViewerRouteComponent extends RouteHandler {
   static async requestState(requestParams, globalResources) {

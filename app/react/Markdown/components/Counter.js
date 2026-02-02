@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import markdownDatasets from '#app/Markdown/markdownDatasets.js';
+import markdownDatasets from '../markdownDatasets.js';
 
 const CounterComponent = ({ count }) => count;
 

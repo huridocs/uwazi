@@ -3,14 +3,12 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
-
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/index.js';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
 } from '#app/Library/actions/libraryActions.js';
 import { t, Translate } from '#app/I18N/index.js';
-
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import ModalTips from '#app/App/ModalTips.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';

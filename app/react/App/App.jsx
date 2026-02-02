@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router';
 import { useAtom } from 'jotai';
 import Notifications from '#app/Notifications/index.js';
-import Cookiepopup from '#app/App/Cookiepopup.js';
+import Cookiepopup from './Cookiepopup.js';
 import { socket } from '#app/socket.js';
 import { NotificationsContainer } from '#V2/Components/UI/index.js';
 import { Matomo, CleanInsights } from '#V2/Components/Analitycs/index.js';

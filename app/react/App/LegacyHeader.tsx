@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { Icon } from '#UI/index.js';
 import { t } from '#app/I18N/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
-import { Menu } from '#app/App/Menu.js';
-import { SiteName } from '#app/App/SiteName.js';
-import { Icon } from '#UI/index.js';
+import { Menu } from './Menu.js';
+import { SiteName } from './SiteName.js';
 
 const LegacyHeader = () => {
   const [showMenu, setShowMenu] = useState(false);

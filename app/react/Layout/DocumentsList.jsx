@@ -16,8 +16,8 @@ import Icon from '#UI/Icon/Icon.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
-import Welcome from '#app/Layout/components/Welcome.js';
-import { TilesViewer } from '#app/Layout/TilesViewer.js';
+import Welcome from './components/Welcome.js';
+import { TilesViewer } from './TilesViewer.js';
 import blankState from '#app/Library/helpers/blankState.js';
 
 const selectAllEntities = command => {

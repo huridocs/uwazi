@@ -2,15 +2,17 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import { ObjectId } from 'mongodb';
 import templatesAPI from '#api/core/v1_layer/templates/index.js';
 import settings from '#api/settings/index.js';
 import relationtypes from '#api/relationtypes/index.js';
 import entities from '#api/entities/entities.js';
 import { createError } from '#api/utils/index.js';
+
+import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import model from './model.js';
 import { generateNames } from '#api/utils/templateUtils.js';
+
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships.js';
 import {
   processRelationshipCollection,

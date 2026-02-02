@@ -13,11 +13,8 @@ import * as thesauriAPI from '#V2/api/thesauri/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { Table } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
-import { addSelection, sanitizeThesaurusValues } from '#V2/Routes/Settings/Thesauri/helpers.js';
-import {
-  columnsThesaurus,
-  ThesaurusRow,
-} from '#V2/Routes/Settings/Thesauri/components/TableComponents.js';
+import { addSelection, sanitizeThesaurusValues } from './helpers.js';
+import { columnsThesaurus, ThesaurusRow } from './components/TableComponents.js';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;

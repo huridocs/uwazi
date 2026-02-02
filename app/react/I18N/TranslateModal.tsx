@@ -15,7 +15,7 @@ import { InputField } from '#V2/Components/Forms/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { postV2 } from '#V2/api/translations/index.js';
 import { TranslationValue } from '#V2/shared/types.js';
-import { t } from '#app/I18N/translateFunction.js';
+import { t } from './translateFunction.js';
 
 const TranslateModal = () => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);

@@ -9,7 +9,7 @@ import ShowIf from '#app/App/ShowIf.js';
 import Icon from '#UI/Icon/Icon.js';
 
 import { setFilter } from '#app/ConnectionsList/actions/actions.js';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
 
 class ConnectionsGroup extends Component {
@@ -111,7 +111,7 @@ class ConnectionsGroup extends Component {
           </span>
         </div>
         <ShowIf if={this.state.expanded}>
-          <ul className="multiselectChild Immutable.is-active">
+          <ul className="multiselectChild is-active">
             {templates.map((template, index) => (
               <li className="multiselectItem" key={index} title={template.label}>
                 <input

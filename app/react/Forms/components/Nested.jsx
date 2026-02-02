@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MarkDown } from '#app/Forms/components/MarkDown.js';
+import { MarkDown } from './MarkDown.js';
 
 export default class Nested extends Component {
   constructor(props) {

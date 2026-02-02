@@ -10,11 +10,11 @@ import { getAggregationSuggestions } from '#app/Library/actions/libraryActions.j
 import { selectTemplates } from '#app/utils/coreSelectors.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 
-import DateFilter from '#app/Library/components/DateFilter.js';
-import NestedFilter from '#app/Library/components/NestedFilter.js';
-import NumberRangeFilter from '#app/Library/components/NumberRangeFilter.js';
-import SelectFilter from '#app/Library/components/SelectFilter.js';
-import TextFilter from '#app/Library/components/TextFilter.js';
+import DateFilter from './DateFilter.js';
+import NestedFilter from './NestedFilter.js';
+import NumberRangeFilter from './NumberRangeFilter.js';
+import SelectFilter from './SelectFilter.js';
+import TextFilter from './TextFilter.js';
 
 const extractRelationshipLabel = (filteredProperty, label, templates) => {
   const relatedTemplate = templates.find(template => template._id === filteredProperty.content);

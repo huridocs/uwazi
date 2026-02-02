@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { I18NLink, t } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/index.js';
 import { processFilters, encodeSearch } from '#app/Library/actions/libraryActions.js';
 import { createSelector } from 'reselect';
 import { isClient } from '#app/utils/index.js';

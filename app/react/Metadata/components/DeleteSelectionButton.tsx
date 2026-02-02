@@ -8,7 +8,7 @@ import { IImmutable } from '#shared/types/Immutable.js';
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 import { ClientFile, IStore } from '#app/istore.js';
 import { Translate } from '#app/I18N/index.js';
-import { deleteSelection } from '#app/Metadata/actions/metadataExtractionActions.js';
+import { deleteSelection } from '../actions/metadataExtractionActions.js';
 
 type deleteSelectionButtonProps = {
   propertyName: string;

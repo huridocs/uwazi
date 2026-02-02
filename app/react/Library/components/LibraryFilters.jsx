@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/index.js';
 import { hideFilters } from '#app/Entities/actions/uiActions.js';
 import { withRouter } from '#app/componentWrappers.js';
 

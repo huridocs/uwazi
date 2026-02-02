@@ -24,17 +24,17 @@ import {
   sanitizeThesaurusValues,
   sortValues,
   thesaurusAsRow,
-} from '#V2/Routes/Settings/Thesauri/helpers.js';
-import type { ConfirmationCallback } from '#V2/Routes/Settings/Thesauri/helpers.js';
+} from './helpers.js';
+import type { ConfirmationCallback } from './helpers.js';
 import {
   DeletionModal,
   GroupForm,
   ThesaurusValueForm,
   ThesaurusActions,
-} from '#V2/Routes/Settings/Thesauri/components/index.js';
-import type { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/index.js';
-import { ThesaurusForm } from '#V2/Routes/Settings/Thesauri/ThesaurusForm.js';
-import { ImportButton } from '#V2/Routes/Settings/Thesauri/components/ImportButton.js';
+} from './components/index.js';
+import type { ThesaurusRow } from './components/index.js';
+import { ThesaurusForm } from './ThesaurusForm.js';
+import { ImportButton } from './components/ImportButton.js';
 
 const EditThesaurus = () => {
   const navigate = useNavigate();

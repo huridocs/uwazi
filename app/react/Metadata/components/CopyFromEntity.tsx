@@ -10,8 +10,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { actions, ShowMetadata, wrapEntityMetadata } from '#app/Metadata/index.js';
 import { store } from '#app/store.js';
-
-import { SearchEntities } from '#app/Metadata/components/SearchEntities.js';
+import { SearchEntities } from './SearchEntities.js';
 import { ClientEntitySchema } from '#app/istore.js';
 
 type CopyFromEntityProps = {

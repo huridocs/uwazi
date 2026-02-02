@@ -5,13 +5,13 @@ import { bindActionCreators } from 'redux';
 import { Helmet } from 'react-helmet';
 import { RowList } from '#app/Layout/Lists.js';
 import Doc from '#app/Library/components/Doc.js';
-import * as semanticSearchActions from '#app/SemanticSearch/actions/actions.js';
+import * as semanticSearchActions from '../actions/actions.js';
 import Immutable from 'immutable';
 import { Translate, t } from '#app/I18N/index.js';
 import SearchDescription from '#app/Library/components/SearchDescription.js';
 import Icon from '#UI/Icon/Icon.js';
-import ResultsSidePanel from '#app/SemanticSearch/components/ResultsSidePanel.js';
-import SemanticSearchMultieditPanel from '#app/SemanticSearch/components/SemanticSearchMultieditPanel.js';
+import ResultsSidePanel from './ResultsSidePanel.js';
+import SemanticSearchMultieditPanel from './SemanticSearchMultieditPanel.js';
 
 function renderAditionalText(doc) {
   const resultsSize = doc.getIn(['semanticSearch', 'totalResults']);

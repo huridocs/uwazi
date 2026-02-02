@@ -2,8 +2,8 @@
 import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
 import { IStore } from '#app/istore.js';
-import { logError } from '#app/Markdown/utils.js';
-import { Section } from '#app/Markdown/components/Section.js';
+import { logError } from '../utils.js';
+import { Section } from './Section.js';
 
 interface EntitySectionProps {
   'show-if'?: string;

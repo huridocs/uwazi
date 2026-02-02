@@ -1,6 +1,5 @@
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { saveEntity } from '#api/entities/entitySavingManager.js';
-import { processDocument } from '#api/files/processDocument.js';
 import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
 import mailer from '#api/utils/mailer.js';
@@ -11,8 +10,9 @@ import proxy from 'express-http-proxy';
 import { createReadStream } from 'fs';
 import { publicAPIMiddleware } from '#api/auth/publicAPIMiddleware.js';
 import { createError, validation } from '#api/utils/index.js';
-import { storage } from '#api/files/storage.js';
-import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
+import { processDocument } from './processDocument.js';
+import { storage } from './storage.js';
+import { uploadMiddleware } from './uploadMiddleware.js';
 
 const processEntityDocument = async (req, entitySharedId) => {
   const file = req.files.find(_file => _file.fieldname.includes('file'));

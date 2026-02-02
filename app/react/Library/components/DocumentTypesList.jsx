@@ -3,15 +3,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
-
-
 import { Link } from 'react-router';
 import rison from '@huridocs/rison';
 import ShowIf from '#app/App/ShowIf.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { t, Translate } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/index.js';
 
 import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
 

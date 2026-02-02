@@ -12,9 +12,9 @@ import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
 import { uploadLocalAttachment } from '#app/Metadata/actions/supportingFilesActions.js';
 
-import { MediaModalFileList } from '#app/Metadata/components/MediaModalFileList.js';
-import { MediaModalUploadFileButton } from '#app/Metadata/components/MediaModalUploadFileButton.js';
-import { validImageFile, validMediaFile } from '#app/Metadata/helpers/validator.js';
+import { MediaModalFileList } from './MediaModalFileList.js';
+import { MediaModalUploadFileButton } from './MediaModalUploadFileButton.js';
+import { validImageFile, validMediaFile } from '../helpers/validator.js';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { ClientFile, IStore } from '#app/istore.js';
 import Icon from '#UI/Icon/Icon.js';

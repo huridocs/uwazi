@@ -8,7 +8,7 @@ import { Translate } from '#app/I18N/index.js';
 import { hideModal } from '#app/Modals/actions/modalActions.js';
 import Modal from '#app/Layout/Modal.js';
 import Icon from '#UI/Icon/Icon.js';
-import { closePanel } from '#app/Viewer/actions/uiActions.js';
+import { closePanel } from '../actions/uiActions.js';
 
 export class ConfirmCloseForm extends Component {
   confirm() {

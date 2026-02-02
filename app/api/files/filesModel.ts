@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 import date from '#api/utils/date.js';
 
 import { instanceModel } from '#api/odm/index.js';

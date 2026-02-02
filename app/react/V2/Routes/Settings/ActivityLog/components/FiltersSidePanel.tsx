@@ -1,14 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-
 import { Sidepanel, Button } from '#V2/Components/UI/index.js';
-
 import { Translate, t } from '#app/I18N/index.js';
-
 import { InputField, DateRangePicker, MultiSelect } from '#V2/Components/Forms/index.js';
 import { useAtomValue } from 'jotai';
-
 import { localeAtom } from '#V2/atoms/index.js';
 import type { ActivityLogSearch } from '../ActivityLogLoader.js';
 

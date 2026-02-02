@@ -5,25 +5,21 @@ import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 
 import { Translate } from '#app/I18N/index.js';
-
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-
 import { Button, PaginationState, Paginator, Pill, Table } from '#V2/Components/UI/index.js';
-
 import { useIsFirstRender } from '#V2/CustomHooks/useIsFirstRender.js';
-
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
-import { getActivityLogColumns } from '#V2/Routes/Settings/ActivityLog/components/TableElements.js';
-import { ActivityLogSidePanel } from '#V2/Routes/Settings/ActivityLog/components/ActivityLogSidePanel.js';
-import { FiltersSidePanel } from '#V2/Routes/Settings/ActivityLog/components/FiltersSidePanel.js';
-import type { LoaderData } from '#V2/Routes/Settings/ActivityLog/ActivityLogLoader.js';
+import { getActivityLogColumns } from './components/TableElements.js';
+import { ActivityLogSidePanel } from './components/ActivityLogSidePanel.js';
+import { FiltersSidePanel } from './components/FiltersSidePanel.js';
+import type { LoaderData } from './ActivityLogLoader.js';
 import {
   getAppliedFilters,
   updateSearch,
   ActivityLogSearch,
   ITEMS_PER_PAGE,
   buildPageURL,
-} from '#V2/Routes/Settings/ActivityLog/ActivityLogLoader.js';
+} from './ActivityLogLoader.js';
 
 const funnelColor = (appliedFiltersCount: number): string =>
   appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';

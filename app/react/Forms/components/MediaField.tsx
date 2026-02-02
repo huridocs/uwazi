@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import isObject from 'lodash/isObject.js';
 import { Translate } from '#app/I18N/index.js';
-
 import Icon from '#UI/Icon/Icon.js';
 import { ClientFile } from '#app/istore.js';
-
 import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
 import {
   MediaModal,

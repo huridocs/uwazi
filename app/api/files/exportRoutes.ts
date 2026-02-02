@@ -13,7 +13,7 @@ import settings from '#api/settings/index.js';
 import captchaMiddleware from '#api/auth/captchaMiddleware.js';
 import { csvExportParamsSchema } from '#shared/types/searchParameterSchema.js';
 import { CsvExportBody } from '#shared/types/searchParameterType.js';
-import { temporalFilesPath, generateFileName } from '#api/files/filesystem.js';
+import { temporalFilesPath, generateFileName } from './filesystem.js';
 import { validation } from '#api/utils/index.js';
 
 export default (app: Application) => {

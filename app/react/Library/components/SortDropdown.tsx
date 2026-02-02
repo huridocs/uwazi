@@ -4,15 +4,13 @@ import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { useLocation, Location } from 'react-router';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/index.js';
 import { I18NLink, t } from '#app/I18N/index.js';
-
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { IStore } from '#app/istore.js';
-
 import { IImmutable } from '#shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
-import { encodeSearch } from '#app/Library/actions/libraryActions.js';
+import { encodeSearch } from '../actions/libraryActions.js';
 
 import {
   getCurrentSortOption,
@@ -21,7 +19,7 @@ import {
   SortType,
   filterTemplates,
   getSortOptions,
-} from '#app/Library/helpers/sortComponets.js';
+} from '../helpers/sortComponets.js';
 
 interface SortDropdownOwnProps {
   selectedTemplates: IImmutable<string[]>;

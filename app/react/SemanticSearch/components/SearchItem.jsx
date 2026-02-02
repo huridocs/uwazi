@@ -8,7 +8,7 @@ import SearchDescription from '#app/Library/components/SearchDescription.js';
 import { withContext } from '#app/componentWrappers.js';
 import { Icon, ProgressBar } from '#UI/index.js';
 
-import { deleteSearch, resumeSearch, stopSearch } from '#app/SemanticSearch/actions/actions.js';
+import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions.js';
 
 class SearchItemComponent extends Component {
   constructor(props) {
