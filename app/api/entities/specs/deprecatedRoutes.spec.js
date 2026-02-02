@@ -31,6 +31,7 @@ describe('entities', () => {
         body: {
           title: 'Batman begins',
           template: templateId,
+          sharedId: 'existing123',
         },
         user: { username: 'admin' },
         language: 'lang',
@@ -47,7 +48,7 @@ describe('entities', () => {
       expect(routes._post('/api/entity_denormalize', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with current user', done => {
+    it('should update an entity with current user (V1 path)', done => {
       jest
         .spyOn(entitiesSavingManager, 'saveEntity')
         .mockReturnValue(Promise.resolve({ entity: 'entity', errors: [] }));
@@ -81,7 +82,7 @@ describe('entities', () => {
       });
     });
 
-    it('should emit thesauriChange socket event with the modified thesaurus based on the entity template', async () => {
+    it('should emit thesauriChange socket event when updating entity (V1 path)', async () => {
       const user = {
         _id: 'c08ef2532f0bd008ac5174b45e033c93',
         username: 'admin',
@@ -90,6 +91,7 @@ describe('entities', () => {
         body: {
           title: 'Batman begins',
           template: 'template',
+          sharedId: 'existing456',
         },
         user,
         language: 'lang',
