@@ -17,7 +17,7 @@ const InteractiveWrapper = ({
 }: {
   initialChecked?: boolean;
   disabled?: boolean;
-  label?: string;
+  label?: string | React.ReactNode;
 }) => {
   const [checked, setChecked] = useState(initialChecked);
 

@@ -25,11 +25,13 @@ const InteractiveWrapper = ({
   initialValue = '',
   clearFieldAction,
   icon,
+  id,
   ...props
 }: {
   initialValue?: string;
   clearFieldAction?: () => void;
   icon?: React.ReactNode;
+  id: string;
   [key: string]: any;
 }) => {
   const [value, setValue] = useState(initialValue);
@@ -47,6 +49,7 @@ const InteractiveWrapper = ({
   return (
     <InputField
       {...props}
+      id={id}
       value={value}
       onChange={handleChange}
       clearFieldAction={clearFieldAction ? handleClear : undefined}
