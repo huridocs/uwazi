@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
-import { registerEventListeners } from '#api/eventListeners.js';
+import { config } from '#api/config.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { Redis } from 'app/api/infrastructure/Redis.js';
 import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
@@ -14,14 +14,15 @@ import {
   QueueWorker,
   QueueWorkerErrorHandler,
 } from '#api/core/libs/queue/infrastructure/QueueWorker.js';
+import { registerEventListeners } from '#api/eventListeners.js';
+import { Redis } from '#api/infrastructure/Redis.js';
+import { DB } from '#api/odm/index.js';
 import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
-import { inspect } from 'util';
 import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
-import { config } from '#api/config.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
-import { DB } from '#api/odm/index.js';
+import { inspect } from 'util';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -37,8 +38,6 @@ const replaceTenantWithJobNamespace =
       })
     );
   };
-
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const logger = LoggerFactory.systemLogger(
   replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
@@ -124,7 +123,7 @@ export function setupQueueWorker(props?: Props) {
       await Redis.disconnect();
       logger.info('Disconected from redis');
     })
-    .catch(async (e: any) => {
+    .catch(async e => {
       captureError(e);
       await Sentry.close(2000);
       process.exit(1);

@@ -1,14 +1,13 @@
 /* eslint-disable max-statements */
-
 import { config } from '#api/config.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { ATServiceListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
-import { Redis } from 'app/api/infrastructure/Redis.js';
-
+import { Redis } from '#api/infrastructure/Redis.js';
 import { DB } from '#api/odm/index.js';
 import { PXParagraphsResultListener } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ConvertToPdfWorker } from '#api/services/convertToPDF/ConvertToPdfWorker.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { ocrManager } from '#api/services/ocr/OcrManager.js';
@@ -20,10 +19,8 @@ import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
 import { syncWorker } from '#api/sync/syncWorker.js';
 import { tenants } from '#api/tenants/index.js';
 import { tocService } from '#api/toc_generation/tocService.js';
-
 import { sleep } from '#shared/tsUtils.js';
 import { handleError } from '#api/utils/handleError.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const systemLogger = LoggerFactory.systemLogger();
 

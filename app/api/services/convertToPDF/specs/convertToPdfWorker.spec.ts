@@ -1,25 +1,18 @@
 import { files, storage, testingUploadPaths } from '#api/files/index.js';
-
-import { Redis } from 'app/api/infrastructure/Redis.js';
-
+import { Redis } from '#api/infrastructure/Redis.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-
 import * as setupSockets from '#api/socketio/setupSockets.js';
-
 import { tenants } from '#api/tenants/index.js';
-
 import * as handleError from '#api/utils/handleError.js';
-
 import testingDB from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { ObjectId } from 'mongodb';
 import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
-import { convertToPDFService } from '#api/services/convertToPDF/convertToPdfService.js';
-import { ConvertToPdfWorker } from '#api/services/convertToPDF/ConvertToPdfWorker.js';
+import { convertToPDFService } from '../convertToPdfService.js';
+import { ConvertToPdfWorker } from '../ConvertToPdfWorker.js';
 
 describe('convertToPdfWorker', () => {
   let worker: ConvertToPdfWorker;
