@@ -59,7 +59,7 @@ const InputField = React.forwardRef(
     }
 
     const hasValue = value !== undefined && value !== null && value !== '';
-    const showClearButton = Boolean(clearFieldAction) && hasValue;
+    const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
     const showIcon = icon && (!clearFieldAction || !hasValue);
 
     if (clearFieldAction || icon) {
