@@ -1,34 +1,57 @@
 import React, { useState, useCallback } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
+import { useRevalidator } from 'react-router';
 import { Panel } from 'V2/Components/Layouts/Panel';
-import { BlankState } from '../BlankState';
 import { EntityReference } from 'app/V2/domain/entities/types';
-import { Reference } from './Reference';
+import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { pdfEventBus } from 'V2/Components/PDFViewer';
 import { useAtomValue } from 'jotai';
-import { pdfScaleAtom } from 'V2/atoms';
+import { pdfScaleAtom, relationshipTypesAtom } from 'V2/atoms';
+import { Entity } from 'V2/domain';
+import { searchByTitle } from 'V2/api/entities';
+import { saveTextReference } from 'V2/api/relationships';
+import { entityLoaderCache } from '../../EntityLoaderCache';
+import { CreateReference } from './CreateReference';
+import { Reference } from './Reference';
+import { BlankState } from '../BlankState';
+import { useReferences, useReferencesActions } from './referencesAtom';
 
 type ReferencesPanelProps = {
   references?: EntityReference[];
+  entity?: Entity;
 };
 
-const ReferencesPanel = ({ references = [] }: ReferencesPanelProps) => {
+const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
   const pdfScale = useAtomValue(pdfScaleAtom);
+  const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const { createReferenceSelection, createReferenceMode } = useReferences();
+  const { setCreateReferenceSelection } = useReferencesActions();
+  const revalidator = useRevalidator();
+
+  const lookup = useCallback(
+    async (searchString: string): Promise<Entity[]> =>
+      searchByTitle({
+        title: searchString,
+        fields: ['title', 'template', 'creationDate', 'sharedId'],
+        includeFiles: true,
+      }),
+    []
+  );
 
   const handleReferenceClick = useCallback(
     (reference: EntityReference) => {
       setSelectedReferenceId(reference._id);
 
       // Scroll to the reference in the PDF
-      const selectionRectangles = reference.reference.selectionRectangles;
+      const { selectionRectangles } = reference.reference;
       if (selectionRectangles && selectionRectangles.length > 0) {
         // Find the first rectangle with a page
         const rect = selectionRectangles.find(r => r.page);
         if (rect && rect.page && rect.top !== undefined && rect.left !== undefined) {
           const pageNumber = Number.parseInt(rect.page, 10);
-          
+
           // Scale normalized coordinates (if stored at scale=1) to current display scale
           const scaledTop = (rect.top || 0) * pdfScale;
           const scaledLeft = (rect.left || 0) * pdfScale;
@@ -40,7 +63,9 @@ const ReferencesPanel = ({ references = [] }: ReferencesPanelProps) => {
           setTimeout(() => {
             const pdfContainer = document.getElementById('pdf-container');
             const pageWrapper = pdfContainer?.querySelector(`#page-${pageNumber}-container`);
-            const pageContainer = pageWrapper?.querySelector('[data-testid="pdf-page"]') as HTMLElement | null;
+            const pageContainer = pageWrapper?.querySelector(
+              '[data-testid="pdf-page"]'
+            ) as HTMLElement | null;
 
             if (pageContainer) {
               // Create a temporary element to scroll to
@@ -51,15 +76,15 @@ const ReferencesPanel = ({ references = [] }: ReferencesPanelProps) => {
               scrollElement.style.width = '1px';
               scrollElement.style.height = '1px';
               scrollElement.style.pointerEvents = 'none';
-              
+
               const currentPosition = getComputedStyle(pageContainer).position;
               if (currentPosition === 'static') {
                 pageContainer.style.position = 'relative';
               }
-              
+
               pageContainer.appendChild(scrollElement);
               scrollElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              
+
               setTimeout(() => {
                 if (scrollElement.parentNode) {
                   scrollElement.parentNode.removeChild(scrollElement);
@@ -86,6 +111,72 @@ const ReferencesPanel = ({ references = [] }: ReferencesPanelProps) => {
     console.log('Delete reference:', reference);
   }, []);
 
+  const handleCancelCreate = useCallback(() => {
+    setCreateReferenceSelection(undefined, undefined);
+  }, [setCreateReferenceSelection]);
+
+  const handleSaveReference = useCallback(
+    async (data: {
+      selection: TextSelection;
+      targetEntityId: string;
+      relationshipType: string;
+      targetFileId?: string;
+    }) => {
+      if (!entity) {
+        console.error('Cannot save reference: entity is not available');
+        return;
+      }
+
+      // Get source file ID (main document)
+      const sourceFile = entity.mainDocument?.[0];
+      if (!sourceFile?._id) {
+        console.error('Cannot save reference: source file is not available');
+        return;
+      }
+
+      if (!data.targetEntityId) {
+        console.error('Cannot save reference: targetEntityId is not available');
+        return;
+      }
+
+      try {
+        await saveTextReference({
+          sourceEntitySharedId: entity.sharedId,
+          sourceFileId: String(sourceFile._id),
+          sourceSelection: data.selection,
+          targetEntitySharedId: data.targetEntityId,
+          relationshipType: data.relationshipType,
+          ...(data.targetFileId && { targetFileId: data.targetFileId }),
+        });
+
+        // Clear the create reference selection after successful save
+        setCreateReferenceSelection(undefined, undefined);
+        // Invalidate cache and revalidate to refresh the entity data and show the new reference
+        entityLoaderCache.invalidateEntity(entity.sharedId);
+        await revalidator.revalidate();
+      } catch (error) {
+        console.error('Error saving reference:', error);
+        // TODO: Show error notification to user
+      }
+    },
+    [entity, setCreateReferenceSelection, revalidator]
+  );
+
+  // If there's a createReferenceSelection, show the CreateReference component
+  if (createReferenceSelection) {
+    return (
+      <CreateReference
+        selection={createReferenceSelection}
+        relationshipTypes={relationshipTypes}
+        searchFunction={lookup}
+        mode={createReferenceMode || 'text'}
+        onSave={handleSaveReference}
+        onCancel={handleCancelCreate}
+      />
+    );
+  }
+
+  // Otherwise, show the references list
   return (
     <Panel className="gap-4">
       <Panel.Body className="pr-1">

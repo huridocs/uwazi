@@ -1,237 +1,247 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from 'app/I18N';
 import { Panel } from 'V2/Components/Layouts/Panel';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { relationshipTypesAtom } from 'V2/atoms';
+import { ClientRelationshipType } from 'app/apiResponseTypes';
 import { Entity } from 'V2/domain';
-import * as searchAPI from 'V2/api/search';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { getTextColor } from 'V2/Components/Metadata/TemplateLabel';
+import { FileType } from 'shared/types/fileType';
+import { Button } from 'V2/Components/UI/Button';
+import { Card } from 'V2/Components/UI';
+import { Checkbox } from 'V2/Components/Forms/Checkbox';
+import { InputField } from 'V2/Components/Forms';
 import { BlankState } from '../BlankState';
-import { createReferenceSelectionAtom } from './referencesAtom';
+import { EntitySearchResult } from './EntitySearchResult';
+
+type SearchFunction = (searchString: string) => Promise<Entity[]>;
+
+type ReferenceMode = 'entity' | 'text';
 
 type CreateReferenceProps = {
   selection: TextSelection;
+  relationshipTypes: ClientRelationshipType[];
+  searchFunction: SearchFunction;
+  mode?: ReferenceMode;
+  onSave?: (data: {
+    selection: TextSelection;
+    targetEntityId: string;
+    relationshipType: string;
+    targetFileId?: string;
+  }) => void;
   onCancel?: () => void;
 };
 
-const EntitySearchResult = ({ entity, onClick }: { entity: Entity; onClick: () => void }) => {
-  const templateName = entity.template?.name || '';
-  const templateColor = entity.template?.color || '#A4CAFE';
-  const templateLabel = entity.template?.label || templateName;
-
-  // Format date - try to get creationDate or editDate
-  const dateProperty = entity.creationDate || entity.editDate;
-  const dateValue = dateProperty?.values?.[0]?.value;
-  let formattedDate = '';
-  if (dateValue) {
-    try {
-      const timestamp = typeof dateValue === 'number' ? dateValue : dateValue;
-      formattedDate = new Date(timestamp).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch {
-      // Invalid date, leave empty
-    }
-  }
-
-  const textColor = useMemo(() => getTextColor(templateColor), [templateColor]);
-
-  return (
-    <div
-      className="border border-gray-100 rounded-xl shadow-sm p-4 bg-white flex flex-col gap-2 cursor-pointer hover:bg-gray-50 transition-colors"
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick();
-        }
-      }}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-bold text-gray-900 line-clamp-2">{entity.title || '-'}</h3>
-          {formattedDate && <p className="text-xs text-gray-600 mt-1">{formattedDate}</p>}
-        </div>
-        {templateLabel && (
-          <span
-            className="text-xs font-medium px-2 py-1 rounded-sm flex-shrink-0"
-            style={{ backgroundColor: templateColor, color: textColor }}
-          >
-            {templateLabel}
-          </span>
-        )}
-      </div>
-    </div>
+const CreateReference = ({
+  selection,
+  relationshipTypes,
+  searchFunction,
+  mode = 'text',
+  onSave,
+  onCancel,
+}: CreateReferenceProps) => {
+  const [selectedRelationshipType, setSelectedRelationshipType] = useState<string | undefined>(
+    undefined
   );
-};
-
-const CreateReference = ({ selection, onCancel }: CreateReferenceProps) => {
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const setCreateReferenceSelection = useSetAtom(createReferenceSelectionAtom);
-  const [selectedRelationshipTypes, setSelectedRelationshipTypes] = useState<Set<string>>(
-    new Set()
-  );
+  const [selectedEntity, setSelectedEntity] = useState<Entity | undefined>(undefined);
+  const [selectedFile, setSelectedFile] = useState<FileType | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Entity[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   const handleRelationshipTypeToggle = useCallback((relationshipTypeId: string) => {
-    setSelectedRelationshipTypes(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(relationshipTypeId)) {
-        newSet.delete(relationshipTypeId);
-      } else {
-        newSet.add(relationshipTypeId);
-      }
-      return newSet;
-    });
+    setSelectedRelationshipType(prev =>
+      prev === relationshipTypeId ? undefined : relationshipTypeId
+    );
   }, []);
 
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      setHasSearched(false);
-      return;
-    }
-
-    setIsSearching(true);
-    setHasSearched(true);
-
-    try {
-      const result = await searchAPI.search({
-        filters: {
-          searchString: query,
-        },
-        fields: ['title', 'template', 'creationDate', 'editDate'],
-        limit: 20,
-      });
-
-      if (result instanceof Error) {
+  const handleSearch = useCallback(
+    async (searchString: string) => {
+      if (!searchString.trim()) {
         setSearchResults([]);
-      } else {
-        setSearchResults(result.rows || []);
+        setHasSearched(false);
+        setIsSearching(false);
+        return;
       }
-    } catch (error) {
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  }, []);
+
+      setIsSearching(true);
+      setHasSearched(true);
+
+      try {
+        const result = await searchFunction(searchString);
+        const filteredResults =
+          mode === 'text'
+            ? result.filter(
+                entity =>
+                  (entity.mainDocument && entity.mainDocument.length > 0) ||
+                  (entity.documents && entity.documents.length > 0) ||
+                  (entity.attachments && entity.attachments.length > 0)
+              )
+            : result;
+        setSearchResults(filteredResults);
+      } catch (error) {
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [searchFunction, mode]
+  );
 
   const handleSearchInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearchQuery(value);
   }, []);
 
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setHasSearched(false);
+    setIsSearching(false);
+    setSelectedEntity(undefined);
+  }, []);
+
   // Debounce search effect
   React.useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setHasSearched(false);
+      setIsSearching(false);
+      return undefined;
+    }
+
+    setIsSearching(true);
+    setHasSearched(true);
+
     const timeoutId = setTimeout(() => {
-      if (searchQuery.trim()) {
-        handleSearch(searchQuery);
-      } else {
-        setSearchResults([]);
-        setHasSearched(false);
-      }
+      handleSearch(searchQuery).catch(() => {
+        // Ignore search errors
+      });
     }, 300);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [searchQuery, handleSearch]);
 
-  const handleEntitySelect = useCallback(
-    (entity: Entity) => {
-      // TODO: Implement creating the reference
-      console.log('Create reference:', {
+  const handleEntitySelect = useCallback((entity: Entity) => {
+    setSelectedEntity(entity);
+    setSelectedFile(undefined); // Reset file selection when entity changes
+  }, []);
+
+  const handleFileSelect = useCallback((file: FileType) => {
+    setSelectedFile(prevFile => {
+      // If clicking the same file, deselect it
+      if (prevFile && String(prevFile._id) === String(file._id)) {
+        return undefined;
+      }
+      // Otherwise, select the new file (this will deselect the previous one automatically)
+      return file;
+    });
+  }, []);
+
+  const handleSave = useCallback(() => {
+    if (selectedRelationshipType && selectedEntity && selectedEntity.sharedId && onSave) {
+      const saveData: {
+        selection: TextSelection;
+        targetEntityId: string;
+        relationshipType: string;
+        targetFileId?: string;
+      } = {
         selection,
-        entity,
-        relationshipTypes: Array.from(selectedRelationshipTypes),
-      });
-    },
-    [selection, selectedRelationshipTypes]
-  );
+        targetEntityId: selectedEntity.sharedId,
+        relationshipType: selectedRelationshipType,
+      };
+
+      // In text mode, include targetFileId if a file is selected
+      if (mode === 'text' && selectedFile) {
+        saveData.targetFileId = String(selectedFile._id);
+      }
+
+      onSave(saveData);
+    }
+  }, [selection, selectedRelationshipType, selectedEntity, selectedFile, mode, onSave]);
 
   return (
     <Panel className="gap-4">
-      <Panel.Body className="pr-1">
-        <div className="flex flex-col gap-4 h-full">
-          {/* Relationship Types Section */}
-          <div className="flex flex-col gap-2">
-            <h2 className="text-sm font-bold text-gray-900">
-              <Translate>Relationship type</Translate>
-            </h2>
-            <div className="flex flex-col gap-2">
-              {relationshipTypes.length > 0 ? (
-                relationshipTypes.map(relationshipType => (
-                  <label
-                    key={relationshipType._id}
-                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedRelationshipTypes.has(relationshipType._id)}
+      <Panel.Body className="pt-2">
+        <div className="flex flex-col gap-2 h-full">
+          <div className="shrink flex flex-col overflow-hidden max-h-[40%]">
+            <Card
+              title={<Translate>Relationship type</Translate>}
+              className="flex flex-col overflow-hidden h-full"
+              color="black"
+            >
+              <div className="flex flex-col gap-0.5 flex-1 min-h-0 h-full">
+                {relationshipTypes.length > 0 ? (
+                  relationshipTypes.map(relationshipType => (
+                    <Checkbox
+                      key={relationshipType._id}
+                      name={relationshipType._id}
+                      checked={selectedRelationshipType === relationshipType._id}
                       onChange={() => handleRelationshipTypeToggle(relationshipType._id)}
-                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      label={relationshipType.name}
+                      className="hover:bg-gray-50 p-2 rounded-md transition-colors"
                     />
-                    <span className="text-sm text-gray-900">{relationshipType.name}</span>
-                  </label>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500">
-                  <Translate>No relationship types available</Translate>
-                </p>
-              )}
-            </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    <Translate>No relationship types available</Translate>
+                  </p>
+                )}
+              </div>
+            </Card>
           </div>
 
-          {/* Search Section */}
-          <div className="flex flex-col gap-2">
-            <div className="relative">
-              <input
-                type="search"
-                placeholder={t('System', 'Search', null, false)}
-                value={searchQuery}
-                onChange={handleSearchInputChange}
-                className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 p-2 pr-10"
-              />
-              <MagnifyingGlassIcon
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-            </div>
+          <div className="flex flex-col gap-2 flex-1 min-h-0 grow">
+            <InputField
+              id="entity-search"
+              type="search"
+              placeholder={t('System', 'Search', null, false)}
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+              hideLabel
+              icon={<MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />}
+              clearFieldAction={handleClearSearch}
+            />
 
-            {/* Search Results */}
             {hasSearched && (
-              <div className="flex-1 min-h-0 overflow-y-auto">
-                {isSearching ? (
+              <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+                {isSearching && (
                   <div className="flex items-center justify-center py-8">
                     <Translate>Searching...</Translate>
                   </div>
-                ) : searchResults.length > 0 ? (
+                )}
+                {!isSearching && searchResults.length > 0 && (
                   <div className="flex flex-col gap-2">
-                    {searchResults.map(entity => (
-                      <EntitySearchResult
-                        key={entity._id}
-                        entity={entity}
-                        onClick={() => handleEntitySelect(entity)}
-                      />
-                    ))}
+                    {searchResults.map(entity => {
+                      const isSelected = selectedEntity?._id === entity._id;
+
+                      return (
+                        <EntitySearchResult
+                          entity={entity}
+                          onClick={() => handleEntitySelect(entity)}
+                          isSelected={isSelected}
+                          mode={mode}
+                          selectedFile={selectedFile}
+                          onFileSelect={handleFileSelect}
+                        />
+                      );
+                    })}
                   </div>
-                ) : (
-                  <BlankState
-                    icon={
-                      <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
-                    }
-                    title={<Translate>No results found</Translate>}
-                    description={
-                      <Translate>Try adjusting your search terms or check for typos</Translate>
-                    }
-                  />
+                )}
+                {!isSearching && searchResults.length === 0 && (
+                  <div className="flex-1 flex items-center justify-center">
+                    <BlankState
+                      icon={
+                        <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+                      }
+                      title={<Translate>No results found</Translate>}
+                      description={
+                        <Translate>Try adjusting your search terms or check for typos</Translate>
+                      }
+                    />
+                  </div>
                 )}
               </div>
             )}
@@ -240,17 +250,20 @@ const CreateReference = ({ selection, onCancel }: CreateReferenceProps) => {
       </Panel.Body>
 
       <Panel.Footer>
-        <div className="flex items-center justify-between w-full">
-          <button
-            type="button"
-            onClick={() => {
-              setCreateReferenceSelection(undefined);
-              onCancel?.();
-            }}
-            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
+        <div className="flex justify-end w-full gap-2">
+          <Button styling="outline" color="primary" onClick={onCancel}>
             <Translate>Cancel</Translate>
-          </button>
+          </Button>
+          <Button
+            styling="solid"
+            color="success"
+            onClick={handleSave}
+            disabled={
+              !selectedRelationshipType || !selectedEntity || (mode === 'text' && !selectedFile)
+            }
+          >
+            <Translate>Save</Translate>
+          </Button>
         </div>
       </Panel.Footer>
     </Panel>

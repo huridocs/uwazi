@@ -97,6 +97,19 @@
   --color-warning-900: #78350f;
   --color-warning-950: #451a03;
 
+  /* Yellow colors (standard Tailwind yellow) */
+  --color-yellow-50: #fefce8;
+  --color-yellow-100: #fef9c3;
+  --color-yellow-200: #fef08a;
+  --color-yellow-300: #fde047;
+  --color-yellow-400: #facc15;
+  --color-yellow-500: #eab308;
+  --color-yellow-600: #ca8a04;
+  --color-yellow-700: #a16207;
+  --color-yellow-800: #854d0e;
+  --color-yellow-900: #713f12;
+  --color-yellow-950: #422006;
+
   /* Alert colors (orange) */
   --color-alert-50: #fff7ed;
   --color-alert-100: #ffedd5;
