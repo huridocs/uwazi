@@ -9,7 +9,12 @@ import {
 import { z } from 'zod';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { Context, CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property.js';
+import {
+  Context,
+  CreatePropertyAssignmentInput,
+  Property,
+  PropertyUpdateInfo,
+} from './Property.js';
 import { PropertyType, PropertyTypeEnum } from './PropertyType.js';
 import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue.js';
 

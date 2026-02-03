@@ -8,7 +8,10 @@ import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertyFactoryCreateInput } from '#api/core/domain/template/PropertyFactory.js';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
 import { PropertyCreatorService } from './PropertyCreatorService.js';
-import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService.js';
+import {
+  SelectPropertyCreatorService,
+  ThesauriDataSource,
+} from './SelectPropertyCreatorService.js';
 import { RelationshipPropertyCreatorService } from './RelationshipPropertyCreatorService.js';
 import { NestedPropertyCreatorService } from './NestedPropertyCreatorService.js';
 
@@ -31,7 +34,7 @@ type CreateProps = {
 type BulkCreateInput = (Omit<PropertyFactoryCreateInput, 'id' | 'template'> & { id?: string })[];
 
 class PropertyCreatorServiceStrategy {
-  constructor(private props: Props) { }
+  constructor(private props: Props) {}
 
   getStrategy(type: PropertyType): AbstractPropertyCreatorService {
     switch (type) {

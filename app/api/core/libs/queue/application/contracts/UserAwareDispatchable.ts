@@ -1,4 +1,4 @@
-import { tenants } from '#api/tenants.js';
+import { tenants } from '#api/tenants/index.js';
 import users from '#api/users/users.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 

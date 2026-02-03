@@ -1,4 +1,4 @@
-import { tenants } from '#api/tenants.js';
+import { tenants } from '#api/tenants/index.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
 import { Job } from './QueueAdapter.js';

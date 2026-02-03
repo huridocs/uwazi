@@ -2,7 +2,7 @@ import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { tenants } from '#api/tenants.js';
+import { tenants } from '#api/tenants/index.js';
 import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import testingDB from '#api/utils/testing_db.js';
 import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';

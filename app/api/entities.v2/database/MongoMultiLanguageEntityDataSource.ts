@@ -5,7 +5,7 @@ import {
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';

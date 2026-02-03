@@ -43,7 +43,7 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 }
 
 class FilesService {
-  constructor(protected deps: Deps) { }
+  constructor(protected deps: Deps) {}
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(

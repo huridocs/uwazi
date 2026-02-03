@@ -53,9 +53,9 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
         const group = thesaurus.getGroupByThesaurusValueId(thesaurusValue.id);
         const parent = group
           ? {
-            value: group.id,
-            label: translationCollection.getTranslation(language, group.label),
-          }
+              value: group.id,
+              label: translationCollection.getTranslation(language, group.label),
+            }
           : undefined;
 
         return {

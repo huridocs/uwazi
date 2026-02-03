@@ -1,4 +1,4 @@
-import { EventsBus } from '#api/core/libs/eventsbus.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { Tenant } from '#api/tenants/tenantContext.js';

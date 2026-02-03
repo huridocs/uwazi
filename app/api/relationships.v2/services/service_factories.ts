@@ -9,7 +9,7 @@ import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
@@ -19,7 +19,7 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/service_factories.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants.js';
+import { tenants } from '#api/tenants/index.js';
 import {
   DefaultHubsDataSource,
   DefaultMigrationHubRecordDataSource,

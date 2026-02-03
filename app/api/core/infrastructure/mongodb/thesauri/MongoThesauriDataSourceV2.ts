@@ -13,7 +13,8 @@ import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
 
 class MongoThesauriDataSourceV2
   extends MongoDataSource<ThesaurusDBO>
-  implements ThesauriDataSource {
+  implements ThesauriDataSource
+{
   protected collectionName = 'dictionaries';
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {

@@ -1,4 +1,4 @@
-import { tenants } from '#api/tenants.js';
+import { tenants } from '#api/tenants/index.js';
 
 import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable.js';
 

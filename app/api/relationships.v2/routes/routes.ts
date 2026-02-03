@@ -2,9 +2,9 @@ import { performance } from 'perf_hooks';
 
 import { Application, NextFunction, Request, Response } from 'express';
 
-import { needsAuthorization } from '#api/auth.js';
+import { needsAuthorization } from '#api/auth/index.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { parseQuery } from '#api/utils.js';
+import { parseQuery } from '#api/utils/index.js';
 import { GetMigrationHubRecordsResponse } from '#shared/types/api.v2/migrationHubRecords.get.js';
 import { MigrationResponse } from '#shared/types/api.v2/relationships.migrate.js';
 import { TestOneHubResponse } from '#shared/types/api.v2/relationships.testOneHub.js';
