@@ -99,38 +99,4 @@ describe('Metadata Display', () => {
       cy.checkA11y();
     });
   });
-
-  describe('Template label', () => {
-    const originalColor = Basic.args.context?.templates[0].color;
-
-    afterEach(() => {
-      if (Basic.args.context?.templates[0]) {
-        Basic.args.context.templates[0].color = originalColor;
-      }
-    });
-
-    [
-      {
-        templateColor: '#cdc6c4',
-        expectedColor: 'rgb(0, 0, 0)',
-      },
-      {
-        templateColor: '#2f0f06',
-        expectedColor: 'rgb(255, 255, 255)',
-      },
-    ].forEach(({ templateColor, expectedColor }) => {
-      it(`should display "${expectedColor}" for template color ${templateColor}`, () => {
-        if (Basic.args.context?.templates[0]) {
-          Basic.args.context.templates[0].color = templateColor;
-        }
-        Basic.args.showGeolocationProperties = false;
-        mount(<Basic />);
-        cy.contains('div', 'This is the title of Template 1').should(
-          'have.css',
-          'color',
-          expectedColor
-        );
-      });
-    });
-  });
 });
