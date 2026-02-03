@@ -1,7 +1,7 @@
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { search } from '#api/search/index.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { User } from '#api/users.v2/model/User.js';
 import { Entity, EntityIcon } from '../domain/entity/Entity.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';

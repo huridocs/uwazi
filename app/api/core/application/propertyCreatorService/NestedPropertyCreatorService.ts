@@ -1,8 +1,8 @@
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { Context, Property } from '#api/core/domain/template/Property.js';
 import { NestedPropertyNotAvailableError } from '#api/core/domain/template/errors.js';
 import { NestedProperty, NestedPropertyProps } from '#api/core/domain/template/NestedProperty.js';
-import { AbstractPropertyCreatorService } from '#api/core/application/propertyCreatorService/AbstractPropertyCreatorService.js';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;

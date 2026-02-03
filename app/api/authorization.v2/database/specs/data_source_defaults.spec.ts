@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DefaultPermissionsDataSource } from '#api/authorization.v2/database/data_source_defaults.js';
-import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
+import { DefaultPermissionsDataSource } from '../data_source_defaults.js';
+import { MongoPermissionsDataSource } from '../MongoPermissionsDataSource.js';
 
 beforeAll(async () => {
   await testingEnvironment.setUp({});

@@ -1,5 +1,4 @@
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-
+import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';
 import { Context, Property } from '#api/core/domain/template/Property.js';
 import { PropertyFactoryCreateInput } from '#api/core/domain/template/PropertyFactory.js';
 

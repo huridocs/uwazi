@@ -1,19 +1,16 @@
-import { Property, Context } from '#api/core/domain/template/Property.js';
+import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';
+import { Context, Property } from '#api/core/domain/template/Property.js';
+import { IdGenerator } from '../contracts/IdGenerator.js';
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertyFactoryCreateInput } from '#api/core/domain/template/PropertyFactory.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { AbstractPropertyCreatorService } from '#api/core/application/propertyCreatorService/AbstractPropertyCreatorService.js';
-import { PropertyCreatorService } from '#api/core/application/propertyCreatorService/PropertyCreatorService.js';
-import {
-  SelectPropertyCreatorService,
-  ThesauriDataSource,
-} from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
-import { RelationshipPropertyCreatorService } from '#api/core/application/propertyCreatorService/RelationshipPropertyCreatorService.js';
-import { NestedPropertyCreatorService } from '#api/core/application/propertyCreatorService/NestedPropertyCreatorService.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
+import { PropertyCreatorService } from './PropertyCreatorService.js';
+import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService.js';
+import { RelationshipPropertyCreatorService } from './RelationshipPropertyCreatorService.js';
+import { NestedPropertyCreatorService } from './NestedPropertyCreatorService.js';
 
 type Props = {
   default: PropertyCreatorService;

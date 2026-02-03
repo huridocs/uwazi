@@ -6,11 +6,11 @@ import {
   RelationshipPropertyDoesNotExistError,
   RelationshipTemplateMismatchError,
 } from '#api/core/domain/entity/errors.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
-} from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+} from './PropertyAssignmentCreatorService.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;

@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
-import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { ProcessingFileFailed } from '#api/core/domain/files/errors.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { FilesDataSource } from './contracts/FilesDataSource.js';
+import { FileStorage } from './contracts/FileStorage.js';
+import { ProcessingFileFailed } from '../domain/files/errors.js';
+import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-import { FileIsNotAPDF } from '#api/core/infrastructure/services/PDFService.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { PDFService } from '#api/core/application/contracts/PDFService.js';
-import { FilesService } from '#api/core/application/FilesService.js';
+import { FileIsNotAPDF } from '../infrastructure/services/PDFService.js';
+import { EventsBus } from '../libs/eventsbus/index.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PDFService } from './contracts/PDFService.js';
+import { FilesService } from './FilesService.js';
 
 type Input = {
   documentId: string;

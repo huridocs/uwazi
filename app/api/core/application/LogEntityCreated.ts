@@ -1,4 +1,4 @@
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
 
 type Input = {
   sharedId: string;

@@ -1,9 +1,6 @@
 import { createError } from '#api/utils/index.js';
 
-import {
-  AbstractController,
-  Dependencies,
-} from '#api/common.v2/infrastructure/AbstractController.js';
+import { AbstractController, Dependencies } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { FileStorageFactory } from '../files/FileStorageFactory.js';

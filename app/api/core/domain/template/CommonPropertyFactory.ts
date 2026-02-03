@@ -1,11 +1,9 @@
-import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
-
-import { Context } from '#api/core/domain/template/Property.js';
-
-import { TitleProperty, TitlePropertyProps } from '#api/core/domain/template/TitleProperty.js';
-import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
-import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
+import { CommonProperty } from './CommonProperty.js';
+import { Context } from './Property.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { CreationDateProperty } from './CreationDateProperty.js';
+import { ModifiedDateProperty } from './ModifiedDateProperty.js';
+import { TitleProperty, TitlePropertyProps } from './TitleProperty.js';
 
 type CreateInput = TitlePropertyProps;
 

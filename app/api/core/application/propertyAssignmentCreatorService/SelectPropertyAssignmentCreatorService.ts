@@ -4,11 +4,11 @@ import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataS
 import { ThesaurusValue } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
 } from './PropertyAssignmentCreatorService.js';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;

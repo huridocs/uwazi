@@ -1,10 +1,10 @@
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ThesaurusNotFoundError } from '#api/core/domain/thesaurus/errors.js';
-import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { z } from 'zod';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 const RequestSchema = z.object({
   _id: z.string({ message: 'You should provide an Id' }),

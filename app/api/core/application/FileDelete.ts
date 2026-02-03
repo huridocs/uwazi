@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { fileDBO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
+import { z } from 'zod';
 import { createError } from '#api/utils/index.js';
 import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
 import { Thumbnail } from '../domain/files/Thumbnail.js';

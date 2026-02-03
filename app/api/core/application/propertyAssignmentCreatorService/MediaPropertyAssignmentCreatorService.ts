@@ -4,7 +4,7 @@ import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
-} from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+} from './PropertyAssignmentCreatorService.js';
 
 type MediaValueInput = { value: string } | { attachment: number; timeLinks?: string };
 

@@ -6,16 +6,16 @@ import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
-import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService.js';
-import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService.js';
+import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService.js';
+import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService.js';
 import {
   PropertyAssignmentCreatorService,
   PropertyAssignmentInput,
 } from './PropertyAssignmentCreatorService.js';
-import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService.js';
-import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService.js';
-import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService.js';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService.js';
+import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService.js';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
