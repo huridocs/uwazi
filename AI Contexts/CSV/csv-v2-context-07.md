@@ -31,9 +31,9 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - Relationship parsing/creation semantics (from v1 `typeParsers/relationship.ts`) are
   now wired into v2 import using preflight-applied values, but full parity (warnings,
   sanitization behavior) is still pending.
-- **CRITICAL:** Files/attachments handling from v1 (`image`, `media`, `file`, `attachments`)
-  is still missing in v2. We need a decided approach for attaching files from row data
-  (parity with v1 `importEntity`), including extraction/storage and metadata rewrite, plus tests.
+- Files/attachments handling from v1 (`image`, `media`, `file`, `attachments`) is now
+  implemented in v2 (see section 6.10). Remaining gaps are integration coverage
+  (single-row import with files, missing file row errors, S3 vs disk IO).
 - Sanitization warnings and row-level warnings are not surfaced in v2; only row errors
   are persisted.
 
@@ -47,8 +47,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - Preflight integration spec needs restoration/updates.
 - No integration coverage for the complete chain (register → extract → preflight →
   thesauri create → import).
-- Entities import job needs tests for batch processing, row errors report, and stop
-  thresholds.
+- Entities import job needs tests for batch processing, row errors report, stop
+  thresholds, and files/attachments integration (see 6.10).
 
 #### 3.5 Retention and cleanup
 
@@ -148,6 +148,25 @@ It is also a handoff guide: a new agent should be able to continue by reading th
    - `CsvEntitiesImportMapper` applies relationship assignments during row import using
      preflight-applied values, matching v1's title-based relationship resolution.
 
+10. **Files/attachments handling implemented in entities import**
+   - New helper `CsvImportRowFilesResolver` reads extracted files via `FileStorage`
+     (`csv-imports/{importId}/extracted`) and builds `InputFile[]` for documents
+     (`file` column, split by `|`) and attachments (`attachments` column, split by `|`).
+   - `CsvEntitiesImportMapper` now returns `PropertyAssignmentInput` (not domain assignments)
+     and can map image/media values to `{ attachment: index }` when filenames match attachments.
+     This avoids duplicating domain normalization logic; trimming/validation happens in the
+     property assignment services and domain validators.
+   - Entities import batch processor now:
+     - resolves row files outside transactions,
+     - uses `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to produce assignments,
+     - stores files via `FilesService.storeFiles(...)` outside the DB transaction,
+     - inserts entity + file records inside a per-row transaction (`entitiesDS.create` +
+       `FilesService.insert`).
+   - Queue wiring updated to inject `FilesService`, `PropertyAssignmentCreatorServiceStrategy`,
+     and `IdGenerator` into `CsvImportEntitiesJob`.
+   - Unit spec updated: `CsvEntitiesImportMapper.spec.ts` now asserts attachment mapping and
+     reflects that mapper passes raw values to the property-assignment layer.
+
 ### 7) Agent-specific notes (handoff)
 
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -159,6 +178,10 @@ It is also a handoff guide: a new agent should be able to continue by reading th
   Keep it idempotent and transaction-aware; only create entities for relationship
   properties with `content` (template id), matching v1 behavior.
 - **All CSV v2 jobs emit to tenant admins only** (`emitToTenantAdmins`), never to sessions.
+- **Files in import**:
+  - Extracted assets remain under `csv-imports/{importId}/extracted`.
+  - Entity file persistence is handled by `FilesService` during entities import; no
+    intermediate persistence layer exists or is needed.
 - **Tests**:
   Only one unit test currently covers `CsvCreateThesauriValuesJob`. There are no pipeline
   integration tests yet (register → extract → preflight → create → relationships → import).

@@ -8,20 +8,18 @@ import moment from 'moment';
 import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
 import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
+import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer';
 import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
 import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 
 type AppliedValueIndex = Map<
   string,
   Map<string, { valueId: string; label: string; parentLabel?: string }>
 >;
 
-type MappedAssignment = {
-  value: ReturnType<Property['createPropertyAssignment']>;
-  language: LanguageISO6391;
-};
+type MappedAssignment = PropertyAssignmentInput;
 
 type AppliedValueDoc = {
   thesaurusId: string;
@@ -131,18 +129,8 @@ const buildSelectAssignment = ({
     return null;
   }
   return {
-    value: property.createPropertyAssignment(
-      {
-        value: [
-          {
-            value: selection.valueId,
-            label: selection.label,
-          },
-        ],
-        language,
-      },
-      true
-    ),
+    name: property.name,
+    value: [{ value: selection.valueId }],
     language,
   };
 };
@@ -171,19 +159,39 @@ const buildMultiselectAssignments = ({
 
   return [
     {
-      value: property.createPropertyAssignment(
-        {
-          value: entries.map(entry => ({
-            value: entry!.valueId,
-            label: entry!.label,
-          })),
-          language,
-        },
-        true
-      ),
+      name: property.name,
+      value: entries.map(entry => ({
+        value: entry!.valueId,
+      })),
       language,
     },
   ];
+};
+
+const buildRelationshipEntries = ({
+  property,
+  value,
+  relationshipIndex,
+}: {
+  property: V1RelationshipProperty;
+  value: string;
+  relationshipIndex: RelationshipValueIndex;
+}) => {
+  if (!property.content) {
+    return [];
+  }
+  const titles = splitMultiValues(value);
+  if (!titles.length) {
+    return [];
+  }
+  const map = relationshipIndex.get(property.content);
+  if (!map) {
+    return [];
+  }
+  return titles
+    .map(title => map.get(title))
+    .filter(Boolean)
+    .map(entry => ({ value: entry!.sharedId }));
 };
 
 const buildRelationshipAssignments = ({
@@ -197,33 +205,15 @@ const buildRelationshipAssignments = ({
   language: LanguageISO6391;
   relationshipIndex: RelationshipValueIndex;
 }): MappedAssignment[] => {
-  if (!property.content) {
-    return [];
-  }
-  const titles = splitMultiValues(value);
-  if (!titles.length) {
-    return [];
-  }
-  const map = relationshipIndex.get(property.content);
-  if (!map) {
-    return [];
-  }
-  const entries = titles
-    .map(title => map.get(title))
-    .filter(Boolean)
-    .map(entry => ({
-      value: entry!.sharedId,
-      label: entry!.label,
-      type: 'entity' as const,
-    }));
-
+  const entries = buildRelationshipEntries({ property, value, relationshipIndex });
   if (!entries.length) {
     return [];
   }
 
   return [
     {
-      value: property.createPropertyAssignment({ value: entries, language }, true),
+      name: property.name,
+      value: entries,
       language,
     },
   ];
@@ -238,13 +228,8 @@ const buildDefaultAssignment = ({
   value: string;
   language: LanguageISO6391;
 }): MappedAssignment => ({
-  value: property.createPropertyAssignment(
-    {
-      value: [{ value }],
-      language,
-    },
-    true
-  ),
+  name: property.name,
+  value: [{ value }],
   language,
 });
 
@@ -261,7 +246,8 @@ const buildDateAssignments = (params: {
   const entry = { value: parseDateValue(value, dateFormat) };
   return [
     {
-      value: property.createPropertyAssignment({ value: [entry], language }, true),
+      name: property.name,
+      value: [entry],
       language,
     },
   ];
@@ -281,7 +267,8 @@ const buildMultiDateAssignments = (params: {
   const entries = values.map(date => ({ value: parseDateValue(date, dateFormat) }));
   return [
     {
-      value: property.createPropertyAssignment({ value: entries, language }, true),
+      name: property.name,
+      value: entries,
       language,
     },
   ];
@@ -309,7 +296,8 @@ const buildDateRangeAssignments = (params: {
   };
   return [
     {
-      value: property.createPropertyAssignment({ value: [entry], language }, true),
+      name: property.name,
+      value: [entry],
       language,
     },
   ];
@@ -340,7 +328,8 @@ const buildMultiDateRangeAssignments = (params: {
   }
   return [
     {
-      value: property.createPropertyAssignment({ value: entries, language }, true),
+      name: property.name,
+      value: entries,
       language,
     },
   ];
@@ -358,7 +347,8 @@ const buildLinkAssignments = (params: {
   }
   return [
     {
-      value: property.createPropertyAssignment({ value: [{ value: link }], language }, true),
+      name: property.name,
+      value: [{ value: link }],
       language,
     },
   ];
@@ -376,7 +366,8 @@ const buildGeolocationAssignments = (params: {
   }
   return [
     {
-      value: property.createPropertyAssignment({ value: [{ value: geo }], language }, true),
+      name: property.name,
+      value: [{ value: geo }],
       language,
     },
   ];
@@ -392,6 +383,7 @@ const buildAssignmentsForLanguage = ({
   sanitizedHeaders,
   rowValues,
   thesaurusIndex,
+  attachmentLookup,
 }: {
   property: Property;
   language: LanguageISO6391;
@@ -401,6 +393,7 @@ const buildAssignmentsForLanguage = ({
   sanitizedHeaders: string[];
   rowValues: string[];
   thesaurusIndex: AppliedValueIndex;
+  attachmentLookup?: (filename: string) => number | undefined;
 }): MappedAssignment[] => {
   const value = getValueForLanguage({
     propName: property.name,
@@ -413,6 +406,19 @@ const buildAssignmentsForLanguage = ({
 
   if (!value) {
     return [];
+  }
+
+  if (property.type === 'image' || property.type === 'media') {
+    const attachmentIndex = attachmentLookup?.(value.trim());
+    if (attachmentIndex !== undefined) {
+      return [
+        {
+          name: property.name,
+          value: [{ attachment: attachmentIndex }],
+          language,
+        },
+      ];
+    }
   }
 
   if (property.type === 'select' && isSelectProperty(property)) {
@@ -451,6 +457,75 @@ const buildAssignmentsForLanguage = ({
   return [buildDefaultAssignment({ property, value, language })];
 };
 
+const buildAssignmentsForLanguages = (params: {
+  property: Property;
+  languages: LanguageISO6391[];
+  defaultLanguage: LanguageISO6391;
+  dateFormat: string;
+  headerAnalysis: ReturnType<typeof CsvHeaderAnalyzer.analyze>;
+  sanitizedHeaders: string[];
+  rowValues: string[];
+  thesaurusIndex: AppliedValueIndex;
+  attachmentLookup?: (filename: string) => number | undefined;
+}) => {
+  const { languages } = params;
+  const assignments: MappedAssignment[] = [];
+  for (const language of languages) {
+    assignments.push(
+      ...buildAssignmentsForLanguage({
+        property: params.property,
+        language,
+        defaultLanguage: params.defaultLanguage,
+        dateFormat: params.dateFormat,
+        headerAnalysis: params.headerAnalysis,
+        sanitizedHeaders: params.sanitizedHeaders,
+        rowValues: params.rowValues,
+        thesaurusIndex: params.thesaurusIndex,
+        attachmentLookup: params.attachmentLookup,
+      })
+    );
+  }
+  return assignments;
+};
+
+const resolveRelationshipAssignments = (params: {
+  property: Property;
+  defaultLanguage: LanguageISO6391;
+  headerAnalysis: ReturnType<typeof CsvHeaderAnalyzer.analyze>;
+  sanitizedHeaders: string[];
+  rowValues: string[];
+  relationshipIndex: RelationshipValueIndex;
+}) => {
+  const {
+    property,
+    defaultLanguage,
+    headerAnalysis,
+    sanitizedHeaders,
+    rowValues,
+    relationshipIndex,
+  } = params;
+  if (!(property instanceof V1RelationshipProperty)) {
+    return [];
+  }
+  const value = getValueForLanguage({
+    propName: property.name,
+    language: defaultLanguage,
+    defaultLanguage,
+    languagesPerHeader: headerAnalysis.languagesPerHeader,
+    sanitizedHeaders,
+    rowValues,
+  });
+  if (!value) {
+    return [];
+  }
+  return buildRelationshipAssignments({
+    property,
+    value,
+    language: defaultLanguage,
+    relationshipIndex,
+  });
+};
+
 function buildAssignmentsForProperty(params: {
   property: Property;
   languages: LanguageISO6391[];
@@ -461,10 +536,10 @@ function buildAssignmentsForProperty(params: {
   rowValues: string[];
   thesaurusIndex: AppliedValueIndex;
   relationshipIndex: RelationshipValueIndex;
+  attachmentLookup?: (filename: string) => number | undefined;
 }): MappedAssignment[] {
   const {
     property,
-    languages,
     defaultLanguage,
     dateFormat,
     headerAnalysis,
@@ -472,49 +547,31 @@ function buildAssignmentsForProperty(params: {
     rowValues,
     thesaurusIndex,
     relationshipIndex,
+    attachmentLookup,
   } = params;
 
   if (property.type === 'relationship') {
-    if (property instanceof V1RelationshipProperty) {
-      const value = getValueForLanguage({
-        propName: property.name,
-        language: defaultLanguage,
-        defaultLanguage,
-        languagesPerHeader: headerAnalysis.languagesPerHeader,
-        sanitizedHeaders,
-        rowValues,
-      });
-      if (!value) {
-        return [];
-      }
-      return buildRelationshipAssignments({
-        property,
-        value,
-        language: defaultLanguage,
-        relationshipIndex,
-      });
-    }
-    return [];
+    return resolveRelationshipAssignments({
+      property,
+      defaultLanguage,
+      headerAnalysis,
+      sanitizedHeaders,
+      rowValues,
+      relationshipIndex,
+    });
   }
 
-  const assignments: MappedAssignment[] = [];
-
-  for (const language of languages) {
-    assignments.push(
-      ...buildAssignmentsForLanguage({
-        property,
-        language,
-        defaultLanguage,
-        dateFormat,
-        headerAnalysis,
-        sanitizedHeaders,
-        rowValues,
-        thesaurusIndex,
-      })
-    );
-  }
-
-  return assignments;
+  return buildAssignmentsForLanguages({
+    property,
+    languages: params.languages,
+    defaultLanguage,
+    dateFormat,
+    headerAnalysis,
+    sanitizedHeaders,
+    rowValues,
+    thesaurusIndex,
+    attachmentLookup,
+  });
 }
 
 class CsvEntitiesImportMapper {
@@ -577,6 +634,7 @@ class CsvEntitiesImportMapper {
     languages: LanguageISO6391[];
     defaultLanguage: LanguageISO6391;
     dateFormat?: string;
+    attachmentLookup?: (filename: string) => number | undefined;
   }): MappedAssignment[] {
     const {
       template,
@@ -588,6 +646,7 @@ class CsvEntitiesImportMapper {
       languages,
       defaultLanguage,
       dateFormat,
+      attachmentLookup,
     } = params;
 
     return template.allProperties.flatMap(property =>
@@ -601,6 +660,7 @@ class CsvEntitiesImportMapper {
         rowValues,
         thesaurusIndex,
         relationshipIndex,
+        attachmentLookup,
       })
     );
   }

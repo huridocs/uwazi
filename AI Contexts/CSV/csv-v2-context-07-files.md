@@ -46,16 +46,15 @@ files at creation time:
 
 ---
 
-### 3) Current CSV v2 import pipeline (where files are missing)
+### 3) Current CSV v2 import pipeline (files implemented)
 
-`CsvImportEntitiesJob` currently builds `Entity` domain objects directly and calls
-`entitiesDS.create(...)` inside batch transactions. It bypasses:
+`CsvImportEntitiesJob` now supports files/attachments by:
 
-- `CreateEntityUseCase` (which is file-aware),
-- `FilesService` (file storage + file record insertion),
-- `PropertyAssignmentCreatorServiceStrategy` (attachment-aware assignment logic).
+- resolving extracted files into `InputFile[]` per row,
+- using `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)`,
+- calling `FilesService.storeFiles` (outside TM) and `FilesService.insert` (inside TM).
 
-Result: CSV v2 **does not** import files/attachments yet.
+Result: CSV v2 **does** import files/attachments using the Entities V2 file flow.
 
 ---
 
@@ -111,7 +110,7 @@ creation flow:
 
 ---
 
-### 6) Proposed approach (Entities V2 path)
+### 6) Implemented approach (Entities V2 path)
 
 We should use the **Entities V2 creation flow** for each CSV row that has files.
 Two integration options:
@@ -137,20 +136,21 @@ Cons:
 - Nested transaction behavior may conflict with existing batch transactions.
 - Potentially slower (per-row use case + file writes).
 
-#### Option B — Extend CSV batch to use property assignment services (recommended)
+#### Option B — Extend CSV batch to use property assignment services (implemented)
 
-1. Add `PropertyAssignmentCreatorServiceStrategy` and `FilesService` to CSV import deps.
+1. Added `PropertyAssignmentCreatorServiceStrategy`, `FilesService`, `FileStorage`,
+   and `IdGenerator` to the entities-import job deps (wired in `queueRegistry.ts`).
 2. For each row:
    - Build `inputFiles` for the row (attachments/documents).
    - Build **property assignment inputs** instead of domain assignments.
      - For image/media: use `{ attachment: index }` when a filename matches an extracted file.
      - For other properties: use existing CSV mapping logic.
    - Use `propertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to create assignments,
-     passing `attachments` (filtered InputFiles).
-   - Apply assignments to the `Entity` and delegate file storage to Entities V2:
-     - Pass `inputFiles` into the entity creation flow so it stores files and inserts
-       file records using its existing process.
-     - CSV import should **not** implement file cleanup for files written by Entities V2.
+     passing the row attachments.
+   - Apply assignments to the `Entity`, store files via `FilesService.storeFiles(...)` outside TM,
+     and insert entity + file records inside a per-row transaction (`entitiesDS.create` and
+     `FilesService.insert`).
+   - CSV import does **not** implement file cleanup for files written by Entities V2.
 
 Pros:
 
@@ -164,7 +164,7 @@ transaction conflicts. Keep Option A documented for the caveats above.
 
 ---
 
-### 7) Proposed data flow (per CSV row)
+### 7) Data flow (per CSV row, implemented)
 
 1. **Detect file references in row:**
 
@@ -205,23 +205,25 @@ transaction conflicts. Keep Option A documented for the caveats above.
 
 ---
 
-### 9) Implementation checklist (for the next agent)
+### 9) Implementation checklist (updated)
 
-1. Add a `CsvImportRowFilesResolver` helper:
+1. ✅ **Implemented** `CsvImportRowFilesResolver` helper:
 
    - Input: `importId`, row values, headers, `fileStorage`
    - Output: `{ attachments: InputFile[], documents: InputFile[] }`
 
-2. Extend CSV import mapper to output `PropertyAssignmentInput` values
-   (image/media with `{ attachment: index }` when appropriate).
+2. ✅ **Implemented** mapper output as `PropertyAssignmentInput` values
+   (image/media with `{ attachment: index }` when appropriate). The mapper no longer
+   normalizes/validates values; that responsibility lives in the property assignment
+   services and domain validators.
 
-3. Update CSV batch processor to:
+3. ✅ **Updated** CSV batch processor to:
 
-   - build assignments via `PropertyAssignmentCreatorServiceStrategy`
-   - call `FilesService.storeFiles` + `FilesService.insert`
-   - keep batch transactions clean and avoid nested TM runs.
+   - build assignments via `PropertyAssignmentCreatorServiceStrategy`,
+   - call `FilesService.storeFiles` (outside TM) + `FilesService.insert` (inside TM),
+   - keep batch transactions clean (per-row TM only; batch progress update uses separate TM).
 
-4. Add tests:
+4. **Still needed — add tests:**
 
    - Single-row import with an image file + media file + document.
    - Missing extracted file → row error and no entity created.
@@ -243,3 +245,5 @@ transaction conflicts. Keep Option A documented for the caveats above.
 - `ImagePropertyAssignmentCreatorService` — `.../ImagePropertyAssignmentCreatorService.ts`
 - `MediaPropertyAssignmentCreatorService` — `.../MediaPropertyAssignmentCreatorService.ts`
 - CSV v1 file handling — `app/api/csv/importEntity.ts`
+ - New helper — `app/api/csv.v2/application/services/CsvImportRowFilesResolver.ts`
+ - Entities import batch — `app/api/csv.v2/application/jobs/CsvImportEntitiesBatchProcessor.ts`

@@ -6,6 +6,9 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { FilesService } from 'api/core/application/FilesService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 import { CsvHeaderAnalyzer, AnalyzerOptions } from '../services/CsvHeaderAnalyzer';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
@@ -37,6 +40,9 @@ type Deps = {
   mapper: CsvEntitiesImportMapper;
   transactionManager: TransactionManager;
   fileStorage: FileStorage;
+  filesService: FilesService;
+  propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
+  idGenerator: IdGenerator;
   batchSize?: number;
 };
 
@@ -170,6 +176,10 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
           csvImportsDS: this.deps.csvImportsDS,
           entitiesDS: this.deps.entitiesDS,
           transactionManager: this.transactionManager,
+          propertyAssignmentCreatorServiceStrategy: this.deps.propertyAssignmentCreatorServiceStrategy,
+          filesService: this.deps.filesService,
+          fileStorage: this.deps.fileStorage,
+          idGenerator: this.deps.idGenerator,
         },
         batchSize: this.getBatchSize(),
         failurePolicy: {

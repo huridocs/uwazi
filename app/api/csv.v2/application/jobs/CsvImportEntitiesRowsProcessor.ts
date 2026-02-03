@@ -1,5 +1,9 @@
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { FilesService } from 'api/core/application/FilesService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 import { CsvImport } from '../../domain/CsvImport';
 import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
@@ -14,6 +18,10 @@ type ProcessRowsDeps = {
   csvImportsDS: CsvImportsDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
   transactionManager: TransactionManager;
+  propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
+  filesService: FilesService;
+  fileStorage: FileStorage;
+  idGenerator: IdGenerator;
 };
 
 type FailurePolicy = {
@@ -65,6 +73,10 @@ const processImportRows = async (params: {
         csvImportsDS: deps.csvImportsDS,
         rowErrorsDS: deps.rowErrorsDS,
         transactionManager: deps.transactionManager,
+        propertyAssignmentCreatorServiceStrategy: deps.propertyAssignmentCreatorServiceStrategy,
+        filesService: deps.filesService,
+        fileStorage: deps.fileStorage,
+        idGenerator: deps.idGenerator,
       },
       context,
       rows,

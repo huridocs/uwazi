@@ -17,6 +17,7 @@ import { ImageProperty } from 'api/core/domain/template/ImageProperty';
 import { MediaProperty } from 'api/core/domain/template/MediaProperty';
 import { PreviewProperty } from 'api/core/domain/template/PreviewProperty';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { PropertyValueInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer';
 import { CsvEntitiesImportMapper, AppliedValueIndex } from '../CsvEntitiesImportMapper';
 
@@ -24,12 +25,18 @@ const TEMPLATE_ID = 'template-1';
 const DEFAULT_LANGUAGE = 'en' as LanguageISO6391;
 const LANGUAGES = ['en', 'es'] as LanguageISO6391[];
 
+type ValueEntry = Extract<PropertyValueInput, { value: unknown }>;
+
+const isValueEntry = (entry: PropertyValueInput): entry is ValueEntry => 'value' in entry;
+const getValueEntries = (entries: PropertyValueInput[]) => entries.filter(isValueEntry);
+
 const buildAssignments = (params: {
   properties: any[];
   headers: string[];
   rowValues: string[];
   thesaurusIndex?: AppliedValueIndex;
   relationshipIndex?: Map<string, Map<string, { sharedId: string; label: string }>>;
+  attachmentLookup?: (filename: string) => number | undefined;
 }) => {
   const {
     properties,
@@ -37,6 +44,7 @@ const buildAssignments = (params: {
     rowValues,
     thesaurusIndex = new Map(),
     relationshipIndex = new Map(),
+    attachmentLookup,
   } = params;
   const template = TemplateBuilder.aTemplate({
     id: TEMPLATE_ID,
@@ -57,6 +65,7 @@ const buildAssignments = (params: {
     relationshipIndex,
     languages: LANGUAGES,
     defaultLanguage: DEFAULT_LANGUAGE,
+    attachmentLookup,
   });
 };
 
@@ -102,21 +111,21 @@ describe('CsvEntitiesImportMapper', () => {
       thesaurusIndex,
     });
 
-    const selectAssignments = assignments.filter(a => a.value.name === 'select');
-    const multiselectAssignments = assignments.filter(a => a.value.name === 'multiselect');
+    const selectAssignments = assignments.filter(a => a.name === 'select');
+    const multiselectAssignments = assignments.filter(a => a.name === 'multiselect');
 
     expect(selectAssignments).toHaveLength(2);
-    expect(selectAssignments[0].value.value[0].value).toBe('id-foo');
-    expect(selectAssignments[1].value.value[0].value).toBe('id-foo');
+    expect(getValueEntries(selectAssignments[0].value)[0].value).toBe('id-foo');
+    expect(getValueEntries(selectAssignments[1].value)[0].value).toBe('id-foo');
 
     expect(multiselectAssignments).toHaveLength(2);
     multiselectAssignments.forEach(assignment => {
-      expect(assignment.value.value.map(v => v.value)).toEqual(['id-foo', 'id-baz']);
+      expect(getValueEntries(assignment.value).map(v => v.value)).toEqual(['id-foo', 'id-baz']);
     });
   });
 
   // eslint-disable-next-line max-statements
-  it('should normalize text, markdown, and numeric using domain rules', () => {
+  it('should pass raw text, markdown, and numeric values to the input mapper', () => {
     const text = new TextProperty({
       id: 'text',
       name: 'text',
@@ -143,11 +152,11 @@ describe('CsvEntitiesImportMapper', () => {
       headers,
       rowValues,
     });
-    const byName = Object.fromEntries(assignments.map(a => [a.value.name, a.value]));
+    const byName = Object.fromEntries(assignments.map(a => [a.name, a]));
 
-    expect(byName.text.value[0].value).toBe('hello');
-    expect(byName.markdown.value[0].value).toBe('**md**');
-    expect(byName.numeric.value[0].value).toBe(42);
+    expect(getValueEntries(byName.text.value)[0].value).toBe('  hello  ');
+    expect(getValueEntries(byName.markdown.value)[0].value).toBe('  **md**  ');
+    expect(getValueEntries(byName.numeric.value)[0].value).toBe('42');
   });
 
   // eslint-disable-next-line max-statements
@@ -196,15 +205,49 @@ describe('CsvEntitiesImportMapper', () => {
       rowValues,
       relationshipIndex,
     });
-    const byName = Object.fromEntries(assignments.map(a => [a.value.name, a.value]));
+    const byName = Object.fromEntries(assignments.map(a => [a.name, a]));
 
-    expect(byName.image.value[0].value).toBe('/api/files/photo.jpg');
-    expect(byName.media.value[0].value).toBe('video.mp4');
-    expect(byName.preview.value).toEqual([]);
-    expect(byName.relationship.value).toEqual([
-      { value: 'shared-1', label: 'related-title', type: 'entity' },
-      { value: 'shared-2', label: 'related-two', type: 'entity' },
-    ]);
+    expect(getValueEntries(byName.image.value)[0].value).toBe('photo.jpg');
+    expect(getValueEntries(byName.media.value)[0].value).toBe('video.mp4');
+    expect(byName.preview.value).toEqual([{ value: 'ignored' }]);
+    expect(byName.relationship.value).toEqual([{ value: 'shared-1' }, { value: 'shared-2' }]);
+  });
+
+  it('should map image and media to attachments when present', () => {
+    const image = new ImageProperty({
+      id: 'image',
+      name: 'image',
+      label: 'Image',
+      template: TEMPLATE_ID,
+    });
+    const media = new MediaProperty({
+      id: 'media',
+      name: 'media',
+      label: 'Media',
+      template: TEMPLATE_ID,
+    });
+    const headers = ['image', 'media'];
+    const rowValues = ['photo.jpg', 'video.mp4'];
+    const attachmentLookup = (filename: string) => {
+      if (filename === 'photo.jpg') {
+        return 1;
+      }
+      if (filename === 'video.mp4') {
+        return 0;
+      }
+      return undefined;
+    };
+
+    const assignments = buildAssignments({
+      properties: [image, media],
+      headers,
+      rowValues,
+      attachmentLookup,
+    });
+    const byName = Object.fromEntries(assignments.map(a => [a.name, a]));
+
+    expect(byName.image.value).toEqual([{ attachment: 1 }]);
+    expect(byName.media.value).toEqual([{ attachment: 0 }]);
   });
 
   it('should skip generatedid when CSV value is empty', () => {
@@ -235,7 +278,7 @@ describe('CsvEntitiesImportMapper', () => {
     const assignments = buildAssignments({ properties: [date], headers, rowValues });
     expect(assignments).toHaveLength(2);
     const [assignment] = assignments;
-    const timestamp = assignment.value.value[0].value as number;
+    const timestamp = getValueEntries(assignment.value)[0].value as number;
     expect(moment.utc(timestamp, 'X').format('YYYY-MM-DD')).toBe('2020-01-01');
   });
 
@@ -262,11 +305,11 @@ describe('CsvEntitiesImportMapper', () => {
       headers: ['geolocation'],
       rowValues: ['1.2|3.4'],
     });
-    expect(linkAssignments[0].value.value[0].value).toEqual({
+    expect(getValueEntries(linkAssignments[0].value)[0].value).toEqual({
       label: 'label',
       url: 'http://example.com',
     });
-    expect(geoAssignments[0].value.value[0].value).toEqual({
+    expect(getValueEntries(geoAssignments[0].value)[0].value).toEqual({
       lat: 1.2,
       lon: 3.4,
       label: '',
@@ -309,15 +352,18 @@ describe('CsvEntitiesImportMapper', () => {
       rowValues: ['2020:2021|2022:2023'],
     });
 
-    const multiDates = multiAssignments[0].value.value.map(entry => {
+    const multiDates = getValueEntries(multiAssignments[0].value).map(entry => {
       const timestamp = entry.value as number;
       return moment.utc(timestamp, 'X').format('YYYY');
     });
     expect(multiDates).toEqual(['2020', '2021']);
-    const range = rangeAssignments[0].value.value[0].value as { from: number; to: number };
+    const range = getValueEntries(rangeAssignments[0].value)[0].value as {
+      from: number;
+      to: number;
+    };
     expect(moment.utc(range.from, 'X').format('YYYY')).toBe('2020');
     expect(moment.utc(range.to, 'X').format('YYYY')).toBe('2021');
-    const multiRange = multiRangeAssignments[0].value.value.map(entry => {
+    const multiRange = getValueEntries(multiRangeAssignments[0].value).map(entry => {
       const value = entry.value as { from: number; to: number };
       return {
         from: moment.utc(value.from, 'X').format('YYYY'),

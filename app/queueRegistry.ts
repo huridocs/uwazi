@@ -15,6 +15,9 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
 import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
 import { DenormalizeThesaurusEntitiesChunkHandler } from 'api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesChunkHandler';
@@ -338,6 +341,17 @@ export function registerJobs(
       CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
     const mapper = new CsvEntitiesImportMapper(thesauriValuesDS, relationshipValuesDS);
     const fileStorage = FileStorageFactory.default();
+    const idGenerator = IdGeneratorFactory.default();
+    const filesService = FilesServiceFactory.default(transactionManager);
+    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+    const propertyAssignmentCreatorServiceStrategy =
+      PropertyAssignmentCreatorServiceStrategy.create({
+        settingsDS,
+        thesauriDS,
+        translationsDS,
+        entitiesDS,
+      });
     const useCase = new CsvImportEntitiesJob({
       csvImportsDS,
       rowsDS,
@@ -349,6 +363,9 @@ export function registerJobs(
       mapper,
       transactionManager,
       fileStorage,
+      filesService,
+      propertyAssignmentCreatorServiceStrategy,
+      idGenerator,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvImportEntitiesJobHandler({ useCase, sockets });
