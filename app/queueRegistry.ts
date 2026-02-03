@@ -48,6 +48,7 @@ import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/Cs
 import { LegacyThesauriRepository } from 'api/csv.v2/infrastructure/services/LegacyThesauriRepository';
 import { LegacyTranslationsRepository } from 'api/csv.v2/infrastructure/services/LegacyTranslationsRepository';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { denormalizeRelated } from 'api/entities/denormalize';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
 import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
@@ -320,11 +321,15 @@ export function registerJobs(
 
   register(
     DenormalizeEntityUpdatedListener.asJob(),
-    async () => new DenormalizeEntityUpdatedListener()
+    async () =>
+      new DenormalizeEntityUpdatedListener({
+        denormalizeRelated,
+        templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+      })
   );
 
   register(
     ProcessRelationshipAfterEntityUpdatedListener.asJob(),
-    async () => new ProcessRelationshipAfterEntityUpdatedListener()
+    async () => new ProcessRelationshipAfterEntityUpdatedListener({})
   );
 }

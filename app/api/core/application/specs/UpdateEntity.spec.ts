@@ -729,13 +729,33 @@ describe('UpdateEntityUseCase', () => {
 
       expect(filesBefore).toMatchObject([
         { entity: 'entity1', originalname: 'Document 1.pdf' },
+        {
+          entity: 'entity1',
+          type: 'thumbnail',
+          filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+        },
         { entity: 'entity1', originalname: 'Document 2.pdf' },
+        {
+          entity: 'entity1',
+          type: 'thumbnail',
+          filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+        },
         { entity: 'entity1', originalname: 'Attachment 1.txt' },
       ]);
 
       expect(filesAfter).toMatchObject([
         { entity: 'entity1', originalname: 'Document 1 Renamed.pdf' },
+        {
+          entity: 'entity1',
+          type: 'thumbnail',
+          filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+        },
         { entity: 'entity1', originalname: 'Document 2 Renamed.pdf' },
+        {
+          entity: 'entity1',
+          type: 'thumbnail',
+          filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+        },
         { entity: 'entity1', originalname: 'Attachment 1 Renamed.txt' },
       ]);
     });
@@ -761,10 +781,22 @@ describe('UpdateEntityUseCase', () => {
 
       const filesAfter = await getAllFiles('entity1');
 
-      expect(filesBefore.length).toBe(3);
-      expect(filesAfter.length).toBe(1);
+      expect(filesBefore.length).toBe(5); // 2 docs + 2 thumbnails + 1 attachment
+      expect(filesAfter.length).toBe(3); // 1 doc + 2 thumbnails (both thumbnails should be preserved)
 
-      expect(filesAfter).toMatchObject([{ entity: 'entity1', originalname: 'Document 1.pdf' }]);
+      expect(filesAfter).toMatchObject([
+        { entity: 'entity1', originalname: 'Document 1.pdf' },
+        {
+          entity: 'entity1',
+          type: 'thumbnail',
+          filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+        },
+        {
+          entity: 'entity1',
+          type: 'thumbnail',
+          filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+        },
+      ]);
 
       expect(fileService.delete).toHaveBeenCalledWith([
         expect.objectContaining({

@@ -87,7 +87,7 @@ export abstract class BaseFile {
   constructor(props: Props) {
     const validated = Schema.parse({
       ...props,
-      originalname: 'originalname' in props ? props.originalname : (props as any).filename,
+      originalname: props.originalname ?? props.filename,
     });
 
     this.id = validated.id;

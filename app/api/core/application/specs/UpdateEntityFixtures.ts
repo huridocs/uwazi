@@ -304,6 +304,16 @@ const fixtures: DBFixture = {
       size: 100000,
       creationDate: 1609459200000,
     }),
+    {
+      _id: factory.id('entity1_doc1_thumbnail'),
+      entity: 'entity1',
+      type: 'thumbnail',
+      filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+      language: 'en',
+      mimetype: 'image/jpeg',
+      size: 10000,
+      creationDate: 1609459200000,
+    },
     factory.document('entity1_doc2', {
       entity: 'entity1',
       originalname: 'Document 2.pdf',
@@ -312,6 +322,16 @@ const fixtures: DBFixture = {
       size: 150000,
       creationDate: 1609459200000,
     }),
+    {
+      _id: factory.id('entity1_doc2_thumbnail'),
+      entity: 'entity1',
+      type: 'thumbnail',
+      filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+      language: 'en',
+      mimetype: 'image/jpeg',
+      size: 12000,
+      creationDate: 1609459200000,
+    },
     factory.attachment('entity1_attach1', {
       entity: 'entity1',
       originalname: 'Attachment 1.txt',

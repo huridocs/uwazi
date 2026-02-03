@@ -62,18 +62,21 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]).all();
 
-    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, f =>
-      (input.files || []).some(file => file.id === f.id)
+    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(
+      existingFiles,
+      f => (input.files || []).some(file => file.id === f.id) || f.type === 'thumbnail'
     );
 
     const updatedFiles: BaseFile[] = [];
 
-    keptFiles.forEach(keptFile => {
-      const update = input.files!.find(file => file.id === keptFile.id);
-      if (!update) return;
+    if (input.files) {
+      keptFiles.forEach(keptFile => {
+        const update = input.files!.find(file => file.id === keptFile.id);
+        if (!update) return;
 
-      updatedFiles.push(keptFile.update({ originalname: update.originalname }));
-    });
+        updatedFiles.push(keptFile.update({ originalname: update.originalname }));
+      });
+    }
 
     await this.deps.fileService.storeFiles(filesCreated);
 
