@@ -2,7 +2,6 @@ import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { saveEntity } from './entitySavingManager.js';
 import { uploadMiddleware } from '#api/files/index.js';
 import { search } from '#api/search/index.js';
-import { tenants } from '#api/tenants/index.js';
 import { withTransaction } from '#api/utils/withTransaction.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -88,7 +87,7 @@ export default app => {
     (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
-      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
+      if (!entityToSave?.sharedId) {
         return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
       }
 
@@ -98,7 +97,7 @@ export default app => {
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
-      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
+      if (!entityToSave?.sharedId) {
         const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
         const result = await EntityFacade.create(entityToSave, req.inputFiles);
         const entityInTargetLanguage = await entityDAO
@@ -107,7 +106,6 @@ export default app => {
 
         await updateThesauriWithEntity(entityInTargetLanguage, req);
 
-        // Return in the same format as V1 for client compatibility
         const response = req.body.entity
           ? { entity: entityInTargetLanguage, errors: [] }
           : entityInTargetLanguage;
