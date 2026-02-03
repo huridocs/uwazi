@@ -16,6 +16,7 @@ const entityLoader =
   // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
+    //LANGUAGE DEFINITION HERE CANNOT DEFAULT TO 'en'
     const language = params.lang || 'en';
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';
