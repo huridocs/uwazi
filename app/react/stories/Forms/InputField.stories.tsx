@@ -26,19 +26,21 @@ const InteractiveWrapper = ({
   clearFieldAction,
   icon,
   id,
+  onChange,
   ...props
 }: {
   initialValue?: string;
   clearFieldAction?: () => void;
   icon?: React.ReactNode;
   id: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   [key: string]: any;
 }) => {
   const [value, setValue] = useState(initialValue);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
-    props.onChange?.(e);
+    onChange?.(e);
   };
 
   const handleClear = () => {

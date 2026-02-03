@@ -34,7 +34,7 @@ const referencesActions = {
     (
       get,
       set,
-      referenceData: {
+      _referenceData: {
         selection: TextSelection;
         targetEntityId?: string;
         relationshipType?: string;

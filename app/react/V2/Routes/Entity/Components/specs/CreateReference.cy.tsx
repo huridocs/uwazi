@@ -140,7 +140,11 @@ const mockSelection: TextSelection = {
 
 describe('CreateReference Component', () => {
   const mockSearchFunction = async (searchString: string): Promise<Entity[]> => {
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise<void>(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 100);
+    });
     const query = searchString.toLowerCase();
     const allEntities = [mockEntityWithFile, mockEntityWithMultipleFiles, mockEntityWithoutFiles];
     return allEntities.filter(entity => entity.title.toLowerCase().includes(query));
