@@ -111,7 +111,6 @@ export const config = {
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,
-      v2CreateEntity: false,
       v2UpdateEntity: false,
       v2CSVImport: false,
       v2UpdateThesaurus: false,
