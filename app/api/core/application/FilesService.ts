@@ -128,7 +128,9 @@ class FilesService {
     }
   }
 
-  async delete(files: [BaseFile, ...BaseFile[]]) {
+  async delete(files: BaseFile[]) {
+    if (!files.length) return;
+
     const contentFiles = files.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(files);

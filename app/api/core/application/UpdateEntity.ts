@@ -1,6 +1,7 @@
 import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
@@ -8,14 +9,16 @@ import { InputFile } from '../infrastructure/files/InputFile';
 import { FilesService } from './FilesService';
 import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource';
+import { FilesDataSource } from './contracts/FilesDataSource';
+import { BaseFile } from '../domain/files/BaseFile';
 
 type Input = {
   sharedId: string;
   language: LanguageISO6391;
+  propertyAssignments: PropertyAssignmentInput[];
 
   icon?: EntityIcon;
   templateId?: string;
-  propertyAssignments?: PropertyAssignmentInput[];
   uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
 };
@@ -27,6 +30,7 @@ type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
   fileService: FilesService;
   templatesDS: TemplatesDataSource;
+  filesDS: FilesDataSource;
 };
 
 class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -56,11 +60,28 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       f.toEntityFile(entity.sharedId, this.idGenerator.generate())
     );
 
+    const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]).all();
+
+    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, f =>
+      (input.files || []).some(file => file.id === f.id)
+    );
+
+    const updatedFiles: BaseFile[] = [];
+
+    keptFiles.forEach(keptFile => {
+      const update = input.files!.find(file => file.id === keptFile.id);
+      if (!update) return;
+
+      updatedFiles.push(keptFile.update({ originalname: update.originalname }));
+    });
+
     await this.deps.fileService.storeFiles(filesCreated);
 
     await this.transactionManager.run(async () => {
       await this.deps.entitiesDS.update(entity);
       await this.deps.fileService.insert(filesCreated);
+      await this.deps.fileService.delete(removedFiles);
+      await this.deps.filesDS.bulkUpdate(updatedFiles);
       await this.eventEmitter.emit(
         EntityUpdatedEvent.create({
           entity,

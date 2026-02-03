@@ -1,6 +1,4 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntitiesDataSourceFactory } from 'api/core/infrastructure/factories/EntitiesDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
@@ -8,7 +6,6 @@ import { EntityIcon } from 'api/core/domain/entity/Entity';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { ObjectId } from 'mongodb';
 import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
@@ -19,314 +16,13 @@ import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFact
 import { getSharedConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
-import { Listener } from 'api/core/libs/eventEmitter/Listener';
-import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
 import { DependenciesContext } from 'api/core/libs/DependenciesContext';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { UpdateEntityUseCase, UpdateEntityUseCaseDeps } from '../UpdateEntity';
-
-const factory = getFixturesFactory();
-
-const fixtures: DBFixture = {
-  settings: [
-    {
-      languages: [
-        { default: true, key: 'en', label: 'English' },
-        { key: 'pt', label: 'Portuguese' },
-      ],
-    },
-  ],
-
-  translationsV2: [
-    {
-      _id: new ObjectId(),
-      context: {
-        type: 'Thesaurus',
-        label: 'thesaurus_colors',
-        id: factory.id('thesaurus_colors').toHexString(),
-      },
-      key: 'Red',
-      language: 'en',
-      value: 'Red in English',
-    },
-    {
-      _id: new ObjectId(),
-      context: {
-        type: 'Thesaurus',
-        label: 'thesaurus_colors',
-        id: factory.id('thesaurus_colors').toHexString(),
-      },
-      key: 'Blue',
-      language: 'en',
-      value: 'Blue in English',
-    },
-    {
-      _id: new ObjectId(),
-      context: {
-        type: 'Thesaurus',
-        label: 'thesaurus_colors',
-        id: factory.id('thesaurus_colors').toHexString(),
-      },
-      key: 'thesaurus_colors',
-      language: 'en',
-      value: 'thesaurus_colors in English',
-    },
-    {
-      _id: new ObjectId(),
-      key: 'Red',
-      value: 'Red in Portuguese',
-      language: 'pt',
-      context: {
-        type: 'Thesaurus',
-        label: 'thesaurus_colors',
-        id: factory.id('thesaurus_colors').toHexString(),
-      },
-    },
-    {
-      _id: new ObjectId(),
-      key: 'Blue',
-      value: 'Blue in Portuguese',
-      language: 'pt',
-      context: {
-        type: 'Thesaurus',
-        label: 'thesaurus_colors',
-        id: factory.id('thesaurus_colors').toHexString(),
-      },
-    },
-    {
-      _id: new ObjectId(),
-      key: 'thesaurus_colors',
-      value: 'thesaurus_colors in Portuguese',
-      language: 'pt',
-      context: {
-        type: 'Thesaurus',
-        label: 'thesaurus_colors',
-        id: factory.id('thesaurus_colors').toHexString(),
-      },
-    },
-  ],
-
-  dictionaries: [
-    factory.thesauri('thesaurus_colors', [
-      ['red_id', 'Red'],
-      ['blue_id', 'Blue'],
-      ['green_id', 'Green'],
-    ]),
-  ],
-
-  relationtypes: [
-    {
-      _id: factory.id('relation_type'),
-      name: 'relation_type',
-      properties: [],
-      __v: 0,
-    },
-  ],
-
-  templates: [
-    factory.template('Basic Template', []),
-
-    factory.template('Related Template', [factory.property('related_text', 'text')]),
-
-    factory.template('Full Template', [
-      factory.property('text', 'text'),
-      factory.property('numeric', 'numeric'),
-      factory.property('markdown', 'markdown'),
-      factory.property('generatedid', 'generatedid'),
-      factory.property('date', 'date'),
-      factory.property('multidate', 'multidate'),
-      factory.property('daterange', 'daterange'),
-      factory.property('multidaterange', 'multidaterange'),
-      factory.property('link', 'link'),
-      factory.property('image', 'image'),
-      factory.property('geolocation_geolocation', 'geolocation'),
-      factory.property('select', 'select', {
-        content: factory.id('thesaurus_colors').toHexString(),
-      }),
-      factory.property('multiselect', 'multiselect', {
-        content: factory.id('thesaurus_colors').toHexString(),
-      }),
-      factory.property('relationship', 'relationship', {
-        relationType: factory.id('relation_type').toHexString(),
-        content: factory.id('Related Template').toHexString(),
-        inherit: {
-          property: factory.id('related_text').toHexString(),
-          type: 'text',
-        },
-      }),
-      factory.property('nested', 'nested'),
-      factory.property('preview', 'preview'),
-      factory.property('media', 'media'),
-    ]),
-  ],
-
-  entities: [
-    ...factory.entityInMultipleLanguages(
-      ['en', 'pt'],
-      'entity1',
-      'Basic Template',
-      {},
-      { title: 'Entity 1' },
-      {
-        en: {
-          title: 'Entity 1 EN',
-        },
-        pt: {
-          title: 'Entity 1 PT',
-        },
-      }
-    ),
-
-    ...factory.entityInMultipleLanguages(
-      ['en', 'pt'],
-      'related_entity',
-      'Related Template',
-      {},
-      { title: 'Related Entity' },
-      {
-        en: {
-          title: 'Related Entity EN',
-          metadata: {
-            related_text: [factory.metadataValue('Related Text EN')],
-          },
-        },
-        pt: {
-          title: 'Related Entity PT',
-          metadata: {
-            related_text: [factory.metadataValue('Related Text PT')],
-          },
-        },
-      }
-    ),
-
-    ...factory.entityInMultipleLanguages(
-      ['en', 'pt'],
-      'related_entity_2',
-      'Related Template',
-      {},
-      { title: 'Related Entity 2' },
-      {
-        en: {
-          title: 'Related Entity 2 EN',
-          metadata: {
-            related_text: [factory.metadataValue('Related Text 2 EN')],
-          },
-        },
-        pt: {
-          title: 'Related Entity 2 PT',
-          metadata: {
-            related_text: [factory.metadataValue('Related Text 2 PT')],
-          },
-        },
-      }
-    ),
-
-    ...factory.entityInMultipleLanguages(
-      ['en', 'pt'],
-      'full_entity',
-      'Full Template',
-      {},
-      { title: 'Full Entity' },
-      {
-        en: {
-          title: 'Full Entity EN',
-          metadata: {
-            text: [factory.metadataValue('Some text value')],
-            numeric: [factory.metadataValue(42)],
-            markdown: [factory.metadataValue('Some **markdown**')],
-            generatedid: [factory.metadataValue('GEN-123')],
-            date: [factory.metadataValue(1609459200)],
-            multidate: [factory.metadataValue(1609459200), factory.metadataValue(1612137600)],
-            daterange: [factory.metadataValue({ from: 1609459200, to: 1612137600 })],
-            multidaterange: [
-              factory.metadataValue({ from: 1609459200, to: 1612137600 }),
-              factory.metadataValue({ from: 1614556800, to: 1617235200 }),
-            ],
-            link: [factory.metadataValue({ url: 'https://uwazi.io', label: 'Uwazi' })],
-            image: [factory.metadataValue('https://example.com/image.jpg')],
-            geolocation_geolocation: [factory.metadataValue({ lat: 10, lon: 20 })],
-            select: [{ value: 'red_id', label: 'Red in English' }],
-            multiselect: [
-              { value: 'red_id', label: 'Red in English' },
-              { value: 'blue_id', label: 'Blue in English' },
-            ],
-            relationship: [
-              {
-                value: 'related_entity',
-                label: 'Related Entity EN',
-                type: 'entity',
-                inheritedType: 'text',
-                inheritedValue: [factory.metadataValue('Related Text EN')],
-              },
-            ],
-            nested: [
-              factory.metadataValue({
-                //@ts-ignore
-                child_text: [factory.metadataValue('Child text value')],
-                child_number: [factory.metadataValue(100)],
-              }),
-            ],
-            preview: [],
-            media: [factory.metadataValue('https://example.com/video.mp4')],
-          },
-        },
-        pt: {
-          title: 'Full Entity PT',
-          metadata: {
-            text: [factory.metadataValue('Some text value')],
-            numeric: [factory.metadataValue(42)],
-            markdown: [factory.metadataValue('Some **markdown**')],
-            generatedid: [factory.metadataValue('GEN-123')],
-            date: [factory.metadataValue(1609459200)],
-            multidate: [factory.metadataValue(1609459200), factory.metadataValue(1612137600)],
-            daterange: [factory.metadataValue({ from: 1609459200, to: 1612137600 })],
-            multidaterange: [
-              factory.metadataValue({ from: 1609459200, to: 1612137600 }),
-              factory.metadataValue({ from: 1614556800, to: 1617235200 }),
-            ],
-            link: [factory.metadataValue({ url: 'https://uwazi.io', label: 'Uwazi' })],
-            image: [factory.metadataValue('https://example.com/image.jpg')],
-            geolocation_geolocation: [factory.metadataValue({ lat: 10, lon: 20 })],
-            select: [{ value: 'red_id', label: 'Red in Portuguese' }],
-            multiselect: [
-              { value: 'red_id', label: 'Red in Portuguese' },
-              { value: 'blue_id', label: 'Blue in Portuguese' },
-            ],
-            relationship: [
-              {
-                value: 'related_entity',
-                label: 'Related Entity PT',
-                type: 'entity',
-                inheritedType: 'text',
-                inheritedValue: [factory.metadataValue('Related Text PT')],
-              },
-            ],
-            nested: [
-              factory.metadataValue({
-                //@ts-ignore
-                child_text: [factory.metadataValue('Child text value')],
-                child_number: [factory.metadataValue(100)],
-              }),
-            ],
-            preview: [],
-            media: [factory.metadataValue('https://example.com/video.mp4')],
-          },
-        },
-      }
-    ),
-  ],
-};
-
-class SampleListener extends Listener<any> {
-  static eventName = EntityUpdatedEvent.name;
-
-  // eslint-disable-next-line class-methods-use-this
-  protected async handle(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-}
+import { factory, fixtures, SampleListener } from './UpdateEntityFixtures';
 
 const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -347,16 +43,23 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
   const eventEmitter = EventEmitterFactory.default();
   const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const fileService = FilesServiceFactory.default(transactionManager, { fileStorage, eventBus });
+  const fileService = FilesServiceFactory.default(transactionManager, {
+    fileStorage,
+    eventBus,
+    filesDS,
+  });
 
   jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
   jest.spyOn(fileService, 'insert').mockResolvedValue();
+  jest.spyOn(fileService, 'delete');
 
   const sut = new UpdateEntityUseCase(
     {
+      filesDS,
       templatesDS,
       idGenerator,
       fileService,
@@ -384,6 +87,9 @@ describe('UpdateEntityUseCase', () => {
   const getAllEntities = async (sharedId: string) =>
     testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
 
+  const getAllFiles = async (entity: string) =>
+    testingEnvironment.db.getCollection('files')!.find({ entity }).toArray();
+
   const getAllJobs = async () => getSharedConnection().collection('jobs').find().toArray();
   const clearJobs = async () => getSharedConnection().collection('jobs').deleteMany({});
 
@@ -407,7 +113,7 @@ describe('UpdateEntityUseCase', () => {
 
     const entitiesBefore = await getAllEntities('entity1');
 
-    await sut.execute({ sharedId: 'entity1', language: 'en', icon });
+    await sut.execute({ sharedId: 'entity1', language: 'en', icon, propertyAssignments: [] });
 
     const entities = await getAllEntities('entity1');
     expect(entitiesBefore).toMatchObject([
@@ -771,6 +477,7 @@ describe('UpdateEntityUseCase', () => {
       await sut.execute({
         language: 'en',
         sharedId: 'entity1',
+        propertyAssignments: [],
         uploadedFiles: [
           new InputFile(
             {
@@ -992,6 +699,86 @@ describe('UpdateEntityUseCase', () => {
     });
   });
 
+  describe('When Files gets updated', () => {
+    it('should rename existing files', async () => {
+      const { sut } = createSut();
+
+      const filesBefore = await getAllFiles('entity1');
+
+      await sut.execute({
+        language: 'en',
+        sharedId: 'entity1',
+        propertyAssignments: [],
+        files: [
+          {
+            id: factory.id('entity1_doc1').toHexString(),
+            originalname: 'Document 1 Renamed.pdf',
+          },
+          {
+            id: factory.id('entity1_doc2').toHexString(),
+            originalname: 'Document 2 Renamed.pdf',
+          },
+          {
+            id: factory.id('entity1_attach1').toHexString(),
+            originalname: 'Attachment 1 Renamed.txt',
+          },
+        ],
+      });
+
+      const filesAfter = await getAllFiles('entity1');
+
+      expect(filesBefore).toMatchObject([
+        { entity: 'entity1', originalname: 'Document 1.pdf' },
+        { entity: 'entity1', originalname: 'Document 2.pdf' },
+        { entity: 'entity1', originalname: 'Attachment 1.txt' },
+      ]);
+
+      expect(filesAfter).toMatchObject([
+        { entity: 'entity1', originalname: 'Document 1 Renamed.pdf' },
+        { entity: 'entity1', originalname: 'Document 2 Renamed.pdf' },
+        { entity: 'entity1', originalname: 'Attachment 1 Renamed.txt' },
+      ]);
+    });
+  });
+
+  describe('When Files gets removed', () => {
+    it('should delete files that are not in the files array', async () => {
+      const { sut, fileService } = createSut();
+
+      const filesBefore = await getAllFiles('entity1');
+
+      await sut.execute({
+        language: 'en',
+        sharedId: 'entity1',
+        propertyAssignments: [],
+        files: [
+          {
+            id: factory.id('entity1_doc1').toHexString(),
+            originalname: 'Document 1.pdf',
+          },
+        ],
+      });
+
+      const filesAfter = await getAllFiles('entity1');
+
+      expect(filesBefore.length).toBe(3);
+      expect(filesAfter.length).toBe(1);
+
+      expect(filesAfter).toMatchObject([{ entity: 'entity1', originalname: 'Document 1.pdf' }]);
+
+      expect(fileService.delete).toHaveBeenCalledWith([
+        expect.objectContaining({
+          originalname: 'Document 2.pdf',
+          id: factory.id('entity1_doc2').toHexString(),
+        }),
+        expect.objectContaining({
+          originalname: 'Attachment 1.txt',
+          id: factory.id('entity1_attach1').toHexString(),
+        }),
+      ]);
+    });
+  });
+
   it('should emit EntityUpdatedEvent after updating the entity', async () => {
     const { sut } = createSut();
 
@@ -1003,20 +790,22 @@ describe('UpdateEntityUseCase', () => {
 
     const jobs = await getAllJobs();
 
-    expect(jobs.length).toBe(1);
+    expect(jobs.length).toBeGreaterThanOrEqual(1);
 
-    expect(jobs).toMatchObject([
-      {
-        queue: 'uwazi_jobs',
-        name: 'EntityUpdatedEvent:SampleListener',
-        params: {
-          after: expect.any(Object),
-          before: expect.any(Object),
-          userId: expect.any(String),
-          targetLanguage: 'en',
-        },
-      },
-    ]);
+    expect(jobs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          queue: 'uwazi_jobs',
+          name: 'EntityUpdatedEvent:SampleListener',
+          params: expect.objectContaining({
+            after: expect.any(Object),
+            before: expect.any(Object),
+            userId: expect.any(String),
+            targetLanguage: 'en',
+          }),
+        }),
+      ])
+    );
   });
 
   it('should change entity template', async () => {

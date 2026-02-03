@@ -63,6 +63,9 @@ const MutateEntitySchema = z.object({
   icon: EntityIconSchema.optional(),
   user: z.string().optional(),
   metadata: MetadataObjectSchema.default({}).optional(),
+});
+
+const CreateEntitySchema = MutateEntitySchema.extend({
   attachments: z
     .array(
       z.object({
@@ -73,12 +76,27 @@ const MutateEntitySchema = z.object({
     .optional(),
 });
 
-const CreateEntitySchema = MutateEntitySchema;
-
 const UpdateEntitySchema = MutateEntitySchema.extend({
   _id: z.string(),
   sharedId: z.string(),
   language: z.string().min(2).max(2),
+  documents: z
+    .array(
+      z.object({
+        _id: z.string().min(1),
+        originalname: z.string().min(1),
+      })
+    )
+    .optional(),
+  attachments: z
+    .array(
+      z.object({
+        _id: z.string().min(1).optional(),
+        originalname: z.string(),
+        url: z.string().url().optional(),
+      })
+    )
+    .optional(),
 });
 
 export { CreateEntitySchema, UpdateEntitySchema };

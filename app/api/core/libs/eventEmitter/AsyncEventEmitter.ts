@@ -30,7 +30,7 @@ class AsyncEventEmitter implements EventEmitter {
     );
   }
 
-  listen(ListenerClass: typeof Listener): void {
+  listen(ListenerClass: typeof Listener<any, any>): void {
     const listeners = this.events.get(ListenerClass.eventName);
     const exists = listeners?.has(ListenerClass);
 

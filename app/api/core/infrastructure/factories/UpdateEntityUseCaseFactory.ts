@@ -10,6 +10,7 @@ import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
+import { FilesDataSourceFactory } from './FilesDataSourceFactory';
 
 class UpdateEntityUseCaseFactory {
   static default() {
@@ -32,10 +33,16 @@ class UpdateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const fileService = FilesServiceFactory.default(transactionManager);
+    const filesDS = FilesDataSourceFactory.default(transactionManager);
+
+    const fileService = FilesServiceFactory.default(transactionManager, {
+      filesDS,
+      transactionManager,
+    });
 
     const useCase = new UpdateEntityUseCase(
       {
+        filesDS,
         entitiesDS,
         templatesDS,
         eventEmitter,

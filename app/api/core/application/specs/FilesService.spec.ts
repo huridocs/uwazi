@@ -155,12 +155,42 @@ describe('FilesService', () => {
       settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
       entities: [f.entity('entity 1'), f.entity('entity2'), f.entity('entity3')],
       files: [
-        f.document('doc1', { entity: 'entity1' }),
-        ...f.processedDocument('doc2', { entity: 'entity1' }),
-        f.document('doc3', { entity: 'entity2' }),
-        ...f.processedDocument('doc4', { entity: 'entity2' }),
-        f.document('doc5', { entity: 'entity3' }),
-        ...f.processedDocument('doc6', { entity: 'entity3' }),
+        f.document('doc1', {
+          entity: 'entity1',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
+        ...f.processedDocument('doc2', {
+          entity: 'entity1',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
+        f.document('doc3', {
+          entity: 'entity2',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
+        ...f.processedDocument('doc4', {
+          entity: 'entity2',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
+        f.document('doc5', {
+          entity: 'entity3',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
+        ...f.processedDocument('doc6', {
+          entity: 'entity3',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
       ],
     };
 

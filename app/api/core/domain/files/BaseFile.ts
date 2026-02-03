@@ -85,7 +85,10 @@ export abstract class BaseFile {
   protected abstract _type: FileTypes;
 
   constructor(props: Props) {
-    const validated = Schema.parse(props);
+    const validated = Schema.parse({
+      ...props,
+      originalname: 'originalname' in props ? props.originalname : (props as any).filename,
+    });
 
     this.id = validated.id;
     this.originalname = validated.originalname;

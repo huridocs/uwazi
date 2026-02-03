@@ -3,6 +3,7 @@ import { CreateEntityUseCaseInput } from 'api/core/application/CreateEntity';
 import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { UpdateEntityUseCaseInput } from 'api/core/application/UpdateEntity';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { CreateEntityDTO, UpdateEntityRequest } from './Schemas';
 
 type ToEntityCreateInputProps = {
@@ -17,6 +18,13 @@ type ToEntityUpdateInputProps = {
 
 class ExpressEntityMapper {
   static toEntityUpdateInput(props: ToEntityUpdateInputProps): UpdateEntityUseCaseInput {
+    const [attachmentsUploaded, attachmentsUpdated] = ArrayUtils.splitInTwo(
+      props.dto.attachments || [],
+      a => !a._id
+    );
+
+    const [_, documentsUpdated] = ArrayUtils.splitInTwo(props.dto.documents || [], d => !d._id);
+
     const input: UpdateEntityUseCaseInput = {
       sharedId: props.dto.sharedId,
       language: props.dto.language as LanguageISO6391,
@@ -26,16 +34,24 @@ class ExpressEntityMapper {
           value: [{ value: props.dto.title }],
         },
       ],
+      files: [
+        ...documentsUpdated.map(doc => ({ id: doc._id, originalname: doc.originalname })),
+        ...attachmentsUpdated.map(doc => ({
+          id: doc._id!,
+          originalname: doc.originalname,
+        })),
+      ],
     };
 
     if (props?.inputFiles) {
       input.uploadedFiles = props.inputFiles;
     }
 
-    if (props.dto?.attachments?.length) {
-      const attachmentsWithUrl = props.dto.attachments.filter(
+    if (attachmentsUploaded.length) {
+      const attachmentsWithUrl = attachmentsUploaded.filter(
         (a): a is typeof a & { url: string } => !!a.url
       );
+
       const urlAttachments = attachmentsWithUrl.map(({ originalname, url }) =>
         InputFile.createUrlAttachment({
           originalname,

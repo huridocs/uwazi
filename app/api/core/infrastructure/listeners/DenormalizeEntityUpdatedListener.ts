@@ -3,24 +3,28 @@ import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFact
 import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
 import { Entity } from 'api/core/domain/entity/Entity';
 import { denormalizeRelated } from 'api/entities/denormalize';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper';
 import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper';
 
-class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent> {
+type Deps = {
+  templatesDS: TemplatesDataSource;
+  denormalizeRelated: typeof denormalizeRelated;
+};
+
+class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps> {
   static eventName = EntityUpdatedEvent.name;
 
-  protected async handle(): Promise<void> {
-    const transactionManager = TransactionManagerFactory.default();
-    const templateDS = TemplatesDataSourceFactory.default(transactionManager);
-
-    const [templateBefore, templateAfter] = await templateDS
+  async handle(): Promise<void> {
+    const [templateBefore, templateAfter] = await this.deps.templatesDS
       .getByIds([this.params.before.templateId, this.params.after.templateId])
       .all();
 
     const beforeEntity = new Entity({ template: templateBefore, ...this.params.before });
-    const afterEntity = new Entity({ template: templateAfter, ...this.params.after });
+    const afterEntity = new Entity({
+      template: templateAfter || templateBefore,
+      ...this.params.after,
+    });
 
     const beforeEntityDbos = MongoEntityMapper.toDBO(beforeEntity);
     const afterEntityDbos = MongoEntityMapper.toDBO(afterEntity);
@@ -39,9 +43,9 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent> {
       );
     }
 
-    await denormalizeRelated(
+    await this.deps.denormalizeRelated(
       targetEntityDboAfter as any,
-      MongoTemplateMapper.toSchema(templateAfter),
+      MongoTemplateMapper.toSchema(afterEntity.template),
       targetEntityDboBefore as any
     );
   }
@@ -50,3 +54,4 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent> {
 EventEmitterFactory.default().listen(DenormalizeEntityUpdatedListener);
 
 export { DenormalizeEntityUpdatedListener };
+export type { Deps as DenormalizeEntityUpdatedListenerDeps };

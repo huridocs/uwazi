@@ -70,6 +70,22 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
   }
 
+  async bulkUpdate(files: BaseFile[]): Promise<void> {
+    if (!files.length) return;
+
+    await this.getCollection().bulkWrite(
+      files.map(file => ({
+        updateOne: {
+          filter: { _id: new ObjectId(file.id) },
+          update: { $set: FileMappers.toDBO(file) },
+        },
+      })),
+      { ignoreUndefined: true }
+    );
+
+    this.setFilesToReindex(files);
+  }
+
   private toModel(dbo: fileDBO) {
     return FileMappers.toModel(dbo, {
       contentLoader: this.fileStorage.getFile.bind(this.fileStorage),

@@ -26,3 +26,5 @@ class EntityUpdatedEvent extends Event<Payload> {
 }
 
 export { EntityUpdatedEvent };
+
+export type { Payload as EntityUpdatedEventPayload };
