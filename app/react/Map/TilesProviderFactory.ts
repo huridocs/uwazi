@@ -1,4 +1,4 @@
-import L, { TileLayer } from 'leaflet';
+import Leaflet, { TileLayer } from 'leaflet';
 import { t } from 'app/I18N';
 import { getGoogleLayer } from 'app/Map/GoogleMapLayer';
 
@@ -38,7 +38,7 @@ const getMapboxLayers: (accessToken?: string) => {
     return {
       ...layers,
       [styleLabel]: {
-        layer: L.tileLayer(mapboxUrl, {
+        layer: Leaflet.tileLayer(mapboxUrl, {
           id: mapBoxStyles[styleId],
           tileSize: 512,
           zoomOffset: -1,
