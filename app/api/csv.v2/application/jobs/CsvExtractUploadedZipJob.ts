@@ -3,14 +3,14 @@ import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { CsvImportsDataSource } from '#api/csv.v2/application/contracts/CsvImportsDataSource.js';
-import { CsvImportRowsDataSource } from '#api/csv.v2/application/contracts/CsvImportRowsDataSource.js';
-import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
-import { CsvImportRow } from '#api/csv.v2/domain/CsvImportRow.js';
-import { CsvImportFileNormalizer } from '#api/csv.v2/application/services/CsvImportFileNormalizer.js';
-import { CsvImportRowsStager } from '#api/csv.v2/application/services/CsvImportRowsStager.js';
-import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
-import { Callbacks as BaseCallbacks } from '#api/csv.v2/application/jobs/types/UseCaseCallbacks.js';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
+import { CsvImportFileNormalizer } from '../services/CsvImportFileNormalizer.js';
+import { CsvImportRowsStager } from '../services/CsvImportRowsStager.js';
+import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler.js';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;

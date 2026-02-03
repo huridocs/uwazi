@@ -13,9 +13,9 @@ import {
   DeleteRelationshipService,
 } from '#api/relationships.v2/services/service_factories.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = TransactionManagerFactory.default();

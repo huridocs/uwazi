@@ -3,7 +3,7 @@ import {
   ActivityLogQueryTime,
   bodyCondition,
   prepareToFromRanges,
-} from '#api/activitylog/activityLogFilter.js';
+} from '../activityLogFilter.js';
 
 describe('activityLogFilter', () => {
   describe('prepareToFromRanges', () => {
@@ -13,7 +13,7 @@ describe('activityLogFilter', () => {
       ${1000011600000} | ${1000011600000} | ${{ $gte: 1000011600000, $lt: 1000098000000 }}
       ${1000011600000} | ${undefined}     | ${{ $gte: 1000011600000 }}
       ${1000011600000} | ${1500008400000} | ${{ $gte: 1000011600000, $lt: 1500094800000 }}
-    `("should create a date condition from: '$from' to: '$to' ", ({ from, to, expected }: any) => {
+    `("should create a date condition from: '$from' to: '$to' ", ({ from, to, expected }) => {
       const timeCondition: ActivityLogQueryTime = { from, to };
       const result = prepareToFromRanges(timeCondition);
       expect(result).toEqual(expected);

@@ -1,8 +1,4 @@
-import {
-  sanitizeText,
-  sanitizeStringValue,
-  sanitizeMetadataValue,
-} from '#api/csv/sanitizationUtils.js';
+import { sanitizeText, sanitizeStringValue, sanitizeMetadataValue } from '../sanitizationUtils.js';
 
 describe('sanitizationUtils', () => {
   describe('sanitizeText', () => {

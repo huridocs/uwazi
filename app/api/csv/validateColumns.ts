@@ -4,10 +4,10 @@ import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { peekHeaders } from '#api/csv/csv.js';
-import { notTranslated } from '#api/csv/entityRow.js';
-import { ImportFile } from '#api/csv/importFile.js';
-import { csvConstants } from '#api/csv/csvDefinitions.js';
+import { peekHeaders } from './csv.js';
+import { notTranslated } from './entityRow.js';
+import { ImportFile } from './importFile.js';
+import { csvConstants } from './csvDefinitions.js';
 
 const PROPERTIES_WITH_LANGUAGE = new Set([
   propertyTypes.text,

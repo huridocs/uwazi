@@ -1,9 +1,9 @@
 import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { CsvImportThesauriValues } from '#api/csv.v2/domain/CsvImportThesauriValues.js';
-import { CsvThesauriPendingChild } from '#api/csv.v2/domain/CsvThesauriPendingValues.js';
-import { ThesaurusValueInput } from '#api/csv.v2/application/contracts/ThesauriRepository.js';
+import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues.js';
+import { CsvThesauriPendingChild } from '../../domain/CsvThesauriPendingValues.js';
+import { ThesaurusValueInput } from '../contracts/ThesauriRepository.js';
 
 type AggregatedChild = {
   label: string;

@@ -11,10 +11,10 @@ import {
   firstDocSharedId,
   nonExistentId,
   extractorId,
-} from '#api/activitylog/specs/fixturesParser.js';
-import { getSemanticData } from '#api/activitylog/activitylogParser.js';
-import * as activityLogBuilderExports from '#api/activitylog/activityLogBuilder.js';
-import { typeParsers } from '#api/activitylog/migrationsParser.js';
+} from './fixturesParser.js';
+import { getSemanticData } from '../activitylogParser.js';
+import * as activityLogBuilderExports from '../activityLogBuilder.js';
+import { typeParsers } from '../migrationsParser.js';
 
 jest.mock('../migrationsParser', () => ({
   typeParsers: {

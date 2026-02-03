@@ -1,20 +1,15 @@
-import translations from '#api/i18n/translations.js';
-
+import translations from '#api/i18n/index.js';
 import settings from '#api/settings/index.js';
-
-import thesauri from '#api/thesauri/thesauri.js';
-
+import thesauri from '#api/thesauri/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { IndexedContextValues } from '#api/i18n/translations.js';
-
 import { WithId } from '#api/odm/index.js';
 import { ObjectId } from 'mongodb';
-
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { CSVLoader } from '#api/csv/csvLoader.js';
-import { fixtures, thesauri1Id } from '#api/csv/specs/fixtures.js';
-import { mockCsvFileReadStream } from '#api/csv/specs/helpers.js';
+import { CSVLoader } from '../csvLoader.js';
+import { fixtures, thesauri1Id } from './fixtures.js';
+import { mockCsvFileReadStream } from './helpers.js';
 
 const getTranslation = async (lang: string, id: ObjectId) =>
   ((await translations.get()).find(t => t.locale === lang)?.contexts || []).find(

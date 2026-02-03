@@ -1,4 +1,4 @@
-import CSRFMiddleware from '#api/auth/CSRFMiddleware.js';
+import CSRFMiddleware from '../CSRFMiddleware.js';
 
 describe('CSRFMiddleware', () => {
   let req;

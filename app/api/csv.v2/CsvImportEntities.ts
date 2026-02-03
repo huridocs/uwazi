@@ -3,9 +3,9 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { CsvImportsDataSource } from '#api/csv.v2/application/contracts/CsvImportsDataSource.js';
-import { CsvImportDomain } from '#api/csv.v2/domain/CsvImport.js';
-import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
+import { CsvImportsDataSource } from './application/contracts/CsvImportsDataSource.js';
+import { CsvImportDomain } from './domain/CsvImport.js';
+import { CsvExtractUploadedZipJobHandler } from './infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;

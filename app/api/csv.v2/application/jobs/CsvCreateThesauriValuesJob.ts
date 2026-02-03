@@ -1,23 +1,23 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { CsvImportsDataSource } from '#api/csv.v2/application/contracts/CsvImportsDataSource.js';
-import { CsvImportThesauriValuesDataSource } from '#api/csv.v2/application/contracts/CsvImportThesauriValuesDataSource.js';
-import { ThesauriRepository } from '#api/csv.v2/application/contracts/ThesauriRepository.js';
-import { TranslationsRepository } from '#api/csv.v2/application/contracts/TranslationsRepository.js';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
+import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
+import { ThesauriRepository } from '../../application/contracts/ThesauriRepository.js';
+import { TranslationsRepository } from '../../application/contracts/TranslationsRepository.js';
 import {
   CsvImport,
   CsvImportDomain,
   CsvImportStatus,
   CsvImportStats,
-} from '#api/csv.v2/domain/CsvImport.js';
+} from '../../domain/CsvImport.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
   PendingValuesDiffSummary,
-} from '#api/csv.v2/domain/CsvImportThesauriValues.js';
-import { PendingThesauriValuesApplier } from '#api/csv.v2/application/services/PendingThesauriValuesApplier.js';
-import { Callbacks as BaseCallbacks } from '#api/csv.v2/application/jobs/types/UseCaseCallbacks.js';
+} from '../../domain/CsvImportThesauriValues.js';
+import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier.js';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
 
 type ThesauriCreationProgress = {
   importId: string;

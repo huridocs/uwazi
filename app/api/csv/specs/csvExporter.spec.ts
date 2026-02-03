@@ -1,9 +1,6 @@
 import { ObjectWritableMock } from 'stream-mock';
-
 import templates from '#api/core/v1_layer/templates/index.js';
-
 import translations from '#api/i18n/translations.js';
-
 import * as translate from '#shared/translate.js';
 import moment from 'moment-timezone';
 import CSVExporter, {
@@ -17,12 +14,8 @@ import CSVExporter, {
   processEntity,
   processHeaders,
   translateCommonHeaders,
-} from '#api/csv/csvExporter.js';
-import {
-  csvExample,
-  searchResults,
-  templates as testTemplates,
-} from '#api/csv/specs/exportCsvFixtures.js';
+} from '../csvExporter.js';
+import { csvExample, searchResults, templates as testTemplates } from './exportCsvFixtures.js';
 
 const hostname = 'cejil.uwazi.io';
 

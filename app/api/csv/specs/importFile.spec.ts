@@ -1,9 +1,8 @@
 import path from 'path';
-
 import { streamToString, deleteFiles } from '#api/files/filesystem.js';
 
-import importFile from '#api/csv/importFile.js';
-import { createTestingZip } from '#api/csv/specs/helpers.js';
+import importFile from '../importFile.js';
+import { createTestingZip } from './helpers.js';
 
 describe('importFile', () => {
   beforeAll(async () => {

@@ -3,7 +3,7 @@ import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import {
   ThesauriRepository,
   ThesaurusValueInput,
-} from '#api/csv.v2/application/contracts/ThesauriRepository.js';
+} from '../../application/contracts/ThesauriRepository.js';
 
 export class LegacyThesauriRepository implements ThesauriRepository {
   // eslint-disable-next-line class-methods-use-this

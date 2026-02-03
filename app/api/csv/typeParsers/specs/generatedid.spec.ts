@@ -1,5 +1,4 @@
 import { propertyTypes } from '#shared/propertyTypes.js';
-
 import typeParsers from '#api/csv/typeParsers.js';
 
 describe('generatedid parser', () => {

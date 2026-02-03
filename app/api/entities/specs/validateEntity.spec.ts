@@ -2,7 +2,7 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { ErrorObject } from 'ajv';
-import ValidationError from 'ajv/dist/runtime/validation_error.js';
+import ValidationError from 'ajv/dist/runtime/validation_error';
 import db from '#api/utils/testing_db.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';

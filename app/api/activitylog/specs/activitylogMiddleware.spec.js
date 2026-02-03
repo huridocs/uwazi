@@ -7,8 +7,8 @@ import { legacyLogger } from '#api/log/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import waitForExpect from 'wait-for-expect';
-import activitylog from '#api/activitylog/activitylog.js';
-import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
+import activitylog from '../activitylog.js';
+import activitylogMiddleware from '../activitylogMiddleware.js';
 
 describe('activitylogMiddleware', () => {
   let req;

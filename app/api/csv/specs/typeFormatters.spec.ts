@@ -8,7 +8,7 @@ import {
   FormatterFunction,
   formatDocuments,
   formatAttachments,
-} from '#api/csv/typeFormatters.js';
+} from '../typeFormatters.js';
 
 let formatFn: any;
 let unixFn: any;

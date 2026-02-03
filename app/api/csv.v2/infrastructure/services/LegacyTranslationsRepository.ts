@@ -1,5 +1,5 @@
 import translations from '#api/i18n/translations.js';
-import { TranslationsRepository } from '#api/csv.v2/application/contracts/TranslationsRepository.js';
+import { TranslationsRepository } from '../../application/contracts/TranslationsRepository.js';
 
 export class LegacyTranslationsRepository implements TranslationsRepository {
   // eslint-disable-next-line class-methods-use-this

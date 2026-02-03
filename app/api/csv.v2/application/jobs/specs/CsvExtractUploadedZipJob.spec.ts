@@ -74,6 +74,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
+
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileNormalizer,

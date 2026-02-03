@@ -1,14 +1,10 @@
 import { search } from '#api/search/index.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-import entities from '#api/entities/entities.js';
-import * as v2Support from '#api/entities/v2_support.js';
+import entities from '../entities.js';
+import * as v2Support from '../v2_support.js';
 
 const factory = getFixturesFactory();
 

@@ -3,13 +3,13 @@ import { Template } from '#api/core/domain/template/Template.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { PropertyName } from '#api/core/domain/template/PropertyName.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import { CsvImportRow } from '#api/csv.v2/domain/CsvImportRow.js';
-import { HeaderAnalysis } from '#api/csv.v2/application/services/CsvHeaderAnalyzer.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
+import { HeaderAnalysis } from './CsvHeaderAnalyzer.js';
 import {
   CsvThesauriPendingValues,
   CsvThesauriPendingEntry,
   CsvThesauriPendingIssue,
-} from '#api/csv.v2/domain/CsvThesauriPendingValues.js';
+} from '../../domain/CsvThesauriPendingValues.js';
 
 type BuildParams = {
   importId: string;

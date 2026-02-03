@@ -7,7 +7,7 @@ import {
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
-import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js';
+import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;

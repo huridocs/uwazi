@@ -1,4 +1,4 @@
-import { CsvThesauriPendingEntry } from '#api/csv.v2/domain/CsvThesauriPendingValues.js';
+import { CsvThesauriPendingEntry } from '../../domain/CsvThesauriPendingValues.js';
 
 export interface CsvImportThesauriValuesDBO {
   importId: string;

@@ -3,8 +3,8 @@ import request from 'supertest';
 import qs from 'qs';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import activitylogRoutes from '#api/activitylog/routes.js';
-import activitylog from '#api/activitylog/activitylog.js';
+import activitylogRoutes from '../routes.js';
+import activitylog from '../activitylog.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();

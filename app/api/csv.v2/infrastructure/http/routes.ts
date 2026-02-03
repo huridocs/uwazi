@@ -1,14 +1,14 @@
-import { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
-import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
-import { handleError } from '#api/utils/index.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { CSVLoader } from '#api/csv/index.js';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import { RegisterCsvImportController } from '#api/csv.v2/infrastructure/http/RegisterCsvImportController.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { CSVLoader } from '#api/csv/index.js';
+import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { handleError } from '#api/utils/index.js';
+import { Application } from 'express';
+import { ParamsDictionary, Request, Response } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
+import { RegisterCsvImportController } from './RegisterCsvImportController.js';
 
 const csvImportRoutes = (app: Application) => {
   // eslint-disable-next-line max-statements

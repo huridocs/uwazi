@@ -10,7 +10,7 @@ import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSock
 import {
   CsvExtractUploadedZipJob,
   ExtractionProgress,
-} from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
+} from '../../application/jobs/CsvExtractUploadedZipJob.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;

@@ -10,7 +10,7 @@ import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSock
 import {
   CsvCreateThesauriValuesJob,
   ThesauriCreationProgress,
-} from '#api/csv.v2/application/jobs/CsvCreateThesauriValuesJob.js';
+} from '../../application/jobs/CsvCreateThesauriValuesJob.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;

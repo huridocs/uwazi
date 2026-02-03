@@ -5,21 +5,21 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { CsvImportsDataSource } from '#api/csv.v2/application/contracts/CsvImportsDataSource.js';
-import { CsvImport, CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
+import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport.js';
 import {
   CsvHeaderAnalyzer,
   AnalyzerOptions,
   HeaderAnalysis,
-} from '#api/csv.v2/application/services/CsvHeaderAnalyzer.js';
-import { CsvHeaderAnalyzerError } from '#api/csv.v2/application/services/CsvHeaderAnalyzerError.js';
-import { CsvThesauriPendingValuesBuilder } from '#api/csv.v2/application/services/CsvThesauriPendingValuesBuilder.js';
-import { CsvImportRowsDataSource } from '#api/csv.v2/application/contracts/CsvImportRowsDataSource.js';
-import { CsvImportThesauriValuesDataSource } from '#api/csv.v2/application/contracts/CsvImportThesauriValuesDataSource.js';
-import { Callbacks } from '#api/csv.v2/application/jobs/types/UseCaseCallbacks.js';
-import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
-import { CsvThesauriPendingEntry } from '#api/csv.v2/domain/CsvThesauriPendingValues.js';
-import { CsvImportThesauriValues } from '#api/csv.v2/domain/CsvImportThesauriValues.js';
+} from '../services/CsvHeaderAnalyzer.js';
+import { CsvHeaderAnalyzerError } from '../services/CsvHeaderAnalyzerError.js';
+import { CsvThesauriPendingValuesBuilder } from '../services/CsvThesauriPendingValuesBuilder.js';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource.js';
+import { Callbacks } from './types/UseCaseCallbacks.js';
+import { CsvCreateThesauriValuesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
+import { CsvThesauriPendingEntry } from '../../domain/CsvThesauriPendingValues.js';
+import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues.js';
 
 type ThesauriWritePort = {
   appendRootLabelsIfMissing(thesaurusId: string, labels: string[]): Promise<void>;

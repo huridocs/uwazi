@@ -1,6 +1,6 @@
-import { CsvThesauriPendingChild } from '#api/csv.v2/domain/CsvThesauriPendingChild.js';
-import { CsvThesauriPendingEntry } from '#api/csv.v2/domain/CsvThesauriPendingEntry.js';
-import { CsvThesauriPendingRoot } from '#api/csv.v2/domain/CsvThesauriPendingRoot.js';
+import { CsvThesauriPendingChild } from './CsvThesauriPendingChild.js';
+import { CsvThesauriPendingEntry } from './CsvThesauriPendingEntry.js';
+import { CsvThesauriPendingRoot } from './CsvThesauriPendingRoot.js';
 
 type CsvThesauriPendingValuesProps = {
   importId: string;

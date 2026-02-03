@@ -9,11 +9,11 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { CsvImportEntities } from '#api/csv.v2/CsvImportEntities.js';
-import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js';
-import { MongoCsvImportsDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportsDataSource.js';
-import { MongoCsvImportRowsDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportRowsDataSource.js';
-import { MongoCsvImportThesauriValuesDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportThesauriValuesDataSource.js';
+import { CsvImportEntities } from '../../CsvImportEntities.js';
+import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
+import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource.js';
+import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource.js';
+import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource.js';
 
 export class CSVImportEntitiesFactories {
   static CSVImportDSDefault(transactionManager: MongoTransactionManager) {

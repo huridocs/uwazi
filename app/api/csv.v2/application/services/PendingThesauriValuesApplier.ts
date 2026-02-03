@@ -2,13 +2,10 @@ import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
-} from '#api/csv.v2/domain/CsvImportThesauriValues.js';
-import { ThesauriRepository } from '#api/csv.v2/application/contracts/ThesauriRepository.js';
-import { TranslationsRepository } from '#api/csv.v2/application/contracts/TranslationsRepository.js';
-import {
-  CsvThesauriValuesDiff,
-  ThesauriDiffResult,
-} from '#api/csv.v2/application/services/CsvThesauriValuesDiff.js';
+} from '../../domain/CsvImportThesauriValues.js';
+import { ThesauriRepository } from '../contracts/ThesauriRepository.js';
+import { TranslationsRepository } from '../contracts/TranslationsRepository.js';
+import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff.js';
 
 type Deps = {
   thesauriRepo: ThesauriRepository;

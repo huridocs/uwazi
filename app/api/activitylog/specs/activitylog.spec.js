@@ -1,8 +1,8 @@
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import activitylog from '#api/activitylog/activitylog.js';
-import * as activityLogParser from '#api/activitylog/activitylogParser.js';
-import fixtures from '#api/activitylog/specs/fixtures.js';
+import activitylog from '../activitylog.js';
+import * as activityLogParser from '../activitylogParser.js';
+import fixtures from './fixtures.js';
 
 const assessResults = (results, expected) => {
   expect(results.rows.length).toBe(expected.size);

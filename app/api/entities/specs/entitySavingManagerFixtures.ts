@@ -1,9 +1,6 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
-
 import { UserSchema } from '#shared/types/userType.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-
 import { FileType } from '#shared/types/fileType.js';
 
 const template1Id = db.id();

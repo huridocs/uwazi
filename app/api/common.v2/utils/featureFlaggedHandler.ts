@@ -1,5 +1,4 @@
 import { tenants } from '#api/tenants/index.js';
-
 import { TenantFeatureFlags } from '#api/tenants/tenantContext.js';
 
 async function withFeatureFlag<T>(

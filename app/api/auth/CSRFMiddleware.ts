@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 export default (req: Request, res: Response, next: NextFunction) => {
   if (!['POST', 'DELETE', 'PUT'].includes(req.method)) {

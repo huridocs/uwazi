@@ -2,8 +2,8 @@
 import settings from '#api/settings/index.js';
 import mailer from '#api/utils/mailer.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import contact from '#api/contact/contact.js';
-import fixtures from '#api/contact/specs/fixtures.js';
+import contact from '../contact.js';
+import fixtures from './fixtures.js';
 
 describe('contact', () => {
   beforeEach(async () => {
