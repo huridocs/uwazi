@@ -1,4 +1,4 @@
-import { LogMetadata } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { LogMetadata } from '../infrastructure/LogEntry.js';
 
 export interface Logger {
   debug(message: string | string[], metadata?: LogMetadata): void;

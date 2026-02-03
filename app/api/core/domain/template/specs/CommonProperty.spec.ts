@@ -1,5 +1,5 @@
 import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
-import { CommonPropertyInvalidError } from '#api/core/domain/template/errors.js';
+import { CommonPropertyInvalidError } from '../errors.js';
 
 describe('CommonProperty', () => {
   it('should set defaults values if not provided', () => {

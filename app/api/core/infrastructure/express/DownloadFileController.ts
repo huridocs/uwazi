@@ -1,10 +1,13 @@
 import { createError } from '#api/utils/index.js';
 
-import { AbstractController, Dependencies } from '#api/common.v2/infrastructure/AbstractController.js';
+import {
+  AbstractController,
+  Dependencies,
+} from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { FileStorageFactory } from '../files/FileStorageFactory.js';
-import { fileDBO } from '../mongodb/files/schemas/filesTypes.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { Request, Response } from 'express';
@@ -168,10 +171,10 @@ class DownloadFileController extends AbstractController {
         file.entity,
         this.request.user
           ? User.createFrom({
-              id: this.request.user._id.toString(),
-              role: this.request.user.role,
-              groups: (this.request.user.groups || []).map(g => g._id.toString()),
-            })
+            id: this.request.user._id.toString(),
+            role: this.request.user.role,
+            groups: (this.request.user.groups || []).map(g => g._id.toString()),
+          })
           : undefined
       )
     ).getDataOrThrow();

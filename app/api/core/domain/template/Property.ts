@@ -5,8 +5,8 @@ import {
 } from '#api/core/domain/template/errors.js';
 import { PropertyName } from '#api/core/domain/template/PropertyName.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { PropertyType } from '#api/core/domain/template/PropertyType.js';
-import { PropertyValue, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { PropertyType } from './PropertyType.js';
+import { PropertyValue, PropertyAssignment } from './PropertyValue.js';
 
 type PropertyUpdateInfo = {
   id: string;

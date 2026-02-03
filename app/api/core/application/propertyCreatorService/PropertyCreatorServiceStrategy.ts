@@ -1,9 +1,9 @@
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';
 import { Context, Property } from '#api/core/domain/template/Property.js';
 import { IdGenerator } from '../contracts/IdGenerator.js';
-import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertyFactoryCreateInput } from '#api/core/domain/template/PropertyFactory.js';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
@@ -31,13 +31,16 @@ type CreateProps = {
 type BulkCreateInput = (Omit<PropertyFactoryCreateInput, 'id' | 'template'> & { id?: string })[];
 
 class PropertyCreatorServiceStrategy {
-  constructor(private props: Props) {}
+  constructor(private props: Props) { }
 
   getStrategy(type: PropertyType): AbstractPropertyCreatorService {
     switch (type) {
       case 'multiselect':
       case 'select':
         return this.props.select;
+
+      case 'nested':
+        return this.props.nested;
 
       case 'relationship':
         return this.props.relationship;
@@ -83,10 +86,7 @@ class PropertyCreatorServiceStrategy {
         templatesDS,
         thesauriDS,
       }),
-      nested: new NestedPropertyCreatorService({
-        templatesDS,
-        settingsDS,
-      }),
+      nested: new NestedPropertyCreatorService({ templatesDS, settingsDS }),
     });
   }
 }

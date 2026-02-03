@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { ImageProperty } from '../ImageProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('ImageProperty', () => {
   it('should set defaults values if not provided', () => {

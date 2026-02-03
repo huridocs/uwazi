@@ -1,5 +1,5 @@
-import { AsyncEventEmitter } from '#api/core/libs/eventEmitter/AsyncEventEmitter.js';
-import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
+import { AsyncEventEmitter } from './AsyncEventEmitter.js';
+import { EventEmitter } from './EventEmitter.js';
 
 class EventEmitterFactory {
   private static instance: EventEmitter;

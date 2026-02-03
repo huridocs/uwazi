@@ -1,19 +1,16 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { ObjectId } from 'mongodb';
-
 import { EntityMappers } from '#api/entities.v2/database/EntityMapper.js';
-
 import { Entity } from '#api/entities.v2/model/Entity.js';
-
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
+import { RelationshipDBOType } from './schemas/relationshipTypes.js';
 import {
   EntityPointer,
   Relationship,
   Selection,
   TextReferencePointer,
-} from '#api/relationships.v2/model/Relationship.js';
-import { JoinedRelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipAggregationTypes.js';
+} from '../model/Relationship.js';
+import { JoinedRelationshipDBOType } from './schemas/relationshipAggregationTypes.js';
 
 type EntityTraversal =
   | {

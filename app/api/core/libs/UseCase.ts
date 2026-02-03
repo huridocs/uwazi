@@ -1,12 +1,12 @@
-import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
+import { EventsBus } from '#api/core/libs/eventsbus.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
+import { TransactionManager } from '../application/contracts/TransactionManager.js';
+import { IdGenerator } from '../application/contracts/IdGenerator.js';
+import { Logger } from './logger/contracts/Logger.js';
+import { EventEmitter } from './eventEmitter/EventEmitter.js';
 
 interface UseCase<Input, Output, Args extends any[] = []> {
   execute(input: Input, ...args: Args): Promise<Output>;

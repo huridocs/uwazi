@@ -1,20 +1,20 @@
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
 import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors.js';
 import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDiff } from '../domain/template/TemplateDiff.js';
-import { Template } from '../domain/template/Template.js';
-import { TranslationService } from '../domain/template/TranslationService.js';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { AbstractUseCase } from '../libs/UseCase.js';
-import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { TranslationService } from '../domain/template/TranslationService.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
 import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
-import { TemplatePostProcessService } from './TemplatePostProcessService.js';
 import { UpdateTemplateDTO } from './TemplateDTOs.js';
+import { TemplatePostProcessService } from './TemplatePostProcessService.js';
+import { Template } from '../domain/template/Template.js';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper.js';
 
 type Input = UpdateTemplateDTO;
 type Output = Template;

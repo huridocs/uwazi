@@ -2,7 +2,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { SettingsDataSource } from './contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors.js';
 import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent.js';
 import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';

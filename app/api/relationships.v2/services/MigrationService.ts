@@ -1,34 +1,24 @@
 /* eslint-disable max-lines */
-
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-
 import { SaveStream } from '#api/common.v2/contracts/SaveStream.js';
-
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-
 import { objectIndexToArrays, objectIndexToSets } from '#shared/data_utils/objectIndex.js';
-
 import { TestOneHubRequest } from '#shared/types/api.v2/relationships.testOneHub.js';
-import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
-import { HubDataSource } from '#api/relationships.v2/contracts/HubDataSource.js';
-import { V1ConnectionsDataSource } from '#api/relationships.v2/contracts/V1ConnectionsDataSource.js';
-import {
-  V1Connection,
-  ReadableV1Connection,
-  V1TextReference,
-} from '#api/relationships.v2/model/V1Connection.js';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
+import { HubDataSource } from '../contracts/HubDataSource.js';
+import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource.js';
+import { V1Connection, ReadableV1Connection, V1TextReference } from '../model/V1Connection.js';
 import {
   EntityPointer,
   FilePointer,
   TextReferencePointer,
   Relationship,
   Selection,
-} from '#api/relationships.v2/model/Relationship.js';
-import { MigrationHubRecordDataSource } from '#api/relationships.v2/contracts/MigrationHubRecordDataSource.js';
-import { MigrationHubRecord } from '#api/relationships.v2/model/MigrationHubRecord.js';
+} from '../model/Relationship.js';
+import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource.js';
+import { MigrationHubRecord } from '../model/MigrationHubRecord.js';
 
 const HUB_BATCH_SIZE = 1000;
 

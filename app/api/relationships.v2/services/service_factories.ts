@@ -1,59 +1,46 @@
 /* eslint-disable max-statements */
-
 import { DefaultPermissionsDataSource } from '#api/authorization.v2/database/data_source_defaults.js';
-
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
-
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
-
-import { search } from '#api/search/index.js';
-
+import { search } from '#api/search.js';
 import { User } from '#api/users.v2/model/User.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
 
-import { tenants } from '#api/tenants/index.js';
-
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
-
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/service_factories.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants.js';
 import {
   DefaultHubsDataSource,
   DefaultMigrationHubRecordDataSource,
   DefaultRelationshipDataSource,
   DefaultRelationshipMigrationFieldsDataSource,
   DefaultV1ConnectionsDataSource,
-} from '#api/relationships.v2/database/data_source_defaults.js';
-import { CreateRelationshipMigrationFieldService as GenericCreateRelationshipMigrationFieldService } from '#api/relationships.v2/services/CreateRelationshipMigrationFieldService.js';
-import { CreateRelationshipService as GenericCreateRelationshipService } from '#api/relationships.v2/services/CreateRelationshipService.js';
-import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from '#api/relationships.v2/services/DeleteRelationshipMigrationFieldService.js';
-import { DeleteRelationshipService as GenericDeleteRelationshipService } from '#api/relationships.v2/services/DeleteRelationshipService.js';
-import { DenormalizationService as GenericDenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
-import { GetMigrationHubRecordsService as GenericGetMigrationHubRecordsService } from '#api/relationships.v2/services/GetMigrationHubRecordsService.js';
-import { GetRelationshipMigrationFieldService as GenericGetRelationshipMigrationFieldsService } from '#api/relationships.v2/services/GetRelationshipMigrationFieldService.js';
-import { GetRelationshipService as GenericGetRelationshipService } from '#api/relationships.v2/services/GetRelationshipService.js';
-import { MigrationService as GenericMigrationService } from '#api/relationships.v2/services/MigrationService.js';
-import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
-import { QueuedRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy.js';
-import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
-import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
-import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from '#api/relationships.v2/services/UpsertRelationshipMigrationFieldService.js';
-
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+} from '../database/data_source_defaults.js';
+import { CreateRelationshipMigrationFieldService as GenericCreateRelationshipMigrationFieldService } from './CreateRelationshipMigrationFieldService.js';
+import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService.js';
+import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from './DeleteRelationshipMigrationFieldService.js';
+import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService.js';
+import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService.js';
+import { GetMigrationHubRecordsService as GenericGetMigrationHubRecordsService } from './GetMigrationHubRecordsService.js';
+import { GetRelationshipMigrationFieldService as GenericGetRelationshipMigrationFieldsService } from './GetRelationshipMigrationFieldService.js';
+import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService.js';
+import { MigrationService as GenericMigrationService } from './MigrationService.js';
+import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
+import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy.js';
+import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
+import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
+import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService.js';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {

@@ -18,9 +18,8 @@ type Deps = {
 };
 
 export class RelationshipPropertyAssignmentCreatorService
-  implements PropertyAssignmentCreatorService
-{
-  constructor(private deps: Deps) {}
+  implements PropertyAssignmentCreatorService {
+  constructor(private deps: Deps) { }
 
   // eslint-disable-next-line max-statements
   async create({

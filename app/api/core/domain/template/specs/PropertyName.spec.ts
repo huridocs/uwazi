@@ -1,4 +1,4 @@
-import { PropertyName } from '#api/core/domain/template/PropertyName.js';
+import { PropertyName } from '../PropertyName.js';
 
 describe('PropertyName', () => {
   describe('old name generation', () => {

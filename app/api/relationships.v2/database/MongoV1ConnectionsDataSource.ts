@@ -1,18 +1,10 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { V1ConnectionsDataSource } from '#api/relationships.v2/contracts/V1ConnectionsDataSource.js';
-import { V1Connection, ReadableV1Connection } from '#api/relationships.v2/model/V1Connection.js';
-import {
-  V1ConnectionDBO,
-  V1ConnectionDBOWithEntityInfo,
-} from '#api/relationships.v2/database/schemas/v1ConnectionTypes.js';
-import {
-  mapConnectionToApp,
-  mapConnectionsWithEntityInfoToApp,
-} from '#api/relationships.v2/database/v1ConnectionMappers.js';
+import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource.js';
+import { V1Connection, ReadableV1Connection } from '../model/V1Connection.js';
+import { V1ConnectionDBO, V1ConnectionDBOWithEntityInfo } from './schemas/v1ConnectionTypes.js';
+import { mapConnectionToApp, mapConnectionsWithEntityInfoToApp } from './v1ConnectionMappers.js';
 
 export class MongoV1ConnectionsDataSource
   extends MongoDataSource<V1ConnectionDBO>

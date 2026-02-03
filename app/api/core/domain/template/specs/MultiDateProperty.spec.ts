@@ -1,7 +1,7 @@
-import { DateProperty } from '#api/core/domain/template/DateProperty.js';
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { DateProperty } from '../DateProperty.js';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { MultiDateProperty } from '../MultiDateProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('MultiDateProperty', () => {
   it('should set defaults values if not provided', () => {

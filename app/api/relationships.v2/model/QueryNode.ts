@@ -1,4 +1,4 @@
-import { NonChainQueryError } from '#api/relationships.v2/model/NonChainQueryErrror.js';
+import { NonChainQueryError } from './NonChainQueryErrror.js';
 
 export abstract class QueryNode {
   protected abstract getChildrenNodes(): QueryNode[];

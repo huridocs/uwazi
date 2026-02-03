@@ -4,12 +4,11 @@ import {
   Property,
   PropertyProps,
 } from '#api/core/domain/template/Property.js';
-
-import { PropertyName } from '#api/core/domain/template/PropertyName.js';
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { GeolocationEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { z } from 'zod';
+import { PropertyName } from './PropertyName.js';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { GeolocationEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Geolocation;

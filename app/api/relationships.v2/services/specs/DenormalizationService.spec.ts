@@ -1,25 +1,16 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
-
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
-
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
-
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { Db } from 'mongodb';
-
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
-
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
-import { RelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DenormalizationService } from '../DenormalizationService.js';
+import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
 
 const factory = getFixturesFactory();
 

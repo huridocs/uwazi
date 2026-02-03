@@ -9,7 +9,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { ObjectId } from 'mongodb';
 import { Template } from '#api/core/domain/template/Template.js';
-import { RelationshipPropertyAssignmentCreatorService } from '#api/core/application/propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.js';
+import { RelationshipPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
 

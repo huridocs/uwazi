@@ -1,17 +1,12 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { RelationshipMigrationFieldsDataSource } from '#api/relationships.v2/contracts/RelationshipMigrationFieldsDataSource.js';
+import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource.js';
 import {
   RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
-} from '#api/relationships.v2/model/RelationshipMigrationField.js';
-import {
-  mapFieldIdToDBO,
-  mapFieldToApp,
-  mapFieldToDBO,
-} from '#api/relationships.v2/database/RelationshipMigrationFieldMappers.js';
-import { RelationshipMigrationFieldDBO } from '#api/relationships.v2/database/schemas/relationshipMigrationFieldTypes.js';
+} from '../model/RelationshipMigrationField.js';
+import { mapFieldIdToDBO, mapFieldToApp, mapFieldToDBO } from './RelationshipMigrationFieldMappers.js';
+import { RelationshipMigrationFieldDBO } from './schemas/relationshipMigrationFieldTypes.js';
 
 class MongoRelationshipMigrationFieldsDataSource
   extends MongoDataSource<RelationshipMigrationFieldDBO>

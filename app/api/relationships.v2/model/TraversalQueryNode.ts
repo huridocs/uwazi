@@ -1,7 +1,7 @@
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import _ from 'lodash';
-import { MatchQueryNode, TemplateRecords } from '#api/relationships.v2/model/MatchQueryNode.js';
-import { QueryNode } from '#api/relationships.v2/model/QueryNode.js';
+import { MatchQueryNode, TemplateRecords } from './MatchQueryNode.js';
+import { QueryNode } from './QueryNode.js';
 
 interface TraversalFilters {
   _id?: string;

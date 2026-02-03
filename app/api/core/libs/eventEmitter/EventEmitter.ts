@@ -1,5 +1,5 @@
-import { Event } from '#api/core/libs/eventEmitter/Event.js';
-import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { Event } from './Event.js';
+import { Listener } from './Listener.js';
 
 interface EventEmitter {
   emit(event: Event<any>): Promise<void>;

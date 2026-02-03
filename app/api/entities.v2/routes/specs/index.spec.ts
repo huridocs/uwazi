@@ -2,13 +2,10 @@ import 'isomorphic-fetch';
 import request from 'supertest';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-import { entitiesRoutes } from '#api/entities.v2/routes/index.js';
+import { entitiesRoutes } from '..';
 
 describe('entities countByTemplate V2 routes', () => {
   const factory = getFixturesFactory();

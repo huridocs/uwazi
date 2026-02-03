@@ -1,13 +1,13 @@
-import { z } from 'zod';
 import {
   Property,
   PropertyProps,
   Context,
   CreatePropertyAssignmentInput,
 } from '#api/core/domain/template/Property.js';
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { LinkEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { z } from 'zod';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { LinkEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Link;

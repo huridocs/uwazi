@@ -1,9 +1,9 @@
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { FilesDataSource } from './contracts/FilesDataSource.js';
-import { FileStorage } from './contracts/FileStorage.js';
-import { ProcessingPDF } from '../domain/files/ProcessingPDF.js';
-import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
-import { Thumbnail } from '../domain/files/Thumbnail.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
@@ -43,7 +43,7 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 }
 
 class FilesService {
-  constructor(protected deps: Deps) {}
+  constructor(protected deps: Deps) { }
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(

@@ -1,21 +1,16 @@
 import { performance } from 'perf_hooks';
 
-import type { Application, NextFunction, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 
-import { needsAuthorization } from '#api/auth/index.js';
-
-import { parseQuery } from '#api/utils/index.js';
-
+import { needsAuthorization } from '#api/auth.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { parseQuery } from '#api/utils.js';
 import { GetMigrationHubRecordsResponse } from '#shared/types/api.v2/migrationHubRecords.get.js';
-
 import { MigrationResponse } from '#shared/types/api.v2/relationships.migrate.js';
-
 import { TestOneHubResponse } from '#shared/types/api.v2/relationships.testOneHub.js';
-
 import { CreateRelationshipMigRationFieldResponse } from '#shared/types/api.v2/relationshipMigrationField.create.js';
-
 import { GetRelationshipMigrationFieldsResponse } from '#shared/types/api.v2/relationshipMigrationField.get.js';
-
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
@@ -26,20 +21,15 @@ import {
   GetRelationshipService,
   MigrationService,
   UpsertRelationshipMigrationFieldService,
-} from '#api/relationships.v2/services/service_factories.js';
-import { validateCreateRelationship } from '#api/relationships.v2/routes/validators/createRelationship.js';
-import { validateDeleteRelationships } from '#api/relationships.v2/routes/validators/deleteRelationships.js';
-import { validateGetRelationships } from '#api/relationships.v2/routes/validators/getRelationship.js';
-import {
-  validateMigration,
-  validateTestOneHub,
-} from '#api/relationships.v2/routes/validators/migration.js';
-import { validateDeleteRelationshipMigrationField } from '#api/relationships.v2/routes/validators/deleteRelationshipMigrationFields.js';
-import { validateUpsertRelationshipMigrationField } from '#api/relationships.v2/routes/validators/upsertRelationshipMigrationFields.js';
+} from '../services/service_factories.js';
+import { validateCreateRelationship } from './validators/createRelationship.js';
+import { validateDeleteRelationships } from './validators/deleteRelationships.js';
+import { validateGetRelationships } from './validators/getRelationship.js';
+import { validateMigration, validateTestOneHub } from './validators/migration.js';
+import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields.js';
+import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields.js';
 
-import { validateGetMigrationHubRecordsRequest } from '#api/relationships.v2/routes/validators/getMigrationHubRecords.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { validateGetMigrationHubRecordsRequest } from './validators/getMigrationHubRecords.js';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (

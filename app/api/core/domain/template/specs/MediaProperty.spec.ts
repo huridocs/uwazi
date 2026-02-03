@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { MediaProperty } from '../MediaProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('MediaProperty', () => {
   it('should set defaults values if not provided', () => {

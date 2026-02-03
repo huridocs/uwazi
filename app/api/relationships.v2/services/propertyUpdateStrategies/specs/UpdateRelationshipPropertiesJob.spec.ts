@@ -1,9 +1,7 @@
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
-
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
-
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { UpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
+import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob.js';
 
 it('should execute the updater and reindex the entity', async () => {
   const indexEntity = jest.fn();

@@ -1,13 +1,7 @@
+/* eslint-disable max-lines */
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-
 import { Validator } from '#api/core/domain/Validator.js';
-
 import { TemplateWithDuplicatedPropertyValidator } from '#api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator.js';
-import {
-  Property,
-  PropertyUpdateInfo,
-  CreatePropertyAssignmentInput,
-} from '#api/core/domain/template/Property.js';
 import {
   DefaultTemplateConflictError,
   PropertyNotFoundError,
@@ -15,11 +9,12 @@ import {
 } from '#api/core/domain/template/errors.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { Result } from '#api/core/libs/Result.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
-import { PropertyType } from '#api/core/domain/template/PropertyType.js';
-import { TemplateWithMissingCommonPropertyValidator } from '#api/core/domain/template/templateValidator/TemplateWithMissingCommonPropertyValidator.js';
-import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property.js';
+import { V1RelationshipProperty } from './V1RelationshipProperty.js';
+import { CommonProperty } from './CommonProperty.js';
+import { PropertyType } from './PropertyType.js';
+import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator.js';
+import { PropertyAssignment } from './PropertyValue.js';
 
 type CloneProps = {
   name?: string;

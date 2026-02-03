@@ -1,20 +1,20 @@
-import { DateProperty } from '#api/core/domain/template/DateProperty.js';
-import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
-import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
-import { GeolocationProperty } from '#api/core/domain/template/GeoLocationProperty.js';
-import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
-import { LinkProperty } from '#api/core/domain/template/LinkProperty.js';
-import { MarkdownProperty } from '#api/core/domain/template/MarkdownProperty.js';
-import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
-import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
-import { MultiDateRangeProperty } from '#api/core/domain/template/MultiDateRangeProperty.js';
-import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
-import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
-import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
-import { PropertyFactory } from '#api/core/domain/template/PropertyFactory.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
-import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { DateProperty } from '../DateProperty.js';
+import { DateRangeProperty } from '../DateRangeProperty.js';
+import { GenerateIdProperty } from '../GenerateIdProperty.js';
+import { GeolocationProperty } from '../GeoLocationProperty.js';
+import { ImageProperty } from '../ImageProperty.js';
+import { LinkProperty } from '../LinkProperty.js';
+import { MarkdownProperty } from '../MarkdownProperty.js';
+import { MediaProperty } from '../MediaProperty.js';
+import { MultiDateProperty } from '../MultiDateProperty.js';
+import { MultiDateRangeProperty } from '../MultiDateRangeProperty.js';
+import { MultiSelectProperty } from '../select/MultiSelectProperty.js';
+import { NumericProperty } from '../NumericProperty.js';
+import { PreviewProperty } from '../PreviewProperty.js';
+import { PropertyFactory } from '../PropertyFactory.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
+import { SelectProperty } from '../select/SelectProperty.js';
+import { TextProperty } from '../TextProperty.js';
 
 describe('PropertyFactory', () => {
   it('should create an instance of TextProperty', () => {

@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { PreviewProperty } from '../PreviewProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('PreviewProperty', () => {
   it('should set defaults values if not provided', () => {

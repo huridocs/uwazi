@@ -1,11 +1,14 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { ResultType } from '#api/core/libs/Result.js';
-import { DefaultTemplateNotFoundError } from '#api/core/domain/template/errors.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
-import { Property } from '#api/core/domain/template/Property.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { ResultType } from '#api/core/libs/Result.js';
+import {
+  DefaultTemplateNotFoundError,
+  TemplateDoesNotExistError,
+} from '#api/core/domain/template/errors.js';
+import { Property } from '../../domain/template/Property.js';
+import { RelationshipProperty } from '../../domain/template/RelationshipProperty.js';
+import { Template } from '../../domain/template/Template.js';
+import { V1RelationshipProperty } from '../../domain/template/V1RelationshipProperty.js';
 
 export interface TemplatesDataSource {
   updateMapping(template: Template, reset?: boolean): Promise<void>;
@@ -21,7 +24,7 @@ export interface TemplatesDataSource {
   getTemplatesIdsHavingProperty(propertyName: string): ResultSet<string>;
   getByIds(ids: Template['id'][]): ResultSet<Template>;
   getByNames(names: Template['name'][]): ResultSet<Template>;
-  getById(id: Template['id']): Promise<Template | undefined>;
+  getById(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>>;
   getTemplatesByPropertyName(property: Property): Promise<Template[]>;
   incrementProcessingTracking(id: Template['id']): Promise<{ total: number; completed: number }>;
   completeProcessing(templateId: string): Promise<void>;

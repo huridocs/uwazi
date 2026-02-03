@@ -1,4 +1,4 @@
-import { ReadableV1Connection } from '#api/relationships.v2/model/V1Connection.js';
+import { ReadableV1Connection } from './V1Connection.js';
 
 class MigrationHubRecord {
   hubId: string;

@@ -7,13 +7,10 @@ import {
 } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { JobsRouter } from '#api/core/libs/queue/infrastructure/JobsRouter.js';
-import { MongoQueueAdapter } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
-import {
-  NamespacedDispatcher,
-  QueueOptions,
-} from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
-import { RoundRobinMongoQueueAdapter } from '#api/core/libs/queue/infrastructure/RoundRobinQueueAdapter.js';
+import { JobsRouter } from '../infrastructure/JobsRouter.js';
+import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
+import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';
+import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter.js';
 
 export function DefaultQueueAdapter(transactionManager: TransactionManager) {
   return new MongoQueueAdapter(

@@ -1,13 +1,10 @@
 import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
-import { PropertyName } from '#api/core/domain/template/PropertyName.js';
-import {
-  FilterableProperty,
-  FilterablePropertyProps,
-} from '#api/core/domain/template/FilterableProperty.js';
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { NestedEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { PropertyName } from './PropertyName.js';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { NestedEntry, PropertyAssignment } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Nested;
@@ -21,10 +18,10 @@ const BaseMetadataValueSchema = z.object({
 
 const EntrySchema = z.object({
   value: z.union([z.record(z.string(), z.array(BaseMetadataValueSchema)), z.null()]),
-  label: z.string().optional(),
 });
 
-const createSchema = (required: boolean) => z.array(EntrySchema).min(required ? 1 : 0);
+const createSchema = (isRequired: boolean) =>
+  z.array(EntrySchema).min(isRequired ? 1 : 0, 'Nested Property is required');
 
 class NestedProperty extends FilterableProperty {
   nestedProperties: string[];
@@ -57,7 +54,7 @@ class NestedProperty extends FilterableProperty {
 
     return {
       name: this.name,
-      value: parsed as NestedEntry[],
+      value: parsed as NestedEntry[], // Todo: fix type issue
       type: this.type,
       isTranslatable: this.isTranslatable,
     };

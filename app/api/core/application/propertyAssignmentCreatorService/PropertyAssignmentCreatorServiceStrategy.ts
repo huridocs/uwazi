@@ -8,14 +8,14 @@ import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService.js';
+import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService.js';
 import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService.js';
-import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService.js';
+import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService.js';
 import {
   PropertyAssignmentCreatorService,
   PropertyAssignmentInput,
 } from './PropertyAssignmentCreatorService.js';
-import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService.js';
-import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService.js';
+import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService.js';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;

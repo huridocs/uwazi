@@ -1,8 +1,5 @@
-import {
-  TitlePropertyInvalidNameError,
-  PropertyTypeInvalidTypeError,
-} from '#api/core/domain/template/errors.js';
-import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
+import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from '../errors.js';
+import { TitleProperty } from '../TitleProperty.js';
 
 describe('TitleProperty', () => {
   it('should set defaults values if not provided', () => {

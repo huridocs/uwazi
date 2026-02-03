@@ -1,6 +1,6 @@
-import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
-import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
-import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
+import { TemplateBuilder } from './TemplateBuilder.js';
+import { SelectProperty } from '../select/SelectProperty.js';
+import { MultiSelectProperty } from '../select/MultiSelectProperty.js';
 
 describe('Select/MultiSelect duplicate removal', () => {
   const buildTemplate = () =>

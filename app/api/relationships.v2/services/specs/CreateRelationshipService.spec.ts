@@ -1,38 +1,23 @@
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
-
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
-
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
-
 import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
-
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
-
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
-
 import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
-
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
-
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-
-import { CreateRelationshipService } from '#api/relationships.v2/services/CreateRelationshipService.js';
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
-import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { CreateRelationshipService } from '../CreateRelationshipService.js';
+import { DenormalizationService } from '../DenormalizationService.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 
 const factory = getFixturesFactory();
 

@@ -29,8 +29,7 @@ import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/Quer
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
-  implements TemplatesDataSource
-{
+  implements TemplatesDataSource {
   protected collectionName = 'templates';
 
   private _nameToPropertyMap?: Record<string, Property>;

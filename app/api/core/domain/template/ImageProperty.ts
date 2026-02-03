@@ -1,12 +1,9 @@
-import { z } from 'zod';
 import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
-import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import {
-  AbstractImageProperty,
-  AbstractImagePropertyProps,
-} from '#api/core/domain/template/AbstractImageProperty.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { PropertyAssignment, ImageEntry } from '#api/core/domain/template/PropertyValue.js';
+import { z } from 'zod';
+import { PropertyTypeInvalidTypeError } from './errors.js';
+import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { PropertyAssignment, ImageEntry } from './PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Image;

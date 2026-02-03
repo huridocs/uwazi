@@ -1,9 +1,8 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-
+import { EntitySchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import { MetadataSchema } from '#shared/types/commonTypes.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { Entity } from '../model/Entity.js';
+import { EntityDBO } from './schemas/EntityTypes.js';
 
 export const EntityMappers = {
   toModel(dbo: EntityDBO) {

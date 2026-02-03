@@ -1,10 +1,7 @@
 import { config } from '#api/config.js';
-import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import {
-  DispatchableClass,
-  JobsDispatcher,
-} from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { NamespacedDispatcher } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
+import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
+import { Dispatchable } from '../application/contracts/Dispatchable.js';
+import { NamespacedDispatcher } from './NamespacedDispatcher.js';
 
 interface DispatcherFactory {
   (name: string): NamespacedDispatcher;
@@ -22,6 +19,7 @@ export class JobsRouter implements JobsDispatcher {
     params: Partial<Parameters<T['handleDispatch']>[1]>
   ): Promise<void> {
     const dispatcher = this.routeJob();
+
     return dispatcher.deleteByParams(dispatchable, params);
   }
 

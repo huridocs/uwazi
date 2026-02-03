@@ -1,16 +1,9 @@
 import { ObjectId } from 'mongodb';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import testingDB from '#api/utils/testing_db.js';
-
 import { TestingRoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
-import {
-  createTestJob,
-  pickJobs,
-  pushJobsForNamespaces,
-} from '#api/core/libs/queue/infrastructure/specs/fixtures.js';
-import { RoundRobinMongoQueueAdapter } from '#api/core/libs/queue/infrastructure/RoundRobinQueueAdapter.js';
+import { createTestJob, pickJobs, pushJobsForNamespaces } from './fixtures.js';
+import { RoundRobinMongoQueueAdapter } from '../RoundRobinQueueAdapter.js';
 
 describe('RoundRobinQueueAdapter', () => {
   let adapter: RoundRobinMongoQueueAdapter;

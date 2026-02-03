@@ -1,4 +1,4 @@
-import { MigrationHubRecordDataSource } from '#api/relationships.v2/contracts/MigrationHubRecordDataSource.js';
+import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource.js';
 
 class GetMigrationHubRecordsService {
   private hubRecordsDS: MigrationHubRecordDataSource;

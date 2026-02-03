@@ -1,7 +1,7 @@
 import { Template } from '#api/core/domain/template/Template.js';
 import { Property, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
+import { GenerateIdProperty } from './GenerateIdProperty.js';
 
 type RenamedMap = { [oldName: string]: string };
 
