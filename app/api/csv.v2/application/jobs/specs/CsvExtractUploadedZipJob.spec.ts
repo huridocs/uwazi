@@ -18,7 +18,7 @@ import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/Cs
 import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { CsvExtractUploadedZipJobFactory } from 'api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory';
-import { CsvExtractUploadedZipJob, Callbacks } from '../CsvExtractUploadedZipJob';
+import { Callbacks } from '../CsvExtractUploadedZipJob';
 
 const callbacks: Callbacks = {
   onStart: jest.fn(),

@@ -176,7 +176,8 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
           csvImportsDS: this.deps.csvImportsDS,
           entitiesDS: this.deps.entitiesDS,
           transactionManager: this.transactionManager,
-          propertyAssignmentCreatorServiceStrategy: this.deps.propertyAssignmentCreatorServiceStrategy,
+          propertyAssignmentCreatorServiceStrategy:
+            this.deps.propertyAssignmentCreatorServiceStrategy,
           filesService: this.deps.filesService,
           fileStorage: this.deps.fileStorage,
           idGenerator: this.deps.idGenerator,
