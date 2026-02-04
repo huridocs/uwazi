@@ -1,9 +1,9 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
-import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
-import { PXExtractParagraphsByEntityStatus } from '#api/paragraphExtraction/application/PXExtractParagraphsByEntityStatus.js';
-import { PXExtractParagraphsFromEntitiesFactory } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
+import { PXExtractParagraphsByEntityStatus } from '../application/PXExtractParagraphsByEntityStatus.js';
+import { PXExtractParagraphsFromEntitiesFactory } from './PXExtractParagraphsFromEntitiesFactory.js';
 
 type Props = {
   tenantName: string;

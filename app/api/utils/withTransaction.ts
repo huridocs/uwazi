@@ -1,11 +1,10 @@
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { storage } from '#api/files/storage.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
-
-import { search } from '#api/search/search.js';
+import { search } from '#api/search/index.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 interface TransactionOperation {
   abort: () => Promise<void>;

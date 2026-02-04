@@ -5,6 +5,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
@@ -20,11 +21,14 @@ export class PXExtractParagraphsFromEntityFactory {
     const mongoTransactionManager = TransactionManagerFactory.default();
 
     const entitiesDS = EntitiesDataSourceFactory.default(mongoTransactionManager);
+
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,
     });
+
     const extractionService = PXExtractionServiceFactory.createDefault();
+
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,

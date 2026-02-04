@@ -1,4 +1,4 @@
-import middleware from '#api/utils/validateRequest.js';
+import middleware from '../validateRequest.js';
 
 describe('validateRequest', () => {
   let next;

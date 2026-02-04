@@ -1,16 +1,13 @@
-import { Segmentation } from '#api/core/domain/files/Segmentation.js';
-
-import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
-
-import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
-
 import { Property } from '#api/core/domain/template/Property.js';
+import { Segmentation } from '#api/core/domain/files/Segmentation.js';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
+import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
 import { ObjectId } from 'mongodb';
 
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
-import { GetParagraphsResultDTO } from '#api/paragraphExtraction/infrastructure/ExternalExtractionService/types.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { GetParagraphsResultDTO } from '../ExternalExtractionService/types.js';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
   key: PXExtractionKey.create({

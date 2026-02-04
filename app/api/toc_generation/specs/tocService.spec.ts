@@ -1,12 +1,9 @@
 import { files, storage } from '#api/files/index.js';
-
 import { tenants } from '#api/tenants/index.js';
-
 import { testingDB } from '#api/utils/testing_db.js';
-
 import request from '#shared/JSONRequest.js';
-import { tocService } from '#api/toc_generation/tocService.js';
-import { fixtures } from '#api/toc_generation/specs/fixtures.js';
+import { tocService } from '../tocService.js';
+import { fixtures } from './fixtures.js';
 
 describe('tocService', () => {
   let requestMock: jest.SpyInstance;

@@ -1,15 +1,15 @@
 import {
+  UserAwareDispatchable,
+  UserAwareDispatchableParams,
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import {
   HeartbeatCallback,
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import {
-  UserAwareDispatchableParams,
-  UserAwareDispatchable,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { PXCreateParagraphs } from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
-import { PXExtractionService } from '#api/paragraphExtraction/domain/PXExtractionService.js';
-import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { PXCreateParagraphs } from '../application/PXCreateParagraphs.js';
+import { PXExtractionService } from '../domain/PXExtractionService.js';
+import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource.js';
 
 type PXCreateParagraphsJobParams = UserAwareDispatchableParams & {
   results: {

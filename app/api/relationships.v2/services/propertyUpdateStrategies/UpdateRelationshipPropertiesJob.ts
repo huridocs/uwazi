@@ -1,7 +1,5 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
-
 import {
   Dispatchable,
   HeartbeatCallback,

@@ -1,16 +1,15 @@
 import { Application } from 'express';
 
 import { needsAuthorization } from '#api/auth/index.js';
-
 import { featureFlagEnabled } from '#api/utils/featureFlagEnabledMiddleware.js';
 
-import { PXCreateExtractorController } from '#api/paragraphExtraction/adapters/PXCreateExtractorController.js';
-import { PXExtractParagraphFromEntitiesController } from '#api/paragraphExtraction/adapters/PXExtractParagraphFromEntitiesController.js';
-import { PXGetExtractorsController } from '#api/paragraphExtraction/adapters/PXGetExtractorsController.js';
-import { PXGetExtractorStatusesController } from '#api/paragraphExtraction/adapters/PXGetExtractorStatusesController.js';
-import { PXGetEntityParagraphsController } from '#api/paragraphExtraction/adapters/PXGetEntityParagraphsController.js';
-import { PXExtractParagraphsByEntityStatusController } from '#api/paragraphExtraction/adapters/PXExtractParagraphsByEntityStatusController.js';
-import { PXDeleteExtractorController } from '#api/paragraphExtraction/adapters/PXDeleteExtractorController.js';
+import { PXCreateExtractorController } from './PXCreateExtractorController.js';
+import { PXExtractParagraphFromEntitiesController } from './PXExtractParagraphFromEntitiesController.js';
+import { PXGetExtractorsController } from './PXGetExtractorsController.js';
+import { PXGetExtractorStatusesController } from './PXGetExtractorStatusesController.js';
+import { PXGetEntityParagraphsController } from './PXGetEntityParagraphsController.js';
+import { PXExtractParagraphsByEntityStatusController } from './PXExtractParagraphsByEntityStatusController.js';
+import { PXDeleteExtractorController } from './PXDeleteExtractorController.js';
 
 const paragraphExtractionRoutes = (app: Application) => {
   app.post(

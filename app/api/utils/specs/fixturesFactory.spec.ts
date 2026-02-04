@@ -1,4 +1,4 @@
-import { getIdMapper, getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { getIdMapper, getFixturesFactory } from '../fixturesFactory.js';
 
 describe('getIdMapper', () => {
   it('should create a new id', () => {

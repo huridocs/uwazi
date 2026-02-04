@@ -4,7 +4,7 @@ import {
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
 
-import { PXExtractParagraphsFromEntitiesFactory } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesFactory.js';
+import { PXExtractParagraphsFromEntitiesFactory } from '../infrastructure/PXExtractParagraphsFromEntitiesFactory.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
 

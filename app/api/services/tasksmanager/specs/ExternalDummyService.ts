@@ -5,7 +5,7 @@ import { Server } from 'http';
 import multer from 'multer';
 import Redis, { RedisClient } from 'redis';
 import RedisSMQ, { QueueMessage } from 'rsmq';
-import { ResultsMessage } from '#api/services/tasksmanager/TaskManager.js';
+import { ResultsMessage } from '../TaskManager.js';
 
 export class ExternalDummyService {
   private app: express.Application;

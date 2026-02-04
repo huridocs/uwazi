@@ -1,26 +1,21 @@
 /* eslint-disable max-statements */
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { testingTenants } from '#api/utils/testingTenants.js';
-
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-
 import * as setupSockets from '#api/socketio/setupSockets.js';
-
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
-import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
-import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
-import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 import { factory, fixtures, patchFixturesWithPort } from './fixtures.js';
+import { InformationExtraction } from '../InformationExtraction.js';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
+import { IXModelsModel } from '../IXModelsModel.js';
 
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;
 
-jest.mock('#api/services/tasksmanager/TaskManager.ts');
-jest.mock('#api/socketio/setupSockets');
-jest.mock('#api/core/libs/queue/configuration/factories', () => ({
+jest.mock('api/services/tasksmanager/TaskManager.ts');
+jest.mock('api/socketio/setupSockets');
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: () => ({
     dispatch: jest.fn(),
   }),

@@ -1,5 +1,5 @@
 import { tenants } from '#api/tenants/index.js';
-import type { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { TenantFeatureFlags } from '#api/tenants/tenantContext.js';
 
 export function featureFlagEnabled(flagKey: TenantFeatureFlags) {

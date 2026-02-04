@@ -3,7 +3,7 @@ import { deleteFiles } from '#api/files/index.js';
 import { createTestingZip } from '#api/csv/specs/helpers.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import zipFile from '#api/utils/zipFile.js';
+import zipFile from '../zipFile.js';
 
 describe('zipFile', () => {
   beforeAll(async () => {

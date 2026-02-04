@@ -1,14 +1,10 @@
 import { Suggestions } from '#api/suggestions/suggestions.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { toHaveBeenCalledBefore } from 'jest-extended';
-
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
-
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import ixmodels from '../ixmodels.js';
 
 expect.extend({ toHaveBeenCalledBefore });
 

@@ -1,23 +1,16 @@
 import { ObjectId } from 'mongodb';
-
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
-
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-
 import { FileType } from '#shared/types/fileType.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-
 import { DBFixture } from '#api/utils/testing_db.js';
-
 import { tenants } from '#api/tenants/index.js';
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { MongoExtractorBuilder } from '#api/paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder.js';
-import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
-import { PXFilesDeletedListener } from '#api/paragraphExtraction/infrastructure/PXFilesDeletedListener.js';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
+import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
+import { PXFilesDeletedListener } from '../PXFilesDeletedListener.js';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();

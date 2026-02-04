@@ -1,15 +1,12 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import relationshipTypeDS from '#api/relationtypes/index.js';
-
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 
-import { PXCreateExtractor } from '#api/paragraphExtraction/application/PXCreateExtractor.js';
-import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { PXCreateExtractor } from '../application/PXCreateExtractor.js';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
 
 interface PXCreateExtractorFactoryProps {
   tenantName: string;

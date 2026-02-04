@@ -7,11 +7,11 @@ import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
-import { factory, fixtures } from '#api/services/informationextraction/specs/fixtures.js';
+import { factory, fixtures } from './fixtures.js';
 import {
   getPropertyTrainingEntities,
   getPdfTrainingProcess,
-} from '#api/services/informationextraction/FetchMaterialsForTraining.js';
+} from '../FetchMaterialsForTraining.js';
 
 describe('FetchMaterialsForTraining selection', () => {
   let extractorProp: EnforcedWithId<IXExtractorType>;

@@ -1,6 +1,6 @@
 import yauzl from 'yauzl';
 import { Readable } from 'stream';
-import { streamToString } from '#api/files/filesystem.js';
+import { streamToString } from '../files/filesystem.js';
 
 export type matchCB = (entry: string) => boolean;
 

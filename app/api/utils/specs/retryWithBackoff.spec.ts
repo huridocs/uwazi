@@ -1,4 +1,4 @@
-import { retryWithBackoff, RetryOptions } from '#api/utils/retryWithBackoff.js';
+import { retryWithBackoff, RetryOptions } from '../retryWithBackoff.js';
 
 describe('retryWithBackoff', () => {
   jest.setTimeout(30000);

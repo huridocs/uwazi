@@ -2,31 +2,26 @@
 import _ from 'lodash';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { testingTenants } from '#api/utils/testingTenants.js';
-
 import { IXSuggestionStateType } from '#shared/types/suggestionType.js';
-import { Extractors } from '#api/services/informationextraction/ixextractors.js';
-import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { Extractors } from '../ixextractors.js';
+import { IXValidationError } from '../IXValidationError.js';
 
 const fixtureFactory = getFixturesFactory();
 
-jest.mock('#api/core/libs/queue/configuration/factories', () => ({
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: jest.fn().mockImplementation(() => {
     const {
       SyncDispatcherForTests,
       // eslint-disable-next-line global-require
-    } = require('#api/core/libs/queue/infrastructure/SyncDispatcherForTests');
+    } = require('api/core/libs/queue/infrastructure/SyncDispatcherForTests');
     const {
       CreateBlankStateSuggestionsJob,
       // eslint-disable-next-line global-require
-    } = require('#api/suggestions/jobs/CreateBlankStateSuggestionsJob');
+    } = require('api/suggestions/jobs/CreateBlankStateSuggestionsJob');
     return new SyncDispatcherForTests({
       CreateBlankStateSuggestionsJob: async () => new CreateBlankStateSuggestionsJob(),
     });

@@ -7,7 +7,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import privateInstanceMiddleware from '#api/auth/privateInstanceMiddleware.js';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import uploadRoutes from '#api/files/routes.js';
+import uploadRoutes from '../routes.js';
 import {
   adminUser,
   collabInGroupUser,
@@ -20,7 +20,7 @@ import {
   mainDocument1,
   restrictedFileName,
   writerUser,
-} from '#api/files/specs/fixtures.js';
+} from './fixtures.js';
 
 const setAppWithUser = (routes: any, user: any) => {
   testingEnvironment.setPermissions(user);

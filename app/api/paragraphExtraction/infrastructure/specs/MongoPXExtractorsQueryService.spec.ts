@@ -1,15 +1,11 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { DBFixture } from '#api/utils/testing_db.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import {
   extractorsQueryFixtures,
   entityFixtures,
@@ -27,11 +23,11 @@ import {
   pxEntityStatus10,
   entity10En,
   entity10Pt,
-} from '#api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures.js';
+} from '../../application/specs/shared/extractorsQueryFixtures.js';
 
-import { MongoPXExtractorsQueryService } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsQueryService.js';
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService.js';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 

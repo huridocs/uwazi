@@ -1,12 +1,12 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
+import * as setupSockets from '#api/socketio/setupSockets.js';
 import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import languageMiddleware from '#api/utils/languageMiddleware.js';
 import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
-import { extendSupertest } from '#api/utils/supertestExtensions.js';
-import { appContext } from '#api/utils/AppContext.js';
-import * as setupSockets from '#api/socketio/setupSockets.js';
+import { appContext } from './AppContext.js';
+import { extendSupertest } from './supertestExtensions.js';
 
 extendSupertest();
 

@@ -1,15 +1,13 @@
 import { Db } from 'mongodb';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
-import { PXExtractParagraphsFromEntities } from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
-import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
-import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities.js';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
 
 type Props = {
   tenantName: string;

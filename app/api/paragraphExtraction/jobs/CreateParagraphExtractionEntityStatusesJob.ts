@@ -7,7 +7,7 @@ import {
   JobsDispatcher,
   DispatchableClass,
 } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { PXCreateEntityStatuses } from '#api/paragraphExtraction/application/PXCreateEntityStatuses.js';
+import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses.js';
 
 interface SpecificJobParams {
   extractorId: string;

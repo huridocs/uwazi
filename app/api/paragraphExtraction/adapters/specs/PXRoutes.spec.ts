@@ -2,13 +2,9 @@
 import request from 'supertest';
 import { Application } from 'express';
 import { ObjectId } from 'mongodb';
-
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { tenants } from '#api/tenants/index.js';
 import {
   EntityStatusDTO,
@@ -19,11 +15,9 @@ import {
   PXGetEntityParagraphsRequest,
   PXGetExtractorStatusesRequest,
 } from '#api/paragraphExtraction/types.js';
-
 import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-
 import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { paragraphExtractionRoutes } from '#api/paragraphExtraction/adapters/PXRoutes.js';
+import { paragraphExtractionRoutes } from '../PXRoutes.js';
 
 import {
   user,
@@ -33,13 +27,13 @@ import {
   relationshipTypesFixtures,
   paragraphProperty,
   paragraphNumberProperty,
-} from '#api/paragraphExtraction/adapters/specs/fixtures.js';
+} from './fixtures.js';
 
 const mockDispatchMethod = jest.fn();
 
 // Mock DefaultDispatcher from the factories module
-jest.mock('#api/core/libs/queue/configuration/factories', () => ({
-  ...jest.requireActual('#api/core/libs/queue/configuration/factories'), // Preserve other exports
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
+  ...jest.requireActual('api/core/libs/queue/configuration/factories'), // Preserve other exports
   DefaultDispatcher: jest.fn().mockReturnValue({
     // Mock DefaultDispatcher export - returns synchronously, not a Promise
     // Use a getter to access mockDispatchMethod lazily, resolving the ReferenceError

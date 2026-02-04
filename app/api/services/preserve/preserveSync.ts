@@ -1,11 +1,11 @@
-import entities from '#api/entities/entities.js';
+import entities from '#api/entities/index.js';
 import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import { newThesauriId } from '#api/utils/templateUtils.js';
 import { tenants } from '#api/tenants/index.js';
-import thesauri from '#api/thesauri/thesauri.js';
+import thesauri from '#api/thesauri/index.js';
 import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import users from '#api/users/users.js';
 import { appContext } from '#api/utils/AppContext.js';

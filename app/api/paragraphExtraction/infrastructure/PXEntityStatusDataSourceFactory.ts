@@ -1,9 +1,10 @@
 import { Db } from 'mongodb';
+
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
-import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource.js';
+import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory.js';
 
 type Props = {
   connection: Db;

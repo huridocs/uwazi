@@ -3,7 +3,7 @@ import {
   AbstractController,
   Dependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
-import { PXCreateExtractorFactory } from '#api/paragraphExtraction/infrastructure/PXCreateExtractorFactory.js';
+import { PXCreateExtractorFactory } from '../infrastructure/PXCreateExtractorFactory.js';
 
 const RequestSchema = z.object({
   targetTemplateId: z.string({ message: 'You should provide a target template' }),

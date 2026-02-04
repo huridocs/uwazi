@@ -1,9 +1,6 @@
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-
 import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
-
 import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
 

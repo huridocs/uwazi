@@ -1,8 +1,6 @@
 import { templateUtils } from '#api/core/v1_layer/templates/index.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
-
 import { propertyTypes } from '#shared/propertyTypes.js';
-
 import { UserSchema } from '#shared/types/userType.js';
 
 export const templateId = db.id();

@@ -1,18 +1,14 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-
 import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO.js';
 
 const f = getFixturesFactory();
 

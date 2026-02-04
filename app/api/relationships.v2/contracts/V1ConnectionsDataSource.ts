@@ -1,6 +1,6 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
-import { V1Connection, ReadableV1Connection } from '#api/relationships.v2/model/V1Connection.js';
+import { V1Connection, ReadableV1Connection } from '../model/V1Connection.js';
 
 export interface V1ConnectionsDataSource {
   all(): ResultSet<V1Connection>;

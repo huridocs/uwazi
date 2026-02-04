@@ -1,6 +1,5 @@
 import { AbstractEvent } from '#api/core/libs/eventsbus/index.js';
-
-import { WithId } from '#api/odm/index.js';
+import { WithId } from '#api/odm/model.js';
 
 import { FileType } from '#shared/types/fileType.js';
 

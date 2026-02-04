@@ -2,7 +2,7 @@ import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { Segmentation } from '#api/core/domain/files/Segmentation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
+import { PXExtractionKey } from './PXExtractionKey.js';
 
 type ExtractParagraphInput = {
   segmentations: Segmentation[];

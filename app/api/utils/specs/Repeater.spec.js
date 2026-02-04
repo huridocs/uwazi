@@ -1,4 +1,4 @@
-import { Repeater } from '#api/utils/Repeater.js';
+import { Repeater } from '../Repeater.js';
 
 describe('Repeater', () => {
   let callbackOne;

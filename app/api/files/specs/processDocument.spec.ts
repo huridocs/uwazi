@@ -3,13 +3,12 @@ import {
   convertToPDFService,
   MimeTypeNotSupportedForConversion,
 } from '#api/services/convertToPDF/convertToPdfService.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
-import { files, UpdateFileError } from '#api/files/files.js';
-import { attachmentsPath, setupTestUploadedPaths } from '#api/files/filesystem.js';
-import { processDocument } from '#api/files/processDocument.js';
+import { files, UpdateFileError } from '../files.js';
+import { attachmentsPath, setupTestUploadedPaths } from '../filesystem.js';
+import { processDocument } from '../processDocument.js';
 
 describe('processDocument', () => {
   beforeEach(async () => {

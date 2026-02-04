@@ -2,9 +2,7 @@
 import { ObjectId } from 'mongodb';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 
 import {
@@ -16,12 +14,12 @@ import {
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
   PXExtractorsQueryService,
-} from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { PXEntityStatusMapper } from '#api/paragraphExtraction/infrastructure/PXEntityStatusMapper.js';
+} from '../domain/PXExtractorsQueryService.js';
+import { EntityStatus } from '../domain/PXEntityStatusModel.js';
+import { MongoPXExtractorDBO } from './MongoPXExtractorDBO.js';
+import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource.js';
+import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource.js';
+import { PXEntityStatusMapper } from './PXEntityStatusMapper.js';
 
 const getDefaultPagination = (inputNumber?: number, inputSize?: number) => {
   const number = inputNumber || 1;

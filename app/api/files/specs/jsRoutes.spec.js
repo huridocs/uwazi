@@ -10,14 +10,14 @@ import mailer from '#api/utils/mailer.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { ObjectId } from 'mongodb';
-import { legacyLogger } from '#api/log/index.js';
-import instrumentRoutes from '#api/utils/instrumentRoutes.js';
-import { createDirIfNotExists, deleteFiles } from '#api/files/filesystem.js';
-import uploadRoutes from '#api/files/jsRoutes.js';
-import { allowedPublicTemplate, fixtures, templateId } from '#api/files/specs/fixtures.js';
+import { legacyLogger } from '../../log.js';
+import instrumentRoutes from '../../utils/instrumentRoutes.js';
+import { createDirIfNotExists, deleteFiles } from '../filesystem.js';
+import uploadRoutes from '../jsRoutes.js';
+import { allowedPublicTemplate, fixtures, templateId } from './fixtures.js';
 
 const mockExport = jest.fn();
-jest.mock('#api/csv/csvExporter', () =>
+jest.mock('api/csv/csvExporter', () =>
   jest.fn().mockImplementation(() => ({ export: mockExport }))
 );
 
@@ -72,7 +72,7 @@ describe('upload routes', () => {
     jest.spyOn(legacyLogger, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
   });
 
-  describe('#api/public', () => {
+  describe('api/public', () => {
     beforeEach(async () => {
       await deleteAllFiles(async () => {
         jest.spyOn(Date, 'now').mockReturnValue(1000);

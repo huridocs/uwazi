@@ -1,5 +1,4 @@
 import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
@@ -7,7 +6,8 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob.js';
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener.js';
-jest.mock('#api/services/tasksmanager/TaskManager');
+
+jest.mock('api/services/tasksmanager/TaskManager');
 
 const extractionKey = PXExtractionKey.create({
   entityStatusId: new ObjectId().toHexString(),

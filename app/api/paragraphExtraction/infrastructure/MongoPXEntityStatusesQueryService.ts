@@ -1,12 +1,9 @@
 import { ObjectId } from 'mongodb';
-
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { PXEntityStatusesQueryService } from '#api/paragraphExtraction/domain/PXEntityStatusesQueryService.js';
+import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource.js';
+import { PXEntityStatusesQueryService } from '../domain/PXEntityStatusesQueryService.js';
 
 interface BuildAggregationPipelineParams {
   sourceTemplateId: string;

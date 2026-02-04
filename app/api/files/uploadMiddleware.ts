@@ -7,7 +7,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { legacyLogger } from '#api/log/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { storage } from '#api/files/storage.js';
+import { storage } from './storage.js';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 

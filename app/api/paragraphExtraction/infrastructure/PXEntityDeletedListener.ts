@@ -1,12 +1,10 @@
-import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
-
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
-import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
-import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
-import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
-import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
+import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;

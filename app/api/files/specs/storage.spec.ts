@@ -8,9 +8,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-
 import { config } from '#api/config.js';
-
 import { testingTenants } from '#api/utils/testingTenants.js';
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile, rmdir } from 'fs/promises';
@@ -18,7 +16,7 @@ import { copyFile, rmdir } from 'fs/promises';
 import { createReadStream } from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileNotFound } from '#api/files/FileNotFound.js';
+import { FileNotFound } from '../FileNotFound.js';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -27,8 +25,8 @@ import {
   setupTestUploadedPaths,
   streamToString,
   uploadsPath,
-} from '#api/files/filesystem.js';
-import { storage } from '#api/files/storage.js';
+} from '../filesystem.js';
+import { storage } from '../storage.js';
 
 let s3: S3Client;
 

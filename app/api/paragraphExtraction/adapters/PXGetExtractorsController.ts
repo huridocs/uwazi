@@ -3,8 +3,8 @@ import {
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
 
-import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
-import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
+import { PXExtractorsQueryServiceFactory } from '../infrastructure/PXExtractorsQueryServiceFactory.js';
 
 type PXExtractorsControllersProps = AbstractControllerDependencies;
 

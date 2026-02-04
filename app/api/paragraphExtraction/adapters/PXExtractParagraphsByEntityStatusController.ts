@@ -4,8 +4,8 @@ import {
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
 
-import { PXExtractParagraphsByEntityStatusFactory } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphByEntityStatusFactory .js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXExtractParagraphsByEntityStatusFactory } from '../infrastructure/PXExtractParagraphByEntityStatusFactory .js';
+import { EntityStatus } from '../domain/PXEntityStatusModel.js';
 
 const RequestSchema = z.object({
   extractorId: z.string({ message: 'You should provide an Extractor' }),

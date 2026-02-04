@@ -7,10 +7,10 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { tenants } from '#api/tenants/index.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';

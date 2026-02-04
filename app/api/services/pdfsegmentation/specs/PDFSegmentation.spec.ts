@@ -3,7 +3,6 @@
 /* eslint-disable max-lines */
 
 import testingDB, { fixturer } from '#api/utils/testing_db.js';
-import { tenants } from '#api/tenants/index.js';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -17,20 +16,19 @@ import {
 import { storage } from '#api/files/index.js';
 import path from 'path';
 
+import { tenants } from '#api/tenants/tenantContext.js';
 import { DB } from '#api/odm/index.js';
 import { Db } from 'mongodb';
-
 import request from '#shared/JSONRequest.js';
 
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-
 import { config } from '#api/config.js';
-import { PDFSegmentation } from '#api/services/pdfsegmentation/PDFSegmentation.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
-import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
+import { PDFSegmentation } from '../PDFSegmentation.js';
+import { SegmentationModel } from '../segmentationModel.js';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
 
-jest.mock('#api/services/tasksmanager/TaskManager.ts');
+jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 const deleteFolder = async (folderPath: string) => {
   try {

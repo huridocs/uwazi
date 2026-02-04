@@ -1,8 +1,7 @@
 import { legacyLogger } from '#api/log/index.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { PDF } from '#api/files/PDF.js';
-import { uploadsPath, deleteFile, fileExistsOnPath } from '#api/files/filesystem.js';
+import { PDF } from '../PDF.js';
+import { uploadsPath, deleteFile, fileExistsOnPath } from '../filesystem.js';
 
 describe('PDF', () => {
   let pdf: PDF;

@@ -4,7 +4,7 @@ import {
   Dependencies as AbstractControllerDependencies,
 } from '#api/common.v2/infrastructure/AbstractController.js';
 
-import { PXEntityParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXEntityParagraphsFactory.js';
+import { PXEntityParagraphsFactory } from '../infrastructure/PXEntityParagraphsFactory.js';
 
 const RequestSchema = z.object({
   id: z.string({ message: 'You should provide the id (sharedId) of the entity' }),

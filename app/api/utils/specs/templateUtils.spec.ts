@@ -1,9 +1,6 @@
 import settings from '#api/settings/settings.js';
-
 import db from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   generateIds,
@@ -12,7 +9,7 @@ import {
   getUpdatedIds,
   getUpdatedNames,
   PropertyOrThesaurusSchema,
-} from '#api/utils/templateUtils.js';
+} from '../templateUtils.js';
 
 describe('templates utils', () => {
   beforeEach(async () => {

@@ -2,9 +2,9 @@ import { UseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
-import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntityJob.js';
+import { EntityStatus } from '../domain/PXEntityStatusModel.js';
 
 type Input = {
   userId: string;

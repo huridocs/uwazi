@@ -2,7 +2,7 @@
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
 import { files, storage } from '#api/files/index.js';
-import { tenants } from '#api/tenants/index.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import settings from '#api/settings/settings.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Readable } from 'stream';
@@ -16,7 +16,7 @@ import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImpleme
 import { fixtures, fixturesFactory } from './fixtures/fixtures.js';
 import { cleanupRecordsOfFiles } from '../ocrRecords.js';
 
-jest.mock('#api/services/tasksmanager/TaskManager.ts');
+jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 class Mocks {
   jestMocks: { [k: string]: jest.SpyInstance };

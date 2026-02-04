@@ -1,19 +1,14 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-
 import { DBFixture } from '#api/utils/testing_db.js';
-
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
-
 import { tenants } from '#api/tenants/index.js';
-import { MongoExtractorBuilder } from '#api/paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder.js';
-import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
-import { PXEntityDeletedListener } from '#api/paragraphExtraction/infrastructure/PXEntityDeletedListener.js';
+import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
+import { PXEntityDeletedListener } from '../PXEntityDeletedListener.js';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();

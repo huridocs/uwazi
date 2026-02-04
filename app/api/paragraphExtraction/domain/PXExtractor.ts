@@ -1,14 +1,13 @@
 import { ObjectId } from 'mongodb';
+
 import { Property } from '#api/core/domain/template/Property.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
+
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { ParagraphOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
-import {
-  PXErrorCode,
-  PXValidationError,
-} from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { ParagraphOutput } from './PXExtractionService.js';
+import { PXErrorCode, PXValidationError } from './PXValidationError.js';
 import { EntityTranslation } from '#api/core/domain/entity/EntityTranslation.js';
 
 export type PXExtractorProps = {
@@ -119,30 +118,6 @@ export class PXExtractor {
     return mainTranslation;
   }
 
-  private static createLegacyTitle(
-    sourceEntity: EntitySchema,
-    extractedParagraph: ParagraphOutput
-  ): string {
-    return `${sourceEntity.title}.${extractedParagraph.paragraphNumber.toString().padStart(2, '0')}`;
-  }
-
-  private static getLegacyTranslation(
-    sourceEntity: EntitySchema,
-    extractedParagraph: ParagraphOutput
-  ) {
-    const translation = extractedParagraph.translations.find(
-      t => t.language === sourceEntity.language
-    );
-
-    const mainTranslation = extractedParagraph.translations.find(t => t.isMainLanguage)!;
-
-    if (translation?.text.length) {
-      return translation;
-    }
-
-    return mainTranslation;
-  }
-
   private static sortByMainLanguage(
     a: EntitySchema,
     b: EntitySchema,
@@ -175,25 +150,8 @@ export class PXExtractor {
     };
   }
 
-  createParagraphs(sourceEntity: Entity | EntitySchema[], extractedParagraph: ParagraphOutput) {
+  createParagraphs(sourceEntity: Entity, extractedParagraph: ParagraphOutput) {
     const mainLanguage = extractedParagraph.translations.find(t => t.isMainLanguage)!.language;
-
-    if (Array.isArray(sourceEntity)) {
-      const paragraphs = sourceEntity.map(entity => {
-        const translation = PXExtractor.getLegacyTranslation(entity, extractedParagraph);
-        return {
-          language: entity.language,
-          title: PXExtractor.createLegacyTitle(entity, extractedParagraph),
-          template: new ObjectId(this.targetTemplate.id),
-          metadata: {
-            [this.paragraphProperty.name]: [{ value: translation.text }],
-            [this.paragraphNumberProperty.name]: [{ value: extractedParagraph.paragraphNumber }],
-          },
-        };
-      });
-
-      return paragraphs.sort((a, b) => PXExtractor.sortByMainLanguage(a, b, mainLanguage));
-    }
 
     const paragraphs = sourceEntity.languages.map(language =>
       this.createParagraph(sourceEntity.getTranslation(language), extractedParagraph)
