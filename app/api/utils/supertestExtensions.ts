@@ -18,7 +18,6 @@ export function extendSupertest() {
     const err: Error = _assertStatus(status, res);
     if (err) {
       err.message += `\n ${extractStatusDebugInfo(res)}`;
-      delete err.stack;
     }
     return err;
   };

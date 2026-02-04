@@ -45,6 +45,7 @@ describe('Entity loader with cache integration', () => {
       params: { sharedId },
       request: { url } as Request,
       context: '',
+      unstable_pattern: '',
     });
   };
 

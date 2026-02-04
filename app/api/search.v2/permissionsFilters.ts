@@ -5,7 +5,7 @@ import { cleanUp } from './queryHelpers.js';
 
 export const permissionsFilters = (query: SearchQuery) => {
   const user = permissionsContext.getUserInContext();
-  const publishedFilter = query.filter?.hasOwnProperty('published');
+  const publishedFilter = query.filter && Object.hasOwn(query.filter, 'published');
 
   return [
     !user && { term: { published: query.filter?.published === false ? 'not_allowed' : 'true' } },

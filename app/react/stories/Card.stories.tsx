@@ -12,7 +12,9 @@ type Story = StoryObj<typeof Card>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Card title={args.title}>{args.children}</Card>
+      <Card title={args.title} color={args.color} className={args.className}>
+        {args.children}
+      </Card>
     </div>
   ),
 };

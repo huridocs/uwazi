@@ -11,7 +11,7 @@ type BlankStateProps = {
 };
 
 const BlankState = ({ icon, title, description }: BlankStateProps) => (
-  <div className="flex flex-col items-center justify-center h-full text-center border border-dashed border-gray-200 rounded-2xl text-gray-500 gap-2 px-4">
+  <div className="flex flex-col items-center justify-center h-full w-full text-center border border-dashed border-gray-200 rounded-2xl text-gray-500 gap-2">
     <p className="font-semibold text-lg">{title}</p>
     {icon}
     <p className="text-sm text-gray-400 w-4/6">{description}</p>

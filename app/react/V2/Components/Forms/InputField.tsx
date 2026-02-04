@@ -19,6 +19,7 @@ interface InputFieldProps {
   preText?: string | React.ReactNode;
   name?: string;
   clearFieldAction?: () => any;
+  icon?: React.ReactNode;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
@@ -41,6 +42,7 @@ const InputField = React.forwardRef(
       autoComplete = 'on',
       name = '',
       clearFieldAction,
+      icon,
       onChange = () => {},
       onSelect = () => {},
       onBlur = () => {},
@@ -56,7 +58,11 @@ const InputField = React.forwardRef(
       clearFieldStyles = 'enabled:hover:text-error-700 text-error-900';
     }
 
-    if (clearFieldAction) {
+    const hasValue = value !== undefined && value !== null && value !== '';
+    const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
+    const showIcon = icon && (!clearFieldAction || !hasValue);
+
+    if (clearFieldAction || icon) {
       fieldStyles = `${fieldStyles} pr-10`;
     }
 
@@ -88,10 +94,14 @@ const InputField = React.forwardRef(
             value={value}
             className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm ${
               type !== 'file' ? 'p-2.5' : ''
-            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'}`}
+            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'} ${
+              type === 'search'
+                ? '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden'
+                : ''
+            }`}
             placeholder={placeholder}
           />
-          {Boolean(clearFieldAction) && (
+          {showClearButton && (
             <button
               type="button"
               onClick={clearFieldAction}
@@ -103,6 +113,11 @@ const InputField = React.forwardRef(
               <XMarkIcon className="w-5" />
               <Translate className="sr-only">Clear</Translate>
             </button>
+          )}
+          {showIcon && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              {icon}
+            </div>
           )}
         </div>
         {errorMessage && <InputError>{errorMessage}</InputError>}

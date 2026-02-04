@@ -568,8 +568,10 @@ No options found,Seçenek bulunamadı
 No property,Mülk yok
 No References,Referans Yok
 No References description,References are parts of this document related with other documents and entities.
+No relationship types available,No relationship types available
 No Relationships,İlişki yok
 No Relationships description,Relationships are bonds between entities.
+No results found,No results found
 No table of contents,İçerik Tablosu yok
 No Table of contents,No Table of contents
 No table of contents description,İçerik Tablosu Yok Açıklama
@@ -767,6 +769,7 @@ Search Tips: exact term,Arama İpuçları: Tam terim
 Search Tips: one char wildcard,Arama İpuçları: Bir Char Wildcard
 Search Tips: proximity,Arama İpuçları: Yakınlık
 Search Tips: wildcard,Arama İpuçları: Wildcard
+Searching...,Searching...
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -955,6 +958,7 @@ Translations,Çeviriler
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Çeviriler kaydedildi
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled

@@ -570,8 +570,10 @@ No options found,Варіантів не знайдено
 No property,Товар не має цієї властивості
 No References,Немає посилань
 No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
+No relationship types available,No relationship types available
 No Relationships,Немає взаємозв'язків
 No Relationships description,Відносини - це зв'язки між суб'єктами.
+No results found,No results found
 No table of contents,Немає змісту
 No Table of contents,No Table of contents
 No table of contents description,Ви можете почати з виділення тексту в документі та натискання кнопки Додати до змісту.
@@ -769,6 +771,7 @@ Search Tips: exact term,"Точна відповідність терміну, �
 Search Tips: one char wildcard,"? для одного символу підстановки. Тобто: ""198?"" буде відповідати 1980-1989 рокам, а також 198a, 198b і т.д."
 Search Tips: proximity,"~ для близького пошуку. Тобто: ""статус""~5 знайде все, що має ""статус"" і ""статус"" на відстані 5 слів, наприклад, ""процесуальний статус"", ""особливий правовий статус""."
 Search Tips: wildcard,"Використовуйте * для пошуку за шаблоном. Наприклад: ""juris*"" буде відповідати таким словам, як юрисдикція, юрисдикційний, юристи, юриспруденція тощо."
+Searching...,Searching...
 Secret keys,Секретні ключі
 Security,Безпека
 Select,Виберіть
@@ -957,6 +960,7 @@ Translations,Переклади
 Translations imported.,Переклади імпортовані.
 Translations reset successfully,Переклади успішно скинуто
 Translations saved,Переклади збережено
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Вимкнути вбудований переклад
 Two-Factor Authentication,Двофакторна автентифікація
 Two-factor authentication enabled,Увімкнено двофакторну автентифікацію

@@ -3,30 +3,39 @@ import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { Entity } from '#V2/domain/index.js';
-import { PDF, pdfEventBus } from '#V2/Components/PDFViewer/index.js';
+import { PDF, pdfEventBus, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/index.js';
 import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
-import { settingsAtom } from '#V2/atoms/index.js';
+import { settingsAtom, pdfScaleAtom, userAtom } from '#V2/atoms/index.js';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { PlainText } from './PlainText.js';
 import { OCRButton } from './OCRButton.js';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
+import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
 import { scrollToPage } from './functions.js';
 import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom.js';
+import { useReferencesActions } from './ReferencesPanel/referencesAtom.js';
 
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
+  const pdfScale = useAtomValue(pdfScaleAtom);
+  const user = useAtomValue(userAtom);
   const [hydrated, setHydrated] = useState(false);
+  const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
+
+  useEffect(() => {
+    setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
+  }, [user]);
 
   const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
   const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
   const [selectedText, setSelectedText] = useState<TextSelection | undefined>(undefined);
   const { addEntry } = useTocActions();
+  const { setCreateReferenceSelection } = useReferencesActions();
 
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {
@@ -86,20 +95,45 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     setSelectedText(undefined);
   }, []);
 
-  const handleConnectToParagraph = useCallback((_selection: TextSelection) => {
-    // TODO: Implement connect to paragraph functionality
-  }, []);
+  const handleConnectToParagraph = useCallback(
+    (selection: TextSelection) => {
+      // Store selection in atom with text mode and switch to references tab
+      setCreateReferenceSelection(selection, 'text');
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(SIDE_TAB_PARAM, 'references');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams, setCreateReferenceSelection]
+  );
 
-  const handleConnectToDocument = useCallback((_selection: TextSelection) => {
-    // TODO: Implement connect to document functionality
-  }, []);
+  const handleConnectToDocument = useCallback(
+    (selection: TextSelection) => {
+      // Store selection in atom with entity mode and switch to references tab
+      setCreateReferenceSelection(selection, 'entity');
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(SIDE_TAB_PARAM, 'references');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams, setCreateReferenceSelection]
+  );
 
   const handleAddToToC = useCallback(
     (selection: TextSelection) => {
-      const tocEntry = convertTextSelectionToTocEntry(selection);
+      // Normalize selection rectangles to scale=1 before creating ToC entry (like IX does)
+      // This ensures coordinates work correctly regardless of PDF display scale
+      const normalizedSelection = selectionHandlers.adjustSelectionsToScale(
+        selection,
+        pdfScale,
+        true // normalize=true means divide by scale to get scale=1 coordinates
+      );
+      const tocEntry = convertTextSelectionToTocEntry(normalizedSelection);
       addEntry(tocEntry); // This automatically sets edit mode to true
+      // Switch to ToC tab
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(SIDE_TAB_PARAM, 'toc');
+      setSearchParams(next, { replace: true });
     },
-    [addEntry]
+    [addEntry, pdfScale, searchParams, setSearchParams]
   );
 
   const handleRemove = useCallback((_selection: TextSelection) => {
@@ -175,8 +209,8 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
         </div>
       </Panel.Body>
 
-      <Panel.Footer highlighted={!!selectedText}>
-        {selectedText ? (
+      <Panel.Footer highlighted={selectedText && userIsAdminOrEditor}>
+        {selectedText && userIsAdminOrEditor ? (
           <NeedAuthorization roles={['admin', 'editor']}>
             <div className="flex flex-row gap-2 items-center w-full">
               <Button

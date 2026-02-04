@@ -566,8 +566,10 @@ No options found,Opciones no encontradas
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
+No relationship types available,No relationship types available
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
+No results found,No results found
 No table of contents,Sin Tabla de Contenidos
 No Table of contents,No Table of contents
 No table of contents description,Sin descripción de Tabla de Contenidos
@@ -765,6 +767,7 @@ Search Tips: exact term,"Coincidencia exacta del término encerrando su cadena d
 Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?"" coincidirá con 1980 a 1989 y también con 198a, 198b, etc."
 Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
+Searching...,Searching...
 Secret keys,Secret keys
 Security,Security
 Select,Seleccionar
@@ -952,6 +955,7 @@ Translations,Traducciones
 Translations imported.,Traducciones importadas.
 Translations reset successfully,Traducciones reseteadas exitosamente
 Translations saved,Traducciones guardadas
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Desactivar la traducción en línea
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Doble factor de autenticación habilitado

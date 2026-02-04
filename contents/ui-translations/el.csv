@@ -569,8 +569,10 @@ No options found,Δεν βρέθηκαν επιλογές
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
+No relationship types available,No relationship types available
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
+No results found,No results found
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
 No Table of contents,No Table of contents
 No table of contents description,"Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση. Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
@@ -768,6 +770,7 @@ Search Tips: exact term,"Ακριβής αντιστοιχία όρου περι
 Search Tips: one char wildcard,"? για μπαλαντέρ ενός χαρακτήρα. Δηλαδή: ""198?"" θα αντιστοιχίσει από το 1980 έως το 1989 και επίσης 198a, 198b, κ.λπ."
 Search Tips: proximity,"~ για αναζητήσεις εγγύτητας. Δηλαδή: ""the status""~5 θα βρει οτιδήποτε έχει ""the"" και ""status"" σε απόσταση 5 λέξεων, όπως ""the procedural status"", ""the specific legal status""."
 Search Tips: wildcard,"Χρησιμοποιήστε * για αναζήτηση με μπαλαντέρ. Δηλαδή: ""juris*"" θα αντιστοιχίσει λέξεις όπως jurisdiction, jurisdictional, jurists, jurisprudence, κ.λπ."
+Searching...,Searching...
 Secret keys,Μυστικά κλειδιά
 Security,Ασφάλεια
 Select,Επιλογή
@@ -956,6 +959,7 @@ Translations,Μεταφράσεις
 Translations imported.,Οι μεταφράσεις εισήχθησαν.
 Translations reset successfully,Οι μεταφράσεις επαναφέρθηκαν επιτυχώς
 Translations saved,Οι μεταφράσεις αποθηκεύτηκαν
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Απενεργοποίηση ενσωματωμένης μετάφρασης
 Two-Factor Authentication,Πιστοποίηση δύο παραγόντων
 Two-factor authentication enabled,Η πιστοποίηση δύο παραγόντων ενεργοποιήθηκε
