@@ -3,10 +3,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { CurrentLocationLink } from '#app/Layout/index.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import { ViewDocumentLink } from '#app/Attachments/components/ViewDocumentLink.jsx';
+import { ViewDocumentLink } from '../ViewDocumentLink.js';
 
 let pathname = 'entity/';
 

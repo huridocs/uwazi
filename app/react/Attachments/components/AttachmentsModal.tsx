@@ -6,8 +6,7 @@ import Dropzone from 'react-dropzone-esm';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
-
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/index.js';
 import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
 
 interface AttachmentsModalProps {
@@ -32,7 +31,7 @@ const AttachmentsModalCmp = ({
   getPercentage,
 }: AttachmentsModalProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  let formDispatch: Function = () => {};
+  let formDispatch: Function = () => { };
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {
@@ -101,7 +100,7 @@ const AttachmentsModalCmp = ({
           <div className="attachments-modal__tabs-content">
             <TabContent for="uploadComputer" className="tab-content centered">
               <Dropzone noClick onDrop={handleDropFiles} multiple={false}>
-                {({ getRootProps }) => (
+                {({ getRootProps }: { getRootProps: () => object }) => (
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   <div {...getRootProps()} className="attachments-modal__dropzone">
                     {getPercentage === undefined ? (

@@ -1,90 +1,88 @@
+import Immutable from 'immutable';
 import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
 import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
-import Immutable from 'immutable';
+
 const getId = (state, setInArray) => state.getIn(setInArray.concat(['_id']));
 const getSharedId = (state, setInArray) => state.getIn(setInArray.concat(['sharedId']));
 
 const getAttachments = (state, setInArray) =>
-  state.getIn(setInArray.concat(['attachments'])) || Immutable.List([]);
+  state.getIn(setInArray.concat(['attachments'])) || Immutable.fromJS([]);
 
 const getDocuments = (state, setInArray) =>
-  state.getIn(setInArray.concat(['documents'])) || Immutable.List([]);
+  state.getIn(setInArray.concat(['documents'])) || Immutable.fromJS([]);
 
 export const manageAttachmentsReducer =
   (originalReducer, { useDefaults = true, setInArray = [] } = {}) =>
-  (orignialState, originalAction) => {
-    let state = orignialState;
-    const action = originalAction || {};
+    (orignialState, originalAction) => {
+      let state = orignialState;
+      const action = originalAction || {};
 
-    if (useDefaults) {
-      state = orignialState || {};
-    }
-
-    if (
-      action.type === uploadTypes.UPLOAD_COMPLETE &&
-      getSharedId(state, setInArray) === action.doc
-    ) {
-      const documents = getDocuments(state, setInArray);
-      return state.setIn(
-        setInArray.concat(['documents']),
-        documents.push(Immutable.fromJS(action.file))
-      );
-    }
-
-    if (
-      action.type === uploadTypes.UPDATE_MAIN_DOC &&
-      getSharedId(state, setInArray) === action.doc
-    ) {
-      const documents = getDocuments(state, setInArray);
-      const index = documents.findIndex(item => item.get('_id') === action.file._id);
-      return state.setIn(
-        setInArray.concat(['documents']),
-        documents.set(index, Immutable.fromJS(action.file))
-      );
-    }
-
-    if (
-      action.type === attachmentsTypes.ATTACHMENT_COMPLETE &&
-      getSharedId(state, setInArray) === action.entity
-    ) {
-      const attachments = getAttachments(state, setInArray);
-      return state.setIn(
-        setInArray.concat(['attachments']),
-        attachments.push(Immutable.fromJS(action.file))
-      );
-    }
-
-    if (
-      action.type === attachmentsTypes.ATTACHMENT_DELETED &&
-      getSharedId(state, setInArray) === action.entity
-    ) {
-      const attachments = getAttachments(state, setInArray);
-      return state.setIn(
-        setInArray.concat(['attachments']),
-        attachments.filterNot(a => a.get('_id') === action.file._id)
-      );
-    }
-
-    if (
-      action.type === attachmentsTypes.ATTACHMENT_RENAMED &&
-      getSharedId(state, setInArray) === action.entity
-    ) {
-      if (getId(state, setInArray) === action.file._id) {
-        return state.setIn(setInArray.concat(['file']), Immutable.fromJS(action.file));
+      if (useDefaults) {
+        state = orignialState || {};
       }
 
-      const attachments = getAttachments(state, setInArray);
-      return state.setIn(
-        setInArray.concat(['attachments']),
-        attachments.map(a => {
-          if (a.get('_id') === action.file._id) {
-            return a.set('originalname', action.file.originalname);
-          }
+      if (
+        action.type === uploadTypes.UPLOAD_COMPLETE &&
+        getSharedId(state, setInArray) === action.doc
+      ) {
+        const documents = getDocuments(state, setInArray);
+        return state.setIn(setInArray.concat(['documents']), documents.push(Immutable.fromJS(action.file)));
+      }
 
-          return a;
-        })
-      );
-    }
+      if (
+        action.type === uploadTypes.UPDATE_MAIN_DOC &&
+        getSharedId(state, setInArray) === action.doc
+      ) {
+        const documents = getDocuments(state, setInArray);
+        const index = documents.findIndex(item => item.get('_id') === action.file._id);
+        return state.setIn(
+          setInArray.concat(['documents']),
+          documents.set(index, Immutable.fromJS(action.file))
+        );
+      }
 
-    return originalReducer(state, action);
-  };
+      if (
+        action.type === attachmentsTypes.ATTACHMENT_COMPLETE &&
+        getSharedId(state, setInArray) === action.entity
+      ) {
+        const attachments = getAttachments(state, setInArray);
+        return state.setIn(
+          setInArray.concat(['attachments']),
+          attachments.push(Immutable.fromJS(action.file))
+        );
+      }
+
+      if (
+        action.type === attachmentsTypes.ATTACHMENT_DELETED &&
+        getSharedId(state, setInArray) === action.entity
+      ) {
+        const attachments = getAttachments(state, setInArray);
+        return state.setIn(
+          setInArray.concat(['attachments']),
+          attachments.filterNot(a => a.get('_id') === action.file._id)
+        );
+      }
+
+      if (
+        action.type === attachmentsTypes.ATTACHMENT_RENAMED &&
+        getSharedId(state, setInArray) === action.entity
+      ) {
+        if (getId(state, setInArray) === action.file._id) {
+          return state.setIn(setInArray.concat(['file']), Immutable.fromJS(action.file));
+        }
+
+        const attachments = getAttachments(state, setInArray);
+        return state.setIn(
+          setInArray.concat(['attachments']),
+          attachments.map(a => {
+            if (a.get('_id') === action.file._id) {
+              return a.set('originalname', action.file.originalname);
+            }
+
+            return a;
+          })
+        );
+      }
+
+      return originalReducer(state, action);
+    };
