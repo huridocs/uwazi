@@ -26,7 +26,7 @@ class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdat
 
     if (!targetEntityDboAfter) {
       throw new Error(
-        `Denormalization failed: could not find entity DBO for language ${this.params.targetLanguage}`
+        `ProcessRelationshipAfterEntityUpdatedListener: failed to process relationships - could not find entity DBO for language ${this.params.targetLanguage}`
       );
     }
 
