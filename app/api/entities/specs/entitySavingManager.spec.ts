@@ -1,6 +1,11 @@
 /* eslint-disable max-lines */
 import { saveEntity } from '#api/entities/entitySavingManager.js';
-import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from '#api/files/index.js';
+import {
+  attachmentsPath,
+  fileExistsOnPath,
+  files as filesAPI,
+  uploadsPath,
+} from '#api/files/index.js';
 import * as processDocumentApi from '#api/files/processDocument.js';
 import { search } from '#api/search/index.js';
 import db from '#api/utils/testing_db.js';
