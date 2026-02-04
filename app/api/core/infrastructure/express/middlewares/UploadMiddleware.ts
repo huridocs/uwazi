@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
@@ -54,9 +54,8 @@ class UploadMiddleware {
     }
 
     this.logger.debug(
-      `[${
-        tenants.current().name
-        // eslint-disable-next-line max-len
+      `[${tenants.current().name
+      // eslint-disable-next-line max-len
       }] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include an 'originalname' field in the body instead.`
     );
 
