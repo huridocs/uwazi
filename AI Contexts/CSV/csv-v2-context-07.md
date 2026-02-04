@@ -15,8 +15,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - Register import (`CsvImportEntities`) → extraction + row staging (`CsvExtractUploadedZipJob`)
 - Preflight (thesauri pending values) (`CsvPreflightJob`)
 - Create thesauri values (`CsvCreateThesauriValuesJob`)
-- Entities import job (`CsvImportEntitiesJob`) exists and is registered but was not chained
-  from the thesauri creation stage.
+- Relationships preflight (`CsvPreflightRelationshipsJob`)
+- Entities import (`CsvImportEntitiesJob`)
 
 ### 3) Missing or incomplete work
 
@@ -44,11 +44,11 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 #### 3.4 Tests and coverage gaps
 
-- Preflight integration spec needs restoration/updates.
 - No integration coverage for the complete chain (register → extract → preflight →
   thesauri create → import).
-- Entities import job needs tests for batch processing, row errors report, stop
-  thresholds, and files/attachments integration (see 6.10).
+- Entities import job now has a basic integration test (single-row happy path).
+  Still missing tests for batch processing, row errors report, stop thresholds,
+  and files/attachments integration (see 6.10).
 
 #### 3.5 Retention and cleanup
 
@@ -79,9 +79,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - Replace legacy thesauri/translations adapters with v2 data sources.
 - Remove v1 imports from v2 services.
 - Add the missing integration tests and finalizer/cleanup job.
-- **TODO:** Relationship resolution is **not wired into entities import yet**.
-  Preflight creates missing entities, but `CsvImportEntitiesJob` still ignores relationship
-  assignments. This must be connected later once relationship parsing logic is finalized.
+- **DONE:** Relationship resolution is wired into entities import (via preflight-applied values).
 
 9. **Relationships preflight refactor (done)**
    - Extracted helper logic into `CsvPreflightRelationshipsService`.
@@ -176,6 +174,17 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - Unit spec updated: `CsvEntitiesImportMapper.spec.ts` now asserts attachment mapping and
   reflects that mapper passes raw values to the property-assignment layer.
 
+11. **CSV v2 job factories added (Entities v2-style)**
+
+- New factories for CSV v2 jobs:
+  - `CsvExtractUploadedZipJobFactory`
+  - `CsvPreflightJobFactory`
+  - `CsvCreateThesauriValuesJobFactory`
+  - `CsvPreflightRelationshipsJobFactory`
+  - `CsvImportEntitiesJobFactory` (refactored to match the same pattern)
+- Queue registry now builds these jobs via factories.
+- Tests were updated to use factories instead of hand-wiring dependencies.
+
 ### 7) Agent-specific notes (handoff)
 
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -192,8 +201,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
   - Entity file persistence is handled by `FilesService` during entities import; no
     intermediate persistence layer exists or is needed.
 - **Tests**:
-  Only one unit test currently covers `CsvCreateThesauriValuesJob`. There are no pipeline
-  integration tests yet (register → extract → preflight → create → relationships → import).
+  A new integration test covers `CsvImportEntitiesJob` (single-row happy path), but there are
+  still no pipeline integration tests (register → extract → preflight → create → relationships → import).
 
 ### 8) Next agent checklist (quick start)
 
