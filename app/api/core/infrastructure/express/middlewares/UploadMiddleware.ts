@@ -54,8 +54,9 @@ class UploadMiddleware {
     }
 
     this.logger.debug(
-      `[${tenants.current().name
-      // eslint-disable-next-line max-len
+      `[${
+        tenants.current().name
+        // eslint-disable-next-line max-len
       }] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include an 'originalname' field in the body instead.`
     );
 

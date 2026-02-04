@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { t } from '#app/I18N/index.js';
 
 const SearchTipsContent = () => (

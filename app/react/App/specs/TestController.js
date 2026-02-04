@@ -1,5 +1,5 @@
 import React from 'react';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import RouteHandler from '../RouteHandler.js';
 
 class TestController extends RouteHandler {
   static requestState() {

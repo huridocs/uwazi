@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
 
-import Provider from '#app/App/Provider.jsx';
+import Provider from '../Provider.js';
 
 describe('Provider', () => {
   let component;

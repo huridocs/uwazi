@@ -10,9 +10,9 @@ import {
   thesauriAtom,
   translationsAtom,
 } from '#V2/atoms/index.js';
-import { socket } from '#app/socket.js';
-import '../sockets';
-import { store } from '#app/store.js';
+import { socket } from '../../socket.js';
+import '../sockets.js';
+import { store } from '../../store.js';
 import {
   currentTranslations,
   newLanguage,
@@ -21,7 +21,7 @@ import {
   translationKeysChangeResult,
   templates,
   thesauri,
-} from '#app/App/specs/fixtures/fixtures.js';
+} from './fixtures/fixtures.js';
 
 describe('sockets', () => {
   describe('connection events', () => {

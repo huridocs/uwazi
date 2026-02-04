@@ -4,7 +4,7 @@
 
 import { shallow, ShallowWrapper } from 'enzyme';
 import React, { useRef } from 'react';
-import { SelectFileButton } from '#app/App/SelectFileButton.jsx';
+import { SelectFileButton } from '../SelectFileButton.js';
 
 jest.mock('react', () => {
   const originReact = jest.requireActual('react');

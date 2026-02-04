@@ -5,13 +5,13 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
-import { Settings } from 'luxon';
 import Immutable from 'immutable';
+import { Settings } from 'luxon';
 import api from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { I18NUtils } from '#app/I18N/index.js';
-import RouteHandler from '#app/App/RouteHandler.jsx';
-import { APIURL } from '#app/config.js';
+import RouteHandler from '../RouteHandler.js';
+import { APIURL } from '../../config.js';
 
 class TestController extends RouteHandler {
   static requestState(_requestParams, _state) {

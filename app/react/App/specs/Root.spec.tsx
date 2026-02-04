@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import Immutable from 'immutable';
-import { headTag } from '#app/App/Root.jsx';
+import { headTag } from '../Root.js';
 
 describe('Root component', () => {
   describe('favicon', () => {
