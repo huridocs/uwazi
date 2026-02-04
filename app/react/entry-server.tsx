@@ -261,7 +261,7 @@ const setReduxState = async (
   return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
-const getSSRProperties = async (
+const prepareSSRContext = async (
   req: ExpressRequest,
   routes: RouteObject[],
   settings: ClientSettings,
@@ -269,8 +269,8 @@ const getSSRProperties = async (
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { fetchRequest, ssrError } = createFetchRequest(req);
-  hydrateAtomStore(atomStoreData);
   const { query } = createStaticHandler(routes);
+  hydrateAtomStore(atomStoreData);
   const staticHandleContext = await query(fetchRequest);
   const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
   const reduxState = reduxStore.getState();
@@ -325,7 +325,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =
-    await getSSRProperties(req, routes, settings, language);
+    await prepareSSRContext(req, routes, settings, language);
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
