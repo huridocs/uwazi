@@ -1,7 +1,6 @@
 import Ajv from 'ajv';
 import { PageService } from '#api/core/domain/template/PageService.js';
 import pages from '#api/pages/index.js';
-
 import { Template } from '#api/core/domain/template/Template.js';
 
 class LegacyPageService implements PageService {

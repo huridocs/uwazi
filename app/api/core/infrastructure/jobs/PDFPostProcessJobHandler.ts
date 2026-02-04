@@ -6,7 +6,7 @@ import {
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { FileIsNotAPDF } from '#api/core/infrastructure/services/PDFService.js';
+import { FileIsNotAPDF } from '../services/PDFService.js';
 
 import {
   UserAwareDispatchable,

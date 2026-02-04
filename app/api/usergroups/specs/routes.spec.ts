@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';

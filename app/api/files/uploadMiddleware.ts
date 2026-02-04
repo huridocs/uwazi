@@ -1,6 +1,6 @@
 import { generateFileName } from '#api/files/index.js';
 import { tenants } from '#api/tenants/index.js';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { FileType } from '#shared/types/fileType.js';

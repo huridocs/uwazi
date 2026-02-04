@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';

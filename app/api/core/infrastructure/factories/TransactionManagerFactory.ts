@@ -1,11 +1,8 @@
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
-import { FakeMongoTransactionManager } from '#api/core/infrastructure/mongodb/common/FakeTransactionManager.js';
-import {
-  getClient,
-  getSharedClient,
-} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { FakeMongoTransactionManager } from '../mongodb/common/FakeTransactionManager.js';
+import { getClient, getSharedClient } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 
 export class TransactionManagerFactory {
   static default() {

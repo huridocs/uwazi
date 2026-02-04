@@ -1,13 +1,12 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-
-import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
-import { SelectPropertyCreatorService } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
-import { SelectPropertyWithInvalidThesaurusError } from '#api/core/domain/template/errors.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService.js';
+import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors.js';
 
 describe('SelectPropertyCreatorService', () => {
   beforeAll(async () => {

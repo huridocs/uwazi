@@ -9,14 +9,14 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import {
   TemplateUpdatedData,
   TemplateUpdatedEvent,
-} from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
+} from '../../../domain/template/events/TemplateUpdatedEvent.js';
+import templates from '../templates.js';
 import fixtures, {
   factory,
   swapTemplate,
   templateToBeEditedId,
   thesauriId1,
-} from '#api/core/v1_layer/templates/specs/fixtures/fixtures.js';
+} from './fixtures/fixtures.js';
 
 async function updateTemplate(template: TemplateSchema, language = 'en') {
   return templates.save(template, language, true, false);

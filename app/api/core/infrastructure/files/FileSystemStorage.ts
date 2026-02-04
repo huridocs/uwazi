@@ -6,11 +6,11 @@ import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FileStorage, GetFileInput } from '#api/core/application/contracts/FileStorage.js';
-import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { StoredFile } from '#api/core/domain/files/StoredFile.js';
-import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage.js';
+import { DiskFile } from './DiskFile.js';
+import { FileContents } from '../../domain/files/FileContents.js';
+import { StoredFile } from '../../domain/files/StoredFile.js';
+import { PathManager } from './PathManager.js';
 
 export class FileSystemStorage implements FileStorage {
   private pathManager: PathManager;

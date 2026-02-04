@@ -1,12 +1,11 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-
-import { PropertyCreatorService } from '#api/core/application/propertyCreatorService/PropertyCreatorService.js';
-import { TextProperty } from '#api/core/domain/template/TextProperty.js';
-import { PropertyTypeMismatchError } from '#api/core/domain/template/errors.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService.js';
+import { TextProperty } from '../../domain/template/TextProperty.js';
+import { PropertyTypeMismatchError } from '../../domain/template/errors.js';
 
 const prevCreated = new ObjectId();
 

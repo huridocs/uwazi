@@ -8,9 +8,9 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
 import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { TemplateDBO } from '../template/DBOs/TemplateDBO.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { MongoTemplateMapper } from '../template/MongoTemplateMapper.js';
 
 class MongoEntityLanguageMapper {
   static toDomain(dbo: EntityDBO, template: Template): EntityTranslationProps {

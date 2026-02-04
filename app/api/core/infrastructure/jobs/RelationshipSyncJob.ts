@@ -8,8 +8,8 @@ import {
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO.js';
 
 type Params = UserAwareDispatchableParams & {
   templateId: string;

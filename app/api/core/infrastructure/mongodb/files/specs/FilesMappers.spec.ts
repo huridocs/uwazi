@@ -5,18 +5,18 @@ import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
-import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
-import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
-import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
+import { FileAttachment } from '../../../../domain/files/FileAttachment.js';
+import { CustomUpload } from '../../../../domain/files/CustomUpload.js';
+import { ProcessingPDF } from '../../../../domain/files/ProcessingPDF.js';
+import { URLAttachment } from '../../../../domain/files/URLAttachment.js';
+import { FileMappers } from '../FilesMappers.js';
 import {
   FileAttachmentDBO,
   ProcessingPDFDBO,
   fileDBO,
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+} from '../schemas/filesTypes.js';
 
 const f = getFixturesFactory();
 

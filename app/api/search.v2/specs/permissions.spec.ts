@@ -1,5 +1,5 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { Application } from 'express';
+import type { Application } from 'express';
 import request from 'supertest';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';

@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { CollectionWrapper } from '#api/core/infrastructure/mongodb/common/CollectionWrapper.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { CollectionWrapper } from '../CollectionWrapper.js';
+import { getConnection } from '../getConnectionForCurrentTenant.js';
 
 class TestingWrapper extends CollectionWrapper {}
 

@@ -5,10 +5,10 @@ import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
 } from '#api/core/domain/template/errors.js';
-import { Property } from '#api/core/domain/template/Property.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { Property } from '../../domain/template/Property.js';
+import { RelationshipProperty } from '../../domain/template/RelationshipProperty.js';
+import { Template } from '../../domain/template/Template.js';
+import { V1RelationshipProperty } from '../../domain/template/V1RelationshipProperty.js';
 
 export interface TemplatesDataSource {
   updateMapping(template: Template, reset?: boolean): Promise<void>;

@@ -1,4 +1,4 @@
-import { Application, Request } from 'express';
+import type { Application, Request } from 'express';
 import { needsAuthorization } from '#api/auth/index.js';
 import { validation } from '#api/utils/index.js';
 import translations from '#api/i18n/index.js';

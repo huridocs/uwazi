@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import request from 'supertest';
-import { Application } from 'express';
+import type { Application } from 'express';
 import { ObjectId } from 'mongodb';
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';

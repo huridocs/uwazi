@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import request from 'supertest';
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 
 import entities from '#api/entities/index.js';
 import { search } from '#api/search/index.js';

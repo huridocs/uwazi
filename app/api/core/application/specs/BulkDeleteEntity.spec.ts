@@ -12,11 +12,8 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import {
-  BulkDeleteEntityInput,
-  BulkDeleteEntityUseCase,
-} from '#api/core/application/BulkDeleteEntity.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity.js';
 
 const factory = getFixturesFactory();
 

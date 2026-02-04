@@ -12,7 +12,7 @@ import { search } from '#api/search/index.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
+import { MongoFilesDataSource } from '../MongoFilesDataSource.js';
 
 const f = getFixturesFactory();
 

@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import { TemplateMutationController } from './TemplateMutationController.js';
 import { SetTemplateAsDefaultController } from './SetTemplateAsDefaultController/SetTemplateAsDefaultController.js';
 import { GetTemplatesController } from './GetTemplatesController.js';

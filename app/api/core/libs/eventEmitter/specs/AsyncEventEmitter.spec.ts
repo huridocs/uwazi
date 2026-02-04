@@ -8,13 +8,13 @@ import { tenants } from '#api/tenants/index.js';
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Collection } from 'mongodb';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { AsyncEventEmitter } from '#api/core/libs/eventEmitter/AsyncEventEmitter.js';
-import { Event } from '#api/core/libs/eventEmitter/Event.js';
-import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
+import { DependenciesContext } from '../../DependenciesContext.js';
+import { JobInfo } from '../../queue/application/contracts/Dispatchable.js';
+import { AsyncEventEmitter } from '../AsyncEventEmitter.js';
+import { Event } from '../Event.js';
+import { Listener } from '../Listener.js';
+import { DefaultDispatcher } from '../../queue/configuration/factories.js';
+import { EventEmitter } from '../EventEmitter.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();

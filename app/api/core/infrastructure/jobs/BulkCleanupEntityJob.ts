@@ -6,7 +6,7 @@ import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
+import { BulkCleanupEntityUseCaseFactory } from '../factories/BulkCleanupEntityUseCaseFactory.js';
 
 type Params = UserAwareDispatchableParams & {
   sharedIds: string[];

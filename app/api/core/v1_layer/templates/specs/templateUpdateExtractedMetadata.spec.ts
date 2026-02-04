@@ -1,18 +1,16 @@
 import { files } from '#api/files/index.js';
-
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { TemplateSchema } from '#shared/types/templateType.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
+import templates from '../templates.js';
 import fixtures, {
   propertyA,
   propertyB,
   propertyC,
   propertyD,
   templateWithExtractedMetadata,
-} from '#api/core/v1_layer/templates/specs/fixtures/fixtures.js';
+} from './fixtures/fixtures.js';
 
 async function updateTemplate(template: TemplateSchema, language = 'en') {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
@@ -188,6 +186,4 @@ describe('updateExtractedMetadataProperties', () => {
       extractedMetadata: [],
     });
   });
-
-  afterAll(async () => testingEnvironment.tearDown());
 });

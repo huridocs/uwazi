@@ -1,5 +1,5 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { Writable } from 'stream';
 import { tenants } from '#api/tenants/index.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';

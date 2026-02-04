@@ -5,7 +5,7 @@ import settings from '#api/settings/index.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import users from '#api/users/users.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
 import translations from '#api/i18n/index.js';

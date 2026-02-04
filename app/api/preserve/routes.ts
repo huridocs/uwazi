@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import { Preserve } from './preserve.js';
 
 export const PreserveRoutes = (app: Application) => {

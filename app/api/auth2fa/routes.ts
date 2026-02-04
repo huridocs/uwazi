@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { validation } from '#api/utils/index.js';

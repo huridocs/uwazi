@@ -5,6 +5,7 @@ import {
   AbstractImageProperty,
   ImageStyle,
 } from '#api/core/domain/template/AbstractImageProperty.js';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
 import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
 import { DateProperty } from '#api/core/domain/template/DateProperty.js';
 import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
@@ -18,21 +19,22 @@ import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
 import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
 import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
 import { MultiDateRangeProperty } from '#api/core/domain/template/MultiDateRangeProperty.js';
+import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
+import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
 import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { Template } from '#api/core/domain/template/Template.js';
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
-import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
-import { Property } from '#api/core/domain/template/Property.js';
-import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 import { ObjectId } from 'mongodb';
-
-import { PropertySchema } from '../../../../../shared/types/commonTypes.js';
-import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
-import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
-import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO.js';
+import { TemplateDBO } from './DBOs/TemplateDBO.js';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {
@@ -258,6 +260,16 @@ export class MongoTemplatePropertyMapper {
           inherit: schema.inherit as any,
         });
 
+      case 'newRelationship':
+        return new RelationshipProperty(
+          baseProps.id,
+          baseProps.name,
+          baseProps.label,
+          mapPropertyQuery(schema.query as TraverseQueryDBO[]),
+          template,
+          schema.denormalizedProperty
+        );
+
       default:
         throw new Error(
           `The Property type "${schema.type}" was not handled. ${JSON.stringify(schema)}`
@@ -286,7 +298,7 @@ export class MongoTemplateMapper {
   static toDomain(schema: TemplateDBO): Template {
     const templateId = schema._id.toHexString();
 
-    return new Template(
+    const template = new Template(
       templateId,
       schema.name,
       schema.properties.map(item => MongoTemplatePropertyMapper.toDomain(item, templateId)),
@@ -295,5 +307,9 @@ export class MongoTemplateMapper {
       schema.default,
       schema.entityViewPage
     );
+
+    template.processing = schema.processing;
+
+    return template;
   }
 }

@@ -1,4 +1,4 @@
-import { Request, NextFunction, Response } from 'express';
+import type { Request, NextFunction, Response } from 'express';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { UserSchema } from '#shared/types/userType.js';

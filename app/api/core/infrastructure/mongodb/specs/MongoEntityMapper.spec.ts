@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
+import { MongoEntityMapper } from '../entity/MongoEntityMapper.js';
 
 const factory = getFixturesFactory();
 

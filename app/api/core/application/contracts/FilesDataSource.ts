@@ -3,11 +3,11 @@ import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { ResultType } from '#api/core/libs/Result.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { FileNotFound, ProcessingFileNotFound } from '#api/core/domain/files/errors.js';
-import { FileType } from '#api/core/domain/files/FileType.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
-import { Segmentation } from '#api/core/domain/files/Segmentation.js';
+import { ProcessingPDF } from '../../domain/files/ProcessingPDF.js';
+import { FileNotFound, ProcessingFileNotFound } from '../../domain/files/errors.js';
+import { FileType } from '../../domain/files/FileType.js';
+import { ProcessedPDF } from '../../domain/files/ProcessedPDF.js';
+import { Segmentation } from '../../domain/files/Segmentation.js';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];

@@ -1,21 +1,18 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
   TemplateDoesNotExistError,
-} from '#api/core/domain/template/errors.js';
-import { RelationshipPropertyCreatorService } from '#api/core/application/propertyCreatorService/RelationshipPropertyCreatorService.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+} from '../../domain/template/errors.js';
+import { RelationshipPropertyCreatorService } from '../propertyCreatorService/RelationshipPropertyCreatorService.js';
 
 const factory = getFixturesFactory();
 

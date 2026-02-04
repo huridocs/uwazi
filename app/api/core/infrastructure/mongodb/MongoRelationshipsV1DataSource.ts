@@ -5,7 +5,7 @@ import { dbSessionContext } from '#api/odm/sessionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { withConnectedData } from '#api/relationships/relationshipsHelpers.js';
 import settings from '#api/settings/index.js';
-import { Relation } from '#api/relationships/RelationsV1Collection.js';
+import { Relation } from '../../../relationships/RelationsV1Collection.js';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';

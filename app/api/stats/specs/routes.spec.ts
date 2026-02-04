@@ -1,4 +1,4 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import statsRoutes from '../routes.js';
 import request from 'supertest';

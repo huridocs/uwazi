@@ -1,6 +1,6 @@
 import { Collection, Document, OptionalId } from 'mongodb';
-import { SaveStream } from '#api/common.v2/contracts/SaveStream.js';
-import { BulkWriteStream } from '#api/core/infrastructure/mongodb/common/BulkWriteStream.js';
+import { SaveStream } from '../../../../common.v2/contracts/SaveStream.js';
+import { BulkWriteStream } from './BulkWriteStream.js';
 
 interface MapperFunc<U, T> {
   (elem: U): OptionalId<T> | Promise<OptionalId<T>>;

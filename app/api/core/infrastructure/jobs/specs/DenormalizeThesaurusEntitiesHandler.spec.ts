@@ -1,10 +1,10 @@
-import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
+import { ObjectId } from 'mongodb';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { DenormalizeThesaurusEntitiesHandler } from '../DenormalizeThesaurusEntitiesHandler.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';

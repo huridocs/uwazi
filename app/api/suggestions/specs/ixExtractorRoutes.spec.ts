@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import { Db, ObjectId } from 'mongodb';
 import request from 'supertest';
 

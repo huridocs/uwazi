@@ -8,7 +8,7 @@ import { uploadMiddleware } from '#api/files/index.js';
 import { sequentialPromises } from '#shared/asyncUtils.js';
 import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
-import { Application, Request } from 'express';
+import type { Application, Request } from 'express';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';

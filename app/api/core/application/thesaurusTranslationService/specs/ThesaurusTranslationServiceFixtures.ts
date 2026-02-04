@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto';
-import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
+import { randomUUID } from 'crypto';
+import { ObjectId } from 'mongodb';
 
 export const factory = getFixturesFactory();
 

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 
 const BasePropertySchema = z.object({
   label: z.string(),

@@ -1,5 +1,5 @@
 import settings from './settings.js';
-import { Application } from 'express';
+import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 
 export default (app: Application) => {

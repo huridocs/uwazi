@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { Application } from 'express';
+import type { Application } from 'express';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { elastic } from '#api/search/index.js';
 

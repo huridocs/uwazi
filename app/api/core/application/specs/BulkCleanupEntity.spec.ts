@@ -21,9 +21,9 @@ import { tenants } from '#api/tenants/index.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { BulkCleanupEntityUseCase } from '#api/core/application/BulkCleanupEntity.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { FilesService } from '#api/core/application/FilesService.js';
+import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity.js';
+import { FileStorage } from '../contracts/FileStorage.js';
+import { FilesService } from '../FilesService.js';
 
 const factory = getFixturesFactory();
 

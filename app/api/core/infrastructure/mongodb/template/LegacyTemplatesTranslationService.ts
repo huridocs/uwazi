@@ -1,9 +1,8 @@
 import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import translations from '#api/i18n/translations.js';
-
 import { Template } from '#api/core/domain/template/Template.js';
 import { ContextType } from '#shared/translationSchema.js';
-import { TemplateSchema } from '../../../../../shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import { MongoTemplateMapper } from './MongoTemplateMapper.js';
 
 class LegacyTemplatesTranslationService implements TranslationService {

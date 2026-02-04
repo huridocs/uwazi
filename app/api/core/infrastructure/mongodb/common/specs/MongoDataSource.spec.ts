@@ -1,12 +1,10 @@
 /* eslint-disable max-statements */
-
 import testingDB from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoDataSource } from '../MongoDataSource.js';
+import { getConnection } from '../getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '../../../factories/TransactionManagerFactory.js';
 
 const blankState = [
   {

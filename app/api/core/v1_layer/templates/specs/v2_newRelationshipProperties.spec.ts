@@ -1,27 +1,18 @@
 import { ObjectId } from 'mongodb';
 
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-
 import entities from '#api/entities/index.js';
-
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
-
 import translations from '#api/i18n/index.js';
-
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
-
 import * as setupSockets from '#api/socketio/setupSockets.js';
-
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import db, { DBFixture } from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
+import templates from '../templates.js';
 
-jest.mock('#api/entities.v2/services/EntityRelationshipsUpdateService');
+jest.mock('api/entities.v2/services/EntityRelationshipsUpdateService');
 
 const fixtureFactory = getFixturesFactory();
 

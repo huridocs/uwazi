@@ -16,13 +16,13 @@ import { S3Error } from '#api/files/S3Storage.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileStorage, GetFileInput } from '#api/core/application/contracts/FileStorage.js';
-import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
-import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { StoredFile } from '#api/core/domain/files/StoredFile.js';
-import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
-import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage.js';
+import { FileAttachment } from '../../domain/files/FileAttachment.js';
+import { CustomUpload } from '../../domain/files/CustomUpload.js';
+import { FileContents } from '../../domain/files/FileContents.js';
+import { StoredFile } from '../../domain/files/StoredFile.js';
+import { URLAttachment } from '../../domain/files/URLAttachment.js';
+import { PathManager } from './PathManager.js';
 
 const catchS3Errors = async <T>(cb: () => Promise<T>): Promise<T> => {
   try {

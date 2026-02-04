@@ -5,9 +5,9 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { PropertyCreatorServiceStrategy } from '#api/core/application/propertyCreatorService/PropertyCreatorServiceStrategy.js';
-import { NestedPropertyNotAvailableError } from '#api/core/domain/template/errors.js';
-import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
+import { PropertyCreatorServiceStrategy } from '../propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { NestedPropertyNotAvailableError } from '../../domain/template/errors.js';
+import { NestedProperty } from '../../domain/template/NestedProperty.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();

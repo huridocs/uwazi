@@ -5,9 +5,9 @@ import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/Mo
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { BulkCleanupEntityUseCase } from '#api/core/application/BulkCleanupEntity.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { FilesServiceFactory } from './FilesServiceFactory.js';
+import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
 
 class BulkCleanupEntityUseCaseFactory {
   static default() {

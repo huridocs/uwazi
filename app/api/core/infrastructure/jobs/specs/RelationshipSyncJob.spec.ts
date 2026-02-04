@@ -8,7 +8,7 @@ import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
-import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
+import { RelationshipSyncJob } from '../RelationshipSyncJob.js';
 
 const factory = getFixturesFactory();
 

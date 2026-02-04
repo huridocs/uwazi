@@ -4,13 +4,13 @@ import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFa
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
-import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
-import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { FileContentsIO } from '../files/FileContentIO.js';
+import { PathManager } from '../files/PathManager.js';
+import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { PDFService } from '../services/PDFService.js';
+import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 
 class FilesServiceFactory {
   static default(

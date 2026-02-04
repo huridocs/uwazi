@@ -1,5 +1,5 @@
 import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
+import type { Application, Request, Response, NextFunction } from 'express';
 
 import db from '#api/utils/testing_db.js';
 

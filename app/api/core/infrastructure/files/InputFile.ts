@@ -2,19 +2,19 @@
 import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { stat } from 'fs/promises';
-import path from 'path';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
 
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { generateFileName, temporalFilesPath } from '#api/files/filesystem.js';
 import date from '#api/utils/date.js';
-import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
-import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
+import path from 'path';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
+import { CustomUpload } from '../../domain/files/CustomUpload.js';
+import { FileAttachment } from '../../domain/files/FileAttachment.js';
+import { FileContents } from '../../domain/files/FileContents.js';
+import { ProcessingPDF } from '../../domain/files/ProcessingPDF.js';
+import { URLAttachment } from '../../domain/files/URLAttachment.js';
 
 type FileMetadata = {
   fieldname: string;

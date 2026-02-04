@@ -1,1 +1,1 @@
-import './LogEntityCreatedListener';
+import './LogEntityCreatedListener.js';

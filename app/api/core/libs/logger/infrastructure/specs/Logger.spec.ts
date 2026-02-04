@@ -1,12 +1,8 @@
 /* eslint-disable max-len */
-
 import { Tenant } from '#api/tenants/tenantContext.js';
-import {
-  StandardLogger,
-  withFeature,
-} from '#api/core/libs/logger/infrastructure/StandardLogger.js';
-import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
-import { StandardWriter } from '#api/core/libs/logger/infrastructure/writers/StandardWriter.js';
+import { StandardLogger, withFeature } from '../StandardLogger.js';
+import { StandardJSONWriter } from '../writers/StandardJSONWriter.js';
+import { StandardWriter } from '../writers/StandardWriter.js';
 
 const tenant: Tenant = {
   name: 'testTenant',

@@ -5,7 +5,7 @@ import { search } from '#api/search/index.js';
 
 import { storage, uploadMiddleware } from '#api/files/index.js';
 import { updateMapping } from '#api/search/entitiesIndex.js';
-import { Application, Request } from 'express';
+import type { Application, Request } from 'express';
 import { TranslationType } from '#shared/translationType.js';
 import { FileType } from '#shared/types/fileType.js';
 

@@ -1,10 +1,9 @@
 import { ObjectId } from 'mongodb';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import testingDB from '#api/utils/testing_db.js';
 
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoResultSet } from '../MongoResultSet.js';
 
 const testDocuments = [
   { _id: new ObjectId(), name: 'doc1' },

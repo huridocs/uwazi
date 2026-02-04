@@ -13,7 +13,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import * as idGenerator from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
+import templates from '../templates.js';
 
 const f = getFixturesFactory();
 

@@ -1,7 +1,7 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { CachedMongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/CachedMongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
+import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
 
 export class TemplatesDataSourceFactory {
   static default(transactionManager: MongoTransactionManager) {

@@ -14,18 +14,18 @@ import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoRes
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { Result } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
   FilesDataSource,
   GetDocumentsForEntityOptions,
-} from '#api/core/application/contracts/FilesDataSource.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
-import { Segmentation } from '#api/core/domain/files/Segmentation.js';
-import { FileNotFound, ProcessingFileNotFound } from '#api/core/domain/files/errors.js';
-import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
-import { SegmentationMapper } from '#api/core/infrastructure/mongodb/files/SegmentationMapper.js';
-import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+} from '../../../application/contracts/FilesDataSource.js';
+import { ProcessingPDF } from '../../../domain/files/ProcessingPDF.js';
+import { ProcessedPDF } from '../../../domain/files/ProcessedPDF.js';
+import { Segmentation } from '../../../domain/files/Segmentation.js';
+import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
+import { FileMappers } from './FilesMappers.js';
+import { SegmentationMapper } from './SegmentationMapper.js';
+import { fileDBO } from './schemas/filesTypes.js';
 
 type GetDocumentsForEntityQuery = {
   entity: string;

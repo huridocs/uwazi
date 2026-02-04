@@ -1,5 +1,5 @@
-import * as templateUtils from '#api/utils/templateUtils.js';
+import * as templateUtils from '../../../utils/templateUtils.js';
 
-export { default } from '#api/core/v1_layer/templates/templates.js';
+export { default } from './templates.js';
 
 export { templateUtils };

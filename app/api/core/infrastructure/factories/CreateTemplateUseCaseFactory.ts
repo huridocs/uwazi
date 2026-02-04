@@ -4,10 +4,10 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
-import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
-import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
-import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyPageService.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
+import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
+import { LegacyPageService } from '../mongodb/page/LegacyPageService.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 
 class CreateTemplateUseCaseFactory {
   static create() {

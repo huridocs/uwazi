@@ -6,7 +6,7 @@ import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/M
 import { PropertyNotFoundError } from '#api/core/domain/template/errors.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
-import { MediaPropertyAssignmentCreatorService } from '#api/core/application/propertyAssignmentCreatorService/MediaPropertyAssignmentCreatorService.js';
+import { MediaPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/MediaPropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
 

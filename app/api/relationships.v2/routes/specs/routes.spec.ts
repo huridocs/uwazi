@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

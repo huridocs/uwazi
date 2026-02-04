@@ -1,5 +1,5 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { Application } from 'express';
+import type { Application } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import searchRoutes from '#api/search/routes.js';

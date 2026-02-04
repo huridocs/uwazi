@@ -25,8 +25,8 @@ import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { tenants } from '#api/tenants/index.js';
 import { ObjectId } from 'mongodb';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { FilesService } from '#api/core/application/FilesService.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { FilesService } from '../FilesService.js';
 
 const factory = getFixturesFactory();
 

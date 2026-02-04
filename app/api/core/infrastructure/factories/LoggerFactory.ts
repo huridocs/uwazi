@@ -2,7 +2,7 @@ import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLog
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { config } from '#api/config.js';
 import { DevelopmentWritter } from '#api/core/libs/logger/infrastructure/writers/DevelopmentWriter.js';
-import { getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
 
 export class LoggerFactory {
   static default(_writer = StandardJSONWriter) {

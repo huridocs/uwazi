@@ -6,18 +6,18 @@ import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/Mo
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/index.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
-import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { tenants } from '#api/tenants/index.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
+import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
+import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob.js';
 
 class UpdateTemplateUseCaseFactory {
   static async create() {

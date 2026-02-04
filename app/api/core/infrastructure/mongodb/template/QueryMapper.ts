@@ -1,12 +1,7 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
-
 import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
-import {
-  MatchQueryDBO,
-  TraverseQueryDBO,
-} from '#api/core/infrastructure/mongodb/template/DBOs/RelationshipsQueryDBO.js';
+import { MatchQueryDBO, TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO.js';
 
 const QueryMapperToModel = {
   parseMatch(query: MatchQueryDBO): MatchQueryNode {

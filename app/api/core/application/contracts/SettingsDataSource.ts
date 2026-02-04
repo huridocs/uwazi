@@ -1,5 +1,4 @@
 import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
-
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 
 export interface SettingsDataSource {

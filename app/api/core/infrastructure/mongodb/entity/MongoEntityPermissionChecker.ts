@@ -4,7 +4,7 @@ import {
 } from '#api/core/domain/entity/EntityPermissionChecker.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { User } from '#api/users.v2/model/User.js';
-import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoEntityDAO } from './MongoEntityDAO.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 
 class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermissionChecker {

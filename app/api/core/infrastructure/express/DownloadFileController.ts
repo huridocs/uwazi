@@ -10,7 +10,7 @@ import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFa
 import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users.v2/model/User.js';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { pipeline } from 'stream/promises';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory.js';

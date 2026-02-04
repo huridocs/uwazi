@@ -10,7 +10,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { ThesaurusNameAlreadyExistsError } from '#api/core/domain/thesaurus/errors.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { tenants } from '#api/tenants/index.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';

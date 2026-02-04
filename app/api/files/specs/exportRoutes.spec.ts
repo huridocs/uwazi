@@ -3,7 +3,7 @@ import csvExporter, { SearchResults } from '#api/csv/csvExporter.js';
 import * as filesystem from '#api/files/filesystem.js';
 import { search } from '#api/search/index.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { Writable } from 'stream';
 import request from 'supertest';
 

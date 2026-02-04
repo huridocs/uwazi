@@ -3,10 +3,10 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { FilesServiceFactory } from './FilesServiceFactory.js';
+import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 
 export class FileUploadForEntityFactory {
   static default(
