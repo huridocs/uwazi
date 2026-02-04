@@ -31,7 +31,7 @@ const entityLoader =
     let pagePlaintext: string | undefined = '';
     let searchResults: SnippetsSearchResponse | undefined;
 
-    if (!entity) {
+    if (!entity?._id) {
       const entityCompositionUseCase = await getEntityCompositionUseCase();
 
       const composition = await entityCompositionUseCase.composeEntity(
@@ -72,7 +72,8 @@ const entityLoader =
       if (!pagePlaintext) {
         const response = await getPagePlaintext(
           entity.mainDocument[0]._id as string,
-          Number.parseInt(currentPage, 10)
+          Number.parseInt(currentPage, 10),
+          headers
         );
 
         if (response instanceof FetchResponseError) {
