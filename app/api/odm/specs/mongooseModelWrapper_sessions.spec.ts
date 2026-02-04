@@ -1,11 +1,10 @@
 /*eslint-disable max-statements*/
 
 import { appContext } from '#api/utils/AppContext.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ClientSession } from 'mongodb';
 import { Schema } from 'mongoose';
-import { MongooseModelWrapper } from '#api/odm/MongooseModelWrapper.js';
+import { MongooseModelWrapper } from '../MongooseModelWrapper.js';
 
 interface TestDoc {
   title: string;

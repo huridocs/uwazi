@@ -84,7 +84,7 @@ describe('entitySavingManager', () => {
   });
 
   describe('saveEntity', () => {
-    const reqData = { user: editorUser, language: 'en', socketEmiter: () => { } };
+    const reqData = { user: editorUser, language: 'en', socketEmiter: () => {} };
 
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {

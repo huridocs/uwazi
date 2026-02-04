@@ -1,12 +1,10 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { DBFixture } from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import {
   Input,
   UpdateSuggestionsAfterEntityUpdate,
-} from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
+} from '../useCases/updateSuggestionsAfterEntityUpdate.js';
 
 const factory = getFixturesFactory();
 

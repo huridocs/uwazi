@@ -1,15 +1,10 @@
 import Ajv from 'ajv';
-
 import { models } from '#api/odm/index.js';
-
 import userGroups from '#api/usergroups/userGroups.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
-
 import { UserSchema } from '#shared/types/userType.js';
-import { fixtures, group1Id, group2Id, user1Id, user2Id } from '#api/usergroups/specs/fixtures.js';
+import { fixtures, group1Id, group2Id, user1Id, user2Id } from './fixtures.js';
 
 describe('userGroups', () => {
   beforeEach(async () => {

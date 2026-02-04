@@ -1,11 +1,8 @@
 import userModel from '#api/users/usersModel.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import db from '#api/utils/testing_db.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-import { ModelBulkWriteStream } from '#api/odm/modelBulkWriteStream.js';
+import { ModelBulkWriteStream } from '../modelBulkWriteStream.js';
 
 const fixtures = {
   users: [

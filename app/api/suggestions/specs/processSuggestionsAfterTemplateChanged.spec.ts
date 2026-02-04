@@ -1,12 +1,10 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { DBFixture } from '#api/utils/testing_db.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import {
   Input,
   ProcessSuggestionsAfterTemplateChanged,
-} from '#api/suggestions/useCases/processSuggestionsAfterTemplateChanged.js';
+} from '../useCases/processSuggestionsAfterTemplateChanged.js';
 
 const factory = getFixturesFactory();
 

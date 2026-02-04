@@ -1,8 +1,7 @@
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory.js';
 
 const fixtures = getFixturesFactory();
 

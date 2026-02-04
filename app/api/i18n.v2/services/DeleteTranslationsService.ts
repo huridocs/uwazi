@@ -1,5 +1,5 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
 
 export class DeleteTranslationsService {
   private translationsDS: TranslationsDataSource;

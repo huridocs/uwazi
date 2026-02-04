@@ -7,7 +7,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { FileType } from '#shared/types/fileType.js';
 import { IXSuggestionStateType, IXSuggestionType } from '#shared/types/suggestionType.js';
-import { LanguageNotSupportedError } from '#api/suggestions/ixValidationError.js';
+import { LanguageNotSupportedError } from './ixValidationError.js';
 
 type CreateForPdfInput = {
   file: FileType;

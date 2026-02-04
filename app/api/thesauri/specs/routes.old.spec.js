@@ -1,5 +1,6 @@
-import '#api/utils/jasmineHelpers';
+import '#api/utils/jasmineHelpers.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+
 import { ObjectId } from 'mongodb';
 import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import thesauriRoute from '../routes.js';

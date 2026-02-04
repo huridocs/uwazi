@@ -1,8 +1,8 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoTranslationsDataSource } from '#api/i18n.v2/database/MongoTranslationsDataSource.js';
-import { CachedMongoTranslationsDataSource } from '#api/i18n.v2/database/CachedMongoTranslationsDataSource.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { MongoTranslationsDataSource } from './MongoTranslationsDataSource.js';
+import { CachedMongoTranslationsDataSource } from './CachedMongoTranslationsDataSource.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
 
 const DefaultTranslationsDataSource = (transactionManager: MongoTransactionManager) => {
   const db = getConnection();

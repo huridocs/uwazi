@@ -1,13 +1,10 @@
 import { UseCase } from '#api/core/libs/UseCase.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
-
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
+import { PipelineBuilder } from '../queryBuilder.js';
+import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
+import { SuggestionFactory } from '../suggestionFactory.js';
 
 type Input = {
   entities: EntitySchema[];

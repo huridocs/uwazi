@@ -4,18 +4,9 @@ import {
   removeUsersFromAllGroups,
   updateUserMemberships,
 } from '#api/usergroups/userGroupsMembers.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-import {
-  fixtures,
-  group1Id,
-  group2Id,
-  user1Id,
-  user2Id,
-  user3Id,
-} from '#api/usergroups/specs/fixtures.js';
+import { fixtures, group1Id, group2Id, user1Id, user2Id, user3Id } from './fixtures.js';
 
 describe('userGroupsMembers', () => {
   beforeEach(async () => {

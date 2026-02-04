@@ -3,19 +3,18 @@
 /* eslint-disable max-lines */
 import entities from '#api/entities/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { checkTypeIsAllowed } from '#api/services/informationextraction/ixextractors.js';
-
-import thesauri from '#api/thesauri/thesauri.js';
+import thesauri from '#api/thesauri/index.js';
 import { flatThesaurusValues } from '#api/thesauri/thesauri.js';
 import { ObjectId } from 'mongodb';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 import { IndexTypes, objectIndex } from '#shared/data_utils/objectIndex.js';
 import { setIntersection } from '#shared/data_utils/setUtils.js';
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { tenants } from '#api/tenants/index.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 class SuggestionAcceptanceError extends Error {}
 

@@ -1,14 +1,10 @@
 import translations from '#api/i18n/translations.js';
-
 import { WithId } from '#api/odm/index.js';
-
 import db from '#api/utils/testing_db.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { Settings } from '#shared/types/settingsType.js';
-import settings from '#api/settings/settings.js';
-import fixtures, { linkFixtures, newLinks } from '#api/settings/specs/fixtures.js';
+import settings from '../settings.js';
+import fixtures, { linkFixtures, newLinks } from './fixtures.js';
 
 describe('settings', () => {
   beforeEach(async () => {

@@ -1,20 +1,16 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
 } from '#api/i18n.v2/errors/translationErrors.js';
-
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-
-import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
-import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { CreateTranslationsService } from '../CreateTranslationsService.js';
+import { ValidateTranslationsService } from '../ValidateTranslationsService.js';
 
 const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;

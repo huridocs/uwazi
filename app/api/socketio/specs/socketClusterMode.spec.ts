@@ -11,7 +11,12 @@ import waitForExpect from 'wait-for-expect';
 import type { SessionData, Store as SessionStore } from 'express-session';
 import users from '#api/users/users.js';
 
-import { endSocketServer, setupApiSockets, emitToTenantAdmins, __testUtils } from '../setupSockets.js';
+import {
+  endSocketServer,
+  setupApiSockets,
+  emitToTenantAdmins,
+  __testUtils,
+} from '../setupSockets.js';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>

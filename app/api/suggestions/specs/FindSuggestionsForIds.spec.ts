@@ -1,30 +1,21 @@
 /* eslint-disable max-statements */
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
-
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
-
 import { ModelNotReadyError } from '#api/services/informationextraction/ixextractors.js';
-
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
-
 import { testingTenants } from '#api/utils/testingTenants.js';
-
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
-import { FindSuggestionsForIds } from '#api/suggestions/useCases/FindSuggestionsForIds.js';
+import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds.js';
 
 // Mock only the TaskManager to make startTask calls work without real Redis
-jest.mock('#api/services/tasksmanager/TaskManager.ts');
+jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 // Mock socket emissions to avoid socket.io initialization error
-jest.mock('#api/socketio/setupSockets', () => ({
+jest.mock('api/socketio/setupSockets', () => ({
   emitToTenant: jest.fn(),
 }));
 

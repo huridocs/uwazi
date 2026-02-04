@@ -3,15 +3,11 @@ import { Db, ObjectId } from 'mongodb';
 import request from 'supertest';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-import { extractorsRoutes } from '#api/suggestions/extractorsRoutes.js';
+import { extractorsRoutes } from '../extractorsRoutes.js';
 
 const adminUser = {
   username: 'User 1',

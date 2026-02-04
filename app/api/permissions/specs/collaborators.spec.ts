@@ -1,12 +1,9 @@
 import { collaborators } from '#api/permissions/collaborators.js';
-
 import { fixtures, groupA, groupB, userA, userB } from '#api/permissions/specs/fixtures.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { PermissionType } from '#shared/types/permissionSchema.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
+import { UserInContextMockFactory } from '../../utils/testingUserInContext.js';
+import { PUBLIC_PERMISSION } from '../publicPermission.js';
 
 describe('collaborators', () => {
   beforeEach(async () => {

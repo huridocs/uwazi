@@ -1,5 +1,5 @@
 import db from '#api/utils/testing_db.js';
-import SHA256 from 'crypto-js/sha256.js';
+import SHA256 from 'crypto-js/sha256';
 
 const userId = db.id();
 const group1Id = db.id();

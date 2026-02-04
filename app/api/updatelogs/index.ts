@@ -1,3 +1,3 @@
 /** @format */
 
-export * from '#api/updatelogs/updatelogsModel.js';
+export * from './updatelogsModel.js';

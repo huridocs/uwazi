@@ -3,14 +3,11 @@ import { Application, NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
 import userGroupRoutes from '#api/usergroups/routes.js';
-
 import { testingTenants } from '#api/utils/testingTenants.js';
 import request, { Response as SuperTestResponse } from 'supertest';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import userGroups from '#api/usergroups/userGroups.js';
+import userGroups from '../userGroups.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',

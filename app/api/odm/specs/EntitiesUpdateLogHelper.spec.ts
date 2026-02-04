@@ -1,9 +1,6 @@
 import { model } from '#api/entities/index.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { model as updatelogsModel } from '#api/updatelogs/index.js';
 
 const fixtureFactory = getFixturesFactory();

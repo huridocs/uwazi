@@ -3,12 +3,11 @@ import { Application } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import searchRoutes from '#api/search/routes.js';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { fixtures, fixturesTimeOut, ids } from '#api/search/specs/fixtures_elastic.js';
+import { UserInContextMockFactory } from '../../utils/testingUserInContext.js';
+import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic.js';
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);

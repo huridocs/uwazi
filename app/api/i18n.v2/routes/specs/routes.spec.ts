@@ -2,15 +2,11 @@ import 'isomorphic-fetch';
 import request from 'supertest';
 
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-import { translationsRoutes } from '#api/i18n.v2/routes/index.js';
+import { translationsRoutes } from '..';
 
 describe('i18n translations V2 routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;

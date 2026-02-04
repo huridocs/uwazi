@@ -1,14 +1,14 @@
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { EntitySchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import { inspect } from 'util';
-import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-import { Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
-import { RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
-import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
+import { Validator } from '../infrastructure/Validator.js';
+import { RequestEntityTranslation } from '../RequestEntityTranslation.js';
+import { SaveEntityTranslations } from '../SaveEntityTranslations.js';
 
 const entityV1ToEntityModel = (entity: EntitySchema) => {
   const inputModelValidator = new Validator<EntityInputModel>(entityInputDataSchema);

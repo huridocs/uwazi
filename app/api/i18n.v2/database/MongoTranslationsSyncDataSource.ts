@@ -2,9 +2,9 @@ import { DeleteResult, Filter, ObjectId, OptionalId } from 'mongodb';
 
 import { SyncDBDataSource } from '#api/core/infrastructure/mongodb/common/SyncDBDataSource.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { TranslationMappers } from '#api/i18n.v2/database/TranslationMappers.js';
-import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
-import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
+import { TranslationMappers } from './TranslationMappers.js';
+import { TranslationDBO } from '../schemas/TranslationDBO.js';
+import { TranslationSyO } from '../schemas/TranslationSyO.js';
 
 export class MongoTranslationsSyncDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>

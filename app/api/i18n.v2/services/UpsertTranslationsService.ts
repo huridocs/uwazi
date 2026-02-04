@@ -1,10 +1,9 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { Translation } from '#api/i18n.v2/model/Translation.js';
-import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
-import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
+import { Translation } from '../model/Translation.js';
+import { CreateTranslationsData } from './CreateTranslationsService.js';
+import { ValidateTranslationsService } from './ValidateTranslationsService.js';
 
 export class UpsertTranslationsService {
   private translationsDS: TranslationsDataSource;

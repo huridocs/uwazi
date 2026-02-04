@@ -1,16 +1,12 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-
-import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
-import { AfterFileUpdatedListener } from '#api/suggestions/listeners/afterFileCreatedListener.js';
-import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
-import { ExtractorsNotAvailableError } from '#api/suggestions/ixValidationError.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
+import { AfterFileUpdatedListener } from '../listeners/afterFileCreatedListener.js';
+import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument.js';
+import { ExtractorsNotAvailableError } from '../ixValidationError.js';
 
 const factory = getFixturesFactory();
 

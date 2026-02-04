@@ -10,14 +10,11 @@ import {
   storage,
   uploadsPath,
 } from '#api/files/index.js';
-
 import { testingTenants } from '#api/utils/testingTenants.js';
-
 import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
-
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 
-import syncRoutes from '#api/sync/routes.js';
+import syncRoutes from '../routes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

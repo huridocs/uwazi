@@ -1,8 +1,6 @@
 /* eslint-disable max-params */
 /* eslint-disable max-statements */
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import db from '#api/utils/testing_db.js';
 
 import { ObjectId } from 'mongodb';
@@ -12,9 +10,8 @@ import {
   IXSuggestionType,
   IXSuggestionsFilter,
 } from '#shared/types/suggestionType.js';
-
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { Suggestions } from '#api/suggestions/suggestions.js';
+import { Suggestions } from '../suggestions.js';
 import {
   factory,
   fixtures,
@@ -23,8 +20,8 @@ import {
   shared2AgeSuggestionId,
   shared2esId,
   suggestionId,
-} from '#api/suggestions/specs/fixtures.js';
-import { GetSuggestionsForTableQuery } from '#api/suggestions/getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+} from './fixtures.js';
+import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
 
 const _getSuggestions = async (query: any) =>
   testingEnvironment.db.getCollection('ixsuggestions')?.find(query).toArray() || [];

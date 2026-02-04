@@ -1,10 +1,8 @@
 import db from '#api/utils/testing_db.js';
-
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { search } from '#api/search/search.js';
-import { elastic } from '#api/search/elastic.js';
-import { fixturesTimeOut } from '#api/search/specs/fixtures_elastic.js';
-
+import { search } from '../search.js';
+import { elastic } from '../elastic.js';
+import { fixturesTimeOut } from './fixtures_elastic.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 describe('index (search)', () => {

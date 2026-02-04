@@ -9,7 +9,7 @@ import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import { factory, fixtures, suggestionSharedId6Title } from '#api/suggestions/specs/fixtures.js';
 
 // Mock IX external service to avoid Redis/task manager initialization via routes import
-jest.mock('#api/services/informationextraction/InformationExtraction', () => ({
+jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   InformationExtraction: class IXMock {
     status = jest.fn().mockResolvedValue({ status: 'ready' });
 

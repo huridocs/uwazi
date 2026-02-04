@@ -1,38 +1,24 @@
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
-
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
-
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
-
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
-
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-
-import { ATEntityCreationListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATEntityCreationListener.js';
-import { GenerateAutomaticTranslationsCofig } from '#api/externalIntegrations.v2/automaticTranslation/GenerateAutomaticTranslationConfig.js';
-import { ATExternalAPI } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/ATExternalAPI.js';
-import { MongoATConfigDataSource } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/MongoATConfigDataSource.js';
-import { Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
-import {
-  ATTaskMessage,
-  RequestEntityTranslation,
-} from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
-import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
-import {
-  SemanticConfig,
-  semanticConfigSchema,
-} from '#api/externalIntegrations.v2/automaticTranslation/types/SemanticConfig.js';
-import {
-  TranslationResult,
-  translationResultSchema,
-} from '#api/externalIntegrations.v2/automaticTranslation/types/TranslationResult.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener.js';
+import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig.js';
+import { ATExternalAPI } from './infrastructure/ATExternalAPI.js';
+import { MongoATConfigDataSource } from './infrastructure/MongoATConfigDataSource.js';
+import { Validator } from './infrastructure/Validator.js';
+import { ATTaskMessage, RequestEntityTranslation } from './RequestEntityTranslation.js';
+import { SaveEntityTranslations } from './SaveEntityTranslations.js';
+import { SemanticConfig, semanticConfigSchema } from './types/SemanticConfig.js';
+import { TranslationResult, translationResultSchema } from './types/TranslationResult.js';
 
 const AutomaticTranslationFactory = {
   defaultATConfigDataSource(transactionManager: MongoTransactionManager) {

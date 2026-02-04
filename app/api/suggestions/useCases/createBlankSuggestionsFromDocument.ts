@@ -1,25 +1,18 @@
 import { UseCase } from '#api/core/libs/UseCase.js';
-
-import entities from '#api/entities/entities.js';
-
+import entities from '#api/entities/index.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
-
-import settings from '#api/settings/settings.js';
-
+import settings from '#api/settings/index.js';
 import { LanguageUtils } from '#shared/language/index.js';
-
 import { FileType } from '#shared/types/fileType.js';
-
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
-import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
-import { Suggestions } from '#api/suggestions/suggestions.js';
+import { SuggestionFactory } from '../suggestionFactory.js';
+import { Suggestions } from '../suggestions.js';
 import {
   ExtractorsNotAvailableError,
   FileTypeNotSupportedError,
   LanguageNotSupportedError,
-} from '#api/suggestions/ixValidationError.js';
+} from '../ixValidationError.js';
 
 type Input = {
   file: FileType;

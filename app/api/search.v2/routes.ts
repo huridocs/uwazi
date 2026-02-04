@@ -7,7 +7,7 @@ import { SearchQuery, Page } from '#shared/types/SearchQueryType.js';
 
 import { mapResults } from '#api/search.v2/searchResponse.js';
 import qs from 'qs';
-import { buildQuery } from '#api/search.v2/buildQuery.js';
+import { buildQuery } from './buildQuery.js';
 import { tenants } from '#api/tenants/index.js';
 
 interface UwaziResponse {

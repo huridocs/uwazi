@@ -3,25 +3,17 @@ import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
 import * as csvApi from '#api/csv/csvLoader.js';
-
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
-
 import i18nRoutes from '#api/i18n/routes.js';
-
 import settings from '#api/settings/index.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js';
-
-import { LanguageSchema } from '#shared/types/commonTypes.js';
-
-import { UserRole } from '#shared/types/userSchema.js';
-import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
-import { sortByLocale } from '#api/i18n/specs/sortByLocale.js';
 import { availableLanguages } from '#shared/language/index.js';
+import { LanguageSchema } from '#shared/types/commonTypes.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { DefaultTranslations } from '../defaultTranslations.js';
+import { sortByLocale } from './sortByLocale.js';
 
 describe('i18n translations routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
@@ -84,7 +76,7 @@ describe('i18n translations routes', () => {
   });
 
   describe('GET', () => {
-    describe('#api/translations', () => {
+    describe('api/translations', () => {
       it('should return the translations', async () => {
         const response = await request(app).get('/api/translations').expect(200);
 
@@ -172,7 +164,7 @@ describe('i18n translations routes', () => {
       });
     });
 
-    describe('#api/languages', () => {
+    describe('api/languages', () => {
       it('should return the available languages', async () => {
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/1`;
 
@@ -202,7 +194,7 @@ describe('i18n translations routes', () => {
   });
 
   describe('POST', () => {
-    describe('#api/translations', () => {
+    describe('api/translations', () => {
       it('should save the translation', async () => {
         const response = await request(app)
           .post('/api/translations')
@@ -237,7 +229,7 @@ describe('i18n translations routes', () => {
       });
     });
 
-    describe('#api/translations/languages', () => {
+    describe('api/translations/languages', () => {
       describe('when successful', () => {
         let response: request.Response;
         let mockCalls: any[];
@@ -409,7 +401,7 @@ describe('i18n translations routes', () => {
       });
     });
 
-    describe('#api/translations/populate', () => {
+    describe('api/translations/populate', () => {
       it('should save the translations', async () => {
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/2`;
 
@@ -442,7 +434,7 @@ describe('i18n translations routes', () => {
       });
     });
 
-    describe('#api/translations/setasdeafult', () => {
+    describe('api/translations/setasdeafult', () => {
       it('should update the setting', async () => {
         const response = await request(app)
           .post('/api/translations/setasdeafult')
@@ -473,7 +465,7 @@ describe('i18n translations routes', () => {
       });
     });
 
-    describe('#api/<translations>/import', () => {
+    describe('api/<translations>/import', () => {
       let csvLoaderMock: jest.SpyInstance;
       let loadTranslationsMock: jest.Mock;
 
@@ -527,7 +519,7 @@ describe('i18n translations routes', () => {
   });
 
   describe('DELETE', () => {
-    describe('#api/translations/languages', () => {
+    describe('api/translations/languages', () => {
       describe('when successful', () => {
         let response: request.Response;
         let mockCalls: any[];

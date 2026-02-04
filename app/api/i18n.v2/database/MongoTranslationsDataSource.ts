@@ -1,19 +1,16 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-
 import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
 import { MongoBulkWriteError, OptionalId } from 'mongodb';
-
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   BulkDeleteKeysByContext,
   TranslationsDataSource,
   UpdateKeysByContextProps,
-} from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { TranslationMappers } from '#api/i18n.v2/database/TranslationMappers.js';
-import { Translation } from '#api/i18n.v2/model/Translation.js';
-import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+} from '../contracts/TranslationsDataSource.js';
+import { TranslationMappers } from '../database/TranslationMappers.js';
+import { Translation } from '../model/Translation.js';
+import { TranslationDBO } from '../schemas/TranslationDBO.js';
 
 export class MongoTranslationsDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>

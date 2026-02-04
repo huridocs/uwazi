@@ -1,26 +1,20 @@
 import entities from '#api/entities/index.js';
-
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-
 import { search } from '#api/search/index.js';
-import settings from '#api/settings/settings.js';
-
+import settings from '#api/settings/index.js';
 import templates from '#api/core/v1_layer/templates/index.js';
-
 import users from '#api/users/users.js';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
 import translations from '#api/i18n/index.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import waitForExpect from 'wait-for-expect';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import settingsRoutes from '#api/settings/routes.js';
-import { settingsModel } from '#api/settings/settingsModel.js';
-import fixtures from '#api/settings/specs/fixtures.js';
+import settingsRoutes from '../routes.js';
+import { settingsModel } from '../settingsModel.js';
+import fixtures from './fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

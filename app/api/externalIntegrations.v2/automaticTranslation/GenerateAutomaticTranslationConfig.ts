@@ -1,9 +1,9 @@
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { ATConfigDataSource } from '#api/externalIntegrations.v2/automaticTranslation/contracts/ATConfigDataSource.js';
-import { GenerateATConfigError } from '#api/externalIntegrations.v2/automaticTranslation/errors/generateATErrors.js';
-import { Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
-import { ATTemplateConfig } from '#api/externalIntegrations.v2/automaticTranslation/model/ATConfig.js';
-import { SemanticConfig } from '#api/externalIntegrations.v2/automaticTranslation/types/SemanticConfig.js';
+import { ATConfigDataSource } from './contracts/ATConfigDataSource.js';
+import { GenerateATConfigError } from './errors/generateATErrors.js';
+import { Validator } from './infrastructure/Validator.js';
+import { ATTemplateConfig } from './model/ATConfig.js';
+import { SemanticConfig } from './types/SemanticConfig.js';
 
 export class GenerateAutomaticTranslationsCofig {
   private atuomaticTranslationConfigDS: ATConfigDataSource;

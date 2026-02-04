@@ -11,10 +11,10 @@ import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import * as unlockCode from '#api/users/generateUnlockCode.js';
-import passwordRecoveriesModel from '#api/users/passwordRecoveriesModel.js';
-import users from '#api/users/users.js';
-import usersModel from '#api/users/usersModel.js';
+import * as unlockCode from '../generateUnlockCode.js';
+import passwordRecoveriesModel from '../passwordRecoveriesModel.js';
+import users from '../users.js';
+import usersModel from '../usersModel.js';
 import fixtures, {
   blockedUserId,
   expectedKey,
@@ -24,9 +24,9 @@ import fixtures, {
   userId,
   userToDelete,
   userToDelete2,
-} from '#api/users/specs/fixtures.js';
+} from './fixtures.js';
 
-jest.mock('#api/users/generateUnlockCode.ts', () => ({
+jest.mock('api/users/generateUnlockCode.ts', () => ({
   generateUnlockCode: () => 'hash',
 }));
 

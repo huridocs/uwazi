@@ -1,6 +1,8 @@
 /* eslint-disable max-classes-per-file */
 //@ts-ignore
-import PromisePool from '@supercharge/promise-pool';
+import PromisePoolModule from '@supercharge/promise-pool';
+const PromisePool =
+  (PromisePoolModule as { default?: typeof PromisePoolModule }).default ?? PromisePoolModule;
 import { SyncDBDataSource } from '#api/core/infrastructure/mongodb/common/SyncDBDataSource.js';
 import { model as updatelogsModel } from '#api/updatelogs/index.js';
 import mongoose from 'mongoose';

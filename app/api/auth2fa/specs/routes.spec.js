@@ -13,9 +13,9 @@ describe('Auth2fa Routes', () => {
 
   beforeEach(() => {
     routes = instrumentRoutes(auth2faRoutes);
-    jest.spyOn(usersUtils, 'setSecret').mockImplementation(() => { });
-    jest.spyOn(usersUtils, 'enable2fa').mockImplementation(() => { });
-    jest.spyOn(usersUtils, 'reset2fa').mockImplementation(() => { });
+    jest.spyOn(usersUtils, 'setSecret').mockImplementation(() => {});
+    jest.spyOn(usersUtils, 'enable2fa').mockImplementation(() => {});
+    jest.spyOn(usersUtils, 'reset2fa').mockImplementation(() => {});
   });
 
   const validateAuthorizationAndValidation = (path, roles) => {

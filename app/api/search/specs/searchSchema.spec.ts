@@ -1,7 +1,5 @@
-import ValidationError from 'ajv/dist/runtime/validation_error.js';
-
+import ValidationError from 'ajv/dist/runtime/validation_error';
 import { validation } from '#api/utils/index.js';
-
 import { searchParamsSchema } from '#shared/types/searchParameterSchema.js';
 
 describe('search schema', () => {

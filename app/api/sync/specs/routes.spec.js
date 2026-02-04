@@ -2,13 +2,13 @@
 import { models } from '#api/odm/index.js';
 import { search } from '#api/search/index.js';
 import { storage } from '#api/files/storage.js';
-import '#api/utils/jasmineHelpers';
+import '#api/utils/jasmineHelpers.js';
 import { ObjectId } from 'mongodb';
 
 import * as index from '#api/search/entitiesIndex.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import instrumentRoutes from '#api/utils/instrumentRoutes.js';
-import syncRoutes from '#api/sync/routes.js';
+import instrumentRoutes from '../../utils/instrumentRoutes.js';
+import syncRoutes from '../routes.js';
 
 describe('sync', () => {
   let routes;

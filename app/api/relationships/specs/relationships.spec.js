@@ -7,8 +7,8 @@ import entities from '#api/entities/entities.js';
 import db from '#api/utils/testing_db.js';
 
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { search } from '#api/search/index.js';
-import relationships from '#api/relationships/relationships.js';
+import { search } from '../../search.js';
+import relationships from '../relationships.js';
 import fixtures, {
   connectionID1,
   connectionID2,
@@ -32,7 +32,7 @@ import fixtures, {
   relation1,
   relation2,
   template,
-} from '#api/relationships/specs/fixtures.js';
+} from './fixtures.js';
 
 describe('relationships', () => {
   beforeEach(async () => {

@@ -3,13 +3,12 @@ import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from '#api/search/index.js';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { routes } from '#api/thesauri/routes.js';
-import { thesauri } from '#api/thesauri/thesauri.js';
-import { fixtures } from '#api/thesauri/specs/fixtures.js';
+import { routes } from '../routes.js';
+import { thesauri } from '../thesauri.js';
+import { fixtures } from './fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

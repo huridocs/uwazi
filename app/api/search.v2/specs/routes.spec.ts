@@ -1,12 +1,10 @@
 import request from 'supertest';
 import { Application } from 'express';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
 import { elastic } from '#api/search/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { searchRoutes } from '#api/search.v2/routes.js';
+import { searchRoutes } from '../routes.js';
 
 import {
   fixturesTitleSearch,
@@ -20,7 +18,7 @@ import {
   entity3es,
   entity4es,
   entity5es,
-} from '#api/search.v2/specs/fixturesTitleSearch.js';
+} from './fixturesTitleSearch.js';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);

@@ -8,12 +8,8 @@ import bodyParser from 'body-parser';
 import _ from 'lodash';
 
 import authRoutes from '#api/auth/routes.js';
-
 import entities from '#api/entities/index.js';
-
 import entitiesModel from '#api/entities/entitiesModel.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -21,53 +17,33 @@ import {
   storage,
   testingUploadPaths,
 } from '#api/files/index.js';
-
-import translations from '#api/i18n/translations.js';
-
+import translations from '#api/i18n/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-
 import relationships from '#api/relationships/index.js';
-
 import relationtypes from '#api/relationtypes/index.js';
-
 import syncRoutes from '#api/sync/routes.js';
-
-import templates from '#api/core/v1_layer/templates/templates.js';
-
+import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
-
-import thesauri from '#api/thesauri/thesauri.js';
-
+import thesauri from '#api/thesauri/index.js';
 import users from '#api/users/users.js';
-
 import { appContext } from '#api/utils/AppContext.js';
-
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
-
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-
 import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
-
 import mailer from '#api/utils/mailer.js';
-
 import db, { DBFixture } from '#api/utils/testing_db.js';
-
+import { advancedSort } from '#app/utils/advancedSort.js';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
-
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-
 import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
-
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
-
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Db, ObjectId } from 'mongodb';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
 import * as utils from '#shared/tsUtils.js';
-import { syncWorker } from '#api/sync/syncWorker.js';
+import { syncWorker } from '../syncWorker.js';
 import {
   host1Fixtures,
   host2Fixtures,
@@ -80,8 +56,7 @@ import {
   template1,
   template2,
   thesauri1Value2,
-} from '#api/sync/specs/fixtures.js';
-import { advancedSort } from '#app/utils/advancedSort.js';
+} from './fixtures.js';
 
 async function runAllTenants() {
   try {

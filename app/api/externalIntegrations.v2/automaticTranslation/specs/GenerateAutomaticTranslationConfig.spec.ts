@@ -1,27 +1,16 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { GenerateAutomaticTranslationsCofig } from '#api/externalIntegrations.v2/automaticTranslation/GenerateAutomaticTranslationConfig.js';
-import { MongoATConfigDataSource } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/MongoATConfigDataSource.js';
-import { GenerateATConfigError } from '#api/externalIntegrations.v2/automaticTranslation/errors/generateATErrors.js';
-import {
-  SemanticConfig,
-  semanticConfigSchema,
-} from '#api/externalIntegrations.v2/automaticTranslation/types/SemanticConfig.js';
-import {
-  ValidationError,
-  Validator,
-} from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
-import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-
-import testingDB from '#api/utils/testing_db.js';
-
-import { Settings } from '#shared/types/settingsType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig.js';
+import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource.js';
+import { GenerateATConfigError } from '../errors/generateATErrors.js';
+import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig.js';
+import { ValidationError, Validator } from '../infrastructure/Validator.js';
+import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
+import testingDB from '#api/utils/testing_db.js';
+import { Settings } from '#shared/types/settingsType.js';
 
 const factory = getFixturesFactory();
 
