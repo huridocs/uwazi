@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { Application } from 'express';
+import type { Application } from 'express';
 import request from 'supertest';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';

@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import { Request as ExpressRequest, Response } from 'express';
+import type { Request as ExpressRequest, Response } from 'express';
 import { join } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';

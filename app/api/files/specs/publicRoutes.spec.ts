@@ -1,5 +1,5 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
 import path from 'path';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';

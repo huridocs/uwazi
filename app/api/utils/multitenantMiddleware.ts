@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { appContext } from '#api/utils/AppContext.js';
 import { config } from '#api/config.js';
 

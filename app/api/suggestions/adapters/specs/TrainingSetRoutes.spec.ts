@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import request from 'supertest';
-import { Application } from 'express';
+import type { Application } from 'express';
 import { ObjectId } from 'mongodb';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

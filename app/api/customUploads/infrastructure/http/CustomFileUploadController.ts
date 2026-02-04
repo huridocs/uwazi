@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { CustomFileUpload } from '#api/customUploads/application/CustomFileUpload.js';
 import { CustomFileUploadFactory } from '../factories/CustomFileUploadFactory.js';

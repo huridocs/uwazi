@@ -1,4 +1,4 @@
-import { Application, Request, Response } from 'express';
+import type { Application, Request, Response } from 'express';
 
 import { elastic } from '#api/search/elastic.js';
 import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';

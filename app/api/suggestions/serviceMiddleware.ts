@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import settings from '#api/settings/settings.js';
 
 const serviceMiddleware = async (_req: Request, res: Response, next: NextFunction) => {

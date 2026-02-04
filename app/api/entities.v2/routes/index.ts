@@ -1,4 +1,4 @@
-import { Application, Request } from 'express';
+import type { Application, Request } from 'express';
 import { validation } from '#api/utils/index.js';
 import entities from '#api/entities/entities.js';
 

@@ -1,4 +1,4 @@
-import { Application, Request, Response, NextFunction } from 'express';
+import type { Application, Request, Response, NextFunction } from 'express';
 import { search } from './index.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 

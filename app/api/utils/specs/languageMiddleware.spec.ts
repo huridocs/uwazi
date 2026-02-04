@@ -1,5 +1,5 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import middleware from '../languageMiddleware.js';
 import fixtures from './languageFixtures.js';
 

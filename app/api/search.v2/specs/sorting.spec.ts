@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import request from 'supertest';
 
 import entities from '#api/entities/index.js';

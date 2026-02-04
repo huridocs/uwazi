@@ -1,6 +1,6 @@
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { NextFunction } from 'express';
+import type { NextFunction } from 'express';
 import captchaMiddleware from '../captchaMiddleware.js';
 import { CaptchaModel } from '../CaptchaModel.js';
 import { ObjectIdSchema } from '../../../shared/types/commonTypes.js';

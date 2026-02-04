@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { RetrieveStatsService } from '#api/stats/services/RetrieveStatsService.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';

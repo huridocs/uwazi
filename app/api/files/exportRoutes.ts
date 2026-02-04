@@ -1,4 +1,4 @@
-import { Application, Request, Response, NextFunction } from 'express';
+import type { Application, Request, Response, NextFunction } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import

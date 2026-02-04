@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import request from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
+import type { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from '#api/search/index.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';

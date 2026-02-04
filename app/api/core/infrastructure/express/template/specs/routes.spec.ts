@@ -1,7 +1,7 @@
 import * as entitiesIndex from '#api/search/entitiesIndex.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { Application, NextFunction } from 'express';
+import type { Application, NextFunction } from 'express';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import request from 'supertest';
 import templateRoutes from '#api/core/infrastructure/express/template/routes.js';

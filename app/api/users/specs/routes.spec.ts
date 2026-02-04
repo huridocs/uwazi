@@ -3,7 +3,7 @@ import request from 'supertest';
 
 import { WithId } from '#api/odm/model.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { DeleteResult } from 'mongodb';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';

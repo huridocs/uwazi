@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 
 import { needsAuthorization } from '#api/auth/index.js';
 import { featureFlagEnabled } from '#api/utils/featureFlagEnabledMiddleware.js';

@@ -1,4 +1,4 @@
-import { Application, Request, Response, NextFunction } from 'express';
+import type { Application, Request, Response, NextFunction } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { isOcrEnabled, ocrManager, getOcrStatus } from '#api/services/ocr/OcrManager.js';
 import { validation, createError } from '#api/utils/index.js';

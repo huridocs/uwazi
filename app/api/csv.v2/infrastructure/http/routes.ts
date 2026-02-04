@@ -5,7 +5,7 @@ import { CSVLoader } from '#api/csv/index.js';
 import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { handleError } from '#api/utils/index.js';
-import { Application } from 'express';
+import type { Application } from 'express';
 import { ParamsDictionary, Request, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { RegisterCsvImportController } from './RegisterCsvImportController.js';

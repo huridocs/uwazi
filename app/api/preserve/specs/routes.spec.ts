@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { Application } from 'express';
+import type { Application } from 'express';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import requestShared from '#shared/JSONRequest.js';

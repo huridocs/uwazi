@@ -1,4 +1,4 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
