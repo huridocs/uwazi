@@ -55,7 +55,7 @@ export abstract class AbstractController<RequestBody = any> {
   static createHandler() {
     return async (request: Request, response: Response) => {
       /* @ts-ignore - 'this' is a constructor, so 'new' is valid*/
-      const instance = new this({ request, response });
+      const instance = new this({ request, response }) as AbstractController;
 
       const tenant = tenants.current();
       const transactionManager = TransactionManagerFactory.default();
@@ -63,10 +63,14 @@ export abstract class AbstractController<RequestBody = any> {
       const idGenerator = IdGeneratorFactory.default();
       const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
 
-      return DependenciesContext.run(
-        { transactionManager, eventEmitter, idGenerator, jobsDispatcher },
-        () => instance.handleAsync()
-      );
+      DependenciesContext.attachContext(instance, 'handleAsync', {
+        transactionManager,
+        eventEmitter,
+        idGenerator,
+        jobsDispatcher,
+      });
+
+      return instance.handleAsync();
     };
   }
 

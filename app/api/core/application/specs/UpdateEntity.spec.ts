@@ -71,7 +71,7 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
     { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
   );
 
-  DependenciesContext.attachContext(sut, {
+  DependenciesContext.attachContext(sut, 'execute', {
     transactionManager,
     idGenerator,
     eventEmitter,
