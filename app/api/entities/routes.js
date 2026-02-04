@@ -90,11 +90,13 @@ export default app => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     activitylogMiddleware,
     (req, res, next) => {
-      if (tenants.current()?.featureFlags?.v2UpdateEntity) {
-        return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
+      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+
+      if (!tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave.sharedId) {
+        return uploadMiddleware.multiple()(req, res, next);
       }
 
-      return uploadMiddleware.multiple()(req, res, next);
+      return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
     },
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
