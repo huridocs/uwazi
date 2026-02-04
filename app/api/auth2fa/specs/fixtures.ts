@@ -1,5 +1,4 @@
 import db from '#api/utils/testing_db.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
 
 const userId = db.id();

@@ -3,10 +3,10 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import request from 'supertest';
 import { UserRole } from '#shared/types/userSchema.js';
 import { legacyLogger } from '#api/log/index.js';
-import documentRoutes from '#api/documents/deprecatedRoutes.js';
-import documents from '#api/documents/documents.js';
-import { fixtures } from '#api/documents/specs/fixtures.js';
-import templates from '#api/core/v1_layer/templates/index.js';
+import documentRoutes from '../deprecatedRoutes.js';
+import documents from '../documents.js';
+import { fixtures } from './fixtures.js';
+import templates from '../../core/v1_layer/templates/index.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
   req.language = 'es';

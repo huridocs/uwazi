@@ -4,11 +4,10 @@ import { Application, Request, Response, NextFunction } from 'express';
 import db from '#api/utils/testing_db.js';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { fixtures, document1 } from '#api/documents/specs/fixtures.js';
+import { fixtures, document1 } from './fixtures.js';
 
-import { documentRoutes } from '#api/documents/routes.js';
+import { documentRoutes } from '../routes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

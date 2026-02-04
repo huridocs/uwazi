@@ -1,5 +1,3 @@
-/** @format */
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import * as otplib from 'otplib';
@@ -9,8 +7,8 @@ import usersModel from '#api/users/usersModel.js';
 import settingsModel from '#api/settings/settings.js';
 import { createError } from '#api/utils/index.js';
 
-import * as usersUtils from '#api/auth2fa/usersUtils.js';
-import fixtures, { userId, secretedUserId } from '#api/auth2fa/specs/fixtures.js';
+import * as usersUtils from '../usersUtils.js';
+import fixtures, { userId, secretedUserId } from './fixtures.js';
 
 function hasKey<O extends object>(obj: O, key: keyof any): key is keyof O {
   return key in obj;

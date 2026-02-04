@@ -1,13 +1,10 @@
 import { mockID } from '#shared/uniqueID.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import date from '#api/utils/date.js';
-
 import db from '#api/utils/testing_db.js';
 
-import { fixtures, pageToUpdate } from '#api/pages/specs/fixtures.js';
-import pages from '#api/pages/pages.js';
+import { fixtures, pageToUpdate } from './fixtures.js';
+import pages from '../pages.js';
 
 describe('pages', () => {
   beforeEach(async () => {

@@ -1,6 +1,6 @@
 import { config } from '#api/config.js';
 import { tenants } from '#api/tenants/index.js';
-import { createLegacyLogger } from '#api/log/legacyLogger.js';
+import { createLegacyLogger } from '../legacyLogger.js';
 
 let lastLogMessage = '';
 

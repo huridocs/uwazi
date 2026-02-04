@@ -1,14 +1,11 @@
 import request from 'supertest';
 import { Application } from 'express';
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import requestShared from '#shared/JSONRequest.js';
-import { PreserveRoutes } from '#api/preserve/routes.js';
+import { PreserveRoutes } from '../routes.js';
 
-import fixtures, { userId1, userId2 } from '#api/preserve/specs/fixtures.js';
+import fixtures, { userId1, userId2 } from './fixtures.js';
 
 describe('entities get searchString', () => {
   const user = { _id: userId2 };

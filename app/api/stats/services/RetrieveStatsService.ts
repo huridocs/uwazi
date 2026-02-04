@@ -1,7 +1,5 @@
 import { Db } from 'mongodb';
-
 import { elastic } from '#api/search/index.js';
-
 import { UserSchema } from '#shared/types/userType.js';
 
 type RoleCount = {

@@ -9,7 +9,7 @@ import {
 import * as processDocumentApi from '#api/files/processDocument.js';
 import { search } from '#api/search/index.js';
 import db from '#api/utils/testing_db.js';
-import { advancedSort } from 'app/utils/advancedSort';
+import { advancedSort } from '#app/utils/advancedSort.js';
 import * as os from 'os';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
@@ -84,7 +84,7 @@ describe('entitySavingManager', () => {
   });
 
   describe('saveEntity', () => {
-    const reqData = { user: editorUser, language: 'en', socketEmiter: () => {} };
+    const reqData = { user: editorUser, language: 'en', socketEmiter: () => { } };
 
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {

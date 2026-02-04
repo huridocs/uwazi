@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 import { testingDB as db, DBFixture } from '#api/utils/testing_db.js';
 
 const batmanFinishesId = db.id();

@@ -1,21 +1,15 @@
 import entities from '#api/entities/index.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { fileExistsOnPath, uploadsPath } from '#api/files/index.js';
-
 import relationships from '#api/relationships/index.js';
-
 import { search } from '#api/search/index.js';
-
 import db from '#api/utils/testing_db.js';
-
 import { mockID } from '#shared/uniqueID.js';
 
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { documents } from '#api/documents/documents.js';
-import { fixtures } from '#api/documents/specs/fixtures.js';
+import { documents } from '../documents.js';
+import { fixtures } from './fixtures.js';
 
 describe('documents', () => {
   beforeEach(async () => {

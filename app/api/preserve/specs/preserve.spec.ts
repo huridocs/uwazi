@@ -1,13 +1,8 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import settings from '#api/settings/index.js';
-
 import templates from '#api/core/v1_layer/templates/index.js';
-
-import thesauri from '#api/thesauri/thesauri.js';
-
+import thesauri from '#api/thesauri/index.js';
 import request from '#shared/JSONRequest.js';
-
 import { PreserveConfig } from '#shared/types/settingsType.js';
 import fixtures, { userId1, userId2 } from './fixtures.js';
 import { Preserve } from '../preserve.js';
