@@ -3,7 +3,7 @@ import { Result } from 'api/core/libs/Result';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
 import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues';
 import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues';
-import { CsvCreateThesauriValuesJob } from '../CsvCreateThesauriValuesJob';
+import { CsvCreateThesauriValuesJobFactory } from '../../../infrastructure/factories/CsvCreateThesauriValuesJobFactory';
 
 const createTransactionManager = () =>
   ({
@@ -75,12 +75,12 @@ describe('CsvCreateThesauriValuesJob', () => {
     const jobsDispatcher = {
       dispatch: jest.fn().mockResolvedValue(undefined),
     };
-    const useCase = new CsvCreateThesauriValuesJob({
+    const { useCase } = CsvCreateThesauriValuesJobFactory.build({
+      transactionManager: transactionManager as any,
       csvImportsDS: csvImportsDS as any,
       thesauriValuesDS: thesauriValuesDS as any,
       thesauriRepo: thesauriRepo as any,
       translationsRepo: translationsRepo as any,
-      transactionManager,
       jobsDispatcher: jobsDispatcher as any,
     });
 

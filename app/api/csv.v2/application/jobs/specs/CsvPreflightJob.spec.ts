@@ -1,20 +1,15 @@
 /* eslint-disable max-statements, max-classes-per-file */
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
 import { CsvImportRow } from '../../../domain/CsvImportRow';
-import { CsvPreflightJob } from '../CsvPreflightJob';
+import { CsvPreflightJobFactory } from '../../../infrastructure/factories/CsvPreflightJobFactory';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -64,26 +59,13 @@ const insertImport = async (
 
 const buildUseCase = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-  const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const thesauriValuesDS =
-    CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
-  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
   const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
     dispatchMany: jest.fn().mockResolvedValue(undefined),
   }) as jest.Mocked<JobsDispatcher>;
-  const useCase = new CsvPreflightJob({
-    csvImportsDS,
-    rowsDS,
-    templatesDS,
-    settingsDS,
-    thesauriDS,
-    thesauriValuesDS,
-    jobsDispatcher,
+  const { useCase, csvImportsDS, rowsDS, thesauriValuesDS } = CsvPreflightJobFactory.build({
     transactionManager,
+    jobsDispatcher,
   });
   return {
     useCase,

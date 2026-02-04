@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Result } from 'api/core/libs/Result';
-import { CsvPreflightJob } from '../CsvPreflightJob';
+import { CsvPreflightJobFactory } from '../../../infrastructure/factories/CsvPreflightJobFactory';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
 
 jest.mock('api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob', () => ({
@@ -47,7 +47,8 @@ describe('CsvPreflightJob error handling', () => {
       getByImport: jest.fn().mockRejectedValue(new Error('rows explode')),
     };
 
-    const useCase = new CsvPreflightJob({
+    const { useCase } = CsvPreflightJobFactory.build({
+      transactionManager: transactionManager as any,
       csvImportsDS: csvImportsDS as any,
       rowsDS: rowsDS as any,
       templatesDS: { getById: jest.fn() } as any,
@@ -59,14 +60,13 @@ describe('CsvPreflightJob error handling', () => {
       thesauriDS: {
         appendRootLabelsIfMissing: noop,
         appendNestedLabelsIfMissing: noop,
-      },
+      } as any,
       thesauriValuesDS: {
         replacePendingValues: jest.fn(),
       } as any,
       jobsDispatcher: {
         dispatch: jest.fn(),
       } as any,
-      transactionManager,
     });
 
     const callbacks = {

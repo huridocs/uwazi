@@ -12,15 +12,12 @@ import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/domain/CsvImport';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { CsvImportFileNormalizer } from '../../services/CsvImportFileNormalizer';
-import { CsvImportRowsStager } from '../../services/CsvImportRowsStager';
+import { CsvExtractUploadedZipJobFactory } from 'api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory';
 import { CsvExtractUploadedZipJob, Callbacks } from '../CsvExtractUploadedZipJob';
 
 const callbacks: Callbacks = {
@@ -60,27 +57,17 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const setUp = (options?: { batchSize?: number }) => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
-    const fileNormalizer = new CsvImportFileNormalizer({
-      fileStorage,
-      filesIO: new FileContentsIO(),
-    });
-    const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options?.batchSize });
     const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-
-    const useCase = new CsvExtractUploadedZipJob({
-      csvImportsDS,
-      fileNormalizer,
-      rowsStager,
-      rowsDS,
+    const { useCase, csvImportsDS, rowsDS } = CsvExtractUploadedZipJobFactory.build({
       transactionManager,
+      fileStorage,
+      batchSize: options?.batchSize,
       jobsDispatcher,
     });
     return { useCase, csvImportsDS, rowsDS, pathManager, fileStorage, jobsDispatcher };
