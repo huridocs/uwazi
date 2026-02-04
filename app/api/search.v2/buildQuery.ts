@@ -6,10 +6,10 @@ import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 type Filter = (RangeFilter | CompoundFilter | string | number | boolean) | undefined;
 
 const isRange = (range: Filter): range is RangeFilter =>
-  typeof range === 'object' && (range.hasOwnProperty('from') || range.hasOwnProperty('to'));
+  typeof range === 'object' && (Object.hasOwn(range, 'from') || Object.hasOwn(range, 'to'));
 
 const isCompound = (filterValue: Filter): filterValue is CompoundFilter =>
-  typeof filterValue === 'object' && filterValue.hasOwnProperty('values');
+  typeof filterValue === 'object' && Object.hasOwn(filterValue, 'values');
 
 const getFilterValue = (filterValue: Filter) => {
   if (isCompound(filterValue)) {
