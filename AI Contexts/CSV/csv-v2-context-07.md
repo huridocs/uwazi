@@ -187,6 +187,11 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 ### 7) Agent-specific notes (handoff)
 
+- **Doc hygiene is mandatory:** Whenever a user gives new instructions or corrections,
+  update the relevant CSV v2 context docs in the same iteration so the next agent can
+  continue without extra guidance. These MDs are the source of truth.
+- **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
+  in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
   `UserAwareDispatchable` requires them and throws if missing.
 - **Dispatcher awareness**:
