@@ -569,8 +569,10 @@ No options found,No options found
 No property,Item does not have this property
 No References,No References
 No References description,References are parts of this document related with other documents and entities.
+No relationship types available,No relationship types available
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
+No results found,No results found
 No table of contents,No table of contents
 No Table of contents,No Table of contents
 No table of contents description,"You can start by selecting text in the document and clicking the ""Add to ToC"" button."
@@ -768,6 +770,7 @@ Search Tips: exact term,"Exact term match by enclosing your search string with q
 Search Tips: one char wildcard,"? for one character wildcard. Ie: ""198?"" will match 1980 to 1989 and also 198a, 198b, etc."
 Search Tips: proximity,"~ for proximity searches. Ie: ""the status""~5 will find anything having ""the"" and""status"" within a distance of 5 words, such as ""the procedural status"", ""the specific legal status""."
 Search Tips: wildcard,"Use an * for wildcard search. Ie: ""juris*"" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc."
+Searching...,Searching...
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -956,6 +959,7 @@ Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Translations saved
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
