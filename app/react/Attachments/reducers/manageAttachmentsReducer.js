@@ -1,14 +1,15 @@
+import Immutable from 'immutable';
 import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
 import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
-import Immutable from 'immutable';
+
 const getId = (state, setInArray) => state.getIn(setInArray.concat(['_id']));
 const getSharedId = (state, setInArray) => state.getIn(setInArray.concat(['sharedId']));
 
 const getAttachments = (state, setInArray) =>
-  state.getIn(setInArray.concat(['attachments'])) || Immutable.List([]);
+  state.getIn(setInArray.concat(['attachments'])) || Immutable.fromJS([]);
 
 const getDocuments = (state, setInArray) =>
-  state.getIn(setInArray.concat(['documents'])) || Immutable.List([]);
+  state.getIn(setInArray.concat(['documents'])) || Immutable.fromJS([]);
 
 export const manageAttachmentsReducer =
   (originalReducer, { useDefaults = true, setInArray = [] } = {}) =>

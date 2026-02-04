@@ -43,8 +43,9 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
 
   return (
     <div
-      className={`w-full border rounded-xl shadow-sm p-4 bg-white flex flex-col gap-3 cursor-pointer transition-colors ${isSelected ? 'border-primary-400 border-2' : 'border-gray-100'
-        }`}
+      className={`w-full border rounded-xl shadow-sm p-4 bg-white flex flex-col gap-3 cursor-pointer transition-colors ${
+        isSelected ? 'border-primary-400 border-2' : 'border-gray-100'
+      }`}
       onClick={onClick}
       role="button"
       tabIndex={0}

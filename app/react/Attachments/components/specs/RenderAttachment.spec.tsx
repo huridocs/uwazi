@@ -1,11 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
-
-import MarkdownMedia, { MarkdownMediaProps } from '#app/Markdown/components/MarkdownMedia.jsx';
+import MarkdownMedia, { MarkdownMediaProps } from '#app/Markdown/components/MarkdownMedia.js';
 import ReactPlayer from 'react-player';
-import { RenderAttachment } from '#app/Attachments/components/RenderAttachment.jsx';
+import { RenderAttachment } from '../RenderAttachment.js';
 
 describe('RenderAttachment', () => {
   let component: ShallowWrapper<typeof RenderAttachment>;

@@ -1,10 +1,8 @@
 import React from 'react';
-
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import ReactPlayer from 'react-player';
-import MarkdownMedia from '#app/Markdown/components/MarkdownMedia.js';
 import { ClientFile } from '#app/istore.js';
-
+import MarkdownMedia from '#app/Markdown/components/MarkdownMedia.js';
 import { isSerializedFile, prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
 
 export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema | ClientFile }) => {

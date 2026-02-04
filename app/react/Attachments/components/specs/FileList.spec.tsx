@@ -1,15 +1,11 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-
 import { FileType } from '#shared/types/fileType.js';
-
-import UploadButton from '#app/Metadata/components/UploadButton.jsx';
-
+import UploadButton from '#app/Metadata/components/UploadButton.js';
 import { LanguageUtils } from '#shared/language/index.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
-import { ConnectedFile as File } from '#app/Attachments/components/File.jsx';
-import { FileList, FileListProps } from '#app/Attachments/components/FileList.jsx';
+import { ConnectedFile as File } from '../File.js';
+import { FileList, FileListProps } from '../FileList.js';
 
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;
