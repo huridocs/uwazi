@@ -111,11 +111,14 @@ const entityLoader =
       );
 
       if (!searchResults) {
-        searchResults = await snippets({
-          sharedId: entity.sharedId,
-          limit: 0,
-          searchString: currentSearchTerm,
-        });
+        searchResults = await snippets(
+          {
+            sharedId: entity.sharedId,
+            limit: 0,
+            searchString: currentSearchTerm,
+          },
+          headers
+        );
 
         entityLoaderCache.setSearchResults(
           entity.sharedId,
