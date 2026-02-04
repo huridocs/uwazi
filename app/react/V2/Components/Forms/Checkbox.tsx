@@ -14,7 +14,7 @@ interface CheckboxProps {
 
 const Checkbox = React.forwardRef(
   ({ name, onChange, className, disabled, checked, label }: CheckboxProps, ref: Ref<any>) => (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <fieldset className={`flex items-center gap-2 border-0 p-0 m-0 ${className}`}>
       <div className="relative inline-flex items-center">
         <input
           type="checkbox"
@@ -69,7 +69,7 @@ const Checkbox = React.forwardRef(
       >
         {isString(label) ? <Translate>{label}</Translate> : label}
       </label>
-    </div>
+    </fieldset>
   )
 );
 
