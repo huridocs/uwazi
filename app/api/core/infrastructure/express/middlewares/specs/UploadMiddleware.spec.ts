@@ -183,6 +183,26 @@ describe('uploadFilesMiddleware', () => {
       });
     });
 
+    it('should log a deprecation warning when originalname fields are not provided in body', async () => {
+      const mockLogger = LoggerFactory.fake();
+      jest.spyOn(mockLogger, 'debug');
+
+      const app = express();
+      app.post(
+        '/test/deprecation',
+        new UploadMiddleware(mockLogger).multiple(),
+        (_req, _res, next) => {
+          next();
+        }
+      );
+
+      await request(app)
+        .post('/test/deprecation')
+        .attach('documents[0]', Buffer.from('content'), 'file.txt');
+
+      expect(mockLogger.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation warning'));
+    });
+
     it('should tag inputFile with the proper type (attachment or document)', async () => {
       expect(inputFiles[0].isDocument()).toBe(true);
       expect(inputFiles[1].isDocument()).toBe(true);

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
@@ -8,9 +9,7 @@ import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/Up
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import entities from 'api/entities';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { withTransaction } from 'api/utils/withTransaction';
-import { Application, Request } from 'express';
+import { Application } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
@@ -159,42 +158,7 @@ export default (app: Application) => {
   app.delete(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          required: ['_id'],
-          additionalProperties: false,
-          properties: {
-            _id: { type: 'string' },
-          },
-        },
-      },
-    }),
-    async (req: Request<{}, {}, {}, { _id: string }>, res) => {
-      if (tenants.current().featureFlags?.v2DeleteFile) {
-        await FileDeleteController.createHandler()(req, res);
-      } else {
-        const [fileToDelete] = await files.get({ _id: req.query._id });
-        if (
-          !fileToDelete ||
-          !(await checkEntityPermission(
-            fileToDelete,
-            permissionsContext.getUserInContext(),
-            'write'
-          ))
-        ) {
-          throw createError('file not found', 404);
-        }
-        await withTransaction(async () => {
-          const [deletedFile] = await files.delete({ _id: req.query._id });
-          const thumbnailFileName = `${deletedFile._id}.jpg`;
-          await files.delete({ filename: thumbnailFileName });
-          res.json([deletedFile]);
-        }, 'DELETE /api/files');
-      }
-    }
+    FileDeleteController.createHandler()
   );
 
   app.get(
