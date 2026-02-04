@@ -22,11 +22,20 @@ type UpdateProps = {
 };
 
 const sanitizeFilename = (filename: string) => {
-  // Remove path traversal attempts, path separators, and null bytes
-  const sanitized = filename
-    .replace(/\.\.[\\\/]/g, '')
-    .replace(/[\\\/]/g, '')
-    .replace(/\0/g, '');
+  let sanitized = filename;
+  let prev;
+
+  // Loop until no more changes (defense against pattern regeneration)
+  do {
+    prev = sanitized;
+    // Remove any sequence of dots followed by path separator (./, ../, .../, etc.)
+    sanitized = sanitized
+      .replace(/\.+[\\\/]/g, '')
+      // Remove any remaining path separators
+      .replace(/[\\\/]/g, '')
+      // Remove null bytes
+      .replace(/\0/g, '');
+  } while (prev !== sanitized);
 
   return sanitized;
 };

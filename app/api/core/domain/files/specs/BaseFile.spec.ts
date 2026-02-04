@@ -71,6 +71,38 @@ describe('BaseFile', () => {
         });
         expect(file.originalname).toBe('pathtofile.txt');
       });
+
+      it('should fully sanitize multiple dots before path separators', () => {
+        const file = new FileAttachment({
+          ...validFileProps,
+          originalname: '....//file.txt',
+        });
+        expect(file.originalname).toBe('file.txt');
+      });
+
+      it('should fully sanitize interleaved traversal patterns', () => {
+        const file = new FileAttachment({
+          ...validFileProps,
+          originalname: '..././file.txt',
+        });
+        expect(file.originalname).toBe('file.txt');
+      });
+
+      it('should fully sanitize triple dots with backslash', () => {
+        const file = new FileAttachment({
+          ...validFileProps,
+          originalname: '...\\file.txt',
+        });
+        expect(file.originalname).toBe('file.txt');
+      });
+
+      it('should handle complex nested traversal attempts', () => {
+        const file = new FileAttachment({
+          ...validFileProps,
+          originalname: '..../.././etc/passwd',
+        });
+        expect(file.originalname).toBe('etcpasswd');
+      });
     });
 
     describe('filename field', () => {
@@ -105,6 +137,14 @@ describe('BaseFile', () => {
           filename: 'folder\\file.txt',
         });
         expect(file.filename).toBe('folderfile.txt');
+      });
+
+      it('should fully sanitize multiple dots in filename', () => {
+        const file = new FileAttachment({
+          ...validFileProps,
+          filename: '....//generated.pdf',
+        });
+        expect(file.filename).toBe('generated.pdf');
       });
     });
 
