@@ -1,6 +1,8 @@
 import { FileAttachment } from '../FileAttachment';
 import { CustomUpload } from '../CustomUpload';
 import { FileContents } from '../FileContents';
+import { Thumbnail } from '../Thumbnail';
+import { URLAttachment } from '../URLAttachment';
 
 describe('BaseFile', () => {
   const validFileProps = {
@@ -157,6 +159,10 @@ describe('BaseFile', () => {
           'video/mp4',
           'application/vnd.ms-excel',
           'application/x-custom+xml',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/html',
+          'text/html; charset=utf-8',
         ];
 
         validMimeTypes.forEach(mimetype => {
@@ -202,18 +208,6 @@ describe('BaseFile', () => {
         expect(file.size).toBe(12345);
       });
 
-      it('should reject zero size', () => {
-        expect(() => new FileAttachment({ ...validFileProps, size: 0 })).toThrow(
-          'File size must be greater than 0'
-        );
-      });
-
-      it('should reject negative size', () => {
-        expect(() => new FileAttachment({ ...validFileProps, size: -100 })).toThrow(
-          'File size must be greater than 0'
-        );
-      });
-
       it('should reject non-integer size', () => {
         expect(() => new FileAttachment({ ...validFileProps, size: 123.45 })).toThrow(
           'File size must be an integer'
@@ -227,19 +221,6 @@ describe('BaseFile', () => {
         const file = new FileAttachment({ ...validFileProps, creationDate: timestamp });
         expect(file.creationDate).toBe(timestamp);
       });
-
-      it('should reject zero timestamp', () => {
-        expect(() => new FileAttachment({ ...validFileProps, creationDate: 0 })).toThrow(
-          'Creation date must be a valid timestamp'
-        );
-      });
-
-      it('should reject negative timestamp', () => {
-        expect(() => new FileAttachment({ ...validFileProps, creationDate: -1000 })).toThrow(
-          'Creation date must be a valid timestamp'
-        );
-      });
-
       it('should reject non-integer timestamp', () => {
         expect(() => new FileAttachment({ ...validFileProps, creationDate: 123.456 })).toThrow(
           'Creation date must be an integer'
@@ -338,6 +319,65 @@ describe('BaseFile', () => {
       const largeSize = 10 * 1024 * 1024 * 1024; // 10GB
       const file = new FileAttachment({ ...validFileProps, size: largeSize });
       expect(file.size).toBe(largeSize);
+    });
+  });
+
+  it('should fallback properties correctly in constructor', () => {
+    const attachment = new FileAttachment({
+      id: 'id',
+      content: validFileProps.content,
+      filename: 'filename',
+      mimetype: 'application/pdf',
+      entity: 'entity',
+
+      size: undefined as any,
+      creationDate: undefined as any,
+      originalname: undefined as any,
+    });
+
+    const thumbnail = new Thumbnail({
+      id: 'id',
+      content: validFileProps.content,
+      filename: 'filename',
+      language: 'en',
+      entity: 'entity',
+
+      mimetype: undefined as any,
+      size: undefined as any,
+      creationDate: undefined as any,
+      originalname: undefined as any,
+    });
+
+    const urlAttachment = new URLAttachment({
+      id: 'id',
+      entity: 'entity',
+      url: 'http://example.com/file.pdf',
+      mimetype: 'application/pdf',
+
+      filename: undefined as any,
+      size: undefined as any,
+      creationDate: undefined as any,
+      originalname: undefined as any,
+    });
+
+    expect(attachment).toMatchObject({
+      size: 0,
+      creationDate: 0,
+      originalname: 'filename',
+    });
+
+    expect(thumbnail).toMatchObject({
+      size: 0,
+      creationDate: 0,
+      originalname: 'filename',
+      mimetype: 'image/jpeg',
+    });
+
+    expect(urlAttachment).toMatchObject({
+      size: 0,
+      creationDate: 0,
+      originalname: 'http://example.com/file.pdf',
+      filename: 'http://example.com/file.pdf',
     });
   });
 });

@@ -59,14 +59,11 @@ const Schema = z.object({
     .trim()
     .min(1, 'MIME type is required')
     .regex(
-      /^[a-zA-Z0-9][a-zA-Z0-9!#$&^_+-]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]*$/,
+      /^[a-zA-Z0-9][a-zA-Z0-9!#$&^_+-]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]*(;\s*[\w-]+=[\w-]+)*$/,
       'Invalid MIME type format'
     ),
-  size: z.number().int('File size must be an integer').positive('File size must be greater than 0'),
-  creationDate: z
-    .number()
-    .int('Creation date must be an integer')
-    .positive('Creation date must be a valid timestamp'),
+  size: z.number().int('File size must be an integer'),
+  creationDate: z.number().int('Creation date must be an integer'),
   uploaded: z.boolean().optional(),
   content: z.any().optional(),
   entity: z.union([z.string().min(1, 'Entity ID must not be empty'), z.undefined()]),
@@ -75,9 +72,9 @@ const Schema = z.object({
 export abstract class BaseFile {
   readonly id: string;
 
-  readonly originalname: string;
+  originalname: string;
 
-  readonly filename: string;
+  filename: string;
 
   readonly mimetype: string;
 
@@ -97,6 +94,8 @@ export abstract class BaseFile {
     const validated = Schema.parse({
       ...props,
       originalname: props.originalname ?? props.filename,
+      creationDate: props.creationDate ?? 0,
+      size: props.size ?? 0,
     });
 
     this.id = validated.id;
