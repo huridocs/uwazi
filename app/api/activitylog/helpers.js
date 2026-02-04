@@ -34,7 +34,7 @@ const templateName = data =>
   data.templateData ? `${data.templateData.name} (${data._id})` : data._id;
 
 const loadEntityFromPublicForm = async data => {
-  const entity = JSON.parse(data.entity);
+  const entity = typeof data.entity === 'string' ? JSON.parse(data.entity) : data.entity;
   const templateData = await templates.getById(entity.template);
   return { ...data, templateData, title: entity.title };
 };

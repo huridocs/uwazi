@@ -28,7 +28,7 @@ describe('assertStatus', () => {
         text: JSON.stringify('validation error'),
       });
       await expect(result.message).toMatch('validation error');
-      expect(result.stack).toBeUndefined();
+      expect(result.stack).toBeDefined();
     });
   });
 });

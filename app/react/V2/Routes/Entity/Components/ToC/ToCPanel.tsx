@@ -84,6 +84,7 @@ const ToCPanel = ({
     setIsSaving(true);
     try {
       // Sort entries before saving to match display order
+      // Note: selection rectangles are already normalized (scale=1) when entries are added
       const sortedToc = sortTocEntries(tocState.toc);
       const updatedFile: FileType = {
         ...file,

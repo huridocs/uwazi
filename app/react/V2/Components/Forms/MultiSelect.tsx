@@ -38,7 +38,28 @@ const MultiSelect = ({
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'top-end',
-    strategy: 'absolute',
+    strategy: 'fixed',
+    modifiers: [
+      {
+        name: 'flip',
+        options: {
+          fallbackPlacements: ['bottom-end', 'top-start', 'bottom-start'],
+        },
+      },
+      {
+        name: 'preventOverflow',
+        options: {
+          boundary: document.documentElement,
+          padding: 8,
+        },
+      },
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 8],
+        },
+      },
+    ],
   });
 
   const [currentValue, setCurrentValue] = useState<string[]>(value);
