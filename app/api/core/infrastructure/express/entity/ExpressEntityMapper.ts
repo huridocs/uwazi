@@ -23,6 +23,7 @@ class ExpressEntityMapper {
       a => !a._id
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, documentsUpdated] = ArrayUtils.splitInTwo(props.dto.documents || [], d => !d._id);
 
     const input: UpdateEntityUseCaseInput = {
