@@ -1,14 +1,14 @@
 import { Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/165-repair_select_parent_denormalization/index.js';
-import { Fixture } from '#api/migrations/migrations/165-repair_select_parent_denormalization/types.js';
+import migration from '../index.js';
+import { Fixture } from '../types.js';
 import {
   oneLanguageFixtures,
   multiLanguageFixtures,
   correctFixtures,
   entities as entityFixtures,
-} from '#api/migrations/migrations/165-repair_select_parent_denormalization/specs/fixtures.js';
+} from './fixtures.js';
 
 let db: Db | null;
 let entities: any[] = [];

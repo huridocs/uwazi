@@ -1,9 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { Db, FindCursor, ObjectId } from 'mongodb';
-import {
-  EntitySchema,
-  TemplateSchema,
-} from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
+import { EntitySchema, TemplateSchema } from '../143-parse-numeric-fields/types.js';
 
 type UpdateOperation = {
   updateOne: {

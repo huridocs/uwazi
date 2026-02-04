@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/146-remove_translationsv2_traces/index.js';
-import { fixtures } from '#api/migrations/migrations/146-remove_translationsv2_traces/specs/fixtures.js';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
 
 describe('migration remove_translationsv2_traces', () => {
   beforeEach(async () => {

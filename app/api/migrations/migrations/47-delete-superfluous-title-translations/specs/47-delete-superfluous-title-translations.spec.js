@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/47-delete-superfluous-title-translations/index.js';
-import fixtures from '#api/migrations/migrations/47-delete-superfluous-title-translations/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 const expectedDefaultResult = [
   { key: 'default template', value: 'default template' },

@@ -1,8 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/123-remove_old_system_key_translations/index.js';
-import fixtures, {
-  templateContext,
-} from '#api/migrations/migrations/123-remove_old_system_key_translations/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures, { templateContext } from './fixtures.js';
 
 describe('remove old system translation migration', () => {
   beforeEach(async () => {

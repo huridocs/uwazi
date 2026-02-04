@@ -1,17 +1,9 @@
 import { Collection, Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import {
-  settingsOnlyDuplication,
-  defaultLanguageDuplication,
-  allCases,
-} from '#api/migrations/migrations/151-remove_duplicate_languages/specs/fixtures.js';
-import migration from '#api/migrations/migrations/151-remove_duplicate_languages/index.js';
-import {
-  Entity,
-  Fixture,
-  Page,
-} from '#api/migrations/migrations/151-remove_duplicate_languages/types.js';
+import { settingsOnlyDuplication, defaultLanguageDuplication, allCases } from './fixtures.js';
+import migration from '../index.js';
+import { Entity, Fixture, Page } from '../types.js';
 
 let db: Db | null;
 

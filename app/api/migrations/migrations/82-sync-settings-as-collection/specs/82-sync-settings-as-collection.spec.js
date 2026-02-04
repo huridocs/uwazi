@@ -1,5 +1,5 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/82-sync-settings-as-collection/index.js';
+import migration from '../index.js';
 
 describe('migration sync-settings-as-collection', () => {
   beforeEach(async () => {

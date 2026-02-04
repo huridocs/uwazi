@@ -1,11 +1,8 @@
 import { Db } from 'mongodb';
-
 import testingDB from '#api/utils/testing_db.js';
-import migration, {
-  deletedKeys,
-} from '#api/migrations/migrations/162-update-translations/index.js';
-import { fixtures } from '#api/migrations/migrations/162-update-translations/specs/fixtures.js';
-import { Fixture } from '#api/migrations/migrations/162-update-translations/types.js';
+import migration, { deletedKeys } from '../index.js';
+import { fixtures } from './fixtures.js';
+import { Fixture } from '../types.js';
 
 let db: Db | null;
 

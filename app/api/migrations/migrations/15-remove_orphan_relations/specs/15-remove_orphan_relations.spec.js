@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/15-remove_orphan_relations/index.js';
-import fixtures from '#api/migrations/migrations/15-remove_orphan_relations/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration remove_orphan_relations', () => {
   beforeEach(async () => {

@@ -1,4 +1,4 @@
-import { Fixture } from '#api/migrations/migrations/171-px_mongo_indexes/types.js';
+import { Fixture } from '../types.js';
 
 const fixtures: Fixture = {};
 

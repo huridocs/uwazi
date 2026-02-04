@@ -2,11 +2,7 @@
 import _ from 'lodash';
 import { Db, ObjectId } from 'mongodb';
 
-import {
-  Entity,
-  Page,
-  Settings,
-} from '#api/migrations/migrations/151-remove_duplicate_languages/types.js';
+import { Entity, Page, Settings } from './types.js';
 
 export default {
   delta: 151,

@@ -1,10 +1,7 @@
 import { ObjectId } from 'mongodb';
 
-import {
-  FileType,
-  Fixture,
-} from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/types.js';
-import { generateFileName } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/fileUtils.js';
+import { FileType, Fixture } from '../types.js';
+import { generateFileName } from '../fileUtils.js';
 
 const primaryDocument: FileType = {
   _id: new ObjectId(),

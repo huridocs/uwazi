@@ -1,11 +1,8 @@
 import testingDB from '#api/utils/testing_db.js';
-
 import { migrator } from '#api/migrations/migrator.js';
 import path from 'path';
-
 import { runMigration } from '#api/migrations/migrate.js';
 import { Connection } from 'mongoose';
-
 import { DB } from '#api/odm/index.js';
 
 describe('migrate', () => {

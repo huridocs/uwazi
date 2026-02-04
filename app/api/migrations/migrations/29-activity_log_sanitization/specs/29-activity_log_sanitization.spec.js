@@ -4,8 +4,8 @@ import {
   IGNORED_ENDPOINTS,
 } from '#api/activitylog/activitylogMiddleware.js';
 import date from '#api/utils/date.js';
-import migration from '#api/migrations/migrations/29-activity_log_sanitization/index.js';
-import fixtures from '#api/migrations/migrations/29-activity_log_sanitization/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration activity log sanitization', () => {
   beforeAll(async () => {

@@ -1,8 +1,7 @@
 import { Db } from 'mongodb';
-
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/168-remove_obsolete_mongo_index/index.js';
-import { fixtures } from '#api/migrations/migrations/168-remove_obsolete_mongo_index/specs/fixtures.js';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
 
 describe('migration remove_obsolete_mongo_index', () => {
   let suggestionsIndexInfo: { [x: string]: any };

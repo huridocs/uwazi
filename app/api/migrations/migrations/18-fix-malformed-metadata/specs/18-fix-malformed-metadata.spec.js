@@ -1,13 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/18-fix-malformed-metadata/index.js';
-import fixtures, {
-  thesauri1,
-  thesauri2,
-  entity1,
-  entity2,
-  entity3,
-  entity4,
-} from '#api/migrations/migrations/18-fix-malformed-metadata/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures, { thesauri1, thesauri2, entity1, entity2, entity3, entity4 } from './fixtures.js';
 
 describe('migration fix-malformed-metadata', () => {
   beforeEach(async () => {

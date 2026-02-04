@@ -1,5 +1,5 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/106-reindex_if_topic_classification_active/index.js';
+import migration from '../index.js';
 
 describe('migration reindex_if_topic_classification_active', () => {
   afterAll(async () => {

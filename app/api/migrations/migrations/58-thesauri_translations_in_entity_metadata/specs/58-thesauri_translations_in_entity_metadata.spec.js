@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/58-thesauri_translations_in_entity_metadata/index.js';
-import { fixtures } from '#api/migrations/migrations/58-thesauri_translations_in_entity_metadata/specs/fixtures.js';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
 
 describe('thesauri_translations_in_entity_metadata', () => {
   beforeEach(async () => {

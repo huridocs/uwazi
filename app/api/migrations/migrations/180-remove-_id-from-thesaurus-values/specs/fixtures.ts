@@ -1,5 +1,5 @@
 import db from '#api/utils/testing_db.js';
-import { Fixture } from '#api/migrations/migrations/180-remove-_id-from-thesaurus-values/types.js';
+import { Fixture } from '../types.js';
 
 const ids = {
   thesaurus_1: db.id(),

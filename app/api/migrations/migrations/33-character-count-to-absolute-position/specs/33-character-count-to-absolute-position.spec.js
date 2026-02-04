@@ -13,8 +13,8 @@ import {
   secondConnectionId,
 } from '#api/migrations/migrations/33-character-count-to-absolute-position/specs/fixtures.js';
 
-import fixtures from '#api/migrations/migrations/33-character-count-to-absolute-position/specs/fixtures.js';
-import migration from '#api/migrations/migrations/33-character-count-to-absolute-position/index.js';
+import fixtures from './fixtures.js';
+import migration from '../index.js';
 
 describe('conversion of character count to absolute position', () => {
   beforeEach(async () => {

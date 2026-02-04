@@ -1,5 +1,4 @@
-import { Fixture } from '#api/migrations/migrations/156-populate_default_map_layers/types.js';
-
+import { Fixture } from '../types.js';
 import db from '#api/utils/testing_db.js';
 
 const fixtures: Fixture = {

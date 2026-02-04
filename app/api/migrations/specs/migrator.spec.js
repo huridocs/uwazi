@@ -1,19 +1,14 @@
 import { toHaveBeenCalledBefore } from 'jest-extended';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from '#api/utils/testing_db.js';
-import migrationsModel from '#api/migrations/migrationsModel.js';
-import { migrator } from '#api/migrations/migrator.js';
-import migration1 from '#api/migrations/specs/testMigrations/1-migrationTest/index.js';
-import migration10 from '#api/migrations/specs/testMigrations/10-migrationTest/index.js';
-import migration2 from '#api/migrations/specs/testMigrations/2-migrationTest/index.js';
+import testingDB from '../../utils/testing_db.js';
+import migrationsModel from '../migrationsModel.js';
+import { migrator } from '../migrator.js';
+import migration1 from './testMigrations/1-migrationTest.js';
+import migration10 from './testMigrations/10-migrationTest.js';
+import migration2 from './testMigrations/2-migrationTest.js';
 
 expect.extend({ toHaveBeenCalledBefore });
 

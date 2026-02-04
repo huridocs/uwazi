@@ -1,4 +1,4 @@
-import { DBFixture } from '#api/migrations/migrations/150-per_namespace_lastSyncs/types.js';
+import { DBFixture } from '../types.js';
 
 export const fixtures: DBFixture = {
   syncs: [

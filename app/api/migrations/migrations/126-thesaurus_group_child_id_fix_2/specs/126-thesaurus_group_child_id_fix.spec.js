@@ -1,5 +1,5 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/126-thesaurus_group_child_id_fix_2/index.js';
+import migration from '../index.js';
 import {
   dictAId,
   dictBId,
@@ -8,7 +8,7 @@ import {
   selectTemplateId,
   multiSelectTemplateId,
   inheritingTemplateId,
-} from '#api/migrations/migrations/126-thesaurus_group_child_id_fix_2/specs/fixtures.js';
+} from './fixtures.js';
 
 describe('migration thesaurus_group_child_id_fix', () => {
   let db;

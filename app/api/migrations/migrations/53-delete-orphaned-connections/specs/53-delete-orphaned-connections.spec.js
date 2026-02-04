@@ -1,5 +1,5 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/53-delete-orphaned-connections/index.js';
+import migration from '../index.js';
 
 describe('migration delete-orphaned-connections', () => {
   beforeEach(async () => {

@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/83-sync_template_config_array_to_object/index.js';
-import { fixtures } from '#api/migrations/migrations/83-sync_template_config_array_to_object/specs/fixtures.js';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
 
 describe('migration sync_template_config_array_to_object', () => {
   beforeEach(async () => {

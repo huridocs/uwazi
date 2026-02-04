@@ -1,13 +1,9 @@
 import { Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/153-update_settings_link_structure/index.js';
-import { fixtures } from '#api/migrations/migrations/153-update_settings_link_structure/specs/fixtures.js';
-import {
-  CorrectLink,
-  CorrectSimpleLink,
-  Settings,
-} from '#api/migrations/migrations/153-update_settings_link_structure/types.js';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
+import { CorrectLink, CorrectSimpleLink, Settings } from '../types.js';
 
 let db: Db | null;
 

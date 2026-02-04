@@ -12,7 +12,7 @@ export default {
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
     const syncs = await db.collection('syncs').find().toArray();
-    const updateOperations = syncs.map(sync => {
+    const updateOperations = syncs.map((sync: any) => {
       const timestamp = sync.lastSync || 0;
       return {
         updateOne: {

@@ -1,12 +1,12 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/93-remove_nonexisting_metadata/index.js';
+import migration from '../index.js';
 import {
   fixtures,
   emptyTemplateId,
   noExtraTemplateId,
   allHaveExtraTemplateId,
   mixedTemplateId,
-} from '#api/migrations/migrations/93-remove_nonexisting_metadata/specs/fixtures.js';
+} from './fixtures.js';
 
 let db;
 

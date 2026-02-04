@@ -1,7 +1,7 @@
 import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import migration from '#api/migrations/migrations/144-translations-to-translationsV2/index.js';
-import fixtures from '#api/migrations/migrations/144-translations-to-translationsV2/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration set_up_new_relationship_collection', () => {
   let db;

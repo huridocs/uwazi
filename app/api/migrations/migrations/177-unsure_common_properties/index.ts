@@ -1,8 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
-import {
-  PropertySchema,
-  TemplateSchema,
-} from '#api/migrations/migrations/177-unsure_common_properties/types.js';
+import { PropertySchema, TemplateSchema } from './types.js';
 
 const required: Omit<PropertySchema, '_id'>[] = [
   { label: 'Title', name: 'title', type: 'text', isCommonProperty: true },

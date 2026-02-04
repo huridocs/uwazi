@@ -1,6 +1,6 @@
 import { testingDB } from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/40-rename-usergroup-members_ref_id/index.js';
-import fixtures from '#api/migrations/migrations/40-rename-usergroup-members_ref_id/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration rename-usergroup-members_ref_id', () => {
   beforeEach(async () => {

@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/20-custom-uploads-type/index.js';
-import fixtures from '#api/migrations/migrations/20-custom-uploads-type/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration custom-uploads-type', () => {
   beforeEach(async () => {

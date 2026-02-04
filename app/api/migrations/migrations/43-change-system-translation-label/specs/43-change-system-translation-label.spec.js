@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/43-change-system-translation-label/index.js';
-import fixtures from '#api/migrations/migrations/43-change-system-translation-label/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration change-system-translation-label', () => {
   beforeEach(async () => {

@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/38-denormalize-inherited/index.js';
-import fixtures from '#api/migrations/migrations/38-denormalize-inherited/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration denormalize-inherited', () => {
   beforeEach(async () => {

@@ -1,10 +1,7 @@
 /* eslint-disable max-lines */
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/60-missing_languages/index.js';
-import {
-  fixtures,
-  EntityBluePrints,
-} from '#api/migrations/migrations/60-missing_languages/specs/fixtures.js';
+import migration from '../index.js';
+import { fixtures, EntityBluePrints } from './fixtures.js';
 
 let db;
 

@@ -6,7 +6,7 @@ import {
   FaultyLinkOrGroup,
   Link,
   Settings,
-} from '#api/migrations/migrations/153-update_settings_link_structure/types.js';
+} from './types.js';
 
 type Categories = 'link' | 'group';
 

@@ -1,7 +1,7 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/30-mutliple-sync/index.js';
-import fixturesWithSync from '#api/migrations/migrations/30-mutliple-sync/specs/fixtures_with_sync.js';
-import fixturesWithoutSync from '#api/migrations/migrations/30-mutliple-sync/specs/fixtures_without_sync.js';
+import migration from '../index.js';
+import fixturesWithSync from './fixtures_with_sync.js';
+import fixturesWithoutSync from './fixtures_without_sync.js';
 
 describe('migration multiple sync', () => {
   beforeEach(() => {

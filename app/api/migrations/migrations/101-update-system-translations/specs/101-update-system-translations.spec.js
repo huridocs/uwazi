@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/101-update-system-translations/index.js';
-import { fixtures } from '#api/migrations/migrations/101-update-system-translations/specs/fixtures.js';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
 
 const expectedTranslations = {
   en: [

@@ -6,7 +6,7 @@ import { pathToFileURL } from 'url';
 import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import migrationsModel from '#api/migrations/migrationsModel.js';
+import migrationsModel from './migrationsModel.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

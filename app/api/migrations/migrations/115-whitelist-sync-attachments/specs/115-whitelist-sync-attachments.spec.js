@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/115-whitelist-sync-attachments/index.js';
-import { fixtures } from '#api/migrations/migrations/115-whitelist-sync-attachments/specs/fixtures.js';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
 
 describe('migration whitelist-sync-attachments', () => {
   beforeEach(async () => {

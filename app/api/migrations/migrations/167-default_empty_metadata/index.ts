@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { Db } from 'mongodb';
-import { Entity, Template } from '#api/migrations/migrations/167-default_empty_metadata/types.js';
+import { Entity, Template } from './types.js';
 
 let entitiesToUpdate: Entity[] = [];
 

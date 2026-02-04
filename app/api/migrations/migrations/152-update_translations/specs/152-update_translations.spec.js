@@ -1,9 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration, {
-  newKeys,
-  deletedKeys,
-} from '#api/migrations/migrations/152-update_translations/index.js';
-import fixtures from '#api/migrations/migrations/152-update_translations/specs/fixtures.js';
+import migration, { newKeys, deletedKeys } from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration update translations of settings new Users/Groups UI', () => {
   beforeAll(async () => {

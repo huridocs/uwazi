@@ -1,5 +1,5 @@
-import { inheritance } from '#api/migrations/migrations/60-missing_languages/inheritance.js';
-import { translator } from '#api/migrations/migrations/60-missing_languages/translator.js';
+import { inheritance } from './inheritance.js';
+import { translator } from './translator.js';
 
 const supportedLanguages = new Set([
   'da',

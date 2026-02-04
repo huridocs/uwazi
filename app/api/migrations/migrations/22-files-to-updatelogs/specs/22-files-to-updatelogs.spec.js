@@ -1,10 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/22-files-to-updatelogs/index.js';
-import fixtures, {
-  file1,
-  file2,
-  file3,
-} from '#api/migrations/migrations/22-files-to-updatelogs/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures, { file1, file2, file3 } from './fixtures.js';
 
 const query = (collectionName, queryObject = {}, select = {}) =>
   testingDB.mongodb.collection(collectionName).find(queryObject, select).toArray();

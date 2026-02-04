@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/12-add-RTL-to-settings-languages/index.js';
-import fixtures from '#api/migrations/migrations/12-add-RTL-to-settings-languages/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration add-RTL-to-settings-languages', () => {
   beforeEach(async () => {

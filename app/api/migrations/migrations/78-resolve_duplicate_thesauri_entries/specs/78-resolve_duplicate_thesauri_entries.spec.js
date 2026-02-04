@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/78-resolve_duplicate_thesauri_entries/index.js';
-import fixtures from '#api/migrations/migrations/78-resolve_duplicate_thesauri_entries/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 const expectedSelect = [{ value: 'C_3_id', label: 'C__(3)' }];
 

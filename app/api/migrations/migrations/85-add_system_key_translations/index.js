@@ -1,13 +1,7 @@
 //eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
-import csv from '#api/csv/index.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import csv from '#api/csv/csv.js';
 
 /*
 This migration is meant to be repeatable.
@@ -62,6 +56,9 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    await readCsvToSystemKeys(db, path.join(__dirname, 'system_keys.csv'));
+    await readCsvToSystemKeys(
+      db,
+      'app/api/migrations/migrations/85-add_system_key_translations/system_keys.csv'
+    );
   },
 };

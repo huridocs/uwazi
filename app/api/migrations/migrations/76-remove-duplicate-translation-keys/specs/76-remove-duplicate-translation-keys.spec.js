@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/76-remove-duplicate-translation-keys/index.js';
-import fixtures from '#api/migrations/migrations/76-remove-duplicate-translation-keys/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration remove-duplicate-translation-keys', () => {
   beforeEach(async () => {

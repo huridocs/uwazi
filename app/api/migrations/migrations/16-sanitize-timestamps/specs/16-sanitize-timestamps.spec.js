@@ -1,8 +1,8 @@
 /** @format */
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '#api/migrations/migrations/16-sanitize-timestamps/index.js';
-import fixtures from '#api/migrations/migrations/16-sanitize-timestamps/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration sanitize-timestamops', () => {
   beforeEach(async () => {

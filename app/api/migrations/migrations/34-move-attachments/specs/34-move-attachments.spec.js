@@ -1,7 +1,7 @@
 import testingDB from '#api/utils/testing_db.js';
 
-import migration from '#api/migrations/migrations/34-move-attachments/index.js';
-import fixtures from '#api/migrations/migrations/34-move-attachments/specs/fixtures.js';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
 
 describe('migration move-attachments', () => {
   beforeEach(async () => {
