@@ -61,6 +61,13 @@ It is also a handoff guide: a new agent should be able to continue by reading th
   inconsistent with the rest of v2 status naming conventions. This needs a final decision
   and refactor if we want strict consistency.
 
+#### 3.7 Progress query endpoints
+
+- **TODO:** Add API endpoints to query CSV import progress directly (not only via socket events):
+  - List imports (paginated, filterable by status/template/date).
+  - Get import details (status, progress counters, row errors summary, report paths, failures).
+  - This enables UI polling and recovery when socket events are missed.
+
 ### 4) Immediate next steps (agreed direction)
 
 1. **Keep future work scoped**
@@ -144,28 +151,30 @@ It is also a handoff guide: a new agent should be able to continue by reading th
    - Preflight now stores `label → sharedId` entries per template for later import usage.
 
 9. **Relationships wired into entities import**
+
    - `CsvImportEntitiesJob` now loads relationship mappings and passes them to the mapper.
    - `CsvEntitiesImportMapper` applies relationship assignments during row import using
      preflight-applied values, matching v1's title-based relationship resolution.
 
 10. **Files/attachments handling implemented in entities import**
-   - New helper `CsvImportRowFilesResolver` reads extracted files via `FileStorage`
-     (`csv-imports/{importId}/extracted`) and builds `InputFile[]` for documents
-     (`file` column, split by `|`) and attachments (`attachments` column, split by `|`).
-   - `CsvEntitiesImportMapper` now returns `PropertyAssignmentInput` (not domain assignments)
-     and can map image/media values to `{ attachment: index }` when filenames match attachments.
-     This avoids duplicating domain normalization logic; trimming/validation happens in the
-     property assignment services and domain validators.
-   - Entities import batch processor now:
-     - resolves row files outside transactions,
-     - uses `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to produce assignments,
-     - stores files via `FilesService.storeFiles(...)` outside the DB transaction,
-     - inserts entity + file records inside a per-row transaction (`entitiesDS.create` +
-       `FilesService.insert`).
-   - Queue wiring updated to inject `FilesService`, `PropertyAssignmentCreatorServiceStrategy`,
-     and `IdGenerator` into `CsvImportEntitiesJob`.
-   - Unit spec updated: `CsvEntitiesImportMapper.spec.ts` now asserts attachment mapping and
-     reflects that mapper passes raw values to the property-assignment layer.
+
+- New helper `CsvImportRowFilesResolver` reads extracted files via `FileStorage`
+  (`csv-imports/{importId}/extracted`) and builds `InputFile[]` for documents
+  (`file` column, split by `|`) and attachments (`attachments` column, split by `|`).
+- `CsvEntitiesImportMapper` now returns `PropertyAssignmentInput` (not domain assignments)
+  and can map image/media values to `{ attachment: index }` when filenames match attachments.
+  This avoids duplicating domain normalization logic; trimming/validation happens in the
+  property assignment services and domain validators.
+- Entities import batch processor now:
+  - resolves row files outside transactions,
+  - uses `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to produce assignments,
+  - stores files via `FilesService.storeFiles(...)` outside the DB transaction,
+  - inserts entity + file records inside a per-row transaction (`entitiesDS.create` +
+    `FilesService.insert`).
+- Queue wiring updated to inject `FilesService`, `PropertyAssignmentCreatorServiceStrategy`,
+  and `IdGenerator` into `CsvImportEntitiesJob`.
+- Unit spec updated: `CsvEntitiesImportMapper.spec.ts` now asserts attachment mapping and
+  reflects that mapper passes raw values to the property-assignment layer.
 
 ### 7) Agent-specific notes (handoff)
 
