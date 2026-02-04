@@ -49,9 +49,9 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     }
 
     const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
-      input.propertyAssignments || [],
+      input.propertyAssignments,
       entity.template,
-      input?.uploadedFiles?.filter(f => f.isAttachment()) || []
+      input?.uploadedFiles?.filter(f => f.isAttachment())
     );
 
     entity.setPropertyAssignments(propertyAssignments, input.language, true);
