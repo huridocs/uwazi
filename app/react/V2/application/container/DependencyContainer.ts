@@ -1,4 +1,4 @@
-import { atomStore } from 'app/V2/atoms';
+import { atomStore } from 'V2/atoms';
 import { EntityCompositionUseCase } from '../useCases/EntityCompositionUseCase';
 import { EntityRepository } from '../../infrastructure/repositories/EntityRepository';
 

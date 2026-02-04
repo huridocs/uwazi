@@ -32,6 +32,7 @@ type AtomStoreData = {
 
 const atomStore = createStore();
 
+// eslint-disable-next-line max-statements
 const hydrateAtomStore = (data: AtomStoreData) => {
   if (data.ciMatomoActive) atomStore.set(ciMatomoActiveAtom, data.ciMatomoActive);
   if (data.globalMatomo) atomStore.set(globalMatomoAtom, { ...data.globalMatomo });

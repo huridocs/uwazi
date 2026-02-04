@@ -269,6 +269,7 @@ const getSSRProperties = async (
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { fetchRequest, ssrError } = createFetchRequest(req);
+  hydrateAtomStore(atomStoreData);
   const { query } = createStaticHandler(routes);
   const staticHandleContext = await query(fetchRequest);
   const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
@@ -336,7 +337,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
 
-  hydrateAtomStore(atomStoreData);
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
