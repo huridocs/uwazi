@@ -44,6 +44,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - `CsvEntitiesImportMapper` still imports `normalizeThesaurusLabel` from a v1 module.
 - Thesauri creation still uses legacy adapters instead of v2 data sources.
 - TODO: Audit `csv.v2` internal imports and ensure they use **relative paths** (avoid `/api` syntax).
+- TODO: Ensure **all stages update `csv_imports.status`** (and stats) even when no work is done,
+  so the UI can rely on status transitions instead of missing socket messages.
 
 #### 3.4 Tests and coverage gaps
 
@@ -234,6 +236,15 @@ is confusing and inconsistent with thesauri preflight behavior.
   - `CsvImportEntitiesJobFactory` (refactored to match the same pattern)
 - Queue registry now builds these jobs via factories.
 - Tests were updated to use factories instead of hand-wiring dependencies.
+
+12. **Relationship stats persisted (Feb 2026)**
+
+- `CsvCreateRelationshipEntitiesJob` now updates import stats:
+  - `relationshipValuesObserved`
+  - `relationshipValuesCreated`
+- When no relationship titles are present, these stats are explicitly set to `0`
+  (job still updates status and dispatches the next stage).
+- Spec coverage added for the **no-relationships** path (no progress emit, stats set to zero).
 
 ### 7) Agent-specific notes (handoff)
 
