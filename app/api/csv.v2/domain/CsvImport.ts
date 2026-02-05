@@ -51,6 +51,8 @@ type CsvImportStats = {
   thesaurusValuesObserved?: number;
   thesaurusValuesCreated?: number;
   thesauriTouched?: number;
+  relationshipValuesObserved?: number;
+  relationshipValuesCreated?: number;
   entitiesCreated?: number;
   rowsProcessed?: number;
   rowsFailed?: number;

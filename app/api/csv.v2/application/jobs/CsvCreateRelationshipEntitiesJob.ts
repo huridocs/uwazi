@@ -7,7 +7,12 @@ import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors'
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CsvImportEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvImportEntitiesJobHandler';
-import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
+import {
+  CsvImport,
+  CsvImportDomain,
+  CsvImportStatus,
+  CsvImportStats,
+} from '../../domain/CsvImport';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
 import { CsvImportRelationshipPendingValuesDataSource } from '../contracts/CsvImportRelationshipPendingValuesDataSource';
@@ -110,18 +115,33 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
   private async finalizeSuccess(params: {
     csvImport: CsvImport;
     relationshipDocs: CsvImportRelationshipValues[];
+    observedTitles: number;
+    createdEntities: number;
     importId: string;
     tenantName: string;
     userId: string;
   }) {
-    const { csvImport, relationshipDocs, importId, tenantName, userId } = params;
+    const {
+      csvImport,
+      relationshipDocs,
+      observedTitles,
+      createdEntities,
+      importId,
+      tenantName,
+      userId,
+    } = params;
     await this.transactionManager.run(async () => {
       const cleared = CsvImportDomain.clearFailure(csvImport);
       const withStatus = CsvImportDomain.withStatus(
         cleared,
         CsvImportStatus.PreflightRelationshipsCreateDone
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const updatedStats: CsvImportStats = {
+        ...(withStatus.stats || {}),
+        relationshipValuesObserved: observedTitles,
+        relationshipValuesCreated: createdEntities,
+      };
+      await this.deps.csvImportsDS.update(withStatus.withStats(updatedStats));
       await this.deps.relationshipValuesDS.replaceValues(importId, relationshipDocs);
       await this.deps.jobsDispatcher.dispatch(CsvImportEntitiesJobHandler, {
         tenantName,
@@ -139,9 +159,15 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
     totalTemplates: number;
     callbacks: Callbacks;
   }) {
-    const { titlesByTemplate, defaultLanguage, userId, totalTemplates, callbacks, importId } = params;
+    const { titlesByTemplate, defaultLanguage, userId, totalTemplates, callbacks, importId } =
+      params;
+    const observedTitles = CsvCreateRelationshipEntitiesJob.countObservedTitles(titlesByTemplate);
     if (!titlesByTemplate.size) {
-      return { createdEntities: 0, relationshipDocs: [] as CsvImportRelationshipValues[] };
+      return {
+        createdEntities: 0,
+        relationshipDocs: [] as CsvImportRelationshipValues[],
+        observedTitles,
+      };
     }
 
     const createdEntities = await createMissingEntitiesForTitles({
@@ -166,39 +192,54 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
       createdEntities,
     });
 
-    return { createdEntities, relationshipDocs };
+    return { createdEntities, relationshipDocs, observedTitles };
   }
 
   async execute(input: Input): Promise<void> {
-    const { importId, tenantName, userId, callbacks } = input;
+    const { importId, callbacks } = input;
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightRelationshipsCreate);
 
     try {
-      const { csvImport, titlesByTemplate, defaultLanguage, totalTemplates } =
-        await this.loadContext(importId);
-      const { relationshipDocs } = await this.runCreation({
-        importId,
-        titlesByTemplate,
-        defaultLanguage,
-        userId,
-        totalTemplates,
-        callbacks,
-      });
-      await this.finalizeSuccess({
-        csvImport,
-        relationshipDocs,
-        importId,
-        tenantName,
-        userId,
-      });
+      await this.runApplyFlow(input);
       callbacks.onSuccess({ importId });
     } catch (error) {
       await this.persistFailure(importId, error as Error);
       callbacks.onError({ importId, error: error as Error });
       throw error;
     }
+  }
+
+  private async runApplyFlow(input: Input) {
+    const { importId, tenantName, userId, callbacks } = input;
+    const { csvImport, titlesByTemplate, defaultLanguage, totalTemplates } =
+      await this.loadContext(importId);
+    const creation = await this.runCreation({
+      importId,
+      titlesByTemplate,
+      defaultLanguage,
+      userId,
+      totalTemplates,
+      callbacks,
+    });
+    await this.finalizeSuccess({
+      csvImport,
+      relationshipDocs: creation.relationshipDocs,
+      observedTitles: creation.observedTitles,
+      createdEntities: creation.createdEntities,
+      importId,
+      tenantName,
+      userId,
+    });
+  }
+
+  private static countObservedTitles(titlesByTemplate: Map<string, Set<string>>) {
+    let observed = 0;
+    titlesByTemplate.forEach(titles => {
+      observed += titles.size;
+    });
+    return observed;
   }
 }
 
