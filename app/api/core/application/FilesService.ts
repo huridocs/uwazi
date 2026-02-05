@@ -130,23 +130,23 @@ class FilesService {
 
   async delete(files: BaseFile[]) {
     if (!files.length) return;
-
-    const contentFiles = files.filter(f => f.hasContent());
     const thumbnails = await this.deps.filesDS
-      .getThumbnails(contentFiles.filter(f => f instanceof ProcessedPDF))
+      .getThumbnails(files.filter(f => f instanceof ProcessedPDF))
       .all();
 
-    const allFilesToDelete = [...contentFiles, ...thumbnails];
+    const allFilesToDelete = [...files, ...thumbnails];
+
+    const contentFiles = allFilesToDelete.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(allFilesToDelete);
     await this.deps.relV1DS.deleteByFiles(contentFiles);
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(
-        new FilesDeletedEvent({ files: files.map(f => FileMappers.toDBO(f)) })
+        new FilesDeletedEvent({ files: allFilesToDelete.map(f => FileMappers.toDBO(f)) })
       );
       await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-        await ArrayUtils.sequentialFor(allFilesToDelete, async file => {
+        await ArrayUtils.sequentialFor(contentFiles, async file => {
           dispatch(DeleteFileFromStorageJobHandler, {
             filePath: this.deps.pathManager.createPath(file),
           });
