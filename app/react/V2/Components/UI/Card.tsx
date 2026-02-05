@@ -4,7 +4,7 @@ interface CardProps {
   title?: string | React.ReactNode;
   children: React.ReactNode;
   className?: string;
-  color?: 'default' | 'yellow';
+  color?: 'default' | 'yellow' | 'black';
 }
 
 const Card = ({ title, children, className, color = 'default' }: CardProps) => {
@@ -14,16 +14,19 @@ const Card = ({ title, children, className, color = 'default' }: CardProps) => {
     case 'yellow':
       headerColor = 'bg-yellow-100 text-yellow-800';
       break;
+    case 'black':
+      headerColor = 'bg-gray-50 text-black-700';
+      break;
     default:
       headerColor = 'bg-gray-50 text-primary-700';
   }
 
   return (
-    <div className={`border rounded-md border-gray-50 shadow-md ${className}`}>
+    <div className={`border rounded-md border-gray-100 shadow-sm ${className}`}>
       {title && (
         <div className={`block w-full font-semibold text-base p-4 ${headerColor}`}>{title}</div>
       )}
-      <div className="p-4">{children}</div>
+      <div className="p-4 h-full w-full overflow-y-auto">{children}</div>
     </div>
   );
 };

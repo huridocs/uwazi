@@ -566,8 +566,10 @@ No options found,Aucune option trouvée
 No property,Aucune propriété
 No References,Pas de références
 No References description,References are parts of this document related with other documents and entities.
+No relationship types available,No relationship types available
 No Relationships,Aucune relation
 No Relationships description,Relationships are bonds between entities.
+No results found,No results found
 No table of contents,Aucune table des matières
 No Table of contents,No Table of contents
 No table of contents description,Aucune description de Table des matières
@@ -765,6 +767,7 @@ Search Tips: exact term,Astuces de recherche: Terme exact
 Search Tips: one char wildcard,Astuces de recherche: terme générique a un caractère
 Search Tips: proximity,Astuces de recherche: proximité
 Search Tips: wildcard,Astuces de recherche: caractère générique
+Searching...,Searching...
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -953,6 +956,7 @@ Translations,Traductions
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Traductions sauvegardées
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
