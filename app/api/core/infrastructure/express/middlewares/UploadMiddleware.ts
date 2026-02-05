@@ -105,7 +105,9 @@ class UploadMiddleware {
                   ...f,
                   originalname: this.processOriginalFileName(f, req, false),
                 },
-                f.fieldname.match('document') ? 'document' : 'attachment'
+                f.fieldname.match('document') || f.fieldname.match('file')
+                  ? 'document'
+                  : 'attachment'
               )
           );
         }

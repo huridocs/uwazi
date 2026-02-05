@@ -7,6 +7,7 @@ import {
 } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
 import { JobsRouter } from '../infrastructure/JobsRouter.js';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
 import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';
@@ -55,4 +56,14 @@ export function DefaultDispatcher(
         queueOptions
       )
   );
+}
+
+export function NoOpDispatcher(): JobsDispatcher {
+  return {
+    async dispatch() {},
+    async dispatchMany(callback: Parameters<JobsDispatcher['dispatchMany']>[0]) {
+      await callback(async () => {});
+    },
+    async deleteByParams() {},
+  };
 }

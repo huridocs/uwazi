@@ -1,5 +1,6 @@
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { saveEntity } from '#api/entities/entitySavingManager.js';
+import { processDocument } from '#api/files/processDocument.js';
 import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
 import mailer from '#api/utils/mailer.js';
@@ -8,9 +9,8 @@ import { withTransaction } from '#api/utils/withTransaction.js';
 import proxy from 'express-http-proxy';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { publicAPIMiddleware } from '#api/auth/publicAPIMiddleware.js';
-import { createError, validation } from '#api/utils/index.js';
-import { processDocument } from './processDocument.js';
+import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
+import { createError, validation } from '../utils/index.js';
 import { storage } from './storage.js';
 import { uploadMiddleware } from './uploadMiddleware.js';
 

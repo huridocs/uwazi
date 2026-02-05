@@ -210,6 +210,28 @@ describe('uploadFilesMiddleware', () => {
       expect(inputFiles[3].isAttachment()).toBe(true);
     });
 
+    it('should treat fieldname "file" as document (for V1 compatibility with public API)', async () => {
+      const app = express();
+      let capturedReq: Request;
+      app.post(
+        '/test/file_upload',
+        new UploadMiddleware(LoggerFactory.fake()).multiple(),
+        (_req, _res, next) => {
+          capturedReq = _req;
+          next();
+        }
+      );
+
+      await request(app)
+        .post('/test/file_upload')
+        .attach('file', Buffer.from('pdf content'), 'document.pdf');
+
+      const uploadedFiles = capturedReq!.inputFiles as InputFile[];
+      expect(uploadedFiles.length).toBe(1);
+      expect(uploadedFiles[0].isDocument()).toBe(true);
+      expect(uploadedFiles[0].isAttachment()).toBe(false);
+    });
+
     it('should upload to tmp directory and attach to req.inputFile an InputFile', async () => {
       expect(inputFiles[0].filepath.match(/tmp/)).toBeTruthy();
       expect(inputFiles[1].filepath.match(/tmp/)).toBeTruthy();
