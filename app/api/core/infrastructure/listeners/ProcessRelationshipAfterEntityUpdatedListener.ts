@@ -26,6 +26,7 @@ class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdat
 
     if (!targetEntityDboAfter) {
       throw new Error(
+        // eslint-disable-next-line max-len
         `ProcessRelationshipAfterEntityUpdatedListener: failed to process relationships - could not find entity DBO for language ${this.params.targetLanguage}`
       );
     }
