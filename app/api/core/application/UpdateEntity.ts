@@ -62,9 +62,8 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]).all();
 
-    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(
-      existingFiles,
-      f => (input.files || []).some(file => file.id === f.id) || f.type === 'thumbnail'
+    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, f =>
+      (input.files || []).some(file => file.id === f.id)
     );
 
     const updatedFiles: BaseFile[] = [];

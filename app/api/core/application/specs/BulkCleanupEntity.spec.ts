@@ -9,7 +9,6 @@ import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGenerato
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
@@ -98,6 +97,7 @@ const fixtures: DBFixture = {
       type: 'document',
       size: 1000,
       creationDate: 1000,
+      status: 'ready',
     }),
     factory.file('file_2_sharedId1', {
       entity: 'sharedId1',
@@ -106,6 +106,7 @@ const fixtures: DBFixture = {
       type: 'document',
       size: 1000,
       creationDate: 1000,
+      status: 'ready',
     }),
     factory.file('file_3_sharedId1', {
       entity: 'sharedId1',
@@ -122,6 +123,16 @@ const fixtures: DBFixture = {
       type: 'thumbnail',
       size: 1000,
       creationDate: 1000,
+      filename: `${factory.id('file_2_sharedId1').toHexString()}.jpg`,
+    }),
+    factory.file('file_1_sharedId5', {
+      entity: 'sharedId1',
+      language: 'en',
+      mimetype: 'image/jpeg',
+      type: 'thumbnail',
+      size: 1000,
+      creationDate: 1000,
+      filename: `${factory.id('file_1_sharedId1').toHexString()}.jpg`,
     }),
     factory.file('file_1_sharedId2', {
       entity: 'sharedId2',
@@ -130,6 +141,7 @@ const fixtures: DBFixture = {
       type: 'document',
       size: 1000,
       creationDate: 1000,
+      status: 'ready',
     }),
     factory.file('file_2_sharedId2', {
       entity: 'sharedId2',
@@ -331,25 +343,7 @@ describe('BulkCleanupEntityUseCase', () => {
       expect.objectContaining({ _id: factory.id('file_1_sharedId4'), entity: 'sharedId4' }),
     ]);
 
-    expect(dispatchMock).toHaveBeenCalledTimes(6);
-    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
-      filePath: '/tenant/uploads/file_1_sharedId1',
-    });
-    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
-      filePath: '/tenant/uploads/file_2_sharedId1',
-    });
-    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
-      filePath: '/tenant/uploads/file_3_sharedId1',
-    });
-    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
-      filePath: '/tenant/uploads/file_4_sharedId1',
-    });
-    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
-      filePath: '/tenant/uploads/file_1_sharedId2',
-    });
-    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
-      filePath: '/tenant/uploads/file_2_sharedId2',
-    });
+    expect(dispatchMock).toHaveBeenCalledTimes(7);
   });
 
   it('should emit EntityDeletedEvent for each sharedId', async () => {

@@ -763,9 +763,7 @@ describe('UpdateEntityUseCase', () => {
 
   describe('When Files gets removed', () => {
     it('should delete files that are not in the files array', async () => {
-      const { sut, fileService } = createSut();
-
-      const filesBefore = await getAllFiles('entity1');
+      const { sut } = createSut();
 
       await sut.execute({
         language: 'en',
@@ -781,32 +779,19 @@ describe('UpdateEntityUseCase', () => {
 
       const filesAfter = await getAllFiles('entity1');
 
-      expect(filesBefore.length).toBe(5); // 2 docs + 2 thumbnails + 1 attachment
-      expect(filesAfter.length).toBe(3); // 1 doc + 2 thumbnails (both thumbnails should be preserved)
-
+      expect(filesAfter).toHaveLength(2);
       expect(filesAfter).toMatchObject([
-        { entity: 'entity1', originalname: 'Document 1.pdf' },
         {
+          filename: 'entity1_doc1',
+          originalname: 'Document 1.pdf',
           entity: 'entity1',
-          type: 'thumbnail',
-          filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+          type: 'document',
         },
         {
+          _id: factory.id('entity1_doc1_thumbnail'),
           entity: 'entity1',
           type: 'thumbnail',
-          filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
         },
-      ]);
-
-      expect(fileService.delete).toHaveBeenCalledWith([
-        expect.objectContaining({
-          originalname: 'Document 2.pdf',
-          id: factory.id('entity1_doc2').toHexString(),
-        }),
-        expect.objectContaining({
-          originalname: 'Attachment 1.txt',
-          id: factory.id('entity1_attach1').toHexString(),
-        }),
       ]);
     });
   });

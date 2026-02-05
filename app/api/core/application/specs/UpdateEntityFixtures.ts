@@ -303,6 +303,7 @@ const fixtures: DBFixture = {
       mimetype: 'application/pdf',
       size: 100000,
       creationDate: 1609459200000,
+      status: 'ready',
     }),
     {
       _id: factory.id('entity1_doc1_thumbnail'),
@@ -320,6 +321,7 @@ const fixtures: DBFixture = {
       language: 'en',
       mimetype: 'application/pdf',
       size: 150000,
+      status: 'ready',
       creationDate: 1609459200000,
     }),
     {

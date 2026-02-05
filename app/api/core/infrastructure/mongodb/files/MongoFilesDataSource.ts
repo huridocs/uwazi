@@ -103,6 +103,8 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   getByEntitiesIds(entitySharedIds: string[]): ResultSet<BaseFile> {
     return new MongoResultSet<fileDBO, BaseFile>(
       this.getCollection().find({
+        type: { $ne: 'thumbnail' },
+
         entity: { $in: entitySharedIds },
       }),
       dbo => this.toModel(dbo)

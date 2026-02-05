@@ -160,6 +160,7 @@ describe('FilesService', () => {
           mimetype: 'application/pdf',
           size: 1000,
           creationDate: 1000,
+          status: 'ready',
         }),
         ...f.processedDocument('doc2', {
           entity: 'entity1',
@@ -172,6 +173,7 @@ describe('FilesService', () => {
           mimetype: 'application/pdf',
           size: 1000,
           creationDate: 1000,
+          status: 'ready',
         }),
         ...f.processedDocument('doc4', {
           entity: 'entity2',
@@ -184,6 +186,7 @@ describe('FilesService', () => {
           mimetype: 'application/pdf',
           size: 1000,
           creationDate: 1000,
+          status: 'ready',
         }),
         ...f.processedDocument('doc6', {
           entity: 'entity3',
@@ -216,9 +219,9 @@ describe('FilesService', () => {
       expect(dispatchedDeletes).toMatchObject([
         'tenant/uploads/doc1',
         'tenant/uploads/doc2',
-        expect.stringContaining('.jpg'),
         'tenant/uploads/doc5',
         'tenant/uploads/doc6',
+        expect.stringContaining('.jpg'),
         expect.stringContaining('.jpg'),
       ]);
     });
