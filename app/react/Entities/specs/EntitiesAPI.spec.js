@@ -2,7 +2,7 @@ import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import api from '#app/utils/api.js';
-import entitiesAPI from '#app/Entities/EntitiesAPI.js';
+import entitiesAPI from '../EntitiesAPI.js';
 
 describe('EntitiesAPI', () => {
   const arrayResponse = [{ entities: 'array' }];
@@ -81,6 +81,7 @@ describe('EntitiesAPI', () => {
 
     describe('should include permissions', () => {
       it('should request for the thesauri', async () => {
+        const originalGet = api.get;
         spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: { rows: [] } }));
         let request = new RequestParams({ _id: 'documentId' });
         await entitiesAPI.get(request);
@@ -92,6 +93,7 @@ describe('EntitiesAPI', () => {
           'entities',
           request.add({ include: ['include', 'permissions'] })
         );
+        api.get = originalGet;
       });
     });
 

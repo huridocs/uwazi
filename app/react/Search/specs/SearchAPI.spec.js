@@ -2,16 +2,25 @@ import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import api from '#app/utils/api.js';
-import SearchApi from '#app/Search/SearchAPI.js';
+import SearchApi from '../SearchAPI.js';
 
 describe('SearchAPI', () => {
   const searchResponse = [{ documents: 'search' }];
   const filteredSearchResult = [{ documents: 'Alfred' }];
   const listResponse = [{ documents: 'list' }];
 
+  const filteredSearchMatcher = url =>
+    url.includes('search') &&
+    !url.includes('search/list') &&
+    !url.includes('count_by_template') &&
+    !url.includes('unpublished') &&
+    url.includes('searchTerm=Batman') &&
+    url.includes('joker=true');
+
   beforeEach(() => {
     backend.restore();
     backend
+      .get(filteredSearchMatcher, { body: JSON.stringify(filteredSearchResult) })
       .get(`${APIURL}search?include=%5B%22permissions%22%5D`, {
         body: JSON.stringify(searchResponse),
       })
@@ -22,10 +31,7 @@ describe('SearchAPI', () => {
         body: JSON.stringify({ rows: listResponse }),
       })
       .get(`${APIURL}search/unpublished`, { body: JSON.stringify({ rows: 'uploads' }) })
-      .get(`${APIURL}search/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
-      .get(`${APIURL}search?searchTerm=Batman&joker=true&include=%5B%22permissions%22%5D`, {
-        body: JSON.stringify(filteredSearchResult),
-      });
+      .get(`${APIURL}search/count_by_template?templateId=templateId`, { body: JSON.stringify(1) });
   });
 
   afterEach(() => backend.restore());
@@ -77,6 +83,7 @@ describe('SearchAPI', () => {
     });
 
     it('should add permissions to the includes', async () => {
+      const originalGet = api.get;
       spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: {} }));
       SearchApi.search();
       expect(api.get).toHaveBeenCalledWith(
@@ -89,6 +96,7 @@ describe('SearchAPI', () => {
         'search',
         new RequestParams({ include: ['include', 'permissions'] })
       );
+      api.get = originalGet;
     });
 
     describe('when passing filters', () => {

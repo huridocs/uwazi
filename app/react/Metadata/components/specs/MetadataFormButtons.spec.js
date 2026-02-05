@@ -7,7 +7,7 @@ import { Icon } from '#UI/Icon/Icon.jsx';
 
 import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
 import { MetadataFormButtons } from '#app/Metadata/components/MetadataFormButtons.jsx';
-import immutable from 'immutable';
+import Immutable from 'immutable';
 
 // Removed - use Immutable.fromJS: immutable directly
 describe('MetadataFormButtons', () => {
@@ -22,8 +22,8 @@ describe('MetadataFormButtons', () => {
       resetForm: jasmine.createSpy('resetForm'),
       clearMetadataSelections: jasmine.createSpy('resetForm'),
       delete: jasmine.createSpy('delete'),
-      data: immutable({ test: 'test', sharedId: 'shId', file: {} }),
-      templates: immutable([{ test: 'test' }]),
+      data: Immutable.fromJS({ test: 'test', sharedId: 'shId', file: {} }),
+      templates: Immutable.fromJS([{ test: 'test' }]),
       formName: 'FormName',
       formStatePath: 'form',
       includeViewButton: true,
@@ -170,7 +170,13 @@ describe('MetadataFormButtons', () => {
       const link = component.find(I18NLink);
       expect(link.props().to).toBe('entity/shId');
       expect(component.find('.edit-metadata').length).toBe(1);
-      expect(component.find('.edit-metadata').at(0).find(Icon).props().icon).toBe('file');
+      expect(
+        component
+          .find('.edit-metadata')
+          .at(0)
+          .findWhere(n => n.prop('icon') === 'file')
+          .props().icon
+      ).toBe('file');
       expect(component.find('.btn-success').length).toBe(0);
       expect(component.find('.delete-metadata').length).toBe(0);
     });

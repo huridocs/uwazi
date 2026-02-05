@@ -1,15 +1,12 @@
 /* eslint-disable no-template-curly-in-string */
-
 import api from '#app/Search/SearchAPI.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 import { markdownDatasets } from '#app/Markdown/index.js';
 
-import PagesAPI from '#app/Pages/PagesAPI.js';
-import pageItemLists from '#app/Pages/utils/pageItemLists.js';
+import PagesAPI from '../../PagesAPI.js';
+import pageItemLists from '../pageItemLists.js';
 
-import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
+import { getPageAssets } from '../getPageAssets.js';
 
 describe('getPageAssets', () => {
   let page: { _id: string; title: string; metadata: { content: string } };
@@ -57,9 +54,7 @@ describe('getPageAssets', () => {
     expect(stateActions).toMatchSnapshot();
   });
 
-  const assertItemLists = (
-    itemLists: Array<{ params: string; items: string[]; options?: { limit?: number } }>
-  ) => {
+  const assertItemLists = (itemLists: any) => {
     expect(itemLists.length).toBe(4);
     expect(itemLists[0].params).toBe('?q=(a:1,b:2)');
     expect(itemLists[0].items).toEqual(['resultsFor:0']);
