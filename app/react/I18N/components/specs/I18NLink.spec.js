@@ -5,7 +5,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { I18NLink } from '#app/I18N/components/I18NLink.jsx';
+import { I18NLink } from '../I18NLink.js';
 
 describe('I18NLink', () => {
   let props;

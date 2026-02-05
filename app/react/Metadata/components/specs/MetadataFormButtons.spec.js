@@ -3,8 +3,6 @@ import { shallow } from 'enzyme';
 
 import { I18NLink } from '#app/I18N/index.js';
 
-import { Icon } from '#UI/Icon/Icon.jsx';
-
 import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
 import { MetadataFormButtons } from '#app/Metadata/components/MetadataFormButtons.jsx';
 import Immutable from 'immutable';

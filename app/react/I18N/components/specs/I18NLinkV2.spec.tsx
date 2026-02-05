@@ -6,7 +6,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
-import { I18NLink, I18NLinkProps } from '#app/I18N/I18NLinkV2.jsx';
+import { I18NLink, I18NLinkProps } from '../../I18NLinkV2.js';
 
 describe('I18NLinkV2', () => {
   const defaultProps: I18NLinkProps & { locale: string; location: string } = {

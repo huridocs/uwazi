@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { ItemSnippet } from '#app/Layout/ItemSnippet.jsx';
+import { ItemSnippet } from '../ItemSnippet.js';
 
 describe('ItemSnippet', () => {
   let component;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import BackButton from '#app/Layout/BackButton.jsx';
+import BackButton from '../BackButton.js';
 
 describe('Icon', () => {
   let component;

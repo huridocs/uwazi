@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import ToggleDisplay from '#app/Layout/ToggleDisplay.jsx';
+import ToggleDisplay from '../ToggleDisplay.js';
 
 describe('ToggleDisplay', () => {
   it('should not render children by default', () => {

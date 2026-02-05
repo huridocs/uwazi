@@ -6,9 +6,9 @@ import { Provider } from 'jotai';
 import { act, render, RenderResult } from '@testing-library/react';
 import { localeAtom, translationsAtom, atomStore } from '#V2/atoms/index.js';
 import { socket } from '#app/socket.js';
-import '#app/App/sockets';
-import { t } from '#app/I18N/translateFunction.jsx';
-import { translations } from '#app/I18N/specs/fixtures.js';
+import '#app/App/sockets.js';
+import { t } from '../translateFunction.js';
+import { translations } from './fixtures.js';
 
 describe('t function', () => {
   let renderResult: RenderResult;

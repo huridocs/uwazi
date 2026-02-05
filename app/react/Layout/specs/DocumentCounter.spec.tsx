@@ -1,6 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { DocumentCounter, EntityCounterProps } from '#app/Layout/DocumentCounter.jsx';
+import { DocumentCounter, EntityCounterProps } from '#app/Layout/DocumentCounter.js';
 
 describe('DocumentCounter', () => {
   let component: ShallowWrapper<typeof DocumentCounter>;

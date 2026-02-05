@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import Tip from '#app/Layout/Tip.jsx';
+import Tip from '../Tip.js';
 
 describe('Tip', () => {
   it('should render children inside tooltip classed containers', () => {

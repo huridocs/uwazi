@@ -1,6 +1,6 @@
 import React from 'react';
 import Immutable from 'immutable';
-import { ImportPanel } from '#app/Uploads/components/ImportPanel.jsx';
+import { ImportPanel } from '#app/Uploads/components/ImportPanel.js';
 import { shallow } from 'enzyme';
 import { LocalForm } from 'react-redux-form';
 

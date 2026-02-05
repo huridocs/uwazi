@@ -1,17 +1,16 @@
 import React from 'react';
-
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import Doc from '#app/Library/components/Doc.jsx';
-import Footer from '#app/App/Footer.jsx';
+import Doc from '#app/Library/components/Doc.js';
+import Footer from '#app/App/Footer.js';
 
-import { DocumentCounter } from '#app/Layout/DocumentCounter.jsx';
-import { TilesViewer } from '#app/Layout/TilesViewer.jsx';
-import { TableViewer } from '#app/Layout/TableViewer.jsx';
-import { LibraryHeader } from '#app/Library/components/LibraryHeader.jsx';
-import { SearchBar } from '#app/Library/components/SearchBar.jsx';
-import { DocumentsList } from '#app/Layout/DocumentsList.jsx';
+import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
+import { TilesViewer } from '#app/Layout/TilesViewer.js';
+import { TableViewer } from '#app/Layout/TableViewer.js';
+import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
+import { SearchBar } from '#app/Library/components/SearchBar.js';
+import { DocumentsList } from '../DocumentsList.js';
 
 describe('DocumentsList', () => {
   let component;
