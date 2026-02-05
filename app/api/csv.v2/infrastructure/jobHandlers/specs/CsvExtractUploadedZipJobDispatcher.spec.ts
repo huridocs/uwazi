@@ -8,14 +8,14 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/domain/CsvImport';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
+import { CsvPreflightJobHandler } from '../CsvPreflightJobHandler';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
 import { CsvExtractUploadedZipJobFactory } from '../../factories/CsvExtractUploadedZipJobFactory';
 

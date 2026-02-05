@@ -1,7 +1,3 @@
-import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
-import { CsvImportFileNormalizer } from 'api/csv.v2/application/services/CsvImportFileNormalizer';
-import { CsvImportRowsStager } from 'api/csv.v2/application/services/CsvImportRowsStager';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
@@ -10,6 +6,10 @@ import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { tenants } from 'api/tenants/tenantContext';
+import { CsvImportRowsStager } from '../../application/services/CsvImportRowsStager';
+import { CsvImportFileNormalizer } from '../../application/services/CsvImportFileNormalizer';
+import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploadedZipJob';
+import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories';
 
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;

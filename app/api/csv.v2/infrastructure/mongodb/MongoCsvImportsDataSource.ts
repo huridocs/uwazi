@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import { Result, ResultType } from 'api/core/libs/Result';
-import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
+import { CsvImportDoesNotExistError } from '../../domain/csvImporErrors';
 import { CsvImport } from '../../domain/CsvImport';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportMapper } from './CsvImportMapper';

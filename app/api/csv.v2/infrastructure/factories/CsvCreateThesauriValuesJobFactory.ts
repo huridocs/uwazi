@@ -1,16 +1,16 @@
-import { CsvCreateThesauriValuesJob } from 'api/csv.v2/application/jobs/CsvCreateThesauriValuesJob';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { tenants } from 'api/tenants/tenantContext';
+import { CsvCreateThesauriValuesJob } from '../../application/jobs/CsvCreateThesauriValuesJob';
 import { LegacyThesauriRepository } from '../services/LegacyThesauriRepository';
 import { LegacyTranslationsRepository } from '../services/LegacyTranslationsRepository';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
 import { ThesauriRepository } from '../../application/contracts/ThesauriRepository';
 import { TranslationsRepository } from '../../application/contracts/TranslationsRepository';
+import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories';
 
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;

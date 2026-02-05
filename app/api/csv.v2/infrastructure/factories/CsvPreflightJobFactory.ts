@@ -1,5 +1,3 @@
-import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
@@ -9,12 +7,14 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { tenants } from 'api/tenants/tenantContext';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
+import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
 import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;

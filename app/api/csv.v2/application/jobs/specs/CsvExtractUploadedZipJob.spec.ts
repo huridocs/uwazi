@@ -8,16 +8,16 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/domain/CsvImport';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
-import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { CsvExtractUploadedZipJobFactory } from 'api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory';
+import { CsvPreflightJobHandler } from '../../../infrastructure/jobHandlers/CsvPreflightJobHandler';
+import { CsvImportDoesNotExistError } from '../../../domain/csvImporErrors';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { CsvExtractUploadedZipJobFactory } from '../../../infrastructure/factories/CsvExtractUploadedZipJobFactory';
 import { Callbacks } from '../CsvExtractUploadedZipJob';
 
 const callbacks: Callbacks = {
