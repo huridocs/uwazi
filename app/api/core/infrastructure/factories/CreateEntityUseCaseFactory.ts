@@ -5,8 +5,7 @@ import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { DefaultDispatcher, NoOpDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { FilesServiceFactory } from './FilesServiceFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
@@ -20,23 +19,10 @@ class CreateEntityUseCaseFactory {
 
     const transactionManager = TransactionManagerFactory.default();
 
-    let jobsDispatcher: JobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
-
-    // In test environment, use a no-op dispatcher that doesn't create jobs in DB
-    if (process.env.NODE_ENV === 'test') {
-      jobsDispatcher = {
-        async dispatch() {
-          // No-op: don't create jobs in test DB
-        },
-        async dispatchMany(callback) {
-          // No-op: don't create jobs in test DB
-          await callback(async () => {});
-        },
-        async deleteByParams() {
-          // No-op: nothing to delete
-        },
-      };
-    }
+    const jobsDispatcher =
+      process.env.NODE_ENV === 'test'
+        ? NoOpDispatcher()
+        : DefaultDispatcher(tenant.name, transactionManager);
 
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;

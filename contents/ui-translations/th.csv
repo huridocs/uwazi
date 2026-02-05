@@ -567,8 +567,10 @@ No options found,ไม่พบตัวเลือก
 No property,ไม่เจอพร๊อพเพอร์ตี้
 No References,ไม่มีการอ้างอิง
 No References description,References are parts of this document related with other documents and entities.
+No relationship types available,No relationship types available
 No Relationships,ไม่มีความสัมพันธ์
 No Relationships description,Relationships are bonds between entities.
+No results found,No results found
 No table of contents,ไม่มีสารบัญ
 No Table of contents,No Table of contents
 No table of contents description,ไม่มีคำอธิบายสารบัญ
@@ -766,6 +768,7 @@ Search Tips: exact term,เคล็ดลับการค้นหา: คำ
 Search Tips: one char wildcard,เคล็ดลับการค้นหา: ตัวอักษรพิเศษ
 Search Tips: proximity,เคล็ดลับการค้นหา: คำใกล้เคียง
 Search Tips: wildcard,เคล็ดลับการค้นหา: ไวลการ์ด
+Searching...,Searching...
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -954,6 +957,7 @@ Translations,การแปล
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,บันทึกการแปล
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
