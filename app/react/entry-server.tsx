@@ -270,7 +270,7 @@ const prepareSSRContext = async (
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { fetchRequest, ssrError } = createFetchRequest(req);
   const { query } = createStaticHandler(routes);
-  hydrateAtomStore(atomStoreData);
+  hydrateAtomStore(atomStoreData, atomStore);
   const staticHandleContext = await query(fetchRequest);
   const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
   const reduxState = reduxStore.getState();
