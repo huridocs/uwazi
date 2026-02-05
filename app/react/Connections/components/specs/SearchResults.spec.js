@@ -1,12 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { Loader } from '#app/components/Elements/Loader.jsx';
-
-import { SearchResults } from '#app/Connections/components/SearchResults.jsx';
 import Immutable from 'immutable';
+import { Loader } from '#app/components/Elements/Loader.js';
 
-// Removed destructuring - use Immutable.fromJS directly
+import { SearchResults } from '../SearchResults.js';
+
 describe('SearchResults', () => {
   let component;
   let props;

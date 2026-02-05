@@ -2,10 +2,9 @@ import { actions } from '#app/BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
 import { notificationActions } from '#app/Notifications/index.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
-
+import Immutable from 'immutable';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import Immutable from 'immutable';
 
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;

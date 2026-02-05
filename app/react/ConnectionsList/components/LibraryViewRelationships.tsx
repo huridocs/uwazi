@@ -1,18 +1,15 @@
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-
+import Immutable from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
-
-import Icon from '#UI/Icon/Icon.js';
-
+import { Icon } from '#app/UI/index.js';
+import { Item } from '#app/Layout/index.js';
 import { Collapsible } from '#app/App/Collapsible.js';
 import { StickyHeader } from '#app/App/StickyHeader.js';
 import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
 import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
-import * as actions from '#app/Relationships/actions/actions.js';
 import { IStore } from '#app/istore.js';
-import Item from '#app/Layout/Item.js';
-import Immutable from 'immutable';
+import * as actions from '../../Relationships/actions/actions.js';
 
 interface LibraryViewRelationshipsProps {
   expanded: boolean;

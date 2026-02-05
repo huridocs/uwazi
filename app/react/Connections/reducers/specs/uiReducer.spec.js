@@ -1,7 +1,7 @@
-import uiReducer from '#app/Connections/reducers/uiReducer.js';
 import Immutable from 'immutable';
 
-// Removed destructuring - use Immutable.fromJS directly
+import uiReducer from '../uiReducer.js';
+
 describe('Connections uiReducer', () => {
   describe('when state is undefined', () => {
     it('should return a default state', () => {

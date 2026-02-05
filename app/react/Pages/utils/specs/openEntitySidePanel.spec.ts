@@ -21,25 +21,23 @@ describe('openEntitySidePanel', () => {
     const storeDispatchMock = jest.fn();
 
     jest.resetModules();
-    jest.doMock('#app/store', () => ({ store: { dispatch: storeDispatchMock } }), {
-      virtual: true,
-    });
+    jest.doMock('app/store', () => ({ store: { dispatch: storeDispatchMock } }), { virtual: true });
     jest.doMock(
-      '#app/BasicReducer',
+      'app/BasicReducer',
       () => ({
         actions: { set: setMock },
       }),
       { virtual: true }
     );
     jest.doMock(
-      '#app/Library/actions/libraryActions',
+      'app/Library/actions/libraryActions',
       () => ({
         getAndSelectDocument: getAndSelectDocumentMock,
       }),
       { virtual: true }
     );
     jest.doMock(
-      '#app/Multireducer',
+      'app/Multireducer',
       () => ({
         wrapDispatch: wrapDispatchMock,
       }),

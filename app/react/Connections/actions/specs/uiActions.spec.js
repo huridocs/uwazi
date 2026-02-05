@@ -1,4 +1,4 @@
-import * as uiActions from '#app/Connections/actions/uiActions.js';
+import * as uiActions from '../uiActions.js';
 
 describe('Connections uiActions', () => {
   describe('openPanel', () => {

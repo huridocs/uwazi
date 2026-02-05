@@ -2,19 +2,19 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import RouteHandler from '#app/App/RouteHandler.js';
 import { shallow } from 'enzyme';
 import { actions } from '#app/BasicReducer/index.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
-import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
+import { PageViewer } from '#app/Pages/components/PageViewer.js';
 import * as sidePanelUtils from '#app/Pages/utils/openEntitySidePanel.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
-import PageView from '../PageView.jsx';
-import * as assetsUtils from '../utils/getPageAssets';
+import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import PageView from '../PageView.js';
+import * as assetsUtils from '../utils/getPageAssets.js';
 
 describe('PageView', () => {
   let component;

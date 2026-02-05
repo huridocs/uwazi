@@ -1,11 +1,11 @@
 import Immutable from 'immutable';
 import React from 'react';
 
-import { ConnectionsGroups, ConnectionsList } from '#app/ConnectionsList/index.js';
-import { ShowMetadata } from '#app/Metadata/index.js';
+import { ConnectionsGroups, ConnectionsList } from '#app/ConnectionsList.js';
+import { ShowMetadata } from '#app/Metadata.js';
 import { shallow } from 'enzyme';
-import { FileList } from '#app/Attachments/components/FileList.jsx';
-import { EntityViewer, mapStateToProps } from '#app/Entities/components/EntityViewer.jsx';
+import { FileList } from '#app/Attachments/components/FileList.js';
+import { EntityViewer, mapStateToProps } from '../EntityViewer.js';
 
 describe('EntityViewer', () => {
   let component;

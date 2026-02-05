@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Field, Form, actions as formActions } from 'react-redux-form';
 
-import { Icon } from '#UI/Icon/Icon.jsx';
+import { Icon } from '#UI/index.js';
 
-import { SearchBar, mapStateToProps } from '#app/ConnectionsList/components/SearchBar.jsx';
+import { SearchBar, mapStateToProps } from '../SearchBar.js';
 
 describe('SearchBar (Entities)', () => {
   let component;

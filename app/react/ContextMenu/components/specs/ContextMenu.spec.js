@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { shallow } from 'enzyme';
 import { connect } from 'react-redux';
 
-import { ContextMenu } from '#app/ContextMenu/components/ContextMenu.jsx';
+import { ContextMenu } from '#app/ContextMenu/components/ContextMenu.js';
 
 const SubMenu = () => <div />;
 

@@ -4,7 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Script from '#app/Pages/components/Script.jsx';
+import Script from '../Script.js';
 
 const workingScript = {
   input: 'console.log("works!");',

@@ -1,10 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { ResetSearch } from '#app/ConnectionsList/components/ResetSearch.jsx';
 import Immutable from 'immutable';
+import { ResetSearch } from '../ResetSearch.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 describe('ResetSearch', () => {
   let component;
   let props;

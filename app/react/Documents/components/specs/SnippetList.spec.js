@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
-import { SnippetList } from '#app/Documents/components/SnippetList.jsx';
+import { SnippetList } from '../SnippetList.js';
 
 describe('SnippetList', () => {
   let component;

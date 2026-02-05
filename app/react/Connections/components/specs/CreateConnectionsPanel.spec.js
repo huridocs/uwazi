@@ -1,30 +1,29 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import SidePanel from '#app/Layout/SidePanel.jsx';
-
-import { Icon } from '#UI/Icon/Icon.jsx';
-
-import { CreateConnectionPanel } from '#app/Connections/components/CreateConnectionPanel.jsx';
-import SearchForm from '#app/Connections/components/SearchForm.jsx';
-import ActionButton from '#app/Connections/components/ActionButton.jsx';
-import SearchResults from '#app/Connections/components/SearchResults.jsx';
 import Immutable from 'immutable';
 
-// Removed destructuring - use Immutable.fromJS directly
+import SidePanel from '#app/Layout/SidePanel.js';
+
+import { Icon } from '#UI/index.js';
+
+import { CreateConnectionPanel } from '../CreateConnectionPanel.js';
+import SearchForm from '../SearchForm.js';
+import ActionButton from '../ActionButton.js';
+import SearchResults from '../SearchResults.js';
+
 describe('CreateConnectionPanel', () => {
   let component;
   let props;
 
   beforeEach(() => {
     props = {
-      connection: Immutable.Map({
+      connection: Immutable.fromJS({
         template: 'rt3',
         type: 'basic',
         sourceDocument: 'sourceId',
         targetDocument: 'targetId',
       }),
-      relationTypes: Immutable.List([
+      relationTypes: Immutable.fromJS([
         { _id: 'rt1', name: 'relationType1' },
         { _id: 'rt2', name: 'relationType2' },
       ]),
@@ -56,7 +55,7 @@ describe('CreateConnectionPanel', () => {
   });
 
   it('should mark the connnection type passed', () => {
-    props.connection = Immutable.Map({
+    props.connection = Immutable.fromJS({
       template: 'rt1',
       type: 'basic',
       sourceDocument: 'sourceId',
@@ -68,7 +67,7 @@ describe('CreateConnectionPanel', () => {
     expect(options.at(0).find(Icon).props().icon).toBe('check');
     expect(options.at(1).find(Icon).props().icon).not.toBe('check');
 
-    props.connection = Immutable.Map({
+    props.connection = Immutable.fromJS({
       template: 'rt2',
       type: 'basic',
       sourceDocument: 'sourceId',

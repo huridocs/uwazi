@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import immutable from 'immutable';
-
+import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
 
@@ -13,7 +12,7 @@ describe('TemplateLabel', () => {
 
   beforeEach(() => {
     initialState = {
-      templates: immutable([
+      templates: Immutable.fromJS([
         { _id: 'templateId', name: 'title' },
         { _id: 'templateId2', name: 'title 2', isEntity: true },
       ]),
@@ -52,14 +51,16 @@ describe('TemplateLabel', () => {
     for (let i = 0; i < 20; i += 1) {
       templates.push({ _id: `templateId${i}`, name: `title ${i}` });
     }
-    initialState.templates = immutable(templates);
+    initialState.templates = Immutable.fromJS(templates);
     props.template = 'templateId19';
     render();
     expect(component.prop('className')).toBe('btn-color btn-color-0');
   });
 
   it('should display the template color if template has a custom color', () => {
-    initialState.templates = immutable([{ _id: 'templateId', name: 'title', color: '#112233' }]);
+    initialState.templates = Immutable.fromJS([
+      { _id: 'templateId', name: 'title', color: '#112233' },
+    ]);
     props.template = 'templateId';
     render();
     expect(component.prop('className')).toBe('btn-color');

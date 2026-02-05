@@ -1,7 +1,7 @@
-import reducer from '#app/Connections/reducers/connectionReducer.js';
 import Immutable from 'immutable';
 
-// Removed destructuring - use Immutable.fromJS directly
+import reducer from '../connectionReducer.js';
+
 describe('Connections connection reducer', () => {
   describe('when state is undefined', () => {
     it('should return a default state', () => {

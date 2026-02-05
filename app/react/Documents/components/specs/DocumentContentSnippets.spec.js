@@ -6,7 +6,7 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 import { I18NLink } from '#app/I18N/index.js';
-import { DocumentContentSnippets } from '#app/Documents/components/SnippetList.jsx';
+import { DocumentContentSnippets } from '../SnippetList.js';
 
 describe('SnippetList', () => {
   let component;

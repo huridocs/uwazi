@@ -1,3 +1,4 @@
+import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
 import { notificationActions } from '#app/Notifications/index.js';
@@ -5,10 +6,8 @@ import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import * as actions from '#app/ConnectionsList/actions/actions.js';
-import Immutable from 'immutable';
+import * as actions from '../actions.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 describe('ConnectionsList actions', () => {
   let dispatch;
   let getState;
@@ -208,7 +207,7 @@ describe('ConnectionsList actions', () => {
           list: {
             sharedId: 'sid',
             sort: { order: 'order' },
-            filters: Immutable.Map({
+            filters: Immutable.fromJS({
               filter: Immutable.fromJS({ oldProperty: 'old', modifiedProperty: 'original' }),
             }),
           },

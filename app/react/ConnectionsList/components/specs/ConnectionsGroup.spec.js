@@ -1,11 +1,9 @@
 import React from 'react';
-
-import { shallow } from 'enzyme';
-import ShowIf from '#app/App/ShowIf.jsx';
-import { ConnectionsGroup } from '#app/ConnectionsList/components/ConnectionsGroup.jsx';
 import Immutable from 'immutable';
+import { shallow } from 'enzyme';
+import ShowIf from '#app/App/ShowIf.js';
+import { ConnectionsGroup } from '../ConnectionsGroup.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 describe('ConnectionsGroup', () => {
   let component;
   let props;
@@ -147,7 +145,7 @@ describe('ConnectionsGroup', () => {
     it('should set selected False if there is more templates in new props', () => {
       component.setProps({
         filters: Immutable.fromJS({ a: 3 }),
-        group: Immutable.Map({
+        group: Immutable.fromJS({
           templates: [{ _id: 1 }, { _id: 2 }, { _id: 3 }],
           context: 'oneContext',
         }),

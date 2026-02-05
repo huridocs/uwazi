@@ -1,5 +1,5 @@
 import api from '#app/utils/api.js';
-import EntitiesApi from '#app/Entities/EntitiesAPI.js';
+import EntitiesApi from '../Entities/EntitiesAPI.js';
 
 export default {
   get(requestParams) {
