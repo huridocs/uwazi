@@ -154,6 +154,47 @@ is confusing and inconsistent with thesauri preflight behavior.
 - Makes relationships consistent with existing thesauri split.
 - Reduces duplicate CSV row scans while preserving idempotent, sequential apply jobs.
 
+### 6.13) Critical design constraint — relationship entity creation (Feb 2026)
+
+**Context (manual testing):**
+
+- CSV with relationship values succeeded in preflight and relationships-create, but **row import failed**
+  with: `Translation for language 'es' does not exist. ["en"]`.
+- This error is thrown when building relationship assignments, which **expects related entities to have
+  translations for all UI languages**.
+
+**Root cause (must not regress):**
+
+- The current relationships creation path **does not use the Entities module**.
+- It creates related entities directly via the Entity domain + data source, **only with the default
+  language**, which violates the Entities module contract.
+- This is why `getTitle('es')` fails during relationship assignment creation.
+
+**Non‑negotiable requirements (explicitly confirmed):**
+
+1. **Creating entities is the sole responsibility of the Entities module.**
+   - CSV V2 must **not** manually construct multiple per‑language entity documents.
+   - CSV V2 must **not** rely on low‑level domain/DS inserts to create entities.
+2. The relationships creation step **must call the same Entities creation flow** used by the API or
+   row import creation, with a minimal payload (title + template).
+3. CSV V2 must **not** encode assumptions about how translations are stored (current model or future
+   refactors).
+4. Relationship creation **does not get multi‑language input** (only title), so it should delegate
+   to the Entities module to build the full translation set.
+
+**Required test (new):**
+
+- Add a spec that proves **relationship‑created entities have all UI languages** using the Entities
+  module creation flow (not by inspecting low‑level translation storage shape).
+- This test should fail against the current relationships creation code until it is updated to use
+  the Entities module properly.
+
+**Summary instruction (for next agent):**
+
+- Do **not** “fix” this by patching translation lookups or skipping missing languages.
+- The correct fix is to **replace relationship entity creation** with the Entities module create
+  use case so the Entities subsystem owns translation creation.
+
 2. **Pipeline chaining completed**
 
    - `CsvCreateThesauriValuesJob` now dispatches `CsvCreateRelationshipEntitiesJobHandler`
