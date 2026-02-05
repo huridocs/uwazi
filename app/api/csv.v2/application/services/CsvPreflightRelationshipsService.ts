@@ -1,10 +1,6 @@
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { Entity } from 'api/core/domain/entity/Entity';
 import { Template } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
 import {
   CsvImportRelationshipValue,
@@ -28,12 +24,9 @@ type CollectTitlesParams = {
 
 type CreateMissingEntitiesParams = {
   entitiesDS: MultiLanguageEntityDataSource;
-  templatesDS: TemplatesDataSource;
   titlesByTemplate: Map<string, Set<string>>;
-  defaultLanguage: LanguageISO6391;
-  userId: string;
   chunkSize: number;
-  transactionManager: TransactionManager;
+  createEntity: (params: { title: string; templateId: string }) => Promise<void>;
 };
 
 type BuildAppliedValuesParams = {
@@ -178,9 +171,8 @@ const collectRelationshipTitlesForImport = async (params: CollectTitlesParams) =
 
 // eslint-disable-next-line max-statements
 const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParams) => {
-  const { entitiesDS, templatesDS, titlesByTemplate, defaultLanguage, userId, chunkSize } = params;
+  const { entitiesDS, titlesByTemplate, chunkSize, createEntity } = params;
   let createdEntities = 0;
-  const templateCache = new Map<string, Template>();
 
   for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
     const titles = Array.from(titlesSet);
@@ -193,35 +185,14 @@ const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParam
         titles,
         chunkSize,
       });
-      let targetTemplate = templateCache.get(templateId);
-      if (!targetTemplate) {
-        // eslint-disable-next-line no-await-in-loop
-        targetTemplate = (await templatesDS.getById(templateId)).getDataOrThrow();
-        templateCache.set(templateId, targetTemplate);
-      }
       for (const chunk of chunks) {
         const missingTitles = buildMissingTitles(chunk, knownTitles);
-        if (missingTitles.length) {
-          const entities = missingTitles.map(title => {
-            const entity = Entity.create({
-              languages: [defaultLanguage],
-              template: targetTemplate!,
-              userId,
-            });
-            entity.setPropertyAssignmentsInAllLanguages([
-              targetTemplate!.createPropertyAssignment('title', {
-                value: [{ value: title }],
-              }),
-            ]);
-            return entity;
-          });
+        for (const title of missingTitles) {
           // eslint-disable-next-line no-await-in-loop
-          await params.transactionManager.run(async () => {
-            await entitiesDS.bulkInsert(entities);
-          });
-          mergeKnownTitles(knownTitles, missingTitles);
-          createdEntities += entities.length;
+          await createEntity({ title, templateId });
+          createdEntities += 1;
         }
+        mergeKnownTitles(knownTitles, missingTitles);
       }
     }
   }

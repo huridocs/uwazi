@@ -195,6 +195,18 @@ is confusing and inconsistent with thesauri preflight behavior.
 - The correct fix is to **replace relationship entity creation** with the Entities module create
   use case so the Entities subsystem owns translation creation.
 
+**Status (implemented):**
+
+- Relationships creation now delegates to the Entities module (via entity creation use case),
+  so translation setup is owned by Entities and not replicated in CSV.
+- New integration spec added:
+  - `app/api/csv.v2/application/jobs/specs/CsvCreateRelationshipEntitiesJob.spec.ts`
+    validates that related entities are created with all UI languages.
+- **Testing rule (explicit):** do not mock entity creation to assert calls. Use integration tests
+  with real persistence to verify behavior. Mocking must remain minimal and only at boundaries.
+- Manual verification: CSV with relationship values now imports successfully without
+  translation errors (relationship-created entities get all UI languages).
+
 2. **Pipeline chaining completed**
 
    - `CsvCreateThesauriValuesJob` now dispatches `CsvCreateRelationshipEntitiesJobHandler`

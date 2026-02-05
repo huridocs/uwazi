@@ -1,11 +1,8 @@
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CsvImportEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvImportEntitiesJobHandler';
 import {
   CsvImport,
@@ -43,11 +40,10 @@ type Input = {
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
-  templatesDS: TemplatesDataSource;
-  settingsDS: SettingsDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
   relationshipValuesDS: CsvImportRelationshipValuesDataSource;
   relationshipPendingValuesDS: CsvImportRelationshipPendingValuesDataSource;
+  entityCreator: (params: { title: string; templateId: string }) => Promise<void>;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
 };
@@ -91,7 +87,6 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
 
   private async loadContext(importId: string) {
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
     const pendingDocs = await this.deps.relationshipPendingValuesDS.getByImport(importId);
 
     const titlesByTemplate = new Map<string, Set<string>>();
@@ -106,7 +101,6 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
 
     return {
       csvImport,
-      defaultLanguage: defaultLanguage as LanguageISO6391,
       titlesByTemplate,
       totalTemplates: titlesByTemplate.size,
     };
@@ -154,13 +148,10 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
   private async runCreation(params: {
     importId: string;
     titlesByTemplate: Map<string, Set<string>>;
-    defaultLanguage: LanguageISO6391;
-    userId: string;
     totalTemplates: number;
     callbacks: Callbacks;
   }) {
-    const { titlesByTemplate, defaultLanguage, userId, totalTemplates, callbacks, importId } =
-      params;
+    const { titlesByTemplate, totalTemplates, callbacks, importId } = params;
     const observedTitles = CsvCreateRelationshipEntitiesJob.countObservedTitles(titlesByTemplate);
     if (!titlesByTemplate.size) {
       return {
@@ -172,12 +163,9 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
 
     const createdEntities = await createMissingEntitiesForTitles({
       entitiesDS: this.deps.entitiesDS,
-      templatesDS: this.deps.templatesDS,
       titlesByTemplate,
-      defaultLanguage,
-      userId,
       chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
-      transactionManager: this.deps.transactionManager,
+      createEntity: this.deps.entityCreator,
     });
     const relationshipDocs = await buildRelationshipAppliedValues({
       entitiesDS: this.deps.entitiesDS,
@@ -213,13 +201,10 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
 
   private async runApplyFlow(input: Input) {
     const { importId, tenantName, userId, callbacks } = input;
-    const { csvImport, titlesByTemplate, defaultLanguage, totalTemplates } =
-      await this.loadContext(importId);
+    const { csvImport, titlesByTemplate, totalTemplates } = await this.loadContext(importId);
     const creation = await this.runCreation({
       importId,
       titlesByTemplate,
-      defaultLanguage,
-      userId,
       totalTemplates,
       callbacks,
     });
