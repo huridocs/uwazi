@@ -34,12 +34,12 @@ import { CsvCreateThesauriValuesJobFactory } from 'api/csv.v2/infrastructure/fac
 import { CsvExtractUploadedZipJobFactory } from 'api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory';
 import { CsvImportEntitiesJobFactory } from 'api/csv.v2/infrastructure/factories/CsvImportEntitiesJobFactory';
 import { CsvPreflightJobFactory } from 'api/csv.v2/infrastructure/factories/CsvPreflightJobFactory';
-import { CsvPreflightRelationshipsJobFactory } from 'api/csv.v2/infrastructure/factories/CsvPreflightRelationshipsJobFactory';
+import { CsvCreateRelationshipEntitiesJobFactory } from 'api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory';
 import { CsvCreateThesauriValuesJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
 import { CsvImportEntitiesJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler';
 import { CsvExtractUploadedZipJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
-import { CsvPreflightRelationshipsJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightRelationshipsJobHandler';
+import { CsvCreateRelationshipEntitiesJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
@@ -239,10 +239,10 @@ export function registerJobs(
     return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
   });
 
-  register(CsvPreflightRelationshipsJobHandler, async () => {
-    const useCase = CsvPreflightRelationshipsJobFactory.default();
+  register(CsvCreateRelationshipEntitiesJobHandler, async () => {
+    const useCase = CsvCreateRelationshipEntitiesJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    return new CsvPreflightRelationshipsJobHandler({ useCase, sockets });
+    return new CsvCreateRelationshipEntitiesJobHandler({ useCase, sockets });
   });
 
   register(CsvImportEntitiesJobHandler, async () => {

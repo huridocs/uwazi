@@ -90,6 +90,27 @@ const addTitlesForRow = (params: {
   });
 };
 
+const collectRelationshipTitlesFromRows = (params: {
+  rows: Array<{ values: string[] }>;
+  template: Template;
+  sanitizedHeaders: string[];
+  titlesByTemplate?: Map<string, Set<string>>;
+}) => {
+  const { rows, template, sanitizedHeaders } = params;
+  const relationshipColumns = buildRelationshipColumnMap({ template, sanitizedHeaders });
+  const titlesByTemplate = params.titlesByTemplate ?? new Map<string, Set<string>>();
+
+  rows.forEach(row =>
+    addTitlesForRow({
+      rowValues: row.values,
+      columns: relationshipColumns,
+      titlesByTemplate,
+    })
+  );
+
+  return titlesByTemplate;
+};
+
 const chunkList = <T>(items: T[], size: number) => {
   if (!items.length) {
     return [];
@@ -245,6 +266,7 @@ const buildRelationshipAppliedValues = async (params: BuildAppliedValuesParams) 
 };
 export {
   buildRelationshipAppliedValues,
+  collectRelationshipTitlesFromRows,
   collectRelationshipTitlesForImport,
   createMissingEntitiesForTitles,
 };

@@ -4,18 +4,21 @@ import {
 } from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { CsvPreflightRelationshipsJob } from '../../application/jobs/CsvPreflightRelationshipsJob';
+import {
+  CsvCreateRelationshipEntitiesJob,
+  RelationshipsProgress,
+} from '../../application/jobs/CsvCreateRelationshipEntitiesJob';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
 };
 
 type Deps = {
-  useCase: CsvPreflightRelationshipsJob;
+  useCase: CsvCreateRelationshipEntitiesJob;
   sockets: V1WebSocketsWrapper;
 };
 
-export class CsvPreflightRelationshipsJobHandler extends UserAwareDispatchable<Params> {
+export class CsvCreateRelationshipEntitiesJobHandler extends UserAwareDispatchable<Params> {
   constructor(private deps: Deps) {
     super();
   }
@@ -32,20 +35,20 @@ export class CsvPreflightRelationshipsJobHandler extends UserAwareDispatchable<P
           onStart: ({ importId }) => {
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
-              'csvImport:preflight:relationships:start',
+              'csvImport:preflight:relationships:create:start',
               { importId }
             );
           },
-          onProgress: info => {
+          onProgress: (info: RelationshipsProgress) => {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             heartbeat();
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
-              'csvImport:preflight:relationships:progress',
+              'csvImport:preflight:relationships:create:progress',
               {
                 importId: info.importId,
-                processedRows: info.processedRows,
-                totalRows: info.totalRows,
+                processedTemplates: info.processedTemplates,
+                totalTemplates: info.totalTemplates,
                 createdEntities: info.createdEntities,
               }
             );
@@ -53,14 +56,14 @@ export class CsvPreflightRelationshipsJobHandler extends UserAwareDispatchable<P
           onSuccess: ({ importId }) => {
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
-              'csvImport:preflight:relationships:success',
+              'csvImport:preflight:relationships:create:success',
               { importId }
             );
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
-              'csvImport:preflight:relationships:error',
+              'csvImport:preflight:relationships:create:error',
               { importId, message: error.message }
             );
           },

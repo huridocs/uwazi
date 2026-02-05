@@ -44,6 +44,7 @@ describe('CsvPreflightJob error handling', () => {
       update: jest.fn().mockResolvedValue(undefined),
     };
     const rowsDS = {
+      countByImport: jest.fn().mockResolvedValue(10),
       getByImport: jest.fn().mockRejectedValue(new Error('rows explode')),
     };
 
@@ -64,6 +65,9 @@ describe('CsvPreflightJob error handling', () => {
       thesauriValuesDS: {
         replacePendingValues: jest.fn(),
       } as any,
+      relationshipPendingValuesDS: {
+        replacePendingValues: jest.fn(),
+      } as any,
       jobsDispatcher: {
         dispatch: jest.fn(),
       } as any,
@@ -73,6 +77,7 @@ describe('CsvPreflightJob error handling', () => {
       onStart: jest.fn(),
       onSuccess: jest.fn(),
       onError: jest.fn(),
+      onProgress: jest.fn(),
     };
 
     await expect(
@@ -95,7 +100,7 @@ describe('CsvPreflightJob error handling', () => {
     expect(failureUpdate.failure).toEqual(
       expect.objectContaining({
         message: 'rows explode',
-        stage: 'preflight:thesauri',
+        stage: 'preflight:scan',
         retryable: true,
       })
     );

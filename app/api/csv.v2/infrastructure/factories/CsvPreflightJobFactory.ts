@@ -12,6 +12,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
+import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 
@@ -24,6 +25,7 @@ type FactoryOptions = {
   settingsDS?: SettingsDataSource;
   thesauriDS?: MongoThesauriDataSource;
   thesauriValuesDS?: CsvImportThesauriValuesDataSource;
+  relationshipPendingValuesDS?: CsvImportRelationshipPendingValuesDataSource;
 };
 
 class CsvPreflightJobFactory {
@@ -45,6 +47,9 @@ class CsvPreflightJobFactory {
     const thesauriValuesDS =
       options.thesauriValuesDS ??
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const relationshipPendingValuesDS =
+      options.relationshipPendingValuesDS ??
+      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
     const jobsDispatcher =
       options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
 
@@ -55,6 +60,7 @@ class CsvPreflightJobFactory {
       settingsDS,
       thesauriDS,
       thesauriValuesDS,
+      relationshipPendingValuesDS,
       jobsDispatcher,
       transactionManager,
     });
@@ -65,6 +71,7 @@ class CsvPreflightJobFactory {
       csvImportsDS,
       rowsDS,
       thesauriValuesDS,
+      relationshipPendingValuesDS,
     };
   }
 }

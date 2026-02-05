@@ -13,18 +13,20 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 ### 2) Current v2 pipeline snapshot (code)
 
 - Register import (`CsvImportEntities`) → extraction + row staging (`CsvExtractUploadedZipJob`)
-- Preflight (thesauri pending values) (`CsvPreflightJob`)
+- Preflight scan (thesauri + relationships pending values) (`CsvPreflightJob`)
 - Create thesauri values (`CsvCreateThesauriValuesJob`)
-- Relationships preflight (`CsvPreflightRelationshipsJob`)
+- Create relationship entities (`CsvCreateRelationshipEntitiesJob`)
 - Entities import (`CsvImportEntitiesJob`)
 
 ### 3) Missing or incomplete work
 
 #### 3.1 Pipeline gaps
 
-- Relationships preflight stage now exists and performs real work (no longer dummy).
-- Pipeline chaining is complete: thesauri create → relationships preflight → entities import.
+- Relationships creation stage now exists and performs real work (no longer dummy).
+- Pipeline chaining is complete: thesauri create → relationships create → entities import.
 - Entities import stage is implemented and wired into the pipeline.
+- **Decision (Feb 2026):** align relationships with thesauri by splitting scan vs create using
+  a single scan job and sequential apply jobs (no orchestrator).
 
 #### 3.2 V1 parity gaps (deferred)
 
@@ -41,6 +43,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 - `CsvEntitiesImportMapper` still imports `normalizeThesaurusLabel` from a v1 module.
 - Thesauri creation still uses legacy adapters instead of v2 data sources.
+- TODO: Audit `csv.v2` internal imports and ensure they use **relative paths** (avoid `/api` syntax).
 
 #### 3.4 Tests and coverage gaps
 
@@ -83,37 +86,84 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 9. **Relationships preflight refactor (done)**
    - Extracted helper logic into `CsvPreflightRelationshipsService`.
-   - Removed ESLint/TS disables from `CsvPreflightRelationshipsJob`.
+   - Removed ESLint/TS disables from the relationships job (now `CsvCreateRelationshipEntitiesJob`).
 
 ### 6) What was completed in this iteration (Jan 2026)
 
-1. **Relationships preflight stage implemented**
+1. **Relationships create stage implemented**
 
-   - Job: `app/api/csv.v2/application/jobs/CsvPreflightRelationshipsJob.ts`.
-   - Handler: `app/api/csv.v2/infrastructure/jobHandlers/CsvPreflightRelationshipsJobHandler.ts`.
-   - Reads staged rows, collects relationship titles (split by `|`), and creates
-     missing related entities using entities.v2.
+   - Job: `app/api/csv.v2/application/jobs/CsvCreateRelationshipEntitiesJob.ts`.
+   - Handler: `app/api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.ts`.
+   - Uses pending relationship titles to create missing related entities using entities.v2.
    - Only creates entities for relationship properties that specify `content` (template id),
      matching v1 behavior.
    - Uses title-only entity creation (no required-property validation; entities.v2 allows this).
    - Statuses in `CsvImportStatus`:
-     - `preflight:relationships`
-     - `preflight:relationships:done`
+     - `preflight:relationships:create`
+     - `preflight:relationships:create:done`
    - Emits tenant-admin events:
-     - `csvImport:preflight:relationships:start|progress|success|error`
+     - `csvImport:preflight:relationships:create:start|progress|success|error`
+
+### 6.12) Event semantics discussion (Feb 2026)
+
+This was surfaced during manual testing of CSV V2: the relationships preflight emits two
+`progress` events even when there are **zero** relationship properties, because the scan
+phase and a final "completion" progress are both emitted before the `success` event. This
+is confusing and inconsistent with thesauri preflight behavior.
+
+**Current scan + apply split (now in code):**
+
+- `CsvPreflightJob` (scan/pending-values build):
+  - `csvImport:preflight:scan:start|progress|success|error`
+- `CsvCreateThesauriValuesJob` (apply/create):
+  - `csvImport:preflight:thesauri:create:start|progress|success|error`
+
+**Issue observed (resolved in Feb 2026):**
+
+- Relationships preflight originally scanned rows and created entities in the same job,
+  causing duplicate progress emits when no relationships existed. This is now split.
+
+**Proposed alignment (recommended):**
+
+1. **Single scan job**: a unified preflight scan reads staged rows once and generates
+   **pending artifacts** for both thesauri and relationships.
+   - New collection for relationships: `csv_import_relationships_pending_values`
+     (stores `{ importId, templateId, titles[], createdAt }`).
+2. **Sequential apply jobs (no orchestrator):**
+   - `CsvCreateThesauriValuesJob` (already exists) is the **single next phase** after scan.
+   - It **always dispatches** `CsvCreateRelationshipEntitiesJob` on success (even if it did no work).
+   - `CsvCreateRelationshipEntitiesJob` **always dispatches** the entities import job on success
+     (even if it did no work).
+   - Each job is a "dumb dispatcher" of the next stage; no fan-out or join logic.
+3. **Event contract** (consistent with thesauri):
+   - **Scan phase events (single job):**
+     - `csvImport:preflight:scan:start|progress|success|error`
+       - payload: `{ importId, processedRows, totalRows }`
+   - **Apply phase events (per type, only if work exists):**
+     - Thesauri: `csvImport:preflight:thesauri:create:start|progress|success|error`
+     - Relationships: `csvImport:preflight:relationships:create:start|progress|success|error`
+       - payload: `{ importId, processedTemplates, totalTemplates, createdEntities }`
+   - **No progress emits when there is no work** (scan still emits; create does not).
+
+**Rationale:**
+
+- Keeps progress semantics meaningful (progress only when real work occurs).
+- Avoids duplicate progress events when there are zero relationships.
+- Makes relationships consistent with existing thesauri split.
+- Reduces duplicate CSV row scans while preserving idempotent, sequential apply jobs.
 
 2. **Pipeline chaining completed**
 
-   - `CsvCreateThesauriValuesJob` now dispatches `CsvPreflightRelationshipsJobHandler`
+   - `CsvCreateThesauriValuesJob` now dispatches `CsvCreateRelationshipEntitiesJobHandler`
      inside the same transaction that sets `preflight:thesauri:create:done`.
-   - `CsvPreflightRelationshipsJob` dispatches `CsvImportEntitiesJobHandler`
+   - `CsvCreateRelationshipEntitiesJob` dispatches `CsvImportEntitiesJobHandler`
      inside its success transaction.
    - Queue registry wiring added for the new handler.
 
 3. **Job handler heartbeat behavior aligned**
 
    - Removed catch-path `heartbeat()` calls from:
-     - `CsvPreflightRelationshipsJobHandler`
+   - `CsvCreateRelationshipEntitiesJobHandler`
      - `CsvImportEntitiesJobHandler`
    - Rationale: catch path only does quick DB writes (`markAsFailed`), so it does not need
      extra heartbeats beyond normal progress callbacks.
@@ -136,7 +186,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 7. **Relationships preflight batching improvements**
 
-   - Added a configurable, top-of-file constant in `CsvPreflightRelationshipsJob`:
+   - Added a configurable, top-of-file constant in `CsvCreateRelationshipEntitiesJob`:
      `RELATIONSHIP_TITLES_CHUNK_SIZE`.
    - Title lookups are now chunked to avoid large `$in` queries.
    - Creation runs in the same chunk size and updates an in-memory `knownTitles` set to
@@ -180,7 +230,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
   - `CsvExtractUploadedZipJobFactory`
   - `CsvPreflightJobFactory`
   - `CsvCreateThesauriValuesJobFactory`
-  - `CsvPreflightRelationshipsJobFactory`
+  - `CsvCreateRelationshipEntitiesJobFactory`
   - `CsvImportEntitiesJobFactory` (refactored to match the same pattern)
 - Queue registry now builds these jobs via factories.
 - Tests were updated to use factories instead of hand-wiring dependencies.
@@ -212,7 +262,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 ### 8) Next agent checklist (quick start)
 
 1. Skim `csv-v2-context-07.md` and confirm the pipeline chain in code:
-   `CsvCreateThesauriValuesJob` → `CsvPreflightRelationshipsJob` → `CsvImportEntitiesJob`.
+   `CsvCreateThesauriValuesJob` → `CsvCreateRelationshipEntitiesJob` → `CsvImportEntitiesJob`.
 2. Keep job dispatch params explicit (`tenantName`, `userId`) for all `UserAwareDispatchable` jobs.
 3. Do not add real relationships logic until the team agrees on the preflight design.
 4. When adding logic, ensure all DB writes are inside `transactionManager.run` and all file I/O

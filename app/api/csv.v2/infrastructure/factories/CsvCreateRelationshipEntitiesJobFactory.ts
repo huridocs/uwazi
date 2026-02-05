@@ -1,5 +1,5 @@
-import { CsvPreflightRelationshipsJob } from 'api/csv.v2/application/jobs/CsvPreflightRelationshipsJob';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
+import { CsvCreateRelationshipEntitiesJob } from '../../application/jobs/CsvCreateRelationshipEntitiesJob';
+import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
@@ -13,10 +13,9 @@ import { tenants } from 'api/tenants/tenantContext';
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;
   jobsDispatcher?: JobsDispatcher;
-  batchSize?: number;
 };
 
-class CsvPreflightRelationshipsJobFactory {
+class CsvCreateRelationshipEntitiesJobFactory {
   static default() {
     return this.build().useCase;
   }
@@ -24,36 +23,36 @@ class CsvPreflightRelationshipsJobFactory {
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const relationshipValuesDS =
       CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
+    const relationshipPendingValuesDS =
+      CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
     const jobsDispatcher =
       options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
 
-    const useCase = new CsvPreflightRelationshipsJob({
+    const useCase = new CsvCreateRelationshipEntitiesJob({
       csvImportsDS,
-      rowsDS,
       relationshipValuesDS,
+      relationshipPendingValuesDS,
       templatesDS,
       settingsDS,
       entitiesDS,
       transactionManager,
       jobsDispatcher,
-      batchSize: options.batchSize,
     });
 
     return {
       useCase,
       transactionManager,
       csvImportsDS,
-      rowsDS,
       relationshipValuesDS,
+      relationshipPendingValuesDS,
       entitiesDS,
     };
   }
 }
 
-export { CsvPreflightRelationshipsJobFactory };
+export { CsvCreateRelationshipEntitiesJobFactory };

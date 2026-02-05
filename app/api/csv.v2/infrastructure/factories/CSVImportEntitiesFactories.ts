@@ -16,6 +16,7 @@ import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataS
 import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource';
 import { MongoCsvImportRowErrorsDataSource } from '../mongodb/MongoCsvImportRowErrorsDataSource';
 import { MongoCsvImportRelationshipValuesDataSource } from '../mongodb/MongoCsvImportRelationshipValuesDataSource';
+import { MongoCsvImportRelationshipPendingValuesDataSource } from '../mongodb/MongoCsvImportRelationshipPendingValuesDataSource';
 
 export class CSVImportEntitiesFactories {
   static CSVImportDSDefault(transactionManager: MongoTransactionManager) {
@@ -41,6 +42,11 @@ export class CSVImportEntitiesFactories {
   static CSVImportRelationshipValuesDSDefault(transactionManager: MongoTransactionManager) {
     const db = getConnection();
     return new MongoCsvImportRelationshipValuesDataSource(db, transactionManager);
+  }
+
+  static CSVImportRelationshipPendingValuesDSDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportRelationshipPendingValuesDataSource(db, transactionManager);
   }
 
   static default() {
@@ -74,6 +80,8 @@ export class CSVImportEntitiesFactories {
       settingsDS,
       thesauriDS,
       thesauriValuesDS: this.CSVImportThesauriValuesDSDefault(transactionManager),
+      relationshipPendingValuesDS:
+        this.CSVImportRelationshipPendingValuesDSDefault(transactionManager),
       jobsDispatcher,
       transactionManager,
     });

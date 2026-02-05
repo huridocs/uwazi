@@ -17,6 +17,7 @@ const createCallbacks = () => ({
   onStart: jest.fn(),
   onSuccess: jest.fn(),
   onError: jest.fn(),
+  onProgress: jest.fn(),
 });
 
 const stageRows = async (
@@ -93,14 +94,20 @@ const fixtures = {
       fixturesFactory.property('select_property', 'select', {
         content: fixturesFactory.id('preflightThesaurus').toString(),
       }),
+      fixturesFactory.property('rel_property', 'relationship', {
+        content: fixturesFactory.id('relatedTemplate').toString(),
+      }),
     ]),
+    fixturesFactory.template('relatedTemplate', []),
   ],
 };
 
 describe('CsvPreflightJob (integration)', () => {
   const template = fixtures.templates[0];
   const templateId = template._id.toString();
-  const selectPropertyId = template.properties![0]!._id!.toString();
+  const selectPropertyId =
+    template.properties!.find(property => property.name === 'select_property')!._id!.toString();
+  const relatedTemplateId = fixtures.templates[1]._id.toString();
   const thesaurusId = fixtures.dictionaries![0]!._id.toString();
 
   beforeAll(async () => {
@@ -111,7 +118,12 @@ describe('CsvPreflightJob (integration)', () => {
     jest.clearAllMocks();
     await testingEnvironment.setFixtures(fixtures);
     await Promise.all(
-      ['csv_imports', 'csv_import_rows', 'csv_import_thesauri_values'].map(async collectionName => {
+      [
+        'csv_imports',
+        'csv_import_rows',
+        'csv_import_thesauri_values',
+        'csv_import_relationships_pending_values',
+      ].map(async collectionName => {
         const collection = testingEnvironment.db.getCollection(collectionName);
         if (collection) {
           await collection.deleteMany({});
@@ -133,7 +145,8 @@ describe('CsvPreflightJob (integration)', () => {
     await insertImport(csvImportsDS, { importId, templateId, userId });
     await stageRows(rowsDS, {
       importId,
-      csv: 'title,select_property__en,select_property__es\nrow,New Value,Nuevo Valor',
+      csv:
+        'title,select_property__en,select_property__es,rel_property\nrow,New Value,Nuevo Valor,Related 1|Related 2',
     });
 
     const callbacks = createCallbacks();
@@ -141,13 +154,13 @@ describe('CsvPreflightJob (integration)', () => {
 
     expect(result).toEqual({
       importId,
-      status: CsvImportStatus.PreflightThesauriDone,
+      status: CsvImportStatus.PreflightScanDone,
     });
     expect(callbacks.onStart).toHaveBeenCalledWith({ importId });
     expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
 
     const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    expect(updatedImport.status).toBe(CsvImportStatus.PreflightThesauriDone);
+    expect(updatedImport.status).toBe(CsvImportStatus.PreflightScanDone);
     const pendingDocs = await thesauriValuesDS.getByImport(importId);
     expect(pendingDocs).toHaveLength(1);
     expect(pendingDocs[0]).toEqual(
@@ -167,6 +180,18 @@ describe('CsvPreflightJob (integration)', () => {
         ],
       })
     );
+    const pendingRelationships = await testingEnvironment.db
+      .getCollection('csv_import_relationships_pending_values')!
+      .find({ importId })
+      .toArray();
+    expect(pendingRelationships).toEqual([
+      expect.objectContaining({
+        importId,
+        templateId: relatedTemplateId,
+        titles: ['Related 1', 'Related 2'],
+      }),
+    ]);
+    expect(callbacks.onProgress).toHaveBeenCalled();
     expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
       CsvCreateThesauriValuesJobHandler,
       expect.objectContaining({ importId, tenantName, userId })

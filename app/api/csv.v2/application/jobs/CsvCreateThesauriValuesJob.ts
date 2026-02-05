@@ -19,7 +19,7 @@ import {
 } from '../../domain/CsvImportThesauriValues';
 import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
-import { CsvPreflightRelationshipsJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightRelationshipsJobHandler';
+import { CsvCreateRelationshipEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler';
 
 type ThesauriCreationProgress = {
   importId: string;
@@ -172,7 +172,7 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         thesauriTouched: totals.touched,
       };
       await this.deps.csvImportsDS.update(withStatus.withStats(updatedStats));
-      await this.deps.jobsDispatcher.dispatch(CsvPreflightRelationshipsJobHandler, {
+      await this.deps.jobsDispatcher.dispatch(CsvCreateRelationshipEntitiesJobHandler, {
         tenantName,
         userId,
         importId,

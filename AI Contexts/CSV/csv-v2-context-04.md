@@ -291,9 +291,9 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 2. ~~**Preflight catch-all failure handling**~~ **(Done)**
 
    - `CsvPreflightJob` now wraps its execution in a catch-all that:
-     - Persists a `failure` object on `csv_imports` with `{ message, stage: 'preflight:thesauri' }`,
+     - Persists a `failure` object on `csv_imports` with `{ message, stage: 'preflight:scan' }`,
        marking the import `retrying` (or `failed` for `NonRetryableJobError`s) when unexpected errors happen.
-     - Invokes `callbacks.onError` so the dispatcher emits `csvImport:preflight:thesauri:error`.
+     - Invokes `callbacks.onError` so the dispatcher emits `csvImport:preflight:scan:error`.
      - Has a dedicated spec (`CsvPreflightJobErrorHandling.spec.ts`) that verifies the failure + emit path.
 
 3. **Registration & dispatch semantics (decision)**
@@ -317,7 +317,7 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 
 6. ~~**Complete thesauri preflight “apply pending values” stage**~~ **(Done)**
 
-   - `CsvPreflightJob` now dispatches `CsvCreateThesauriValuesJob` from inside the same `transactionManager.run` block that writes `preflight:thesauri:done`.
+   - `CsvPreflightJob` now dispatches `CsvCreateThesauriValuesJob` from inside the same `transactionManager.run` block that writes `preflight:scan:done`.
    - `CsvCreateThesauriValuesJob`:
      - Loads per‑thesaurus pending-value docs from `csv_import_thesauri_values`.
      - Uses `CsvThesauriValuesDiff` to compare pending roots/children against the live thesaurus and append any missing values via the legacy adapters.
@@ -328,14 +328,14 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 
    - Ensure `CsvPreflightJob`:
      - Uses `CsvHeaderAnalyzer` and `CsvThesauriPendingValuesBuilder` only on staged `csv_import_rows`.
-     - Sets `status` to `preflight:thesauri` in a small TM run and emits `csvImport:preflight:thesauri:start`.
+     - Sets `status` to `preflight:scan` in a small TM run and emits `csvImport:preflight:scan:start`.
      - On header/pending-values errors:
        - Persists `failure` with `issues` and `stage` (`preflight:preparation:headers` / `...:thesauri`).
        - Sets `status = failed`.
-       - Emits `csvImport:preflight:thesauri:error`.
+       - Emits `csvImport:preflight:scan:error`.
      - On success:
        - Clears any prior `failure`.
-       - Sets `status = preflight:thesauri:done`.
+       - Sets `status = preflight:scan:done`.
        - Dispatches the apply‑pending-values job before exiting the success transaction (after clearing failure + storing status).
 
 8. **Design & implement relationship preflight**
@@ -361,7 +361,7 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 10. **Status naming consistency**
 
     - Decide on a unified policy for DB `CsvImportStatus` vs emitted event names:
-      - Option A: store colon‑based statuses directly (e.g. `preflight:thesauri`, `preflight:thesauri:done`).
+      - Option A: store colon‑based statuses directly (e.g. `preflight:scan`, `preflight:scan:done`).
       - Option B: keep coarser DB enums (`ExtractingFiles`, `PreflightThesauri`, etc.) and introduce a mapping layer for events.
     - Apply the decision across:
       - `CsvImportStatus` enum.
@@ -370,7 +370,7 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 11. **Finalize event model**
     - Confirm and document the final event set (currently:
       - Extraction: `csvImport:extract:start|progress|success|error`.
-      - Preflight (thesauri): `csvImport:preflight:thesauri:start|progress|success|error`.
+      - Preflight (scan): `csvImport:preflight:scan:start|progress|success|error`.
       - Preflight (relationships): `csvImport:preflight:relationships:start|progress|success|error`.
       - Preflight (validation): `csvImport:preflight:validate:start|progress|success|error` (optional).
     - Ensure that:
