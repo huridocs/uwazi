@@ -1,28 +1,16 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { saveEntity } from 'api/entities/entitySavingManager';
-import { processDocument } from 'api/files/processDocument';
-import { search } from 'api/search';
 import settings from 'api/settings';
 import mailer from 'api/utils/mailer';
 import cors from 'cors';
-import { withTransaction } from 'api/utils/withTransaction';
 import proxy from 'express-http-proxy';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 import { createError, validation } from '../utils';
-import { storage } from './storage';
-import { uploadMiddleware } from './uploadMiddleware';
-
-const processEntityDocument = async (req, entitySharedId) => {
-  const file = req.files.find(_file => _file.fieldname.includes('file'));
-  if (file) {
-    await storage.storeFile(file.filename, createReadStream(file.path), 'document');
-    await processDocument(entitySharedId, file);
-    await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
-    req.emitToSessionSocket('documentProcessed', entitySharedId);
-  }
-};
+import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
 
 const routes = app => {
   const corsOptions = {
@@ -36,7 +24,7 @@ const routes = app => {
   app.post(
     '/api/public',
     cors(corsOptions),
-    uploadMiddleware.multiple(),
+    (req, res, next) => new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     publicAPIMiddleware,
     activitylogMiddleware,
     (req, _res, next) => {
@@ -86,24 +74,26 @@ const routes = app => {
         return;
       }
 
-      const result = await withTransaction(async () => {
-        const { entity: savedEntity } = await saveEntity(entity, {
-          user: {},
-          language: req.language,
-          socketEmiter: req.emitToSessionSocket,
-          files: req.files,
-        });
+      // Create entity using V2
+      const result = await EntityFacade.create(entity, req.inputFiles);
 
-        await processEntityDocument(req, savedEntity.sharedId);
+      // Fetch the full entity with files to match V1 response format
+      const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
+      const entityWithFiles = await entityDAO
+        .getWithFile({ language: req.language, sharedId: result.sharedId })
+        .next();
 
-        if (email) {
-          await mailer.send(email);
-        }
+      // Send email after successful entity creation
+      if (email) {
+        await mailer.send(email);
+      }
 
-        return savedEntity;
-      }, 'POST /api/public');
+      // Emit socket event for document processing completion
+      if (req.emitToSessionSocket) {
+        req.emitToSessionSocket('documentProcessed', result.sharedId);
+      }
 
-      res.json(result);
+      res.json(entityWithFiles);
     }
   );
 

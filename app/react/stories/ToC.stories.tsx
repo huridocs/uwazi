@@ -6,7 +6,7 @@ import { ToC, type ProcessedTocEntry } from 'V2/Routes/Entity/Components/ToC/ToC
 import { normalizeToc, findItemsWithChildren } from 'V2/Routes/Entity/Components/ToC/utils';
 
 const meta: Meta<typeof ToC> = {
-  title: 'Components/ToC',
+  title: 'EntityViewer/ToC',
   component: ToC,
   parameters: {
     layout: 'padded',
