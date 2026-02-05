@@ -5,6 +5,7 @@ import thunkModule from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { applyMiddleware, createStore, Store, Middleware } from 'redux';
 
+import Immutable from '../shared/immutableWrapper.js';
 import reducer from './reducer.js';
 import { IStore } from './istore.js';
 
@@ -13,8 +14,33 @@ const thunk: Middleware = ((thunkModule as { default?: Middleware }).default ||
 const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store: Store<IStore> | undefined;
 
+function hydrateImmutableFilters(preloaded: IStore): IStore {
+  return (['library', 'uploads'] as const).reduce<IStore>(
+    (out, key) => {
+      const slice = preloaded[key];
+      if (slice?.filters == null) return out;
+      const raw = slice.filters as { toJS?: () => object };
+      return {
+        ...out,
+        [key]: {
+          ...slice,
+          filters: Immutable.fromJS(
+            typeof raw.toJS === 'function' ? raw.toJS() : raw
+          ) as unknown as IStore['library']['filters'],
+        },
+      };
+    },
+    { ...preloaded }
+  );
+}
+
 export default function create(initialData = data) {
-  store = createStore<IStore>(reducer, initialData, composeWithDevTools(applyMiddleware(thunk)));
+  const hasFilters =
+    initialData &&
+    typeof initialData === 'object' &&
+    (['library', 'uploads'] as const).some(key => (initialData as IStore)[key]?.filters != null);
+  const hydrated = hasFilters ? hydrateImmutableFilters(initialData as IStore) : initialData;
+  store = createStore<IStore>(reducer, hydrated, composeWithDevTools(applyMiddleware(thunk)));
 
   return store;
 }

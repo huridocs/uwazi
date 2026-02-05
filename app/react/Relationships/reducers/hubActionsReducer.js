@@ -1,5 +1,5 @@
 import * as types from '#app/Relationships/actions/actionTypes.js';
-import Immutable from 'immutable';
+import Immutable from '#shared/immutableWrapper.js';
 
 const initialState = {
   editing: false,

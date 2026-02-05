@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import Immutable from '#shared/immutableWrapper.js';
 
 import * as actions from '#app/ContextMenu/actions/actionTypes.js';
 import * as ViewerActions from '#app/Viewer/actions/actionTypes.js';

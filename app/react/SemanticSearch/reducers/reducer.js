@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from '#app/BasicReducer/index.js';
-import Immutable from 'immutable';
+import Immutable from '#shared/immutableWrapper.js';
 
 export default combineReducers({
   search: createReducer('semanticSearch/search', {}),

@@ -12,6 +12,7 @@ import {
   filterTemplates,
   getPropertySortType,
   getSortOptions,
+  selectedTemplatesCount,
   SearchOptions,
   SortType,
 } from '../helpers/sortComponets.js';
@@ -26,7 +27,7 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
   let { templates } = state;
   const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'library.search';
 
-  if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
+  if (selectedTemplatesCount(ownProps.selectedTemplates) > 0) {
     templates = filterTemplates(state.templates, ownProps.selectedTemplates);
   }
   const search = stateProperty

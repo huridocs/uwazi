@@ -61,15 +61,7 @@ const metricsMiddleware = promBundle({
 app.use(metricsMiddleware);
 initSentry();
 routesErrorHandler(app);
-const isDevelopment = process.env.NODE_ENV !== 'production' || process.env.HOT;
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-    crossOriginOpenerPolicy: isDevelopment ? false : { policy: 'same-origin' },
-    crossOriginResourcePolicy: isDevelopment ? false : { policy: 'same-origin' },
-  })
-);
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 const http = Server(app);
 
@@ -134,11 +126,7 @@ if (app.get('env') === 'production') {
 }
 
 app.use(compression());
-const distPath =
-  app.get('env') === 'production'
-    ? path.resolve(process.cwd(), 'prod/dist')
-    : path.resolve(__dirname, '../dist');
-app.use(express.static(distPath, { maxage }));
+app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
 app.use('/public', express.static(config.publicAssets));
 
 app.use(appContextMiddleware);
@@ -158,7 +146,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 
-  apiRoutes(app, http);
+  await apiRoutes(app, http);
   serverSideRender(app);
 
   app.use(errorHandlingMiddleware);

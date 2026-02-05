@@ -86,6 +86,14 @@ const getCommonSorts = (search: SearchOptions) => [
     : []),
 ];
 
+export function selectedTemplatesCount(
+  selected: IImmutable<string[]> | string[] | null | undefined
+): number {
+  if (selected == null) return 0;
+  if ('count' in selected && typeof selected.count === 'function') return selected.count();
+  return Array.isArray(selected) ? selected.length : 0;
+}
+
 const filterTemplates = (
   templates: IImmutable<ClientTemplateSchema[]>,
   selectedTemplates: IImmutable<string[]>

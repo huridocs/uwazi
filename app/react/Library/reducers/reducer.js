@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import Immutable from 'immutable';
+import Immutable from '#shared/immutableWrapper.js';
 import createReducer from '#app/BasicReducer/index.js';
 import { isClient } from '#app/utils/index.js';
 

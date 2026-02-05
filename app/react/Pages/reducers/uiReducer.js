@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import Immutable from '#shared/immutableWrapper.js';
 import * as actions from '../actions/actionTypes.js';
 
 export default function pagesUI(state = {}, action = {}) {

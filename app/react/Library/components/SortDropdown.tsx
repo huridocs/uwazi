@@ -19,6 +19,7 @@ import {
   SortType,
   filterTemplates,
   getSortOptions,
+  selectedTemplatesCount,
 } from '../helpers/sortComponets.js';
 
 interface SortDropdownOwnProps {
@@ -37,7 +38,7 @@ const getOptionUrl = (option: SortType, path: string, location: Location) => {
 const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
   let { templates } = state;
 
-  if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
+  if (selectedTemplatesCount(ownProps.selectedTemplates) > 0) {
     templates = filterTemplates(state.templates, ownProps.selectedTemplates);
   }
 
