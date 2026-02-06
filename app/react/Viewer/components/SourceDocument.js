@@ -11,7 +11,7 @@ import {
 } from '#app/Viewer/actions/uiActions.js';
 import Document from '#app/Viewer/components/Document.js';
 import { createSelector } from 'reselect';
-import { selectDoc, selectReferences } from '#app/Viewer/selectors.js';
+import { selectDoc, selectReferences } from '../selectors.js';
 
 const selectSourceRange = createSelector(
   s => s.uiState,

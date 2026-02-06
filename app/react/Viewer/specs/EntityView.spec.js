@@ -8,8 +8,8 @@ import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import * as pageAssetsUtils from '#app/Pages/utils/getPageAssets.js';
 
-import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
-import EntityView from '#app/Viewer/EntityView.jsx';
+import EntitiesAPI from '../../Entities/EntitiesAPI.js';
+import EntityView from '../EntityView.js';
 
 describe('EntityView', () => {
   describe('requestState', () => {

@@ -4,8 +4,8 @@ import Immutable from 'immutable';
 
 import libraryHelpers from '#app/Library/helpers/libraryFilters.js';
 
-import { SearchDescription } from '#app/Library/components/SearchDescription.jsx';
-import { mapStateToProps } from '#app/Library/components/SearchDescription.jsx';
+import { SearchDescription } from '#app/Library/components/SearchDescription.js';
+import { mapStateToProps } from '../SearchDescription.js';
 
 describe('SearchDescription', () => {
   let searchTerm;

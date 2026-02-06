@@ -3,8 +3,8 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryRootComponent } from '#app/Library/Library.jsx';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import { LibraryRootComponent } from '#app/Library/Library.js';
+import RouteHandler from '#app/App/RouteHandler.js';
 import createStore from '#app/store.js';
 
 const routes = [
@@ -52,6 +52,7 @@ const routes = [
 ];
 
 jest.mock('#app/appRoutes', () => ({
+  getAppRoutes: () => routes,
   routes,
 }));
 

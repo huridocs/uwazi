@@ -7,11 +7,10 @@ import Immutable from 'immutable';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
-
 import { IStore } from '#app/istore.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
-import { PageReferences, groupByRectangle } from '#app/Viewer/components/PageReferences.jsx';
+import { PageReferences, groupByRectangle } from '../PageReferences.js';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 

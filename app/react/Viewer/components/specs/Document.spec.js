@@ -5,10 +5,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { PDF } from '#app/Viewer/PDF.js';
+import { PDF } from '#app/PDF/index.js';
 import { Document } from '#app/Viewer/components/Document.js';
 
-jest.mock('#V2/atoms', () => ({
+jest.mock('V2/atoms', () => ({
   atomStore: { get: () => 2 },
 }));
 

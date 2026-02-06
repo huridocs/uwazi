@@ -1,13 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { RowList } from '#app/Layout/Lists.jsx';
-import { I18NLink } from '#app/I18N/index.js';
-import { ItemList } from '#app/Markdown/components/ItemList.jsx';
-import Slider from '#app/Markdown/components/slider.jsx';
 import Immutable from 'immutable';
 
-// Removed destructuring - use Immutable.fromJS directly
+import { RowList } from '#app/Layout/Lists.js';
+import { I18NLink } from '#app/I18N/index.js';
+import { ItemList } from '../ItemList.js';
+import Slider from '../slider.js';
+
 describe('ItemList', () => {
   let component;
   let props;

@@ -3,11 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
-
-import Icon from '#UI/Icon/Icon.js';
-
+import { Icon } from '#app/UI/index.js';
 import { EntitySchema } from '#shared/types/entityType.js';
-
 import { generateID } from '#shared/IDGenerator.js';
 import {
   uploadDocument as uploadDocumentAction,

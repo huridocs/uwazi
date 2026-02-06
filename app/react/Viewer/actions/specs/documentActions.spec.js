@@ -16,9 +16,9 @@ import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
-import * as libraryActions from '#app/Library/actions/saveEntityWithFiles.js';
-import * as actions from '#app/Viewer/actions/documentActions.js';
-import * as types from '#app/Viewer/actions/actionTypes.js';
+import * as libraryActions from '../../../Library/actions/saveEntityWithFiles.js';
+import * as actions from '../documentActions.js';
+import * as types from '../actionTypes.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

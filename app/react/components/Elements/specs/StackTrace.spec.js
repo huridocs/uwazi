@@ -2,11 +2,10 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { Icon } from '#UI/Icon/Icon.jsx';
-
-import StackTrace from '#app/components/Elements/StackTrace.jsx';
 import Immutable from 'immutable';
+import { Icon } from '#app/UI/index.js';
+
+import StackTrace from '../StackTrace.js';
 
 describe('StackTrace', () => {
   let component;

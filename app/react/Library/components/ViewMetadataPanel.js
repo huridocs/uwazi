@@ -17,8 +17,8 @@ import {
   getDocumentReferences,
   unselectAllDocuments,
   saveDocument,
-} from '#app/Library/actions/libraryActions.js';
-import EntityForm from '#app/Library/containers/EntityForm.js';
+} from '../actions/libraryActions.js';
+import EntityForm from '../containers/EntityForm.js';
 
 const getTemplates = state => state.templates;
 

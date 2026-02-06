@@ -1,4 +1,4 @@
-import { validateHomePageRoute } from '#app/utils/routeHelpers.js';
+import { validateHomePageRoute } from '../routeHelpers.js';
 
 describe('validateHomePageRoute', () => {
   it('should validate /library', () => {

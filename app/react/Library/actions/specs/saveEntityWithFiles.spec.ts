@@ -6,7 +6,7 @@ import fetchMock from 'fetch-mock';
 
 import { APIURL } from '#app/config.js';
 import { readFileAsBase64, saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
-import { contentForFiles } from '#app/Library/actions/specs/fixtures.js';
+import { contentForFiles } from './fixtures.js';
 
 describe('saveEntityWithFiles', () => {
   const dispatch = jasmine.createSpy('dispatch');
@@ -173,7 +173,7 @@ describe('saveEntityWithFiles', () => {
         await saveEntityWithFiles(entity, dispatch);
         fail('Should throw error');
       } catch (ex) {
-        expect(ex.message).toEqual('Failed response with error.');
+        expect((ex as Error)?.message ?? ex).toEqual('Failed response with error.');
       }
     });
   });

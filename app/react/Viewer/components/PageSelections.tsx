@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Highlight } from '@huridocs/react-text-selection-handler';
-import uniqBy from 'lodash/uniqBy.js';
+import uniqBy from 'lodash/uniqBy';
 import { useAtomValue } from 'jotai';
+import { Highlight } from '@huridocs/react-text-selection-handler';
 import { IStore } from '#app/istore.js';
 import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
 import { pdfScaleAtom } from '#V2/atoms/index.js';

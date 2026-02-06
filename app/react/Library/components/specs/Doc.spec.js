@@ -1,13 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import Immutable from 'immutable';
 
 import { Item } from '#app/Layout/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { mapStateToProps } from '#app/Library/components/Doc.jsx';
-import { Doc } from '#app/Library/components/Doc.jsx';
-import Immutable from 'immutable';
+import { mapStateToProps } from '../Doc.js';
+import { Doc } from '../Doc.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 describe('Doc', () => {
   let component;
   let props = {};

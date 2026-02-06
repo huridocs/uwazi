@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import SafeHTML from '#app/utils/SafeHTML.jsx';
+import SafeHTML from '../SafeHTML.js';
 
 describe('SafeHTML', () => {
   it('should transform <snippet/> tag to <b> (every other tag should be treated as text)', () => {

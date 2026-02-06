@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
-import { FeatureToggle, OwnPropTypes } from '#app/components/Elements/FeatureToggle.jsx';
+import { FeatureToggle, OwnPropTypes } from '../FeatureToggle.js';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 

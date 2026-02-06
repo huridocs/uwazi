@@ -1,15 +1,12 @@
+import Immutable from 'immutable';
 import { SettingsFilterSchema } from '#shared/types/settingsType.js';
-
-import { ConnectedComponent as TemplatesFilterComponent } from '#app/Library/components/TemplatesFilter.jsx';
-
-import { renderConnected } from '#app/utils/test/renderConnected.jsx';
-
+import { ConnectedComponent as TemplatesFilterComponent } from '#app/Library/components/TemplatesFilter.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
 import * as redux from 'redux';
-import DocumentTypesList from '#app/Library/components/DocumentTypesList.jsx';
-import Immutable from 'immutable';
+import DocumentTypesList from '../DocumentTypesList.js';
 
-jest.mock('#app/Library/actions/filterActions');
+jest.mock('app/Library/actions/filterActions');
 
 describe('TemplatesFilter', () => {
   let component: any;

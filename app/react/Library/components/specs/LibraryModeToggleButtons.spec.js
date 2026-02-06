@@ -3,11 +3,8 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { I18NLink } from '#app/I18N/index.js';
 
-import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.jsx';
-import {
-  LibraryModeToggleButtons,
-  mapStateToProps,
-} from '#app/Library/components/LibraryModeToggleButtons.jsx';
+import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.js';
+import { LibraryModeToggleButtons, mapStateToProps } from '../LibraryModeToggleButtons.js';
 
 describe('LibraryModeToggleButtons', () => {
   let component;

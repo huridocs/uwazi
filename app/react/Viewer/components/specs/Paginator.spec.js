@@ -3,8 +3,8 @@
  */
 import React from 'react';
 import { CurrentLocationLink } from '#app/Layout/index.js';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
-import { PaginatorWithPage as Paginator } from '#app/Viewer/components/Paginator.jsx';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { PaginatorWithPage as Paginator } from '../Paginator.js';
 
 let page = 1;
 const mockUseLocation = jest.fn().mockImplementation(() => ({

@@ -5,16 +5,13 @@ import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import Immutable from 'immutable';
-
 import { FileType } from '#shared/types/fileType.js';
-
-import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.jsx';
-
+import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
 import { socket } from '#app/socket.js';
 import { Provider } from 'react-redux';
-import { OCRStatus } from '#app/Viewer/components/OCRStatus.jsx';
-import * as ocrActions from '#app/Viewer/actions/ocrActions.js';
-import * as documentActions from '#app/Viewer/actions/documentActions.js';
+import { OCRStatus } from '../OCRStatus.js';
+import * as ocrActions from '../../actions/ocrActions.js';
+import * as documentActions from '../../actions/documentActions.js';
 
 describe('OCRStatus', () => {
   let file: FileType;

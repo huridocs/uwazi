@@ -4,14 +4,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
-import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.jsx';
-
-import { PDFView } from '#app/Viewer/PDFView.jsx';
-
-import EntityView from '#app/Viewer/EntityView.jsx';
-
-import { Loader } from '#app/components/Elements/Loader.jsx';
-
+import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
+import { PDFView } from '#app/Viewer/PDFView.js';
+import EntityView from '#app/Viewer/EntityView.js';
+import { Loader } from '#app/components/Elements/Loader.js';
 import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
@@ -94,7 +90,7 @@ describe('ViewerComponent', () => {
       const component = renderComponent(store);
       expect(component.find(EntityView).length).toBe(0);
       const error = component.find(ErrorFallback).at(0);
-      expect(error.props().error).toEqual({ status: 404, message: 'Not Found' });
+      expect(error.prop('error')).toEqual({ status: 404, message: 'Not Found' });
     });
   });
 });

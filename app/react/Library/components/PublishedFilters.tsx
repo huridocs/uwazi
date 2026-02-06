@@ -4,7 +4,8 @@ import FormGroup from '#app/DocumentForm/components/FormGroup.js';
 import { Aggregations } from '#shared/types/aggregations.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { Translate } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
+
 interface PublishedFiltersProps {
   onChange: () => void;
   aggregations: Aggregations;

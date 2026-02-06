@@ -18,7 +18,7 @@ import { mockID } from '#shared/uniqueID.js';
 import { api } from '#app/Entities/index.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import SearchApi from '#app/Search/SearchAPI.js';
-import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles.js';
+import * as saveEntityWithFiles from '../saveEntityWithFiles.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

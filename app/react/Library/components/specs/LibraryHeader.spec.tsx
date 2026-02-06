@@ -5,21 +5,17 @@
 import React from 'react';
 import { formReducer, FormState } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
-
+import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
-
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
-
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import * as libraryActions from '#app/Library/actions/libraryActions.js';
 
 import { IStore } from '#app/istore.js';
-
 import { IImmutable } from '#shared/types/Immutable.js';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
-import { LibraryHeader, LibraryHeaderOwnProps } from '#app/Library/components/LibraryHeader.jsx';
-import { SearchBar } from '#app/Library/components/SearchBar.jsx';
-import Immutable from 'immutable';
+import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader.js';
+import { SearchBar } from '../SearchBar.js';
 
 jest.mock('../SortDropdown', () => ({
   __esModule: true,

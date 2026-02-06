@@ -1,11 +1,10 @@
 import React from 'react';
-
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { shallow } from 'enzyme';
 
 import { actions } from '#app/BasicReducer/index.js';
 
-import { ViewDocButton, mapDispatchToProps } from '../ViewDocButton.jsx';
+import { ViewDocButton, mapDispatchToProps } from '../ViewDocButton.js';
 
 describe('ViewDocButton', () => {
   let props;
@@ -35,7 +34,7 @@ describe('ViewDocButton', () => {
   });
   describe('when targetReference is provided', () => {
     it('should render view button with reference id in the url query', () => {
-      props.targetReference = Immutable.fromJS({ _id: 'ref1', range: { start: 200, end: 300 } });
+      props.targetReference = fromJS({ _id: 'ref1', range: { start: 200, end: 300 } });
       render();
       expect(component).toMatchSnapshot();
 
@@ -45,7 +44,7 @@ describe('ViewDocButton', () => {
     });
     it('should call openReferencesTab when clicked', () => {
       const event = { stopPropagation: jest.fn() };
-      props.targetReference = Immutable.fromJS({ range: { start: 200, end: 300 } });
+      props.targetReference = fromJS({ range: { start: 200, end: 300 } });
       render();
       component.simulate('click', event);
       expect(props.openReferencesTab).toHaveBeenCalled();

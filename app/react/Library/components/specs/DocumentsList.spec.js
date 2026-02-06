@@ -2,12 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {
-  clickOnDocument,
-  selectAllDocuments,
-  mapStateToProps,
-} from '#app/Library/components/DocumentsList.js';
-import { DocumentsList } from '#app/Layout/DocumentsList.jsx';
+import { clickOnDocument, selectAllDocuments, mapStateToProps } from '../DocumentsList.js';
+import { DocumentsList } from '../../../Layout/DocumentsList.js';
 
 describe('Library DocumentsList container', () => {
   let component;

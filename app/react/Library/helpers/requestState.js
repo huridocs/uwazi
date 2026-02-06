@@ -5,11 +5,11 @@ import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { getThesaurusPropertyNames } from '#shared/commonTopicClassification.js';
 import { setTableViewColumns } from '#app/Library/actions/libraryActions.js';
+import { tocGenerationUtils } from '#app/ToggledFeatures/tocGeneration/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { getTableColumns } from '#app/Library/helpers/tableColumns.js';
-import setReduxState from '#app/Library/helpers/setReduxState.js';
-import { tocGenerationUtils } from '#app/ToggledFeatures/tocGeneration/utils.js';
+import { getTableColumns } from './tableColumns.js';
+import setReduxState from './setReduxState.js';
 
 const decodeQuery = params => {
   try {

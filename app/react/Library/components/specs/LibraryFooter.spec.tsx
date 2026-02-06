@@ -2,19 +2,17 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import Immutable from 'immutable';
 import {
   defaultState,
   renderConnected,
   renderConnectedContainer,
-} from '#app/utils/test/renderConnected.jsx';
-
+} from '#app/utils/test/renderConnected.js';
 import * as uploadActions from '#app/Uploads/actions/uploadsActions.js';
 import { ShallowWrapper } from 'enzyme';
 import { act, fireEvent, screen } from '@testing-library/react';
-
+import Immutable from 'immutable';
 import { Provider } from 'react-redux';
-import { LibraryFooter } from '#app/Library/components/LibraryFooter.jsx';
+import { LibraryFooter } from '../LibraryFooter.js';
 
 describe('LibraryFooter', () => {
   it.each(['library', 'uploads'])(
@@ -36,7 +34,6 @@ describe('LibraryFooter', () => {
     const component = renderConnected(LibraryFooter, props, {});
 
     const createButton = component.find({ icon: 'import-csv' }).parent();
-
     createButton.simulate('click');
     expect(uploadActions.showImportPanel).toHaveBeenCalled();
   });

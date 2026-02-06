@@ -1,7 +1,6 @@
 import { TemplateSchema } from '#shared/types/templateType.js';
-
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
-import { ensure } from '#shared/tsUtils.js';
+import { ensure } from '../../../shared/tsUtils.js';
 
 interface TranslatableColumn extends PropertySchema {
   translationContext?: string;

@@ -4,17 +4,16 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { PDFView, PDFViewComponent } from '#app/Viewer/PDFView.jsx';
-import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.jsx';
-import RouteHandler from '#app/App/RouteHandler.jsx';
-import * as utils from '#app/Viewer/utils.js';
+import { PDFView, PDFViewComponent } from '#app/Viewer/PDFView.js';
+import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.js';
+import RouteHandler from '#app/App/RouteHandler.js';
+import * as utils from '#app/utils/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
 import * as documentActions from '#app/Viewer/actions/documentActions.js';
 import * as routeActions from '../actions/routeActions.js';
 import * as uiActions from '../actions/uiActions.js';

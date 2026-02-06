@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { LibraryFilters, mapStateToProps } from '#app/Library/components/LibraryFilters.jsx';
-import SidePanel from '#app/Layout/SidePanel.jsx';
+import { LibraryFilters, mapStateToProps } from '#app/Library/components/LibraryFilters.js';
+import SidePanel from '#app/Layout/SidePanel.js';
 
 describe('LibraryFilters', () => {
   let component;

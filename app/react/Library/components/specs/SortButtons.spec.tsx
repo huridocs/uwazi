@@ -4,20 +4,14 @@
 import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import Immutable from 'immutable';
 
 import { IStore } from '#app/istore.js';
 import { actions } from 'react-redux-form';
-
 import { IImmutable } from '#shared/types/Immutable.js';
-import {
-  SortButtons,
-  SortButtonsOwnProps,
-  mapStateToProps,
-} from '#app/Library/components/SortButtons.jsx';
-import Immutable from 'immutable';
+import { SortButtons, SortButtonsOwnProps, mapStateToProps } from '../SortButtons.js';
 
-// Removed - use Immutable.fromJS: immutable directly
 describe('SortButtons', () => {
   let props: SortButtonsOwnProps;
   let state: Partial<Omit<IStore, 'library'>> & {

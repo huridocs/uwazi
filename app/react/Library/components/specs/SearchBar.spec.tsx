@@ -7,19 +7,13 @@ import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import Immutable from 'immutable';
-
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
-
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import * as semanticSearchActions from '#app/SemanticSearch/actions/actions.js';
-
 import * as libraryActions from '#app/Library/actions/libraryActions.js';
-
-import { SearchBar } from '#app/Library/components/SearchBar.jsx';
-
+import { SearchBar } from '#app/Library/components/SearchBar.js';
 import { IStore } from '#app/istore.js';
-
 import { IImmutable } from '#shared/types/Immutable.js';
 
 describe('SearchBar', () => {

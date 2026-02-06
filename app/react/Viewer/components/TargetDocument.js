@@ -8,9 +8,9 @@ import {
   selectReference,
   deactivateReference,
 } from '#app/Viewer/actions/uiActions.js';
-import { selectTargetDoc, selectTargetReferences } from '#app/Viewer/selectors.js';
+import { selectTargetDoc, selectTargetReferences } from '../selectors.js';
 
-import TargetDocumentHeader from '#app/Viewer/components/TargetDocumentHeader.js';
+import TargetDocumentHeader from './TargetDocumentHeader.js';
 
 const mapStateToProps = state => {
   const { documentViewer } = state;

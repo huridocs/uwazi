@@ -1,14 +1,9 @@
 import React from 'react';
-
-import { shallow } from 'enzyme';
-import { ItemFooter } from '#app/Layout/Lists.jsx';
-import {
-  UploadEntityStatus,
-  mapStateToProps,
-} from '#app/Library/components/UploadEntityStatus.jsx';
 import Immutable from 'immutable';
+import { shallow } from 'enzyme';
+import { ItemFooter } from '#app/Layout/Lists.js';
+import { UploadEntityStatus, mapStateToProps } from '../UploadEntityStatus.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 describe('UploadEntityStatus', () => {
   describe('render', () => {
     let component;
@@ -59,7 +54,7 @@ describe('UploadEntityStatus', () => {
         user: Immutable.fromJS({ _id: 'batId' }),
       };
 
-      doc = Immutable.Map({
+      doc = Immutable.fromJS({
         _id: '123',
         sharedId: 'docId',
         template: 'template',

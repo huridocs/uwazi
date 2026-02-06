@@ -1,6 +1,6 @@
 import comonProperties from '#shared/commonProperties.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
-import { queryToFilter } from '#app/Library/helpers/publishedStatusFilter.js';
+import { queryToFilter } from './publishedStatusFilter.js';
 
 function getOptions(property, thesauris) {
   const matchingTHesauri = thesauris.find(thesauri => thesauri._id === property.content);

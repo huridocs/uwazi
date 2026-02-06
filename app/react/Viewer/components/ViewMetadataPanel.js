@@ -12,15 +12,15 @@ import {
 import { deleteDocument } from '#app/Viewer/actions/documentActions.js';
 import modals from '#app/Modals/index.js';
 
-import { closePanel } from '#app/Viewer/actions/uiActions.js';
+import { closePanel } from '../actions/uiActions.js';
 import {
   saveToc,
   editToc,
   leaveEditMode,
   removeFromToc,
   indentTocElement,
-} from '#app/Viewer/actions/documentActions.js';
-import { DocumentForm } from '#app/Viewer/containers/DocumentForm.js';
+} from '../actions/documentActions.js';
+import { DocumentForm } from '../containers/DocumentForm.js';
 
 export const mapStateToProps = state => {
   const { documentViewer } = state;

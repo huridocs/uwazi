@@ -1,12 +1,15 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryCardsComponent } from '#app/Library/LibraryCards.jsx';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import { LibraryCardsComponent } from '#app/Library/LibraryCards.js';
+import RouteHandler from '#app/App/RouteHandler.js';
 import createStore from '#app/store.js';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
-import LibraryLayout from '#app/Library/LibraryLayout.jsx';
+import LibraryLayout from '#app/Library/LibraryLayout.js';
 
 jest.mock('#app/appRoutes');
+jest.mock('#app/Library/helpers/requestState.js', () => ({
+  requestState: jest.fn(() => Promise.resolve([])),
+}));
 
 describe('Library', () => {
   const templates = [

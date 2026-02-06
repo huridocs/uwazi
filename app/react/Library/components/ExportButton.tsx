@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
-
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { exportDocuments } from '#app/Library/actions/exportActions.js';
-
 import { User } from '#api/users/usersModel.js';
 import Modal from '#app/Layout/Modal.js';
-
 import { CaptchaValue } from '#shared/types/Captcha.js';
 import { Captcha, FormGroup } from '#app/ReactReduxForms/index.js';
-
 import { IImmutable } from '#shared/types/Immutable.js';
 import { LocalForm } from '#app/Forms/Form.js';
 import { ExportStore } from '../reducers/ExportStoreType.js';

@@ -1,14 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
+import Immutable from 'immutable';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
-import EntityView from '#app/Viewer/EntityView.jsx';
-import { PDFViewComponent } from '#app/Viewer/PDFView.jsx';
-import { ViewerRouteComponent as ViewerRoute } from '#app/Viewer/ViewerRoute.jsx';
-import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.jsx';
-import Immutable from 'immutable';
+import EntitiesAPI from '../../Entities/EntitiesAPI.js';
+import EntityView from '../EntityView.js';
+import { PDFViewComponent } from '../PDFView.js';
+import { ViewerRouteComponent as ViewerRoute } from '../ViewerRoute.js';
+import { ViewerComponent } from '../components/ViewerComponent.js';
 
 describe('ViewerRoute', () => {
   describe('Entity views', () => {

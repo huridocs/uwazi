@@ -1,4 +1,4 @@
-import { advancedSort } from '#app/utils/advancedSort.js';
+import { advancedSort } from '../advancedSort.js';
 
 describe('Advanced Sort', () => {
   it('should sort regular characters (not affecting original)', () => {

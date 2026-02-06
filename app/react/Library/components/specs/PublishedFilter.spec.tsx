@@ -1,10 +1,8 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-
-import SelectFilter from '#app/Library/components/SelectFilter.jsx';
-
+import SelectFilter from '#app/Library/components/SelectFilter.js';
 import { Aggregations } from '#shared/types/aggregations.js';
-import { PublishedFilters } from '#app/Library/components/PublishedFilters.jsx';
+import { PublishedFilters } from '../PublishedFilters.js';
 
 describe('Published Filter', () => {
   let component: ShallowWrapper<typeof PublishedFilters>;

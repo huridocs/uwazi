@@ -2,7 +2,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { DocumentTypesList } from '#app/Library/components/DocumentTypesList.jsx';
+import { DocumentTypesList } from '../DocumentTypesList.js';
 
 jest.mock('#app/I18N', () => ({
   t: (_context, key) => key,

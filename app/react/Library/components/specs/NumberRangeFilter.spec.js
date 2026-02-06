@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import NumberRangeFilter from '#app/Library/components/NumberRangeFilter.jsx';
+import NumberRangeFilter from '../NumberRangeFilter.js';
 
 describe('NumberRangeFilter', () => {
   it('should render a NumberRangeFilter filter field with a label and passing the model', () => {

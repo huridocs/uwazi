@@ -5,13 +5,11 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from '#app/ReactReduxForms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
-
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withRouter } from '#app/componentWrappers.js';
-
 import { SettingsFilterSchema } from '#shared/types/settingsType.js';
-import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
-import DocumentTypesList from '#app/Library/components/DocumentTypesList.js';
+import { filterDocumentTypes } from '../actions/filterActions.js';
+import DocumentTypesList from './DocumentTypesList.js';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;

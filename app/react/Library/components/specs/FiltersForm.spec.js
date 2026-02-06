@@ -1,13 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
+import Immutable from 'immutable';
 import { Form } from 'react-redux-form';
 
-import { FiltersForm, mapStateToProps } from '#app/Library/components/FiltersForm.jsx';
-import FiltersFromProperties from '#app/Library/components/FiltersFromProperties.jsx';
-import Immutable from 'immutable';
+import { FiltersForm, mapStateToProps } from '#app/Library/components/FiltersForm.js';
+import FiltersFromProperties from '../FiltersFromProperties.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 describe('FiltersForm', () => {
   let component;
   let props;
@@ -17,7 +15,7 @@ describe('FiltersForm', () => {
       location: { myfilter: 'true' },
       navigate: jest.fn(),
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      fields: Immutable.List([
+      fields: Immutable.fromJS([
         { _id: '1', name: 'name' },
         { _id: '2', name: 'name', type: 'numeric' },
         { _id: '3', name: 'date', type: 'date', defaultfilter: true },
@@ -60,7 +58,7 @@ describe('FiltersForm', () => {
       ]),
       documentTypes: Immutable.fromJS([]),
       templates: Immutable.fromJS([]),
-      aggregations: Immutable.Map({
+      aggregations: Immutable.fromJS({
         all: {
           select: {
             count: 10,

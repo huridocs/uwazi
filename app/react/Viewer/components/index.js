@@ -1,1 +1,1 @@
-export { default as Document } from '#app/Viewer/components/Document.js';
+export { default as Document } from './Document.js';

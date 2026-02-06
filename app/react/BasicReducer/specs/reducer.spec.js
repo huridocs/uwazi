@@ -1,10 +1,7 @@
 /* eslint-disable max-lines */
-/** @format */
-
-import createReducer, * as actions from '#app/BasicReducer/reducer.js';
 import Immutable from 'immutable';
+import createReducer, * as actions from '#app/BasicReducer/reducer.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 describe('BasicReducer', () => {
   describe('createReducer', () => {
     it('should return a reducer function with default value passed', () => {

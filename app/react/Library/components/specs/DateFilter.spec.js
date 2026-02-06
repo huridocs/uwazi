@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import DateFilter from '#app/Library/components/DateFilter.jsx';
+import DateFilter from '../DateFilter.js';
 
 describe('DateFilter', () => {
   it('should render a date filter field with a label and passing the model and format', () => {

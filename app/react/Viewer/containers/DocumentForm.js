@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions, MetadataForm } from '#app/Metadata/index.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
-import { saveDocument } from '#app/Viewer/actions/documentActions.js';
+import { saveDocument } from '../actions/documentActions.js';
 
 function mapStateToProps({ documentViewer, templates, thesauris }) {
   return {

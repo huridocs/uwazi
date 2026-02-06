@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { ConnectionsList } from '#app/ConnectionsList/index.js';
+import { ConnectionsList } from '#app/Viewer/components/ConnectionsList.js';
 
 describe('ConnectionsList', () => {
   let component;

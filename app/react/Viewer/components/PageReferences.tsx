@@ -2,13 +2,10 @@ import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
 import { IStore } from '#app/istore.js';
-
 import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { createSelector } from 'reselect';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-
 import { unique } from '#shared/filterUnique.js';
-
 import { SelectionRectangleSchema } from '#shared/types/commonTypes.js';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';

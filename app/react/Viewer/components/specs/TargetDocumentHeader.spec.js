@@ -1,10 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { TargetDocumentHeader } from '#app/Viewer/components/TargetDocumentHeader.js';
 import Immutable from 'immutable';
 
-// Removed destructuring - use Immutable.fromJS directly
+import { TargetDocumentHeader } from '#app/Viewer/components/TargetDocumentHeader.js';
+
 describe('TargetDocumentHeader', () => {
   let component;
   let props;

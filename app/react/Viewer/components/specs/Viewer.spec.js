@@ -2,17 +2,16 @@
  * @jest-environment jsdom
  */
 import Immutable from 'immutable';
-
 import React from 'react';
 import { shallow } from 'enzyme';
 
 import { CreateConnectionPanel } from '#app/Connections/index.js';
 import ContextMenu from '#app/ContextMenu/index.js';
-import ShowIf from '#app/App/ShowIf.jsx';
-import { ConnectedViewer } from '#app/Viewer/components/Viewer.jsx';
-import SourceDocument from '#app/Viewer/components/SourceDocument.js';
-import TargetDocument from '#app/Viewer/components/TargetDocument.js';
-import * as routeActions from '#app/actions/routeActions';
+import ShowIf from '#app/App/ShowIf.js';
+import { ConnectedViewer } from '../Viewer.js';
+import SourceDocument from '../SourceDocument.js';
+import TargetDocument from '../TargetDocument.js';
+import * as routeActions from '../../actions/routeActions.js';
 
 describe('Viewer', () => {
   let component;

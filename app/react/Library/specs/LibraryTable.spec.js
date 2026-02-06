@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryTableComponent } from '#app/Library/LibraryTable.jsx';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import { LibraryTableComponent } from '#app/Library/LibraryTable.js';
+import RouteHandler from '#app/App/RouteHandler.js';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
 
 jest.mock('#app/appRoutes');
