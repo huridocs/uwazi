@@ -1,12 +1,14 @@
-import entities from 'api/entities';
+import { config } from 'api/config';
 import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
 import { storage } from 'api/files/storage';
 import { legacyLogger } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { search } from 'api/search';
+import { elastic, search } from 'api/search';
 import { tenants } from 'api/tenants';
+import { Tenant } from 'api/tenants/tenantContext';
 import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
@@ -15,13 +17,23 @@ import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { config } from 'api/config';
-import { Tenant } from 'api/tenants/tenantContext';
+import { ApiResponse } from '@elastic/elasticsearch';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
+
+const getEntitiesWithFiles = async () => {
+  const entities = await testingEnvironment.db.getAllFrom('entities');
+  const files = await testingEnvironment.db.getAllFrom('files');
+
+  return entities.map(entity => ({
+    ...entity,
+    attachments: files.filter(f => f.entity === entity.sharedId && f.type === 'attachment'),
+    documents: files.filter(f => f.entity === entity.sharedId && f.type === 'document'),
+  }));
+};
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -68,21 +80,23 @@ describe('preserveSync', () => {
 
   beforeAll(async () => {
     await db.connect({ defaultTenant: false });
-    await db.setupFixturesAndContext(fixtures);
     db.UserInContextMockFactory.restore();
     backend.restore();
 
     const tenant1: Tenant = {
       name: tenantName,
       dbName: db.dbName,
-      indexName: db.dbName,
+      indexName: 'preserveSync_index',
       ...(await testingUploadPaths()),
       featureFlags: config.defaultTenant.featureFlags,
     };
 
     tenants.add(tenant1);
 
+    await db.setupFixturesAndContext(fixtures);
+
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(elastic.indices, 'putMapping').mockResolvedValue({} as ApiResponse);
   });
 
   afterAll(async () => db.disconnect());
@@ -134,10 +148,9 @@ describe('preserveSync', () => {
     it('should create entities based on evidences PROCESSED status', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
-        const entitiesImported: EntitySchema[] = await entities.get(
-          {},
-          {},
-          { sort: { title: 'asc' } }
+        const allEntities: any = await getEntitiesWithFiles();
+        const entitiesImported: EntitySchema[] = allEntities.sort((a: any, b: any) =>
+          a.title.localeCompare(b.title)
         );
         expect(
           entitiesImported.map(entity => ({
@@ -157,7 +170,10 @@ describe('preserveSync', () => {
     it('should save entities with the user configured for the integration', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
-        const entitiesImported = await entities.get({}, '+permissions', { sort: { title: 'asc' } });
+        const allEntities: any = await getEntitiesWithFiles();
+        const entitiesImported = allEntities.sort((a: any, b: any) =>
+          a.title.localeCompare(b.title)
+        );
 
         expect(entitiesImported).toMatchObject([
           { user: user._id, permissions: [{ refId: user._id?.toString(), level: 'write' }] },
@@ -188,14 +204,16 @@ describe('preserveSync', () => {
     it('should save evidences downloads as attachments', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
-        const entitiesImported: EntityWithFilesSchema[] = (
-          await entities.get({}, {}, { sort: { title: 'asc' } })
-        ).map((entity: EntityWithFilesSchema) => ({
-          ...entity,
-          attachments: entity.attachments
-            ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
-            : [],
-        }));
+
+        const allEntities: any = await getEntitiesWithFiles();
+        const entitiesImported: EntityWithFilesSchema[] = allEntities
+          .sort((a: any, b: any) => a.title.localeCompare(b.title))
+          .map((entity: EntityWithFilesSchema) => ({
+            ...entity,
+            attachments: entity.attachments
+              ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
+              : [],
+          }));
 
         expect(entitiesImported).toMatchObject(
           [
@@ -302,7 +320,7 @@ describe('preserveSync', () => {
     it('should save evidences downloads to disk', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
-        const entitiesImported: EntityWithFilesSchema[] = await entities.get();
+        const entitiesImported: EntityWithFilesSchema[] = await getEntitiesWithFiles();
         const attachments: FileType[] = entitiesImported
           .map(entity => entity.attachments || [])
           .flat();
@@ -325,7 +343,10 @@ describe('preserveSync', () => {
           ],
         });
 
-        const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
+        const allEntities: any = await getEntitiesWithFiles();
+        const entitiesImported = allEntities.sort((a: any, b: any) =>
+          a.title.localeCompare(b.title)
+        );
         expect(entitiesImported).toMatchObject([
           {
             metadata: {
@@ -361,7 +382,10 @@ describe('preserveSync', () => {
     it('should save date on "Preserve date" if property exists on the template', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
-        const entitiesImported = await entities.get({}, {}, { sort: { title: 'asc' } });
+        const allEntities: any = await getEntitiesWithFiles();
+        const entitiesImported = allEntities.sort((a: any, b: any) =>
+          a.title.localeCompare(b.title)
+        );
         expect(entitiesImported).toMatchObject([
           {
             metadata: { preservation_date: [{ value: 1 }] },
