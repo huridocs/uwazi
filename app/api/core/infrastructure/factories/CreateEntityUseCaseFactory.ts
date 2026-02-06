@@ -5,7 +5,7 @@ import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { DefaultDispatcher, NoOpDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { FilesServiceFactory } from './FilesServiceFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
@@ -18,7 +18,12 @@ class CreateEntityUseCaseFactory {
     const tenant = tenants.current();
 
     const transactionManager = TransactionManagerFactory.default();
-    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+
+    const jobsDispatcher =
+      process.env.NODE_ENV === 'test'
+        ? NoOpDispatcher()
+        : DefaultDispatcher(tenant.name, transactionManager);
+
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
 
@@ -43,7 +48,7 @@ class CreateEntityUseCaseFactory {
       dispatcher: jobsDispatcher,
     });
 
-    const fileService = FilesServiceFactory.default(transactionManager);
+    const fileService = FilesServiceFactory.default(transactionManager, { jobsDispatcher });
 
     const useCase = new CreateEntityUseCase(
       {
