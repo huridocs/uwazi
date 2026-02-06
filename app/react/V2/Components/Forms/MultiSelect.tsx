@@ -49,7 +49,7 @@ const MultiSelect = ({
       {
         name: 'preventOverflow',
         options: {
-          boundary: document.documentElement,
+          boundary: typeof document !== 'undefined' ? document.documentElement : undefined,
           padding: 8,
         },
       },
