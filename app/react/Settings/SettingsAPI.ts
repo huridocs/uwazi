@@ -1,7 +1,5 @@
 import api from '#app/utils/api.js';
-
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 import { ClientSettings } from '#app/apiResponseTypes.js';
 
 export default {

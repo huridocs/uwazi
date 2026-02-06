@@ -3,8 +3,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import DateRange from '#app/Forms/components/DateRange.jsx';
-import DatePicker from '#app/Forms/components/DatePicker.jsx';
+import DateRange from '../DateRange.js';
+import DatePicker from '../DatePicker.js';
 
 describe('DateRange', () => {
   let component;

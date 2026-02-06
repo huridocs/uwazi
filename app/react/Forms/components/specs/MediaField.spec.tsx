@@ -3,12 +3,9 @@
  */
 import React from 'react';
 import { screen, RenderResult, act, fireEvent } from '@testing-library/react';
-
-import MediaField from '#app/Forms/components/MediaField.jsx';
-
-import { MediaModalType } from '#app/Metadata/components/MediaModal.jsx';
-
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
+import MediaField from '#app/Forms/components/MediaField.js';
+import { MediaModalType } from '#app/Metadata/components/MediaModal.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
 describe('MediaField', () => {
   let renderResult: RenderResult;

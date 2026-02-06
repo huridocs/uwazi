@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import ExtendedTooltip from '#app/Charts/components/ExtendedTooltip.jsx';
+import ExtendedTooltip from '../ExtendedTooltip.js';
 
 describe('ExtendedTooltip', () => {
   let component;

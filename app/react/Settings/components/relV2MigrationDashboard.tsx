@@ -13,19 +13,14 @@ import {
   updateRelationshipMigrationField,
   deleteRelationshipMigrationField,
 } from '#app/Entities/actions/V2NewRelationshipsActions.js';
-
-import Icon from '#UI/Icon/Icon.js';
-
+import { Icon } from '#app/UI/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   GetRelationshipMigrationFieldsResponse,
   ResponseElement,
 } from '#shared/types/api.v2/relationshipMigrationField.get.js';
-
 import { PlanElement } from '#shared/types/api.v2/relationships.migrate.js';
-
 import { CreateRelationshipMigRationFieldResponse } from '#shared/types/api.v2/relationshipMigrationField.create.js';
-
 import { GetMigrationHubRecordsResponse } from '#shared/types/api.v2/migrationHubRecords.get.js';
 
 const UNUSED_RECORDS_PAGE_SIZE = 10;

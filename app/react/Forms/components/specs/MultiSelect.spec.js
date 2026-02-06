@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { MultiSelect } from '#app/Forms/components/MultiSelect.jsx';
+import { MultiSelect } from '../MultiSelect.js';
 
 describe('MultiSelect', () => {
   let component;

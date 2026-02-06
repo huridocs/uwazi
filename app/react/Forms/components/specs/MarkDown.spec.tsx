@@ -2,10 +2,9 @@ import { TabLink, TabContent } from 'react-tabs-redux';
 import React from 'react';
 
 import { shallow, ShallowWrapper } from 'enzyme';
-
 import MarkDownViewer from '#app/Markdown/index.js';
 
-import { MarkDown, MarkDownType } from '#app/Forms/components/MarkDown.jsx';
+import { MarkDown, MarkDownType } from '../MarkDown.js';
 
 describe('MarkDown', () => {
   let component: ShallowWrapper<MarkDown>;

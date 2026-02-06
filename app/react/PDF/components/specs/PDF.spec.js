@@ -3,7 +3,6 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { PDFPage } from '#app/PDF/index.js';
 import PDFPageComponent from '../PDFPage.js';
 import PDFJS from '../../PDFJS.js';
 import PDF from '../PDF.js';

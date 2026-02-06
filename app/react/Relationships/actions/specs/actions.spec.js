@@ -252,7 +252,10 @@ describe('Relationships actions', () => {
           hubs,
         },
         documentViewer: {
-          doc: Immutable.fromJS({ ...entity, ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }) }),
+          doc: Immutable.fromJS({
+            ...entity,
+            ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }),
+          }),
         },
       };
     }

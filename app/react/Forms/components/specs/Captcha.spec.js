@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import api from '#app/utils/api.js';
-import Captcha from '#app/Forms/components/Captcha.jsx';
+import api from '../../../utils/api.js';
+import Captcha from '../Captcha.js';
 
 describe('Captcha', () => {
   let component;
