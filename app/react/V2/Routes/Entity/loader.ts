@@ -1,8 +1,9 @@
 import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from 'shared/JSONRequest';
+import { getStore } from 'shared/atomStore';
 import { isClient } from 'app/utils';
-import { atomStore, localeAtom } from 'V2/atoms';
+import { localeAtom } from 'V2/atoms';
 import { getPagePlaintext } from 'V2/api/files';
 import { snippets } from 'V2/api/search';
 import { SnippetsSearchResponse } from 'V2/api/types';
@@ -17,7 +18,7 @@ const entityLoader =
   // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
-
+    const atomStore = getStore();
     const language = params.lang || atomStore.get(localeAtom);
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';

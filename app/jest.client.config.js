@@ -18,6 +18,7 @@ module.exports = {
   },
   moduleNameMapper: {
     '\\.(css|scss)$': 'identity-obj-proxy',
+    '^shared/atomStore/server\\.store$': '<rootDir>/shared/atomStore/client.store',
     '^shared/(.*)': '<rootDir>/shared/$1',
     '^app/(.*)': '<rootDir>/react/$1',
     '^app/UI/(.*)': '<rootDir>/react/UI/$1',

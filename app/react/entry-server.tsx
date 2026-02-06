@@ -17,6 +17,7 @@ import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
 import { omit, sortBy } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
+import { getStore } from 'shared/atomStore';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -29,7 +30,7 @@ import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { ClientFeatureFlags } from './V2/shared/types';
-import { atomStore, hydrateAtomStore } from './V2/atoms';
+import { hydrateAtomStore, settingsAtom } from './V2/atoms';
 import { I18NUtils } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
@@ -270,6 +271,7 @@ const prepareSSRContext = async (
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { fetchRequest, ssrError } = createFetchRequest(req);
   const { query } = createStaticHandler(routes);
+  const atomStore = getStore();
   hydrateAtomStore(atomStoreData, atomStore);
   const staticHandleContext = await query(fetchRequest);
   const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
@@ -281,6 +283,7 @@ const prepareSSRContext = async (
     staticHandleContext,
     router,
     ssrError,
+    atomStore,
   };
 };
 
@@ -324,7 +327,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
-  const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =
+  const { reduxState, atomStoreData, staticHandleContext, router, ssrError, atomStore } =
     await prepareSSRContext(req, routes, settings, language);
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();

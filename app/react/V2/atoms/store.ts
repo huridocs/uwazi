@@ -1,9 +1,10 @@
-import { createStore } from 'jotai';
 import { sortBy } from 'lodash';
+import { createStore } from 'jotai';
 import { isClient } from 'app/utils';
 import { store as reduxStore } from 'app/store';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
 import { ClientTemplateSchema, ClientTranslationSchema, RelationshipTypesType } from 'app/istore';
+import { getStore } from 'shared/atomStore/client.store';
 import { globalMatomoAtom } from './globalMatomoAtom';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
 import { relationshipTypesAtom } from './relationshipTypes';
@@ -30,8 +31,6 @@ type AtomStoreData = {
   isMobile?: boolean;
 };
 
-const atomStore = createStore();
-
 // eslint-disable-next-line max-statements
 const hydrateAtomStore = (data: AtomStoreData, store: ReturnType<typeof createStore>) => {
   if (data.ciMatomoActive) store.set(ciMatomoActiveAtom, data.ciMatomoActive);
@@ -48,6 +47,7 @@ const hydrateAtomStore = (data: AtomStoreData, store: ReturnType<typeof createSt
 };
 
 if (isClient && window.__atomStoreData__) {
+  const atomStore = getStore();
   hydrateAtomStore(window.__atomStoreData__, atomStore);
 
   //sync deprecated redux store
@@ -78,4 +78,4 @@ if (isClient && window.__atomStoreData__) {
 }
 
 export type { AtomStoreData };
-export { atomStore, hydrateAtomStore };
+export { hydrateAtomStore };

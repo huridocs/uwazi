@@ -12,10 +12,10 @@ import {
 } from 'react-router';
 import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
+import { getStore } from 'shared/atomStore';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import './App/sockets';
 import CustomProvider from './App/Provider';
-import { atomStore } from './V2/atoms';
 import { store } from './store';
 import { routes } from './appRoutes';
 
@@ -41,17 +41,21 @@ if (window.SENTRY_APP_DSN) {
 
 const router = createBrowserRouter(routes);
 
-const App = () => (
-  <ReduxProvider store={store as any}>
-    <CustomProvider>
-      <Provider store={atomStore}>
-        <ErrorBoundary>
-          <RouterProvider router={router} />
-        </ErrorBoundary>
-      </Provider>
-    </CustomProvider>
-  </ReduxProvider>
-);
+const App = () => {
+  const atomStore = getStore();
+
+  return (
+    <ReduxProvider store={store as any}>
+      <CustomProvider>
+        <Provider store={atomStore}>
+          <ErrorBoundary>
+            <RouterProvider router={router} />
+          </ErrorBoundary>
+        </Provider>
+      </CustomProvider>
+    </ReduxProvider>
+  );
+};
 
 const container = document.getElementById('root');
 const root = window.__loadingError__ === undefined ? hydrateRoot(container!, <App />) : container;
