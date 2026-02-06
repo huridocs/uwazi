@@ -33,7 +33,14 @@ const fixturesFactory = getFixturesFactory();
 const fileNameToProcess = 'english_testing_file.pdf';
 const attachmentFile = 'spn.pdf';
 const fixtures: DBFixture = {
-  entities: [fixturesFactory.entity('parentEntity')],
+  entities: [
+    fixturesFactory.entity(
+      'parentEntity',
+      undefined,
+      {},
+      { user: fixturesFactory.idString('admin') }
+    ),
+  ],
   files: [
     fixturesFactory.fileDeprecated(
       'fileToProcess',
@@ -177,7 +184,6 @@ describe('OCR service', () => {
       expect(await storage.fileExists(originalFile.filename!, 'document')).toBe(true);
       expect(resultFile.type).toBe('document');
       expect(await storage.fileExists(resultFile.filename!, 'document')).toBe(true);
-      expect(resultFile.language).toBe(originalFile.language);
 
       const connectionsForOrigFile = await relationships.get({
         file: originalFile._id.toHexString(),

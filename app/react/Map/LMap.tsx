@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
-import React, { useEffect, useState } from 'react';
-import L from 'leaflet';
+import React, { useEffect, useRef, useState } from 'react';
+import Leaflet from 'leaflet';
 import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
 import { GeolocationSchema } from 'shared/types/commonTypes';
@@ -17,6 +17,11 @@ import {
   checkMapInitialization,
 } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
+import {
+  streetAttribution,
+  satelliteAttribution,
+  getImproveThisMapLegend,
+} from './MapBoxAttributions';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 
@@ -30,7 +35,7 @@ type LMapProps = {
   startingPoint: GeolocationSchema;
   renderPopupInfo?: boolean;
   templatesInfo: TemplatesInfo;
-  tilesProvider: string;
+  tilesProvider: 'google' | 'mapbox';
   mapApiKey: string;
   zoom?: number;
   layers?: Layer[];
@@ -43,12 +48,13 @@ const LMap = ({
   layers,
   ...props
 }: LMapProps) => {
-  let map: L.Map;
-  let markerGroup: L.MarkerClusterGroup;
+  let map: Leaflet.Map;
+  let markerGroup: Leaflet.MarkerClusterGroup;
   const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
   const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
   const deletedEntity = useAtomValue(deletedEntityAtom);
   const containerId = uniqueID();
+  const attributionControlRef = useRef<Leaflet.Control.Attribution | null>(null);
 
   const clickHandler = (markerPoint: any) => {
     if (!map.dragging.enabled()) {
@@ -103,7 +109,7 @@ const LMap = ({
 
   const initMap = () => {
     const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
-    const mapLayers: { [k: string]: L.TileLayer } = {};
+    const mapLayers: { [k: string]: Leaflet.TileLayer } = {};
     Object.keys(baseMaps).forEach(key => {
       const mapKey = baseMaps[key].key;
       if (layers && layers.length && !layers.includes(mapKey as Layer)) {
@@ -112,7 +118,7 @@ const LMap = ({
       mapLayers[key] = baseMaps[key].layer;
     });
 
-    map = L.map(containerId, {
+    map = Leaflet.map(containerId, {
       center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
       zoom,
       maxZoom: 20,
@@ -122,18 +128,26 @@ const LMap = ({
       scrollWheelZoom: false,
       wheelDebounceTime: 100,
       dragging: false,
+      attributionControl: currentTilesProvider === 'google',
     });
 
     map.on('click', enableMapGestures);
     document.addEventListener('click', disableMapGestures);
     map.getPanes().mapPane.style.zIndex = '0';
-    markerGroup = L.markerClusterGroup();
+    markerGroup = Leaflet.markerClusterGroup();
+
+    attributionControlRef.current = Leaflet.control
+      .attribution({ prefix: false, position: 'bottomright' })
+      .addTo(map);
 
     if (showControls) {
-      L.control.zoom({ position: 'bottomright' }).addTo(map);
+      Leaflet.control.zoom({ position: 'bottomright' }).addTo(map);
     }
+
     if (showControls && Object.values(mapLayers).length > 1) {
-      L.control.layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
+      Leaflet.control
+        .layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false })
+        .addTo(map);
     }
 
     const initialLayer = Object.values(mapLayers)[0];
@@ -141,6 +155,43 @@ const LMap = ({
     initialLayer.addTo(map);
     initMarkers();
     map.on('click', clickHandler);
+
+    const updateAttribution = (layerKey?: string) => {
+      if (!attributionControlRef.current || currentTilesProvider === 'google') {
+        return;
+      }
+
+      const center = map.getCenter();
+      const currentZoom = map.getZoom();
+      const improveThisMapLink = getImproveThisMapLegend(center.lng, center.lat, currentZoom);
+
+      let attribution = streetAttribution;
+
+      if (layerKey) {
+        const layer = baseMaps[layerKey].key as Layer;
+        if (layer === 'Satellite' || layer === 'Hybrid') {
+          attribution = satelliteAttribution;
+        }
+      }
+
+      const container = attributionControlRef.current.getContainer();
+      if (container) {
+        container.innerHTML = `${attribution} - ${improveThisMapLink}`;
+      }
+    };
+
+    const initialLayerKey = Object.keys(mapLayers)[0];
+    updateAttribution(initialLayerKey);
+
+    map.on('baselayerchange', (e: Leaflet.LayersControlEvent) => {
+      const layerKey = Object.keys(mapLayers).find(key => mapLayers[key] === e.layer);
+      updateAttribution(layerKey);
+    });
+
+    map.on('moveend', () => {
+      const layerKey = Object.keys(mapLayers).find(key => map.hasLayer(mapLayers[key]));
+      updateAttribution(layerKey);
+    });
   };
 
   useEffect(() => {

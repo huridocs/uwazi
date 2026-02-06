@@ -183,11 +183,53 @@ describe('uploadFilesMiddleware', () => {
       });
     });
 
+    it('should log a deprecation warning when originalname fields are not provided in body', async () => {
+      const mockLogger = LoggerFactory.fake();
+      jest.spyOn(mockLogger, 'debug');
+
+      const app = express();
+      app.post(
+        '/test/deprecation',
+        new UploadMiddleware(mockLogger).multiple(),
+        (_req, _res, next) => {
+          next();
+        }
+      );
+
+      await request(app)
+        .post('/test/deprecation')
+        .attach('documents[0]', Buffer.from('content'), 'file.txt');
+
+      expect(mockLogger.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation warning'));
+    });
+
     it('should tag inputFile with the proper type (attachment or document)', async () => {
       expect(inputFiles[0].isDocument()).toBe(true);
       expect(inputFiles[1].isDocument()).toBe(true);
       expect(inputFiles[2].isAttachment()).toBe(true);
       expect(inputFiles[3].isAttachment()).toBe(true);
+    });
+
+    it('should treat fieldname "file" as document (for V1 compatibility with public API)', async () => {
+      const app = express();
+      let capturedReq: Request;
+      app.post(
+        '/test/file_upload',
+        new UploadMiddleware(LoggerFactory.fake()).multiple(),
+        (_req, _res, next) => {
+          capturedReq = _req;
+          next();
+        }
+      );
+
+      await request(app)
+        .post('/test/file_upload')
+        .attach('file', Buffer.from('pdf content'), 'document.pdf');
+
+      const uploadedFiles = capturedReq!.inputFiles as InputFile[];
+      expect(uploadedFiles.length).toBe(1);
+      expect(uploadedFiles[0].isDocument()).toBe(true);
+      expect(uploadedFiles[0].isAttachment()).toBe(false);
     });
 
     it('should upload to tmp directory and attach to req.inputFile an InputFile', async () => {

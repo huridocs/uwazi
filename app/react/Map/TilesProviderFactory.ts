@@ -1,4 +1,4 @@
-import L, { TileLayer } from 'leaflet';
+import Leaflet, { TileLayer } from 'leaflet';
 import { t } from 'app/I18N';
 import { getGoogleLayer } from 'app/Map/GoogleMapLayer';
 
@@ -6,9 +6,9 @@ const DEFAULT_MAPBOX_TOKEN =
   'pk.eyJ1Ijoibnd5dSIsImEiOiJjazlta3liaWowMHBkM2pwaHFiaG0wcDBqIn0.47wbPKb2A4u3iCt34qrSRw';
 
 const mapBoxStyles: { [k: string]: string } = {
-  Streets: 'mapbox/streets-v11',
+  Streets: 'mapbox/streets-v12',
   Satellite: 'mapbox/satellite-v9',
-  Hybrid: 'mapbox/satellite-streets-v11',
+  Hybrid: 'mapbox/satellite-streets-v12',
   Dark: 'mapbox/dark-v11',
 };
 
@@ -38,7 +38,7 @@ const getMapboxLayers: (accessToken?: string) => {
     return {
       ...layers,
       [styleLabel]: {
-        layer: L.tileLayer(mapboxUrl, {
+        layer: Leaflet.tileLayer(mapboxUrl, {
           id: mapBoxStyles[styleId],
           tileSize: 512,
           zoomOffset: -1,
