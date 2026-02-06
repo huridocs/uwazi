@@ -6,8 +6,8 @@ import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFi
 import {
   uploadLocalAttachment,
   uploadLocalAttachmentFromUrl,
-} from '#app/Metadata/actions/supportingFilesActions.js';
-import { MetadataFormFiles } from '#app/Metadata/components/MetadataFormFiles.js';
+} from '../actions/supportingFilesActions.js';
+import { MetadataFormFiles } from './MetadataFormFiles.js';
 
 type SupportingFilesProps = {
   model: string;

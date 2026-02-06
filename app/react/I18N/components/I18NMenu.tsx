@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Location, useLocation } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
@@ -114,20 +113,27 @@ const I18NMenu = () => {
           </button>
 
           <ul className={dropdownOpen ? 'dropdown-menu expanded' : 'dropdown-menu'}>
-            {languageList?.map(language => {
-              const url = `/${language.key}${path}${
-                path.match('document') ? '' : urlLocation.search
-              }`;
+            {languageList?.map(
+              (language: {
+                _id?: string;
+                key: string;
+                label?: string;
+                localized_label?: string;
+              }) => {
+                const url = `/${language.key}${path}${
+                  path.match('document') ? '' : urlLocation.search
+                }`;
 
-              return (
-                <li
-                  key={language._id as string}
-                  className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
-                >
-                  <a href={url}>{language.localized_label || language.label}</a>
-                </li>
-              );
-            })}
+                return (
+                  <li
+                    key={language._id as string}
+                    className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
+                  >
+                    <a href={url}>{language.localized_label || language.label}</a>
+                  </li>
+                );
+              }
+            )}
 
             <NeedAuthorization roles={['admin']}>
               <li className="menuNav-item">

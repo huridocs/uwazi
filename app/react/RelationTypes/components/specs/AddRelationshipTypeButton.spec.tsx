@@ -4,10 +4,9 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { screen, fireEvent, act } from '@testing-library/react';
-
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
-import { AddRelationshipTypeButton } from '#app/RelationTypes/components/AddRelationshipTypeButton.jsx';
-import * as relationTypeActions from '#app/RelationTypes/actions/relationTypeActions.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { AddRelationshipTypeButton } from '../AddRelationshipTypeButton.js';
+import * as relationTypeActions from '../../actions/relationTypeActions.js';
 
 describe('Add relationship type button', () => {
   const render = () => {

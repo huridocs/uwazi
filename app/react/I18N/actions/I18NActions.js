@@ -3,7 +3,7 @@ import * as notifications from '#app/Notifications/actions/notificationsActions.
 import { store } from '#app/store.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { t } from '#app/I18N/index.js';
-import I18NApi from '#app/I18N/I18NApi.js';
+import I18NApi from '../I18NApi.js';
 
 export function inlineEditTranslation(contextId, key) {
   return dispatch => {

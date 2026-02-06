@@ -2,16 +2,16 @@ import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
-import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
+import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { FavoriteBanner } from '#app/Favorites/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { FormatMetadata } from '#app/Metadata/index.js';
-import { Item, mapStateToProps } from '#app/Layout/Item.jsx';
-import { RowList, ItemFooter } from '#app/Layout/Lists.jsx';
-import DocumentLanguage from '#app/Layout/DocumentLanguage.jsx';
-import * as Icon from '#app/Layout/Icon.jsx';
-import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
-import ItemSnippet from '#app/Layout/ItemSnippet.jsx';
+import { FormatMetadata } from '../../Metadata.js';
+import { Item, mapStateToProps } from '../Item.js';
+import { RowList, ItemFooter } from '../Lists.js';
+import DocumentLanguage from '../DocumentLanguage.js';
+import * as Icon from '../Icon.js';
+import TemplateLabel from '../TemplateLabel.js';
+import ItemSnippet from '../ItemSnippet.js';
 
 describe('Item', () => {
   let component;

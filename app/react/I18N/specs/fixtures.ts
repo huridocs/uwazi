@@ -1,5 +1,4 @@
 import { ClientTranslationSchema } from '#app/istore.js';
-
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 
 const languages: LanguagesListSchema = [

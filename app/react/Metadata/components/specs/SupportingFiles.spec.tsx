@@ -7,10 +7,9 @@ import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
 import { ClientFile } from '#app/istore.js';
-
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
-import { SupportingFiles } from '#app/Metadata/components/SupportingFiles.jsx';
-import * as supportingLocalFilesActions from '#app/Metadata/actions/supportingFilesActions.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { SupportingFiles } from '../SupportingFiles.js';
+import * as supportingLocalFilesActions from '../../actions/supportingFilesActions.js';
 
 describe('Supporting files', () => {
   let reduxStore = {};

@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { Pill } from '#app/Metadata/components/Pill.jsx';
+import { Pill } from '../Pill.js';
 
 describe('Pill', () => {
   it('should render a pill with the provided color and content', () => {

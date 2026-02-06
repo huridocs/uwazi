@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Icon } from '#UI/Icon/Icon.jsx';
+import { Icon } from '#UI/index.js';
 
 import {
   MultipleEditionFieldWarningBase,
   mapStateToProps,
-} from '#app/Metadata/components/MultipleEditionFieldWarning.jsx';
+} from '../MultipleEditionFieldWarning.js';
 
 describe('FormGroup', () => {
   let component;

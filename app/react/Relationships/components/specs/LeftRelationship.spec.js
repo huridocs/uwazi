@@ -1,12 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import Doc from '#app/Library/components/Doc.jsx';
+import Immutable from 'immutable';
+import Doc from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList';
 
-import { LeftRelationship } from '#app/Relationships/components/LeftRelationship.jsx';
-import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.jsx';
-import Immutable from 'immutable';
+import { LeftRelationship } from '../LeftRelationship.js';
+import HubRelationshipMetadata from '../HubRelationshipMetadata.js';
 
 describe('RelationshipsGraphEdit', () => {
   let component;

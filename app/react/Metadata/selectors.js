@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
 import Immutable from 'immutable';
-import formater from '#app/Metadata/helpers/formater.js';
+import formater from './helpers/formater.js';
 
 const indexValues = t =>
   t.set(

@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import multiReducer from '#app/Multireducer/index.js';
 import { actions as basicActions } from '#app/BasicReducer/index.js';
-import actions from '../../actions/index.js';
+import actions from '../../actions.js';
 
 import DocumentResultsPanel, {
   mapDispatchToProps,

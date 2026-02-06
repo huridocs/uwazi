@@ -1,16 +1,14 @@
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-
+import Immutable from 'immutable';
 import { mockID } from '#shared/uniqueID.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import SearchApi from '#app/Search/SearchAPI.js';
 import api from '#app/utils/api.js';
-import * as types from '#app/Relationships/actions/actionTypes.js';
-import * as actions from '#app/Relationships/actions/actions.js';
-import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
-import Immutable from 'immutable';
+import * as types from '../actionTypes.js';
+import * as actions from '../actions.js';
+import * as routeUtils from '../../utils/routeUtils.js';
 
-// Removed destructuring - use Immutable.fromJS directly
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
@@ -254,17 +252,14 @@ describe('Relationships actions', () => {
           hubs,
         },
         documentViewer: {
-          doc: Immutable.fromJS({
-            ...entity,
-            ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }),
-          }),
+          doc: Immutable.fromJS({ ...entity, ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }) }),
         },
       };
     }
 
     beforeEach(() => {
       store = mockStore({});
-      hubs = Immutable.List([
+      hubs = Immutable.fromJS([
         {
           hub: 'hub1',
           leftRelationship: { _id: 'originalLeftRelationship1', template: '1' },
@@ -684,7 +679,7 @@ describe('Relationships actions', () => {
     describe('search', () => {
       it('should update the state searchTerm and debounce server searching the term', () => {
         jasmine.clock().install();
-
+        SearchApi.search.calls.reset();
         actions.search('term', 'basic')(store.dispatch);
         expect(store.getActions()).toContainEqual({
           type: 'relationships/searchTerm/SET',

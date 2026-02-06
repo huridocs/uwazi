@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { RelationshipsGraphEdit } from '#app/Relationships/components/RelationshipsGraphEdit.jsx';
-import LeftRelationship from '#app/Relationships/components/LeftRelationship.jsx';
-import RightRelationship from '#app/Relationships/components/RightRelationship.jsx';
 import Immutable from 'immutable';
+
+import { RelationshipsGraphEdit } from '../RelationshipsGraphEdit.js';
+import LeftRelationship from '../LeftRelationship.js';
+import RightRelationship from '../RightRelationship.js';
 
 describe('RelationshipsGraphEdit', () => {
   let component;

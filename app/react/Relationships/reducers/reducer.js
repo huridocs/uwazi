@@ -2,9 +2,9 @@ import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from '#app/BasicReducer/index.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
-import hubs from '#app/Relationships/reducers/hubsReducer.js';
-import hubActions from '#app/Relationships/reducers/hubActionsReducer.js';
-import uiState from '#app/Relationships/reducers/uiReducer.js';
+import hubs from './hubsReducer.js';
+import hubActions from './hubActionsReducer.js';
+import uiState from './uiReducer.js';
 
 export default combineReducers({
   hubs,

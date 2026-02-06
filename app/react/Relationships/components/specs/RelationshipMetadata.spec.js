@@ -3,14 +3,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { ShowMetadata, MetadataForm } from '#app/Metadata/index.js';
 import { api as entitiesAPI } from '#app/Entities/index.js';
-import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles.js';
-import {
-  RelationshipMetadata,
-  mapStateToProps,
-} from '#app/Relationships/components/RelationshipMetadata.jsx';
-import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
+import * as saveEntityWithFiles from '../../../Library/actions/saveEntityWithFiles.js';
+import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata.js';
+import * as routeUtils from '../../utils/routeUtils.js';
 
-import * as actions from '#app/actions/actions';
+import * as actions from '../../actions/actions.js';
 
 describe('RelationshipMetadata', () => {
   let component;
@@ -142,7 +139,7 @@ describe('RelationshipMetadata', () => {
       renderComponent();
       spyOn(routeUtils, 'requestState').and.callFake(async () => Promise.resolve([{}, {}]));
       instance.deleteDocument();
-      await props.mainContext.confirm.calls.allArgs()[0][0].accept();
+      await props.mainContext.confirm.calls.mostRecent().args[0].accept();
       expect(entitiesAPI.delete).toHaveBeenCalledWith({
         data: { sharedId: 'ab146' },
         headers: {},

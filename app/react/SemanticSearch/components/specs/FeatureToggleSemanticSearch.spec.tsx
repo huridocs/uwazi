@@ -5,7 +5,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.jsx';
+import { FeatureToggleSemanticSearch } from '../FeatureToggleSemanticSearch.js';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 

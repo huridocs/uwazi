@@ -5,8 +5,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import PDFJS from '#app/PDF/PDFJS.js';
-import PDFPage from '#app/PDF/components/PDFPage.jsx';
+import PDFJS from '../../PDFJS.js';
+import PDFPage from '../PDFPage.js';
 
 const pdfObject = { numPages: 2 };
 

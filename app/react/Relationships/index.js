@@ -1,5 +1,5 @@
-import * as actions from '#app/Relationships/actions/actions.js';
-import * as uiActions from '#app/Relationships/actions/uiActions.js';
-import RelationshipsFormButtons from '#app/Relationships/components/RelationshipsFormButtons.js';
+import * as actions from './actions/actions.js';
+import * as uiActions from './actions/uiActions.js';
+import RelationshipsFormButtons from './components/RelationshipsFormButtons.js';
 
 export { actions, uiActions, RelationshipsFormButtons };

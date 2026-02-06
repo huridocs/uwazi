@@ -1,4 +1,4 @@
-import validator, { notEmpty, labelAndUrl, latAndLon } from '#app/Metadata/helpers/validator.jsx';
+import validator, { notEmpty, labelAndUrl, latAndLon } from '../validator.js';
 
 describe('metadata validator', () => {
   const fieldsTemplate = [

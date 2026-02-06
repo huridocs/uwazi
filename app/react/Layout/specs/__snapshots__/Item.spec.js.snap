@@ -24,7 +24,7 @@ exports[`Item when doc have snippets should render ItemSnippet including doc, sn
       "type": "entity",
     }
   }
-  onSnippetClick={[Function]}
+  onSnippetClick={[MockFunction]}
   snippets={
     Object {
       "count": 1,

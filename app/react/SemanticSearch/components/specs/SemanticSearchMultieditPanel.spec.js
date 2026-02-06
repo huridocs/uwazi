@@ -11,7 +11,7 @@ import {
   mapStateToProps,
   mapDispatchToProps,
   SemanticSearchMultieditPanel,
-} from '#app/SemanticSearch/components/SemanticSearchMultieditPanel.jsx';
+} from '../SemanticSearchMultieditPanel.js';
 
 describe('SemanticSearchMultieditPanel', () => {
   let state;

@@ -10,8 +10,8 @@ import {
   SemanticSearchSidePanel,
   mapStateToProps,
   mapDispatchToProps,
-} from '#app/SemanticSearch/components/SemanticSearchPanel.jsx';
-import * as actions from '#app/actions/actions';
+} from '../SemanticSearchPanel.js';
+import * as actions from '../../actions/actions.js';
 
 describe('SemanticSearchPanel', () => {
   let initialState;

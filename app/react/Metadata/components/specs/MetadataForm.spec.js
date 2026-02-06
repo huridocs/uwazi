@@ -5,10 +5,10 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Form, Field } from 'react-redux-form';
 
-import { MetadataForm, mapStateToProps } from '#app/Metadata/components/MetadataForm.jsx';
-import MetadataFormFields from '#app/Metadata/components/MetadataFormFields.jsx';
-import { Select as SimpleSelect } from '#app/Forms/index.js';
-import { SupportingFiles } from '#app/Metadata/components/SupportingFiles.jsx';
+import { MetadataForm, mapStateToProps } from '../MetadataForm.js';
+import MetadataFormFields from '../MetadataFormFields.js';
+import { Select as SimpleSelect } from '../../../Forms.js';
+import { SupportingFiles } from '../SupportingFiles.js';
 
 describe('MetadataForm', () => {
   let component;

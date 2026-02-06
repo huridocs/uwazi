@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { shallow } from 'enzyme';
-import { ResultsSidePanel } from '#app/SemanticSearch/components/ResultsSidePanel.jsx';
+import { ResultsSidePanel } from '../ResultsSidePanel.js';
 
 describe('DocumentResults', () => {
   let component;

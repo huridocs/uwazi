@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import ValueList from '#app/Metadata/components/ValueList.jsx';
+import ValueList from '../ValueList.js';
 
 describe('ValueList', () => {
   let component;

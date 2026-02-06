@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import { mockID } from '#shared/uniqueID.js';
 import { api } from '#app/Entities/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import * as actions from '#app/Metadata/actions/actions.js';
+import * as actions from '../actions.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

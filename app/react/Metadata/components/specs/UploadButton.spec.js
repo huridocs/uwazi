@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { Icon } from '#UI/Icon/Icon.jsx';
+import { Icon } from '#UI/index.js';
 
-import { UploadButton } from '#app/Metadata/components/UploadButton.jsx';
+import { UploadButton } from '../UploadButton.js';
 
 describe('UploadButton', () => {
   let component;

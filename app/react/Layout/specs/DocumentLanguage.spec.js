@@ -1,11 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { DocumentLanguage, mapStateToProps } from '#app/Layout/DocumentLanguage.jsx';
 import Immutable from 'immutable';
+import { DocumentLanguage, mapStateToProps } from '../DocumentLanguage.js';
 
-// Removed destructuring - use Immutable.fromJS directly
-jest.mock('#app/I18N', () => ({
+jest.mock('app/I18N', () => ({
   t: (_context, key) => key,
   Translate: ({ children }) => children,
 }));
@@ -16,7 +14,7 @@ describe('DocumentLanguage', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.Map({
+      doc: Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',

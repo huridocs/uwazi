@@ -4,12 +4,10 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { screen, act, fireEvent } from '@testing-library/react';
-
 import { notificationActions } from '#app/Notifications/index.js';
-
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
-import * as actions from '#app/Metadata/actions/metadataExtractionActions.js';
-import { MetadataExtractor, Selection } from '#app/Metadata/components/MetadataExtractor.jsx';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import * as actions from '../../actions/metadataExtractionActions.js';
+import { MetadataExtractor, Selection } from '../MetadataExtractor.js';
 
 describe('MetadataExtractor', () => {
   let selected: Selection | undefined;

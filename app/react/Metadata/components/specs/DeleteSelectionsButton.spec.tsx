@@ -4,14 +4,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, act } from '@testing-library/react';
-
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
-
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
-
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { ClientFile } from '#app/istore.js';
-import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.jsx';
-import * as actions from '#app/Metadata/actions/metadataExtractionActions.js';
+import { DeleteSelectionButton } from '../DeleteSelectionButton.js';
+import * as actions from '../../actions/metadataExtractionActions.js';
 
 describe('Delete selections button', () => {
   let renderResult: RenderResult;

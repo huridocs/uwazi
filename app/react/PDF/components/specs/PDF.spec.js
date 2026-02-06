@@ -3,9 +3,10 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { PDFPage } from '../../index.js';
+import { PDFPage } from '#app/PDF/index.js';
+import PDFPageComponent from '../PDFPage.js';
 import PDFJS from '../../PDFJS.js';
-import PDF from '../PDF.jsx';
+import PDF from '../PDF.js';
 
 const legacyCharacterMapUrl = '/legacy_character_maps/';
 
@@ -26,6 +27,7 @@ describe('PDF', () => {
 
   beforeEach(async () => {
     spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdfObject) });
+    if (PDFJS.getDocument.calls) PDFJS.getDocument.calls.reset();
     props = {
       file: 'file_url',
       filename: 'original.pdf',
@@ -37,7 +39,10 @@ describe('PDF', () => {
   const render = async () => {
     component = shallow(<PDF {...props} />);
     instance = component.instance();
-    spyOn(instance, 'setState').and.callThrough();
+    const originalSetState = instance.setState.bind(instance);
+    jest.spyOn(instance, 'setState').mockImplementation(function (state) {
+      return originalSetState(state);
+    });
   };
 
   describe('on instance', () => {
@@ -156,7 +161,7 @@ describe('PDF', () => {
       render();
       instance.setState({ pdf: { numPages: 3 } });
       component.update();
-      expect(component.find(PDFPage).length).toBe(3);
+      expect(component.find(PDFPageComponent).length).toBe(3);
     });
   });
 

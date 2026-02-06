@@ -1,17 +1,15 @@
 /* eslint-disable import/no-mutable-exports, global-require, prefer-destructuring */
+import * as pdfjs from 'pdfjs-dist';
+import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { isClient } from '#app/utils/index.js';
 
 let PDFJS = {};
 let pdfjsLib = {};
-let EventBus = null;
 
 const pdfjsLoader = async () => {
-  if (isClient && typeof window !== 'undefined') {
-    const pdfjs = await import('pdfjs-dist');
-    await import('pdfjs-dist/web/pdf_viewer.css');
-    const viewerModule = await import('pdfjs-dist/web/pdf_viewer.mjs');
-    PDFJS = viewerModule;
-    EventBus = viewerModule.EventBus;
+  if (isClient) {
+    import('pdfjs-dist/web/pdf_viewer.css');
+    PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
 
     if (process.env.NODE_ENV === 'production') {
       pdfjsLib = await import('pdfjs-dist/webpack.mjs');

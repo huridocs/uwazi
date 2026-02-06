@@ -3,10 +3,7 @@
  */
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import {
-  uploadLocalAttachment,
-  uploadLocalAttachmentFromUrl,
-} from '#app/Metadata/actions/supportingFilesActions.js';
+import { uploadLocalAttachment, uploadLocalAttachmentFromUrl } from '../supportingFilesActions.js';
 
 const file = new File(['testFile'], 'testFile.txt', {
   type: 'text/plain',

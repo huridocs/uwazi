@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { TableRow } from '#app/Library/components/TableRow.js';
-
 import { IStore, TableViewColumn } from '#app/istore.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 

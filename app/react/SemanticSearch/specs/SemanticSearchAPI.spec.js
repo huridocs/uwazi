@@ -2,7 +2,7 @@ import backend from 'fetch-mock';
 import { APIURL } from '#app/config.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import semanticSearchAPI from '#app/SemanticSearch/SemanticSearchAPI.js';
+import semanticSearchAPI from '../SemanticSearchAPI.js';
 
 describe('SemanticSearchAPI', () => {
   let searchId;

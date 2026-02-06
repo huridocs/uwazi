@@ -1,18 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import * as redux from 'redux';
-
+import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
 import { FormGroup } from '#app/Forms/index.js';
-import MultipleEditionFieldWarning from '#app/Metadata/components/MultipleEditionFieldWarning.jsx';
-import { LookupMultiSelect, DatePicker } from '#app/ReactReduxForms/index.jsx';
-import {
-  MetadataFormFields,
-  mapDispatchToProps,
-} from '#app/Metadata/components/MetadataFormFields.jsx';
-import { AddThesauriValueButton } from '#app/Metadata/components/AddThesauriValueButton.jsx';
-import Immutable from 'immutable';
+import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning.js';
+import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms.js';
+import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields.js';
+import { AddThesauriValueButton } from '../AddThesauriValueButton.js';
 
 describe('MetadataFormFields with one entity to edit ', () => {
   let component;

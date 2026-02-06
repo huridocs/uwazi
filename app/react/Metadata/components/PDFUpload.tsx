@@ -3,10 +3,10 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import get from 'lodash/get.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
-import { MetadataFormFiles } from '#app/Metadata/components/MetadataFormFiles.js';
+import { MetadataFormFiles } from './MetadataFormFiles.js';
 
 type PDFUploadProps = {
   model: string;

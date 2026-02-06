@@ -7,13 +7,10 @@ import thunk from 'redux-thunk';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 import { mount, ReactWrapper } from 'enzyme';
 import { Provider } from 'react-redux';
-
 import { AccessLevels } from '#shared/types/permissionSchema.js';
-
 import { UserRole } from '#shared/types/userSchema.js';
-
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
-import { RelationshipsFormButtons } from '#app/Relationships/components/RelationshipsFormButtons.jsx';
+import { RelationshipsFormButtons } from '../RelationshipsFormButtons.js';
 
 describe('RelationshipsFormButtons', () => {
   const middlewares = [thunk];

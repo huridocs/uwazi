@@ -1,7 +1,7 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import { DocumentResults } from '#app/SemanticSearch/components/DocumentResults.jsx';
+import { DocumentResults } from '../DocumentResults.js';
 
 describe('DocumentResults', () => {
   let props;
