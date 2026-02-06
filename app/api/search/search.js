@@ -1,30 +1,29 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import date from 'api/utils/date';
-import propertiesHelper from 'shared/commonProperties';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
-import { createError } from 'api/utils';
-import { filterOptions } from 'shared/optionsUtils';
-import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import translations from 'api/i18n/translations';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { checkWritePermissions } from 'shared/permissionsUtils';
-import usersModel from 'api/users/users';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
 import userGroups from 'api/usergroups/userGroups';
+import usersModel from 'api/users/users';
+import { createError } from 'api/utils';
+import date from 'api/utils/date';
 import { sequentialPromises } from 'shared/asyncUtils';
+import propertiesHelper from 'shared/commonProperties';
+import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { filterOptions } from 'shared/optionsUtils';
+import { checkWritePermissions } from 'shared/permissionsUtils';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { inspect } from 'util';
+import templatesModel from '../core/v1_layer/templates';
+import entitiesModel from '../entities/entitiesModel';
+import thesauri from '../thesauri';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
-import entitiesModel from '../entities/entitiesModel';
-import templatesModel from '../core/v1_layer/templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
-import thesauri from '../thesauri';
 import * as v2 from './v2_support';
-import translations from 'api/i18n/translations';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -888,7 +887,6 @@ const search = {
   },
 
   async bulkIndex(docs, action = 'index') {
-    inspect(new Error('who calls ?'));
     return bulkIndex(docs, action);
   },
 
