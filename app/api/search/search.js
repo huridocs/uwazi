@@ -1,30 +1,29 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import date from '#api/utils/date.js';
-import propertiesHelper from '#shared/commonProperties.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
-import { createError } from '#api/utils/index.js';
-import { filterOptions } from '#shared/optionsUtils.js';
-import { preloadOptionsLimit, preloadOptionsSearch } from '#shared/config.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import translations from '#api/i18n/translations.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { checkWritePermissions } from '#shared/permissionsUtils.js';
-import usersModel from '#api/users/users.js';
+import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import userGroups from '#api/usergroups/userGroups.js';
+import usersModel from '#api/users/users.js';
+import { createError } from '#api/utils/index.js';
+import date from '#api/utils/date.js';
 import { sequentialPromises } from '#shared/asyncUtils.js';
+import propertiesHelper from '#shared/commonProperties.js';
+import { preloadOptionsLimit, preloadOptionsSearch } from '#shared/config.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { filterOptions } from '#shared/optionsUtils.js';
+import { checkWritePermissions } from '#shared/permissionsUtils.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
-import { inspect } from 'util';
+import templatesModel from '../core/v1_layer/templates/index.js';
+import entitiesModel from '../entities/entitiesModel.js';
+import thesauri from '../thesauri/index.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
 import { elastic } from './elastic.js';
-import entitiesModel from '../entities/entitiesModel.js';
-import templatesModel from '../core/v1_layer/templates/index.js';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
-import thesauri from '../thesauri/index.js';
 import * as v2 from './v2_support.js';
-import translations from '#api/i18n/translations.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -109,12 +108,11 @@ function processFilters(filters, properties, dictionaries) {
 }
 
 function getContent(property, allProperties, newRelationshipsEnabled) {
-  const inherited = property.inherit
-    ? propertiesHelper.getInheritedProperty(property, allProperties)
-    : null;
   return (
     v2.deducePropertyContent(property, newRelationshipsEnabled) ||
-    (inherited ? inherited.content : property.content)
+    (property.inherit
+      ? propertiesHelper.getInheritedProperty(property, allProperties).content
+      : property.content)
   );
 }
 
@@ -154,8 +152,7 @@ async function aggregationProperties(propertiesToBeAggregated, allProperties) {
         type === propertyTypes.newRelationship
       );
     })
-    .map(toAggregationData(allProperties, newRelationshipsEnabled))
-    .filter(property => property.content);
+    .map(toAggregationData(allProperties, newRelationshipsEnabled));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -480,25 +477,11 @@ const _denormalizeAndLimitAggregations = async (
       property = _key in propertiesByName ? propertiesByName[_key] : null;
     }
 
-    if (!property) {
-      // eslint-disable-next-line no-console
-      console.error('Missing aggregation property', {
-        key,
-        templatesCount: templates.length,
-        propertiesCount: properties.length,
-        sampleProperties: properties.slice(0, 5).map(p => p.name),
-      });
-      return;
-    }
-
     if (property.inherit) {
       property = propertiesHelper.getInheritedProperty(property, properties, propertiesById);
     }
 
     property = v2.findDenormalizedProperty(property, properties, newRelationshipsEnabled);
-    if (!property) {
-      return;
-    }
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
@@ -904,7 +887,6 @@ const search = {
   },
 
   async bulkIndex(docs, action = 'index') {
-    inspect(new Error('who calls ?'));
     return bulkIndex(docs, action);
   },
 

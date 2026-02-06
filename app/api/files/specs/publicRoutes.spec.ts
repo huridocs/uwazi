@@ -74,7 +74,7 @@ describe('public routes', () => {
 
       const [document] = newEntity.documents!;
       expect(document).toEqual(
-        expect.objectContaining({ originalname: '12345.test.pdf', status: 'processing' })
+        expect.objectContaining({ originalname: '12345.test.pdf', status: 'ready' })
       );
       expect(await storage.fileExists(document.filename!, 'document')).toBe(true);
     });
