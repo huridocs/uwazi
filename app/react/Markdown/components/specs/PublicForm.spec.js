@@ -7,9 +7,9 @@ import { act } from 'react-dom/test-utils';
 import { LocalForm } from '#app/Forms/Form.js';
 import Dropzone from 'react-dropzone-esm';
 import { MetadataFormFields } from '#app/Metadata/index.js';
-import { Captcha } from '#app/ReactReduxForms/index.jsx';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
-import { PublicFormComponent as PublicForm } from '#app/Markdown/components/PublicForm.jsx';
+import { Captcha } from '#app/ReactReduxForms/index.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { PublicFormComponent as PublicForm } from '../PublicForm.js';
 
 const mockApiGet = jest.fn().mockResolvedValue({
   json: {
@@ -204,7 +204,7 @@ describe('PublicForm', () => {
     });
   });
 
-  it('should NOT clear the form attachments on submission error', async done => {
+  it('should NOT clear the form attachments on submission error', async () => {
     const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
       type: 'image/jpg',
     });
@@ -226,7 +226,7 @@ describe('PublicForm', () => {
       await formSubmit({ title: 'test' });
       component.update();
     });
-    request.then(uploadCompletePromise => {
+    return request.then(uploadCompletePromise =>
       uploadCompletePromise.promise
         .then(() => fail('should throw error'))
         .catch(() => {
@@ -235,8 +235,7 @@ describe('PublicForm', () => {
           expect(actualAttachments.get(0).props.children).toEqual('image.jpg');
           expect(instance.formDispatch).not.toHaveBeenCalledWith();
           expect(instance.refreshCaptcha).toHaveBeenCalled();
-          done();
-        });
-    });
+        })
+    );
   });
 });

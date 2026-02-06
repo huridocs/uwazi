@@ -1,4 +1,4 @@
-import utils from '#app/Markdown/CustomHooks/utils/parsingUtils.js';
+import utils from '../parsingUtils.js';
 
 describe('Custom Hooks Parsing utils', () => {
   describe('findBucketsByCountry', () => {

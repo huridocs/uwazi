@@ -2,9 +2,8 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
-
 import { ClientFile } from '#app/istore.js';
-import { ReviewTocButton } from '#app/ToggledFeatures/tocGeneration/ReviewTocButton.jsx';
+import { ReviewTocButton } from '../ReviewTocButton.js';
 
 describe('ReviewTocButton', () => {
   let component: ShallowWrapper<typeof ReviewTocButton>;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import EntityInfo, { mapDispatchToProps } from '#app/Markdown/components/EntityInfo.jsx';
+import EntityInfo, { mapDispatchToProps } from '../EntityInfo.js';
 
 describe('EntityInfo', () => {
   let props;

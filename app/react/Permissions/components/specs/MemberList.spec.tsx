@@ -1,13 +1,11 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
-
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { MembersList } from '#app/Permissions/components/MembersList.jsx';
-import { data, pseudoData } from '#app/Permissions/components/specs/testData.js';
-import { MemberListItemInfo } from '#app/Permissions/components/MemberListItemInfo.jsx';
-import { MemberListItemPermission } from '#app/Permissions/components/MemberListItemPermission.jsx';
+import { MembersList } from '../MembersList.js';
+import { data, pseudoData } from './testData.js';
+import { MemberListItemInfo } from '../MemberListItemInfo.js';
+import { MemberListItemPermission } from '../MemberListItemPermission.js';
 
 describe('MemberList', () => {
   it('should render with the correct data', () => {

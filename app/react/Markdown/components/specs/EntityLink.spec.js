@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import EntityLink from '#app/Markdown/components/EntityLink.jsx';
-import PagesContext from '#app/Markdown/components/Context.jsx';
+import EntityLink from '../EntityLink.js';
+import PagesContext from '../Context.js';
 
 describe('EntityLink', () => {
   let props;

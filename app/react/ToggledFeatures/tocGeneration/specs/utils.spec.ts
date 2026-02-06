@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-
 import { processQuery } from '#app/Library/helpers/requestState.js';
 
 describe('Library/Uploads processQuery()', () => {

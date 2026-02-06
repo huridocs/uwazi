@@ -1,23 +1,23 @@
 import loadable from '@loadable/component';
 
 import { Link } from 'react-router';
-import Icon from '#UI/Icon/Icon.js';
-import Counter from '#app/Markdown/components/Counter.js';
-import ContactForm from '#app/Markdown/components/ContactForm.js';
-import { EntityData } from '#app/Markdown/components/EntityData.js';
-import { EntitySection } from '#app/Markdown/components/EntitySection.js';
-import EntityLink from '#app/Markdown/components/EntityLink.js';
-import ItemList from '#app/Markdown/components/ItemList.js';
-import Repeat from '#app/Markdown/components/Repeat.js';
-import Context from '#app/Markdown/components/Context.js';
-import Map from '#app/Markdown/components/Map.js';
-import MarkdownLink from '#app/Markdown/components/MarkdownLink.js';
-import MarkdownMedia from '#app/Markdown/components/MarkdownMedia.js';
-import PayPalDonateLink from '#app/Markdown/components/PayPalDonateLink.js';
-import PublicForm from '#app/Markdown/components/PublicForm.js';
-import Value from '#app/Markdown/components/Value.js';
-import SearchBox from '#app/Markdown/components/SearchBox.js';
-import EntityInfo from '#app/Markdown/components/EntityInfo.js';
+import { Icon } from '#app/UI/index.js';
+import Counter from './Counter.js';
+import ContactForm from './ContactForm.js';
+import { EntityData } from './EntityData.js';
+import { EntitySection } from './EntitySection.js';
+import EntityLink from './EntityLink.js';
+import ItemList from './ItemList.js';
+import Repeat from './Repeat.js';
+import Context from './Context.js';
+import Map from './Map.js';
+import MarkdownLink from './MarkdownLink.js';
+import MarkdownMedia from './MarkdownMedia.js';
+import PayPalDonateLink from './PayPalDonateLink.js';
+import PublicForm from './PublicForm.js';
+import Value from './Value.js';
+import SearchBox from './SearchBox.js';
+import EntityInfo from './EntityInfo.js';
 
 const BarChart = loadable(
   async () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js')

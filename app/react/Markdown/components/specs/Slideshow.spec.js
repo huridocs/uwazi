@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Slideshow from '#app/Markdown/components/Slideshow.jsx';
+import Slideshow from '../Slideshow.js';
 
 describe('Link', () => {
   beforeEach(() => {

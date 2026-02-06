@@ -1,5 +1,4 @@
 /**
- * @format
  * @jest-environment jsdom
  */
 
@@ -10,7 +9,7 @@ import FreeBarChart, {
   FreeBarChartProps,
   CustomTooltip,
   CustomTooltipProps,
-} from '#app/Markdown/components/FreeBarChart.jsx';
+} from '../FreeBarChart.js';
 
 describe('FreeBarChart', () => {
   let component: any;

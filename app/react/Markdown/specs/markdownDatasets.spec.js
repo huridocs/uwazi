@@ -6,8 +6,8 @@ import searchApi from '#app/Search/SearchAPI.js';
 import entitiesApi from '#app/Entities/EntitiesAPI.js';
 import api from '#app/utils/api.js';
 
-import markdownDatasets from '#app/Markdown/markdownDatasets.js';
-import fixtures from '#app/Markdown/specs/fixtures.js';
+import markdownDatasets from '../markdownDatasets.js';
+import fixtures from './fixtures.js';
 
 describe('markdownDatasets', () => {
   let requestParams;

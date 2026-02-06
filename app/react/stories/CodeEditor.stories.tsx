@@ -1,10 +1,6 @@
 import React, { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import {
-  CodeEditor,
-  CodeEditorProps,
-  CodeEditorInstance,
-} from '#V2/Components/CodeEditor/index.js';
+import { CodeEditor, CodeEditorProps, CodeEditorInstance } from '#V2/Components/CodeEditor.js';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
 myButton.addEventListener('click', function () {
@@ -92,7 +88,7 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
         <CodeEditor
           language={language}
           intialValue={intialValue}
-          onMount={(editor: any) => {
+          onMount={editor => {
             editorInstance.current = editor;
           }}
           fallbackElement={fallbackElement}

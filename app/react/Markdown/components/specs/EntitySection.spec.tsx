@@ -3,10 +3,9 @@
  */
 import React from 'react';
 import { ReactWrapper } from 'enzyme';
-
-import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
-import { state } from '#app/Markdown/components/specs/fixture/state.js';
-import { EntitySection } from '#app/Markdown/components/EntitySection.jsx';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { state } from './fixture/state.js';
+import { EntitySection } from '../EntitySection.js';
 
 describe('EntitySection Markdown', () => {
   let component: ReactWrapper<
@@ -21,7 +20,7 @@ describe('EntitySection Markdown', () => {
     spyOn(console, 'error').and.callFake(consoleErrorSpy);
   });
 
-  const render = (innerComponent: React.ReactElement) => {
+  const render = (innerComponent: any) => {
     component = renderConnectedMount(() => innerComponent, state);
   };
 

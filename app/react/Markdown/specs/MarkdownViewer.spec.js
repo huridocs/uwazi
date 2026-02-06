@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 
 import { shallow } from 'enzyme';
 
-import { atomStore, userAtom } from '#V2/atoms/index.js';
+import { atomStore, userAtom } from '#app/V2/atoms.js';
 import { store } from '#app/store.js';
-import CustomHookComponents from '#app/Markdown/CustomHooks/index.js';
-import MarkdownViewer from '#app/Markdown/MarkdownViewer.jsx';
-import { errorCollector } from '#app/Markdown/utils.js';
+import CustomHookComponents from '../CustomHooks.js';
+import MarkdownViewer from '../MarkdownViewer.js';
+import { errorCollector } from '../utils.js';
 
 describe('MarkdownViewer', () => {
   let component;

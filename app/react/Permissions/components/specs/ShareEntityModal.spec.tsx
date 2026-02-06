@@ -1,22 +1,15 @@
 /* eslint-disable max-statements */
 import { ShallowWrapper } from 'enzyme';
-
-import { ShareEntityModal } from '#app/Permissions/components/ShareEntityModal.jsx';
-
+import { ShareEntityModal } from '#app/Permissions/components/ShareEntityModal.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
-
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
-
-import { renderConnected } from '#app/utils/test/renderConnected.jsx';
-
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 import * as api from '#app/Permissions/PermissionsAPI.js';
-
 import { saveEntitiesPermissions } from '#app/Permissions/actions/actions.js';
-import { UserGroupsLookupField } from '#app/Permissions/components/UserGroupsLookupField.jsx';
-import { MembersList } from '#app/Permissions/components/MembersList.jsx';
-import { data } from '#app/Permissions/components/specs/testData.js';
+import { UserGroupsLookupField } from '../UserGroupsLookupField.js';
+import { MembersList } from '../MembersList.js';
+import { data } from './testData.js';
 
 jest.mock('#app/Permissions/actions/actions', () => ({
   saveEntitiesPermissions: jest.fn().mockReturnValue(async () => Promise.resolve()),

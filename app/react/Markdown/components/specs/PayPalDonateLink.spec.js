@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import PayPalDonateLink from '#app/Markdown/components/PayPalDonateLink.jsx';
+import PayPalDonateLink from '../PayPalDonateLink.js';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),

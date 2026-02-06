@@ -1,9 +1,7 @@
 import React, { ComponentClass } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
-
-import type { ErrorBoundaryProps } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
+import { ErrorBoundary } from '#app/V2/Components/ErrorHandling.js';
+import type { ErrorBoundaryProps } from '#app/V2/Components/ErrorHandling.js';
 
 const meta: Meta<ComponentClass<ErrorBoundaryProps, any>> = {
   title: 'Components/ErrorBoundary',

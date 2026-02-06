@@ -14,8 +14,6 @@ class DoubleIndexedObject<T extends IndexTypes = IndexTypes, U = any> {
 
   set(index1: T): void;
 
-  set(index1: T, index2: T): void;
-
   set(index1: T, index2: T, value: U): void;
 
   set(index1: T, index2?: T, value?: U): void {

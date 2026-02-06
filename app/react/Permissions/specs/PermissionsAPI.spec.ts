@@ -4,7 +4,6 @@ import {
   savePermissions,
   searchCollaborators,
 } from '#app/Permissions/PermissionsAPI.js';
-
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 jest.mock('#app/utils/api', () => ({

@@ -1,7 +1,5 @@
 import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
-
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-
 import { AccessLevels, MixedAccess } from '#shared/types/permissionSchema.js';
 
 export const data: MemberWithPermission[] = [

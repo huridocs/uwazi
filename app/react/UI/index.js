@@ -1,6 +1,6 @@
-import Icon from '#UI/Icon/Icon.js';
-import ProgressBar from '#UI/ProgressBar/ProgressBar.js';
-import CountryList from '#UI/CountryList/CountryList.js';
-import { ToggleButton } from '#UI/ToggleButton/ToggleButton.js';
+import Icon from './Icon/Icon.js';
+import ProgressBar from './ProgressBar/ProgressBar.js';
+import CountryList from './CountryList/CountryList.js';
+import { ToggleButton } from './ToggleButton/ToggleButton.js';
 
 export { Icon, ProgressBar, CountryList, ToggleButton };

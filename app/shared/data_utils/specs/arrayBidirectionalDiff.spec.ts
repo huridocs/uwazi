@@ -1,4 +1,4 @@
-import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
+import { arrayBidirectionalDiff } from '../arrayBidirectionalDiff.js';
 
 it('should return the added and deleted objects', () => {
   const a = [{ value: 1 }, { value: 3 }, { value: 2 }];

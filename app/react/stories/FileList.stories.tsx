@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { createStore, Provider } from 'jotai';
-import { Entity } from '#V2/domain/index.js';
+import { Entity } from '#V2/domain.js';
 import { FileType } from '#shared/types/fileType.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { FileList } from '#V2/Routes/Entity/Components/FileList.js';

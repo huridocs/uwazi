@@ -1,4 +1,4 @@
-import { explicitOrdering, isUnique } from '#shared/data_utils/arrayUtils.js';
+import { explicitOrdering, isUnique } from '../arrayUtils.js';
 
 describe('explicitOrdering()', () => {
   it('should arrange elements based on orderArray with strict', () => {

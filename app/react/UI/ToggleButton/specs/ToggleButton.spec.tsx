@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { ToggleButton } from '#UI/ToggleButton/ToggleButton.jsx';
+import { ToggleButton } from '../ToggleButton.js';
 
 describe('Toggle button', () => {
   const component: ShallowWrapper<typeof ToggleButton> = shallow(

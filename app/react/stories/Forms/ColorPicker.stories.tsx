@@ -2,8 +2,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-
-import { ColorPicker } from '#V2/Components/Forms/index.js';
+import { ColorPicker } from '#app/V2/Components/Forms.js';
 
 const meta: Meta<typeof ColorPicker> = {
   title: 'Forms/ColorPicker',
