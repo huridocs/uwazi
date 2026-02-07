@@ -82,7 +82,7 @@ const Schema = z
     if (duplicated.length > 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `Duplicated labels: ${duplicated.join(', ')}`,
+        message: `Thesaurus with Id: "${data.id}" has duplicated labels: ${duplicated.map(label => `"${label}"`).join(' ')}`,
         path: ['values'],
       });
     }

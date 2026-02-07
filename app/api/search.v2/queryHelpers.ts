@@ -78,7 +78,7 @@ function snippetsHighlight(query: SearchQuery, fields: { [key: string]: {} }[] |
           post_tags: ['</b>'],
           encoder: 'html',
           number_of_fragments: 9999,
-          ...(fields?.[0].hasOwnProperty('fullText_*') ? { type: 'fvh' } : {}),
+          ...(fields?.[0] && Object.hasOwn(fields[0], 'fullText_*') ? { type: 'fvh' } : {}),
           fragment_size: 300,
           fragmenter: 'span',
           fields,

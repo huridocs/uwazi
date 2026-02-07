@@ -567,8 +567,10 @@ No options found,검색된 옵션 없음
 No property,속성 없음
 No References,참고문헌 없음
 No References description,References are parts of this document related with other documents and entities.
+No relationship types available,No relationship types available
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
+No results found,No results found
 No table of contents,목차 없음
 No Table of contents,No Table of contents
 No table of contents description,목차 설명 없음
@@ -766,6 +768,7 @@ Search Tips: exact term,검색 팁: 정확한 용어
 Search Tips: one char wildcard,검색 팁: one char wildcard
 Search Tips: proximity,검색 팁: 근접성
 Search Tips: wildcard,검색 팁: wildcard
+Searching...,Searching...
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -954,6 +957,7 @@ Translations,번역
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,번역 저장 완료
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled

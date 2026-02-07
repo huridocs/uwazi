@@ -564,8 +564,10 @@ No options found,Варианты не найдены
 No property,Нет свойства
 No References,Нет ссылок
 No References description,References are parts of this document related with other documents and entities.
+No relationship types available,No relationship types available
 No Relationships,Нет взаимосвязей
 No Relationships description,Relationships are bonds between entities.
+No results found,No results found
 No table of contents,Нет содержания
 No Table of contents,No Table of contents
 No table of contents description,Нет описания содержания
@@ -763,6 +765,7 @@ Search Tips: exact term,Советы по поиску: точный терми�
 Search Tips: one char wildcard,Советы по поиску: использование одного подстановочного знака
 Search Tips: proximity,Советы по поиску: близость
 Search Tips: wildcard,Советы по поиску: подстановочный знак
+Searching...,Searching...
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -951,6 +954,7 @@ Translations,Переводы
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Переводы сохранены
+Try adjusting your search terms or check for typos,Try adjusting your search terms or check for typos
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled

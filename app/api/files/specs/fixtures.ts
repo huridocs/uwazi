@@ -214,6 +214,15 @@ const fixtures: DBFixture = {
       published: true,
     },
     {
+      _id: db.id(),
+      template: allowedPublicTemplate,
+      sharedId: 'sharedId2',
+      language: 'en',
+      title: 'Test Entity for Attachments',
+      metadata: {},
+      published: true,
+    },
+    {
       _id: restrictedEntityId,
       template: allowedPublicTemplate,
       sharedId: 'restrictedSharedId',

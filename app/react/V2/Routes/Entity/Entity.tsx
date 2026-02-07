@@ -135,7 +135,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.REFERENCES,
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <ReferencesPanel references={entity?.references} />,
+          content: <ReferencesPanel references={entity?.references} entity={entity} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,

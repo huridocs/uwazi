@@ -64,7 +64,7 @@ class UploadMiddleware {
     return file.originalname;
   }
 
-  singleUpload(type: 'document' | 'attachment') {
+  singleUpload(type: 'document' | 'attachment' | 'custom' | 'raw' = 'raw') {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
         await new Promise<void>((resolve, reject) => {
@@ -107,7 +107,9 @@ class UploadMiddleware {
                   ...f,
                   originalname: this.processOriginalFileName(f, req, false),
                 },
-                f.fieldname.match('document') ? 'document' : 'attachment'
+                f.fieldname.match('document') || f.fieldname.match('file')
+                  ? 'document'
+                  : 'attachment'
               )
           );
         }
