@@ -2,7 +2,6 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-
 import { DateRangePicker } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof DateRangePicker> = {

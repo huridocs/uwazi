@@ -28,7 +28,7 @@ export async function httpRequest(
     }
 
     req
-      .on('response', (response: any) => {
+      .on('response', response => {
         const data = JSON.parse(response.text);
         if (response.status === 200) {
           resolve(data);

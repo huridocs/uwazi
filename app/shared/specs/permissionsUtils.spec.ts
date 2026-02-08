@@ -1,7 +1,7 @@
 import { UserRole } from '#shared/types/userSchema.js';
+import { UserSchema } from '../types/userType.js';
 import { PermissionSchema } from '../types/permissionType.js';
-import { checkWritePermissions } from '#shared/permissionsUtils.js';
-import { UserSchema } from '#shared/types/userType.js';
+import { checkWritePermissions } from '../permissionsUtils.js';
 
 describe('Permissions utils', () => {
   describe('checkWritePermissions', () => {

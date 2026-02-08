@@ -1,4 +1,4 @@
-import { filterOptions } from '#shared/optionsUtils.js';
+import { filterOptions } from '../optionsUtils.js';
 
 describe('Options utils', () => {
   describe('filterOptions', () => {

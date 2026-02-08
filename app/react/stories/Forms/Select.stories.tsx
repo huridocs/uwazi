@@ -22,7 +22,7 @@ const ComponentWithSelect = ({ args }: { args: SelectProps }) => {
           disabled={args.disabled}
           hideLabel={args.hideLabel}
           hasErrors={args.hasErrors}
-          onChange={(e: any) => {
+          onChange={e => {
             setValue(e.target.value);
           }}
           value={value}

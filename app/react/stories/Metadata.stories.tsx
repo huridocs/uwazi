@@ -14,7 +14,7 @@ import {
   thesauri,
   templates,
   settings,
-} from '#app/stories/fixtures/MetadataDisplayFixtures.js';
+} from './fixtures/MetadataDisplayFixtures.js';
 
 const store = createStore();
 store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });

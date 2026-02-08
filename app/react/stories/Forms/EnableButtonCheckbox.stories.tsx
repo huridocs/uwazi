@@ -1,6 +1,5 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-
 import { EnableButtonCheckbox } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof EnableButtonCheckbox> = {

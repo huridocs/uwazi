@@ -28,7 +28,7 @@ export abstract class Task {
         this.status.state = 'done';
         this.status.endTime = Date.now();
       },
-      reason => {
+      (reason: any) => {
         this.status.state = 'failed';
         this.status.endTime = Date.now();
         this.status.message = `Failed with ${reason?.toString()}`;

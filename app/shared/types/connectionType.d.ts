@@ -1,6 +1,6 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
-import { FileType } from './fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 

@@ -1,4 +1,4 @@
-import { setIntersection, setsEqual } from '#shared/data_utils/setUtils.js';
+import { setIntersection, setsEqual } from '../setUtils.js';
 
 describe('setsEqual', () => {
   it('should return true for two empty sets', () => {

@@ -2,7 +2,7 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
-import { highlights } from '#app/stories/fixtures/PDFStoryFixtures.js';
+import { highlights } from './fixtures/PDFStoryFixtures.js';
 
 const meta: Meta<typeof PDF> = {
   title: 'Viewers/PDF',

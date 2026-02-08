@@ -1,4 +1,4 @@
-import { shallowObjectDiff } from '#shared/data_utils/shallowObjectDiff.js';
+import { shallowObjectDiff } from '../shallowObjectDiff.js';
 
 const ABC = {
   A: 0,

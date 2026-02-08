@@ -60,7 +60,8 @@ describe('arrays', () => {
 
     it('with two values, it should throw an error', () => {
       const arr = new Arrays();
-      const callback = () => arr.set('key1', 0, 'value1');
+      // @ts-expect-error
+      const callback = () => arr.set('key1', 'value1');
       expect(callback).toThrowError(
         'Needs one parameter for the key, or three parameters for the key, index, and value.'
       );
