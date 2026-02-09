@@ -37,22 +37,16 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
           onProgress: ({ importId, processedRows, totalRows }) => {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             heartbeat();
-            this.deps.sockets.emitToTenantAdmins(
-              tenantName,
-              'csvImport:preflight:scan:progress',
-              {
-                importId,
-                processedRows,
-                totalRows,
-              }
-            );
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:progress', {
+              importId,
+              processedRows,
+              totalRows,
+            });
           },
           onSuccess: ({ importId }: { importId: string }) => {
-            this.deps.sockets.emitToTenantAdmins(
-              tenantName,
-              'csvImport:preflight:scan:success',
-              { importId }
-            );
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:success', {
+              importId,
+            });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:error', {
