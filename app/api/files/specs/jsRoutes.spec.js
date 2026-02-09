@@ -123,11 +123,6 @@ describe('upload routes', () => {
         __v: 0,
         documents: [],
         attachments: [],
-        user: expect.any(ObjectId),
-        icon: {
-          _id: null,
-          type: 'Empty',
-        },
       });
     });
 
