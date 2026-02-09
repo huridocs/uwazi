@@ -5,6 +5,7 @@ import { getStore as getServerStore } from './server.store';
 
 type AtomStore = ReturnType<typeof createStore>;
 
-const getStore = (): AtomStore => (isClient ? getClientStore() : getServerStore());
+const getStore = (): AtomStore =>
+  isClient || process.env.NODE_ENV === 'test' ? getClientStore() : getServerStore();
 
 export { getStore };

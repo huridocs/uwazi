@@ -21,7 +21,6 @@ module.exports = {
     '^shared/(.*)': '<rootDir>/shared/$1',
     '^app/(.*)': '<rootDir>/react/$1',
     '^app/UI/(.*)': '<rootDir>/react/UI/$1',
-    '^shared/atomStore/server\\.store$': '<rootDir>/shared/atomStore/client.store',
     '^uuid$': require.resolve('uuid'),
   },
   transformIgnorePatterns: [
