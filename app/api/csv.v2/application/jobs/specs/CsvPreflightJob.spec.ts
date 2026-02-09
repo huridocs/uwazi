@@ -105,8 +105,9 @@ const fixtures = {
 describe('CsvPreflightJob (integration)', () => {
   const template = fixtures.templates[0];
   const templateId = template._id.toString();
-  const selectPropertyId =
-    template.properties!.find(property => property.name === 'select_property')!._id!.toString();
+  const selectPropertyId = template
+    .properties!.find(property => property.name === 'select_property')!
+    ._id!.toString();
   const relatedTemplateId = fixtures.templates[1]._id.toString();
   const thesaurusId = fixtures.dictionaries![0]!._id.toString();
 
@@ -145,8 +146,7 @@ describe('CsvPreflightJob (integration)', () => {
     await insertImport(csvImportsDS, { importId, templateId, userId });
     await stageRows(rowsDS, {
       importId,
-      csv:
-        'title,select_property__en,select_property__es,rel_property\nrow,New Value,Nuevo Valor,Related 1|Related 2',
+      csv: 'title,select_property__en,select_property__es,rel_property\nrow,New Value,Nuevo Valor,Related 1|Related 2',
     });
 
     const callbacks = createCallbacks();
