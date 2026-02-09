@@ -1690,4 +1690,102 @@ describe('Entity', () => {
       });
     });
   });
+
+  describe('hasChanged method', () => {
+    const createTestEntity = () =>
+      new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: [
+          {
+            language: 'en',
+            id: 'id_1',
+            metadata: {
+              text: {
+                isTranslatable: true,
+                name: 'text',
+                type: 'text',
+                value: [{ value: 'text' }],
+              },
+            },
+          },
+        ],
+      });
+
+    it('should return TRUE when a property value changes', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [{ value: 'New text' }] })],
+        'en'
+      );
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when icon changes', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when generatedToc changes', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.update({ generatedToc: true });
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when property is cleared', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [] })],
+        'en'
+      );
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when template changes', () => {
+      const template2 = TemplateBuilder.aTemplate({ id: 'different-template' })
+        .withProperties([
+          new TextProperty({
+            id: 'text',
+            template: 'different-template',
+            label: 'Text',
+          }),
+        ])
+        .build();
+
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.changeTemplate(template2);
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when permissions are added', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.addGrantForCreator('user-999');
+
+      expect(entity.hasChanged).toBe(true);
+    });
+  });
 });

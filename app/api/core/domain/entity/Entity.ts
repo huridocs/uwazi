@@ -17,6 +17,7 @@ import {
   EntityTranslationProps,
 } from 'api/core/domain/entity/EntityTranslation';
 import date from 'api/utils/date';
+import stringify from 'fast-json-stable-stringify';
 import { AccessGrant, EntityPermission } from './EntityPermission';
 import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
@@ -159,6 +160,10 @@ class Entity {
     };
   }
 
+  get hasChanged() {
+    return stringify(this.asDTO) !== stringify(this.previousVersion.asDTO);
+  }
+
   get previousVersion() {
     return new Entity(this.props);
   }
@@ -255,6 +260,8 @@ class Entity {
   }
 
   changeTemplate(template: Template) {
+    if (template.id === this.template.id) return;
+
     this.template = template;
 
     const defaultPropertyAssignments = template.createDefaultPropertyAssignments();

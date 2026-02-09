@@ -93,6 +93,8 @@ class EntitiesService {
   async upsert(entity: Entity, context: UpsertContext) {
     this.ensureTransaction();
 
+    if (!entity.hasChanged) return;
+
     await this.deps.entitiesDS.update(entity);
 
     await this.deps.eventEmitter.emit(

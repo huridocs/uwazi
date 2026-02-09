@@ -2,6 +2,7 @@
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { Id, IdProps } from 'api/core/libs/Id';
+import stringify from 'fast-json-stable-stringify';
 import {
   DateEntry,
   PropertyAssignment,
@@ -87,7 +88,7 @@ class EntityTranslation {
       );
     }
 
-    if (JSON.stringify(currentValue) === JSON.stringify(propertyValue)) {
+    if (stringify(currentValue) === stringify(propertyValue)) {
       return;
     }
 
