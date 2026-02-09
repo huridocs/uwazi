@@ -120,6 +120,7 @@ describe('upload routes', () => {
         metadata: {},
         permissions: [{ refId: expect.any(String), type: 'user', level: 'write' }],
         obsoleteMetadata: [],
+        __v: 0,
         documents: [],
         attachments: [],
         user: expect.any(ObjectId),
