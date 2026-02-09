@@ -1,29 +1,34 @@
-import entities from 'api/entities';
+import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { FileAttachment } from 'api/core/domain/files/FileAttachment';
+import { EntitiesDataSourceFactory } from 'api/core/infrastructure/factories/EntitiesDataSourceFactory';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
+import templates from 'api/core/v1_layer/templates';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { legacyLogger } from 'api/log';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
-import templates from 'api/core/v1_layer/templates';
-import { newThesauriId } from 'api/utils/templateUtils';
 import { tenants } from 'api/tenants';
 import thesauri from 'api/thesauri';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import users from 'api/users/users';
-import { appContext } from 'api/utils/AppContext';
+import { newThesauriId } from 'api/utils/templateUtils';
+import mimetypes from 'mime-types';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
 import request from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
 import { PreserveConfig } from 'shared/types/settingsType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Readable } from 'stream';
-import mimetypes from 'mime-types';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { preserveSyncModel } from './preserveSyncModel';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
@@ -95,29 +100,84 @@ const extractDate = async (
 
 const saveEvidence =
   (config: PreserveConfig['config'][0], host: string) =>
-  async (previous: Promise<EntitySchema>, evidence: any) => {
+  async (previous: Promise<string | undefined>, evidence: any): Promise<string | undefined> => {
     await previous;
 
     try {
+      // Skip evidences with empty titles
+      if (!evidence.attributes.title) {
+        return undefined;
+      }
+
       const template = await templates.getById(config.template);
       const user = await users.getById(config.user);
 
-      if (user) {
-        appContext.set('user', user);
+      // Set up V2 services
+      const transactionManager = TransactionManagerFactory.default();
+      const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+
+      const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
+        entitiesDS,
+        settingsDS,
+        thesauriDS,
+        translationsDS,
+      });
+      const entitiesService = EntitiesServiceFactory.default({
+        entitiesDS,
+        transactionManager,
+      });
+
+      const entity = await entitiesService.create({
+        templateId: config.template.toString(),
+        userId: user?._id?.toString(),
+      });
+
+      const propertyAssignments: PropertyAssignmentInput[] = [
+        {
+          name: 'title',
+          value: [{ value: evidence.attributes.title }],
+        },
+      ];
+
+      const urlMetadata = await extractURL(template, evidence);
+      if (urlMetadata.url) {
+        propertyAssignments.push({
+          name: 'url',
+          value: urlMetadata.url,
+        });
       }
 
-      const { sharedId } = await entities.save(
-        {
-          title: evidence.attributes.title,
-          template: config.template,
-          metadata: {
-            ...(await extractURL(template, evidence)),
-            ...(await extractSource(template, evidence)),
-            ...(await extractDate(template, evidence)),
-          },
-        },
-        { language: 'en', user: user || {} }
+      const sourceMetadata = await extractSource(template, evidence);
+      if (sourceMetadata.source) {
+        propertyAssignments.push({
+          name: 'source',
+          value: sourceMetadata.source,
+        });
+      }
+
+      const dateMetadata = await extractDate(template, evidence);
+      if (dateMetadata.preservation_date) {
+        propertyAssignments.push({
+          name: 'preservation_date',
+          value: dateMetadata.preservation_date,
+        });
+      }
+
+      const assignments = await propertyAssignmentStrategy.bulkCreate(
+        propertyAssignments,
+        entity.template,
+        []
       );
+      entity.setPropertyAssignmentsInAllLanguages(assignments);
+
+      const { sharedId } = entity;
+
+      const attachments: FileAttachment[] = [];
+      const filesService = FilesServiceFactory.default(transactionManager);
+
       await Promise.all(
         evidence.attributes.downloads.map(async (download: any) => {
           const fileStream = (
@@ -138,19 +198,24 @@ const saveEvidence =
           });
 
           const fileId = IdGeneratorFactory.default().generate();
-          const attachment = inputFile.toEntityFile(sharedId, fileId);
-
-          const transactionManager = TransactionManagerFactory.default();
-          const filesService = FilesServiceFactory.default(transactionManager);
-          await filesService.storeFiles([attachment]);
-
-          await transactionManager.run(async () => {
-            await filesService.insert([attachment]);
-          });
+          attachments.push(inputFile.toEntityFile(sharedId, fileId) as FileAttachment);
         })
       );
+
+      await filesService.storeFiles(attachments);
+
+      await transactionManager.run(async () => {
+        await filesService.insert(attachments);
+        await entitiesService.insert(entity, {
+          tenantName: tenants.current().name,
+          actorId: user?._id?.toString() || 'system',
+        });
+      });
+
+      return sharedId;
     } catch (error) {
       legacyLogger.error(error);
+      return undefined;
     }
   };
 
