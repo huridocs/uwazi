@@ -19,6 +19,10 @@ type CreateInput = {
   templateId?: string;
 };
 
+type CreateManyInput = CreateInput & {
+  count: number;
+};
+
 type Deps = {
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
@@ -61,6 +65,25 @@ class EntitiesService {
       template,
       icon,
     });
+  }
+
+  async createMany({ templateId, userId, icon, count }: CreateManyInput) {
+    if (count <= 0) {
+      return [];
+    }
+    const [template, languages] = await Promise.all([
+      this.getTemplateByIdOrDefault(templateId),
+      this.deps.settingsDS.getLanguageKeys(),
+    ]);
+
+    return Array.from({ length: count }, () =>
+      Entity.create({
+        languages,
+        userId,
+        template,
+        icon,
+      })
+    );
   }
 
   async insert(entity: Entity, context: InsertContext) {

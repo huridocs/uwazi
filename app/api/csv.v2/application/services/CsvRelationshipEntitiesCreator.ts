@@ -41,15 +41,17 @@ const createRelationshipEntitiesBatch = async (params: {
   if (!titles.length) {
     return 0;
   }
-  const entities = await Promise.all(
-    titles.map(async title => {
-      const entity = await entitiesService.create({ templateId, userId });
-      entity.setPropertyAssignmentsInAllLanguages([
-        entity.template.createPropertyAssignment('title', { value: [{ value: title }] }),
-      ]);
-      return entity;
-    })
-  );
+  const entities = await entitiesService.createMany({
+    templateId,
+    userId,
+    count: titles.length,
+  });
+  entities.forEach((entity, index) => {
+    const title = titles[index];
+    entity.setPropertyAssignmentsInAllLanguages([
+      entity.template.createPropertyAssignment('title', { value: [{ value: title }] }),
+    ]);
+  });
   await transactionManager.run(async () => {
     await entitiesService.bulkInsert(entities, { tenantName, actorId: userId });
   });
