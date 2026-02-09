@@ -30,7 +30,7 @@ import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { ClientFeatureFlags } from './V2/shared/types';
-import { hydrateAtomStore, settingsAtom } from './V2/atoms';
+import { hydrateAtomStore } from './V2/atoms';
 import { I18NUtils } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
