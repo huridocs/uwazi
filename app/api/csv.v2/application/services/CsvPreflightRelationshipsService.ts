@@ -11,7 +11,6 @@ type RelationshipColumn = {
   property: V1RelationshipProperty;
   index: number;
 };
-
 type CollectTitlesParams = {
   rowsDS: CsvImportRowsDataSource;
   importId: string;
@@ -21,21 +20,25 @@ type CollectTitlesParams = {
   batchSize: number;
   onProgress: (info: { processedRows: number; totalRows: number }) => void;
 };
-
 type CreateMissingEntitiesParams = {
   entitiesDS: MultiLanguageEntityDataSource;
   titlesByTemplate: Map<string, Set<string>>;
   chunkSize: number;
-  createEntity: (params: { title: string; templateId: string }) => Promise<void>;
+  totalTemplates: number;
+  onBatch?: (info: {
+    processedTemplates: number;
+    totalTemplates: number;
+    createdEntities: number;
+    pendingTitles: number;
+  }) => void;
+  createEntities: (params: { templateId: string; titles: string[] }) => Promise<number>;
 };
-
 type BuildAppliedValuesParams = {
   entitiesDS: MultiLanguageEntityDataSource;
   importId: string;
   titlesByTemplate: Map<string, Set<string>>;
   chunkSize: number;
 };
-
 const MULTI_VALUE_SEPARATOR = '|';
 
 const splitRelationshipValues = (rawValue: unknown) => {
@@ -48,7 +51,6 @@ const splitRelationshipValues = (rawValue: unknown) => {
     .filter(value => value.trim() !== '')
     .filter((value, index, list) => list.indexOf(value) === index);
 };
-
 const buildRelationshipColumnMap = (params: { template: Template; sanitizedHeaders: string[] }) => {
   const { template, sanitizedHeaders } = params;
   return template.allProperties
@@ -61,7 +63,6 @@ const buildRelationshipColumnMap = (params: { template: Template; sanitizedHeade
     }))
     .filter(({ index }) => index >= 0);
 };
-
 const addTitlesForRow = (params: {
   rowValues: string[];
   columns: RelationshipColumn[];
@@ -141,13 +142,11 @@ const collectKnownTitles = async (params: {
   }
   return knownTitles;
 };
-
 // eslint-disable-next-line max-statements
 const collectRelationshipTitlesForImport = async (params: CollectTitlesParams) => {
   const { rowsDS, importId, template, sanitizedHeaders, totalRows, batchSize, onProgress } = params;
   const relationshipColumns = buildRelationshipColumnMap({ template, sanitizedHeaders });
   const titlesByTemplate = new Map<string, Set<string>>();
-
   let processedRows = 0;
   for (let offset = 0; offset < totalRows; offset += batchSize) {
     // eslint-disable-next-line no-await-in-loop
@@ -171,8 +170,10 @@ const collectRelationshipTitlesForImport = async (params: CollectTitlesParams) =
 
 // eslint-disable-next-line max-statements
 const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParams) => {
-  const { entitiesDS, titlesByTemplate, chunkSize, createEntity } = params;
+  const { entitiesDS, titlesByTemplate, chunkSize, createEntities, onBatch, totalTemplates } =
+    params;
   let createdEntities = 0;
+  let templateIndex = 0;
 
   for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
     const titles = Array.from(titlesSet);
@@ -187,14 +188,20 @@ const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParam
       });
       for (const chunk of chunks) {
         const missingTitles = buildMissingTitles(chunk, knownTitles);
-        for (const title of missingTitles) {
+        if (missingTitles.length) {
+          onBatch?.({
+            processedTemplates: Math.min(templateIndex + 1, totalTemplates),
+            totalTemplates,
+            createdEntities,
+            pendingTitles: missingTitles.length,
+          });
           // eslint-disable-next-line no-await-in-loop
-          await createEntity({ title, templateId });
-          createdEntities += 1;
+          createdEntities += await createEntities({ templateId, titles: missingTitles });
+          mergeKnownTitles(knownTitles, missingTitles);
         }
-        mergeKnownTitles(knownTitles, missingTitles);
       }
     }
+    templateIndex += 1;
   }
 
   return createdEntities;

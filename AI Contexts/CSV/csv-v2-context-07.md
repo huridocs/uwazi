@@ -73,6 +73,17 @@ It is also a handoff guide: a new agent should be able to continue by reading th
   - Get import details (status, progress counters, row errors summary, report paths, failures).
   - This enables UI polling and recovery when socket events are missed.
 
+#### 3.8 Discuss with team
+
+- Relationship creation now uses `EntitiesService.create` per title, which fetches template + language
+  settings every call. Consider adding a bulk helper in `EntitiesService` that:
+  - fetches template + languages once,
+  - builds entities for all titles,
+  - bulk inserts in a single transaction.
+  This keeps the Entities-module contract while avoiding N+1 reads.
+- If we keep per-title `create` + bulk insert, validate lock timeouts on large imports and ensure
+  progress callbacks/heartbeats are emitted per batch (not only at end).
+
 ### 4) Immediate next steps (agreed direction)
 
 1. **Keep future work scoped**
@@ -199,6 +210,11 @@ is confusing and inconsistent with thesauri preflight behavior.
 
 - Relationships creation now delegates to the Entities module (via entity creation use case),
   so translation setup is owned by Entities and not replicated in CSV.
+- Creation now batches missing titles and uses `EntitiesService.bulkInsert` per batch while still
+  building entities via `EntitiesService.create` (one per title).
+- Progress/heartbeat now emits per batch (before each bulk insert) to avoid worker timeouts.
+- Entity creation logic moved out of the job factory into application-layer helpers:
+  `app/api/csv.v2/application/services/CsvRelationshipEntitiesCreator.ts`.
 - New integration spec added:
   - `app/api/csv.v2/application/jobs/specs/CsvCreateRelationshipEntitiesJob.spec.ts`
     validates that related entities are created with all UI languages.

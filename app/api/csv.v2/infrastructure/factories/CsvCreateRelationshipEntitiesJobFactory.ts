@@ -1,4 +1,3 @@
-import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
@@ -6,6 +5,7 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { tenants } from 'api/tenants/tenantContext';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
 import { CsvCreateRelationshipEntitiesJob } from '../../application/jobs/CsvCreateRelationshipEntitiesJob';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories';
 
@@ -29,15 +29,14 @@ class CsvCreateRelationshipEntitiesJobFactory {
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
     const jobsDispatcher =
       options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
+    const entitiesService = EntitiesServiceFactory.default({ transactionManager });
 
     const useCase = new CsvCreateRelationshipEntitiesJob({
       csvImportsDS,
       relationshipValuesDS,
       relationshipPendingValuesDS,
       entitiesDS,
-      entityCreator: async ({ title, templateId }) => {
-        await EntityFacade.create({ title, template: templateId });
-      },
+      entitiesService,
       transactionManager,
       jobsDispatcher,
     });

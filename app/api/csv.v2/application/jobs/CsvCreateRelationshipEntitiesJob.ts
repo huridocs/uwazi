@@ -1,4 +1,5 @@
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { EntitiesService } from 'api/core/application/EntitiesService';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
@@ -19,6 +20,10 @@ import {
   buildRelationshipAppliedValues,
   createMissingEntitiesForTitles,
 } from '../services/CsvPreflightRelationshipsService';
+import {
+  createRelationshipEntitiesBatch,
+  loadRelationshipCreationContext,
+} from '../services/CsvRelationshipEntitiesCreator';
 
 type RelationshipsProgress = {
   importId: string;
@@ -43,7 +48,7 @@ type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
   relationshipValuesDS: CsvImportRelationshipValuesDataSource;
   relationshipPendingValuesDS: CsvImportRelationshipPendingValuesDataSource;
-  entityCreator: (params: { title: string; templateId: string }) => Promise<void>;
+  entitiesService: EntitiesService;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
 };
@@ -83,27 +88,6 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
       );
       await this.deps.csvImportsDS.update(withStatus);
     });
-  }
-
-  private async loadContext(importId: string) {
-    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
-    const pendingDocs = await this.deps.relationshipPendingValuesDS.getByImport(importId);
-
-    const titlesByTemplate = new Map<string, Set<string>>();
-    pendingDocs.forEach(doc => {
-      if (!doc.titles.length) {
-        return;
-      }
-      const set = titlesByTemplate.get(doc.templateId) || new Set<string>();
-      doc.titles.forEach(title => set.add(title));
-      titlesByTemplate.set(doc.templateId, set);
-    });
-
-    return {
-      csvImport,
-      titlesByTemplate,
-      totalTemplates: titlesByTemplate.size,
-    };
   }
 
   private async finalizeSuccess(params: {
@@ -148,10 +132,12 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
   private async runCreation(params: {
     importId: string;
     titlesByTemplate: Map<string, Set<string>>;
+    tenantName: string;
+    userId: string;
     totalTemplates: number;
     callbacks: Callbacks;
   }) {
-    const { titlesByTemplate, totalTemplates, callbacks, importId } = params;
+    const { titlesByTemplate, totalTemplates, callbacks, importId, tenantName, userId } = params;
     const observedTitles = CsvCreateRelationshipEntitiesJob.countObservedTitles(titlesByTemplate);
     if (!titlesByTemplate.size) {
       return {
@@ -165,19 +151,30 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
       entitiesDS: this.deps.entitiesDS,
       titlesByTemplate,
       chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
-      createEntity: this.deps.entityCreator,
+      totalTemplates,
+      onBatch: info => {
+        callbacks.onProgress({
+          importId,
+          processedTemplates: info.processedTemplates,
+          totalTemplates: info.totalTemplates,
+          createdEntities: info.createdEntities,
+        });
+      },
+      createEntities: async ({ templateId, titles }) =>
+        createRelationshipEntitiesBatch({
+          entitiesService: this.deps.entitiesService,
+          transactionManager: this.transactionManager,
+          templateId,
+          titles,
+          tenantName,
+          userId,
+        }),
     });
     const relationshipDocs = await buildRelationshipAppliedValues({
       entitiesDS: this.deps.entitiesDS,
       importId,
       titlesByTemplate,
       chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
-    });
-    callbacks.onProgress({
-      importId,
-      processedTemplates: totalTemplates,
-      totalTemplates,
-      createdEntities,
     });
 
     return { createdEntities, relationshipDocs, observedTitles };
@@ -201,10 +198,16 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
 
   private async runApplyFlow(input: Input) {
     const { importId, tenantName, userId, callbacks } = input;
-    const { csvImport, titlesByTemplate, totalTemplates } = await this.loadContext(importId);
+    const { csvImport, titlesByTemplate, totalTemplates } = await loadRelationshipCreationContext({
+      csvImportsDS: this.deps.csvImportsDS,
+      relationshipPendingValuesDS: this.deps.relationshipPendingValuesDS,
+      importId,
+    });
     const creation = await this.runCreation({
       importId,
       titlesByTemplate,
+      tenantName,
+      userId,
       totalTemplates,
       callbacks,
     });
