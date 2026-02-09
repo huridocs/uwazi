@@ -7,10 +7,10 @@ import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/Prop
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { InputFile } from '../infrastructure/files/InputFile';
 import { FilesService } from './FilesService';
-import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { FilesDataSource } from './contracts/FilesDataSource';
 import { BaseFile } from '../domain/files/BaseFile';
+import { EntitiesService } from './EntitiesService';
 
 type Input = {
   sharedId: string;
@@ -28,6 +28,7 @@ type Output = Entity;
 type Deps = {
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
   entitiesDS: MultiLanguageEntityDataSource;
+  entitiesService: EntitiesService;
   fileService: FilesService;
   templatesDS: TemplatesDataSource;
   filesDS: FilesDataSource;
@@ -80,17 +81,13 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.fileService.storeFiles(filesCreated);
 
     await this.transactionManager.run(async () => {
-      await this.deps.entitiesDS.update(entity);
+      await this.deps.entitiesService.upsert(entity, {
+        actorId: this.actorId,
+        targetLanguage: input.language,
+      });
       await this.deps.fileService.insert(filesCreated);
       await this.deps.fileService.delete(removedFiles);
       await this.deps.filesDS.bulkUpdate(updatedFiles);
-      await this.eventEmitter.emit(
-        EntityUpdatedEvent.create({
-          entity,
-          targetLanguage: input.language,
-          userId: this.actorId,
-        })
-      );
     });
 
     return entity;

@@ -20,6 +20,7 @@ import { DependenciesContext } from 'api/core/libs/DependenciesContext';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { UpdateEntityUseCase, UpdateEntityUseCaseDeps } from '../UpdateEntity';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures';
@@ -53,12 +54,19 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
     filesDS,
   });
 
+  const entitiesService = EntitiesServiceFactory.default({
+    transactionManager,
+    entitiesDS,
+    eventEmitter,
+  });
+
   jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
   jest.spyOn(fileService, 'insert').mockResolvedValue();
   jest.spyOn(fileService, 'delete');
 
   const sut = new UpdateEntityUseCase(
     {
+      entitiesService,
       filesDS,
       templatesDS,
       idGenerator,
@@ -256,10 +264,23 @@ describe('UpdateEntityUseCase', () => {
             name: 'media',
             value: [{ value: '' }], // This unlink the property assignment to the attached file.
           },
-          // {
-          //   name: 'nested',
-          //   value: [],
-          // },
+          {
+            name: 'nested',
+            value: [
+              {
+                value: {
+                  child_text: [{ value: 'Child text value' }],
+                  child_number: [{ value: 42 }],
+                },
+              },
+              {
+                value: {
+                  child_text: [{ value: 'Second child text' }],
+                  child_number: [{ value: 100 }],
+                },
+              },
+            ],
+          },
         ],
       });
 
@@ -297,6 +318,20 @@ describe('UpdateEntityUseCase', () => {
               },
             ],
             image: [],
+            nested: [
+              {
+                value: {
+                  child_text: [{ value: 'Child text value' }],
+                  child_number: [{ value: 42 }],
+                },
+              },
+              {
+                value: {
+                  child_text: [{ value: 'Second child text' }],
+                  child_number: [{ value: 100 }],
+                },
+              },
+            ],
             media: [],
           },
           language: 'en',
@@ -339,6 +374,20 @@ describe('UpdateEntityUseCase', () => {
                 type: 'entity',
                 inheritedType: 'text',
                 inheritedValue: [{ value: 'Related Text 2 PT' }],
+              },
+            ],
+            nested: [
+              {
+                value: {
+                  child_text: [{ value: 'Child text value' }],
+                  child_number: [{ value: 42 }],
+                },
+              },
+              {
+                value: {
+                  child_text: [{ value: 'Second child text' }],
+                  child_number: [{ value: 100 }],
+                },
               },
             ],
           },

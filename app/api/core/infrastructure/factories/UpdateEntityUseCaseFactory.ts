@@ -11,6 +11,7 @@ import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
 import { FilesDataSourceFactory } from './FilesDataSourceFactory';
+import { EntitiesServiceFactory } from './EntitiesServiceFactory';
 
 class UpdateEntityUseCaseFactory {
   static default() {
@@ -40,9 +41,18 @@ class UpdateEntityUseCaseFactory {
       transactionManager,
     });
 
+    const entitiesService = EntitiesServiceFactory.default({
+      transactionManager,
+      entitiesDS,
+      eventEmitter,
+      settingsDS,
+      templatesDS,
+    });
+
     const useCase = new UpdateEntityUseCase(
       {
         filesDS,
+        entitiesService,
         entitiesDS,
         templatesDS,
         eventEmitter,
