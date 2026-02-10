@@ -369,6 +369,24 @@ is confusing and inconsistent with thesauri preflight behavior.
   A new integration test covers `CsvImportEntitiesJob` (single-row happy path), but there are
   still no pipeline integration tests (register → extract → preflight → create → relationships → import).
 
+### 9) TODO — CSV v2 tests pollute queue jobs
+
+Running CSV v2 tests leaves jobs in the queue collection even when tests pass. The queue uses the
+shared DB and default queue name; dispatched jobs are not auto-cleaned.
+
+**Mitigation options:**
+- **Test cleanup:** delete the queue collection in CSV v2 specs (`afterEach`/`afterAll`).
+- **Test queue namespace:** configure a test-only queue name to isolate/purge safely.
+- **Recording/Sync dispatcher:** use non-queue dispatchers in tests that don't need real workers.
+- **No worker during tests:** ensure the queue worker isn't running when tests enqueue jobs.
+
+### 10) TODO — Improve row-level error messaging
+
+Row errors are currently low-signal for end users (e.g., an empty CSV line can surface as
+`Cannot read properties of undefined (reading 'Value')`). We should add explicit, user-friendly
+errors/warnings for common parsing issues (empty line, missing required columns, malformed rows),
+and avoid leaking internal exceptions directly to users.
+
 ### 8) Next agent checklist (quick start)
 
 1. Skim `csv-v2-context-07.md` and confirm the pipeline chain in code:
