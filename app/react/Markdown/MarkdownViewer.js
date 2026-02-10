@@ -4,7 +4,8 @@ import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import { risonDecodeOrIgnore } from 'app/utils';
 import { Translate } from 'app/I18N';
-import { atomStore, userAtom } from 'app/V2/atoms';
+import { getStore } from 'shared/atomStore';
+import { userAtom } from 'app/V2/atoms';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
@@ -45,7 +46,7 @@ class MarkdownViewer extends Component {
     if (errorCollector.hasErrors()) {
       errorCollector.report();
 
-      const user = atomStore.get(userAtom);
+      const user = getStore().get(userAtom);
       if (user._id) {
         // prepare the error message to be shown to the logged in user
         store.dispatch(notify(errorCollector.display(), 'warning', 20000));
