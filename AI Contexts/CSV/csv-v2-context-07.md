@@ -387,6 +387,16 @@ Row errors are currently low-signal for end users (e.g., an empty CSV line can s
 errors/warnings for common parsing issues (empty line, missing required columns, malformed rows),
 and avoid leaking internal exceptions directly to users.
 
+### 11) TODO — Define file column conventions (v1 parity + multi-file option)
+
+We should formalize CSV file column semantics to avoid ambiguity and align with v1:
+
+- `file__XX` (language-specific): **one value per cell**.
+- `file` (default language): **one value per cell**.
+- `files` (new, multi-file): allows a single value or `|`‑separated list.
+
+Goal: keep v1 semantics intact while providing an explicit multi-file column.
+
 ### 8) Next agent checklist (quick start)
 
 1. Skim `csv-v2-context-07.md` and confirm the pipeline chain in code:
