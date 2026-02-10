@@ -5,6 +5,7 @@ import {
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -13,6 +14,7 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvPreflightJob;
   sockets: V1WebSocketsWrapper;
+  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
@@ -49,6 +51,7 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
             });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
+            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:error', {
               importId,
               message: error.message,

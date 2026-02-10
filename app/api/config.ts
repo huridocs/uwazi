@@ -113,6 +113,7 @@ export const config = {
       testing: DEV_FLAG_TESTING === 'true' || false,
       v2CSVImport: false,
       v2UpdateThesaurus: false,
+      v1CSVImportCompat: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

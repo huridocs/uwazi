@@ -5,6 +5,7 @@ import {
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -13,6 +14,7 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvImportEntitiesJob;
   sockets: V1WebSocketsWrapper;
+  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
@@ -22,22 +24,33 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
 
   async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
     const { tenantName } = this;
+    let v1LoadedCount = 0;
 
     try {
       await this.deps.useCase.execute({
         importId: this.params.importId,
         callbacks: {
           onStart: ({ importId }) => {
+            this.deps.v1Compat?.start(tenantName);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:import:start', {
               importId,
             });
           },
           onSuccess: ({ importId }) => {
+            const { v1Compat } = this.deps;
+            if (v1Compat) {
+              v1Compat
+                .rowExceptions(tenantName, importId)
+                .catch(() => undefined)
+                .finally(() => v1Compat.end(tenantName));
+            }
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:import:success', {
               importId,
             });
           },
           onProgress: info => {
+            v1LoadedCount += info.entitiesCreatedInBatch;
+            this.deps.v1Compat?.progress(tenantName, v1LoadedCount);
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             heartbeat();
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:import:progress', {
@@ -50,6 +63,7 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
             });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
+            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:import:error', {
               importId,
               message: error.message,

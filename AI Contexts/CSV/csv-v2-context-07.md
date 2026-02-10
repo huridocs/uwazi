@@ -312,6 +312,39 @@ is confusing and inconsistent with thesauri preflight behavior.
   (job still updates status and dispatches the next stage).
 - Spec coverage added for the **no-relationships** path (no progress emit, stats set to zero).
 
+13. **V1 socket-compat layer (Mar 2026)**
+
+- Added a removable, handler-only compat emitter to reuse the v1 UI socket footprint while the
+  v2 UI is under construction.
+- Emits **tenant-admin** events only (no session propagation), to avoid polluting use cases.
+- Feature-flagged via `featureFlags.v1CSVImportCompat` (default `false`).
+- Events:
+  - `IMPORT_CSV_START`: emitted from extract job start.
+  - `IMPORT_CSV_PROGRESS`: emitted from entities-import batches (cumulative entities created).
+  - `IMPORT_CSV_ROW_EXCEPTIONS`: emitted once on entities-import success, built from
+    `csv_import_row_errors` and grouped by error message.
+  - `IMPORT_CSV_ERROR`: emitted from any stage failure (extract, preflight, thesauri, relationships, import).
+  - `IMPORT_CSV_END`: emitted after entities-import success (after row exceptions).
+- Implementation:
+  - `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`
+  - wired in queue worker registration (`app/queueRegistry.ts`)
+  - used in job handlers:
+    - `CsvExtractUploadedZipJobHandler`
+    - `CsvPreflightJobHandler`
+    - `CsvCreateThesauriValuesJobHandler`
+    - `CsvCreateRelationshipEntitiesJobHandler`
+    - `CsvImportEntitiesJobHandler`
+
+#### How to remove v1 compat (when v2 UI is ready)
+
+1. Delete `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`.
+2. Remove `v1CSVImportCompat` from:
+   - `app/api/tenants/tenantContext.ts`
+   - `app/api/config.ts`
+3. Remove `CsvV1CompatEmitter` wiring in `app/queueRegistry.ts`.
+4. Remove optional `v1Compat` usage from CSV job handlers listed above.
+5. Delete any v1 compat references in docs/tests (if added).
+
 ### 7) Agent-specific notes (handoff)
 
 - **Doc hygiene is mandatory:** Whenever a user gives new instructions or corrections,

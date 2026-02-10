@@ -8,6 +8,7 @@ import {
   CsvCreateRelationshipEntitiesJob,
   RelationshipsProgress,
 } from '../../application/jobs/CsvCreateRelationshipEntitiesJob';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -16,6 +17,7 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvCreateRelationshipEntitiesJob;
   sockets: V1WebSocketsWrapper;
+  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvCreateRelationshipEntitiesJobHandler extends UserAwareDispatchable<Params> {
@@ -61,6 +63,7 @@ export class CsvCreateRelationshipEntitiesJobHandler extends UserAwareDispatchab
             );
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
+            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
               'csvImport:preflight:relationships:create:error',
