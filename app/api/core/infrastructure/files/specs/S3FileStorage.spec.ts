@@ -21,7 +21,7 @@ import { Tenant } from '#api/tenants/tenantContext.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { Readable } from 'node:stream';
-import { S3FileStorage } from '#api/core/infrastructure/files/S3FileStorage.js';
+import { S3FileStorage } from '../S3FileStorage.js';
 
 const f = getFixturesFactory();
 

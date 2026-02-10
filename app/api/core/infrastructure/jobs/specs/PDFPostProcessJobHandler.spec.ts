@@ -17,11 +17,11 @@ import { tenants } from '#api/tenants/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { createHash } from 'crypto';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { FileIsNotAPDF, PDFService } from '#api/core/infrastructure/services/PDFService.js';
-import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
+import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { FileIsNotAPDF, PDFService } from '../../services/PDFService.js';
+import { PDFPostProcessJobHandler } from '../PDFPostProcessJobHandler.js';
 
 async function filesAreIdentical(file1: string, file2: string) {
   const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);

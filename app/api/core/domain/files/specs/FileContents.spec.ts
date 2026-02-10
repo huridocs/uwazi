@@ -5,7 +5,7 @@ import { readFile, unlink } from 'fs/promises';
 
 import { tmpdir } from 'os';
 import path from 'path';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileContents } from '../FileContents.js';
 
 describe('FileContents', () => {
   const testDir = path.join(tmpdir(), 'fileContents-tests');

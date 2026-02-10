@@ -10,8 +10,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { createReadStream } from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
-import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { FileSystemStorage } from '../FileSystemStorage.js';
+import { PathManager } from '../PathManager.js';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;

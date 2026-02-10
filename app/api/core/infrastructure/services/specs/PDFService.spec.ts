@@ -12,7 +12,7 @@ import { createHash } from 'crypto';
 import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FileIsNotAPDF, PDFService } from '#api/core/infrastructure/services/PDFService.js';
+import { FileIsNotAPDF, PDFService } from '../PDFService.js';
 
 const errorShell = TestUtils.mockClass<ShellExecutor>({
   execute: jest.fn().mockImplementation(() => Result.fail(new Error('generic shell error'))),

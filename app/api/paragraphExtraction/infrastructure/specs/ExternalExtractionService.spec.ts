@@ -8,12 +8,8 @@ import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey
 import { GetParagraphsResultOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
 
 import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { PXExternalExtractionService } from '#api/paragraphExtraction/infrastructure/ExternalExtractionService/ExternalExtractionService.js';
-import {
-  document,
-  mockGetParagraphsResult,
-  segmentation,
-} from '#api/paragraphExtraction/infrastructure/specs/fixtures.js';
+import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService.js';
+import { document, mockGetParagraphsResult, segmentation } from './fixtures.js';
 
 const upload = multer();
 const app = express();
