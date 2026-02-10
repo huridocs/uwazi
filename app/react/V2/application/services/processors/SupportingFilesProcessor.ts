@@ -1,7 +1,7 @@
 import groupBy from 'lodash/groupBy.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { FileType } from '#shared/types/fileType.js';
-import { AdapterEntity, ProcessingContext } from '#V2/application/services/processors/types.js';
+import { AdapterEntity, ProcessingContext } from './types.js';
 
 export class SupportingFilesProcessor {
   private readonly context: ProcessingContext;

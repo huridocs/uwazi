@@ -1,15 +1,13 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import {
   Table,
   ConfirmNavigationModal,
   ConfirmationModal,
   ProgressBar,
 } from '#V2/Components/UI/index.js';
-
 import { Translate } from '#app/I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
@@ -21,15 +19,12 @@ import {
 } from 'react-router';
 import * as templatesAPI from '#V2/api/templates/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
-
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
 import _ from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
-
 import uniqueID from '#shared/uniqueID.js';
-
 import { socket } from '#app/socket.js';
 import {
   cleanProperty,
@@ -37,16 +32,13 @@ import {
   processDefaultProperties,
   processProperties,
   confirmationMessages,
-} from '#V2/Routes/Settings/Templates/helpers.js';
-import {
-  propertyColumns,
-  PropertyRow,
-} from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.js';
-import { TemplateMetadata } from '#V2/Routes/Settings/Templates/components/TemplateMetadata.js';
-import { AddRelationshipTypeModal } from '#V2/Routes/Settings/Templates/components/AddRelationshipTypeModal.js';
-import { AddThesaurusModal } from '#V2/Routes/Settings/Templates/components/AddThesaurusModal.js';
-import { TemplatesEditorFooter } from '#V2/Routes/Settings/Templates/components/TemplatesEditorFooter.js';
-import { ConfigPropertyPanel } from '#V2/Routes/Settings/Templates/components/ConfigPropertyPanel.js';
+} from './helpers.js';
+import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents.js';
+import { TemplateMetadata } from './components/TemplateMetadata.js';
+import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal.js';
+import { AddThesaurusModal } from './components/AddThesaurusModal.js';
+import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
+import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

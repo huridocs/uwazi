@@ -1,9 +1,5 @@
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
-import {
-  IXSuggestionsLoaderResponse,
-  TableSuggestion,
-  ixStatus,
-} from '#V2/Routes/Settings/IX/types.js';
+import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../../types.js';
 
 const suggestion1: TableSuggestion = {
   _id: 'suggestion1',

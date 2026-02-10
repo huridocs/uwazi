@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Highlights } from '#V2/Routes/Settings/IX/types.js';
+import { Highlights } from '../../types.js';
 
 const highlightsAtom = atom<Highlights | undefined>();
 

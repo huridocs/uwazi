@@ -1,12 +1,8 @@
 import React, { ChangeEventHandler } from 'react';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-
-import { Button } from '#V2/Components/UI/index.js';
-
-import { importThesaurus } from '#V2/api/thesauri/index.js';
+import { Button } from '#app/V2/Components/UI/index.js';
+import { importThesaurus } from '#app/V2/api/thesauri/index.js';
 
 const ImportButton = ({
   onSuccess,

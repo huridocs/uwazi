@@ -5,9 +5,7 @@ import { useSetAtom } from 'jotai';
 import { IncomingHttpHeaders } from 'http';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { Translate } from '#app/I18N/index.js';
 import { notificationAtom, settingsAtom } from '#V2/atoms/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
@@ -27,7 +25,7 @@ import {
   sanitizeFilters,
   formatFilters,
   Filter,
-} from '#V2/Routes/Settings/Filters/components/index.js';
+} from './components/index.js';
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
@@ -248,7 +246,7 @@ const FiltersTable = () => {
       <FiltersSidepanel
         showSidepanel={showSidepanel}
         setShowSidepanel={setShowSidepanel}
-        onSave={(newFilter: any) => {
+        onSave={newFilter => {
           if (newFilter) {
             setFilters(updateFilters(newFilter, filters) || []);
           }

@@ -1,11 +1,11 @@
 import React, { useState, ChangeEvent } from 'react';
-
 import { t, Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import * as relationshipTypesAPI from '#V2/api/relationshiptypes/index.js';
 import { useSetAtom, useAtom } from 'jotai';
 import { notificationAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 
 interface AddRelationshipTypeModalProps {
   onClose: () => void;
@@ -46,10 +46,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
     try {
       await save();
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>Error creating relationship type.</Translate>,
-      });
+      handleUnexpectedError(error, 'Error saving relationship type');
     } finally {
       setIsSaving(false);
       handleClose();

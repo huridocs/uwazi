@@ -1,4 +1,4 @@
-import { TableProps } from '#V2/Components/UI/Table/Table.jsx';
+import { TableProps } from '../Table.js';
 
 type BasicData = {
   rowId: string;

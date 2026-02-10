@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/CodeEditor.stories.jsx';
+import * as stories from '#app/stories/CodeEditor.stories.js';
 
 const { HTMLEditor, JSEditor } = composeStories(stories);
 

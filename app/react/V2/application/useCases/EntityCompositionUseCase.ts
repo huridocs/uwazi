@@ -1,21 +1,17 @@
 import { IncomingHttpHeaders } from 'http';
 import { createStore } from 'jotai';
-import { EntityRepository } from '#V2/infrastructure/index.js';
-import { settingsAtom, templatesAtom, thesauriAtom, userAtom } from '#V2/atoms/index.js';
-import { localeAtom, translationsAtom } from '#V2/atoms/translationsAtoms.js';
+import { EntityRepository } from '#app/V2/infrastructure/index.js';
+import { settingsAtom, templatesAtom, thesauriAtom, userAtom } from '#app/V2/atoms/index.js';
+import { localeAtom, translationsAtom } from '#app/V2/atoms/translationsAtoms.js';
 import { EntitySchema } from '#shared/types/entityType.js';
-import { AdapterEntityProcessor } from '#V2/application/services/processors/AdapterEntityProcessor.js';
+import { AdapterEntityProcessor } from '../services/processors/AdapterEntityProcessor.js';
 import {
   BatchCompositionResult,
   CompositionOptions,
   CompositionResult,
   ProcessingContext,
-} from '#V2/application/services/processors/types.js';
-import {
-  cardViewOptions,
-  fullDetailOptions,
-  editionModeOptions,
-} from '#V2/application/optionsPresets.js';
+} from '../services/processors/types.js';
+import { cardViewOptions, fullDetailOptions, editionModeOptions } from '../optionsPresets.js';
 
 export class EntityCompositionUseCase {
   constructor(

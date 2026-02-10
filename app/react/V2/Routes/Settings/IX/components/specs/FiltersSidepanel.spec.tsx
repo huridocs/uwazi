@@ -4,10 +4,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
-import {
-  FiltersSidepanel,
-  FiltersSidepanelProps,
-} from '#V2/Routes/Settings/IX/components/FiltersSidepanel.jsx';
+import { FiltersSidepanel, FiltersSidepanelProps } from '../FiltersSidepanel.js';
 
 const mockSetSearchParams = jest.fn();
 let mockSearchParams = new URLSearchParams();

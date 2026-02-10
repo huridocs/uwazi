@@ -4,19 +4,13 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import api from '#app/utils/api.js';
 import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
+import api from '#app/utils/api.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
-import { IXSuggestions } from '#V2/Routes/Settings/IX/IXSuggestions.jsx';
-import {
-  loaderData,
-  thesauri,
-  entity1,
-  entity2,
-  nestedSuggestions,
-} from '#V2/Routes/Settings/IX/specs/fixtures.js';
-import { ixStatus, IXSuggestionsLoaderResponse } from '#V2/Routes/Settings/IX/types.js';
+import { IXSuggestions } from '../IXSuggestions.js';
+import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from './fixtures.js';
+import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
 
 jest.mock('#V2/api/entities', () => ({
   ...jest.requireActual('#V2/api/entities'),

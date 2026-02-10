@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import { EntityFile } from '#V2/Components/UI/Files/FileCard.jsx';
+import { EntityFile } from '../FileCard.js';
 
 export const mockImageFile: EntityFile = {
   _id: 'file1',

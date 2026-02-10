@@ -1,14 +1,10 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { Translate } from '#app/I18N/index.js';
-
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { useAtomValue } from 'jotai';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
-
-import { Button, Card, CopyValueInput } from '#V2/Components/UI/index.js';
+import { Button, Card, CopyValueInput } from '#app/V2/Components/UI/index.js';
 import { requestToken } from '#V2/api/preserve/index.js';
 
 const Preserve = () => {

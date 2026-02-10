@@ -2,7 +2,7 @@ import React from 'react';
 import sanitizeHtml from 'sanitize-html';
 import { parseDocument } from 'htmlparser2';
 
-import { TableSuggestion } from '#V2/Routes/Settings/IX/types.js';
+import { TableSuggestion } from '../types.js';
 
 export const BASE_CONTEXT = 50;
 

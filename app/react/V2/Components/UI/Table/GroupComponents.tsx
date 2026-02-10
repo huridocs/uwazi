@@ -2,10 +2,9 @@
 import React from 'react';
 import { Row } from '@tanstack/react-table';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-
 import { Translate } from '#app/I18N/index.js';
-import { EmbededButton } from '#V2/Components/UI/EmbededButton.js';
-import { TableRow } from '#V2/Components/UI/Table/Table.js';
+import { EmbededButton } from '../EmbededButton.js';
+import { TableRow } from './Table.js';
 
 const GroupHeader = () => <Translate className="sr-only">Empty</Translate>;
 

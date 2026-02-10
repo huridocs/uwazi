@@ -2,13 +2,14 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/ErrorBoundary.stories.jsx';
+import * as stories from '#app/stories/ErrorBoundary.stories.js';
 
 const { BasicErrorBoundary } = composeStories(stories);
 
 const FragileComponent = ({ source }: { source?: { text: string } }) => (
   <div>
-    <span>this works {source?.text}</span>
+    {/* @ts-expect-error */}
+    <span>this works {source.text}</span>
   </div>
 );
 

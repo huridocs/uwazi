@@ -1,5 +1,5 @@
-export { createColumns } from '#V2/Routes/Settings/CustomUploads/components/UploadsTable.js';
-export { FileList } from '#V2/Routes/Settings/CustomUploads/components/FileList.js';
-export { UploadProgress } from '#V2/Routes/Settings/CustomUploads/components/UploadProgress.js';
-export { DropzoneModal } from '#V2/Routes/Settings/CustomUploads/components/DropzoneModal.js';
-export { EditFileSidepanel } from '#V2/Routes/Settings/CustomUploads/components/EditFileSidepanel.js';
+export { createColumns } from './UploadsTable.js';
+export { FileList } from './FileList.js';
+export { UploadProgress } from './UploadProgress.js';
+export { DropzoneModal } from './DropzoneModal.js';
+export { EditFileSidepanel } from './EditFileSidepanel.js';

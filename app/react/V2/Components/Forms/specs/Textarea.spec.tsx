@@ -4,7 +4,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Textarea, TextareaProps } from '#V2/Components/Forms/Textarea.jsx';
+import { Textarea, TextareaProps } from '../Textarea.js';
 
 describe('Textarea', () => {
   const defaultProps: TextareaProps = {

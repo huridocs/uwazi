@@ -3,10 +3,10 @@ import ReactPlayer from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
 import { MediaMetadataProperty } from '#V2/domain/entities/types.js';
-import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
-import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.js';
-import { MediaPlayer } from '#V2/Components/UI/index.js';
-import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.js';
+import { MetadataFieldProps } from './types.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MediaPlayer } from '../UI/index.js';
+import { MetadataCard } from './MetadataCard.js';
 
 type MediaProps = MetadataFieldProps & {
   values: MediaMetadataProperty['values'];

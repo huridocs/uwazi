@@ -1,6 +1,6 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
 import cloneDeep from 'lodash/cloneDeep.js';
-import { TableRow, TableProps } from '#V2/Components/UI/Table/Table.js';
+import { TableRow, TableProps } from './Table.js';
 
 const getRowIds = <T extends TableRow<T>>(data: TableProps<T>['data']) => {
   const identifiers: { id: UniqueIdentifier; parentId?: string }[] = [];

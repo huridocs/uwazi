@@ -2,8 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import * as monaco from 'monaco-editor';
-
 import { isClient } from '#app/utils/index.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
@@ -76,10 +76,7 @@ const CodeEditorComponent = ({
         setEditorReady(true);
       } catch (e) {
         setHasError(true);
-        if (isClient) {
-          const error = new Error('Code editor error', { cause: e });
-          captureException(error);
-        }
+        handleUnexpectedError(e, 'Error creating monaco editor');
       }
     }
 

@@ -4,8 +4,8 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
-
-import { TestRouterContext } from '#V2/testing/TestRouterContext.jsx';
+import { ClientPropertySchema } from '#app/istore.js';
+import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
 import { TestAtomStoreProvider as AtomProvider } from '#V2/testing/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
 import {
@@ -19,11 +19,10 @@ import {
   template1,
   entity1,
   thesauri,
-} from '#V2/Routes/Settings/IX/components/sidepanel/specs/SidepanelsFixtures.js';
-import { PDFSidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PDFSidepanel.jsx';
-import { PropertySidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PropertySidepanel.jsx';
-import * as sidepanelFunctions from '#V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
-import { ClientPropertySchema } from '#app/istore.js';
+} from './SidepanelsFixtures.js';
+import { PDFSidepanel } from '../PDFSidepanel.js';
+import { PropertySidepanel } from '../PropertySidepanel.js';
+import * as sidepanelFunctions from '../../../helpers/sidepanelFunctions.js';
 
 const renderPDFSidepanel = (
   suggestion: any,
@@ -84,7 +83,7 @@ const clickToFillAndWait = async (expectedValue: any) => {
 };
 
 const mockCoerceValue = (result: { success: boolean; value?: any }) => {
-  const { coerceValue: coerceValueMock } = jest.requireMock('#V2/api/entities');
+  const { coerceValue: coerceValueMock } = jest.requireMock('V2/api/entities');
   coerceValueMock.mockResolvedValue(result);
 };
 

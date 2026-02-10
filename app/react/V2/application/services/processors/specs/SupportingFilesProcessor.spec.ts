@@ -1,7 +1,7 @@
-import { SupportingFilesProcessor } from '#V2/application/services/processors/SupportingFilesProcessor.js';
-import { ProcessingContext, AdapterEntity } from '#V2/application/services/processors/types.js';
+import { SupportingFilesProcessor } from '../SupportingFilesProcessor.js';
+import { ProcessingContext, AdapterEntity } from '../types.js';
 import { EntitySchema } from '#shared/types/entityType.js';
-import { processingContext } from '#V2/application/services/processors/specs/PropertyProcessorsFixtures.js';
+import { processingContext } from './PropertyProcessorsFixtures.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FileType } from '#shared/types/fileType.js';
 

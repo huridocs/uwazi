@@ -2,10 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import {
-  highlightSnippetInPage,
-  clearSnippets,
-} from '#V2/Components/PDFViewer/functions/snippetToHighlight.js';
+import { highlightSnippetInPage, clearSnippets } from '../snippetToHighlight.js';
 
 const joinText = (nodes: NodeListOf<Element>): string =>
   Array.from(nodes)

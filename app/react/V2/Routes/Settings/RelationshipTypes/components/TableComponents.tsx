@@ -1,11 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-
 import { Translate } from '#app/I18N/index.js';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-
-import { Button, Pill } from '#V2/Components/UI/index.js';
-
+import { Button, Pill } from '#app/V2/Components/UI/index.js';
 import { ClientRelationshipType, Template } from '#app/apiResponseTypes.js';
 
 type Relationships = ClientRelationshipType & { rowId: string };

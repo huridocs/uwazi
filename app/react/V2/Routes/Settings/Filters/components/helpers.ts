@@ -1,5 +1,4 @@
 import { ClientSettingsFilterSchema } from '#app/apiResponseTypes.js';
-
 import { ClientTemplateSchema } from '#app/istore.js';
 
 type Filter = ClientSettingsFilterSchema & {

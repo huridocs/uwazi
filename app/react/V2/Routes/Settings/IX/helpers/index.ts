@@ -4,8 +4,8 @@ export {
   getMetadataFromProperty,
   formatAccepted,
   escapeLucene,
-} from '#V2/Routes/Settings/IX/helpers/helpers.js';
-export { searchRelatedEntities } from '#V2/Routes/Settings/IX/helpers/loaderHelper.js';
+} from './helpers.js';
+export { searchRelatedEntities } from './loaderHelper.js';
 export {
   SELECT_TYPES,
   coerceValue,
@@ -14,4 +14,4 @@ export {
   handleEntitySave,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
-} from '#V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
+} from './sidepanelFunctions.js';

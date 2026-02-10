@@ -5,13 +5,13 @@ import {
   ClientUserSchema,
 } from '#app/apiResponseTypes.js';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/istore.js';
-import { Entity } from '#V2/domain/index.js';
+import { Entity } from '#app/V2/domain/index.js';
 import {
   EntityReference,
   EntityTemplate,
   ExtendedPropertyInfo,
   MetadataProperty,
-} from '#V2/domain/entities/types.js';
+} from '#app/V2/domain/entities/types.js';
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
 export interface ProcessingContext extends CompositionOptions {

@@ -1,6 +1,6 @@
 import { EntitySchema } from '#shared/types/entityType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ProcessingContext } from '#V2/application/services/processors/types.js';
+import { ProcessingContext } from '../types.js';
 
 export const rawEntity: EntitySchema = {
   _id: 'entity.test-incident',

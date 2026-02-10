@@ -1,4 +1,4 @@
-import { Filter } from '#V2/Routes/Settings/Filters/components/helpers.js';
+import { Filter } from '../helpers.js';
 
 const templates = [
   {

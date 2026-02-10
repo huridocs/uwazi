@@ -1,12 +1,9 @@
 import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
-
 import { MetadataObjectSchema, PropertyValueSchema } from '#shared/types/commonTypes.js';
-
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
-import { secondsToISODate } from '#V2/shared/dateHelpers.js';
+import { parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import * as entitiesAPI from '#V2/api/entities/index.js';
 import * as filesAPI from '#V2/api/files/index.js';
-
 import { TemplateSchema } from '#shared/types/templateType.js';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
@@ -30,11 +27,6 @@ const getFormValue = (
   if (suggestion.propertyName !== 'title' && entity.metadata) {
     const entityMetadata = entity.metadata[suggestion.propertyName];
     value = entityMetadata?.length ? entityMetadata[0].value : '';
-
-    if (type === 'date' && value) {
-      const dateString = secondsToISODate(value as number);
-      value = dateString;
-    }
 
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value) || [];
@@ -104,6 +96,12 @@ const coerceValue = async (
   language: string = 'en'
 ) => {
   if (propertyType === 'date' && !Number.isNaN(text?.valueOf())) {
+    const timestamp = parseLocalizedDate(text as string, language);
+    if (timestamp !== null) {
+      return { success: true, value: timestamp };
+    }
+
+    // Fallback to backend API
     return entitiesAPI.coerceValue(text!, 'date', language);
   }
 

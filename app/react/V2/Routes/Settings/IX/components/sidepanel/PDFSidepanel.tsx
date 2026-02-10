@@ -3,15 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
-
 import { FileType } from '#shared/types/fileType.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
@@ -22,23 +17,23 @@ import {
 } from '#V2/Components/UI/index.js';
 import { PDF, selectionHandlers, pdfEventBus } from '#V2/Components/PDFViewer/index.js';
 import { notificationAtom, pdfScaleAtom } from '#V2/atoms/index.js';
+import { Checkbox } from '#V2/Components/Forms/index.js';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '#V2/Routes/Settings/IX/helpers/index.js';
-import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/SidepanelForms.js';
+} from '../../helpers/index.js';
+import { SidepanelForms } from './SidepanelForms.js';
 import {
   highlightsAtom,
   selectionErrorAtom,
   textSelectionAtom,
   selectionsAtom,
-} from '#V2/Routes/Settings/IX/components/atoms/index.js';
-import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
-import { SidepanelProps } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
-import { Checkbox } from '#app/V2/Components/Forms/index.js';
+} from '../atoms/index.js';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
+import { SidepanelProps } from './types.js';
 
 enum HighlightColors {
   CURRENT = '#B1F7A3',

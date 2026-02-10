@@ -1,4 +1,4 @@
-import { Link } from '#V2/Routes/Settings/MenuConfig/shared.js';
+import { Link } from '../../MenuConfig.js';
 
 const links: Link[] = [
   {

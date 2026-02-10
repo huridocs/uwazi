@@ -1,5 +1,2 @@
-export { Templates, templatesLoader } from '#V2/Routes/Settings/Templates/Templates.js';
-export {
-  TemplatesEditor,
-  templatesEditorLoader,
-} from '#V2/Routes/Settings/Templates/TemplatesEditor.js';
+export { Templates, templatesLoader } from './Templates.js';
+export { TemplatesEditor, templatesEditorLoader } from './TemplatesEditor.js';

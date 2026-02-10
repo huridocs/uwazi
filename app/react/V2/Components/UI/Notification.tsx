@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { Translate } from '#app/I18N/index.js';
 
 interface NotificationProps {

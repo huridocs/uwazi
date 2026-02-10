@@ -1,5 +1,5 @@
 // eslint-disable-next-line camelcase
-export { LEGACY_createStore } from '#V2/testing/reduxStore.js';
-export { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
-export { TestRouterContext } from '#V2/testing/TestRouterContext.js';
-export { setupMatchMediaMock } from '#V2/testing/matchMediaMock.js';
+export { LEGACY_createStore } from './reduxStore.js';
+export { TestAtomStoreProvider } from './TestAtomStoreProvider.js';
+export { TestRouterContext } from './TestRouterContext.js';
+export { setupMatchMediaMock } from './matchMediaMock.js';

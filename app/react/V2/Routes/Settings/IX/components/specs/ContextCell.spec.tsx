@@ -3,14 +3,14 @@
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ContextCell } from '#V2/Routes/Settings/IX/components/ContextCell.jsx';
+import { ContextCell } from '../ContextCell.js';
 import {
   basicMatching,
   multipleMatching,
   multipleMatchInMatching,
   noMatching,
   plainText,
-} from '#V2/Routes/Settings/IX/components/specs/HTMLFixtures.js';
+} from './HTMLFixtures.js';
 
 describe('ContextCell', () => {
   it('should not render script tags', () => {

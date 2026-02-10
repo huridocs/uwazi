@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-
 import { ClientPropertySchema } from '#app/istore.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
@@ -9,7 +8,7 @@ import {
   getPropertyValuesMap,
   getRelationshipInfo,
   updateSuggestionValues,
-} from '#V2/Routes/Settings/IX/helpers/loaderHelper.js';
+} from '../loaderHelper.js';
 
 jest.mock('#V2/api/search', () => ({
   search: jest.fn(),

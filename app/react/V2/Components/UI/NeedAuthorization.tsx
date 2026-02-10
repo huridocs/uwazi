@@ -1,13 +1,9 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-
 import { PermissionSchema } from '#shared/types/permissionType.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
 import { userAtom } from '#V2/atoms/index.js';
-
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
 type PropTypes = {

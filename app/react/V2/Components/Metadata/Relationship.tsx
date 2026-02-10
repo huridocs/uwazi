@@ -2,10 +2,10 @@ import React from 'react';
 import { I18NLinkV2 } from '#app/I18N/index.js';
 import { RelationshipMetadataProperty } from '#V2/domain/entities/types.js';
 import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
-import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
-import { CountryFlag } from '#V2/Components/CustomIcons/index.js';
-import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.js';
-import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.js';
+import { MetadataFieldProps } from './types.js';
+import { CountryFlag } from '../CustomIcons/index.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MetadataCard } from './MetadataCard.js';
 
 type RelationshipProps = MetadataFieldProps & {
   values: Extract<RelationshipMetadataProperty['values'], Array<any>>;

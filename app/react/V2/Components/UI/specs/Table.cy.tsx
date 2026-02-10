@@ -4,8 +4,8 @@ import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import map from 'lodash/map.js';
-import * as stories from '#app/stories/Table.stories.jsx';
-import { tableWithDisabled } from '#V2/Components/UI/Table/specs/fixtures.js';
+import * as stories from '#app/stories/Table.stories.js';
+import { tableWithDisabled } from '../Table/specs/fixtures.js';
 
 const { Basic, Nested, Custom, BasicWithDisabledDnD, NestedWithDisabledDnD } =
   composeStories(stories);

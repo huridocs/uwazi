@@ -6,7 +6,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider, useSetAtom } from 'jotai';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.jsx';
+import { FeatureToggle } from '../FeatureToggle.js';
 
 // Test wrapper component to provide atom context and set initial values
 const TestWrapper = ({

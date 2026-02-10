@@ -2,13 +2,10 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/istore.js';
 import { Table } from '#V2/Components/UI/index.js';
-
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import * as translationsAPI from '#V2/api/translations/index.js';
 import {
   ContextPill,
@@ -16,7 +13,7 @@ import {
   LabelHeader,
   TypeHeader,
   ActionHeader,
-} from '#V2/Routes/Settings/Translations/components/TableComponents.js';
+} from './components/TableComponents.js';
 
 type TranslationContext = ClientTranslationContextSchema & { rowId: string };
 

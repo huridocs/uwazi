@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Filter } from '#V2/Routes/Settings/Filters/components/helpers.js';
+import { Filter } from './helpers.js';
 
 const sidepanelAtom = atom({} as Filter | undefined);
 

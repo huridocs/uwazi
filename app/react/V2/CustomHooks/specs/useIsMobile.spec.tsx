@@ -6,7 +6,7 @@ import { renderHook, act } from '@testing-library/react';
 import { Provider } from 'jotai';
 import { serverIsMobileAtom } from '#V2/atoms/isMobileAtom.js';
 import { setupMatchMediaMock, TestAtomStoreProvider } from '#V2/testing/index.js';
-import { useIsMobile, MOBILE_VIEW_MAX_WIDTH } from '#V2/CustomHooks/useIsMobile.jsx';
+import { useIsMobile, MOBILE_VIEW_MAX_WIDTH } from '../useIsMobile.js';
 
 describe('useIsMobile', () => {
   let matchMediaMock: jest.Mock;

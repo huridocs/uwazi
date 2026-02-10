@@ -6,11 +6,8 @@ import { useAtomValue } from 'jotai';
 import get from 'lodash/get.js';
 import isEmpty from 'lodash/isEmpty.js';
 import uniqBy from 'lodash/uniqBy.js';
-import { captureException } from '@sentry/react';
-
 import { Translate } from '#app/I18N/index.js';
-
-import { isClient } from '#app/utils/index.js';
+import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 import {
   defaultSearch,
   InputField,
@@ -20,16 +17,18 @@ import {
 } from '#V2/Components/Forms/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
-import { MultiselectItemLabel } from '#V2/Routes/Settings/IX/components/MultiselectItemLabel.js';
-import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
-import { escapeLucene, searchRelatedEntities } from '#V2/Routes/Settings/IX/helpers/index.js';
-import { SuggestionValue, TableSuggestion } from '#V2/Routes/Settings/IX/types.js';
-import {
-  textSelectionAtom,
-  selectionErrorAtom,
-} from '#V2/Routes/Settings/IX/components/atoms/index.js';
-import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { secondsToISODate } from '#V2/shared/dateHelpers.js';
+import { DateTime } from 'luxon';
+import { selectionErrorAtom, textSelectionAtom } from '../atoms/index.js';
+import { SuggestionValue, TableSuggestion } from '../../types.js';
+import { MultiselectItemLabel } from '../MultiselectItemLabel.js';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
+import { escapeLucene, searchRelatedEntities } from '../../helpers/index.js';
+
+const dateStringToSeconds = (dateString: string) =>
+  DateTime.fromISO(dateString).setZone('UTC').toSeconds();
 
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
@@ -206,7 +205,7 @@ const Relationships = ({
         const escapedText = escapeLucene(searchTextRef.current.trim());
         const fieldName = extractor?.inheritedProperty?.name;
 
-        let searchField = ['select', 'multiselect'].includes(
+        const searchField = ['select', 'multiselect'].includes(
           extractor?.inheritedProperty?.type || ''
         )
           ? '.label'
@@ -258,10 +257,7 @@ const Relationships = ({
         .catch(e => {
           initialOptionsRef.current = [];
           setOptions([]);
-          if (isClient) {
-            const error = new Error('Lookup search error', { cause: e });
-            captureException(error);
-          }
+          handleUnexpectedError(e, 'Error looking up search');
         });
     }
   }, [property, suggestion, extractor]);
@@ -273,15 +269,16 @@ const Relationships = ({
       const escapedText = escapeLucene(searchTerm.trim());
       const fieldName = extractor?.inheritedProperty?.name;
 
-      let searchField = ['select', 'multiselect'].includes(extractor?.inheritedProperty?.type || '')
+      const searchField = ['select', 'multiselect'].includes(
+        extractor?.inheritedProperty?.type || ''
+      )
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
-        extractor?.inheritedProperty && fieldName
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
           ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
           : `title:(${escapedText}*)`
-      } `;
+        } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 
@@ -357,11 +354,24 @@ const TextInput = ({
   const {
     register,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useFormContext();
 
-  const selectionError = useAtomValue(selectionErrorAtom);
+  // Register the field for non-date fields
+  const fieldRegistration =
+    property.type !== 'date'
+      ? register('field', {
+        required: property.required || property.name === 'title',
+      })
+      : {
+        onChange: undefined,
+        onBlur: undefined,
+        name: 'field',
+        ref: undefined,
+      };
 
+  const selectionError = useAtomValue(selectionErrorAtom);
   const templateId = suggestion?.entityTemplateId;
 
   let inputType: 'number' | 'date' | 'text' = 'text';
@@ -377,6 +387,25 @@ const TextInput = ({
       break;
   }
 
+  const fieldValue = watch('field');
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const dateString = event.target.value;
+    if (dateString) {
+      const timestamp = dateStringToSeconds(dateString);
+      setValue('field', timestamp, { shouldDirty: true });
+    } else {
+      setValue('field', '', { shouldDirty: true });
+    }
+  };
+
+  const getDisplayValue = () => {
+    if (property.type === 'date' && typeof fieldValue === 'number') {
+      return secondsToISODate(fieldValue);
+    }
+    return fieldValue;
+  };
+
   return (
     <div className="flex gap-2 grow items-center">
       <div className="grow">
@@ -388,12 +417,12 @@ const TextInput = ({
           label={<Translate context={templateId}>{property.label}</Translate>}
           hideLabel
           type={inputType}
+          value={getDisplayValue()}
+          onChange={property.type === 'date' ? handleDateChange : fieldRegistration.onChange}
+          onBlur={fieldRegistration.onBlur}
+          name={fieldRegistration.name || 'field'}
+          ref={fieldRegistration.ref}
           hasErrors={errors.field?.type === 'required' || !!selectionError}
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...register('field', {
-            required: property.required || property.name === 'title',
-            valueAsDate: property.type === 'date' || undefined,
-          })}
           errorMessage={
             errors.field?.type === 'required' && (
               <Translate className="sr-only">This field is required</Translate>

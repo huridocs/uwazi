@@ -4,16 +4,13 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
-
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
-
-import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
-
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-
-import { notificationAtom, notificationAtomType } from '#V2/atoms/index.js';
-
+import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { Page } from '#app/V2/shared/types.js';
+import { notificationAtom, notificationAtomType } from '#app/V2/atoms/index.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import {
   EntityViewHeader,
   YesNoPill,
@@ -23,9 +20,7 @@ import {
   UrlCell,
   ActionHeader,
   List,
-} from '#V2/Routes/Settings/Pages/components/PageListTable.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { Page } from '#app/V2/shared/types.js';
+} from './components/PageListTable.js';
 
 type TablePage = Page & { rowId: string };
 

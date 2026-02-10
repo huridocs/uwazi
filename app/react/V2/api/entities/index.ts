@@ -157,7 +157,7 @@ const searchByTitle = async (
       })
     );
 
-    return compositionResults.filter((entity): entity is Entity => entity !== null);
+    return compositionResults.filter((entity: Entity | null): entity is Entity => entity !== null);
   } catch (e) {
     return [];
   }

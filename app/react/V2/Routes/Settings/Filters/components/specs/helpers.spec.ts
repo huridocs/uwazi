@@ -3,8 +3,8 @@ import {
   deleteFilters,
   updateFilters,
   sanitizeFilters,
-} from '#V2/Routes/Settings/Filters/components/helpers.js';
-import { filters, templates } from '#V2/Routes/Settings/Filters/components/specs/fixtures.js';
+} from '../helpers.js';
+import { filters, templates } from './fixtures.js';
 
 describe('Filters helpers', () => {
   describe('filterAvailableTemplates', () => {

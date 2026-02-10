@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
 import { useOutlet } from 'react-router';
 import { Helmet } from 'react-helmet';
-
 import { t } from '#app/I18N/index.js';
-import { SettingsNavigation } from '#V2/Routes/Settings/SettingsNavigation.js';
+import { SettingsNavigation } from './SettingsNavigation.js';
 
 const Settings = () => {
   const outlet = useOutlet();

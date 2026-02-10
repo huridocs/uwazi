@@ -1,4 +1,4 @@
-import { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/index.js';
+import { ThesaurusRow } from '../components/index.js';
 import {
   addGroupSubmit,
   addItemSubmit,
@@ -10,7 +10,7 @@ import {
   sanitizeThesaurusValues,
   sortValues,
   thesaurusAsRow,
-} from '#V2/Routes/Settings/Thesauri/helpers.js';
+} from '../helpers.js';
 
 const thesaurusValues: ThesaurusRow[] = [
   {

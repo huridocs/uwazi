@@ -13,10 +13,10 @@ import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as PDFViewerModule from '#V2/Components/PDFViewer/index.js';
-import { Entity } from '#V2/Routes/Entity/Entity.jsx';
+import { Entity } from '../Entity.js';
 
-jest.mock('#V2/Components/PDFViewer', () => ({
-  ...jest.requireActual('#V2/Components/PDFViewer'),
+jest.mock('V2/Components/PDFViewer', () => ({
+  ...jest.requireActual('V2/Components/PDFViewer'),
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 

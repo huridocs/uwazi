@@ -1,2 +1,2 @@
-export type { MetadataProperty } from '#V2/domain/entities/types.js';
-export type { Entity } from '#V2/domain/entities/Entity.js';
+export type { MetadataProperty } from './entities/types.js';
+export type { Entity } from './entities/Entity.js';

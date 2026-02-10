@@ -1,8 +1,8 @@
 import React from 'react';
 import { SelectMetadataProperty, MultiSelectMetadataProperty } from '#V2/domain/entities/types.js';
-import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
-import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.js';
-import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.js';
+import { MetadataFieldProps } from './types.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MetadataCard } from './MetadataCard.js';
 
 type SelectProps = MetadataFieldProps & {
   values: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'];

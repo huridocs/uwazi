@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Translate } from '#app/I18N/index.js';
 
 const NoDataCell = () => (

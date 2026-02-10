@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/Forms/MultiselectList.stories.jsx';
+import * as stories from '#app/stories/Forms/MultiselectList.stories.js';
 import {
   MultiselectList,
   MultiselectListOption,
   defaultSearch,
-} from '#V2/Components/Forms/MultiselectList/MultiselectList.jsx';
-import { specialCharacters, pizzas, salads } from '#V2/Components/Forms/specs/fixtures.js';
+} from '../MultiselectList/MultiselectList.js';
+import { specialCharacters, pizzas, salads } from './fixtures.js';
 
 const BasicTestComponent = () => {
   const [items, setItems] = useState(pizzas);
