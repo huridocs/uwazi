@@ -26,6 +26,8 @@ export class ProcessingPDF extends FileWithContents {
     super(baseProps);
     this.status = status;
     this.entity = entity;
+
+    this.props = { ...this.props, entity, status } as Props;
   }
 
   failed() {

@@ -27,6 +27,10 @@ import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { testingTenants } from 'api/utils/testingTenants';
+import { EventsBus } from 'api/core/libs/eventsbus/EventsBus';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
+import { FilesServiceDeps } from '../FilesService';
+import { FilesDataSource } from '../contracts/FilesDataSource';
 
 const f = getFixturesFactory();
 
@@ -53,12 +57,14 @@ const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
   },
 });
 
-const createService = () => {
+const createService = (deps?: Partial<FilesServiceDeps>) => {
   const transactionManager = TransactionManagerFactory.fake();
   const service = FilesServiceFactory.default(transactionManager, {
     fileStorage,
     jobsDispatcher,
+    ...deps,
   });
+
   return { service, transactionManager };
 };
 
@@ -224,6 +230,39 @@ describe('FilesService', () => {
         expect.stringContaining('.jpg'),
         expect.stringContaining('.jpg'),
       ]);
+    });
+  });
+
+  describe('when bulk upserting files', () => {
+    it('should only update files that have changes', async () => {
+      const filesDS = TestUtils.mockClass<FilesDataSource>({ bulkUpdate: jest.fn() });
+      const eventBus = TestUtils.mockClass<EventsBus>({
+        emit: jest.fn(),
+      });
+
+      const { service, transactionManager } = createService({ filesDS, eventBus });
+
+      const file = FileBuilder.document('file1');
+
+      await service.bulkUpsert([file]);
+      await transactionManager.executeOnCommitHandlers(null);
+
+      expect(filesDS.bulkUpdate).not.toHaveBeenCalled();
+      expect(eventBus.emit).not.toHaveBeenCalled();
+
+      const updateFile = file.update({ originalname: 'new name' });
+
+      await service.bulkUpsert([updateFile]);
+      await transactionManager.executeOnCommitHandlers(null);
+
+      expect(filesDS.bulkUpdate).toHaveBeenCalledWith([updateFile]);
+
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        new FileUpdatedEvent({
+          after: updateFile.toDTO(),
+          before: updateFile.previousVersion!.toDTO(),
+        })
+      );
     });
   });
 });

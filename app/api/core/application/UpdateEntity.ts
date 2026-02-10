@@ -87,7 +87,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       });
       await this.deps.fileService.insert(filesCreated);
       await this.deps.fileService.delete(removedFiles);
-      await this.deps.filesDS.bulkUpdate(updatedFiles);
+      await this.deps.fileService.bulkUpsert(updatedFiles);
     });
 
     return entity;

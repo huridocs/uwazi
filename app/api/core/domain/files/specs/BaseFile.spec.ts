@@ -380,4 +380,77 @@ describe('BaseFile', () => {
       filename: 'http://example.com/file.pdf',
     });
   });
+
+  describe('hasChanged property', () => {
+    const cases = [
+      {
+        name: 'FileAttachment',
+        build: () => new FileAttachment(validFileProps),
+        updatedName: 'changed.pdf',
+        sameName: validFileProps.originalname,
+      },
+      {
+        name: 'CustomUpload',
+        build: () =>
+          new CustomUpload({
+            ...validFileProps,
+            entity: undefined,
+          } as any),
+        updatedName: 'changed.txt',
+        sameName: validFileProps.originalname,
+      },
+      {
+        name: 'Thumbnail',
+        build: () =>
+          new Thumbnail({
+            id: 'thumb1',
+            filename: 'thumb.jpg',
+            language: 'en',
+            entity: 'entity1',
+            content: validFileProps.content,
+            mimetype: 'image/jpeg',
+            size: 100,
+            creationDate: 1234567890,
+            originalname: 'thumb.jpg',
+          }),
+        updatedName: 'thumb-new.jpg',
+        sameName: 'thumb.jpg',
+      },
+      {
+        name: 'URLAttachment',
+        build: () =>
+          new URLAttachment({
+            id: 'url1',
+            entity: 'entity1',
+            url: 'http://example.com/file.pdf',
+            mimetype: 'application/pdf',
+            filename: 'file.pdf',
+            size: 10,
+            creationDate: 1234567890,
+            originalname: 'file.pdf',
+          }),
+        updatedName: 'file-updated.pdf',
+        sameName: 'file.pdf',
+      },
+    ];
+
+    describe.each(cases)('$name', ({ build, updatedName, sameName }) => {
+      it('should be false before any update', () => {
+        const file = build();
+        expect(file.hasChanged).toBe(false);
+      });
+
+      it('should be true after update changes originalname', () => {
+        const file = build();
+        const updated = file.update({ originalname: updatedName });
+        expect(updated.hasChanged).toBe(true);
+      });
+
+      it('should be false after update with same originalname', () => {
+        const file = build();
+        const updated = file.update({ originalname: sameName });
+        expect(updated.hasChanged).toBe(false);
+      });
+    });
+  });
 });

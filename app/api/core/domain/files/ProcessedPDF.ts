@@ -47,6 +47,8 @@ export class ProcessedPDF extends FileWithContents {
     if (typeof fullText !== 'function') {
       this.fullText = fullText;
     }
+
+    this.props = { ...this.props, entity, language, totalPages, fullText, generatedToc } as Props;
   }
 
   async getFullText() {

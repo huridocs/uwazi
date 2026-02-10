@@ -11,6 +11,7 @@ import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ObjectId } from 'mongodb';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { BaseFile } from '../domain/files/BaseFile';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler';
@@ -121,6 +122,29 @@ class FilesService {
     }
   }
 
+  async bulkUpsert(files: BaseFile[]) {
+    const _files = files.filter(f => f.hasChanged);
+
+    if (!_files.length) return;
+
+    await this.deps.filesDS.bulkUpdate(_files);
+
+    this.deps.transactionManager.onCommitted(async () => {
+      await ArrayUtils.sequentialFor(_files, async file => {
+        const after = file.toDTO();
+        const before = file.previousVersion?.toDTO();
+        if (!before) return;
+
+        await this.deps.eventBus.emit(
+          new FileUpdatedEvent({
+            after,
+            before,
+          })
+        );
+      });
+    });
+  }
+
   async deleteEntityFiles(entitySharedIds: string[]) {
     const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
     if (isNonEmptyArray(files)) {
@@ -179,3 +203,4 @@ class FilesService {
 }
 
 export { FilesService };
+export type { Deps as FilesServiceDeps };

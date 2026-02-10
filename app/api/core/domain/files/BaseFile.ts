@@ -1,6 +1,8 @@
+/* eslint-disable max-statements */
 import { fileDBO, fileDTO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { FileTypes } from 'api/files/storage';
 import { z } from 'zod';
+import stringify from 'fast-json-stable-stringify';
 import { FileContents } from './FileContents';
 
 type Props = {
@@ -90,23 +92,29 @@ export abstract class BaseFile {
 
   protected abstract _type: FileTypes;
 
+  protected props: Props;
+
+  private previousProps?: Props;
+
   constructor(props: Props) {
-    const validated = Schema.parse({
+    const _props = Schema.parse({
       ...props,
       originalname: props.originalname ?? props.filename,
       creationDate: props.creationDate ?? 0,
       size: props.size ?? 0,
     });
 
-    this.id = validated.id;
-    this.originalname = validated.originalname;
-    this.filename = validated.filename;
-    this.mimetype = validated.mimetype;
-    this.size = validated.size;
-    this.creationDate = validated.creationDate;
-    this.content = validated.content;
-    this.uploaded = validated.uploaded;
-    this.entity = validated.entity;
+    this.props = _props;
+
+    this.id = _props.id;
+    this.originalname = _props.originalname;
+    this.filename = _props.filename;
+    this.mimetype = _props.mimetype;
+    this.size = _props.size;
+    this.creationDate = _props.creationDate;
+    this.content = _props.content;
+    this.uploaded = _props.uploaded;
+    this.entity = _props.entity;
   }
 
   get type() {
@@ -114,7 +122,7 @@ export abstract class BaseFile {
   }
 
   private clone(props: Partial<Props>): BaseFile {
-    return new (this.constructor as any)({
+    const newProps: Props = {
       id: this.id,
       creationDate: this.creationDate,
 
@@ -125,7 +133,27 @@ export abstract class BaseFile {
       uploaded: props.uploaded ?? this.uploaded,
       content: props.content ?? this.content,
       entity: props.entity ?? this.entity,
-    } as Props);
+    };
+
+    const instance = new (this.constructor as any)(newProps) as BaseFile;
+
+    instance.previousProps = this.props;
+
+    return instance;
+  }
+
+  get previousVersion(): BaseFile | undefined {
+    if (!this.previousProps) {
+      return undefined;
+    }
+
+    return new (this.constructor as any)(this.previousProps) as BaseFile;
+  }
+
+  get hasChanged() {
+    if (this.previousProps === undefined) return false;
+
+    return stringify(this.props) !== stringify(this.previousProps);
   }
 
   update(props: UpdateProps): BaseFile {
