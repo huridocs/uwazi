@@ -6,6 +6,8 @@ import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { tenants } from 'api/tenants/tenantContext';
 import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { CsvCreateRelationshipEntitiesJob } from '../../application/jobs/CsvCreateRelationshipEntitiesJob';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories';
 
@@ -19,6 +21,7 @@ class CsvCreateRelationshipEntitiesJobFactory {
     return this.build().useCase;
   }
 
+  // eslint-disable-next-line max-statements
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
@@ -29,7 +32,14 @@ class CsvCreateRelationshipEntitiesJobFactory {
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
     const jobsDispatcher =
       options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
-    const entitiesService = EntitiesServiceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.cached(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.cached(transactionManager);
+    const entitiesService = EntitiesServiceFactory.default({
+      transactionManager,
+      settingsDS,
+      templatesDS,
+      entitiesDS,
+    });
 
     const useCase = new CsvCreateRelationshipEntitiesJob({
       csvImportsDS,

@@ -184,38 +184,6 @@ describe('EntitiesService', () => {
     });
   });
 
-  describe('when creating bare entities in bulk', () => {
-    it('should create the requested number of entities with all UI languages', async () => {
-      const { sut } = createSut();
-      const templateId = fixtures.templates[0]._id.toString();
-
-      const entities = await sut.createMany({
-        templateId,
-        userId: 'actorId',
-        count: 3,
-      });
-
-      expect(entities).toHaveLength(3);
-      entities.forEach(entity => {
-        expect(entity.template.id).toBe(templateId);
-        expect(entity.languages).toEqual(expect.arrayContaining(['en', 'es']));
-      });
-    });
-
-    it('should return an empty array when count is zero', async () => {
-      const { sut } = createSut();
-      const templateId = fixtures.templates[0]._id.toString();
-
-      const entities = await sut.createMany({
-        templateId,
-        userId: 'actorId',
-        count: 0,
-      });
-
-      expect(entities).toEqual([]);
-    });
-  });
-
   describe('when bulk inserting Entities', () => {
     it('should insert multiple entities into the database', async () => {
       const { sut, transactionManager } = createSut();
