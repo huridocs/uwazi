@@ -1,4 +1,4 @@
-export { atomStore, hydrateAtomStore } from './store';
+export { hydrateAtomStore } from './store';
 export { notificationAtom } from './notificationAtom';
 export { settingsAtom } from './settingsAtom';
 export { templatesAtom } from './templatesAtom';

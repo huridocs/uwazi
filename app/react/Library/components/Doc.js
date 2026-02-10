@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { is, Map } from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { getStore } from 'shared/atomStore';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
 import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { Icon } from 'UI';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from 'V2/atoms';
 
 import { Item } from 'app/Layout';
 import helpers from 'app/Documents/helpers';
@@ -68,6 +69,7 @@ class Doc extends Component {
   }
 
   render() {
+    const atomStore = getStore();
     const { className, additionalText, targetReference } = this.props;
     const doc = helpers.performantDocToJSWithoutRelations(this.props.doc);
     const { sharedId, file, processed } = doc;
