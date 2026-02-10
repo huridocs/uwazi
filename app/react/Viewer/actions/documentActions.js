@@ -7,13 +7,14 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
+import { getStore } from 'shared/atomStore';
 import { documentsApi } from 'app/Documents';
 import { notificationActions } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 import { closePanel as closeConnectionPanel } from 'app/Connections/actions/uiActions.js';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from 'V2/atoms';
 import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
@@ -101,7 +102,7 @@ export function deleteDocument(doc) {
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
-    atomStore.set(deletedEntityAtom, doc.sharedId);
+    getStore().set(deletedEntityAtom, doc.sharedId);
     await dispatch(unselectAllDocuments());
   };
 }
