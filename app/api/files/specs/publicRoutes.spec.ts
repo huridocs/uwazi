@@ -2,14 +2,12 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
 import path from 'path';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
 import request from 'supertest';
 
-import entities from 'api/entities';
 import { setupTestUploadedPaths, storage } from 'api/files';
 import { search } from 'api/search';
 import mailer from 'api/utils/mailer';
-import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
+import { setUpApp } from 'api/utils/testingRoutes';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { routes } from '../jsRoutes';
@@ -45,36 +43,45 @@ describe('public routes', () => {
     it('should create the entity and store the files', async () => {
       await fs.writeFile(path.join(os.tmpdir(), 'attachment.txt'), 'attachment');
 
-      await socketEmit('documentProcessed', async () =>
-        request(app)
-          .post('/api/public')
-          .field(
-            'entity',
-            JSON.stringify({ title: 'public submit', template: templateId.toString() })
-          )
-          .attach('file', `${__dirname}/12345.test.pdf`)
-          .attach(
-            'attachments[0]',
-            path.join(os.tmpdir(), 'attachment.txt'),
-            'filename with special char ñ.txt'
-          )
-          .field('attachments_originalname[0]', 'filename with special char ñ.txt')
-          .expect(200)
-      );
+      const response = await request(app)
+        .post('/api/public')
+        .field(
+          'entity',
+          JSON.stringify({ title: 'public submit', template: templateId.toString() })
+        )
+        .attach('file', `${__dirname}/12345.test.pdf`)
+        .attach(
+          'attachments[0]',
+          path.join(os.tmpdir(), 'attachment.txt'),
+          'filename with special char ñ.txt'
+        )
+        .field('attachments_originalname[0]', 'filename with special char ñ.txt')
+        .expect(200);
 
-      const [newEntity] = (await entities.get({
-        title: 'public submit',
-      })) as EntityWithFilesSchema[];
+      const { sharedId } = response.body;
 
-      const textAttachment = (newEntity.attachments || []).find(
-        attachment => attachment.originalname === 'filename with special char ñ.txt'
+      const [newEntity] = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ sharedId, language: 'es' })
+        .toArray();
+
+      const files = await testingEnvironment.db
+        .getCollection('files')!
+        .find({ entity: newEntity.sharedId })
+        .toArray();
+
+      const documents = files.filter((f: any) => f.type === 'document');
+      const attachments = files.filter((f: any) => f.type === 'attachment');
+
+      const textAttachment = attachments.find(
+        (attachment: any) => attachment.originalname === 'filename with special char ñ.txt'
       );
       expect(textAttachment).not.toBeUndefined();
       expect(await storage.fileExists(textAttachment?.filename!, 'attachment')).toBe(true);
 
-      const [document] = newEntity.documents!;
+      const [document] = documents;
       expect(document).toEqual(
-        expect.objectContaining({ originalname: '12345.test.pdf', status: 'ready' })
+        expect.objectContaining({ originalname: '12345.test.pdf', status: 'processing' })
       );
       expect(await storage.fileExists(document.filename!, 'document')).toBe(true);
     });
