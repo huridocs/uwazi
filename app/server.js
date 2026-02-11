@@ -39,6 +39,8 @@ import { serverSideRender } from './react/server';
 import { initSentry } from './initSentry';
 import { setupQueueWorker } from './setupQueueWorker';
 
+import 'api/core/infrastructure/listeners/Listeners';
+
 mongoose.Promise = Promise;
 
 const app = express();

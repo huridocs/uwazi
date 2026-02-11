@@ -4,13 +4,15 @@ import React, { Component } from 'react';
 
 import { shallow } from 'enzyme';
 
-import { atomStore, userAtom } from 'app/V2/atoms';
+import { getStore } from 'shared/atomStore';
+import { userAtom } from 'app/V2/atoms';
 import { store } from 'app/store';
 import CustomHookComponents from '../CustomHooks';
 import MarkdownViewer from '../MarkdownViewer';
 import { errorCollector } from '../utils';
 
 describe('MarkdownViewer', () => {
+  const atomStore = getStore();
   let component;
   let props;
 

@@ -8,8 +8,8 @@ import Immutable from 'immutable';
 import { PDF } from 'app/PDF';
 import { Document } from 'app/Viewer/components/Document.js';
 
-jest.mock('V2/atoms', () => ({
-  atomStore: { get: () => 2 },
+jest.mock('shared/atomStore', () => ({
+  getStore: () => ({ get: () => 2 }),
 }));
 
 // eslint-disable-next-line max-statements
