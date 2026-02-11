@@ -161,6 +161,7 @@ describe('BulkDeleteEntityUseCase', () => {
   });
 
   afterAll(async () => {
+    await jobsCollection.deleteMany({});
     await testingEnvironment.tearDown();
   });
 

@@ -27,6 +27,10 @@ import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { testingTenants } from 'api/utils/testingTenants';
+import { EventsBus } from 'api/core/libs/eventsbus/EventsBus';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
+import { FilesServiceDeps } from '../FilesService';
+import { FilesDataSource } from '../contracts/FilesDataSource';
 
 const f = getFixturesFactory();
 
@@ -53,12 +57,14 @@ const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
   },
 });
 
-const createService = () => {
+const createService = (deps?: Partial<FilesServiceDeps>) => {
   const transactionManager = TransactionManagerFactory.fake();
   const service = FilesServiceFactory.default(transactionManager, {
     fileStorage,
     jobsDispatcher,
+    ...deps,
   });
+
   return { service, transactionManager };
 };
 
@@ -155,12 +161,45 @@ describe('FilesService', () => {
       settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
       entities: [f.entity('entity 1'), f.entity('entity2'), f.entity('entity3')],
       files: [
-        f.document('doc1', { entity: 'entity1' }),
-        ...f.processedDocument('doc2', { entity: 'entity1' }),
-        f.document('doc3', { entity: 'entity2' }),
-        ...f.processedDocument('doc4', { entity: 'entity2' }),
-        f.document('doc5', { entity: 'entity3' }),
-        ...f.processedDocument('doc6', { entity: 'entity3' }),
+        f.document('doc1', {
+          entity: 'entity1',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+          status: 'ready',
+        }),
+        ...f.processedDocument('doc2', {
+          entity: 'entity1',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
+        f.document('doc3', {
+          entity: 'entity2',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+          status: 'ready',
+        }),
+        ...f.processedDocument('doc4', {
+          entity: 'entity2',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
+        f.document('doc5', {
+          entity: 'entity3',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+          status: 'ready',
+        }),
+        ...f.processedDocument('doc6', {
+          entity: 'entity3',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
+        }),
       ],
     };
 
@@ -186,11 +225,44 @@ describe('FilesService', () => {
       expect(dispatchedDeletes).toMatchObject([
         'tenant/uploads/doc1',
         'tenant/uploads/doc2',
-        expect.stringContaining('.jpg'),
         'tenant/uploads/doc5',
         'tenant/uploads/doc6',
         expect.stringContaining('.jpg'),
+        expect.stringContaining('.jpg'),
       ]);
+    });
+  });
+
+  describe('when bulk upserting files', () => {
+    it('should only update files that have changes', async () => {
+      const filesDS = TestUtils.mockClass<FilesDataSource>({ bulkUpdate: jest.fn() });
+      const eventBus = TestUtils.mockClass<EventsBus>({
+        emit: jest.fn(),
+      });
+
+      const { service, transactionManager } = createService({ filesDS, eventBus });
+
+      const file = FileBuilder.document('file1');
+
+      await service.bulkUpsert([file]);
+      await transactionManager.executeOnCommitHandlers(null);
+
+      expect(filesDS.bulkUpdate).not.toHaveBeenCalled();
+      expect(eventBus.emit).not.toHaveBeenCalled();
+
+      const updateFile = file.update({ originalname: 'new name' });
+
+      await service.bulkUpsert([updateFile]);
+      await transactionManager.executeOnCommitHandlers(null);
+
+      expect(filesDS.bulkUpdate).toHaveBeenCalledWith([updateFile]);
+
+      expect(eventBus.emit).toHaveBeenCalledWith(
+        new FileUpdatedEvent({
+          after: updateFile.toDTO(),
+          before: updateFile.previousVersion!.toDTO(),
+        })
+      );
     });
   });
 });

@@ -94,6 +94,7 @@ describe('PXEntityStatusManager', () => {
       language: 'en',
       entity: entity.sharedId!,
       status: 'ready',
+      mimetype: 'application/pdf',
     });
 
     await testingEnvironment.setFixtures({
@@ -146,6 +147,7 @@ describe('PXEntityStatusManager', () => {
       language: 'en',
       entity: entity.sharedId!,
       status: 'ready',
+      mimetype: 'application/pdf',
     });
 
     await testingEnvironment.setFixtures({
@@ -241,6 +243,7 @@ describe('PXEntityStatusManager', () => {
       language: 'en',
       entity: entity.sharedId!,
       _id: new ObjectId(),
+      mimetype: 'application/pdf',
     });
 
     await testingEnvironment.setFixtures({

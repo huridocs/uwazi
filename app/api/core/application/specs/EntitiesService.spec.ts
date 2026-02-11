@@ -8,25 +8,19 @@ import { Entity } from 'api/core/domain/entity/Entity';
 import { NumericProperty } from 'api/core/domain/template/NumericProperty';
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
 import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
-import { PDFService } from 'api/core/infrastructure/services/PDFService';
-import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
-import { FilesService } from '../FilesService';
+import { EventEmitter } from 'api/core/libs/eventEmitter/EventEmitter';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { EntitiesServiceDeps } from '../EntitiesService';
 
 const factory = getFixturesFactory();
 
@@ -49,28 +43,11 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSut = () => {
+const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
-  const idGenerator = IdGeneratorFactory.default();
 
-  const filesDS = FilesDataSourceFactory.default(transactionManager);
-
-  const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-
-  const fileService = new FilesService({
-    pathManager: new PathManager({ tenant: tenants.current() }),
-    idGenerator,
-    fileStorage,
-    filesDS,
-    jobsDispatcher,
-    filesIO: new FileContentsIO(),
-    pdfService: new PDFService(),
-    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-    transactionManager,
-    eventBus: applicationEventsBus,
-  });
 
   jest.spyOn(jobsDispatcher, 'dispatch').mockResolvedValue();
   jest.spyOn(jobsDispatcher, 'dispatchMany').mockImplementation(async callback => {
@@ -81,9 +58,15 @@ const createSut = () => {
     eventBus,
     transactionManager,
     dispatcher: jobsDispatcher,
+    ...deps,
   });
 
-  return { sut, fileService, eventBus, transactionManager, dispatcher: jobsDispatcher };
+  return {
+    sut,
+    eventBus,
+    transactionManager,
+    dispatcher: jobsDispatcher,
+  };
 };
 
 const createSampleTemplate = () =>
@@ -358,6 +341,38 @@ describe('EntitiesService', () => {
       expect(entity.languages).toEqual(expectedEntity.languages);
       expect(entity.icon).toEqual(expectedEntity.icon);
       expect(entity.userId).toEqual(expectedEntity.userId);
+    });
+  });
+
+  describe('when upserting an Entity', () => {
+    it('should not call data source and event emitter if it has not changed', async () => {
+      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+      const entitiesDS = TestUtils.mockClass<MongoMultiLanguageEntityDataSource>({
+        update: jest.fn(),
+      });
+      const { sut, transactionManager } = createSut({ eventEmitter, entitiesDS });
+
+      const entity = new Entity({
+        template: createSampleTemplate(),
+        sharedId: 'sharedId',
+        translations: [{ language: 'en', id: 'id_1', metadata: {} }],
+      });
+
+      await transactionManager.run(async () =>
+        sut.upsert(entity, { actorId: 'actorId', targetLanguage: 'en' })
+      );
+
+      expect(entitiesDS.update).not.toHaveBeenCalled();
+      expect(eventEmitter.emit).not.toHaveBeenCalled();
+
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+      await transactionManager.run(async () =>
+        sut.upsert(entity, { actorId: 'actorId', targetLanguage: 'en' })
+      );
+
+      expect(entitiesDS.update).toHaveBeenCalled();
+      expect(eventEmitter.emit).toHaveBeenCalled();
     });
   });
 });

@@ -163,13 +163,21 @@ describe('Templates Update', () => {
         'entityA3',
         'templateA',
         {},
-        { title: 'entityA3 english', icon: { label: 'icon' }, language: 'en' }
+        {
+          title: 'entityA3 english',
+          icon: { _id: 'id', type: 'type', label: 'icon' },
+          language: 'en',
+        }
       ),
       f.entity(
         'entityA3',
         'templateA',
         {},
-        { title: 'entityA3 spanish', icon: { label: 'icon' }, language: 'es' }
+        {
+          title: 'entityA3 spanish',
+          icon: { _id: 'id', type: 'type', label: 'icon' },
+          language: 'es',
+        }
       ),
     ],
     connections: [...createConnection('entityB1', 'entityA3', 'rel', 'hub1')],

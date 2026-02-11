@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { saveEntity } from 'api/entities/entitySavingManager';
 import { uploadMiddleware } from 'api/files';
 import { search } from 'api/search';
+import { tenants } from 'api/tenants';
 import { withTransaction } from 'api/utils/withTransaction';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
@@ -12,12 +12,14 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
 import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
+import { UpdateEntityController } from 'api/core/infrastructure/express/entity/UpdateEntityController';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
 import date from '../utils/date';
 import entities from './entities';
+import { saveEntity } from './entitySavingManager';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -86,16 +88,16 @@ export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    activitylogMiddleware,
     (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
-      if (!entityToSave?.sharedId) {
-        return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
+      if (!tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave.sharedId) {
+        return uploadMiddleware.multiple()(req, res, next);
       }
 
-      return uploadMiddleware.multiple()(req, res, next);
+      return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
     },
-    activitylogMiddleware,
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
@@ -114,6 +116,11 @@ export default app => {
 
         res.json(response);
 
+        return;
+      }
+
+      if (tenants.current()?.featureFlags?.v2UpdateEntity && entityToSave?.sharedId) {
+        await UpdateEntityController.createHandler()(req, res, next);
         return;
       }
 
