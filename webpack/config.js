@@ -51,6 +51,17 @@ module.exports = production => {
     },
     resolve: {
       extensions: ['.*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      alias: {
+        'shared/atomStore/server.store': path.join(rootPath, 'app/shared/atomStore/client.store'),
+        './app/shared/atomStore/server.store': path.join(
+          rootPath,
+          'app/shared/atomStore/client.store'
+        ),
+        [path.join(rootPath, 'app/shared/atomStore/server.store')]: path.join(
+          rootPath,
+          'app/shared/atomStore/client.store'
+        ),
+      },
     },
     resolveLoader: {
       modules: ['node_modules'],
@@ -159,9 +170,9 @@ module.exports = production => {
     },
     plugins: [
       process.env.CYPRESS &&
-      new webpack.ProvidePlugin({
-        process: 'process/browser',
-      }),
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+        }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({

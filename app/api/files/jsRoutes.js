@@ -13,7 +13,6 @@ import cors from 'cors';
 import proxy from 'express-http-proxy';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 import { createError, validation } from '../utils';
-import { uploadMiddleware } from './uploadMiddleware';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');

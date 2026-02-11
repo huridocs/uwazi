@@ -2,8 +2,9 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
+import { getStore } from 'shared/atomStore';
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
-import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
+import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
 import { socket } from '../../socket';
 import '../sockets';
 import { store } from '../../store';
@@ -18,6 +19,8 @@ import {
 } from './fixtures/fixtures';
 
 describe('sockets', () => {
+  const atomStore = getStore();
+
   describe('connection events', () => {
     beforeEach(() => {
       spyOn(store, 'dispatch').and.callFake(argument =>
