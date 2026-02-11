@@ -3,14 +3,17 @@
  */
 import React from 'react';
 import { Provider } from 'jotai';
+import { getStore } from 'shared/atomStore';
 import { act, render, RenderResult } from '@testing-library/react';
-import { localeAtom, translationsAtom, atomStore } from 'V2/atoms';
+import { localeAtom, translationsAtom } from 'V2/atoms';
 import { socket } from 'app/socket';
 import 'app/App/sockets';
 import { t } from '../translateFunction';
 import { translations } from './fixtures';
 
 describe('t function', () => {
+  const atomStore = getStore();
+
   let renderResult: RenderResult;
   let locale = 'es';
 
