@@ -54,16 +54,19 @@ const fileEntity1En = f.document('fileEntity1En', {
   language: 'en',
   entity: entity1En.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 const fileEntity1Pt = f.document('fileEntity1Pt', {
   language: 'pt',
   entity: entity1En.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 const fileEntity2En = f.document('fileEntity2En', {
   language: 'en',
   entity: entity2En.sharedId,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
 const relationshipE1Hub1 = {

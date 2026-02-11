@@ -19,6 +19,7 @@ type Tenant = {
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
+    v2UpdateEntity?: boolean;
     fileCacheHeaders?: boolean;
     v2CSVImport?: boolean;
     v2UpdateThesaurus?: boolean;

@@ -19,6 +19,8 @@ import { DenormalizeThesaurusEntitiesHandler } from 'api/core/infrastructure/job
 import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { DenormalizeEntityUpdatedListener } from 'api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener';
+import { ProcessRelationshipAfterEntityUpdatedListener } from 'api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
@@ -43,6 +45,7 @@ import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/Cs
 import { CsvCreateRelationshipEntitiesJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler';
 import { CsvV1CompatEmitter } from 'api/csv.v2/infrastructure/services/CsvV1CompatEmitter';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { denormalizeRelated } from 'api/entities/denormalize';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
 import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
@@ -284,4 +287,18 @@ export function registerJobs(
 
     return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
   });
+
+  register(
+    DenormalizeEntityUpdatedListener.asJob(),
+    async () =>
+      new DenormalizeEntityUpdatedListener({
+        denormalizeRelated,
+        templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+      })
+  );
+
+  register(
+    ProcessRelationshipAfterEntityUpdatedListener.asJob(),
+    async () => new ProcessRelationshipAfterEntityUpdatedListener({})
+  );
 }

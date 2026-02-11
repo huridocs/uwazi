@@ -9,13 +9,14 @@ import Immutable from 'immutable';
 import api from 'app/utils/api';
 
 import { mockID } from 'shared/uniqueID.js';
+import { getStore } from 'shared/atomStore';
 import { documentsApi } from 'app/Documents';
 import { APIURL } from 'app/config.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from 'V2/atoms';
 import * as libraryActions from '../../../Library/actions/saveEntityWithFiles';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
@@ -454,6 +455,7 @@ describe('documentActions', () => {
     });
 
     describe('deleteDocument', () => {
+      const atomStore = getStore();
       it('should delete the document and dispatch a notification on success', done => {
         spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
         spyOn(atomStore, 'set');
