@@ -3,6 +3,7 @@ import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { search } from 'api/search';
+import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
@@ -41,7 +42,10 @@ class EntitiesServiceFactory {
       deps?.templatesDS ??
       TemplatesDataSourceFactory.default(transactionManager as MongoTransactionManager);
 
+    const eventEmitter = deps?.eventEmitter ?? EventEmitterFactory.default();
+
     return new EntitiesService({
+      eventEmitter,
       dispatcher,
       entitiesDS,
       entityPermissionChecker,
