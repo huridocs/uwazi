@@ -31,6 +31,7 @@ const documentPt = factory.document('document_1', {
   entity: entity.sharedId,
   creationDate: 1,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
 const documentEn = factory.document('document_2', {
@@ -38,6 +39,7 @@ const documentEn = factory.document('document_2', {
   entity: entity.sharedId,
   creationDate: 2,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
 const documentEs = factory.document('invalid_document', {
@@ -45,6 +47,7 @@ const documentEs = factory.document('invalid_document', {
   entity: entity.sharedId,
   creationDate: 3,
   status: 'ready',
+  mimetype: 'application/pdf',
 });
 
 const customFile = factory.custom_upload('invalid_custom_file', {

@@ -8,10 +8,17 @@ const JobSchema = z.object({
   eventName: z.string().min(1),
 });
 
-abstract class Listener<Payload extends Event<any>> extends UserAwareDispatchable<
-  Payload['payload']
-> {
+type Dependencies<T> = {} & T;
+
+abstract class Listener<
+  Payload extends Event<any>,
+  ExtendedDeps = {},
+> extends UserAwareDispatchable<Payload['payload']> {
   static readonly eventName: string;
+
+  constructor(protected deps: Dependencies<ExtendedDeps>) {
+    super();
+  }
 
   static asJob() {
     const { eventName, listenerName } = JobSchema.parse({

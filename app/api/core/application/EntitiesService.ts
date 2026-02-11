@@ -3,6 +3,7 @@ import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { search } from 'api/search';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { User } from 'api/users.v2/model/User';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { Entity, EntityIcon } from '../domain/entity/Entity';
 import { SettingsDataSource } from './contracts/SettingsDataSource';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource';
@@ -12,6 +13,8 @@ import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatch
 import { RelationshipSyncJob } from '../infrastructure/jobs/RelationshipSyncJob';
 import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob';
 import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
+import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent';
+import { EventEmitter } from '../libs/eventEmitter/EventEmitter';
 
 type CreateInput = {
   icon?: EntityIcon;
@@ -28,11 +31,17 @@ type Deps = {
   dispatcher: JobsDispatcher;
   search: typeof search;
   entityPermissionChecker: EntityPermissionChecker;
+  eventEmitter: EventEmitter;
 };
 
 type InsertContext = {
   tenantName: string;
   actorId: string;
+};
+
+type UpsertContext = {
+  actorId: string;
+  targetLanguage: LanguageISO6391;
 };
 
 type DeleteContext = {
@@ -79,6 +88,22 @@ class EntitiesService {
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]));
     });
+  }
+
+  async upsert(entity: Entity, context: UpsertContext) {
+    this.ensureTransaction();
+
+    if (!entity.hasChanged) return;
+
+    await this.deps.entitiesDS.update(entity);
+
+    await this.deps.eventEmitter.emit(
+      EntityUpdatedEvent.create({
+        entity,
+        targetLanguage: context.targetLanguage,
+        userId: context.actorId,
+      })
+    );
   }
 
   async bulkInsert(entities: Entity[], context: InsertContext) {

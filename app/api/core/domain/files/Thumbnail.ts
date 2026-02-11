@@ -23,7 +23,7 @@ export class Thumbnail extends FileWithContents {
 
   constructor(props: Props) {
     const { entity, language, ...baseProps } = props;
-    super(baseProps);
+    super({ ...baseProps, mimetype: baseProps.mimetype ?? 'image/jpeg' });
     this.entity = entity;
     this.language = language;
   }

@@ -146,6 +146,7 @@
     "express-http-proxy": "^2.1.1",
     "express-prom-bundle": "^8.0.0",
     "express-session": "^1.18.1",
+    "fast-json-stable-stringify": "^2.1.0",
     "filesize": "10.1.6",
     "flag-icons": "^7.5.0",
     "flowbite": "^2.3.0",

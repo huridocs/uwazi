@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
 import { Template } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
@@ -15,11 +16,14 @@ import {
   EntityTranslation,
   EntityTranslationProps,
 } from 'api/core/domain/entity/EntityTranslation';
+import date from 'api/utils/date';
+import stringify from 'fast-json-stable-stringify';
 import { AccessGrant, EntityPermission } from './EntityPermission';
 import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
 import { EntityTranslationDoesNotExistError } from './errors';
 import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty';
+import { EntityDTO } from './EntityDTO';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -43,6 +47,12 @@ type Props = {
   sharedId?: string;
   icon?: Icon;
   permissions?: AccessGrant[];
+  generatedToc?: boolean;
+};
+
+type UpdateProps = {
+  icon?: Icon;
+  generatedToc?: boolean;
 };
 
 class Entity {
@@ -58,9 +68,11 @@ class Entity {
 
   icon?: Icon;
 
+  generatedToc?: boolean;
+
   permissions: EntityPermission;
 
-  constructor(props: Props) {
+  constructor(private props: Props) {
     this.userId = props.userId;
     this.template = props.template;
     this.icon = props.icon;
@@ -69,23 +81,53 @@ class Entity {
     this.published = props.published || false;
     this.permissions = new EntityPermission(props.permissions);
 
+    this.generatedToc = props?.generatedToc;
     this.translations = this.createTranslations(props.translations);
   }
 
   private createTranslations(props: EntityTranslationProps[]) {
-    return props.reduce(
-      (acc, translation) => ({
+    return props.reduce((acc, translation) => {
+      const entityTranslation = new EntityTranslation({
+        ...translation,
+        metadata: translation.metadata,
+      });
+
+      entityTranslation.mergeMetadata(this.template.createDefaultPropertyAssignments());
+
+      return {
         ...acc,
-        [translation.language]: new EntityTranslation({
-          ...translation,
-          metadata: {
-            ...this.template.createDefaultPropertyAssignments(),
-            ...translation.metadata,
-          },
-        }),
-      }),
-      {}
+        [translation.language]: entityTranslation,
+      };
+    }, {});
+  }
+
+  private validatePropertyAssignments(shouldValidateForRequired = false) {
+    this.template.allProperties.forEach(property =>
+      this.getPropertyAssignments(property.name).forEach(pa => {
+        property.validatePropertyAssignment(pa, shouldValidateForRequired);
+      })
     );
+  }
+
+  private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
+    if (value.isTranslatable) {
+      this.setValueInLanguage(value, targetLanguage);
+    } else {
+      this.setValueInAllLanguages(value);
+    }
+  }
+
+  private setValueInAllLanguages(value: PropertyAssignment) {
+    this.translationsList.forEach(([_language, translation]) => translation.setValue(value));
+  }
+
+  private setValueInLanguage(value: PropertyAssignment, language: LanguageISO6391) {
+    this.getTranslation(language).setValue(value);
+  }
+
+  private refreshEditDate() {
+    const now = date.currentUTC();
+    this.translationsList.forEach(([_language, translation]) => translation.refreshEditDate(now));
   }
 
   static create(input: CreateInput) {
@@ -102,6 +144,28 @@ class Entity {
     }
 
     return instance;
+  }
+
+  get asDTO(): EntityDTO {
+    return {
+      sharedId: this.sharedId,
+      templateId: this.template.id,
+      published: this.published,
+      userId: this.userId,
+      icon: this.icon,
+      generatedToc: this.generatedToc,
+
+      permissions: this.permissions.accessGrants,
+      translations: this.translationsList.map(([_language, translation]) => translation.asDTO),
+    };
+  }
+
+  get hasChanged() {
+    return stringify(this.asDTO) !== stringify(this.previousVersion.asDTO);
+  }
+
+  get previousVersion() {
+    return new Entity(this.props);
   }
 
   get translationsList() {
@@ -195,28 +259,27 @@ class Entity {
     this.validatePropertyAssignments(shouldValidateForRequired);
   }
 
-  private validatePropertyAssignments(shouldValidateForRequired = false) {
-    this.template.allProperties.forEach(property =>
-      this.getPropertyAssignments(property.name).forEach(pa => {
-        property.validatePropertyAssignment(pa, shouldValidateForRequired);
-      })
+  changeTemplate(template: Template) {
+    if (template.id === this.template.id) return;
+
+    this.template = template;
+
+    const defaultPropertyAssignments = template.createDefaultPropertyAssignments();
+
+    this.translationsList.forEach(([_language, translation]) =>
+      translation.mergeMetadata(defaultPropertyAssignments)
     );
+
+    this.refreshEditDate();
   }
 
-  private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
-    if (value.isTranslatable) {
-      this.setValueInLanguage(value, targetLanguage);
-    } else {
-      this.setValueInAllLanguages(value);
+  update(props: UpdateProps) {
+    if (props.icon !== this.icon || props.generatedToc !== this.generatedToc) {
+      this.refreshEditDate();
     }
-  }
 
-  private setValueInAllLanguages(value: PropertyAssignment) {
-    this.translationsList.forEach(([_language, translation]) => translation.setValue(value));
-  }
-
-  private setValueInLanguage(value: PropertyAssignment, language: LanguageISO6391) {
-    this.getTranslation(language).setValue(value);
+    this.icon = 'icon' in props ? props.icon : this.icon;
+    this.generatedToc = props.generatedToc ?? this.generatedToc;
   }
 
   createMetadataValuesFromRelationships(
@@ -279,4 +342,4 @@ class Entity {
 }
 
 export { Entity };
-export type { Icon as EntityIcon };
+export type { Icon as EntityIcon, Props as EntityProps };

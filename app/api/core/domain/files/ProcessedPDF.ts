@@ -38,7 +38,7 @@ export class ProcessedPDF extends FileWithContents {
 
   constructor(props: Props) {
     const { entity, language, totalPages, fullText, generatedToc, ...baseProps } = props;
-    super({ ...baseProps });
+    super(baseProps);
     this.language = language;
     this.totalPages = totalPages;
     this.fullTextLoader = fullText;
@@ -47,6 +47,8 @@ export class ProcessedPDF extends FileWithContents {
     if (typeof fullText !== 'function') {
       this.fullText = fullText;
     }
+
+    this.props = { ...this.props, entity, language, totalPages, fullText, generatedToc } as Props;
   }
 
   async getFullText() {
