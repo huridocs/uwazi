@@ -2,11 +2,10 @@
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
-
 import { t, Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
-
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
 import { propertyIcons } from '#V2/Components/UI/Icons.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
@@ -28,7 +27,6 @@ import { MatchingPropertiesTable } from './MatchingPropertiesTable.js';
 import { translationsKeys } from '../helpers.js';
 import { PropertyRow } from '../types.js';
 import { GeneratedIdField } from './fields/GeneratedIdField.js';
-import { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 
 interface ConfigPropertyPanelProps {
   isOpen: boolean;

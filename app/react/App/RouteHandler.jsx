@@ -23,7 +23,7 @@ class RouteHandler extends Component {
     });
   }
 
-  emptyState() { } //eslint-disable-line
+  emptyState() {} //eslint-disable-line
 
   //eslint-disable-next-line
   isRenderedFromServer() {
@@ -60,7 +60,7 @@ class RouteHandler extends Component {
       query = Object.fromEntries(params.entries());
     }
 
-    const { store = { getState: () => { } } } = this.context;
+    const { store = { getState: () => {} } } = this.context;
 
     const headers = {};
     const requestParams = new RequestParams({ ...query, ...routeParams }, headers);

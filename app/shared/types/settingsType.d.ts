@@ -1,7 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from '#shared/types/commonTypes.js';
+import {
+  ObjectIdSchema,
+  LanguagesListSchema,
+  GeolocationSchema,
+} from '#shared/types/commonTypes.js';
 
 export interface AutomaticTranslationConfig {
   active: boolean;

@@ -8,10 +8,10 @@ import { referencesActions } from '#app/Viewer/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import SearchApi from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
-import EntitiesApi from '#app/Entities/EntitiesAPI.js';
+import EntitiesApi from '../../Entities/EntitiesAPI.js';
 import * as types from './actionTypes.js';
 import * as uiActions from './uiActions.js';
-import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
+import * as routeUtils from '../utils/routeUtils.js';
 
 function parseResults(results, parentEntity, editing) {
   return { type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing };

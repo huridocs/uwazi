@@ -1,9 +1,9 @@
-import type { Application, Request, Response, NextFunction } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
+import { storage } from '#api/files/index.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { isOcrEnabled, ocrManager, getOcrStatus } from '#api/services/ocr/OcrManager.js';
-import { validation, createError } from '#api/utils/index.js';
 import { files } from './files.js';
-import { storage } from './index.js';
+import { validation, createError } from '../utils/index.js';
 
 const validateOcrIsEnabled = async (_req: Request, res: Response, next: NextFunction) => {
   if (!(await isOcrEnabled())) {

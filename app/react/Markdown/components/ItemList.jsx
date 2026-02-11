@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import qs from 'qs';
 
@@ -11,7 +11,7 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Slider from './slider.js';
-import Immutable from 'immutable';
+
 class ItemList extends Component {
   render() {
     const { items, link } = this.props;

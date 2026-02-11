@@ -53,7 +53,7 @@ const PagesList = () => {
     const result = await Promise.all(
       sharedIds.map(async sharedId => pagesAPI.deleteBySharedId(sharedId!))
     );
-    const hasErrors = result.find((res: any) => res instanceof FetchResponseError) !== undefined;
+    const hasErrors = result.find(res => res instanceof FetchResponseError) !== undefined;
     setNotifications(deletionNotification(hasErrors));
     await revalidator.revalidate();
   };

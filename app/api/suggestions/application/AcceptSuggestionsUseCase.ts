@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
-import { Suggestions } from '../suggestions.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 import { DataType, UwaziFilterQuery } from '#api/odm/index.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';

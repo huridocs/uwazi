@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { isClient } from './utils/index.js';
+import { isClient } from '#app/utils/index.js';
 
 let _socket = {
   on: (_event, _listener) => {},

@@ -1,8 +1,5 @@
-/* eslint-disable import/no-dynamic-require, global-require */
-
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { pathToFileURL } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
@@ -22,21 +19,20 @@ const sortByDelta = migrations => migrations.sort((a, b) => a.delta - b.delta);
 const getMigrations = async migrationsDir => {
   const [lastMigration] = await migrationsModel.get({}, null, { limit: 1, sort: { delta: -1 } });
   const files = await fs.readdir(migrationsDir);
-  const migrations = await Promise.all(
-    files.map(async migration => {
-      const migrationPath = path.join(migrationsDir, migration);
-      const stats = await fs.stat(migrationPath);
-      const finalPath = stats.isDirectory() ? path.join(migrationPath, 'index.js') : migrationPath;
-      const migrationUrl = pathToFileURL(finalPath).href;
-      const module = await import(migrationUrl);
-      return module.default;
-    })
+  let migrations = await Promise.all(
+    files
+      .filter(f => !f.startsWith('.'))
+      .map(migration =>
+        import(pathToFileURL(path.join(migrationsDir, migration, 'index.js')).href).then(
+          m => m.default
+        )
+      )
   );
-  const sortedMigrations = sortByDelta(migrations);
+  migrations = sortByDelta(migrations);
   if (lastMigration) {
-    return sortedMigrations.map(m => (m.delta > lastMigration.delta ? m : null)).filter(m => m);
+    migrations = migrations.map(m => (m.delta > lastMigration.delta ? m : null)).filter(m => m);
   }
-  return sortedMigrations;
+  return migrations;
 };
 
 const saveMigration = migration => migrationsModel.save(migration);

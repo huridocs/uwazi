@@ -1,9 +1,9 @@
 import type { Application } from 'express';
-import { TemplateMutationController } from './TemplateMutationController.js';
-import { SetTemplateAsDefaultController } from './SetTemplateAsDefaultController/SetTemplateAsDefaultController.js';
-import { GetTemplatesController } from './GetTemplatesController.js';
-import { DeleteTemplateController } from './DeleteTemplateController/DeleteTemplateController.js';
-import { CountTemplatesByThesaurusController } from './CountTemplatesByThesaurusController.js';
+import { TemplateMutationController } from '#api/core/infrastructure/express/template/TemplateMutationController.js';
+import { SetTemplateAsDefaultController } from '#api/core/infrastructure/express/template/SetTemplateAsDefaultController/SetTemplateAsDefaultController.js';
+import { GetTemplatesController } from '#api/core/infrastructure/express/template/GetTemplatesController.js';
+import { DeleteTemplateController } from '#api/core/infrastructure/express/template/DeleteTemplateController/DeleteTemplateController.js';
+import { CountTemplatesByThesaurusController } from '#api/core/infrastructure/express/template/CountTemplatesByThesaurusController.js';
 import needsAuthorization from '../../../../auth/authMiddleware.js';
 
 export default (app: Application) => {

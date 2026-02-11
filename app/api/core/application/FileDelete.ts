@@ -1,4 +1,4 @@
-import { fileDBO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
+import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { z } from 'zod';
 import { createError } from '#api/utils/index.js';
 import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';

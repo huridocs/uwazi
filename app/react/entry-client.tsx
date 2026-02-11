@@ -1,6 +1,7 @@
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/react';
+
 import {
   RouterProvider,
   createBrowserRouter,
@@ -11,12 +12,15 @@ import {
 } from 'react-router';
 import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
-import './App/sockets';
+import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
+import './App/sockets.js';
 import CustomProvider from './App/Provider.js';
 import { atomStore } from '#V2/atoms/index.js';
 import { store } from './store.js';
 import { getAppRoutes } from './appRoutes.js';
+import { loadIcons } from '#UI/Icon/library.js';
+
+loadIcons();
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({

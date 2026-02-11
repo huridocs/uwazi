@@ -9,7 +9,7 @@ import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiple
 import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
 import SemanticSearchPanel from '#app/SemanticSearch/components/SemanticSearchPanel.js';
 import ImportPanel from '#app/Uploads/components/ImportPanel.js';
-import { LibraryFooter } from '#app/Library/components/LibraryFooter.js';
+import { LibraryFooter } from './components/LibraryFooter.js';
 
 class LibraryLayoutBase extends Component {
   render() {

@@ -1,4 +1,4 @@
-import type { Application, Request, Response, NextFunction } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
@@ -6,7 +6,6 @@ import fs from 'fs/promises';
 import QueryString from 'qs';
 
 import { legacyLogger } from '#api/log/index.js';
-
 import { search } from '#api/search/index.js';
 import { CSVExporter } from '#api/csv/index.js';
 import settings from '#api/settings/index.js';
@@ -14,7 +13,7 @@ import captchaMiddleware from '#api/auth/captchaMiddleware.js';
 import { csvExportParamsSchema } from '#shared/types/searchParameterSchema.js';
 import { CsvExportBody } from '#shared/types/searchParameterType.js';
 import { temporalFilesPath, generateFileName } from './filesystem.js';
-import { validation } from '#api/utils/index.js';
+import { validation } from '../utils/index.js';
 
 export default (app: Application) => {
   const generateExportFileName = (databaseName: string = '') =>

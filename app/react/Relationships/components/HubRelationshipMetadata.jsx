@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
+import Immutable from 'immutable';
 
 import { t } from '#app/I18N/index.js';
 import formater from '#app/Metadata/helpers/formater.js';
-import Icon from '#UI/Icon/Icon.js';
-import Immutable from 'immutable';
-
+import { Icon } from '#app/UI/index.js';
 
 const conformQuote = text => (
   <div className="relationship-quote">

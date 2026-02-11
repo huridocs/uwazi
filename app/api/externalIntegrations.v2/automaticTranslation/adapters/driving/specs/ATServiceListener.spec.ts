@@ -6,7 +6,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import RedisSMQ from 'rsmq';
 import { UserSchema } from '#shared/types/userType.js';
 import waitForExpect from 'wait-for-expect';
-import { ATServiceListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
+import { ATServiceListener } from '../ATServiceListener.js';
 import { Redis } from '#api/infrastructure/Redis.js';
 import { RedisClient } from 'redis';
 

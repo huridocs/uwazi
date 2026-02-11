@@ -8,7 +8,6 @@ import last from 'lodash/last.js';
 import { Translate } from '#app/I18N/index.js';
 import { InputField, Select } from '#V2/Components/Forms/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
-
 import uniqueID from '#shared/uniqueID.js';
 import { ThesaurusRow } from './TableComponents.js';
 import { sanitizeThesaurusLabel } from '../helpers.js';

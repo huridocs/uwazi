@@ -3,7 +3,7 @@ import { PaneLayoutProps } from './PaneLayout/types.js';
 import { PaneLayoutDesktop } from './PaneLayout/PaneLayoutDesktop.js';
 import { Pane } from './PaneLayout/Pane.js';
 import { PaneLayoutMobile } from './PaneLayout/PaneLayoutMobile.js';
-import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import { useIsMobile } from '../../CustomHooks/useIsMobile.js';
 
 const PaneLayout = ({
   children,

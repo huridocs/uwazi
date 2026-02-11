@@ -1,6 +1,7 @@
 import Immutable from '#shared/immutableWrapper.js';
 
 import * as viewerTypes from '#app/Viewer/actions/actionTypes.js';
+
 import * as types from '../actions/actionTypes.js';
 
 const initialState = {

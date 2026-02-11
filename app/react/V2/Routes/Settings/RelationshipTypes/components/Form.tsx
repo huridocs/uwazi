@@ -2,11 +2,9 @@
 import React from 'react';
 
 import { Translate } from '#app/I18N/index.js';
-
-import { InputField } from '#V2/Components/Forms/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
 import { useForm } from 'react-hook-form';
-
-import { Button, Card } from '#V2/Components/UI/index.js';
+import { Button, Card } from '#app/V2/Components/UI/index.js';
 import { Relationships } from './TableComponents.js';
 
 interface FormProps {

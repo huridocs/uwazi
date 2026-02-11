@@ -1,9 +1,7 @@
 import React from 'react';
 import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { availableLanguages } from '#shared/language/index.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import {

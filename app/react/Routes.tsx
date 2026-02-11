@@ -29,7 +29,7 @@ import {
   thesauriLoader,
   ThesauriList,
   editThesaurusLoader,
-} from '#V2/Routes/Settings/Thesauri/index.js';
+} from '#app/V2/Routes/Settings/Thesauri/index.js';
 import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
   RelationshipTypes,

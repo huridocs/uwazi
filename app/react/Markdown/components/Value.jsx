@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import markdownDatasets from '#app/Markdown/markdownDatasets.js';
-import PagesContext from '#app/Markdown/components/Context.js';
-import { objectPath } from '#app/Markdown/utils.js';
+import markdownDatasets from '../markdownDatasets.js';
+import PagesContext from './Context.js';
+import { objectPath } from '../utils.js';
 
 export class ValueComponent extends Component {
   renderChildren(_value) {

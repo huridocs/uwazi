@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
-import { switchView as switchViewAction } from '#app/ConnectionsList/actions/actions.js';
+import { switchView as switchViewAction } from '../actions/actions.js';
 
 export class ToggleStyleButtons extends Component {
   constructor(props) {

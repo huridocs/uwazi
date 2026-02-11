@@ -1,5 +1,5 @@
 import { templateUtils } from '#api/core/v1_layer/templates/index.js';
-import { CSVRow } from './csv.js';
+import { CSVRow } from '#api/csv/csv.js';
 import { csvConstants, headerWithLanguage, languageCodeSuffix } from './csvDefinitions.js';
 
 type Languages = string[];

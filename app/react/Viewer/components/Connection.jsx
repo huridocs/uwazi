@@ -2,23 +2,23 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import ShowIf from '#app/App/ShowIf.js';
-import { deleteReference } from '../actions/referencesActions.js';
+import { deleteReference } from '#app/Viewer/actions/referencesActions.js';
 import {
   highlightReference,
   activateReference,
   selectReference,
   toggleReferences,
-} from '../actions/uiActions.js';
+} from '#app/Viewer/actions/uiActions.js';
 import { Item } from '#app/Layout/index.js';
 import helpers from '#app/Documents/helpers.js';
+
 const selectDoc = createSelector(
   s => s.documentViewer.targetDoc,
   s => s.documentViewer.doc,

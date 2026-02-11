@@ -1,13 +1,10 @@
 import { UseCase } from '#api/core/libs/UseCase.js';
-
 import { LanguageUtils } from '#shared/language/index.js';
-
 import { files } from '#api/files/index.js';
-
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { Suggestions } from '#api/suggestions/suggestions.js';
+import { Suggestions } from '../suggestions.js';
 import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy.js';
-import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
+import { SuggestionFactory } from '../suggestionFactory.js';
 
 type Input = CreateBlankSuggestionsInput;
 

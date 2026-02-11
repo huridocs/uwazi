@@ -2,13 +2,12 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { ModelAction } from 'react-redux-form';
-
+import { Icon } from '#app/UI/index.js';
+import { IStore } from '#app/istore.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { SelectionRectanglesSchema } from '#shared/types/commonTypes.js';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions.js';
-import { IStore } from '#app/istore.js';
-import Icon from '#UI/Icon/Icon.js';
 
 type OwnPropTypes = {
   fieldName: string;

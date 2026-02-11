@@ -8,37 +8,22 @@ import {
   ObjectIdSchema,
   PropertyTypeSchema,
 } from '#shared/types/commonTypes.js';
-
 import { filesModel } from '#api/files/filesModel.js';
-
 import { SegmentationType } from '#shared/types/segmentationType.js';
-
 import entitiesModel from '#api/entities/entitiesModel.js';
-
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
-
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import ixmodels from './ixmodels.js';
-
+import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { FileType } from '#shared/types/fileType.js';
-
 import templatesModel from '#api/core/v1_layer/templates/templates.js';
-
 import { propertyTypes } from '#shared/propertyTypes.js';
-
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-
 import { Entity } from '#api/entities.v2/model/Entity.js';
-
 import { IXModelType } from '#shared/types/IXModelType.js';
-
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-
 import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
-
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { ObjectId } from 'mongodb';
-
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from './ixextractors.js';
 import { IXServices } from './IXServices.js';

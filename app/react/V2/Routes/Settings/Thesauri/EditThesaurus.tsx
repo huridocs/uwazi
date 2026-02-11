@@ -7,13 +7,10 @@ import { Row } from '@tanstack/react-table';
 import isEmpty from 'lodash/isEmpty.js';
 
 import { Translate } from '#app/I18N/index.js';
-
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
-
-import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
-
+import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   addGroupSubmit,

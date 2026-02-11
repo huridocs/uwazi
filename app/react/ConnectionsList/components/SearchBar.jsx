@@ -6,9 +6,9 @@ import { Field, Form, actions as formActions } from 'react-redux-form';
 
 import { debounce } from '#app/utils/index.js';
 import { t } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
-import { searchReferences } from '#app/ConnectionsList/actions/actions.js';
+import { searchReferences } from '../actions/actions.js';
 
 export class SearchBar extends Component {
   constructor(props) {

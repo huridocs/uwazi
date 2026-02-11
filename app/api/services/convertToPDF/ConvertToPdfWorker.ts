@@ -9,7 +9,7 @@ import { createWriteStream } from 'fs';
 import * as os from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { TaskManager } from '../tasksmanager/TaskManager.js';
 import { convertToPDFService } from './convertToPdfService.js';
 
 const ajv = new Ajv();

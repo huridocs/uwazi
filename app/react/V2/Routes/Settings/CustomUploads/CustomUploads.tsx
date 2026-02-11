@@ -5,11 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { FileType } from '#shared/types/fileType.js';
 import { getByType, remove, UploadService } from '#V2/api/files/index.js';
 import {

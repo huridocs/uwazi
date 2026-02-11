@@ -3,11 +3,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-
 import { FileType } from '#shared/types/fileType.js';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';

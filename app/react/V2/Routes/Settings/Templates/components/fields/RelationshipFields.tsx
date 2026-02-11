@@ -3,7 +3,6 @@ import React, { useMemo, useEffect } from 'react';
 import { Controller, useWatch, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Select } from '#V2/Components/Forms/index.js';
-
 import { t, Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import orderBy from 'lodash/orderBy.js';

@@ -6,7 +6,7 @@ import { Highlight } from '@huridocs/react-text-selection-handler';
 import { IStore } from '#app/istore.js';
 import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
-import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 
 interface Selection extends ExtractedMetadataSchema {
   isCurrent?: boolean;

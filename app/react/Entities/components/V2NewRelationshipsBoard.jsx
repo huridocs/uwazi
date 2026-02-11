@@ -7,13 +7,13 @@ import { bindActionCreators } from 'redux';
 import { setTargetDocument } from '#app/Connections/actions/actions.js';
 import SearchForm from '#app/Connections/components/SearchForm.js';
 import SearchResults from '#app/Connections/components/SearchResults.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 import {
   deleteRelationships,
   getRelationshipsByEntity,
   saveRelationship,
-} from '#app/Entities/actions/V2NewRelationshipsActions.js';
+} from '../actions/V2NewRelationshipsActions.js';
 
 const bg = i => (i % 2 === 0 ? '#f2f2f2' : '#ffffff');
 

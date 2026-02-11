@@ -14,7 +14,7 @@ import ReferencesAPI from '#app/Viewer/referencesAPI.js';
 import formater from '#app/Metadata/helpers/formater.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
 import { DateTime } from 'luxon';
 
@@ -23,7 +23,7 @@ import {
   matterTemplate,
   renderableTemplates,
   datePropertyOverrides,
-} from '#app/Timeline/utils/timelineFixedData.js';
+} from '../utils/timelineFixedData.js';
 
 const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
 const dateProperties = Object.keys(renderableTemplates).reduce(

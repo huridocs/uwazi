@@ -7,7 +7,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { files, storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import settings from '#api/settings/settings.js';
 import { emitToTenant } from '#api/socketio/setupSockets.js';
@@ -21,7 +21,7 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { EnforcedWithId } from '#api/odm/model.js';
+import { EnforcedWithId } from '../../odm/model.js';
 import { OcrRecord, OcrStatus } from './ocrModel.js';
 import {
   createForFile,

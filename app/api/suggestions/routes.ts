@@ -1,10 +1,9 @@
-import type { Application, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from './suggestions.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';
-
 import { needsAuthorization } from '#api/auth/index.js';
 import { parseQuery } from '#api/utils/parseQueryMiddleware.js';
 import { SuggestionsQueryFilterSchema } from '#shared/types/suggestionSchema.js';

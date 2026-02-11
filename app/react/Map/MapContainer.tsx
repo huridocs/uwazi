@@ -4,9 +4,8 @@ import { useAtomValue } from 'jotai';
 import { isClient } from '#app/utils/index.js';
 import { LMap } from '#app/Map/index.js';
 import { DataMarker, MarkerInput } from '#app/Map/MapHelper.js';
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
+import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 

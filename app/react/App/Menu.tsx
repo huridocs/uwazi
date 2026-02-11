@@ -3,27 +3,19 @@ import React from 'react';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-
+import Immutable from 'immutable';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-
 import { NeedAuthorization } from '#app/Auth/index.js';
-
 import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from '#app/I18N/index.js';
-
 import { processFilters, encodeSearch } from '#app/Library/actions/libraryActions.js';
-
 import { showSemanticSearch as showSemanticSearchAction } from '#app/SemanticSearch/actions/actions.js';
-
 import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
 import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
-import Icon from '#UI/Icon/Icon.js';
-
+import { Icon } from '#app/UI/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
-
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { DropdownMenu } from './DropdownMenu.js';
-import Immutable from 'immutable';
 
 interface MenuProps {
   className: string;

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
-import api from '#app/utils/api.js';
+import api from '../../utils/api.js';
 
 class Captcha extends Component {
   constructor(props) {
@@ -59,7 +59,7 @@ class Captcha extends Component {
 
 Captcha.defaultProps = {
   value: { text: '', id: '' },
-  refresh: () => { },
+  refresh: () => {},
   remote: false,
 };
 

@@ -1,6 +1,6 @@
+import DatePicker from '#app/Forms/components/DatePicker.js';
 import React, { Component } from 'react';
-import DatePicker from './DatePicker.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
 export interface MultiDateProps {

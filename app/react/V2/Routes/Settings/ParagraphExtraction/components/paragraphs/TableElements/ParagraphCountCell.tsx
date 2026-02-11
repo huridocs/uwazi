@@ -1,7 +1,6 @@
-import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-
 import { TablePXEntityParagraphRow } from '#V2/shared/ParagraphExtractionTypes.js';
+import React from 'react';
 
 const ParagraphCountCell = ({
   cell,

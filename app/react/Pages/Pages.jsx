@@ -4,7 +4,7 @@ import RouteHandler from '#app/App/RouteHandler.js';
 import { actions } from '#app/BasicReducer/index.js';
 import PagesAPI from './PagesAPI.js';
 
-import PagesList from '#V2/Routes/Settings/Pages/PagesList.js';
+import PagesList from './components/PagesList.js';
 
 export class Pages extends RouteHandler {
   static async requestState(requestParams) {

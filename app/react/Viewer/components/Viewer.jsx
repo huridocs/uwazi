@@ -5,8 +5,6 @@ import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Immutable from 'immutable';
-
-
 import { ConnectionsList } from '#app/ConnectionsList/index.js';
 import { CreateConnectionPanel } from '#app/Connections/index.js';
 import { CurrentLocationLink, Icon } from '#app/Layout/index.js';
@@ -22,22 +20,22 @@ import ShowIf from '#app/App/ShowIf.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.js';
-import { PaginatorWithPage } from '#app/Viewer/components/Paginator.js';
-import { addReference as addReferenceAction } from '#app/Viewer/actions/referencesActions.js';
+import { PaginatorWithPage } from './Paginator.js';
+import { addReference as addReferenceAction } from '../actions/referencesActions.js';
 import {
   loadDefaultViewerMenu,
   loadTargetDocument as loadTargetDocumentAction,
-} from '#app/Viewer/actions/documentActions.js';
-import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
-import { selectDoc } from '#app/Viewer/selectors.js';
-import ConfirmCloseForm from '#app/Viewer/components/ConfirmCloseForm.js';
-import ViewMetadataPanel from '#app/Viewer/components/ViewMetadataPanel.js';
-import ViewerDefaultMenu from '#app/Viewer/components/ViewerDefaultMenu.js';
-import ViewerTextSelectedMenu from '#app/Viewer/components/ViewerTextSelectedMenu.js';
-import SourceDocument from '#app/Viewer/components/SourceDocument.js';
-import TargetDocument from '#app/Viewer/components/TargetDocument.js';
-import determineDirection from '#app/Viewer/utils/determineDirection.js';
-import { OCRStatus } from '#app/Viewer/components/OCRStatus.js';
+} from '../actions/documentActions.js';
+import { openPanel, toggleReferences } from '../actions/uiActions.js';
+import { selectDoc } from '../selectors.js';
+import ConfirmCloseForm from './ConfirmCloseForm.js';
+import ViewMetadataPanel from './ViewMetadataPanel.js';
+import ViewerDefaultMenu from './ViewerDefaultMenu.js';
+import ViewerTextSelectedMenu from './ViewerTextSelectedMenu.js';
+import SourceDocument from './SourceDocument.js';
+import TargetDocument from './TargetDocument.js';
+import determineDirection from '../utils/determineDirection.js';
+import { OCRStatus } from './OCRStatus.js';
 
 class Viewer extends Component {
   constructor(props) {

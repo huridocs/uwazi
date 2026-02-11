@@ -1,16 +1,14 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { t } from '#app/I18N/index.js';
 import ShowIf from '#app/App/ShowIf.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
-import { setFilter } from '#app/ConnectionsList/actions/actions.js';
-import Immutable from 'immutable';
-
+import { setFilter } from '../actions/actions.js';
 
 class ConnectionsGroup extends Component {
   static getDerivedStateFromProps(props, state) {

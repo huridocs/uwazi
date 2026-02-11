@@ -8,7 +8,7 @@ import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';
 import sortBy from 'lodash/sortBy.js';
 import PropTypes from 'prop-types';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { withContext, withRouter } from '#app/componentWrappers.js';
 import { AttachmentsList } from '#app/Attachments/index.js';
 import { ConnectionsGroups, ConnectionsList, ResetSearch } from '#app/ConnectionsList/index.js';
@@ -26,11 +26,11 @@ import ContextMenu from '#app/ContextMenu/index.js';
 import { FileList } from '#app/Attachments/components/FileList.js';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
 import { PageViewer } from '#app/Pages/components/PageViewer.js';
-import { ShowSidepanelMenu } from '#app/Entities/components/ShowSidepanelMenu.js';
-import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.js';
-import { deleteEntity } from '#app/Entities/actions/actions.js';
-import { showTab } from '#app/Entities/actions/uiActions.js';
-import EntityForm from '#app/Entities/containers/EntityForm.js';
+import { ShowSidepanelMenu } from './ShowSidepanelMenu.js';
+import V2NewRelationshipsBoard from './V2NewRelationshipsBoard.js';
+import { deleteEntity } from '../actions/actions.js';
+import { showTab } from '../actions/uiActions.js';
+import EntityForm from '../containers/EntityForm.js';
 
 class EntityViewer extends Component {
   constructor(props, context) {

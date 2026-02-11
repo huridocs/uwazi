@@ -14,7 +14,7 @@ import Tip from '#app/Layout/Tip.js';
 import { generateID } from '#shared/IDGenerator.js';
 
 import { saveThesaurus } from '#app/Thesauri/actions/thesauriActions.js';
-import { sanitizeThesauri } from '#V2/Routes/Settings/Thesauri/helpers.js';
+import { sanitizeThesauri } from '#app/V2/Routes/Settings/Thesauri/helpers.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import {
   DatePicker,
@@ -30,12 +30,12 @@ import {
   Select,
   LookupMultiSelect,
   MediaField,
-} from '#app/ReactReduxForms/index.js';
-import MultipleEditionFieldWarning from '#app/Metadata/components/MultipleEditionFieldWarning.js';
-import { MediaModalType } from '#app/Metadata/components/MediaModal.js';
-import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.js';
-import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.js';
-import { AddThesauriValueButton } from '#app/Metadata/components/AddThesauriValueButton.js';
+} from '../../ReactReduxForms/index.js';
+import MultipleEditionFieldWarning from './MultipleEditionFieldWarning.js';
+import { MediaModalType } from './MediaModal.js';
+import { MetadataExtractor } from './MetadataExtractor.js';
+import { DeleteSelectionButton } from './DeleteSelectionButton.js';
+import { AddThesauriValueButton } from './AddThesauriValueButton.js';
 
 const translateOptions = thesauri =>
   thesauri

@@ -1,5 +1,7 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
-import { saveEntity } from './entitySavingManager.js';
+import { saveEntity } from '#api/entities/entitySavingManager.js';
 import { uploadMiddleware } from '#api/files/index.js';
 import { search } from '#api/search/index.js';
 import { withTransaction } from '#api/utils/withTransaction.js';
@@ -10,11 +12,11 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
-import needsAuthorization from '#api/auth/authMiddleware.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
-import { thesauri } from '#api/thesauri/thesauri.js';
-import { parseQuery, validation } from '#api/utils/index.js';
-import date from '#api/utils/date.js';
+import needsAuthorization from '../auth/authMiddleware.js';
+import templates from '../core/v1_layer/templates/templates.js';
+import { thesauri } from '../thesauri/thesauri.js';
+import { parseQuery, validation } from '../utils/index.js';
+import date from '../utils/date.js';
 import entities from './entities.js';
 
 async function updateThesauriWithEntity(entity, req) {

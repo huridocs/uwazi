@@ -4,8 +4,8 @@ import { FileType } from '#shared/types/fileType.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { inspect } from 'util';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
-import { IXValidationError } from '#api/suggestions/ixValidationError.js';
+import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument.js';
+import { IXValidationError } from '../ixValidationError.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

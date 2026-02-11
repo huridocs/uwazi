@@ -1,5 +1,5 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import type { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { Writable } from 'stream';
 import { tenants } from '#api/tenants/index.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
@@ -10,7 +10,7 @@ import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFa
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
+import { DownloadFileController } from '../DownloadFileController.js';
 
 type CreateSutProps = {
   filename?: string;

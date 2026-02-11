@@ -5,12 +5,12 @@ import { Entity } from '#V2/domain/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as search from '#V2/api/search/index.js';
 import * as container from '#V2/application/container/singletons.js';
-import { entityLoader } from '#V2/Routes/Entity/loader.js';
-import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import { entityLoader } from '../loader.js';
+import { entityLoaderCache } from '../EntityLoaderCache.js';
 
-jest.mock('#V2/api/files');
-jest.mock('#V2/api/search');
-jest.mock('#V2/application/container/singletons');
+jest.mock('#V2/api/files/index.js');
+jest.mock('#V2/api/search/index.js');
+jest.mock('#V2/application/container/singletons.js');
 
 describe('Entity loader with cache integration', () => {
   let mockEntity: Partial<Entity>;

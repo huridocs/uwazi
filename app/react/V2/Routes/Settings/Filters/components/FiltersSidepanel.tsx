@@ -3,11 +3,8 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
-
 import uniqueID from '#shared/uniqueID.js';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { ClientTemplateSchema } from '#app/istore.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';

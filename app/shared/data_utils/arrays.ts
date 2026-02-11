@@ -25,6 +25,7 @@ class Arrays<T> {
   }
 
   set(key: string): void;
+
   set(key: string, index: number, value: T): void;
 
   set(key: string, index?: number, value?: T): void {

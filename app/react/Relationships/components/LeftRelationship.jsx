@@ -2,14 +2,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import Icon from '#UI/Icon/Icon.js';
+import Immutable from 'immutable';
+import { Icon } from '#app/UI/index.js';
 import Doc from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList.js';
 import * as actions from '../actions/actions.js';
 import HubRelationshipMetadata from './HubRelationshipMetadata.js';
-import Immutable from 'immutable';
-
 
 class LeftRelationship extends Component {
   static renderFigure() {

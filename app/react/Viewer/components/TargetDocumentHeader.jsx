@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Translate } from '#app/I18N/index.js';
 
-import Icon from '#UI/Icon/Icon.js';
-import { addReference, saveTargetRangedReference } from '#app/Viewer/actions/referencesActions.js';
-import { cancelTargetDocument } from '#app/Viewer/actions/documentActions.js';
-import { toggleReferences } from '#app/Viewer/actions/uiActions.js';
+import { Icon } from '#app/UI/index.js';
+import { addReference, saveTargetRangedReference } from '../actions/referencesActions.js';
+import { cancelTargetDocument } from '../actions/documentActions.js';
+import { toggleReferences } from '../actions/uiActions.js';
 
 class TargetDocumentHeader extends Component {
   constructor(props) {

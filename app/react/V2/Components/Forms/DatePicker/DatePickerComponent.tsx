@@ -6,8 +6,8 @@ import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import uniqueID from '#shared/uniqueID.js';
 import { t } from '#app/I18N/index.js';
-import { Label } from '#V2/Components/Forms/Label.js';
-import { InputError } from '#V2/Components/Forms/InputError.js';
+import { Label } from '../Label.js';
+import { InputError } from '../InputError.js';
 
 interface DatePickerProps {
   dateFormat?: string;

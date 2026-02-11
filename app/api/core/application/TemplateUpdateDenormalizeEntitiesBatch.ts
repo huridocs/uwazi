@@ -1,17 +1,18 @@
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { UseCase } from '#api/core/libs/UseCase.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+/* eslint-disable max-statements */
+import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
-import { search } from '#api/search/index.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js'; // Todo
 import cloneDeep from 'lodash/cloneDeep.js';
-import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
+import { search } from '#api/search/index.js';
 import { EntitySchema } from '#shared/types/entityType.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { applicationEventsBus } from '../libs/eventsbus/index.js';
+import { TransactionManager } from './contracts/TransactionManager.js';
+import { UseCase } from '../libs/UseCase.js';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 
 type Input = {
   entitiesIds: string[];

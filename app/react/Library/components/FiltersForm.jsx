@@ -2,11 +2,9 @@ import { Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
 import { debounce } from '#app/utils/index.js';
 import libraryHelper, { prepareDefaultFilters } from '#app/Library/helpers/libraryFilters.js';
@@ -17,9 +15,9 @@ import { FilterTocGeneration } from '#app/ToggledFeatures/tocGeneration/index.js
 import { TemplatesFilter } from '#app/Library/components/TemplatesFilter.js';
 import { AssigneeFilter } from '#app/Library/components/AssigneeFilter.js';
 import { withRouter } from '#app/componentWrappers.js';
-import { PermissionsFilter } from '#app/Library/components/PermissionsFilter.js';
-import { PublishedFilters } from '#app/Library/components/PublishedFilters.js';
-import Filters from '#app/Library/components/FiltersFromProperties.js';
+import { PermissionsFilter } from './PermissionsFilter.js';
+import { PublishedFilters } from './PublishedFilters.js';
+import Filters from './FiltersFromProperties.js';
 
 class FiltersForm extends Component {
   constructor(props) {

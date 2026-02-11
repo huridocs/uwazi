@@ -108,17 +108,17 @@ import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { faBullseye } from '@fortawesome/free-solid-svg-icons/faBullseye';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt';
-import { twoFactorAuth } from './two-factor-auth.js';
-import { infoCircleHollow } from './info-circle-hollow.js';
+import { twoFactorAuth } from '#UI/Icon/two-factor-auth.js';
+import { infoCircleHollow } from '#UI/Icon/info-circle-hollow.js';
 import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
 import { faMap } from '@fortawesome/free-solid-svg-icons/faMap';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
 import { faColumns } from '@fortawesome/free-solid-svg-icons';
-import { saveAndNext } from '#UI/Icon/save-and-next.js';
-import { exportCsv } from '#UI/Icon/export-csv.js';
-import { importCsv } from '#UI/Icon/import-csv.js';
-import { copyFrom } from '#UI/Icon/copy-from.js';
-import { funnelFilter } from '#UI/Icon/funnel-filter.js';
+import { saveAndNext } from './save-and-next.js';
+import { exportCsv } from './export-csv.js';
+import { importCsv } from './import-csv.js';
+import { copyFrom } from './copy-from.js';
+import { funnelFilter } from './funnel-filter.js';
 
 const icons = {
   faAlignJustify,

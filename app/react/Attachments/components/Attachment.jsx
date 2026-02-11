@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { filesize } from 'filesize';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import ShowIf from '#app/App/ShowIf.js';
@@ -20,7 +20,7 @@ import {
   loadForm,
   submitForm,
   resetForm,
-} from '#app/Attachments/actions/actions.js';
+} from '../actions/actions.js';
 
 const getItemOptions = (filename, url) => {
   const options = {};

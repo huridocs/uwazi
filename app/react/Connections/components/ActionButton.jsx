@@ -3,11 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
-
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { saveConnection, selectRangedTarget } from '../actions/actions.js';
-
 
 class ActionButton extends Component {
   onClick(enabled, connection) {
@@ -65,8 +63,8 @@ class ActionButton extends Component {
 }
 
 ActionButton.defaultProps = {
-  onCreate: () => { },
-  onRangedConnect: () => { },
+  onCreate: () => {},
+  onRangedConnect: () => {},
   type: '',
   busy: false,
 };

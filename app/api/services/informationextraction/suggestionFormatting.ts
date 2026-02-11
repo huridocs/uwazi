@@ -4,9 +4,7 @@
 import Ajv from 'ajv';
 
 import date from '#api/utils/date.js';
-
 import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
-
 import { EntitySchema } from '#shared/types/entityType.js';
 import {
   CommonSuggestion,
@@ -18,13 +16,9 @@ import {
   TextSelectionSuggestionSchema,
   ValuesSelectionSuggestionSchema,
 } from '#shared/types/suggestionSchema.js';
-
 import { syncWrapValidator } from '#shared/tsUtils.js';
-import { InternalIXResultsMessage } from '#api/services/informationextraction/InformationExtraction.js';
-import {
-  AllowedPropertyTypes,
-  checkTypeIsAllowed,
-} from '#api/services/informationextraction/ixextractors.js';
+import { InternalIXResultsMessage } from './InformationExtraction.js';
+import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors.js';
 
 type RawSuggestion = {
   entity_name?: string;
@@ -91,9 +85,10 @@ const simpleSuggestion = (
 ) => ({
   suggestedValue,
   segment: rawSuggestion.segment_text,
-  selectionRectangles: rawSuggestion.segments_boxes.map(box => {
-    const { page_number, ...rect } = box;
-    return { ...rect, page: page_number.toString() };
+  selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
+    const rect = { ...box, page: box.page_number.toString() };
+    delete rect.page_number;
+    return rect;
   }),
 });
 

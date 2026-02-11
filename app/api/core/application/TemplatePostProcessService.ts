@@ -1,9 +1,8 @@
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDiff } from '../domain/template/TemplateDiff.js';
-import { Template } from '../domain/template/Template.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable.js';
@@ -11,6 +10,7 @@ import {
   JobsDispatcher,
   DispatchableClass,
 } from '../libs/queue/application/contracts/JobsDispatcher.js';
+import { Template } from '../domain/template/Template.js';
 
 type Deps = {
   jobsDispatcher: JobsDispatcher;

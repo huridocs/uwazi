@@ -16,7 +16,7 @@ import {
 
 import { Loader } from '#app/components/Elements/Loader.js';
 import { arrayUtils } from '#app/Charts/index.js';
-import markdownDatasets from '#app/Markdown/markdownDatasets.js';
+import markdownDatasets from '../markdownDatasets.js';
 
 const objectFlip = obj => {
   const flip = {};

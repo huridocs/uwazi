@@ -3,13 +3,13 @@
 import React from 'react';
 import { Button } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { captureException } from '@sentry/react';
 import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 import { isClient } from '#app/utils/index.js';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Footer = () => {
   const revalidator = useRevalidator();
@@ -52,8 +52,7 @@ const Footer = () => {
       });
     } catch (e) {
       if (isClient) {
-        const error = new Error('Error saving extractor', { cause: e });
-        captureException(error);
+        handleUnexpectedError(e, 'Error creating paragraph extractor');
       }
     }
   };

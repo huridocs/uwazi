@@ -1,6 +1,6 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { SetTemplateAsDefaultRequestDto, SetTemplateAsDefaultResponseDto } from './DTO.js';
-import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { TemplateFacade } from '../../../facades/TemplateFacade.js';
 
 class SetTemplateAsDefaultController extends AbstractController<SetTemplateAsDefaultRequestDto> {
   protected async handle(): Promise<void> {

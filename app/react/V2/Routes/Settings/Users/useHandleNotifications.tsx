@@ -4,10 +4,8 @@ import { useSetAtom } from 'jotai';
 import last from 'lodash/last.js';
 
 import { Translate } from '#app/I18N/index.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
-import { notificationAtom } from '#V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 import { FormIntent } from './types.js';
 
 const useHandleNotifications = () => {

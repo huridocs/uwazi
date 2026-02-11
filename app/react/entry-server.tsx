@@ -19,26 +19,25 @@ import { Provider } from 'jotai';
 import omit from 'lodash/omit.js';
 import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
-import api from './utils/api.js';
-import { RequestParams } from './utils/RequestParams.js';
+import api from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { ClientSettings } from './apiResponseTypes.js';
-import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js';
-import settingsApi from '#api/settings/settings.js';
-import { config } from '#api/config.js';
-import { tenants } from '#api/tenants/index.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
+import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
+import settingsApi from '../api/settings/settings.js';
+import { tenants } from '../api/tenants/index.js';
 import CustomProvider from './App/Provider.js';
 import Root from './App/Root.js';
 import RouteHandler from './App/RouteHandler.js';
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
-import { ClientFeatureFlags } from '#V2/shared/types.js';
-import { atomStore, hydrateAtomStore } from '#V2/atoms/index.js';
+import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
+import { ClientFeatureFlags } from './V2/shared/types.js';
+import { atomStore, hydrateAtomStore } from './V2/atoms/index.js';
 import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
 import { getRoutes } from './Routes.js';
 import createReduxStore from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
-import { isMobileDevice } from '#shared/detectDevice.js';
+import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
 
 loadIcons();
@@ -373,8 +372,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       loadingError={loadingError || ssrError}
       featureFlags={clientFeatureFlags}
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
-      environment={config.ENVIRONMENT}
-      version={config.VERSION}
     />
   );
 

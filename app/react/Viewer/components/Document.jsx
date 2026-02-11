@@ -9,13 +9,13 @@ import React, { Component, createRef } from 'react';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { PDF } from '#app/PDF/index.js';
 import Immutable from 'immutable';
-import { highlightSnippet } from '../actions/uiActions.js';
+import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { atomStore, pdfScaleAtom } from '#V2/atoms/index.js';
 
 import determineDirection from '../utils/determineDirection.js';
 
-import { APIURL } from '#app/config.js';
+import { APIURL } from '../../config.js';
 
 class Document extends Component {
   constructor(props) {
@@ -97,7 +97,7 @@ class Document extends Component {
     this.componentDidUpdate();
   }
 
-  handleOver() { }
+  handleOver() {}
 
   renderPDF(file) {
     if (!file._id && this.containerRef) {
@@ -129,8 +129,9 @@ class Document extends Component {
     return (
       <div>
         <div
-          className={`_${this.props.doc.get('_id')} document ${this.props.className
-            } ${determineDirection(file)}`}
+          className={`_${this.props.doc.get('_id')} document ${
+            this.props.className
+          } ${determineDirection(file)}`}
         >
           <Header />
           <div
@@ -148,20 +149,20 @@ class Document extends Component {
 }
 
 Document.defaultProps = {
-  onPageLoaded: () => { },
-  onDocumentReady: () => { },
-  onPageChange: () => { },
-  onClick: () => { },
-  onPDFLoaded: () => { },
+  onPageLoaded: () => {},
+  onDocumentReady: () => {},
+  onPageChange: () => {},
+  onClick: () => {},
+  onPDFLoaded: () => {},
   file: {},
   searchTerm: '',
   page: 1,
   selectedSnippet: Immutable.fromJS({}),
-  deactivateReference: () => { },
+  deactivateReference: () => {},
   header: () => false,
-  activateReference: () => { },
+  activateReference: () => {},
   doScrollToActive: false,
-  scrollToActive: () => { },
+  scrollToActive: () => {},
   activeReference: '',
   className: '',
   executeOnClickHandler: false,

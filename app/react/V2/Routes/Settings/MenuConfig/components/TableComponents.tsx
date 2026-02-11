@@ -1,11 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-
 import { Translate } from '#app/I18N/index.js';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-
 import { Button } from '#V2/Components/UI/index.js';
-
 import { Link } from '../shared.js';
 
 const EditButton = ({ cell, column }: CellContext<Link, string>) => (

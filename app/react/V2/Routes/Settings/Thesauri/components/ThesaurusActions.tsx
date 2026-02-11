@@ -1,11 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router';
-
 import { Translate } from '#app/I18N/index.js';
-
-import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
-
+import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import { ConfirmationCallback } from '../helpers.js';
 
 interface DeletionModalProps {

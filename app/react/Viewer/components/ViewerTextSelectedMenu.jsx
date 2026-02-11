@@ -6,10 +6,10 @@ import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 import { actions as connectionsActions } from '#app/Connections/index.js';
 import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
 import ShowIf from '#app/App/ShowIf.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
-import { addToToc } from '#app/Viewer/actions/documentActions.js';
+import { addToToc } from '../actions/documentActions.js';
 
 class ViewerTextSelectedMenu extends Component {
   handleDisable() {

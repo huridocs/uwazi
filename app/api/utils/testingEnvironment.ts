@@ -8,13 +8,13 @@ import {
   cleanupTestUploadedPaths,
   createDirIfNotExists,
   setupTestUploadedPaths,
-} from '#api/files/filesystem.js';
+} from '#api/files/index.js';
+import { FileType } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/types.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
 
 const __filename = fileURLToPath(import.meta.url);

@@ -7,8 +7,8 @@ import {
   MultiselectListOption,
 } from '#V2/Components/Forms/index.js';
 import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
-import { filterPXQualifiedTemplates } from '#V2/Routes/Settings/ParagraphExtraction/utils/filterPXQualifiedTemplates.js';
-import { formatTemplatesToOptions } from '#V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
+import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates.js';
+import { formatTemplatesToOptions } from '../../../../../utils/formatters.js';
 
 const Body = () => {
   const { targetTemplateId, setTargetTemplateId } = useCreateExtractorContext();

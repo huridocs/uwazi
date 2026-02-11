@@ -4,7 +4,8 @@ import { Translate } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import Attachment from '#app/Attachments/components/Attachment.js';
-import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.js';
+
+import UploadSupportingFile from './UploadSupportingFile.js';
 
 class AttachmentsList extends Component {
   static arrangeFiles(files = []) {

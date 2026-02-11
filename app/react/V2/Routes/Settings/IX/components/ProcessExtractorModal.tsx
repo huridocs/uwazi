@@ -2,7 +2,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect } from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
-
 import { Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '#V2/Components/UI/index.js';
 import { Checkbox, InputField, RadioSelect } from '#V2/Components/Forms/index.js';

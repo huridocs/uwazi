@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 
 import { files } from '#api/files/files.js';
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-import { IXSuggestionsModel } from './IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
 import {

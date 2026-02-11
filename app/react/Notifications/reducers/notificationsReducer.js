@@ -1,6 +1,6 @@
-import Immutable from '#shared/immutableWrapper.js';
+import Immutable from 'immutable';
 
-import * as actions from '../actions/actionTypes.js';
+import * as actions from '#app/Notifications/actions/actionTypes.js';
 
 const initialState = [];
 

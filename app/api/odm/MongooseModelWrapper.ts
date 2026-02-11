@@ -8,7 +8,7 @@ import {
   EnforcedWithId,
   UwaziUpdateOptions,
 } from './model.js';
-import { tenants } from '#api/tenants/tenantContext.js';
+import { tenants } from '../tenants/tenantContext.js';
 import { DB } from './DB.js';
 import { dbSessionContext } from './sessionsContext.js';
 

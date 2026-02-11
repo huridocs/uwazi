@@ -27,7 +27,7 @@ const PXTableFooter = ({
         <Paginator
           totalPages={Math.ceil(total / PAGE_SIZE)}
           currentPage={Number(currentPage)}
-          buildUrl={page => {
+          buildUrl={(page: any) => {
             const innerSearchParams = new URLSearchParams(location.search);
             innerSearchParams.delete('page');
             innerSearchParams.set('page', page);

@@ -7,7 +7,8 @@ import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraph
 import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
 import DocumentsList from '#app/Layout/DocumentsList.js';
 import { SortButtons } from '#app/Library/components/SortButtons.js';
-import { searchReferences } from '#app/ConnectionsList/actions/actions.js';
+import { searchReferences } from '../actions/actions.js';
+
 export function mapStateToProps({ relationships }) {
   const documents = relationships.list.searchResults;
 

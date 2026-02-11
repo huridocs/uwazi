@@ -1,4 +1,4 @@
-
+import Immutable from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -9,9 +9,7 @@ import { Loader } from '#app/components/Elements/Loader.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
 import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
-import { PDFView } from '#app/Viewer/PDFView.js';
-import Immutable from 'immutable';
-
+import { PDFView } from '../PDFView.js';
 
 class EntityViewerComponent extends Component {
   constructor(props, context) {

@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { BookOpenIcon, Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Translate } from '#app/I18N/index.js';
-import { userAtom, settingsAtom } from '#V2/atoms/index.js';
+import { userAtom, settingsAtom } from '../../../atoms/index.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
 

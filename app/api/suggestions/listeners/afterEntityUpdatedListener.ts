@@ -4,8 +4,8 @@ import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import isEqual from 'lodash/isEqual.js';
 import { ObjectId } from 'mongodb';
-import { UpdateSuggestionsAfterEntityUpdate } from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
-import { ProcessSuggestionsAfterTemplateChanged } from '#api/suggestions/useCases/processSuggestionsAfterTemplateChanged.js';
+import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate.js';
+import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

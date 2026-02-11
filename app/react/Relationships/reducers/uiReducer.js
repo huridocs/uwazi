@@ -1,5 +1,6 @@
-import * as types from '#app/Relationships/actions/actionTypes.js';
 import Immutable from '#shared/immutableWrapper.js';
+import * as types from '../actions/actionTypes.js';
+
 const initialState = { open: false, connecting: false };
 
 export default function (state = initialState, action = {}) {

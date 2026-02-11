@@ -9,14 +9,10 @@ import cloneDeep from 'lodash/cloneDeep.js';
 import isEqual from 'lodash/isEqual.js';
 
 import { Translate } from '#app/I18N/index.js';
-
 import * as SettingsAPI from '#V2/api/settings/index.js';
-
 import { notificationAtom } from '#V2/atoms/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-
-import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
-
+import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { MenuForm } from './components/MenuForm.js';
 import { columns } from './components/TableComponents.js';

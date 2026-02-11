@@ -21,9 +21,9 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import entities from '../entities.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
-import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
+import { EntityDeletedEvent } from '../events/EntityDeletedEvent.js';
+import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -37,7 +37,7 @@ import fixtures, {
   unpublishedDocId,
   uploadId1,
   uploadId2,
-} from '#api/entities/specs/fixtures.js';
+} from './fixtures.js';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();

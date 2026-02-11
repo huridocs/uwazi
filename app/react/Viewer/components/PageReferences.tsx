@@ -127,32 +127,38 @@ const indexdReferencesByPage = createSelector(
       )
 );
 
+type RefMap = { get(key: string): unknown };
+type RectList = {
+  size: number;
+  get(i: number): { get(k: string): unknown; toJS(): SelectionRectangleSchema };
+};
+
 const groupByRectangle = createSelector(
   (state: IStore) => state.documentViewer.references,
   references =>
     references.reduce((groups, reference) => {
       if (!groups) return [];
-
-      if (reference?.get('template') || !reference) return groups;
-
-      const rectangles = reference.get('reference')?.get('selectionRectangles');
-
-      if (!rectangles?.size) return groups;
+      const ref = reference as RefMap;
+      if (ref?.get('template') || !ref) return groups;
+      const rects = (ref.get('reference') as RefMap | undefined)?.get('selectionRectangles') as
+        | RectList
+        | undefined;
+      if (!rects?.size) return groups;
 
       const hasGroup = groups?.some(refGroups =>
         refGroups.some(refGroup => {
           if (
-            refGroup.length === rectangles.size &&
-            refGroup.start.page === rectangles.get(0).get('page') &&
-            refGroup.start.width === rectangles.get(0).get('width') &&
-            refGroup.end.page === rectangles.get(rectangles.size - 1).get('page') &&
-            refGroup.end.width === rectangles.get(rectangles.size - 1).get('width')
+            refGroup.length === rects.size &&
+            refGroup.start.page === rects.get(0).get('page') &&
+            refGroup.start.width === rects.get(0).get('width') &&
+            refGroup.end.page === rects.get(rects.size - 1).get('page') &&
+            refGroup.end.width === rects.get(rects.size - 1).get('width')
           ) {
             refGroups.push({
-              _id: reference.get('_id')!.toString(),
-              length: rectangles.size,
-              start: rectangles.get(0).toJS(),
-              end: rectangles.get(rectangles.size - 1).toJS(),
+              _id: ref.get('_id')!.toString(),
+              length: rects.size,
+              start: rects.get(0).toJS(),
+              end: rects.get(rects.size - 1).toJS(),
             });
             return true;
           }
@@ -164,10 +170,10 @@ const groupByRectangle = createSelector(
 
       groups.push([
         {
-          _id: reference.get('_id')!.toString(),
-          length: rectangles.size,
-          start: rectangles.get(0).toJS(),
-          end: rectangles.get(rectangles.size - 1).toJS(),
+          _id: ref.get('_id')!.toString(),
+          length: rects.size,
+          start: rects.get(0).toJS(),
+          end: rects.get(rects.size - 1).toJS(),
         },
       ]);
 

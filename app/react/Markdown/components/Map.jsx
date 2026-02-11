@@ -14,7 +14,7 @@ import {
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import { Loader } from '#app/components/Elements/Loader.js';
-import markdownDatasets from '#app/Markdown/markdownDatasets.js';
+import markdownDatasets from '../markdownDatasets.js';
 
 const renderInfo = marker => (
   <div>

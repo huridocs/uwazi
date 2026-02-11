@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
-
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { CellContext } from '@tanstack/react-table';

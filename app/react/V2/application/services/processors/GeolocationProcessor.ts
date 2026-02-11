@@ -1,9 +1,9 @@
 import {
   GeolocationMetadataProperty,
   GeolocationPropertyTypes,
-} from '#V2/domain/entities/types.js';
-import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
-import { BasePropertyProcessor } from '#V2/application/services/processors/BasePropertyProcessor.js';
+} from '#app/V2/domain/entities/types.js';
+import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
+import { BasePropertyProcessor } from './BasePropertyProcessor.js';
 import { ProcessingContext, PropertyTypeProcessor, AdapterMetadataProperty } from './types.js';
 
 export class GeolocationProcessor extends BasePropertyProcessor {

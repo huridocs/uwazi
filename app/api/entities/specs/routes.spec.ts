@@ -1,18 +1,20 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import type { Application, NextFunction, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
+
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import db from '#api/utils/testing_db.js';
+
 import * as entitySavingManager from '#api/entities/entitySavingManager.js';
 import routes from '#api/entities/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
-import thesauri from '#api/thesauri/thesauri.js';
+import thesauri from '#api/thesauri/index.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import path from 'path';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import entities from '#api/entities/entities.js';
+import entities from '../entities.js';
 import fixtures, { permissions, templateId } from './fixtures.js';
 
 jest.mock(

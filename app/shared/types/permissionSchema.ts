@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { unique } from '#api/utils/filters.js';
 import { wrapValidator } from '#shared/tsUtils.js';
-import type { PermissionsDataSchema } from './permissionType.js';
+import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-
 import { Translate, t } from '#app/I18N/index.js';
 import isString from 'lodash/isString.js';
-import { Button, Modal } from './index.js';
+
+import { Button, Modal } from '../UI/index.js';
 import { modalSizeType } from './Modal.js';
 
 type confirmationModalType = {

@@ -4,11 +4,9 @@ import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import isEmpty from 'lodash/isEmpty.js';
 import last from 'lodash/last.js';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
-
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
-
 import uniqueID from '#shared/uniqueID.js';
 import { ThesaurusRow } from './TableComponents.js';
 import { emptyThesaurus, sanitizeThesaurusLabel } from '../helpers.js';

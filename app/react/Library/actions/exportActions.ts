@@ -1,9 +1,10 @@
 import Immutable from 'immutable';
+
 import superagent from 'superagent';
-import { Dispatch } from 'redux';
 import { actions } from '#app/BasicReducer/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { t } from '#app/I18N/index.js';
+import { Dispatch } from 'redux';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { CaptchaValue } from '#shared/types/Captcha.js';
 import { EntitySchema } from '#shared/types/entityType.js';

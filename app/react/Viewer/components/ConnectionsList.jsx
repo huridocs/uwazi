@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t, Translate } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { Warning } from '#app/Layout/index.js';
-import { closePanel, deactivateReference } from '../actions/uiActions.js';
+import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
 import Connection from './Connection.js';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
 

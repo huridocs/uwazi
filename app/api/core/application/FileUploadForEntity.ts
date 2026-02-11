@@ -1,6 +1,6 @@
 // eslint-disable-next-line node/no-restricted-import
-import { InputFile } from '../infrastructure/files/InputFile.js';
-import { fileDBO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';

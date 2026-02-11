@@ -1,11 +1,10 @@
 import { UseCase } from '#api/core/libs/UseCase.js';
-
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import {
   GetExtractedParagraphsOutput,
   PXExtractorsQueryService,
-} from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
-import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
+} from '../domain/PXExtractorsQueryService.js';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
 
 type PXGetEntityParagraphsInput = {
   id: string;

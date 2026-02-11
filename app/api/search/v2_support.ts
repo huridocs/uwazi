@@ -4,7 +4,6 @@ import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import type { ElasticHit } from './elasticTypes.js';
 
 async function checkFeatureEnabled() {
   const db = getConnection();
@@ -19,7 +18,8 @@ function createRelationshipsV2ResponseProcessor(featureEnabled = false) {
   if (!featureEnabled) {
     return (hit: any) => hit._source.metadata;
   }
-  return (hit: ElasticHit<any>) => {
+
+  return (hit: any) => {
     const mappedMetadata = {} as any;
     Object.keys(hit._source.metadata || {}).forEach(propertyName => {
       mappedMetadata[propertyName] = (hit._source.metadata[propertyName] || []).map(
@@ -87,9 +87,6 @@ function findDenormalizedProperty(
   allProperties: PropertySchema[],
   featureEnabled = false
 ) {
-  if (!property) {
-    return undefined;
-  }
   if (featureEnabled && property.denormalizedProperty) {
     return allProperties.find(p => p.name === property.denormalizedProperty);
   }
@@ -102,12 +99,9 @@ function getTypeToAggregate(
   allProperties: PropertySchema[],
   featureEnabled = false
 ) {
-  if (!property) {
-    return undefined;
-  }
   if (featureEnabled && property.type === propertyTypes.newRelationship) {
     if (property.denormalizedProperty) {
-      return allProperties.find(p => p.name === property.denormalizedProperty)?.type;
+      return allProperties.find(p => p.name === property.denormalizedProperty)!.type;
     }
 
     return property.type;

@@ -4,7 +4,7 @@ import rison from '@huridocs/rison';
 import { actions as formActions } from 'react-redux-form';
 import { t } from '#app/I18N/index.js';
 import { store } from '#app/store.js';
-import * as types from './actionTypes.js';
+import * as types from '#app/Library/actions/actionTypes.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { documentsApi } from '#app/Documents/index.js';
 import { api as entitiesAPI } from '#app/Entities/index.js';
@@ -15,7 +15,7 @@ import referencesAPI from '#app/Viewer/referencesAPI.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions.js';
-import { filterToQuery } from '#app/Library/helpers/publishedStatusFilter.js';
+import { filterToQuery } from '../helpers/publishedStatusFilter.js';
 import { saveEntityWithFiles } from './saveEntityWithFiles.js';
 
 function enterLibrary() {

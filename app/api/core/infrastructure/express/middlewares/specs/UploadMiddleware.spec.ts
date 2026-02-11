@@ -6,7 +6,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { generateFileName } from '#api/files/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { UploadMiddleware } from '../UploadMiddleware.js';
 
 const fileIO = new FileContentsIO();
 

@@ -5,10 +5,10 @@ import { ClientSession, ObjectId } from 'mongodb';
 import entities from '#api/entities/index.js';
 import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import createError from '#api/utils/Error.js';
-import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import model from './templatesModel.js';
 
 const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSession) => {

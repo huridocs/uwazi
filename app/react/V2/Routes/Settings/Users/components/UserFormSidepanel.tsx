@@ -4,18 +4,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { t, Translate } from '#app/I18N/index.js';
 import { InputField, Select, MultiSelect } from '#V2/Components/Forms/index.js';
 import { Button, Card, ConfirmationModal, Sidepanel } from '#V2/Components/UI/index.js';
-
+import { validEmailFormat } from '#V2/shared/formatHelpers.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal.js';
 import { User, Group } from '../types.js';
-import { validEmailFormat } from '#V2/shared/formatHelpers.js';
 
 type SubmitType = 'formSubmit' | 'reset-2fa' | 'unlock-user' | 'reset-password' | undefined;
 
@@ -312,7 +309,7 @@ const UserFormSidepanel = ({
                       Groups
                     </Translate>
                   }
-                  onChange={(selectedGroups: any) => {
+                  onChange={selectedGroups => {
                     const values = calculateSelectedGroups(selectedGroups, groups);
                     setValue('groups', values, { shouldDirty: true });
                   }}

@@ -12,7 +12,7 @@ import {
   formatDocuments,
   formatAttachments,
 } from './typeFormatters.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
 export type SearchResults = {
   rows: any[];

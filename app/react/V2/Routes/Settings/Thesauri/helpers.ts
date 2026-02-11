@@ -6,16 +6,11 @@ import assign from 'lodash/assign.js';
 import isEqual from 'lodash/isEqual.js';
 import orderBy from 'lodash/orderBy.js';
 import remove from 'lodash/remove.js';
-
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
 import { get as getThesauri } from '#V2/api/thesauri/index.js';
-
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-
 import { httpRequest } from '#shared/superagent.js';
-
 import uniqueID from '#shared/uniqueID.js';
-
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { ThesaurusRow } from './components/TableComponents.js';
 

@@ -3,11 +3,9 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-
-import * as extractorsAPI from '#V2/api/ix/extractors.js';
+import * as extractorsAPI from '#app/V2/api/ix/extractors.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-
 import { ClientTemplateSchema } from '#app/istore.js';
 import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
 import { Translate, t } from '#app/I18N/index.js';

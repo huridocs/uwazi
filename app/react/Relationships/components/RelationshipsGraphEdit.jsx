@@ -2,14 +2,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import Icon from '#UI/Icon/Icon.js';
+import Immutable from 'immutable';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import * as actions from '../actions/actions.js';
+
 import LeftRelationship from './LeftRelationship.js';
 import RightRelationship from './RightRelationship.js';
-import Immutable from 'immutable';
-
 
 export class RelationshipsGraphEdit extends Component {
   componentDidMount() {

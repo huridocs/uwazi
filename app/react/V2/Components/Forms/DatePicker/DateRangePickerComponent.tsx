@@ -6,14 +6,14 @@ import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import uniqueID from '#shared/uniqueID.js';
-import { Label } from '#V2/Components/Forms/Label.js';
-import { InputError } from '#V2/Components/Forms/InputError.js';
-import { InputField } from '#V2/Components/Forms/InputField.js';
+import { Label } from '../Label.js';
+import { InputError } from '../InputError.js';
+import { InputField } from '../InputField.js';
 import {
   DatePickerProps,
   datePickerOptionsByLocale,
   validateLocale,
-} from '#V2/Components/Forms/DatePicker/DatePickerComponent.js';
+} from './DatePickerComponent.js';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   dateFormat?: string;
@@ -180,7 +180,7 @@ const DateRangePickerComponent = React.forwardRef(
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
-                  <path d="M 0 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                 </svg>
               </div>
               <InputField
@@ -212,7 +212,7 @@ const DateRangePickerComponent = React.forwardRef(
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
-                  <path d="M 0 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                 </svg>
               </div>
               <InputField

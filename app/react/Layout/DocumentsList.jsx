@@ -12,13 +12,13 @@ import Footer from '#app/App/Footer.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import Welcome from './components/Welcome.js';
 import { TilesViewer } from './TilesViewer.js';
-import blankState from '#app/Library/helpers/blankState.js';
+import blankState from '../Library/helpers/blankState.js';
 
 const selectAllEntities = command => {
   command.selectAllDocuments();
@@ -137,11 +137,11 @@ class DocumentsList extends Component {
 
     const totalConnections = connections
       ? connectionsGroups.reduce(
-        (total, g) =>
-          total +
-          g.get('templates').reduce((count, template) => count + template.get('count'), 0),
-        0
-      )
+          (total, g) =>
+            total +
+            g.get('templates').reduce((count, template) => count + template.get('count'), 0),
+          0
+        )
       : undefined;
 
     const counter = (

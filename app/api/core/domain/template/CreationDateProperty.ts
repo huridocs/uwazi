@@ -1,5 +1,5 @@
-import { CommonProperty, CommonPropertyProps } from './CommonProperty.js';
-import { Context } from './Property.js';
+import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
+import { Context } from '#api/core/domain/template/Property.js';
 import date from '#api/utils/date.js';
 import {
   CreationDatePropertyInvalidNameError,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import DropdownList from 'react-widgets/lib/DropdownList.js';
 import { iconNames } from '#UI/Icon/library.js';
-import { CountryList } from '#UI/index.js';
+import { CountryList } from '#app/UI/index.js';
+import DropdownList from 'react-widgets/lib/DropdownList.js';
 import IconSelectorItem from './IconSelectorItem.js';
 
 export default class IconSelector extends Component {

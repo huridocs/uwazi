@@ -5,18 +5,13 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { Row } from '@tanstack/react-table';
 import { useSetAtom, useAtomValue } from 'jotai';
-
 import { t, Translate } from '#app/I18N/index.js';
-
-import * as relationshipTypesAPI from '#V2/api/relationshiptypes/index.js';
-
+import * as relationshipTypesAPI from '#app/V2/api/relationshiptypes/index.js';
 import { Template } from '#app/apiResponseTypes.js';
-
-import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
-
-import { Button, Table, Sidepanel, ConfirmationModal } from '#V2/Components/UI/index.js';
-
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
+import { Button, Table, Sidepanel, ConfirmationModal } from '#app/V2/Components/UI/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents.js';
 import { Form } from './components/Form.js';
 
@@ -92,11 +87,7 @@ const RelationshipTypes = () => {
       });
       setIsSidepanelOpen(false);
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.error,
-      });
+      handleUnexpectedError(error, 'Error saving relationship type');
       setIsSidepanelOpen(false);
     }
     await revalidator.revalidate();
@@ -111,11 +102,7 @@ const RelationshipTypes = () => {
       });
       setShowConfirmationModal(false);
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.error,
-      });
+      handleUnexpectedError(error, 'Error deleting relationship type');
       setShowConfirmationModal(false);
     }
     await revalidator.revalidate();

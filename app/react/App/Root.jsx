@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
+
 import { availableLanguages } from '#shared/language/index.js';
 
 const determineHotAssets = query => ({
   JS: [
     'http://localhost:8080/nprogress.js',
-    'http://localhost:8080/vendor.js',
     'http://localhost:8080/main.js',
+    'http://localhost:8080/vendor.js',
   ],
   CSS: [
     `http://localhost:8080/CSS/vendor.css${query}`,
@@ -133,12 +134,14 @@ class Root extends Component {
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
           <script
+            //eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
               __html: `window.UWAZI_ENVIRONMENT = "${this.props.environment || process.env.ENVIRONMENT || 'development'}";window.UWAZI_VERSION = "${this.props.version || process.env.npm_package_version || 'development'}"`,
             }}
           />
           {process.env.SENTRY_APP_DSN && (
             <script
+              //eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{
                 __html: `window.SENTRY_APP_DSN = "${process.env.SENTRY_APP_DSN}"`,
               }}
