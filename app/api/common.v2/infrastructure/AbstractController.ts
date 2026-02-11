@@ -11,6 +11,7 @@ import { DependenciesContext } from 'api/core/libs/DependenciesContext';
 import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
@@ -62,12 +63,14 @@ export abstract class AbstractController<RequestBody = any> {
       const eventEmitter = EventEmitterFactory.default();
       const idGenerator = IdGeneratorFactory.default();
       const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+      const logger = LoggerFactory.default();
 
       DependenciesContext.attachContext(instance, 'handleAsync', {
         transactionManager,
         eventEmitter,
         idGenerator,
         jobsDispatcher,
+        logger,
       });
 
       return instance.handleAsync();
