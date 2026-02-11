@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
-import Ajv, { _ } from 'ajv';
+import Ajv from 'ajv';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -228,7 +228,7 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
     Sentry.captureException(error);
   }
 
-  if (_error?.constructor === Error) {
+  if (result.code === 500) {
     result.prettyMessage = 'A server side error has occurred';
     result.error = 'A server side error has occurred';
   }
