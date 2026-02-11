@@ -32,6 +32,7 @@ const createSut = () => {
         jobsDispatcher,
         eventEmitter,
         idGenerator,
+        logger: TestUtils.mockClass({}),
       },
       async () => (transactional ? transactionManager.run(callback) : callback())
     );

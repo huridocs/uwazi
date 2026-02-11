@@ -84,6 +84,7 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
     idGenerator,
     eventEmitter,
     jobsDispatcher,
+    logger: TestUtils.mockClass({}),
   });
 
   return { sut, fileService };
