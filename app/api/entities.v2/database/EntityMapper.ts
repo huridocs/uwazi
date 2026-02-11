@@ -13,7 +13,7 @@ export const EntityMappers = {
       dbo.title,
       MongoIdHandler.mapToApp(dbo.template),
       dbo.metadata as any,
-      dbo.icon,
+      dbo.icon as any,
       dbo.obsoleteMetadata
     );
   },

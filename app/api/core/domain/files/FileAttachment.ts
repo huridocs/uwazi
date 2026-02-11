@@ -16,6 +16,8 @@ export class FileAttachment extends FileWithContents {
     const { entity, ...baseProps } = props;
     super(baseProps);
     this.entity = entity;
+
+    this.props = { ...this.props, entity };
   }
 
   static fromDBO(dbo: FileAttachmentDBO, contentLoader: FileContentLoader) {

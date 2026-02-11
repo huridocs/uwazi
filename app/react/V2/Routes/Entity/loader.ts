@@ -1,6 +1,7 @@
+import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { LoaderFunction } from 'react-router';
+import { getStore } from '#shared/atomStore/index.js';
 import { isClient } from '#app/utils/index.js';
 import { getPagePlaintext } from '#V2/api/files/index.js';
 import { snippets } from '#V2/api/search/index.js';
@@ -10,13 +11,15 @@ import { fullDetailOptions } from '#V2/application/optionsPresets.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
 import { LoaderResponse } from './types.js';
+import { localeAtom } from '#app/V2/atoms/index.js';
 
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
-    const language = params.lang || 'en';
+    const atomStore = getStore();
+    const language = params.lang || atomStore.get(localeAtom);
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';
     const currentSearchTerm = searchParams.get(SEARCH_PARAM);
@@ -30,7 +33,7 @@ const entityLoader =
     let pagePlaintext: string | undefined = '';
     let searchResults: SnippetsSearchResponse | undefined;
 
-    if (!entity) {
+    if (!entity?._id) {
       const entityCompositionUseCase = await getEntityCompositionUseCase();
 
       const composition = await entityCompositionUseCase.composeEntity(
@@ -71,7 +74,8 @@ const entityLoader =
       if (!pagePlaintext) {
         const response = await getPagePlaintext(
           entity.mainDocument[0]._id as string,
-          Number.parseInt(currentPage, 10)
+          Number.parseInt(currentPage, 10),
+          headers
         );
 
         if (response instanceof FetchResponseError) {
@@ -108,11 +112,14 @@ const entityLoader =
       );
 
       if (!searchResults) {
-        searchResults = await snippets({
-          sharedId: entity.sharedId,
-          limit: 0,
-          searchString: currentSearchTerm,
-        });
+        searchResults = await snippets(
+          {
+            sharedId: entity.sharedId,
+            limit: 0,
+            searchString: currentSearchTerm,
+          },
+          headers
+        );
 
         entityLoaderCache.setSearchResults(
           entity.sharedId,

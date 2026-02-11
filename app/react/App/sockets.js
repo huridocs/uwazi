@@ -1,14 +1,9 @@
 import { actions } from '#app/BasicReducer/index.js';
+import { getStore } from '#shared/atomStore/index.js';
 import { t } from '#app/I18N/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
-import {
-  atomStore,
-  settingsAtom,
-  templatesAtom,
-  thesauriAtom,
-  translationsAtom,
-} from '#V2/atoms/index.js';
+import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
 import { store } from '../store.js';
 import { socket, reconnectSocket } from '../socket.js';
 
@@ -47,6 +42,7 @@ socket.on('forceReconnect', () => {
 });
 
 socket.on('templateChange', template => {
+  const atomStore = getStore();
   const currentTemplates = atomStore.get(templatesAtom);
   const index = currentTemplates.findIndex(current => current._id === template._id);
   atomStore.set(
@@ -58,6 +54,7 @@ socket.on('templateChange', template => {
 });
 
 socket.on('templateDelete', payload => {
+  const atomStore = getStore();
   const updatedTemplates = atomStore
     .get(templatesAtom)
     .filter(currentTemplate => currentTemplate._id !== payload._id);
@@ -65,10 +62,12 @@ socket.on('templateDelete', payload => {
 });
 
 socket.on('updateSettings', settings => {
+  const atomStore = getStore();
   atomStore.set(settingsAtom, settings);
 });
 
 socket.on('thesauriChange', thesaurus => {
+  const atomStore = getStore();
   const currentThesauri = atomStore.get(thesauriAtom);
   const index = currentThesauri.findIndex(current => current._id === thesaurus._id);
   atomStore.set(
@@ -81,6 +80,7 @@ socket.on('thesauriChange', thesaurus => {
 });
 
 socket.on('thesauriDelete', payload => {
+  const atomStore = getStore();
   const updatedThesauri = atomStore
     .get(thesauriAtom)
     .filter(currentThesauri => currentThesauri._id !== payload._id);
@@ -88,6 +88,7 @@ socket.on('thesauriDelete', payload => {
 });
 
 socket.on('translationsChange', languageTranslations => {
+  const atomStore = getStore();
   const translations = atomStore.get(translationsAtom);
   const modifiedLanguage = translations.find(
     translation => translation.locale === languageTranslations.locale
@@ -101,6 +102,7 @@ socket.on('translationsChange', languageTranslations => {
 });
 
 socket.on('translationKeysChange', translationsEntries => {
+  const atomStore = getStore();
   const translations = atomStore.get(translationsAtom);
   translationsEntries.forEach(item => {
     const modifiedContext = translations
@@ -135,6 +137,7 @@ socket.on('translationsInstallError', errorMessage => {
 });
 
 socket.on('translationsDelete', locale => {
+  const atomStore = getStore();
   const translations = atomStore.get(translationsAtom);
   const updatedTranslations = translations.filter(language => language.locale !== locale);
   atomStore.set(translationsAtom, [...updatedTranslations]);

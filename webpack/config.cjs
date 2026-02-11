@@ -56,6 +56,16 @@ module.exports = production => {
         '.jsx': ['.tsx', '.jsx'],
       },
       alias: {
+        'shared/atomStore/server.store': path.join(rootPath, 'app/shared/atomStore/client.store'),
+        './app/shared/atomStore/server.store': path.join(
+          rootPath,
+          'app/shared/atomStore/client.store'
+        ),
+        [path.join(rootPath, 'app/shared/atomStore/server.store')]: path.join(
+          rootPath,
+          'app/shared/atomStore/client.store'
+        ),
+        './server.store.js': path.join(rootPath, 'app/shared/atomStore/client.store'),
         'api': path.join(rootPath, 'app/api'),
         'app': path.join(rootPath, 'app/react'),
         'shared': path.join(rootPath, 'app/shared'),

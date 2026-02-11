@@ -11,14 +11,18 @@ export type Params<ExtendedParams> = ExtendedParams & { tenantName: string; user
 export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatchable {
   protected params!: Params<ExtendedParams>;
 
+  protected jobInfo!: JobInfo;
+
   protected abstract handle(heartBeatCallBack: HeartbeatCallback, jobInfo?: JobInfo): Promise<void>;
 
   protected get tenantName() {
-    if (!this.params.tenantName) {
+    const tenantName = this.params.tenantName || this.jobInfo?.namespace;
+
+    if (!tenantName) {
       throw new Error('There is no Tenant, you should provide a tenantName on Job params');
     }
 
-    return this.params.tenantName;
+    return tenantName;
   }
 
   protected get userId() {
@@ -40,6 +44,7 @@ export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatcha
     jobInfo?: JobInfo
   ): Promise<void> {
     this.params = params;
+    this.jobInfo = jobInfo!;
 
     await tenants.run(async () => {
       await this.setCurrentUser();

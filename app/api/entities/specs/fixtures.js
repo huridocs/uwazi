@@ -78,6 +78,7 @@ export default {
       filename: `${uploadId1}.jpg`,
       language: 'en',
       type: 'thumbnail',
+      mimetype: 'image/jpeg',
     },
     {
       _id: db.id(),
@@ -85,6 +86,7 @@ export default {
       filename: `${uploadId2}.jpg`,
       language: 'es',
       type: 'thumbnail',
+      mimetype: 'image/jpeg',
     },
     {
       _id: uploadId1,
@@ -92,6 +94,7 @@ export default {
       filename: '8202c463d6158af8065022d9b5014cc1.pdf',
       language: 'en',
       type: 'document',
+      mimetype: 'application/pdf',
       fullText: {
         1: 'page[[1]] 1[[1]]',
         2: 'page[[2]] 2[[2]]',
@@ -104,6 +107,7 @@ export default {
       filename: '8202c463d6158af8065022d9b5014ccb.pdf',
       language: 'es',
       type: 'document',
+      mimetype: 'application/pdf',
       fullText: { 1: 'text' },
     },
     {
@@ -111,12 +115,14 @@ export default {
       filename: '8202c463d6158af8065022d9b5014ccc.pdf',
       language: 'pt',
       type: 'attachment',
+      mimetype: 'application/pdf',
     },
     {
       entity: 'shared1',
       language: 'en',
       filename: 'nonexistent.pdf',
       type: 'document',
+      mimetype: 'application/pdf',
       fullText: { 1: 'text' },
     },
     {
@@ -124,23 +130,27 @@ export default {
       filename: 'nonexistent.pdf',
       type: 'document',
       language: 'es',
+      mimetype: 'application/pdf',
     },
     {
       entity: 'shared1',
       filename: 'nonexistent.pdf',
       type: 'document',
+      mimetype: 'application/pdf',
       language: 'pt',
     },
     {
       entity: 'shared10',
       filename: '123.pdf',
       type: 'document',
+      mimetype: 'application/pdf',
       language: 'pt',
     },
     {
       entity: 'multiselect',
       filename: '123.pdf',
       type: 'document',
+      mimetype: 'application/pdf',
       language: 'en',
     },
     {
@@ -148,6 +158,7 @@ export default {
       filename: '123.pdf',
       language: 'es',
       fullText: { 1: 'text' },
+      mimetype: 'application/pdf',
       type: 'document',
     },
     // files to test entity.get
@@ -158,6 +169,7 @@ export default {
       filename: 'file1.name',
       language: 'en',
       type: 'attachment',
+      mimetype: 'application/octet-stream',
     },
     {
       _id: entityGetTestFileId2,
@@ -165,12 +177,14 @@ export default {
       filename: 'file2.name',
       language: 'en',
       type: 'document',
+      mimetype: 'application/pdf',
     },
     {
       _id: entityGetTestFileId3,
       entity: 'entityGetTestEntityIdC',
       filename: 'file3.name',
       language: 'en',
+      mimetype: 'application/pdf',
       type: 'document',
     },
     {
@@ -180,6 +194,7 @@ export default {
       filename: 'file4.name',
       language: 'en',
       type: 'attachment',
+      mimetype: 'application/octet-stream',
     },
   ],
   entities: [
@@ -561,6 +576,7 @@ export default {
     {
       _id: db.id(),
       languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
+      featureFlags: { v2UpdateEntity: true },
     },
   ],
   templates: [

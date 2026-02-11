@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.228.189",
+  "version": "1.228.191",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -160,6 +160,7 @@
     "express-http-proxy": "^2.1.1",
     "express-prom-bundle": "^8.0.0",
     "express-session": "^1.18.1",
+    "fast-json-stable-stringify": "^2.1.0",
     "filesize": "10.1.6",
     "flag-icons": "^7.5.0",
     "flowbite": "^2.3.0",

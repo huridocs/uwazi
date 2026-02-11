@@ -34,6 +34,7 @@ const mongoSchema = new mongoose.Schema({
     sync: Boolean,
     deactivateTestJob: Boolean,
     paragraphExtraction: Boolean,
+    v2UpdateEntity: Boolean,
     fileCacheHeaders: Boolean,
     v2UpdateThesaurus: Boolean,
   },

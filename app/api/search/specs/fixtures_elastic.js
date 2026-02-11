@@ -29,6 +29,7 @@ export const fixtures = {
     {
       entity: metadataSnippets,
       type: 'document',
+      mimetype: 'application/pdf',
       language: 'eng',
       fullText: {
         1: 'Once upon a time[[1]]',
@@ -37,12 +38,14 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: 'unpublishedSharedId',
       language: 'eng',
       fullText: { 1: 'unpublished document' },
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanFinishes,
       language: 'eng',
       title: 'Batman finishes en',
@@ -50,6 +53,7 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanFinishes,
       language: 'spa',
       title: 'Batman finishes es',
@@ -57,6 +61,7 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanBegins,
       language: 'eng',
       title: 'Batman begins en',
@@ -67,6 +72,7 @@ export const fixtures = {
     },
     {
       type: 'document',
+      mimetype: 'application/pdf',
       entity: batmanBegins,
       language: 'spa',
       title: 'Batman begins es',

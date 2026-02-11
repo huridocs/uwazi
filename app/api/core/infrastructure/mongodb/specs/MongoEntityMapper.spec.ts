@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { MongoEntityMapper } from '../entity/MongoEntityMapper.js';
@@ -47,56 +48,59 @@ describe('TemplateMapper', () => {
     { _id: new ObjectId(), label: 'generatedid', name: 'generatedid', type: 'generatedid' },
   ]);
 
-  const entitiesDbo = factory.entityInMultipleLanguages(
-    ['en', 'es'],
-    'sample_entity',
-    'sample_template',
-    {
-      date: [{ value: 1000000 }],
-      daterange: [{ value: { from: 1000000, to: 2000000 } }],
-      geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
-      image: [{ value: 'image1.jpg' }],
-      link: [{ value: { url: 'http://example.com', label: 'Label' } }],
-      markdown: [{ value: 'Some **markdown** content' }],
-      multidate: [{ value: 1000000 }, { value: 1000000 }],
-      multidaterange: [
-        { value: { from: 1000000, to: 2000000 } },
-        { value: { from: 3000000, to: 4000000 } },
-      ],
-      multiselect: [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-      ],
-      numeric: [{ value: 42 }],
-      relationship: [
-        {
-          value: 'shared_id',
-          type: 'entity',
-          label: 'Related Entity',
-          inheritedType: 'text',
-          inheritedValue: [{ value: 'Some text' }],
-        },
-      ],
-      select: [{ value: 'option1', label: 'Option 1' }],
-      text: [{ value: 'Some text content' }],
-      generatedid: [{ value: 'gen-12345' }],
-      nested: [],
-      preview: [],
-      media: [],
-    },
-    {
-      creationDate: 1000000,
-      editDate: 2000000,
-      published: true,
-      icon: { _id: 'icon_id', label: 'Icon Label', type: 'icon' },
-      user: factory.id('user_id'),
-      obsoleteMetadata: [],
-      permissions: [],
-    }
-  );
+  const createEntitiesDBO = () =>
+    factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'sample_entity',
+      'sample_template',
+      {
+        date: [{ value: 1000000 }],
+        daterange: [{ value: { from: 1000000, to: 2000000 } }],
+        geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
+        image: [{ value: 'image1.jpg' }],
+        link: [{ value: { url: 'http://example.com', label: 'Label' } }],
+        markdown: [{ value: 'Some **markdown** content' }],
+        multidate: [{ value: 1000000 }, { value: 1000000 }],
+        multidaterange: [
+          { value: { from: 1000000, to: 2000000 } },
+          { value: { from: 3000000, to: 4000000 } },
+        ],
+        multiselect: [
+          { value: 'option1', label: 'Option 1' },
+          { value: 'option2', label: 'Option 2' },
+        ],
+        numeric: [{ value: 42 }],
+        relationship: [
+          {
+            value: 'shared_id',
+            type: 'entity',
+            label: 'Related Entity',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'Some text' }],
+          },
+        ],
+        select: [{ value: 'option1', label: 'Option 1' }],
+        text: [{ value: 'Some text content' }],
+        generatedid: [{ value: 'gen-12345' }],
+        nested: [],
+        preview: [],
+        media: [],
+      },
+      {
+        creationDate: 1000000,
+        editDate: 2000000,
+        published: true,
+        icon: { _id: 'icon_id', label: 'Icon Label', type: 'icon' },
+        user: factory.id('user_id'),
+        obsoleteMetadata: [],
+        permissions: [],
+        generatedToc: true,
+      }
+    );
 
   it('should map to domain correctly', () => {
-    const result = MongoEntityMapper.toDomain(entitiesDbo as any[], templateDbo as any);
+    const entities = createEntitiesDBO();
+    const result = MongoEntityMapper.toDomain(entities as any[], templateDbo as any);
 
     expect(result.translations).toEqual({
       en: {
@@ -406,15 +410,32 @@ describe('TemplateMapper', () => {
     expect(result.sharedId).toBe('sample_entity');
     expect(result.userId).toBe(factory.id('user_id').toString());
     expect(result.published).toBe(true);
+    expect(result.generatedToc).toBe(true);
     expect(result.icon).toEqual({ id: 'icon_id', label: 'Icon Label', type: 'icon' });
+
+    // Icon removed
+    entities.forEach(e => (e.icon = { _id: null, label: undefined, type: 'Empty' }));
+
+    const resultNoIcon = MongoEntityMapper.toDomain(entities as any[], templateDbo as any);
+
+    expect(resultNoIcon.icon).toBeUndefined();
   });
 
   it('should map to DBO correctly', () => {
-    const entitiesMapped = MongoEntityMapper.toDBO(
-      MongoEntityMapper.toDomain(entitiesDbo as any[], templateDbo as any)
-    );
+    const entities = createEntitiesDBO();
+    const entitiesDomain = MongoEntityMapper.toDomain(entities as any[], templateDbo as any);
+    const entitiesMapped = MongoEntityMapper.toDBO(entitiesDomain);
 
-    expect(entitiesMapped).toEqual(entitiesDbo);
+    expect(entitiesMapped).toEqual(entities);
+
+    entitiesDomain.update({ icon: undefined });
+
+    const resultNoIcon = MongoEntityMapper.toDBO(entitiesDomain);
+
+    expect(resultNoIcon.map(e => e.icon)).toEqual([
+      { _id: null, label: undefined, type: 'Empty' },
+      { _id: null, label: undefined, type: 'Empty' },
+    ]);
   });
 
   describe('Permissions mapping', () => {

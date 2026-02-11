@@ -1,6 +1,8 @@
+import { getStore } from '#shared/atomStore/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import api from '#app/Entities/EntitiesAPI.js';
 import { t } from '#app/I18N/index.js';
+
 import {
   removeDocument,
   removeDocuments,
@@ -12,7 +14,7 @@ import { notificationActions } from '#app/Notifications/index.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
-import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
 
 export function saveEntity(entity) {
   return async dispatch => {
@@ -42,7 +44,7 @@ export function deleteEntity(entity) {
     await api.delete(new RequestParams({ sharedId: entity.sharedId }));
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     dispatch(removeDocument(entity));
-    atomStore.set(deletedEntityAtom, entity.sharedId);
+    getStore().set(deletedEntityAtom, entity.sharedId);
     await dispatch(unselectDocument(entity._id));
   };
 }

@@ -43,6 +43,8 @@ import { setupQueueWorker } from './setupQueueWorker.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+import '#api/core/infrastructure/listeners/Listeners.js';
+
 mongoose.Promise = Promise;
 
 const app = express();

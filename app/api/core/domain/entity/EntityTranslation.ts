@@ -2,6 +2,7 @@
 import date from '#api/utils/date.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Id, IdProps } from '#api/core/libs/Id.js';
+import stringify from 'fast-json-stable-stringify';
 import {
   DateEntry,
   PropertyAssignment,
@@ -52,6 +53,27 @@ class EntityTranslation {
     return this.getValue<DateEntry>('editDate');
   }
 
+  get asDTO(): Required<Props> {
+    return {
+      id: this.id.value,
+      language: this.language,
+      metadata: this.metadata,
+    };
+  }
+
+  mergeMetadata(newMetadata: Record<string, PropertyAssignment>) {
+    Object.values(this.metadata).forEach(propertyAssignment => {
+      const ofSameName = newMetadata[propertyAssignment.name];
+      const differentType = ofSameName?.type !== propertyAssignment.type;
+
+      if ((ofSameName && differentType) || !ofSameName) {
+        delete this.metadata[propertyAssignment.name];
+      }
+    });
+
+    this.metadata = { ...newMetadata, ...this.metadata };
+  }
+
   setValue(propertyValue: PropertyAssignment) {
     const currentValue = this.metadata[propertyValue.name];
     if (!currentValue) {
@@ -66,7 +88,7 @@ class EntityTranslation {
       );
     }
 
-    if (JSON.stringify(currentValue) === JSON.stringify(propertyValue)) {
+    if (stringify(currentValue) === stringify(propertyValue)) {
       return;
     }
 
@@ -79,7 +101,11 @@ class EntityTranslation {
     }
 
     this.metadata[propertyValue.name] = propertyValue;
-    this.editDate.value = [{ value: date.currentUTC() }];
+    this.refreshEditDate();
+  }
+
+  refreshEditDate(value = date.currentUTC()) {
+    this.editDate.value = [{ value }];
   }
 
   getValue<Value = PropertyValue>(name: string): PropertyAssignment<Value> {

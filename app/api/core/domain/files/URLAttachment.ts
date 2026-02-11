@@ -17,7 +17,16 @@ export class URLAttachment extends BaseFile {
 
   constructor(props: Props) {
     const { entity, url, ...baseProps } = props;
-    super(baseProps);
+    const filename = baseProps?.filename ?? url;
+    const originalname = baseProps?.originalname ?? url;
+
+    super({
+      ...baseProps,
+      filename,
+      originalname,
+    });
+    this.filename = filename;
+    this.originalname = originalname;
     this.url = url;
     this.entity = entity;
     // keeping this since it still possible to pass content with prop spread

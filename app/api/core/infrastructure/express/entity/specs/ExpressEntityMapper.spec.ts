@@ -644,4 +644,281 @@ describe('ExpressEntityMapper', () => {
       expect(result.inputFiles![2].metadata.mimetype).toBe('text/plain');
     });
   });
+
+  // eslint-disable-next-line max-statements
+  describe('toEntityUpdateInput()', () => {
+    it('should map basic required fields correctly', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Updated Entity Title',
+        template: 'template456',
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.sharedId).toBe('shared123');
+      expect(result.language).toBe('en');
+      expect(result.propertyAssignments).toContainEqual({
+        name: 'title',
+        value: [{ value: 'Updated Entity Title' }],
+      });
+      expect(result.templateId).toBe('template456');
+      expect(result.files).toEqual([]);
+    });
+
+    it('should map icon when provided', () => {
+      const result1 = ExpressEntityMapper.toEntityUpdateInput({
+        dto: {
+          _id: 'entity123',
+          sharedId: 'shared123',
+          language: 'en',
+          title: 'Entity',
+          icon: {
+            _id: 'icon789',
+            label: 'Updated Icon',
+            type: 'updated-icon-type',
+          },
+        },
+      });
+
+      expect(result1.icon).toEqual({
+        id: 'icon789',
+        label: 'Updated Icon',
+        type: 'updated-icon-type',
+      });
+    });
+
+    it('should set icon to undefined when icon._id is null', () => {
+      const result = ExpressEntityMapper.toEntityUpdateInput({
+        dto: {
+          _id: 'entity123',
+          sharedId: 'shared123',
+          language: 'en',
+          title: 'Entity',
+          icon: {
+            _id: null,
+            label: '',
+            type: '',
+          },
+        },
+      });
+
+      expect(result.icon).toBeUndefined();
+    });
+
+    it('should map existing documents with _id to files array', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        documents: [
+          { _id: 'doc1', originalname: 'document1.pdf' },
+          { _id: 'doc2', originalname: 'document2.pdf' },
+        ],
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.files).toEqual([
+        { id: 'doc1', originalname: 'document1.pdf' },
+        { id: 'doc2', originalname: 'document2.pdf' },
+      ]);
+    });
+
+    it('should map existing attachments with _id to files array', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        attachments: [
+          { _id: 'att1', originalname: 'attachment1.pdf' },
+          { _id: 'att2', originalname: 'attachment2.pdf' },
+        ],
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.files).toEqual([
+        { id: 'att1', originalname: 'attachment1.pdf' },
+        { id: 'att2', originalname: 'attachment2.pdf' },
+      ]);
+    });
+
+    it('should combine documents and attachments with _id in files array', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        documents: [{ _id: 'doc1', originalname: 'document1.pdf' }],
+        attachments: [
+          { _id: 'att1', originalname: 'attachment1.pdf' },
+          { _id: 'att2', originalname: 'attachment2.pdf' },
+        ],
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.files).toEqual([
+        { id: 'doc1', originalname: 'document1.pdf' },
+        { id: 'att1', originalname: 'attachment1.pdf' },
+        { id: 'att2', originalname: 'attachment2.pdf' },
+      ]);
+    });
+
+    it('should map new attachments without _id to uploadedFiles as URL attachments', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        attachments: [
+          { originalname: 'new-attachment.pdf', url: 'https://example.com/new-attachment.pdf' },
+        ],
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.uploadedFiles).toBeDefined();
+      expect(result.uploadedFiles).toHaveLength(1);
+      expect(result.uploadedFiles![0].metadata.originalname).toBe('new-attachment.pdf');
+      expect(result.uploadedFiles![0].metadata.url).toBe('https://example.com/new-attachment.pdf');
+    });
+
+    it('should separate new and existing attachments correctly', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        attachments: [
+          { _id: 'att1', originalname: 'existing-attachment.pdf' },
+          {
+            originalname: 'new-attachment.pdf',
+            url: 'https://example.com/new-attachment.pdf',
+          },
+        ],
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.files).toContainEqual({
+        id: 'att1',
+        originalname: 'existing-attachment.pdf',
+      });
+      expect(result.uploadedFiles).toHaveLength(1);
+      expect(result.uploadedFiles![0].metadata.originalname).toBe('new-attachment.pdf');
+    });
+
+    it('should map inputFiles when provided', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+      };
+      const inputFiles: InputFile[] = [
+        {
+          mimetype: 'application/pdf',
+          filename: 'uploaded.pdf',
+          filepath: '/tmp/uploaded.pdf',
+          originalname: 'uploaded.pdf',
+          isAttachment: () => false,
+        } as unknown as InputFile,
+      ];
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto, inputFiles });
+
+      expect(result.uploadedFiles).toBe(inputFiles);
+    });
+
+    it('should combine inputFiles and URL attachments', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        attachments: [
+          {
+            originalname: 'url-attachment.pdf',
+            url: 'https://example.com/url-attachment.pdf',
+          },
+        ],
+      };
+      const inputFiles: InputFile[] = [
+        {
+          mimetype: 'application/pdf',
+          filename: 'uploaded.pdf',
+          filepath: '/tmp/uploaded.pdf',
+          originalname: 'uploaded.pdf',
+          isAttachment: () => false,
+        } as unknown as InputFile,
+      ];
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto, inputFiles });
+
+      expect(result.uploadedFiles).toHaveLength(2);
+      expect(result.uploadedFiles![0]).toBe(inputFiles[0]);
+      expect(result.uploadedFiles![1].metadata.originalname).toBe('url-attachment.pdf');
+      expect(result.uploadedFiles![1].metadata.url).toBe('https://example.com/url-attachment.pdf');
+    });
+
+    it('should filter out attachments without URL when creating URL attachments', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        attachments: [
+          { originalname: 'no-url.pdf' },
+          { originalname: 'with-url.pdf', url: 'https://example.com/with-url.pdf' },
+        ],
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.uploadedFiles).toHaveLength(1);
+      expect(result.uploadedFiles![0].metadata.originalname).toBe('with-url.pdf');
+    });
+
+    it('should handle empty metadata object', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        metadata: {},
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.propertyAssignments).toHaveLength(1);
+      expect(result.propertyAssignments).toEqual([
+        {
+          name: 'title',
+          value: [{ value: 'Entity' }],
+        },
+      ]);
+    });
+
+    it('should handle attachments and documents with empty arrays', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        documents: [],
+        attachments: [],
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.files).toEqual([]);
+      expect(result.uploadedFiles).toBeUndefined();
+    });
+  });
 });

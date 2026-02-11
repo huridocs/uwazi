@@ -4,16 +4,16 @@ import referencesAPI from '#app/Viewer/referencesAPI.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 import * as connectionsTypes from '#app/Connections/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
-
 import { actions } from '#app/BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
+import { getStore } from '#shared/atomStore/index.js';
 import { documentsApi } from '#app/Documents/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { closePanel as closeConnectionPanel } from '#app/Connections/actions/uiActions.js';
-import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
 import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
 import * as selectionActions from './selectionActions.js';
 import * as uiActions from './uiActions.js';
@@ -101,7 +101,7 @@ export function deleteDocument(doc) {
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
-    atomStore.set(deletedEntityAtom, doc.sharedId);
+    getStore().set(deletedEntityAtom, doc.sharedId);
     await dispatch(unselectAllDocuments());
   };
 }

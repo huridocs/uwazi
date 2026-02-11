@@ -12,6 +12,15 @@ export class EntityTranslationDoesNotExistError extends DomainError {
   }
 }
 
+export class EntityDoesNotExistError extends DomainError {
+  constructor(sharedId: string) {
+    super(
+      `Entity with shared ID '${sharedId}' does not exist.`,
+      'entity.entity.does_not_exist_error'
+    );
+  }
+}
+
 export class AttachmentNotFoundError extends DomainError {
   constructor(index: number, available: InputFile[]) {
     super(

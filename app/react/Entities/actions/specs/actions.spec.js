@@ -1,13 +1,15 @@
+import { getStore } from '#shared/atomStore/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import api from '#app/Entities/EntitiesAPI.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { atomStore, deletedEntityAtom } from '#V2/atoms.js';
+import { deletedEntityAtom } from '#V2/atoms.js';
 
 import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles.js';
 import * as actions from '../actions.js';
 
 describe('Entities actions', () => {
+  const atomStore = getStore();
   let dispatch;
 
   beforeEach(() => {

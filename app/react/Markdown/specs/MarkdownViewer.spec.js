@@ -3,14 +3,15 @@
 import React, { Component } from 'react';
 
 import { shallow } from 'enzyme';
-
-import { atomStore, userAtom } from '#app/V2/atoms.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { userAtom } from '#app/V2/atoms.js';
 import { store } from '#app/store.js';
 import CustomHookComponents from '../CustomHooks.js';
 import MarkdownViewer from '../MarkdownViewer.js';
 import { errorCollector } from '../utils.js';
 
 describe('MarkdownViewer', () => {
+  const atomStore = getStore();
   let component;
   let props;
 

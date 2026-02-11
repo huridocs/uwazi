@@ -11,6 +11,7 @@ import { tenants } from '#api/tenants/index.js';
 import date from '#api/utils/date.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { ObjectId } from 'mongodb';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO.js';
 import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler.js';
@@ -121,6 +122,29 @@ class FilesService {
     }
   }
 
+  async bulkUpsert(files: BaseFile[]) {
+    const _files = files.filter(f => f.hasChanged);
+
+    if (!_files.length) return;
+
+    await this.deps.filesDS.bulkUpdate(_files);
+
+    this.deps.transactionManager.onCommitted(async () => {
+      await ArrayUtils.sequentialFor(_files, async file => {
+        const after = file.toDTO();
+        const before = file.previousVersion?.toDTO();
+        if (!before) return;
+
+        await this.deps.eventBus.emit(
+          new FileUpdatedEvent({
+            after,
+            before,
+          })
+        );
+      });
+    });
+  }
+
   async deleteEntityFiles(entitySharedIds: string[]) {
     const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
     if (isNonEmptyArray(files)) {
@@ -128,15 +152,22 @@ class FilesService {
     }
   }
 
-  async delete(files: [BaseFile, ...BaseFile[]]) {
-    const contentFiles = files.filter(f => f.hasContent());
+  async delete(files: BaseFile[]) {
+    if (!files.length) return;
+    const thumbnails = await this.deps.filesDS
+      .getThumbnails(files.filter(f => f instanceof ProcessedPDF))
+      .all();
 
-    await this.deps.filesDS.delete(files);
+    const allFilesToDelete = [...files, ...thumbnails];
+
+    const contentFiles = allFilesToDelete.filter(f => f.hasContent());
+
+    await this.deps.filesDS.delete(allFilesToDelete);
     await this.deps.relV1DS.deleteByFiles(contentFiles);
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(
-        new FilesDeletedEvent({ files: files.map(f => FileMappers.toDBO(f)) })
+        new FilesDeletedEvent({ files: allFilesToDelete.map(f => FileMappers.toDBO(f)) })
       );
       await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
         await ArrayUtils.sequentialFor(contentFiles, async file => {
@@ -172,3 +203,4 @@ class FilesService {
 }
 
 export { FilesService };
+export type { Deps as FilesServiceDeps };

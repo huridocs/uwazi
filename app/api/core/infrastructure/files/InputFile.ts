@@ -132,9 +132,9 @@ export class InputFile {
         destination: '',
         encoding: '',
         fieldname: '',
-        filename: '',
+        filename: originalname,
         path: '',
-        size: 0,
+        size: 1,
       },
       'url_attachment'
     );

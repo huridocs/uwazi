@@ -54,7 +54,7 @@ class MongoEntityLanguageMapper {
 
 class MongoEntityMapper {
   static toDBO(entity: Entity): EntityDBO[] {
-    let icon: EntityDBO['icon'];
+    let icon: EntityDBO['icon'] = { _id: null, type: 'Empty' };
     let user: EntityDBO['user'];
     const { published, sharedId } = entity;
     const template = ObjectId.createFromHexString(entity.template.id);
@@ -89,6 +89,8 @@ class MongoEntityMapper {
       creationDate: translation.creationDate.value[0].value,
       editDate: translation.editDate.value[0].value,
 
+      generatedToc: entity.generatedToc,
+
       icon,
       published,
       permissions,
@@ -104,7 +106,7 @@ class MongoEntityMapper {
   static toDomain(entityDbo: EntityDBO[], templateDbo: TemplateDBO): Entity {
     const template = MongoTemplateMapper.toDomain(templateDbo);
     const userId = entityDbo[0].user?.toHexString();
-    const { sharedId, published } = entityDbo[0];
+    const { sharedId, published, generatedToc } = entityDbo[0];
     const permissions = entityDbo[0].permissions?.map(permission => ({
       refId: permission.refId.toString(),
       type: permission.type as PermissionType,
@@ -113,7 +115,7 @@ class MongoEntityMapper {
 
     let icon: EntityIcon | undefined;
 
-    if (entityDbo[0].icon) {
+    if (entityDbo[0].icon?._id && entityDbo[0]?.icon?.label) {
       icon = {
         id: entityDbo[0].icon._id,
         label: entityDbo[0].icon.label,
@@ -122,6 +124,7 @@ class MongoEntityMapper {
     }
 
     return new Entity({
+      generatedToc,
       template,
       sharedId,
       published,

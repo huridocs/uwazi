@@ -7,15 +7,15 @@ import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
 import api from '#app/utils/api.js';
-
 import { mockID } from '#shared/uniqueID.js';
+import { getStore } from '#shared/atomStore/index.js';
 import { documentsApi } from '#app/Documents/index.js';
 import { APIURL } from '#app/config.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
 import * as libraryActions from '../../../Library/actions/saveEntityWithFiles.js';
 import * as actions from '../documentActions.js';
 import * as types from '../actionTypes.js';
@@ -454,6 +454,7 @@ describe('documentActions', () => {
     });
 
     describe('deleteDocument', () => {
+      const atomStore = getStore();
       it('should delete the document and dispatch a notification on success', done => {
         spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
         spyOn(atomStore, 'set');

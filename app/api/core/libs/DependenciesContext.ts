@@ -3,12 +3,14 @@ import { TransactionManager } from '../application/contracts/TransactionManager.
 import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
+import { Logger } from './logger/contracts/Logger.js';
 
 type Dependencies = {
   eventEmitter: EventEmitter;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
+  logger: Logger;
 };
 
 class DependenciesContext extends AsyncLocalStorage<Dependencies> {
@@ -18,6 +20,14 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     }
 
     return this.getStore()!.transactionManager;
+  }
+
+  get logger() {
+    if (!this.getStore()?.logger) {
+      throw new Error('Logger is not set');
+    }
+
+    return this.getStore()!.logger;
   }
 
   get idGenerator(): IdGenerator {
@@ -42,6 +52,14 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     }
 
     return this.getStore()!.eventEmitter;
+  }
+
+  attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Dependencies): void {
+    const originalMethod = (anInstance[method] as any).bind(anInstance);
+
+    // eslint-disable-next-line no-param-reassign
+    (anInstance[method] as any) = async (...args: any[]) =>
+      this.run(deps, async () => originalMethod(...args));
   }
 }
 

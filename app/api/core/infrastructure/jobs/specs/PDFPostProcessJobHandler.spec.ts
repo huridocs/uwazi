@@ -70,6 +70,9 @@ describe('PDFPostProcessJob', () => {
           status: 'processing',
           filename: 'english.pdf',
           entity: 'fileEntity',
+          mimetype: 'application/pdf',
+          size: 1000,
+          creationDate: 1000,
         }),
       ],
     };

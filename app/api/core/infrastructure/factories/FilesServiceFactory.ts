@@ -1,4 +1,4 @@
-import { FilesService } from '#api/core/application/FilesService.js';
+import { FilesService, FilesServiceDeps } from '#api/core/application/FilesService.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -15,7 +15,7 @@ import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 class FilesServiceFactory {
   static default(
     transactionManager: MongoTransactionManager,
-    deps: Partial<ConstructorParameters<typeof FilesService>[0]> = {}
+    deps: Partial<FilesServiceDeps> = {}
   ) {
     const jobsDispatcher =
       deps.jobsDispatcher ||

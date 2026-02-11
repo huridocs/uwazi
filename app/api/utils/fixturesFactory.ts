@@ -206,6 +206,9 @@ function getFixturesFactory() {
           filename: `${idMapper(id)}.jpg`,
           type: 'thumbnail',
           entity: extra?.entity,
+          mimetype: 'image/jpeg',
+          size: extra?.size || 1000,
+          creationDate: extra?.creationDate || 1000,
         }) as ThumbnailDBO,
       ];
     },

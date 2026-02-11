@@ -1,4 +1,4 @@
-import { atomStore } from '#V2/atoms/index.js';
+import { getStore } from '#shared/atomStore/index.js';
 import { EntityCompositionUseCase } from '../useCases/EntityCompositionUseCase.js';
 import { EntityRepository } from '#V2/infrastructure/repositories/EntityRepository.js';
 
@@ -29,6 +29,7 @@ export class DependencyContainer {
 
   getEntityCompositionUseCase(): EntityCompositionUseCase {
     if (!this.entityCompositionUseCase) {
+      const atomStore = getStore();
       this.entityCompositionUseCase = new EntityCompositionUseCase(this.getRepository(), atomStore);
     }
     return this.entityCompositionUseCase;

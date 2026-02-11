@@ -4,14 +4,15 @@ import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { atomStore, userAtom } from '#V2/atoms/index.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { userAtom } from '#V2/atoms/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { store } from '#app/store.js';
-import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from '#app/Markdown/components/index.js';
-import CustomHookComponents from '#app/Markdown/CustomHooks/index.js';
-import markdownToReact from '#app/Markdown/markdownToReact.js';
-import { ValidatedElement } from '#app/Markdown/ValidatedElement.js';
-import { errorCollector, visualizationHtmlTags } from '#app/Markdown/utils.js';
+import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components/index.js';
+import CustomHookComponents from './CustomHooks/index.js';
+import markdownToReact from './markdownToReact.js';
+import { ValidatedElement } from './ValidatedElement.js';
+import { errorCollector, visualizationHtmlTags } from './utils.js';
 
 class MarkdownViewer extends Component {
   static errorHtml(index, message) {
@@ -45,7 +46,7 @@ class MarkdownViewer extends Component {
     if (errorCollector.hasErrors()) {
       errorCollector.report();
 
-      const user = atomStore.get(userAtom);
+      const user = getStore().get(userAtom);
       if (user._id) {
         // prepare the error message to be shown to the logged in user
         store.dispatch(notify(errorCollector.display(), 'warning', 20000));

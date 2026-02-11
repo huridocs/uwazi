@@ -32,6 +32,7 @@ const createSut = () => {
         jobsDispatcher,
         eventEmitter,
         idGenerator,
+        logger: TestUtils.mockClass({}),
       },
       async () => (transactional ? transactionManager.run(callback) : callback())
     );
@@ -101,7 +102,7 @@ describe('AsyncEventEmitter', () => {
     sut.listen(ListenerA2);
     sut.listen(ListenerB);
 
-    const eventA = new EventA({ data: 'some data', tenantName: 'tenant', userId: 'user' });
+    const eventA = new EventA({ data: 'some data', userId: 'user' });
 
     await runInContext(async () => sut.emit(eventA));
 
@@ -110,11 +111,11 @@ describe('AsyncEventEmitter', () => {
     expect(jobs).toMatchObject([
       {
         name: 'EventA:ListenerA1',
-        params: { data: 'some data', tenantName: 'tenant', userId: 'user' },
+        params: { data: 'some data', userId: 'user' },
       },
       {
         name: 'EventA:ListenerA2',
-        params: { data: 'some data', tenantName: 'tenant', userId: 'user' },
+        params: { data: 'some data', userId: 'user' },
       },
     ]);
   });
@@ -122,7 +123,7 @@ describe('AsyncEventEmitter', () => {
   it('should throw when there are no listeners registered for the event', async () => {
     const { sut, runInContext } = createSut();
 
-    const eventA = new EventA({ data: 'some data', tenantName: 'tenant', userId: 'user' });
+    const eventA = new EventA({ data: 'some data', userId: 'user' });
 
     const promise = runInContext(async () => sut.emit(eventA));
 
@@ -134,7 +135,7 @@ describe('AsyncEventEmitter', () => {
 
     sut.listen(ListenerA1);
 
-    const eventA = new EventA({ data: 'some data', tenantName: 'tenant', userId: 'user' });
+    const eventA = new EventA({ data: 'some data', userId: 'user' });
 
     await expect(runInContext(async () => sut.emit(eventA), false)).rejects.toThrow(
       'Cannot emit events outside of a transaction'

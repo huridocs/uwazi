@@ -19,6 +19,7 @@ import { Provider } from 'jotai';
 import omit from 'lodash/omit.js';
 import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
+import { getStore } from '#shared/atomStore/index.js';
 import api from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
@@ -31,7 +32,7 @@ import Root from './App/Root.js';
 import RouteHandler from './App/RouteHandler.js';
 import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
 import { ClientFeatureFlags } from './V2/shared/types.js';
-import { atomStore, hydrateAtomStore } from './V2/atoms/index.js';
+import { hydrateAtomStore } from './V2/atoms/index.js';
 import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
 import { getRoutes } from './Routes.js';
@@ -267,7 +268,7 @@ const setReduxState = async (
   return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
-const getSSRProperties = async (
+const prepareSSRContext = async (
   req: ExpressRequest,
   routes: RouteObject[],
   settings: ClientSettings,
@@ -276,6 +277,8 @@ const getSSRProperties = async (
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { fetchRequest, ssrError } = createFetchRequest(req);
   const { query } = createStaticHandler(routes);
+  const atomStore = getStore();
+  hydrateAtomStore(atomStoreData, atomStore);
   const staticHandleContext = await query(fetchRequest);
   const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
   const reduxState = reduxStore.getState();
@@ -286,6 +289,7 @@ const getSSRProperties = async (
     staticHandleContext,
     router,
     ssrError,
+    atomStore,
   };
 };
 
@@ -329,8 +333,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
-  const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =
-    await getSSRProperties(req, routes, settings, language);
+  const { reduxState, atomStoreData, staticHandleContext, router, ssrError, atomStore } =
+    await prepareSSRContext(req, routes, settings, language);
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
@@ -342,7 +346,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
 
-  hydrateAtomStore(atomStoreData);
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
