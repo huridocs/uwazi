@@ -228,7 +228,7 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
     Sentry.captureException(error);
   }
 
-  if (result.code === 500) {
+  if (result.code >= 500) {
     result.prettyMessage = 'A server side error has occurred';
     result.error = 'A server side error has occurred';
   }
