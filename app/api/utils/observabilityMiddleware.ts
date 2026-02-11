@@ -9,15 +9,14 @@ const observabilityMiddleware = (req: Request, res: Response, next: NextFunction
 
   telemetryCollector.add({
     request_id: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
     method: req.method,
     path: req.path,
-    user_agent: req.headers['user-agent'],
   });
 
   res.on('finish', () => {
     telemetryCollector.add({
       status_code: res.statusCode,
+      user_id: req?.user?._id?.toString(),
     });
 
     const logData = telemetryCollector.build();

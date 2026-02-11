@@ -5,6 +5,7 @@ import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { InputFile } from 'api/core/infrastructure/files/InputFile';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
 import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService';
@@ -16,7 +17,6 @@ import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssign
 import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
 import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
-import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;

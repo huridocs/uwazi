@@ -7,15 +7,15 @@ type Time = {
 class TelemetryCollector {
   private metadata: Record<string, any>;
 
-  private mainProcess: string;
-
   private time: Map<string, Time>;
 
-  constructor(mainProcess: string) {
-    this.mainProcess = mainProcess;
+  private mainOperation: string;
+
+  constructor(mainOperation: string) {
     this.time = new Map<string, Time>();
     this.metadata = {};
-    this.timeStart(mainProcess);
+    this.mainOperation = mainOperation;
+    this.timeStart(mainOperation);
   }
 
   add(metadata: Record<string, any>) {
@@ -50,13 +50,25 @@ class TelemetryCollector {
   }
 
   build() {
-    const enriched: Record<string, any> = {};
+    const mainTime = this.time.get(this.mainOperation)!;
 
-    this.time.forEach((timeEntry, operationName) => {
-      enriched[`${operationName}_duration_ms`] = timeEntry.duration();
-    });
+    const timings = Array.from(this.time.entries())
+      .filter(([operation]) => operation !== this.mainOperation)
+      .sort(([, a], [, b]) => a.start - b.start)
+      .map(([operation, timeEntry], index) => ({
+        operation,
+        duration_ms: timeEntry.duration(),
+        order: index,
+      }));
 
-    return { ...this.metadata, ...enriched };
+    return {
+      ...this.metadata,
+      timings,
+      summary: {
+        main_operation: this.mainOperation,
+        total_duration_ms: mainTime.duration(),
+      },
+    };
   }
 }
 
