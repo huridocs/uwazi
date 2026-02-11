@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import settings from 'api/settings/settings';
-import { appContext } from './AppContext';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
@@ -12,9 +11,6 @@ declare global {
 }
 
 export default async (req: Request, _res: Response, next: NextFunction) => {
-  const telemetryCollector = appContext.getTelemetryCollector();
-  telemetryCollector.timeStart('language_middleware');
-
   try {
     let lang = req.get('content-language');
     if (!lang && req.cookies) {
@@ -29,7 +25,6 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
     //@ts-ignore
     req.language = languages.find(l => l.key === lang) ? lang : languages.find(l => l.default).key;
 
-    telemetryCollector.timeEnd('language_middleware');
     next();
   } catch (e) {
     next(e);

@@ -88,7 +88,6 @@ class UploadMiddleware {
     };
   }
 
-  // @TimedMethod('upload_middleware_multiple')
   multiple() {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {

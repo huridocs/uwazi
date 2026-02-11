@@ -1,4 +1,3 @@
-import { TelemetryCollector } from 'api/core/libs/logger/TelemetryCollector';
 import { AsyncLocalStorage } from 'async_hooks';
 
 interface ContextData {
@@ -36,14 +35,6 @@ class AppContext {
 
   setValueAsDefault(key: string, value: unknown) {
     this.defaultData[key] = value;
-  }
-
-  getTelemetryCollector() {
-    return this.get('telemetryCollector') as TelemetryCollector;
-  }
-
-  setTelemetryCollector(telemetryCollector: TelemetryCollector) {
-    this.set('telemetryCollector', telemetryCollector);
   }
 }
 
