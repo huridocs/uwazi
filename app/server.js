@@ -15,7 +15,6 @@ import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
-import { observabilityMiddleware } from 'api/utils/observabilityMiddleware';
 import { Redis } from 'api/infrastructure/Redis';
 import { maskMongoPassword } from 'api/utils/maskMongoPassword';
 import { elasticClient } from 'api/search/elastic';
@@ -40,6 +39,7 @@ import { initSentry } from './initSentry';
 import { setupQueueWorker } from './setupQueueWorker';
 
 import 'api/core/infrastructure/listeners/Listeners';
+import { dependenciesContextMiddleware } from 'api/core/infrastructure/express/middlewares/DependenciesContextMiddleware';
 
 mongoose.Promise = Promise;
 
@@ -131,8 +131,8 @@ app.use(appContextMiddleware);
 
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
+app.use(dependenciesContextMiddleware);
 app.use(requestIdMiddleware);
-app.use(observabilityMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 

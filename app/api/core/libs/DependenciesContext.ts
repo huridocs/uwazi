@@ -4,6 +4,7 @@ import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher';
 import { IdGenerator } from '../application/contracts/IdGenerator';
 import { EventEmitter } from './eventEmitter/EventEmitter';
 import { Logger } from './logger/contracts/Logger';
+import { TelemetryCollector } from './logger/TelemetryCollector';
 
 type Dependencies = {
   eventEmitter: EventEmitter;
@@ -11,6 +12,7 @@ type Dependencies = {
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
   logger: Logger;
+  telemetryCollector?: TelemetryCollector;
 };
 
 class DependenciesContext extends AsyncLocalStorage<Dependencies> {
@@ -22,7 +24,15 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     return this.getStore()!.transactionManager;
   }
 
-  get logger() {
+  get telemetryCollector(): TelemetryCollector {
+    if (!this.getStore()?.telemetryCollector) {
+      throw new Error('TelemetryCollector is not set');
+    }
+
+    return this.getStore()!.telemetryCollector!;
+  }
+
+  get logger(): Logger {
     if (!this.getStore()?.logger) {
       throw new Error('Logger is not set');
     }
