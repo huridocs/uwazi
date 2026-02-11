@@ -1,11 +1,11 @@
-import { appContext } from 'api/utils/AppContext';
+import { DependenciesContext } from '../DependenciesContext';
 
 export function TimedMethod(operationName: string) {
   return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      const telemetryCollector = appContext.getTelemetryCollector();
+      const { telemetryCollector } = DependenciesContext;
 
       if (!telemetryCollector) {
         return originalMethod.apply(this, args);
