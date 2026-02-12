@@ -66,6 +66,7 @@ const attachment = {
   entity: 'sharedId1',
   type: 'attachment',
   filename: 'attachment.txt',
+  mimetype: 'text/plain',
 } as const;
 
 const thumbnail = {
@@ -75,6 +76,7 @@ const thumbnail = {
   entity: 'publicEntity',
   type: 'thumbnail',
   filename: 'thumbnail.jpg',
+  mimetype: 'image/jpeg',
 } as const;
 
 const restrictedThumbnail = {
@@ -84,6 +86,7 @@ const restrictedThumbnail = {
   entity: 'restrictedSharedId',
   type: 'thumbnail',
   filename: 'restricted.jpg',
+  mimetype: 'image/jpeg',
 } as const;
 
 const downloadFixtures = {
@@ -139,6 +142,7 @@ const fixtures: DBFixture = {
       filename: 'fileNotInDisk',
       originalname: 'fileNotInDisk',
       type: 'document',
+      mimetype: 'application/pdf',
       status: 'ready',
     },
     {
@@ -158,6 +162,7 @@ const fixtures: DBFixture = {
       originalname: 'restrictedUpload2',
       filename: 'restricted file 2 not on disk',
       type: 'document',
+      mimetype: 'application/pdf',
       language: 'eng',
     },
     {
@@ -167,25 +172,35 @@ const fixtures: DBFixture = {
       originalname: 'readOnlyUpload',
       filename: 'read only file',
       type: 'document',
+      mimetype: 'application/pdf',
       language: 'eng',
     },
     {
       entity: 'sharedId1',
       filename: 'fileWithoutTocFlag',
+      mimetype: 'application/pdf',
     },
     {
       _id: db.id(),
       originalname: 'fileNotONDisk',
       filename: 'fileNotOnDisk',
       type: 'custom',
+      mimetype: 'application/pdf',
     },
-    { _id: db.id(), originalname: 'upload2', type: 'document' },
-    { _id: db.id(), originalname: 'upload3', type: 'custom' },
+    { _id: db.id(), originalname: 'upload2', type: 'document', mimetype: 'application/pdf' },
+    {
+      _id: db.id(),
+      originalname: 'upload3',
+      filename: 'fileWithoutTocFlag',
+      type: 'custom',
+      mimetype: 'application/pdf',
+    },
     {
       _id: externalUrlFileId,
       originalname: 'external url',
       type: 'attachment',
       url: 'http://example.com/image.jpg',
+      mimetype: 'image/jpeg',
     },
   ],
   connections: [

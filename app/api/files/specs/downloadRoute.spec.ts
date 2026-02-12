@@ -65,7 +65,14 @@ describe('files routes download', () => {
     { file: downloadFixtures.thumbnail, endpoint: '/files/thumbnails' },
   ])('Get $endpoint, $file.filename', ({ file, endpoint }) => {
     it('should get the file', async () => {
-      const response = await request(app).get(path.join(endpoint, file.filename));
+      const response = await request(app)
+        .get(path.join(endpoint, file.filename))
+        .buffer()
+        .parse((res, cb) => {
+          const data: any[] = [];
+          res.on('data', chunk => data.push(chunk));
+          res.on('end', () => cb(null, Buffer.concat(data)));
+        });
 
       expect(response.status).toBe(200);
       expect(response.body instanceof Buffer).toBe(true);

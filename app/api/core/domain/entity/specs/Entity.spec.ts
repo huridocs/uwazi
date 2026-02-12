@@ -1373,4 +1373,419 @@ describe('Entity', () => {
       );
     });
   });
+
+  describe('Update method', () => {
+    const sampleEntity = () =>
+      Entity.create({
+        template: createSampleTemplate(),
+        languages: ['en'],
+      });
+
+    it('should update common fields', () => {
+      const entity = sampleEntity();
+
+      const icon = { id: 'icon-id', label: 'icon-label', type: 'emoji' };
+
+      entity.update({ icon, generatedToc: true });
+
+      expect(entity.icon).toEqual(icon);
+      expect(entity.generatedToc).toEqual(true);
+
+      entity.update({});
+
+      expect(entity.icon).toEqual(icon);
+      expect(entity.generatedToc).toEqual(true);
+
+      entity.update({ generatedToc: false });
+
+      expect(entity.icon).toEqual(icon);
+      expect(entity.generatedToc).toEqual(false);
+
+      entity.update({ icon: undefined });
+
+      expect(entity.icon).toEqual(undefined);
+      expect(entity.generatedToc).toEqual(false);
+    });
+
+    it('should update editDate for all translations when update is called', async () => {
+      const entity = Entity.create({
+        languages: ['en', 'pt'],
+        template: createSampleTemplate(),
+        userId: 'user-456',
+      });
+
+      entity.update({ icon: { id: 'icon-id', label: 'label', type: 'emoji' } });
+
+      const firstEditDateEn = entity.getTranslation('en').editDate.value[0].value;
+      const firstEditDatePt = entity.getTranslation('pt').editDate.value[0].value;
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      entity.update({ icon: { id: 'new-icon', label: 'label', type: 'emoji' } });
+
+      expect(entity.getTranslation('en').editDate.value[0].value).toBeGreaterThan(firstEditDateEn);
+      expect(entity.getTranslation('pt').editDate.value[0].value).toBeGreaterThan(firstEditDatePt);
+    });
+
+    it('should NOT update editDate when update is called with no changes', async () => {
+      const entity = Entity.create({
+        languages: ['en', 'pt'],
+        template: createSampleTemplate(),
+        userId: 'user-456',
+      });
+
+      const icon = { id: 'icon-id', label: 'icon-label', type: 'emoji' };
+      entity.update({ icon });
+
+      const editDateEnBefore = entity.getTranslation('en').editDate.value[0].value;
+      const editDatePtBefore = entity.getTranslation('pt').editDate.value[0].value;
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      entity.update({ icon });
+
+      expect(entity.getTranslation('en').editDate.value[0].value).toEqual(editDateEnBefore);
+      expect(entity.getTranslation('pt').editDate.value[0].value).toEqual(editDatePtBefore);
+    });
+  });
+
+  describe('Changing Template', () => {
+    it('should handle metadata migration when changing templates', () => {
+      const originalTemplate = TemplateBuilder.aTemplate({ id: 'old-template' })
+        .withProperties([
+          new TextProperty({
+            id: 'common_text',
+            template: 'old-template',
+            label: 'Common Text',
+          }),
+          new NumericProperty({
+            id: 'common_numeric',
+            template: 'old-template',
+            label: 'Common Numeric',
+          }),
+          new TextProperty({
+            id: 'old_only_text',
+            template: 'old-template',
+            label: 'Old Only Text',
+          }),
+          new NumericProperty({
+            id: 'type_change_property',
+            template: 'old-template',
+            label: 'Type Change Property',
+          }),
+        ])
+        .build();
+
+      const newTemplate = TemplateBuilder.aTemplate({ id: 'new-template' })
+        .withProperties([
+          new TextProperty({
+            id: 'common_text',
+            template: 'new-template',
+            label: 'Common Text',
+          }),
+          new NumericProperty({
+            id: 'common_numeric',
+            template: 'new-template',
+            label: 'Common Numeric',
+          }),
+          new TextProperty({
+            id: 'type_change_property',
+            template: 'new-template',
+            label: 'Type Change Property',
+          }),
+          new SelectProperty({
+            id: 'select_new',
+            template: 'new-template',
+            label: 'New Select',
+            content: 'thes-1',
+          }),
+        ])
+        .build();
+
+      const entity = Entity.create({
+        languages: ['en', 'es'],
+        template: originalTemplate,
+      });
+
+      entity.setPropertyAssignmentsInAllLanguages([
+        entity.template.createPropertyAssignment('title', {
+          value: [{ value: 'Entity Title' }],
+        }),
+        entity.template.createPropertyAssignment('common_text', {
+          value: [{ value: 'Common text value' }],
+        }),
+        entity.template.createPropertyAssignment('common_numeric', {
+          value: [{ value: 42 }],
+        }),
+        entity.template.createPropertyAssignment('old_only_text', {
+          value: [{ value: 'This will be removed' }],
+        }),
+        entity.template.createPropertyAssignment('type_change_property', {
+          value: [{ value: 100 }],
+        }),
+      ]);
+
+      entity.changeTemplate(newTemplate);
+
+      expect(entity.translations).toEqual({
+        en: {
+          id: expect.any(Object),
+          language: 'en',
+          metadata: {
+            title: {
+              name: 'title',
+              value: [{ value: 'Entity Title' }],
+              type: 'text',
+              isTranslatable: true,
+            },
+            creationDate: {
+              name: 'creationDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            editDate: {
+              name: 'editDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            common_text: {
+              name: 'common_text',
+              type: 'text',
+              value: [{ value: 'Common text value' }],
+              isTranslatable: true,
+            },
+            common_numeric: {
+              name: 'common_numeric',
+              value: [{ value: 42 }],
+              type: 'numeric',
+              isTranslatable: false,
+            },
+            type_change_property: {
+              name: 'type_change_property',
+              value: [],
+              type: 'text',
+              isTranslatable: true,
+            },
+            new_select: {
+              name: 'new_select',
+              type: 'select',
+              language: 'n/a',
+              value: [],
+              isTranslatable: false,
+            },
+          },
+        },
+        es: {
+          id: expect.any(Object),
+          language: 'es',
+          metadata: {
+            title: {
+              name: 'title',
+              value: [{ value: 'Entity Title' }],
+              type: 'text',
+              isTranslatable: true,
+            },
+            creationDate: {
+              name: 'creationDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            editDate: {
+              name: 'editDate',
+              value: [{ value: expect.any(Number) }],
+              type: 'date',
+              isTranslatable: false,
+            },
+            common_text: {
+              name: 'common_text',
+              type: 'text',
+              value: [{ value: 'Common text value' }],
+              isTranslatable: true,
+            },
+            common_numeric: {
+              name: 'common_numeric',
+              value: [{ value: 42 }],
+              type: 'numeric',
+              isTranslatable: false,
+            },
+            type_change_property: {
+              name: 'type_change_property',
+              value: [],
+              type: 'text',
+              isTranslatable: true,
+            },
+            new_select: {
+              name: 'new_select',
+              type: 'select',
+              language: 'n/a',
+              value: [],
+              isTranslatable: false,
+            },
+          },
+        },
+      });
+    });
+  });
+
+  describe('Entity previous version', () => {
+    it('should return the correct previous version of the Entity', () => {
+      const entity = new Entity({
+        template: createSampleTemplate(),
+        icon: { id: 'id', label: 'label', type: 'emoji' },
+        generatedToc: true,
+        published: true,
+        sharedId: 'sharedId',
+        userId: 'userId',
+        permissions: [],
+        translations: [
+          { language: 'en', id: 'id_1', metadata: {} },
+          { language: 'es', id: 'id_1', metadata: {} },
+        ],
+      });
+
+      entity.update({ icon: undefined, generatedToc: false });
+
+      entity.setPropertyAssignments(
+        [
+          entity.template.createPropertyAssignment('text', {
+            value: [{ value: 'New text value' }],
+          }),
+        ],
+        'en'
+      );
+
+      expect(entity.asDTO).toMatchObject({ icon: undefined, generatedToc: false });
+      expect(entity.getTranslation('en').metadata.text).toEqual({
+        name: 'text',
+        value: [{ value: 'New text value' }],
+        type: 'text',
+        isTranslatable: true,
+      });
+
+      expect(entity.previousVersion.asDTO.translations).toMatchObject([
+        {
+          id: 'id_1',
+          language: 'en',
+          metadata: {
+            text: { name: 'text', value: [], type: 'text', isTranslatable: true },
+          },
+        },
+        {
+          id: 'id_1',
+          language: 'es',
+          metadata: {
+            text: { name: 'text', value: [], type: 'text', isTranslatable: true },
+          },
+        },
+      ]);
+
+      expect(entity.previousVersion).toMatchObject({
+        icon: { id: 'id', label: 'label', type: 'emoji' },
+        generatedToc: true,
+      });
+    });
+  });
+
+  describe('hasChanged method', () => {
+    const createTestEntity = () =>
+      new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: [
+          {
+            language: 'en',
+            id: 'id_1',
+            metadata: {
+              text: {
+                isTranslatable: true,
+                name: 'text',
+                type: 'text',
+                value: [{ value: 'text' }],
+              },
+            },
+          },
+        ],
+      });
+
+    it('should return TRUE when a property value changes', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [{ value: 'New text' }] })],
+        'en'
+      );
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when icon changes', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when generatedToc changes', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.update({ generatedToc: true });
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when property is cleared', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [] })],
+        'en'
+      );
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when template changes', () => {
+      const template2 = TemplateBuilder.aTemplate({ id: 'different-template' })
+        .withProperties([
+          new TextProperty({
+            id: 'text',
+            template: 'different-template',
+            label: 'Text',
+          }),
+        ])
+        .build();
+
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.changeTemplate(template2);
+
+      expect(entity.hasChanged).toBe(true);
+    });
+
+    it('should return TRUE when permissions are added', () => {
+      const entity = createTestEntity();
+
+      expect(entity.hasChanged).toBe(false);
+
+      entity.addGrantForCreator('user-999');
+
+      expect(entity.hasChanged).toBe(true);
+    });
+  });
 });
