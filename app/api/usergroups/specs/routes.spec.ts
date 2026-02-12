@@ -193,7 +193,7 @@ describe('usergroups routes', () => {
         });
         const response: request.Response = await endpointCall();
         expect(response.status).toBe(500);
-        expect(response.body.prettyMessage).toContain('unhandled error');
+        expect(response.body.prettyMessage).toContain('A server side error has occurred');
       }
     );
   });

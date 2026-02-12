@@ -111,6 +111,12 @@ const handleTemplateUpdate = async (
   }
 };
 
+class MissingExtractorError extends DomainError {
+  constructor() {
+    super('Missing extractor.', 'MissingExtractorError');
+  }
+}
+
 const Extractors = {
   get: model.get.bind(model),
   getById: model.getById.bind(model),
@@ -118,7 +124,7 @@ const Extractors = {
   delete: async (_ids: string[]) => {
     const ids = _ids.map(id => new ObjectId(id));
     const extractors = await model.get({ _id: { $in: ids } });
-    if (extractors.length !== ids.length) throw new Error('Missing extractor.');
+    if (extractors.length !== ids.length) throw new MissingExtractorError();
     await model.delete({ _id: { $in: ids } });
     await Suggestions.delete({ extractorId: { $in: ids } });
   },
@@ -137,7 +143,7 @@ const Extractors = {
   update: async (extractor: ExtractorType) => {
     const { _id, name, source, property, templates: templateIds } = extractor;
     const [curentExtractor] = await model.get({ _id });
-    if (!curentExtractor) throw Error('Missing extractor.');
+    if (!curentExtractor) throw new MissingExtractorError();
     await templatePropertyExistenceCheck(property, templateIds);
 
     const updated = await model.save({

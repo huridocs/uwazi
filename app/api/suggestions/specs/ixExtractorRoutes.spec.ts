@@ -183,7 +183,7 @@ describe('extractor routes', () => {
       {
         reason: 'non existing _id',
         expectedMessage: 'Missing extractor.',
-        expectedCode: 500,
+        expectedCode: 400,
         change: {
           _id: fixturesFactory.id('non_existing_extractor').toString(),
         },
@@ -283,7 +283,7 @@ describe('extractor routes', () => {
           fixturesFactory.id('non-existing-extractor').toString(),
         ],
       };
-      const response = await request(app).delete('/api/ixextractors').query(input).expect(500);
+      const response = await request(app).delete('/api/ixextractors').query(input).expect(400);
       expect(response.body.error).toBe('Missing extractor.');
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(3);

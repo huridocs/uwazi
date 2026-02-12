@@ -7,6 +7,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { DeleteResult } from 'mongodb';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';
@@ -213,13 +214,15 @@ describe('users routes', () => {
       });
 
       it('should return an error if recover password fails', async () => {
+        class ErrorSample extends DomainError {}
+
         jest.spyOn(users, 'recoverPassword').mockImplementation(() => {
-          throw new Error('error on recoverPassword');
+          throw new ErrorSample('error on recoverPassword', 'error_code');
         });
         const response = await request(app)
           .post('/api/recoverpassword')
           .send({ email: 'recover@me.com' });
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.prettyMessage).toContain('error on recoverPassword');
       });
     });
