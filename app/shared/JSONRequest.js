@@ -47,6 +47,7 @@ function toUrlParams(_data) {
   }
 
   return `?${Object.keys(data)
+    // eslint-disable-next-line max-statements
     .map(key => {
       if (typeof data[key] === 'undefined' || data[key] === null) {
         return;
@@ -56,7 +57,13 @@ function toUrlParams(_data) {
         data[key] = JSON.stringify(data[key]);
       }
 
-      let encodedValue = encodeURIComponent(data[key]);
+      let encodedValue;
+
+      try {
+        encodedValue = encodeURIComponent(data[key]);
+      } catch (_e) {
+        encodedValue = data[key];
+      }
 
       if (encodeURIComponent(key) === 'q') {
         try {
@@ -66,6 +73,7 @@ function toUrlParams(_data) {
           encodedValue = encodeURIComponent(data[key]);
         }
       }
+
       return `${encodeURIComponent(key)}=${encodedValue}`;
     })
     .filter(param => param)
