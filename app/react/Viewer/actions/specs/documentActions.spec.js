@@ -172,6 +172,7 @@ describe('documentActions', () => {
 
   describe('indentTocElement', () => {
     it('should change the toc entry indentation', () => {
+      spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
       const chapter1 = {
         range: { start: 12, end: 23 },
         label: 'Chapter 1',
@@ -196,9 +197,14 @@ describe('documentActions', () => {
       });
 
       store.dispatch(actions.indentTocElement(chapter2, 1));
-      expect(store.getActions()[0].type).toBe('rrf/change');
-      expect(store.getActions()[0].model).toBe('documentViewer.tocForm');
-      expect(store.getActions()[0].value[1].indentation).toBe(1);
+      expect(store.getActions()[0].type).toBe('loadAction');
+      expect(formActions.load).toHaveBeenCalledWith(
+        'documentViewer.tocForm',
+        expect.arrayContaining([
+          expect.objectContaining({ _id: 1, indentation: 0 }),
+          expect.objectContaining({ _id: 2, indentation: 1 }),
+        ])
+      );
     });
   });
 
@@ -435,7 +441,8 @@ describe('documentActions', () => {
           },
         });
 
-        spyOn(api, 'post').and.callThrough();
+        const originalPost = api.post;
+        jest.spyOn(api, 'post').mockImplementation((...args) => originalPost.apply(api, args));
         store
           .dispatch(actions.saveToc(toc, fileId))
           .then(() => {

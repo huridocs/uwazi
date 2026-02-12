@@ -545,7 +545,9 @@ describe('libraryActions', () => {
     it('should handle exceptions and dispatch a notification on error', async () => {
       mockID();
       const doc = { name: 'entity1' };
-      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.throwError('Internal server error.');
+      spyOn(saveEntityWithFiles, 'saveEntityWithFiles').and.throwError(
+        new Error('Internal server error.')
+      );
 
       const expectedActions = [
         { model: 'library.sidepanel.metadata', submitFailed: true, type: 'rrf/setSubmitFailed' },

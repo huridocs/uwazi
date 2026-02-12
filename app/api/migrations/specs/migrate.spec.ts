@@ -23,6 +23,13 @@ describe('migrate', () => {
     beforeEach(async () => {
       await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
+      migrator.loader = (p: string) =>
+        Promise.resolve(
+          (function (r: NodeRequire) {
+            const m = r(p);
+            return m.default ?? m;
+          })(require)
+        );
     });
 
     it('should call migrator migrate', async () => {

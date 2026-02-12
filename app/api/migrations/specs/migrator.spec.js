@@ -31,6 +31,13 @@ describe('migrator', () => {
     beforeEach(async () => {
       await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
+      migrator.loader = p =>
+        Promise.resolve(
+          (function (r) {
+            const m = r(p);
+            return m.default ?? m;
+          })(require)
+        );
       jest.spyOn(migration1, 'up');
       jest.spyOn(migration2, 'up');
       jest.spyOn(migration10, 'up');

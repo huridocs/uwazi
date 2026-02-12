@@ -83,7 +83,7 @@ const clickToFillAndWait = async (expectedValue: any) => {
 };
 
 const mockCoerceValue = (result: { success: boolean; value?: any }) => {
-  const { coerceValue: coerceValueMock } = jest.requireMock('V2/api/entities');
+  const { coerceValue: coerceValueMock } = jest.requireMock('#V2/api/entities');
   coerceValueMock.mockResolvedValue(result);
 };
 
