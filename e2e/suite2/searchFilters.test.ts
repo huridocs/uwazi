@@ -10,7 +10,6 @@ const getAllEntitiesTitles = async (number: number) => {
   await page.waitForSelector(
     `div.main-wrapper > div.item-group > div.item-document:nth-child(${number})`
   );
-
   return page.$$eval('div.main-wrapper > div.item-group > div.item-document', entities =>
     entities.map(entity => {
       const elem = entity.querySelector('div.item-info > h2.item-name > span');
@@ -92,7 +91,6 @@ describe('search filters path', () => {
       await selectFilterOption('Mecanismo', 4);
       await selectFilterOption('Informe de admisibilidad', 2);
       await selectFilterOption('Ordenes de la corte', 6);
-
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
       await waitForEvent('DOMContentLoaded');
       const entityTitles = await getAllEntitiesTitles(6);
@@ -122,14 +120,11 @@ describe('search filters path', () => {
     describe('AND switch', () => {
       it('should filter entities having all the values selected', async () => {
         await expect(page).toClick('span.multiselectItem-name', { text: 'Ecuador' });
-
         await expect(page).toClick('label[for="pa_sswitcher"].switcher');
         await waitForEvent('DOMContentLoaded');
         const entityTitles = await getAllEntitiesTitles(6);
         expect(entityTitles.length).toEqual(6);
-
         await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
-
         await page.waitForSelector('span.multiselectItem-name');
       });
     });
@@ -138,11 +133,9 @@ describe('search filters path', () => {
   describe('date filters', () => {
     const fillDate = async (selector: string, date: string) => {
       await expect(page).toClick(`div.${selector}`);
-
       await expect(page).toFill(`div.${selector} > div > div > input`, date);
       try {
         await page.waitForSelector('.react-datepicker__day--selected');
-
         await page.click('.react-datepicker__day--selected');
       } catch (_ex) {}
     };
@@ -191,9 +184,7 @@ describe('search filters path', () => {
 
     it('should order by aggregation count despite of selected value when expanded', async () => {
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
-
       await expect(page).toClick('span.multiselectItem-name', { text: 'Categoría A' });
-
       await expect(page).toClick('span.multiselectItem-name', { text: 'Categoría B' });
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
@@ -209,29 +200,20 @@ describe('search filters path', () => {
     it('should define Fecha and País as default filters', async () => {
       await page.goto(host);
       await disableTransitions();
-
       await expect(page).toClick('a', { text: 'Settings' });
-
       await expect(page).toClick('a', { text: 'Templates' });
-
       await expect(page).toClick('a', { text: 'Informe de admisibilidad' });
 
       await expect(page).toClick('button', { text: 'Fecha' });
-
       await expect(page).toClick('label', { text: 'Use as filter' });
-
       await expect(page).toClick('label', { text: 'Default filter' });
-
       await expect(page).toClick('aside button', { text: 'Save' });
 
       await expect(page).toClick('button', { text: 'País' });
-
       await expect(page).toClick('label', { text: 'Default filter' });
-
       await expect(page).toClick('aside button', { text: 'Save' });
 
       await expect(page).toClick('button', { text: 'Save' });
-
       await expect(page).toClick('button', { text: 'Dismiss' });
     });
 
@@ -256,7 +238,6 @@ describe('search filters path', () => {
       });
 
       await expect(page).toMatchElement('li.multiselectItem', { text: 'Venezuela' });
-
       await expect(page).not.toMatchElement('li.multiselectItem', { text: 'No Label' });
     });
 
