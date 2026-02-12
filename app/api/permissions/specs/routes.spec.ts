@@ -5,8 +5,9 @@ import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { PUBLIC_PERMISSION } from '../publicPermission';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { DomainError } from 'api/core/domain/error/DomainError';
+import { PUBLIC_PERMISSION } from '../publicPermission';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -88,9 +89,11 @@ describe('permissions routes', () => {
     });
 
     describe('Error Handling', () => {
+      class ErrorSample extends DomainError {}
+
       it('should handle errors on POST', async () => {
         jest.spyOn(entitiesPermissions, 'set').mockImplementation(() => {
-          throw new Error('error on save');
+          throw new ErrorSample('error on save', 'error_code');
         });
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
@@ -98,29 +101,29 @@ describe('permissions routes', () => {
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app).post('/api/entities/permissions').send(permissionsData);
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.error).toContain('error on save');
       });
       it('should handle errors on PUT', async () => {
         jest.spyOn(entitiesPermissions, 'get').mockImplementation(() => {
-          throw new Error('error on get');
+          throw new ErrorSample('error on get', 'error_code');
         });
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .put('/api/entities/permissions')
           .send({ sharedIds: ['sharedId1', 'sharedId2'] });
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.error).toContain('error on get');
       });
       it('should handle errors on collaborators search', async () => {
         jest.spyOn(collaborators, 'search').mockImplementation(() => {
-          throw new Error('error on get');
+          throw new ErrorSample('error on get', 'error_code');
         });
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .get('/api/collaborators')
           .query({ filterTerm: 'username' });
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(400);
         expect(response.body.error).toContain('error on get');
       });
     });

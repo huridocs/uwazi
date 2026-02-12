@@ -38,7 +38,7 @@ describe('relationships routes', () => {
         .post('/api/relationships/bulk')
         .send({ save: [{ reference: { text: 'test', selectionRectangles: [] } }], delete: [] });
 
-      expect(status).toBe(500);
+      expect(status).toBe(400);
       expect(body.error.match(/selectionRectangles should not be empty/)).not.toBe(null);
     });
   });
