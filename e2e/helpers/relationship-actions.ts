@@ -5,19 +5,16 @@ import { getPropertyOfSelector } from './selectorUtils.js';
 const reloadPage = async () => {
   await page.reload();
   await disableTransitions();
-
   await expect(page).toClick('#tab-relationships');
 };
 
 const clickEdit = async () => {
   const selector = 'button.edit-metadata';
-
   await expect(page).toClick(selector);
 };
 
 const clickSave = async () => {
   await expect(page).toClick('button.btn-success');
-
   await page.waitForXPath("//*[@class='alert-text' and contains(., 'Relationships saved')]");
 };
 
@@ -40,15 +37,11 @@ const removeHub = async (hubNumber: number) => {
 
 const addHub = async (hubType: string) => {
   await expect(page).toClick(`${hubSelector('last')} div.leftRelationshipType button`);
-
   const hubIndex = (await page.$$('div.relationshipsHub')).length - 1;
-
   await expect(page).toClick(
     `${hubSelector(hubIndex)} div.leftRelationshipType div.rw-dropdown-list-input`
   );
-
   await page.type(`${hubSelector(hubIndex)} div.leftRelationshipType div.rw-popup input`, hubType);
-
   await expect(page).toClick(`${hubSelector(hubIndex)} div.leftRelationshipType div.rw-popup li`);
 };
 
@@ -56,9 +49,7 @@ const addNewRelTypeToHub = async (hubNumber: number, relTypeName: string) => {
   await expect(page).toClick(
     `${hubSelector(hubNumber)} div.last-of-type div.rw-dropdown-list-input + span button`
   );
-
   await page.type(`${hubSelector(hubNumber)} div.rw-popup input`, relTypeName);
-
   await expect(page).toClick(
     `${hubSelector(hubNumber)} div.rightRelationshipsTypeGroup:last-child div.rw-popup li`
   );
@@ -81,7 +72,6 @@ const addNewRelationship = async (
     `${typeGroupSelector(hubNumber, typeGroupNumber)} button.relationships-new svg`
   );
   await clearAndType('aside.is-active div.sidepanel-body div.search-box input', searchTerm);
-
   await expect(page).toClick('.sidepanel-body .item-name', { text: searchTerm });
 };
 
@@ -116,7 +106,6 @@ const moveRelationship = async (
   await expect(page).toClick(
     `${relationSelector(hubNumber, typeGroupNumber, relationNumber)} div.moveEntity button`
   );
-
   await expect(page).toClick(
     `${typeGroupSelector(targetHub, targetTypeGroup)} div.insertEntities button`
   );

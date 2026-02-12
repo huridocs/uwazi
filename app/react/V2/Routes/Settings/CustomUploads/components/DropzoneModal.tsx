@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
-
 import { Translate } from '#app/I18N/index.js';
-
 import { FileType } from '#shared/types/fileType.js';
 import { FileDropzone } from '#V2/Components/Forms/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
-import { uploadProgressAtom } from './uploadProgressAtom.js';
 import { UploadService } from '#V2/api/files/index.js';
+import { uploadProgressAtom } from './uploadProgressAtom.js';
 
 type DropzoneModalProps = {
   notify: (responses: (FileType | FetchResponseError)[], message: React.ReactNode) => void;

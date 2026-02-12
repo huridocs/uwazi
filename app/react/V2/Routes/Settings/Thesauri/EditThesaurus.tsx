@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import isEmpty from 'lodash/isEmpty.js';
-
 import { Translate } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';

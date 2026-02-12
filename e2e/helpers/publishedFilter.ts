@@ -15,17 +15,14 @@ const assessFilterStatus = async () => {
 
 const goToPublishedEntities = async () => {
   await page.goto(host);
-
   await page.waitForSelector('[title="Published"]');
   const [publishedSelected, restrcitedSelected] = await assessFilterStatus();
   if (!publishedSelected) {
     await page.click('[title="Published"]');
-
     await page.waitForNavigation();
   }
   if (restrcitedSelected) {
     await page.click('[title="Restricted"]');
-
     await page.waitForNavigation();
   }
   await disableTransitions();
@@ -33,17 +30,14 @@ const goToPublishedEntities = async () => {
 
 const goToRestrictedEntities = async () => {
   await page.goto(host);
-
   await page.waitForSelector('[title="Published"]');
   const [publishedSelected, restrcitedSelected] = await assessFilterStatus();
   if (publishedSelected) {
     await page.click('[title="Published"]');
-
     await page.waitForNavigation();
   }
   if (!restrcitedSelected) {
     await page.click('[title="Restricted"]');
-
     await page.waitForNavigation();
   }
   await disableTransitions();
@@ -52,18 +46,15 @@ const goToRestrictedEntities = async () => {
 const goToAllEntities = async () => {
   await page.goto(host);
   await disableTransitions();
-
   await page.waitForSelector('#publishedStatuspublished');
 
   const [publishedSelected, restrictedStatus] = await assessFilterStatus();
   if (!publishedSelected) {
     await page.click('[title="Published"]');
-
     await page.waitForNavigation();
   }
   if (!restrictedStatus) {
     await page.click('[title="Restricted"]');
-
     await page.waitForNavigation();
   }
   await disableTransitions();

@@ -44,7 +44,6 @@ describe('multi edit', () => {
     return {
       async shiftSelectUntil(toTitle: string) {
         await page.keyboard.down('Shift');
-        await page.keyboard.down('Shift');
         await expect(page).toClick('.item-info', { text: toTitle });
         await page.keyboard.up('Shift');
       },
@@ -59,7 +58,6 @@ describe('multi edit', () => {
   };
 
   const reloadLibrary = async () => {
-    await expect(page).toClick('label', { text: 'Restricted' });
     await expect(page).toClick('label', { text: 'Restricted' });
     await page.waitForNetworkIdle();
     await expect(page).toClick('label', { text: 'Restricted' });
