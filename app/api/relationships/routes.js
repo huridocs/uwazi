@@ -2,9 +2,16 @@ import Ajv from 'ajv';
 
 import { ObjectIdAsString } from 'api/utils/ajvSchemas';
 import { LanguageISO6391Schema } from 'shared/types/commonSchemas';
+import { DomainError } from 'api/core/domain/error/DomainError';
 import relationships from './relationships.js';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+
+class SelectionRectanglesIsEmptyError extends DomainError {
+  constructor() {
+    super('selectionRectangles should not be empty', 'SelectionRectanglesIsEmptyError');
+  }
+}
 
 export default app => {
   app.post(
@@ -21,7 +28,7 @@ export default app => {
             error => error.instancePath.match(/selectionRectangles/) && error.keyword === 'minItems'
           )
         ) {
-          next(new Error('selectionRectangles should not be empty'));
+          next(new SelectionRectanglesIsEmptyError());
         } else {
           next(e);
         }
