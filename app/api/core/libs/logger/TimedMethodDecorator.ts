@@ -11,11 +11,11 @@ export function TimedMethod(operationName: string) {
         return originalMethod.apply(this, args);
       }
 
-      telemetryCollector.timeStart(operationName);
+      const endTimer = telemetryCollector.startTimer(operationName);
 
       const result = await originalMethod.apply(this, args);
 
-      telemetryCollector.timeEnd(operationName);
+      endTimer();
 
       return result;
     };
