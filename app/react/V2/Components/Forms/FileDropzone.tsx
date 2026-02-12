@@ -49,7 +49,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
           className={`p-4 bg-gray-50 rounded-sm border border-gray-300 border-dashed ${className}`}
         >
           <div {...getRootProps()}>
-            <input {...getInputProps()} />
+            <input {...getInputProps({ 'aria-label': 'Upload files' })} />
             <div className="flex flex-col gap-4">
               <ArrowUpTrayIcon className="m-auto w-auto text-gray-200 max-w-20" />
 

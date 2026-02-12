@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -5,6 +8,11 @@ import { I18NLink } from '#app/I18N/index.js';
 
 import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.js';
 import { LibraryModeToggleButtons, mapStateToProps } from '../LibraryModeToggleButtons.js';
+
+jest.mock('#app/utils/index.js', () => {
+  const actual = jest.requireActual('#app/utils/index.js');
+  return { ...actual, isClient: true };
+});
 
 describe('LibraryModeToggleButtons', () => {
   let component;
@@ -15,18 +23,14 @@ describe('LibraryModeToggleButtons', () => {
     mapViewMode: true,
     searchUrl: '?q="asd"',
     showGeolocation: true,
-    zoomIn: jasmine.createSpy('zoomIn'),
-    zoomOut: jasmine.createSpy('zoomOut'),
+    zoomIn: jest.fn(),
+    zoomOut: jest.fn(),
     zoomLevel: 3,
   };
 
   const render = () => {
     component = shallow(<LibraryModeToggleButtons {...props} />);
   };
-
-  beforeAll(() => {
-    spyOn(require('#app/utils'), 'isClient').and.returnValue(true);
-  });
 
   describe('render()', () => {
     beforeEach(() => {

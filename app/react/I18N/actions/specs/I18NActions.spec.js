@@ -9,16 +9,20 @@ import I18NApi from '../../I18NApi.js';
 import * as actions from '../I18NActions.js';
 
 describe('I18NActions', () => {
-  const dispatch = jasmine.createSpy('dispatch');
+  const dispatch = jest.fn();
   const translations = Immutable.fromJS([
     { locale: 'en', contexts: [{ id: 'System', values: { Search: 'Search' } }] },
     { locale: 'es', contexts: [{ id: 'System', values: { Search: 'Buscar' } }] },
   ]);
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('inlineEditTranslation', () => {
     it('should dispatch an OPEN_INLINE_EDIT_FORM action with context and key given', () => {
-      spyOn(formActions, 'load');
-      spyOn(store, 'getState').and.returnValue({ translations });
+      jest.spyOn(formActions, 'load');
+      jest.spyOn(store, 'getState').mockReturnValue({ translations });
       actions.inlineEditTranslation('System', 'Search')(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'OPEN_INLINE_EDIT_FORM',
@@ -34,7 +38,7 @@ describe('I18NActions', () => {
 
   describe('closeInlineEditTranslation', () => {
     it('should dispatch an CLOSE_INLINE_EDIT_FORM action', () => {
-      spyOn(formActions, 'reset');
+      jest.spyOn(formActions, 'reset');
       actions.closeInlineEditTranslation()(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: 'CLOSE_INLINE_EDIT_FORM' });
       expect(formActions.reset).toHaveBeenCalledWith('inlineEditModel');
@@ -49,7 +53,7 @@ describe('I18NActions', () => {
 
   describe('saveTranslations', () => {
     it('should request the I18NApi to save each translation', () => {
-      spyOn(I18NApi, 'save');
+      jest.spyOn(I18NApi, 'save').mockResolvedValue(undefined);
       const translation = [{ _id: 1 }, { _id: 2 }];
       actions.saveTranslations(translation)(dispatch);
       expect(I18NApi.save).toHaveBeenCalledWith(new RequestParams({ _id: 1 }));
@@ -59,7 +63,7 @@ describe('I18NActions', () => {
 
   describe('editTranslations', () => {
     it('should load the translation in to the translations form', done => {
-      spyOn(formActions, 'load').and.returnValue(() => {});
+      jest.spyOn(formActions, 'load').mockReturnValue(() => {});
       const translation = [{ _id: 1 }, { _id: 2 }];
       actions.editTranslations(translation)(dispatch);
       expect(formActions.load).toHaveBeenCalledWith('translationsForm', translation);
@@ -69,11 +73,9 @@ describe('I18NActions', () => {
 
   describe('addLanguage', () => {
     it('should request the I18NApi to add a language', done => {
-      spyOn(I18NApi, 'addLanguage').and.callFake(async () => Promise.resolve());
-      spyOn(SettingsAPI, 'get').and.returnValue(
-        Promise.resolve({ collection: 'updated settings' })
-      );
-      spyOn(basicActions, 'set');
+      jest.spyOn(I18NApi, 'addLanguage').mockResolvedValue(undefined);
+      jest.spyOn(SettingsAPI, 'get').mockResolvedValue({ collection: 'updated settings' });
+      jest.spyOn(basicActions, 'set');
       actions
         .addLanguage({ label: 'Español', key: 'es' })(dispatch)
         .then(() => {
@@ -87,11 +89,9 @@ describe('I18NActions', () => {
 
   describe('deleteLanguage', () => {
     it('should request the I18NApi to add a language', done => {
-      spyOn(I18NApi, 'deleteLanguage').and.callFake(async () => Promise.resolve());
-      spyOn(SettingsAPI, 'get').and.returnValue(
-        Promise.resolve({ collection: 'updated settings' })
-      );
-      spyOn(basicActions, 'set');
+      jest.spyOn(I18NApi, 'deleteLanguage').mockResolvedValue(undefined);
+      jest.spyOn(SettingsAPI, 'get').mockResolvedValue({ collection: 'updated settings' });
+      jest.spyOn(basicActions, 'set');
       actions
         .deleteLanguage('es')(dispatch)
         .then(() => {
@@ -103,7 +103,7 @@ describe('I18NActions', () => {
 
   describe('setDefaultLanguage', () => {
     it('should request the I18NApi to add a language', done => {
-      spyOn(I18NApi, 'setDefaultLanguage').and.callFake(async () => Promise.resolve());
+      jest.spyOn(I18NApi, 'setDefaultLanguage').mockResolvedValue(undefined);
       actions
         .setDefaultLanguage('es')(dispatch)
         .then(() => {
@@ -115,7 +115,7 @@ describe('I18NActions', () => {
 
   describe('resetDefaultTranslations', () => {
     it('should request the I18NApi to reset translation of the language', async () => {
-      spyOn(I18NApi, 'populateTranslations').and.callFake(async () => Promise.resolve());
+      jest.spyOn(I18NApi, 'populateTranslations').mockResolvedValue(undefined);
       await actions.resetDefaultTranslations('es')(dispatch);
       expect(I18NApi.populateTranslations).toHaveBeenCalledWith(
         new RequestParams({ locale: 'es' })

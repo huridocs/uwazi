@@ -74,8 +74,10 @@ describe('ExportButton', () => {
     });
 
     it('should not dispatch on click', () => {
-      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
+      jest.spyOn(actions, 'exportDocuments').mockReturnValue(async () => Promise.resolve());
       render();
+      (actions.exportDocuments as jest.Mock).mockClear();
+      component.find('.btn').simulate('click');
       expect(actions.exportDocuments).not.toHaveBeenCalled();
     });
 

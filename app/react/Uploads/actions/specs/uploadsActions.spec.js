@@ -34,6 +34,7 @@ const mockSuperAgent = (url = `${APIURL}import`) => {
   const mockUpload = superagent.post(url);
   spyOn(mockUpload, 'field').and.returnValue(mockUpload);
   spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+  spyOn(mockUpload, 'end').and.returnValue(mockUpload);
   spyOn(superagent, 'post').and.returnValue(mockUpload);
   return mockUpload;
 };

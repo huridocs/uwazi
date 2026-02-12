@@ -94,14 +94,12 @@ describe('PDFView', () => {
     ref = '';
     anotherProp = '';
 
-    const dispatch = jasmine.createSpy('dispatch');
+    const dispatch = jest.fn(action => (typeof action === 'function' ? action(dispatch) : action));
     context = {
       store: {
         getState: () => ({}),
-        dispatch: dispatch.and.callFake(action =>
-          typeof action === 'function' ? action(dispatch) : action
-        ),
-        subscribe: jasmine.createSpy('subscribe'),
+        dispatch,
+        subscribe: jest.fn(),
       },
     };
 
@@ -112,10 +110,11 @@ describe('PDFView', () => {
       }),
       routes: [],
     };
-    spyOn(routeActions, 'requestViewerState');
-
-    spyOn(routeActions, 'setViewerState').and.returnValue({ type: 'setViewerState' });
+    jest.spyOn(routeActions, 'requestViewerState').mockResolvedValue(undefined);
+    jest.spyOn(routeActions, 'setViewerState').mockReturnValue({ type: 'setViewerState' });
   });
+
+  afterEach(() => jest.restoreAllMocks());
 
   it('should pass down raw property', () => {
     raw = 'true';
@@ -205,7 +204,7 @@ describe('PDFView', () => {
 
   describe('onDocumentReady', () => {
     it('should scrollToPage on the query when not on raw mode', () => {
-      spyOn(uiActions, 'scrollToPage');
+      jest.spyOn(uiActions, 'scrollToPage');
       raw = 'false';
       page = 15;
       render();
@@ -214,13 +213,13 @@ describe('PDFView', () => {
 
       raw = 'true';
       render();
-      uiActions.scrollToPage.calls.reset();
+      uiActions.scrollToPage.mockClear();
       component.find({ page: 15 }).at(0).props().onDocumentReady();
       expect(uiActions.scrollToPage).not.toHaveBeenCalled();
     });
 
     it('should activate text reference if query parameters have reference id', () => {
-      spyOn(uiActions, 'activateReference').and.returnValue({ type: 'ABC' });
+      jest.spyOn(uiActions, 'activateReference').mockReturnValue({ type: 'ABC' });
       raw = 'false';
       ref = 'refId';
       pathname = 'pathname';
@@ -234,8 +233,8 @@ describe('PDFView', () => {
     });
 
     it('should emit documentLoaded event', () => {
-      spyOn(uiActions, 'scrollToPage');
-      spyOn(utils.events, 'emit');
+      jest.spyOn(uiActions, 'scrollToPage');
+      jest.spyOn(utils.events, 'emit');
       render();
 
       component.find({ page: 1 }).at(0).props().onDocumentReady();
@@ -250,7 +249,7 @@ describe('PDFView', () => {
         page = 15;
         anotherProp = 'test';
         pathname = 'pathname';
-        spyOn(uiActions, 'scrollToPage');
+        jest.spyOn(uiActions, 'scrollToPage');
         render();
 
         component.find({ page: 15 }).at(0).props().changePage(16);
@@ -265,7 +264,7 @@ describe('PDFView', () => {
         page = 15;
         anotherProp = 'test';
         pathname = 'pathname';
-        spyOn(uiActions, 'scrollToPage');
+        jest.spyOn(uiActions, 'scrollToPage');
         mockNavigate.mockClear();
 
         render();
@@ -288,19 +287,19 @@ describe('PDFView', () => {
 
   describe('componentWillReceiveProps', () => {
     it('should load raw page when page/raw changes and raw is true', async () => {
-      spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
+      jest.spyOn(entitiesAPI, 'getRawPage').mockResolvedValue('raw text');
       const searchParams = mapProperties({ raw: 'true', page: 15 });
       const wrapper = shallowComponent(searchParams);
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
       wrapper.instance().context = context;
       mockNavigate.mockClear();
-      entitiesAPI.getRawPage.calls.reset();
+      entitiesAPI.getRawPage.mockClear();
       searchParams.set('page', 16);
       searchParams.set('raw', 'false');
       wrapper.setProps({ searchParams });
       wrapper.update();
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-      entitiesAPI.getRawPage.calls.reset();
+      entitiesAPI.getRawPage.mockClear();
       const newSearchParams = mapProperties({ raw: 'true', page: 17 });
 
       wrapper.setProps({
@@ -338,7 +337,7 @@ describe('PDFView', () => {
 
   describe('componentWillUnmount', () => {
     it('should leave edit mode', () => {
-      spyOn(documentActions, 'leaveEditMode').and.returnValue({ type: 'LEAVING_EDIT_MODE' });
+      jest.spyOn(documentActions, 'leaveEditMode').mockReturnValue({ type: 'LEAVING_EDIT_MODE' });
       render();
       component.unmount();
       expect(documentActions.leaveEditMode).toHaveBeenCalled();

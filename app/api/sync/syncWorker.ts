@@ -110,7 +110,7 @@ export const syncWorker = {
   },
 
   async login({ url, username, password }: SyncConfig) {
-    const response = await request.post(urljoin(url, '#api/login'), { username, password });
+    const response = await request.post(urljoin(url, 'api/login'), { username, password });
 
     return response.cookie || '';
   },

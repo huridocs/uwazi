@@ -97,21 +97,29 @@ describe('getPageAssets', () => {
   });
 
   describe('Datasets', () => {
-    let markdownDatasetsResponse: {};
+    let markdownDatasetsResponse: Record<string, unknown>;
 
     beforeEach(() => {
       markdownDatasetsResponse = { request1: 'url1', request2: 'url2' };
-      spyOn(markdownDatasets, 'fetch').and.callFake(async (content, requestParams, options) => {
-        expect(content).toBe('originalContent');
-        expect(requestParams).toEqual(request.onlyHeaders());
-        return Promise.resolve({ ...markdownDatasetsResponse, ...options.additionalDatasets });
-      });
+      jest
+        .spyOn(markdownDatasets, 'fetch')
+        .mockImplementation(async (_content, requestParams, options) => {
+          expect(requestParams).toEqual(request.onlyHeaders());
+          return Promise.resolve({ ...markdownDatasetsResponse, ...options?.additionalDatasets });
+        });
     });
 
     it('should request each dataset inside the content', async () => {
       const stateActions = await getPageAssets(request);
+      expect(markdownDatasets.fetch).toHaveBeenCalledWith(
+        'originalContent',
+        request.onlyHeaders(),
+        expect.any(Object)
+      );
       expect(stateActions.datasets).toEqual(markdownDatasetsResponse);
     });
+
+    afterEach(() => jest.restoreAllMocks());
 
     describe('Extended datasets and data', () => {
       it('should request additional dataset queries and passed data', async () => {

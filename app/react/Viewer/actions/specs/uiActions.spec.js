@@ -52,8 +52,8 @@ describe('Viewer uiActions', () => {
   describe('scrollToActive', () => {
     let dispatch;
     beforeEach(() => {
-      dispatch = jasmine.createSpy('dispatch');
-      spyOn(actions, 'activateReference').and.returnValue({ type: 'activateReference' });
+      dispatch = jest.fn();
+      jest.spyOn(actions, 'activateReference').mockReturnValue({ type: 'activateReference' });
     });
 
     it('should scroll to active if goToActive is true', () => {
@@ -72,9 +72,10 @@ describe('Viewer uiActions', () => {
   describe('activateReference()', () => {
     let dispatch;
     beforeEach(() => {
-      spyOn(scroller, 'to');
-      spyOn(window.document, 'querySelector').and.returnValue(true);
-      dispatch = jasmine.createSpy('dispatch');
+      jest.restoreAllMocks();
+      jest.spyOn(scroller, 'to').mockImplementation(() => Promise.resolve());
+      jest.spyOn(window.document, 'querySelector').mockReturnValue(true);
+      dispatch = jest.fn();
     });
 
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
@@ -208,10 +209,10 @@ describe('Viewer uiActions', () => {
     let references;
 
     beforeEach(() => {
-      dispatch = jasmine.createSpy('dispatch');
+      dispatch = jest.fn();
       references = [{ _id: 'id1' }, { _id: 'id2', reference: 'range' }];
       actions.selectReference(references[1])(dispatch);
-      dispatch.calls.argsFor(0)[0](dispatch);
+      dispatch.mock.calls[0][0](dispatch);
     });
 
     it('should dispatch a call to activateReference', () => {
@@ -229,7 +230,7 @@ describe('Viewer uiActions', () => {
 
   describe('resetReferenceCreation()', () => {
     it('should RESET_REFERENCE_CREATION and unset targetDocument', () => {
-      const dispatch = jasmine.createSpy('dispatch');
+      const dispatch = jest.fn();
       actions.resetReferenceCreation()(dispatch);
 
       expect(dispatch).toHaveBeenCalledWith({ type: types.RESET_REFERENCE_CREATION });
@@ -240,7 +241,7 @@ describe('Viewer uiActions', () => {
 
   describe('scrollToToc', () => {
     it('should scroll do the pageof the toc, with an offset to the toc position', async () => {
-      spyOn(scroller, 'to').and.callFake(async () => Promise.resolve());
+      jest.spyOn(scroller, 'to').mockResolvedValue(undefined);
       await actions.scrollToToc({
         text: 'The hammer to fall',
         selectionRectangles: [
@@ -264,7 +265,7 @@ describe('Viewer uiActions', () => {
 
   describe('scrollToPage', () => {
     it('should scroll to the page passed forcing the load', async () => {
-      spyOn(scroller, 'to').and.callFake(async () => Promise.resolve());
+      jest.spyOn(scroller, 'to').mockResolvedValue(undefined);
       actions.scrollToPage(3, 1, true);
       expect(scroller.to).toHaveBeenCalledWith('.document-viewer div#page-3', '.document-viewer', {
         dividerOffset: 1,

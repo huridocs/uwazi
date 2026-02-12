@@ -21,23 +21,25 @@ describe('Attachments actions', () => {
     store = mockStore({});
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('uploadAttachment', () => {
     let file;
     let mockUpload;
 
     beforeEach(() => {
       mockUpload = superagent.post(`${APIURL}attachments/upload`);
-      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
-      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
-      spyOn(superagent, 'post').and.returnValue(mockUpload);
+      jest.spyOn(mockUpload, 'field').mockReturnValue(mockUpload);
+      jest.spyOn(mockUpload, 'attach').mockReturnValue(mockUpload);
+      jest.spyOn(mockUpload, 'end').mockReturnValue(mockUpload);
+      jest.spyOn(superagent, 'post').mockReturnValue(mockUpload);
 
-      // needed to work with firefox/chrome and phantomjs
       file = { name: 'filename' };
-      const isChrome = typeof File === 'function';
-      if (isChrome) {
+      if (typeof File === 'function') {
         file = new File([], 'filename');
       }
-      //
     });
 
     it('should start the upload', () => {
@@ -86,7 +88,7 @@ describe('Attachments actions', () => {
         name: 'fileName',
         url: 'URL',
       };
-      spyOn(api, 'post').and.returnValue({ then: cb => cb({ json: { text: 'file' } }) });
+      jest.spyOn(api, 'post').mockReturnValue({ then: cb => cb({ json: { text: 'file' } }) });
       const expectedActions = [
         { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 100 },
@@ -113,8 +115,10 @@ describe('Attachments actions', () => {
 
   describe('renameAttachment', () => {
     beforeEach(() => {
-      spyOn(api, 'post').and.returnValue({ then: cb => cb({ json: 'file' }) });
-      spyOn(formActions, 'reset').and.callFake(form => ({ type: 'formReset', value: form }));
+      jest.spyOn(api, 'post').mockReturnValue({ then: cb => cb({ json: 'file' }) });
+      jest
+        .spyOn(formActions, 'reset')
+        .mockImplementation(form => ({ type: 'formReset', value: form }));
       mockID();
     });
 
@@ -147,9 +151,9 @@ describe('Attachments actions', () => {
 
   describe('deleteAttachment', () => {
     it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', done => {
-      spyOn(api, 'delete').and.callFake(async () => Promise.resolve({}));
+      jest.spyOn(api, 'delete').mockResolvedValue({});
       mockID();
-      const dispatch = jasmine.createSpy('dispatch');
+      const dispatch = jest.fn();
       actions
         .deleteAttachment(
           'id',
@@ -179,8 +183,10 @@ describe('Attachments actions', () => {
 
   describe('loadForm', () => {
     beforeEach(() => {
-      spyOn(formActions, 'reset').and.callFake(form => ({ type: 'formReset', value: form }));
-      spyOn(formActions, 'load').and.callFake((form, attachment) => ({
+      jest
+        .spyOn(formActions, 'reset')
+        .mockImplementation(form => ({ type: 'formReset', value: form }));
+      jest.spyOn(formActions, 'load').mockImplementation((form, attachment) => ({
         type: 'formLoad',
         value: `${form}, ${attachment}`,
       }));
@@ -200,7 +206,9 @@ describe('Attachments actions', () => {
 
   describe('submitForm', () => {
     beforeEach(() => {
-      spyOn(formActions, 'submit').and.callFake(form => ({ type: 'formSubmit', value: form }));
+      jest
+        .spyOn(formActions, 'submit')
+        .mockImplementation(form => ({ type: 'formSubmit', value: form }));
     });
 
     it('should submit the form', () => {
@@ -214,7 +222,9 @@ describe('Attachments actions', () => {
 
   describe('resetForm', () => {
     beforeEach(() => {
-      spyOn(formActions, 'reset').and.callFake(form => ({ type: 'formReset', value: form }));
+      jest
+        .spyOn(formActions, 'reset')
+        .mockImplementation(form => ({ type: 'formReset', value: form }));
     });
 
     it('should reset and load passed form', () => {

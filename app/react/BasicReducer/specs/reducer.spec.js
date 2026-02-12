@@ -101,7 +101,7 @@ describe('BasicReducer', () => {
     let state;
     beforeEach(() => {
       reducer = createReducer('1', { nested: { key: [] } });
-      state = Immutable.Map({
+      state = Immutable.fromJS({
         nested: {
           key: [
             { _id: 1, title: 'test' },
@@ -125,7 +125,7 @@ describe('BasicReducer', () => {
       });
     });
     it('should update passed value in a list in a nested key at the namespace, by a custom index', () => {
-      state = Immutable.Map({
+      state = Immutable.fromJS({
         nested: {
           key: [
             { _id: 1, title: 'test' },

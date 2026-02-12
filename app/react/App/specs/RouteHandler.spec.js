@@ -26,6 +26,8 @@ class TestController extends RouteHandler {
   }
 }
 
+const originalRequestState = TestController.requestState;
+
 describe('RouteHandler', () => {
   let component;
   let instance;
@@ -38,11 +40,11 @@ describe('RouteHandler', () => {
   ];
   let state;
 
-  const context = { store: { getState: () => state, dispatch: jasmine.createSpy('dispatch') } };
+  const context = { store: { getState: () => state, dispatch: jest.fn() } };
 
   beforeEach(() => {
-    spyOn(api, 'locale');
-    spyOn(I18NUtils, 'saveLocale');
+    jest.spyOn(api, 'locale');
+    jest.spyOn(I18NUtils, 'saveLocale');
 
     state = {
       settings: { collection: Immutable.fromJS({ languages }) },
@@ -56,7 +58,9 @@ describe('RouteHandler', () => {
     backend.get(`${APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
     delete window.__initialData__;
 
-    spyOn(TestController, 'requestState').and.callThrough();
+    jest
+      .spyOn(TestController, 'requestState')
+      .mockImplementation((...args) => originalRequestState.apply(TestController, args));
 
     RouteHandler.renderedFromServer = false;
 
@@ -69,7 +73,10 @@ describe('RouteHandler', () => {
     instance.constructor = TestController;
   });
 
-  afterEach(() => backend.restore());
+  afterEach(() => {
+    jest.restoreAllMocks();
+    backend.restore();
+  });
 
   describe('static requestState', () => {
     it('should return a promise with an empty array', done => {
@@ -110,13 +117,13 @@ describe('RouteHandler', () => {
 
     describe('when params change', () => {
       it('should request the clientState', () => {
-        spyOn(instance, 'getClientState');
+        jest.spyOn(instance, 'getClientState');
         component.setProps(props);
         expect(instance.getClientState).toHaveBeenCalledWith(props);
       });
 
       it('should call emptyState', () => {
-        spyOn(instance, 'emptyState');
+        jest.spyOn(instance, 'emptyState');
         instance.componentDidUpdate(props);
         expect(instance.emptyState).toHaveBeenCalled();
       });
@@ -124,7 +131,7 @@ describe('RouteHandler', () => {
 
     describe('when path changes', () => {
       it('should request the clientState', () => {
-        spyOn(instance, 'getClientState');
+        jest.spyOn(instance, 'getClientState');
         props = {
           params: { ...routeParams },
           location,
@@ -137,7 +144,7 @@ describe('RouteHandler', () => {
 
     describe('when params are the same', () => {
       it('should NOT request the clientState', () => {
-        spyOn(instance, 'getClientState');
+        jest.spyOn(instance, 'getClientState');
         component.setProps({ params: { ...routeParams }, location });
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
