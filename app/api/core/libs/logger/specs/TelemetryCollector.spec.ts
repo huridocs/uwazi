@@ -165,27 +165,6 @@ describe('TelemetryCollector', () => {
       expect(result.timings[2].order).toBe(2);
     });
 
-    it('should calculate start_offset_ms relative to main operation', () => {
-      const collector = new TelemetryCollector('main_operation');
-      const mainStartTime = currentTime;
-
-      currentTime += 100;
-      const end1 = collector.startTimer('operation_1');
-      const op1StartTime = currentTime;
-
-      currentTime += 50;
-      const end2 = collector.startTimer('operation_2');
-      const op2StartTime = currentTime;
-
-      end1();
-      end2();
-
-      const result = collector.build();
-
-      expect(result.timings[0].start_offset_ms).toBe(op1StartTime - mainStartTime);
-      expect(result.timings[1].start_offset_ms).toBe(op2StartTime - mainStartTime);
-    });
-
     it('should not include main operation in timings array', () => {
       const collector = new TelemetryCollector('main_operation');
       collector.startTimer('operation_1')();

@@ -6,7 +6,7 @@ import { EventEmitter } from './eventEmitter/EventEmitter';
 import { Logger } from './logger/contracts/Logger';
 import { TelemetryCollector } from './logger/TelemetryCollector';
 
-type Dependencies = {
+type Deps = {
   eventEmitter: EventEmitter;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
@@ -15,7 +15,7 @@ type Dependencies = {
   telemetryCollector?: TelemetryCollector;
 };
 
-class DependenciesContext extends AsyncLocalStorage<Dependencies> {
+class DependenciesContext extends AsyncLocalStorage<Deps> {
   get transactionManager(): TransactionManager {
     if (!this.getStore()?.transactionManager) {
       throw new Error('TransactionManager is not set');
@@ -24,7 +24,7 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     return this.getStore()!.transactionManager;
   }
 
-  get telemetryCollector(): TelemetryCollector {
+  getTelemetryCollector(): TelemetryCollector {
     if (!this.getStore()?.telemetryCollector) {
       throw new Error('TelemetryCollector is not set');
     }
@@ -64,7 +64,7 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     return this.getStore()!.eventEmitter;
   }
 
-  attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Dependencies): void {
+  attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Deps): void {
     const originalMethod = (anInstance[method] as any).bind(anInstance);
 
     // eslint-disable-next-line no-param-reassign
@@ -76,3 +76,4 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
 const dependenciesContext = new DependenciesContext();
 
 export { dependenciesContext as DependenciesContext };
+export type { Deps as DependenciesContextDeps };

@@ -10,6 +10,9 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import path from 'path';
 import { UserSchema } from 'shared/types/userType';
+import { DependenciesContext } from 'api/core/libs/DependenciesContext';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { TelemetryCollector } from 'api/core/libs/logger/TelemetryCollector';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
@@ -26,8 +29,19 @@ const testingEnvironment = {
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
+    this.mockDependenciesContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
+  },
+
+  mockDependenciesContext() {
+    jest.spyOn(DependenciesContext, 'getTelemetryCollector').mockReturnValue(
+      TestUtils.mockClass<TelemetryCollector>({
+        add: jest.fn(),
+        build: jest.fn(),
+        startTimer: jest.fn().mockReturnValue(jest.fn()),
+      })
+    );
   },
 
   testingFilesPath(fileName: string) {
