@@ -1,12 +1,11 @@
 import { ValidationError as AJVValidationError } from 'ajv';
 import { ZodError } from 'zod';
-
 import type { Request, Response } from 'express';
+
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users/usersModel.js';
 import { ValidationError } from '#api/core/domain/error/ValidationError.js';
-
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';

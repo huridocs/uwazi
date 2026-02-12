@@ -10,7 +10,7 @@ import { TranslationType } from '#shared/translationType.js';
 import { FileType } from '#shared/types/fileType.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { needsAuthorization } from '#api/auth/index.js';
+import { needsAuthorization } from '../auth/index.js';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {

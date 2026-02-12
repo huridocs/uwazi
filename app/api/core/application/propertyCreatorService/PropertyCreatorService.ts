@@ -1,5 +1,5 @@
-import { Context, Property } from '#api/core/domain/template/Property.js';
-import { PropertyFactory } from '#api/core/domain/template/PropertyFactory.js';
+import { Context, Property } from '../../domain/template/Property.js';
+import { PropertyFactory } from '../../domain/template/PropertyFactory.js';
 import { AbstractPropertyCreatorService, CreateInput } from './AbstractPropertyCreatorService.js';
 
 class PropertyCreatorService extends AbstractPropertyCreatorService {

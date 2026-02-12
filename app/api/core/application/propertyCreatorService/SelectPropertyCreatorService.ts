@@ -1,15 +1,15 @@
 import { ThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
-import { Context, Property } from '#api/core/domain/template/Property.js';
-import { SelectPropertyWithInvalidThesaurusError } from '#api/core/domain/template/errors.js';
+import { Context, Property } from '../../domain/template/Property.js';
+import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors.js';
 import { IncorrectPropertyTypeError } from '../errors.js';
 import {
   MultiSelectPropertyProps,
   MultiSelectProperty,
-} from '#api/core/domain/template/select/MultiSelectProperty.js';
+} from '../../domain/template/select/MultiSelectProperty.js';
 import {
   SelectPropertyProps,
   SelectProperty,
-} from '#api/core/domain/template/select/SelectProperty.js';
+} from '../../domain/template/select/SelectProperty.js';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
 
 type Deps = {

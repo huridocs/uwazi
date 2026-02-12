@@ -1,6 +1,6 @@
 import { getStore } from '#shared/atomStore/index.js';
 import { getRoutes } from './Routes.js';
-import { settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { settingsAtom, userAtom } from './V2/atoms/index.js';
 
 let _routes;
 export const getAppRoutes = () => {

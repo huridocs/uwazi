@@ -1,12 +1,12 @@
 import { TaskStatus } from '#shared/tasks/tasks.js';
-import { ClassifierModelSchema } from '#app/Thesauri/types/classifierModelType.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
 import { LabelCountSchema } from '#app/Thesauri/types/labelCountType.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { ExtractedMetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { EntitySchema } from '#shared/types/entityType.js';
-import { ConnectionSchema } from '#sshared/types/connectionType.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from '#app/apiResponseTypes.js';
 import { FileType } from '#shared/types/fileType.js';
 import { PageType } from '#shared/types/pageType.js';
@@ -90,7 +90,7 @@ export interface QuickLabelMetadata {
 
 export interface ThesaurusSuggestions {
   property?: PropertySchema;
-  model?: ClassifierModelSchema;
+  model?: IXModelType;
   docsWithLabels?: LabelCountSchema;
   docsWithSuggestionsForPublish?: LabelCountSchema;
   docsWithSuggestionsForReview?: LabelCountSchema;
