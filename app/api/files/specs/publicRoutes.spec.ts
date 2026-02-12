@@ -8,10 +8,11 @@ import { setupTestUploadedPaths, storage } from 'api/files';
 import { search } from 'api/search';
 import mailer from 'api/utils/mailer';
 import { setUpApp } from 'api/utils/testingRoutes';
+import { PUBLIC_USER_ID } from 'api/users/publicUser';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { routes } from '../jsRoutes';
-import { fixtures, templateId } from './fixtures';
+import { fixtures, templateId, writerUser } from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -114,6 +115,64 @@ describe('public routes', () => {
         text: 'The joker is back!',
         to: 'batman@gotham.com',
       });
+    });
+
+    it('should set req.user to Public user when not authenticated', async () => {
+      let capturedUser: any = null;
+
+      const appWithSpy: Application = setUpApp(
+        routes,
+        (req: Request, res: Response, next: NextFunction) => {
+          res.on('finish', () => {
+            capturedUser = req.user;
+          });
+          next();
+        }
+      );
+
+      await request(appWithSpy)
+        .post('/api/public')
+        .field(
+          'entity',
+          JSON.stringify({ title: 'test req.user', template: templateId.toString() })
+        )
+        .expect(200);
+
+      expect(capturedUser).toBeDefined();
+      expect(capturedUser._id.toString()).toBe(PUBLIC_USER_ID.toString());
+      expect(capturedUser.username).toBe('PublicUser');
+    });
+
+    it('should not overwrite req.user when user is authenticated', async () => {
+      let capturedUser: any = null;
+
+      const appWithAuthenticatedUser: Application = setUpApp(
+        routes,
+        (req: Request, res: Response, next: NextFunction) => {
+          req.user = writerUser;
+
+          res.on('finish', () => {
+            capturedUser = req.user;
+          });
+          next();
+        }
+      );
+
+      await request(appWithAuthenticatedUser)
+        .post('/api/public')
+        .field(
+          'entity',
+          JSON.stringify({
+            title: 'test authenticated user',
+            template: templateId.toString(),
+          })
+        )
+        .expect(200);
+
+      expect(capturedUser).toBeDefined();
+      expect(capturedUser._id.toString()).toBe(writerUser._id.toString());
+      expect(capturedUser.username).toBe(writerUser.username);
+      expect(capturedUser._id.toString()).not.toBe(PUBLIC_USER_ID.toString());
     });
   });
 });

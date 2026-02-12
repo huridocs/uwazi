@@ -90,6 +90,10 @@ const routes = app => {
       try {
         const userForContext = req.user || (await getPublicUser());
 
+        if (!req.user) {
+          req.user = userForContext;
+        }
+
         permissionsContext.setUserInContext(userForContext);
 
         const result = await EntityFacade.create(entity, req.inputFiles);
