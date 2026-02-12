@@ -19,6 +19,7 @@ import {
   entity4es,
   entity5es,
 } from './fixturesTitleSearch.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -187,7 +188,7 @@ describe('entities get searchString', () => {
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {
-        class ErrorSample extends DomainError {}
+        class ErrorSample extends DomainError { }
 
         jest.spyOn(elastic, 'search').mockImplementation(() => {
           throw new ErrorSample('Error for test', 'error_code');
