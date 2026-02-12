@@ -23,7 +23,7 @@ describe('migrate', () => {
     beforeEach(async () => {
       await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
-      migrator.loader = (p: string) =>
+      migrator.loader = async (p: string) =>
         Promise.resolve(
           (function (r: NodeRequire) {
             const m = r(p);

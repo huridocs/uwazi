@@ -8,8 +8,7 @@ import migrationsModel from './migrationsModel.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const loadMigration = p =>
-  import(pathToFileURL(p).href).then(m => m.default);
+const loadMigration = p => import(pathToFileURL(p).href).then(m => m.default);
 
 const promiseInSequence = funcs =>
   funcs.reduce(
@@ -48,7 +47,9 @@ const migrator = {
     );
   },
   shouldMigrate() {
-    return getMigrations(this.migrationsDir, this.loader).then(migrations => Boolean(migrations.length));
+    return getMigrations(this.migrationsDir, this.loader).then(migrations =>
+      Boolean(migrations.length)
+    );
   },
 };
 

@@ -18,12 +18,13 @@ import {
   thesauri,
 } from './fixtures/fixtures.js';
 
-const getDispatchCalls = () =>
-  store.dispatch.mock?.calls ?? store.dispatch.calls?.allArgs() ?? [];
+const getDispatchCalls = () => store.dispatch.mock?.calls ?? store.dispatch.calls?.allArgs() ?? [];
 
 const findNotifyByMessage = message => {
   const calls = getDispatchCalls();
-  const action = calls.map(args => args[0]).find(a => a?.type === 'NOTIFY' && a?.notification?.message === message);
+  const action = calls
+    .map(args => args[0])
+    .find(a => a?.type === 'NOTIFY' && a?.notification?.message === message);
   return action;
 };
 
@@ -32,16 +33,20 @@ describe('sockets', () => {
 
   describe('connection events', () => {
     beforeEach(() => {
-      jest.spyOn(store, 'dispatch').mockImplementation(argument =>
-        typeof argument === 'function' ? argument(store.dispatch) : argument
-      );
+      jest
+        .spyOn(store, 'dispatch')
+        .mockImplementation(argument =>
+          typeof argument === 'function' ? argument(store.dispatch) : argument
+        );
     });
 
     it('should emit a disconnect event', () => {
       jasmine.clock().install();
       socket._callbacks.$disconnect[0]('transport close');
       jasmine.clock().tick(8000);
-      const lostAction = findNotifyByMessage('Lost connection to the server. Your changes may be lost');
+      const lostAction = findNotifyByMessage(
+        'Lost connection to the server. Your changes may be lost'
+      );
       expect(lostAction?.notification?.message).toEqual(
         'Lost connection to the server. Your changes may be lost'
       );
@@ -269,9 +274,11 @@ describe('sockets', () => {
 
   describe('Languages', () => {
     beforeEach(() => {
-      jest.spyOn(store, 'dispatch').mockImplementation(argument =>
-        typeof argument === 'function' ? argument(store.dispatch) : argument
-      );
+      jest
+        .spyOn(store, 'dispatch')
+        .mockImplementation(argument =>
+          typeof argument === 'function' ? argument(store.dispatch) : argument
+        );
     });
 
     describe('language install', () => {
