@@ -86,6 +86,7 @@ describe('upload routes', () => {
         obsoleteMetadata: [],
         documents: [],
         attachments: [],
+        icon: { _id: null, type: 'Empty' },
       });
     });
 
