@@ -4,12 +4,13 @@ import 'app/Viewer/scss/document.scss';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 
+import { getStore } from 'shared/atomStore';
 import { Loader } from 'app/components/Elements/Loader';
 import { PDF } from 'app/PDF';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
 import { selectionHandlers } from 'V2/Components/PDFViewer';
-import { atomStore, pdfScaleAtom } from 'V2/atoms';
+import { pdfScaleAtom } from 'V2/atoms';
 
 import determineDirection from '../utils/determineDirection';
 
@@ -51,7 +52,7 @@ class Document extends Component {
     );
     const highlight = selectionHandlers.adjustSelectionsToScale(
       { ...textSelection, selectionRectangles },
-      atomStore.get(pdfScaleAtom),
+      getStore().get(pdfScaleAtom),
       true
     );
     this.props.setSelection(highlight, this.props.file._id);

@@ -4,6 +4,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { elastic } from 'api/search';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DomainError } from 'api/core/domain/error/DomainError';
 import { searchRoutes } from '../routes';
 
 import {
@@ -187,12 +188,14 @@ describe('entities get searchString', () => {
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {
+        class ErrorSample extends DomainError {}
+
         jest.spyOn(elastic, 'search').mockImplementation(() => {
-          throw new Error('Error for test');
+          throw new ErrorSample('Error for test', 'error_code');
         });
         const { body, status } = await request(app).get('/api/v2/search');
 
-        expect(status).toBe(500);
+        expect(status).toBe(400);
         expect(body.error).toContain('Error for test');
       });
     });

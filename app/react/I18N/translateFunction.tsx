@@ -1,5 +1,6 @@
 import React from 'react';
-import { atomStore, translationsAtom, localeAtom } from 'V2/atoms';
+import { getStore } from 'shared/atomStore';
+import { translationsAtom, localeAtom } from 'V2/atoms';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import { Translate } from './Translate';
 
@@ -21,6 +22,8 @@ const t: TranslationFunction = (
   returnComponent = true,
   truncate = undefined
 ) => {
+  const atomStore = getStore();
+
   if (!contextId) {
     // eslint-disable-next-line no-console
     console.warn(`You cannot translate "${key}", because context id is "${contextId}"`);

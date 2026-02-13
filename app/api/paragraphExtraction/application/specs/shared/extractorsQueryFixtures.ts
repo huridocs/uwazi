@@ -89,26 +89,32 @@ const [entityWithoutExtractorEn] = f.entityInMultipleLanguages(
 const fileEntity1En = f.processedDocument('fileEntity1En', {
   language: 'en',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const secondFileEntity1En = f.processedDocument('secondFileEntity1En', {
   language: 'en',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity1Pt = f.processedDocument('fileEntity1Pt', {
   language: 'pt',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity1It = f.processedDocument('fileEntity1It', {
   language: 'it',
   entity: entity1En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity2It = f.processedDocument('fileEntity2En', {
   language: 'it',
   entity: entity2En.sharedId,
+  mimetype: 'application/pdf',
 });
 const fileEntity4En = f.processedDocument('fileEntity4En', {
   language: 'en',
   entity: entity5En.sharedId,
+  mimetype: 'application/pdf',
 });
 
 const [paragraph1Entity1En, paragraph1Entity1Pt] = f.entityInMultipleLanguages(
