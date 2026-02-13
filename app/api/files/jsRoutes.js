@@ -12,7 +12,7 @@ import settings from '#api/settings/index.js';
 import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
 import mailer from '#api/utils/mailer.js';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
-import { createError, validation } from '../utils.js';
+import { createError, validation } from '../utils/index.js';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');
