@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import loadable from '@loadable/component';
 import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
@@ -9,6 +9,7 @@ import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
 import { pdfEventBus } from './events';
 import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight';
+import { adjustSelectionsToScale } from './functions/handleTextSelection';
 
 const PDFPage = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage
@@ -18,9 +19,13 @@ const eventBus = new EventBus();
 
 interface PDFProps {
   fileUrl: string;
+  /** Highlights in scale=1 (normalized) coordinates; converted to display scale when drawing */
   highlights?: { [page: string]: TextHighlight[] };
+  /** Called with selection in scale=1 (normalized) coordinates, ready to store */
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
+  /** Called when the PDF render scale changes (e.g. for scroll-to-reference in display coords) */
+  onScaleChange?: (scale: number) => void;
   size?: { height?: string; width?: string; overflow?: string };
 }
 
@@ -32,13 +37,37 @@ const getPDFFile = async (fileUrl: string) =>
     isEvalSupported: false,
   }).promise;
 
-const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size }: PDFProps) => {
+const PDF = ({
+  fileUrl,
+  highlights,
+  onSelect = () => undefined,
+  onDeselect,
+  onScaleChange,
+  size,
+}: PDFProps) => {
   const pageRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const [currentScale, setCurrentScale] = useState(1);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
   const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleScaleChange = useCallback(
+    (scale: number) => {
+      setCurrentScale(scale);
+      onScaleChange?.(scale);
+    },
+    [onScaleChange]
+  );
+
+  const handleSelect = useCallback(
+    (selection: TextSelection) => {
+      const normalized = adjustSelectionsToScale(selection, currentScale, true);
+      onSelect(normalized);
+    },
+    [onSelect, currentScale]
+  );
 
   const padding = 0;
   const containerStyles = {
@@ -184,7 +213,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
   }
 
   return (
-    <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
+    <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
       <div id="pdf-container" ref={pdfContainerRef} style={containerStyles}>
         {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
@@ -206,6 +235,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
                     eventBus={eventBus}
                     highlights={pageHighlights}
                     containerWidth={containerWidth}
+                    onScaleChange={handleScaleChange}
                   />
                 </SelectionRegion>
               </div>

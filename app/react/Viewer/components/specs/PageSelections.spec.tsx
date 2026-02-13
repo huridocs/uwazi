@@ -7,8 +7,6 @@ import { RenderResult } from '@testing-library/react';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { ClientEntitySchema, ClientFile } from 'app/istore';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { pdfScaleAtom } from 'V2/atoms';
 import { PageSelections } from '../PageSelections';
 
 const defaultEntityDocument: ClientFile = {
@@ -63,8 +61,6 @@ describe('Page selections highlights', () => {
   };
   let file: any | ClientFile;
   let selections: ExtractedMetadataSchema[];
-  let pdfScalingValue = 1;
-
   beforeEach(() => {
     file = defaultEntityDocument;
     selections = [];
@@ -85,12 +81,7 @@ describe('Page selections highlights', () => {
         }),
       },
     };
-    ({ renderResult } = renderConnectedContainer(
-      <TestAtomStoreProvider initialValues={[[pdfScaleAtom, pdfScalingValue]]}>
-        <PageSelections />
-      </TestAtomStoreProvider>,
-      () => state
-    ));
+    ({ renderResult } = renderConnectedContainer(<PageSelections />, () => state));
   };
 
   it('should only render when editing the entity and has a document', () => {

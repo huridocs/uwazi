@@ -10,7 +10,7 @@ import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Components/UI';
 import { PDF, selectionHandlers, pdfEventBus } from 'V2/Components/PDFViewer';
-import { notificationAtom, pdfScaleAtom } from 'V2/atoms';
+import { notificationAtom } from 'V2/atoms';
 import { Checkbox } from 'V2/Components/Forms';
 import {
   coerceValue,
@@ -46,7 +46,6 @@ const PDFSidepanel = ({
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
   const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
   const selections = useAtomValue(selectionsAtom);
-  const pdfScalingValue = useAtomValue(pdfScaleAtom);
   const setNotifications = useSetAtom(notificationAtom);
   const setSelections = useSetAtom(selectionsAtom);
 
@@ -163,20 +162,15 @@ const PDFSidepanel = ({
   const handleClickToFill = async () => {
     if (selectedText) {
       if (selectedText.selectionRectangles) {
-        const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
-          selectedText,
-          pdfScalingValue,
-          true
-        );
-
+        // Selection is already in scale=1 (normalized) from PDF onSelect
         setHighlights(
-          selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
+          selectionHandlers.getHighlightsFromSelection(selectedText, HighlightColors.NEW)
         );
         setSelections(
           selectionHandlers.updateFileSelection(
             { name: suggestion?.propertyName || '', id: property?._id as string },
             pdfFile?.extractedMetadata,
-            normalizedSelections
+            selectedText
           )
         );
       }

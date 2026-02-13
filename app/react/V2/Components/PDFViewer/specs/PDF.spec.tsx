@@ -5,8 +5,6 @@
 import React from 'react';
 import { render, act, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
-import { pdfScaleAtom } from 'V2/atoms';
-import { TestAtomStoreProvider } from 'V2/testing';
 import { PDF, PDFProps } from '../PDF';
 import * as helpers from '../functions/helpers';
 import { pdfEventBus } from '../events';
@@ -108,11 +106,7 @@ describe('PDF', () => {
   let renderResult: RenderResult;
 
   const renderComponet = () => {
-    renderResult = render(
-      <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-        <PDF fileUrl="url/of/file.pdf" highlights={highlights} />
-      </TestAtomStoreProvider>
-    );
+    renderResult = render(<PDF fileUrl="url/of/file.pdf" highlights={highlights} />);
   };
 
   beforeAll(() => {
@@ -125,7 +119,6 @@ describe('PDF', () => {
   beforeEach(() => {
     jest.spyOn(helpers, 'triggerScroll');
     jest.spyOn(window, 'requestAnimationFrame');
-    jest.spyOn(pdfScaleAtom, 'write');
   });
 
   afterEach(() => {
@@ -166,7 +159,6 @@ describe('PDF', () => {
       })
     );
     expect(mockPageRender).toHaveBeenCalled();
-    expect(pdfScaleAtom.write).toHaveBeenCalled();
     expect(container).toMatchSnapshot();
   });
 
@@ -268,19 +260,13 @@ describe('PDF', () => {
 
       await act(async () => {
         const result = render(
-          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-            <PDF fileUrl="url/of/file1.pdf" highlights={highlights} />
-          </TestAtomStoreProvider>
+          <PDF fileUrl="url/of/file1.pdf" highlights={highlights} />
         );
         unmountInstanceOne = result.unmount;
       });
 
       await act(async () => {
-        render(
-          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-            <PDF fileUrl="url/of/file2.pdf" highlights={highlights} />
-          </TestAtomStoreProvider>
-        );
+        render(<PDF fileUrl="url/of/file2.pdf" highlights={highlights} />);
       });
 
       unmountInstanceOne!();
@@ -386,11 +372,7 @@ describe('PDF', () => {
     it('re-draws when containerWidth changes', async () => {
       let result: RenderResult;
       await act(async () => {
-        result = render(
-          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1]]}>
-            <PDF fileUrl="url/of/file.pdf" highlights={highlights} />
-          </TestAtomStoreProvider>
-        );
+        result = render(<PDF fileUrl="url/of/file.pdf" highlights={highlights} />);
       });
 
       const page1 = result!.container.querySelector('[data-testid="pdf-page"]') as HTMLElement;

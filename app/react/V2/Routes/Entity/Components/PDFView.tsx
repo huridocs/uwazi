@@ -3,12 +3,12 @@ import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
 import { Entity } from 'V2/domain';
-import { PDF, pdfEventBus, selectionHandlers } from 'V2/Components/PDFViewer';
+import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { NeedAuthorization, Truncate, Button } from 'V2/Components/UI';
 import { Panel } from 'V2/Components/Layouts/Panel';
 import { isClient } from 'app/utils';
-import { settingsAtom, pdfScaleAtom, userAtom } from 'V2/atoms';
+import { settingsAtom, userAtom } from 'V2/atoms';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
@@ -17,11 +17,15 @@ import { scrollToPage } from './functions';
 import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom';
 import { useReferencesActions } from './ReferencesPanel/referencesAtom';
 
+type PDFViewProps = {
+  entity: Entity;
+  pagePlaintext?: string;
+};
+
 // eslint-disable-next-line max-statements
-const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {
+const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
-  const pdfScale = useAtomValue(pdfScaleAtom);
   const user = useAtomValue(userAtom);
   const [hydrated, setHydrated] = useState(false);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
@@ -119,21 +123,14 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
 
   const handleAddToToC = useCallback(
     (selection: TextSelection) => {
-      // Normalize selection rectangles to scale=1 before creating ToC entry (like IX does)
-      // This ensures coordinates work correctly regardless of PDF display scale
-      const normalizedSelection = selectionHandlers.adjustSelectionsToScale(
-        selection,
-        pdfScale,
-        true // normalize=true means divide by scale to get scale=1 coordinates
-      );
-      const tocEntry = convertTextSelectionToTocEntry(normalizedSelection);
-      addEntry(tocEntry); // This automatically sets edit mode to true
-      // Switch to ToC tab
+      // Selection is already in scale=1 (normalized) from PDF onSelect
+      const tocEntry = convertTextSelectionToTocEntry(selection);
+      addEntry(tocEntry);
       const next = new URLSearchParams(searchParams.toString());
       next.set(SIDE_TAB_PARAM, 'toc');
       setSearchParams(next, { replace: true });
     },
-    [addEntry, pdfScale, searchParams, setSearchParams]
+    [addEntry, searchParams, setSearchParams]
   );
 
   const handleRemove = useCallback((_selection: TextSelection) => {

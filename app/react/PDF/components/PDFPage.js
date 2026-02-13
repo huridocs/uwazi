@@ -4,7 +4,6 @@ import { isClient } from 'app/utils';
 import { PageReferences } from 'app/Viewer/components/PageReferences';
 import { PageSelections } from 'app/Viewer/components/PageSelections';
 import { calculateScaling } from 'V2/Components/PDFViewer';
-import { atomStore, pdfScaleAtom } from 'V2/atoms';
 import PDFJS, { EventBus } from '../PDFJS';
 
 class PDFPage extends Component {
@@ -129,8 +128,6 @@ class PDFPage extends Component {
           textLayerMode: 1,
           eventBus: new EventBus(),
         });
-
-        atomStore.set(pdfScaleAtom, scale);
 
         this.pdfPageView.setPdfPage(page);
         this.pdfPageView

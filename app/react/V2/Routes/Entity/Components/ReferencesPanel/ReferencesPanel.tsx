@@ -7,7 +7,7 @@ import { EntityReference } from 'app/V2/domain/entities/types';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { pdfEventBus } from 'V2/Components/PDFViewer';
 import { useAtomValue } from 'jotai';
-import { pdfScaleAtom, relationshipTypesAtom } from 'V2/atoms';
+import { relationshipTypesAtom } from 'V2/atoms';
 import { Entity } from 'V2/domain';
 import { searchByTitle } from 'V2/api/entities';
 import { saveTextReference } from 'V2/api/relationships';
@@ -24,7 +24,6 @@ type ReferencesPanelProps = {
 
 const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
-  const pdfScale = useAtomValue(pdfScaleAtom);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const { createReferenceSelection, createReferenceMode } = useReferences();
   const { setCreateReferenceSelection } = useReferencesActions();
@@ -40,66 +39,18 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
     []
   );
 
-  const handleReferenceClick = useCallback(
-    (reference: EntityReference) => {
-      setSelectedReferenceId(reference._id);
+  const handleReferenceClick = useCallback((reference: EntityReference) => {
+    setSelectedReferenceId(reference._id);
 
-      // Scroll to the reference in the PDF
-      const { selectionRectangles } = reference.reference;
-      if (selectionRectangles && selectionRectangles.length > 0) {
-        // Find the first rectangle with a page
-        const rect = selectionRectangles.find(r => r.page);
-        if (rect && rect.page && rect.top !== undefined && rect.left !== undefined) {
-          const pageNumber = Number.parseInt(rect.page, 10);
-
-          // Scale normalized coordinates (if stored at scale=1) to current display scale
-          const scaledTop = (rect.top || 0) * pdfScale;
-          const scaledLeft = (rect.left || 0) * pdfScale;
-
-          // Scroll to the page first
-          pdfEventBus.dispatch('goToPage', pageNumber);
-
-          // Then scroll to the rectangle position
-          setTimeout(() => {
-            const pdfContainer = document.getElementById('pdf-container');
-            const pageWrapper = pdfContainer?.querySelector(`#page-${pageNumber}-container`);
-            const pageContainer = pageWrapper?.querySelector(
-              '[data-testid="pdf-page"]'
-            ) as HTMLElement | null;
-
-            if (pageContainer) {
-              // Create a temporary element to scroll to
-              const scrollElement = document.createElement('div');
-              scrollElement.style.position = 'absolute';
-              scrollElement.style.left = `${scaledLeft}px`;
-              scrollElement.style.top = `${scaledTop}px`;
-              scrollElement.style.width = '1px';
-              scrollElement.style.height = '1px';
-              scrollElement.style.pointerEvents = 'none';
-
-              const currentPosition = getComputedStyle(pageContainer).position;
-              if (currentPosition === 'static') {
-                pageContainer.style.position = 'relative';
-              }
-
-              pageContainer.appendChild(scrollElement);
-              scrollElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-              setTimeout(() => {
-                if (scrollElement.parentNode) {
-                  scrollElement.parentNode.removeChild(scrollElement);
-                }
-                if (currentPosition === 'static') {
-                  pageContainer.style.position = '';
-                }
-              }, 1000);
-            }
-          }, 300);
-        }
+    const selectionRectangles = reference.reference?.selectionRectangles;
+    if (selectionRectangles && selectionRectangles.length > 0) {
+      const rect = selectionRectangles.find(r => r.page);
+      if (rect?.page) {
+        const pageNumber = Number.parseInt(rect.page, 10);
+        pdfEventBus.dispatch('goToPage', pageNumber);
       }
-    },
-    [pdfScale]
-  );
+    }
+  }, []);
 
   const handleView = useCallback((reference: EntityReference) => {
     // TODO: Implement view functionality
