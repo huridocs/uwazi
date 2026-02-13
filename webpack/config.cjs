@@ -66,11 +66,11 @@ module.exports = production => {
           'app/shared/atomStore/client.store'
         ),
         './server.store.js': path.join(rootPath, 'app/shared/atomStore/client.store'),
-        'api': path.join(rootPath, 'app/api'),
-        'app': path.join(rootPath, 'app/react'),
-        'shared': path.join(rootPath, 'app/shared'),
-        'UI': path.join(rootPath, 'app/react/UI'),
-        'V2': path.join(rootPath, 'app/react/V2'),
+        api: path.join(rootPath, 'app/api'),
+        app: path.join(rootPath, 'app/react'),
+        shared: path.join(rootPath, 'app/shared'),
+        UI: path.join(rootPath, 'app/react/UI'),
+        V2: path.join(rootPath, 'app/react/V2'),
         '#api': path.join(rootPath, 'app/api'),
         '#app': path.join(rootPath, 'app/react'),
         '#shared': path.join(rootPath, 'app/shared'),
@@ -187,9 +187,9 @@ module.exports = production => {
     },
     plugins: [
       process.env.CYPRESS &&
-      new webpack.ProvidePlugin({
-        process: 'process/browser',
-      }),
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+        }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({

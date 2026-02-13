@@ -1,8 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-if (typeof window !== 'undefined') {
-  import('./scss/alert.scss');
-}
 import Icon from '#UI/Icon/Icon.js';
 
 class Alert extends Component {

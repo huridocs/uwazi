@@ -1,4 +1,3 @@
-import { ClientSettings } from '#app/apiResponseTypes.js';
 import React from 'react';
 import { Navigate } from 'react-router';
 import LibraryRoot from './Library/Library.js';
@@ -9,6 +8,7 @@ import { PageView } from './Pages/PageView.js';
 import { Login } from './Users/Login.js';
 import { validateHomePageRoute } from './utils/routeHelpers.js';
 import { ViewerRoute } from './Viewer/ViewerRoute.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
