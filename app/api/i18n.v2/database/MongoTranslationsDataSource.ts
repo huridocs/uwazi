@@ -1,7 +1,7 @@
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
 import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
-import { MongoBulkWriteError, OptionalId } from 'mongodb';
+import { AnyBulkWriteOperation, MongoBulkWriteError, OptionalId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import {
   BulkDeleteKeysByContext,
@@ -9,8 +9,9 @@ import {
   UpdateKeysByContextProps,
 } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
-import { Translation } from '../model/Translation';
+import { Translation, TranslationContext } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
+import { TranslationContextModel } from '../model/TranslationContextModel';
 
 export class MongoTranslationsDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>
@@ -155,5 +156,84 @@ export class MongoTranslationsDataSource
       .toArray();
 
     return result?.notFoundKeys || keys;
+  }
+
+  /**
+   * Fetches a TranslationContext domain model from the database.
+   * Returns an empty context if no translations exist yet (e.g., new template/thesaurus).
+   */
+  async getContext(
+    contextInfo: TranslationContext,
+    languages: LanguageISO6391[],
+    defaultLanguage: LanguageISO6391
+  ): Promise<TranslationContextModel> {
+    const translations = await this.getByContext(contextInfo.id).all();
+
+    return TranslationContextModel.create(contextInfo, translations, languages, defaultLanguage);
+  }
+
+  /**
+   * Persists changes from a TranslationContext domain model to the database.
+   * Uses the diff to optimize database operations.
+   */
+  async updateContext(context: TranslationContextModel): Promise<void> {
+    const diff = context.getDiff();
+
+    if (!diff.hasChanges()) {
+      return;
+    }
+
+    const bulkOps: AnyBulkWriteOperation<OptionalId<TranslationDBO>>[] = [];
+
+    if (diff.contextLabelChanged) {
+      const contextInfo = context.getContextInfo();
+      bulkOps.push({
+        updateMany: {
+          filter: { 'context.id': contextInfo.id },
+          update: { $set: { 'context.label': contextInfo.label } },
+        },
+      });
+    }
+
+    if (diff.addedTranslations.length > 0) {
+      diff.addedTranslations.forEach(translation => {
+        bulkOps.push({
+          insertOne: {
+            document: TranslationMappers.toDBO(translation),
+          },
+        });
+      });
+    }
+
+    if (diff.updatedTranslations.length > 0) {
+      diff.updatedTranslations.forEach(translation => {
+        bulkOps.push({
+          updateOne: {
+            filter: {
+              'context.id': translation.context.id,
+              key: translation.key,
+              language: translation.language,
+            },
+            update: { $set: TranslationMappers.toDBO(translation) },
+          },
+        });
+      });
+    }
+
+    if (diff.deletedKeys.length > 0) {
+      const contextInfo = context.getContextInfo();
+      bulkOps.push({
+        deleteMany: {
+          filter: {
+            'context.id': contextInfo.id,
+            key: { $in: diff.deletedKeys },
+          },
+        },
+      });
+    }
+
+    if (bulkOps.length > 0) {
+      await this.getCollection().bulkWrite(bulkOps);
+    }
   }
 }
