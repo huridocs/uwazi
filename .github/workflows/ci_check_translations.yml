@@ -60,7 +60,7 @@ jobs:
           fi
 
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+        uses: supercharge/mongodb-github-action@1.12.1
         with:
           mongodb-version: 7.0
           mongodb-replica-set: test-rs

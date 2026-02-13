@@ -1,16 +1,16 @@
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-
+import { DeleteResult } from 'mongodb';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import { WithId } from '#api/odm/model.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import type { NextFunction, Request, Response } from 'express';
-import { DeleteResult } from 'mongodb';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -278,12 +278,26 @@ describe('users routes', () => {
       expect(response.status).toBe(401);
     });
 
-    it('should call users get', async () => {
-      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
+    it('should call users get and filter out Public user', async () => {
+      const mockUsers = [
+        { _id: 'user1', username: 'User1' },
+        { _id: PUBLIC_USER_ID, username: 'PublicUser' },
+        { _id: 'user2', username: 'User2' },
+      ];
+      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(mockUsers as any));
+
       const response = await request(app).get('/api/users');
+
       expect(response.status).toBe(200);
       expect(users.get).toHaveBeenCalledWith({}, '+groups +failedLogins +accountLocked');
-      expect(response.body).toEqual(['users']);
+      expect(response.body).toHaveLength(2);
+      expect(
+        response.body.find((u: any) => u._id.toString() === PUBLIC_USER_ID.toString())
+      ).toBeUndefined();
+      expect(response.body).toEqual([
+        { _id: 'user1', username: 'User1' },
+        { _id: 'user2', username: 'User2' },
+      ]);
     });
   });
 
