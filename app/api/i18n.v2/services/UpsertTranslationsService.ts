@@ -73,6 +73,7 @@ export class UpsertTranslationsService {
    * - Keys renamed to themselves (no-op) are allowed
    * - The keysToDelete parameter can include renamed keys for backward compatibility (duplicates are handled)
    * - Deduplication only affects keys within the same context
+   * - For multiple-to-one renames, first rename wins, subsequent ones are skipped
    */
   async updateContext(
     context: CreateTranslationsData['context'],
@@ -83,18 +84,13 @@ export class UpsertTranslationsService {
     return this.transactionManager.run(async () => {
       const existingKeys = await this.getExistingKeysInContext(context.id);
 
-      const deduplicatedKeyChanges = this.deduplicateKeyChanges(
+      const { deduplicatedKeyChanges, keysWithMultipleToOneRename } = this.deduplicateKeyChanges(
         keyChanges,
         existingKeys,
         valueChanges
       );
 
-      const keysToRemove = this.calculateKeysToRemove(
-        keyChanges,
-        deduplicatedKeyChanges,
-        keysToDelete,
-        valueChanges
-      );
+      const keysToRemove = this.calculateKeysToRemove(keyChanges, keysToDelete, valueChanges);
 
       const keysChangedReversed = Object.entries(deduplicatedKeyChanges).reduce<{
         [newKey: string]: string;
@@ -112,6 +108,10 @@ export class UpsertTranslationsService {
 
       await this.updateKeyValueOnDefaultLanguage(Object.values(deduplicatedKeyChanges), context);
 
+      if (keysWithMultipleToOneRename.length > 0) {
+        await this.updateAllLanguagesForNewKeys(keysWithMultipleToOneRename, context);
+      }
+
       await this.translationsDS.deleteKeysByContext(context.id, keysToRemove);
     });
   }
@@ -125,6 +125,22 @@ export class UpsertTranslationsService {
     await this.translationsDS.upsert(
       newKeys.reduce<Translation[]>((memo, newKey) => {
         memo.push(new Translation(newKey, newKey, defaultLanguageKey, context));
+        return memo;
+      }, [])
+    );
+  }
+
+  private async updateAllLanguagesForNewKeys(
+    newKeys: string[],
+    context: CreateTranslationsData['context']
+  ) {
+    const allLanguages = await this.settingsDS.getLanguageKeys();
+
+    await this.translationsDS.upsert(
+      newKeys.reduce<Translation[]>((memo, newKey) => {
+        allLanguages.forEach(language => {
+          memo.push(new Translation(newKey, newKey, language, context));
+        });
         return memo;
       }, [])
     );
@@ -188,25 +204,36 @@ export class UpsertTranslationsService {
     keyChanges: { [oldKey: string]: string },
     existingKeys: Set<string>,
     valueChanges: { [key: string]: string }
-  ): { [oldKey: string]: string } {
+  ): {
+    deduplicatedKeyChanges: { [oldKey: string]: string };
+    keysWithMultipleToOneRename: string[];
+  } {
     const deduplicated: { [oldKey: string]: string } = {};
+    const keysCreatedDuringRename = new Set<string>();
+    const multipleToOneKeys = new Set<string>();
 
     Object.entries(keyChanges).forEach(([oldKey, newKey]) => {
-      const targetExists = existingKeys.has(newKey);
+      const targetExists = existingKeys.has(newKey) || keysCreatedDuringRename.has(newKey);
       const isNoOp = oldKey === newKey;
       const oldKeyStillNeeded = !!valueChanges[oldKey];
 
       if ((!targetExists || isNoOp) && !oldKeyStillNeeded) {
         deduplicated[oldKey] = newKey;
+        keysCreatedDuringRename.add(newKey);
+      } else if (targetExists && !isNoOp && keysCreatedDuringRename.has(newKey)) {
+        // Multiple-to-one rename: this target key was created by a previous rename in this batch
+        multipleToOneKeys.add(newKey);
       }
     });
 
-    return deduplicated;
+    return {
+      deduplicatedKeyChanges: deduplicated,
+      keysWithMultipleToOneRename: Array.from(multipleToOneKeys),
+    };
   }
 
   private calculateKeysToRemove(
     originalKeyChanges: { [oldKey: string]: string },
-    deduplicatedKeyChanges: { [oldKey: string]: string },
     keysToDelete: string[],
     valueChanges: { [key: string]: string }
   ): string[] {

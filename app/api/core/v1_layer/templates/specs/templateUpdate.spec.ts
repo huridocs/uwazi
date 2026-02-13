@@ -229,50 +229,48 @@ describe('templates', () => {
 
     it('should update translations handling duplicate values properly', async () => {
       const { _id, ...newTemplate } = factory.template('Country');
-      await updateTemplate(newTemplate);
-      const dbTranslations = await DefaultTranslationsDataSource(
-        TransactionManagerFactory.default()
-      )
+      let template1 = await updateTemplate(newTemplate);
+      let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();
 
       expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
 
-      // template1.commonProperties[0].label = 'Country name';
-      // await templates.save(template1);
-      //
-      // dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
-      //   .getAll()
-      //   .all();
-      //
-      // expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
-      // expect(
-      //   dbTranslations.filter(t => t.key === 'Country name' && t.language === 'en').length
-      // ).toBe(1);
-      //
-      // template1.commonProperties[0].label = 'Country';
-      // await templates.save(template1);
-      //
-      // dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
-      //   .getAll()
-      //   .all();
-      //
-      // expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
-      // expect(
-      //   dbTranslations.filter(t => t.key === 'Country name' && t.language === 'en').length
-      // ).toBe(0);
-      //
-      // template1.name = 'Country template';
-      // await templates.save(template1);
-      //
-      // dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
-      //   .getAll()
-      //   .all();
-      //
-      // expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
-      // expect(
-      //   dbTranslations.filter(t => t.key === 'Country template' && t.language === 'en').length
-      // ).toBe(1);
+      template1.commonProperties![0].label = 'Country name';
+      template1 = await updateTemplate(template1);
+
+      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+        .getAll()
+        .all();
+
+      expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
+      expect(
+        dbTranslations.filter(t => t.key === 'Country name' && t.language === 'en').length
+      ).toBe(1);
+
+      template1.commonProperties![0].label = 'Country';
+      template1 = await updateTemplate(template1);
+
+      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+        .getAll()
+        .all();
+
+      expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
+      expect(
+        dbTranslations.filter(t => t.key === 'Country name' && t.language === 'en').length
+      ).toBe(0);
+
+      template1.name = 'Country template';
+      template1 = await updateTemplate(template1);
+
+      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+        .getAll()
+        .all();
+
+      expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
+      expect(
+        dbTranslations.filter(t => t.key === 'Country template' && t.language === 'en').length
+      ).toBe(1);
     });
   });
 });
