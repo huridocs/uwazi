@@ -23,6 +23,14 @@ class FetchResponseError extends Error {
   }
 }
 
+const attemptURIEncode = string => {
+  try {
+    return encodeURIComponent(string);
+  } catch (_e) {
+    return string;
+  }
+};
+
 const attemptRisonDecode = string => {
   const errcb = e => {
     throw Error(`rison decoder error: ${e}`);
@@ -50,7 +58,7 @@ function toUrlParams(_data) {
     // eslint-disable-next-line max-statements
     .map(key => {
       if (typeof data[key] === 'undefined' || data[key] === null) {
-        return;
+        return undefined;
       }
 
       if (typeof data[key] === 'object') {
@@ -59,18 +67,14 @@ function toUrlParams(_data) {
 
       let encodedValue;
 
-      try {
-        encodedValue = encodeURIComponent(data[key]);
-      } catch (_e) {
-        encodedValue = data[key];
-      }
+      encodedValue = attemptURIEncode(data[key]);
 
       if (encodeURIComponent(key) === 'q') {
         try {
           attemptRisonDecode(data[key]);
           encodedValue = data[key];
         } catch (err) {
-          encodedValue = encodeURIComponent(data[key]);
+          encodedValue = attemptURIEncode(data[key]);
         }
       }
 
