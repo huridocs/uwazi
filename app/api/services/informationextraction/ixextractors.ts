@@ -17,9 +17,9 @@ import { DomainError } from '#api/core/domain/error/DomainError.js';
 
 type AllowedPropertyTypes =
   | Subset<
-    PropertyTypeSchema,
-    'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship' | 'markdown'
-  >
+      PropertyTypeSchema,
+      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship' | 'markdown'
+    >
   | 'title';
 
 interface ExtractorType extends IXExtractorType {
