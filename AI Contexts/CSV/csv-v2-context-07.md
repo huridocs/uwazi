@@ -375,6 +375,7 @@ Running CSV v2 tests leaves jobs in the queue collection even when tests pass. T
 shared DB and default queue name; dispatched jobs are not auto-cleaned.
 
 **Mitigation options:**
+
 - **Test cleanup:** delete the queue collection in CSV v2 specs (`afterEach`/`afterAll`).
 - **Test queue namespace:** configure a test-only queue name to isolate/purge safely.
 - **Recording/Sync dispatcher:** use non-queue dispatchers in tests that don't need real workers.
@@ -396,6 +397,114 @@ We should formalize CSV file column semantics to avoid ambiguity and align with 
 - `files` (new, multi-file): allows a single value or `|`‑separated list.
 
 Goal: keep v1 semantics intact while providing an explicit multi-file column.
+
+### 12) TODO — Add cancel endpoint (cooperative stop, no cleanup)
+
+Feature request recap (backend first, API endpoint only):
+
+- Add a "Cancel import" endpoint that marks an import as stopped/cancelled and prevents the
+  pipeline from continuing beyond the next safe checkpoint.
+- Keep this intentionally simple: **no rollback/cleanup** of already-applied work.
+  - If cancellation is requested before work starts: no further action should happen: if jobs have already been created, they will fetch the DB import DS and figure out it was canceled and stop cleanly, no actions taken.
+  - If requested after thesauri preflight/create: keep those values.
+  - If requested during relationships create or entities import: allow partial progress (for
+    example, 1,050/20,000 rows imported), then stop and report the achieved progress.
+- Cooperative-stop semantics are acceptable:
+  - If a stage can detect cancellation mid-loop, stop there.
+  - If not, finish the current stage/batch, then avoid dispatching downstream jobs.
+- Final status should be visible as `cancelled`/`stopped` with existing counters/progress/errors
+  preserved as-is.
+
+Implementation direction (to evaluate before coding):
+
+- Add a cancel API route (admin-only) that updates `csv_imports.status`.
+- Use cooperative status checks only (no queue cleanup assumptions):
+  - At the beginning of every job, re-read `csv_imports.status`; if `cancelled`, treat as
+    a no-op stop and return without dispatching downstream jobs.
+  - At intermediate checkpoints in long loops/batches (especially where we already heartbeat),
+    re-check status and stop when it becomes `cancelled`.
+- Keep behavior simple and deterministic:
+  - cancellation is not rollback,
+  - completed work stays,
+  - downstream stages are simply not started once cancellation is detected.
+
+Critical concurrency pitfall (must handle):
+
+- A running job can keep an in-memory/stale `csvImport` snapshot while an admin cancels the import
+  in a different transaction.
+- If the job later writes status/progress/failure using a full-document `$set` from stale data,
+  it can accidentally overwrite `status: cancelled` (for example, back to `import:entities`,
+  `retrying`, or `*:done`).
+- Mongo transactions do not automatically prevent this at our current write pattern; a commit may
+  still succeed unless we enforce write preconditions.
+
+Minimal guard pattern (recommended):
+
+- Keep cooperative checks at job start + loop checkpoints as planned.
+- Additionally, make csv-import writes cancellation-safe:
+  - Use conditional updates for status/finalization/progress writes (compare-and-set style),
+    e.g., apply update only when current status is not `cancelled` (or when expected status matches).
+  - If conditional update does not match any document, treat as clean stop/no-op (not a failure).
+- For terminal transitions (`*:done`, `failed`, `retrying`), never overwrite `cancelled`; if import
+  is already cancelled, return without dispatching downstream jobs.
+- Preserve current simplicity: no rollback, no cleanup, just "stop at checkpoints" and "never
+  revert cancelled".
+- Tighten endpoint semantics:
+  - Cancel is idempotent and monotonic: once `cancelled`, it stays cancelled (no implicit resume).
+  - If import is already in terminal `completed`/`failed`, cancel endpoint should be a no-op
+    response and must not rewrite terminal history.
+  - Job handlers should treat cancellation exits as clean stop (not retryable error paths).
+
+### 13) TODO — ANY-template relationships with deterministic conflict handling
+
+Problem:
+
+- For relationship properties without `content` (ANY template), v2 currently skips resolution.
+- We need predictable behavior that does not create random entities and does not silently attach
+  ambiguous matches.
+- Encoding note (verified in template editor + API/domain mapping):
+  - For v1-style relationship properties (`type: 'relationship'`), "Any entity" is represented as
+    `content: ''` (empty string), not a literal `"ANY"` token.
+  - Treat empty/falsey `content` as the ANY-template scenario in CSV import logic.
+
+Decision direction:
+
+- Implement Option B semantics:
+  - Try to resolve existing entities by title across allowed scope.
+  - Never create missing entities for ANY-template relationships.
+  - If resolution is ambiguous (more than one candidate), mark as unresolvable.
+
+Required behavior:
+
+- Unresolvable relationship values must fail the row with explicit, user-friendly errors.
+- Errors should identify property + raw relationship value + reason (`not_found` or `ambiguous`).
+- Do not fallback to "first match wins".
+
+### 14) TODO — Relationship title ambiguity (targeted and ANY) must fail rows
+
+Problem:
+
+- Duplicate titles can exist even within the same target template. Current behavior can collapse
+  to one entry (effectively first/last match), which is incorrect and non-deterministic.
+- This impacts both:
+  - constrained relationships (`property.content` set to a template id),
+  - unconstrained ANY-template relationships.
+
+Required behavior (split by scenario):
+
+- Constrained relationship (`property.content` set):
+  - zero entities => keep current v2 behavior: create missing entity in the target template during
+    relationships create preflight, then assign by resolved sharedId.
+  - more than one entity (duplicate title match) => `unresolvable:ambiguous` row error.
+  - exactly one entity => assign normally.
+- ANY-template relationship (`property.content` not set):
+  - zero entities => `unresolvable:not_found` row error (no creation allowed).
+  - more than one entity => `unresolvable:ambiguous` row error.
+  - exactly one entity => assign normally.
+- Row must fail when at least one relationship token is unresolvable; importer should continue with
+  other rows according to existing row-error policy.
+- Persist enough conflict detail for debugging/reporting (at minimum: row index, property, token,
+  candidate count and template scope context).
 
 ### 8) Next agent checklist (quick start)
 
