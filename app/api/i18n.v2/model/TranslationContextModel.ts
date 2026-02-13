@@ -28,7 +28,10 @@ export class TranslationContextModel {
 
     this.translations = this.buildTranslationIndex(translations);
     this.originalTranslations = this.cloneTranslationIndex(this.translations);
-    this.originalContextLabel = contextInfo.label;
+    // Extract original label from existing translations (for updates),
+    // or use contextInfo label if no translations exist (for new contexts)
+    this.originalContextLabel =
+      translations.length > 0 ? translations[0].context.label : contextInfo.label;
   }
 
   /**
