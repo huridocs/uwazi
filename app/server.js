@@ -2,7 +2,6 @@
 
 import compression from 'compression';
 import express from 'express';
-import promBundle from 'express-prom-bundle';
 
 import helmet from 'helmet';
 import { Server } from 'http';
@@ -18,6 +17,9 @@ import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { Redis } from 'api/infrastructure/Redis';
 import { maskMongoPassword } from 'api/utils/maskMongoPassword';
 import { elasticClient } from 'api/search/elastic';
+import { dependenciesContextMiddleware } from 'api/core/infrastructure/express/middlewares/DependenciesContextMiddleware';
+import { registerMetricsRoutes } from 'api/core/infrastructure/express/MetricsRoute';
+import { metricsMiddleware } from 'api/core/infrastructure/express/middlewares/MetricsMiddleware';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -39,24 +41,11 @@ import { initSentry } from './initSentry';
 import { setupQueueWorker } from './setupQueueWorker';
 
 import 'api/core/infrastructure/listeners/Listeners';
-import { dependenciesContextMiddleware } from 'api/core/infrastructure/express/middlewares/DependenciesContextMiddleware';
 
 mongoose.Promise = Promise;
 
 const app = express();
-const metricsMiddleware = promBundle({
-  includeMethod: false,
-  includePath: false,
-  customLabels: {
-    port: config.PORT,
-    env: config.ENVIRONMENT,
-  },
-  promClient: {
-    collectDefaultMetrics: {},
-  },
-});
 
-app.use(metricsMiddleware);
 initSentry();
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
@@ -127,6 +116,8 @@ app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
 app.use('/public', express.static(config.publicAssets));
 
+app.use(metricsMiddleware);
+
 app.use(appContextMiddleware);
 
 // this middleware should go just before any other that accesses to db
@@ -144,7 +135,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   versionRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
-
+  registerMetricsRoutes(app);
   apiRoutes(app, http);
   serverSideRender(app);
 
