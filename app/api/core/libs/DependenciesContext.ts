@@ -24,12 +24,8 @@ class DependenciesContext extends AsyncLocalStorage<Deps> {
     return this.getStore()!.transactionManager;
   }
 
-  getTelemetryCollector(): TelemetryCollector {
-    if (!this.getStore()?.telemetryCollector) {
-      throw new Error('TelemetryCollector is not set');
-    }
-
-    return this.getStore()!.telemetryCollector!;
+  getTelemetryCollector(): TelemetryCollector | undefined {
+    return this.getStore()?.telemetryCollector;
   }
 
   get logger(): Logger {

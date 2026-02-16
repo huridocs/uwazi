@@ -43,7 +43,7 @@ class UpdateEntityController extends AbstractController<Request> {
       const response =
         'entity' in this.request.body ? { entity: entityWithFiles, errors: [] } : entityWithFiles;
 
-      DependenciesContext.getTelemetryCollector().add({
+      DependenciesContext.getTelemetryCollector()?.add({
         sharedId: output.sharedId,
         templateId: output.template.id.toString(),
       });
@@ -51,7 +51,7 @@ class UpdateEntityController extends AbstractController<Request> {
       this.response.json(response);
       this.request.emitToSessionSocket('documentProcessed', output.sharedId);
     } catch (error: unknown) {
-      DependenciesContext.getTelemetryCollector().add({
+      DependenciesContext.getTelemetryCollector()?.add({
         error: JSON.stringify(error),
         dto: JSON.stringify(this.request.body),
       });
