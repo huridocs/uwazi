@@ -18,7 +18,7 @@ services:
       - xpack.security.enabled=false
 
   mongo:
-    image: "mongo:7.0"
+    image: 'mongo:7.0'
     container_name: uwazi-mongo
     command: mongod --replSet "uwazi_replica_set"
     volumes:
@@ -27,12 +27,12 @@ services:
       - '27017:27017'
     ulimits:
       nofile:
-        soft: "65536"
-        hard: "65536"
+        soft: '65536'
+        hard: '65536'
 
   mongoreplicaset_start_script:
-    image: "mongo:7.0"
-    restart: "no"
+    image: 'mongo:7.0'
+    restart: 'no'
     container_name: mongoreplicaset_start_script
     depends_on:
       - mongo
@@ -65,6 +65,22 @@ services:
     volumes:
       - ./storage/minio:/data
     command: server /data --console-address :9001
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3001:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
 
 volumes:
   esdata01:
