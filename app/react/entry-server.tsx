@@ -77,13 +77,12 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
   return headers;
 };
 
-const abortSSR = (res: Response, req: ExpressRequest, step: string) => {
+const logSSRAborted = (req: ExpressRequest, step: string) => {
   LoggerFactory.default().debug('SSR Aborted', {
     aborted: req.aborted,
     url: req.url,
     step,
   });
-  res.status(404).send('Request aborted');
 };
 
 const createFetchRequest = (
@@ -321,7 +320,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   }
 
   if (req.aborted) {
-    abortSSR(res, req, 'Matching routes');
+    logSSRAborted(req, 'Matching routes');
     return;
   }
 
@@ -349,14 +348,14 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   if (req.aborted) {
-    abortSSR(res, req, 'Store data');
+    logSSRAborted(req, 'Store data');
     return;
   }
 
   const { reduxState, atomStore, atomStoreData } = await prepareStoreData(req, settings, language);
 
   if (req.aborted) {
-    abortSSR(res, req, 'Route data');
+    logSSRAborted(req, 'Route data');
     return;
   }
 
@@ -373,7 +372,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
 
   if (req.aborted) {
-    abortSSR(res, req, 'Component HTML');
+    logSSRAborted(req, 'Component HTML');
     return;
   }
 
