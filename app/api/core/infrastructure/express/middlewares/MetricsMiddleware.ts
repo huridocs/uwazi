@@ -1,3 +1,4 @@
+import { config } from 'api/config';
 import { httpRequestCounter, httpRequestDuration } from 'api/core/libs/logger/PrometheusCollector';
 import { NextFunction, Request, Response } from 'express';
 
@@ -24,13 +25,19 @@ const metricsMiddleware = (request: Request, response: Response, next: NextFunct
 
     if (!shouldSample(route)) return;
 
-    httpRequestCounter.inc({
+    const labels = {
       method: request.method,
-      status_code: String(response.statusCode),
       route,
+      env: config.ENVIRONMENT,
+      port: String(config.PORT),
+    };
+
+    httpRequestCounter.inc({
+      ...labels,
+      status_code: String(response.statusCode),
     });
 
-    httpRequestDuration.observe({ method: request.method, route }, durationSeconds);
+    httpRequestDuration.observe(labels, durationSeconds);
   });
 
   next();
