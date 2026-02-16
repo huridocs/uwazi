@@ -14,16 +14,18 @@ import { NeedAuthorization } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { BlankState } from '../BlankState';
 import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC';
-import { scrollToPage } from '../functions';
+import type { PdfControllerApi } from '../PdfControllerContext';
 import { entityLoaderCache } from '../../EntityLoaderCache';
 import { useToc, useTocActions } from './tocAtom';
 import { getPageNumber } from './utils';
 
 const ToCPanel = ({
+  mainPdfController,
   toc,
   generatedToc,
   file,
 }: {
+  mainPdfController: PdfControllerApi;
   toc?: TocSchema[];
   generatedToc?: boolean;
   file?: FileType;
@@ -64,12 +66,15 @@ const ToCPanel = ({
     setIsAllCollapsed(collapsed);
   };
 
-  const handleToCEntryClick = useCallback((entry: ProcessedTocEntry) => {
-    const pageNumber = getPageNumber(entry.entry);
-    if (pageNumber !== null) {
-      scrollToPage(pageNumber);
-    }
-  }, []);
+  const handleToCEntryClick = useCallback(
+    (entry: ProcessedTocEntry) => {
+      const pageNumber = getPageNumber(entry.entry);
+      if (pageNumber !== null) {
+        mainPdfController.goToPage(pageNumber);
+      }
+    },
+    [mainPdfController]
+  );
 
   const handleEdit = () => {
     setEditMode(true);
@@ -262,3 +267,4 @@ const ToCPanel = ({
 };
 
 export { ToCPanel };
+anel };

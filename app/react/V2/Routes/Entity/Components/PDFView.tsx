@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
 import { Entity } from 'V2/domain';
-import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
+import { PDF } from 'V2/Components/PDFViewer';
+import type { PDFHandle } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { NeedAuthorization, Truncate, Button } from 'V2/Components/UI';
 import { Panel } from 'V2/Components/Layouts/Panel';
@@ -13,17 +14,21 @@ import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextS
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
 import { PAGE_PARAM, VIEW_MODE_PARAM, SIDE_TAB_PARAM } from '../urlParams';
-import { scrollToPage } from './functions';
+import type { PdfControllerApi } from './PdfControllerContext';
 import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom';
 import { useReferencesActions } from './ReferencesPanel/referencesAtom';
 
 type PDFViewProps = {
+  mainPdfController: PdfControllerApi;
   entity: Entity;
   pagePlaintext?: string;
 };
 
 // eslint-disable-next-line max-statements
-const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
+const PDFView = forwardRef<PDFHandle, PDFViewProps>(function PDFView(
+  { mainPdfController, entity, pagePlaintext },
+  ref
+) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
@@ -74,18 +79,8 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
   );
 
   useEffect(() => {
-    const handlePageChange = (p?: number) => {
-      updatePageParam(p || 1);
-    };
-
-    const { unsubscribe } = pdfEventBus.on('onPageChange', handlePageChange);
-
     setHydrated(true);
-
-    return () => {
-      unsubscribe();
-    };
-  }, [updatePageParam]);
+  }, []);
 
   const handleTextSelect = useCallback((selection: TextSelection) => {
     if (selection.selectionRectangles && selection.selectionRectangles.length > 0) {
@@ -146,10 +141,17 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
       if (isRaw) {
         updatePageParam(targetPage);
       } else {
-        scrollToPage(targetPage);
+        mainPdfController.goToPage(targetPage);
       }
     },
-    [isRaw, pageNumber, entity?.mainDocument?.[0]?.totalPages, updatePageParam]
+    [isRaw, pageNumber, entity?.mainDocument?.[0]?.totalPages, updatePageParam, mainPdfController]
+  );
+
+  const handlePageChange = useCallback(
+    (pageNumber: number) => {
+      updatePageParam(pageNumber);
+    },
+    [updatePageParam]
   );
 
   if (!entity?.mainDocument) {
@@ -194,10 +196,12 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
           </div>
           <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'hidden' : 'block'}`}>
             <PDF
+              ref={ref}
               fileUrl={`/api/files/${filename}`}
               size={{ height: '100%', width: '90%' }}
               onSelect={handleTextSelect}
               onDeselect={handleTextDeselect}
+              onPageChange={handlePageChange}
             />
           </div>
           <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
@@ -285,6 +289,6 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
       </Panel.Footer>
     </Panel>
   );
-};
+});
 
 export { PDFView };

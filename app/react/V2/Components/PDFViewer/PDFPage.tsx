@@ -6,8 +6,6 @@ import { EventBus, PDFJSViewer, PDFJS } from './pdfjs';
 import { TextHighlight } from './types';
 import { calculateScaling } from './functions/calculateScaling';
 import { adjustSelectionsToScale } from './functions/handleTextSelection';
-import { pdfEventBus } from './events';
-
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
@@ -16,6 +14,8 @@ interface PDFPageProps {
   containerWidth?: number;
   /** Called when scale is computed/updated so parent can use it (e.g. to normalize selections) */
   onScaleChange?: (scale: number) => void;
+  /** Called when this page has been drawn (replaces pdfEventBus onPageChange) */
+  onPageChange?: (pageNumber: number) => void;
 }
 
 const PDFPage = ({
@@ -25,6 +25,7 @@ const PDFPage = ({
   containerWidth,
   highlights,
   onScaleChange,
+  onPageChange,
 }: PDFPageProps) => {
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useState(1);
@@ -73,7 +74,7 @@ const PDFPage = ({
                 pageViewer
                   .draw()
                   .then(() => {
-                    pdfEventBus.dispatch('onPageChange', pdfPage.pageNumber);
+                    onPageChange?.(pdfPage.pageNumber);
                   })
                   .catch(e => {
                     setError(e.message);

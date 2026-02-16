@@ -6,8 +6,8 @@ import React from 'react';
 import { render, act, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
 import { PDF, PDFProps } from '../PDF';
+import type { PDFHandle } from '../PDF';
 import * as helpers from '../functions/helpers';
-import { pdfEventBus } from '../events';
 import * as snippetFuncs from '../functions/snippetToHighlight';
 
 configMocks({ act });
@@ -104,9 +104,20 @@ jest.mock('../pdfjs.ts', () => ({
 
 describe('PDF', () => {
   let renderResult: RenderResult;
+  let pdfRef: React.RefObject<PDFHandle | null>;
 
-  const renderComponet = () => {
-    renderResult = render(<PDF fileUrl="url/of/file.pdf" highlights={highlights} />);
+  const renderComponet = (props: Partial<PDFProps> = {}) => {
+    pdfRef = React.createRef<PDFHandle>();
+    renderResult = render(
+      <PDF
+        ref={pdfRef}
+        fileUrl="url/of/file.pdf"
+        highlights={highlights}
+        onPdfReady={props.onPdfReady}
+        onPageChange={props.onPageChange}
+        {...props}
+      />
+    );
   };
 
   beforeAll(() => {
@@ -162,24 +173,22 @@ describe('PDF', () => {
     expect(container).toMatchSnapshot();
   });
 
-  describe('pdfEventBus', () => {
-    beforeEach(() => {
-      jest.spyOn(pdfEventBus, 'dispatch');
-    });
+  describe('callbacks and ref API', () => {
+    it('should call onPdfReady when PDF and containerWidth are ready', async () => {
+      const onPdfReady = jest.fn();
 
-    it('should dispatch pdfReady event when PDF and containerWidth are ready', async () => {
       await act(() => {
-        renderComponet();
+        renderComponet({ onPdfReady });
       });
 
-      expect(pdfEventBus.dispatch).toHaveBeenCalledWith('pdfReady');
+      expect(onPdfReady).toHaveBeenCalled();
     });
 
-    it('should dispatch onPageChange event when a page is rendered', async () => {
-      const dispatchSpy = jest.spyOn(pdfEventBus, 'dispatch');
+    it('should call onPageChange when a page is rendered', async () => {
+      const onPageChange = jest.fn();
 
       await act(() => {
-        renderComponet();
+        renderComponet({ onPageChange });
       });
 
       const { getAllByTestId } = renderResult;
@@ -190,10 +199,10 @@ describe('PDF', () => {
       });
 
       expect(mockPageRender).toHaveBeenCalled();
-      expect(dispatchSpy).toHaveBeenCalledWith('onPageChange', 1);
+      expect(onPageChange).toHaveBeenCalledWith(1);
     });
 
-    it('should scroll to page when goToPage event is dispatched', async () => {
+    it('should scroll to page when ref.goToPage is called', async () => {
       await act(() => {
         renderComponet();
       });
@@ -201,14 +210,21 @@ describe('PDF', () => {
       const { container } = renderResult;
       const page3Container = container.querySelector('#page-3-container') as HTMLDivElement;
 
-      act(() => {
-        pdfEventBus.dispatch('goToPage', 3);
+      await act(() => {
+        oberserverMock.enterNode(renderResult.getAllByTestId('pdf-page')[0]);
       });
 
-      expect(helpers.triggerScroll).toHaveBeenCalledWith({ current: page3Container }, 0);
+      act(() => {
+        pdfRef.current?.goToPage(3);
+      });
+
+      expect(helpers.triggerScroll).toHaveBeenCalledWith(
+        { current: page3Container },
+        expect.any(Number)
+      );
     });
 
-    it('should call highlightSnippetInPage when activateSnippet event is dispatched', async () => {
+    it('should call highlightSnippetInPage when ref.activateSnippet is called', async () => {
       const highlightSpy = jest.spyOn(snippetFuncs, 'highlightSnippetInPage');
 
       await act(() => {
@@ -223,7 +239,7 @@ describe('PDF', () => {
       });
 
       act(() => {
-        pdfEventBus.dispatch('activateSnippet', {
+        pdfRef.current?.activateSnippet({
           text: 'Page 1 <b>contains</b> some text',
           page: 1,
         });
@@ -233,7 +249,7 @@ describe('PDF', () => {
       highlightSpy.mockRestore();
     });
 
-    it('should call clearSnippets when deactivateSnippet event is dispatched', async () => {
+    it('should call clearSnippets when ref.deactivateSnippet is called', async () => {
       const clearSpy = jest.spyOn(snippetFuncs, 'clearSnippets');
 
       await act(() => {
@@ -248,37 +264,14 @@ describe('PDF', () => {
       });
 
       act(() => {
-        pdfEventBus.dispatch('deactivateSnippet');
+        pdfRef.current?.deactivateSnippet();
       });
 
       expect(clearSpy).toHaveBeenCalled();
       clearSpy.mockRestore();
     });
 
-    it('should handle multiple PDF instances without listener accumulation', async () => {
-      let unmountInstanceOne: RenderResult['unmount'];
-
-      await act(async () => {
-        const result = render(
-          <PDF fileUrl="url/of/file1.pdf" highlights={highlights} />
-        );
-        unmountInstanceOne = result.unmount;
-      });
-
-      await act(async () => {
-        render(<PDF fileUrl="url/of/file2.pdf" highlights={highlights} />);
-      });
-
-      unmountInstanceOne!();
-
-      act(() => {
-        pdfEventBus.dispatch('goToPage', 1);
-      });
-
-      expect(helpers.triggerScroll).toHaveBeenCalledTimes(1);
-    });
-
-    it('should scroll to highlight when scrollToHighlight event is dispatched', async () => {
+    it('should scroll to highlight when ref.scrollToHighlight is called', async () => {
       await act(() => {
         renderComponet();
       });
@@ -292,15 +285,14 @@ describe('PDF', () => {
 
       const highlightWrapper = container.querySelector('[data-highlight-key="2"]') as HTMLElement;
 
-      const highlightRectangle = highlightWrapper.querySelector(
+      const highlightRectangle = highlightWrapper?.querySelector(
         '.highlight-rectangle'
       ) as HTMLElement;
       const scrollIntoViewMock = jest.fn();
-
-      highlightRectangle.scrollIntoView = scrollIntoViewMock;
+      if (highlightRectangle) highlightRectangle.scrollIntoView = scrollIntoViewMock;
 
       act(() => {
-        pdfEventBus.dispatch('scrollToHighlight', '2');
+        pdfRef.current?.scrollToHighlight('2');
       });
 
       expect(scrollIntoViewMock).toHaveBeenCalledWith({

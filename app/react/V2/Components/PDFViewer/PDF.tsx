@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import loadable from '@loadable/component';
 import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
@@ -7,9 +14,17 @@ import { Translate } from 'app/I18N';
 import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
-import { pdfEventBus } from './events';
 import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight';
 import { adjustSelectionsToScale } from './functions/handleTextSelection';
+
+export type Snippet = { text: string; page: number; filename?: string };
+
+export interface PDFHandle {
+  goToPage: (pageNumber: number) => void;
+  scrollToHighlight: (highlightKey: string) => void;
+  activateSnippet: (snippet: Snippet) => void;
+  deactivateSnippet: () => void;
+}
 
 const PDFPage = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage
@@ -26,6 +41,10 @@ interface PDFProps {
   onDeselect?: () => any;
   /** Called when the PDF render scale changes (e.g. for scroll-to-reference in display coords) */
   onScaleChange?: (scale: number) => void;
+  /** Called when the visible page changes (for URL sync etc.) */
+  onPageChange?: (pageNumber: number) => void;
+  /** Called when PDF and container are ready (e.g. to scroll to initial highlight) */
+  onPdfReady?: () => void;
   size?: { height?: string; width?: string; overflow?: string };
 }
 
@@ -37,14 +56,19 @@ const getPDFFile = async (fileUrl: string) =>
     isEvalSupported: false,
   }).promise;
 
-const PDF = ({
-  fileUrl,
-  highlights,
-  onSelect = () => undefined,
-  onDeselect,
-  onScaleChange,
-  size,
-}: PDFProps) => {
+const PDF = forwardRef<PDFHandle, PDFProps>(function PDF(
+  {
+    fileUrl,
+    highlights,
+    onSelect = () => undefined,
+    onDeselect,
+    onScaleChange,
+    onPageChange,
+    onPdfReady,
+    size,
+  },
+  ref
+) {
   const pageRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [currentScale, setCurrentScale] = useState(1);
@@ -52,6 +76,39 @@ const PDF = ({
   const [error, setError] = useState<string>();
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
   const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const animationFrameIdRef = useRef(0);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      goToPage(pageNumber: number) {
+        const pageRef = { current: pageRefsMap.current[pageNumber.toString()] };
+        animationFrameIdRef.current = triggerScroll(pageRef, animationFrameIdRef.current);
+      },
+      scrollToHighlight(highlightKey: string) {
+        const highlightWrapper = pdfContainerRef.current?.querySelector(
+          `[data-highlight-key="${highlightKey}"]`
+        );
+        const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
+        const elementToScroll = highlightRectangle || highlightWrapper;
+        elementToScroll?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      },
+      activateSnippet(snippet: Snippet) {
+        const pageContainer = pageRefsMap.current[snippet.page.toString()];
+        if (pageContainer) {
+          highlightSnippetInPage(pageContainer, snippet);
+          const firstMark = pageContainer.querySelector('mark');
+          firstMark?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+      deactivateSnippet() {
+        Object.values(pageRefsMap.current).forEach(container => {
+          if (container) clearSnippets(container);
+        });
+      },
+    }),
+    []
+  );
 
   const handleScaleChange = useCallback(
     (scale: number) => {
@@ -129,84 +186,10 @@ const PDF = ({
 
   useEffect(() => {
     if (pdf && containerWidth) {
-      let animationFrameId = 0;
-
-      const onScrollToPageHandler = (pageNumber: number = 1) => {
-        const pageRef = { current: pageRefsMap.current[pageNumber.toString()] };
-        animationFrameId = triggerScroll(pageRef, animationFrameId);
-      };
-
-      const onActivateSnippetHandler = (snippet?: {
-        text: string;
-        page: number;
-        filename?: string;
-      }) => {
-        if (snippet) {
-          const pageContainer = pageRefsMap.current[snippet.page.toString()];
-
-          if (pageContainer) {
-            highlightSnippetInPage(pageContainer, snippet);
-
-            const firstMark = pageContainer.querySelector('mark');
-
-            if (firstMark) {
-              firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          }
-        }
-      };
-
-      const onDeactivateSnippetHandler = () => {
-        Object.values(pageRefsMap.current).forEach(container => {
-          if (container) {
-            clearSnippets(container);
-          }
-        });
-      };
-
-      const onScrollToHighlightHandler = (highlightKey?: string) => {
-        if (highlightKey) {
-          const highlightWrapper = pdfContainerRef.current?.querySelector(
-            `[data-highlight-key="${highlightKey}"]`
-          );
-
-          const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
-          const elementToScroll = highlightRectangle || highlightWrapper;
-
-          elementToScroll?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      };
-
-      const subscriptionGoToPage = pdfEventBus.on('goToPage', onScrollToPageHandler);
-
-      const subscriptionActivateSnippet = pdfEventBus.on(
-        'activateSnippet',
-        onActivateSnippetHandler
-      );
-
-      const subscriptionDeactivateSnippet = pdfEventBus.on(
-        'deactivateSnippet',
-        onDeactivateSnippetHandler
-      );
-
-      const subscriptionScrollToHighlight = pdfEventBus.on(
-        'scrollToHighlight',
-        onScrollToHighlightHandler
-      );
-
-      pdfEventBus.dispatch('pdfReady');
-
-      return () => {
-        cancelAnimationFrame(animationFrameId);
-        subscriptionGoToPage.unsubscribe();
-        subscriptionActivateSnippet.unsubscribe();
-        subscriptionDeactivateSnippet.unsubscribe();
-        subscriptionScrollToHighlight.unsubscribe();
-      };
+      onPdfReady?.();
     }
-
     return () => undefined;
-  }, [pdf, containerWidth]);
+  }, [pdf, containerWidth, onPdfReady]);
 
   if (error) {
     return <div>{error}</div>;
@@ -236,6 +219,7 @@ const PDF = ({
                     highlights={pageHighlights}
                     containerWidth={containerWidth}
                     onScaleChange={handleScaleChange}
+                    onPageChange={onPageChange}
                   />
                 </SelectionRegion>
               </div>
@@ -247,7 +231,7 @@ const PDF = ({
       </div>
     </HandleTextSelection>
   );
-};
+});
 
 export type { PDFProps };
 export { PDF };

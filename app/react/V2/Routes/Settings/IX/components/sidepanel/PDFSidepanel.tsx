@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
@@ -9,7 +9,8 @@ import { PropertyValueSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Components/UI';
-import { PDF, selectionHandlers, pdfEventBus } from 'V2/Components/PDFViewer';
+import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
+import type { PDFHandle } from 'V2/Components/PDFViewer';
 import { notificationAtom } from 'V2/atoms';
 import { Checkbox } from 'V2/Components/Forms';
 import {
@@ -48,6 +49,8 @@ const PDFSidepanel = ({
   const selections = useAtomValue(selectionsAtom);
   const setNotifications = useSetAtom(notificationAtom);
   const setSelections = useSetAtom(selectionsAtom);
+  const pdfRef = useRef<PDFHandle>(null);
+  const highlightKeyToScrollRef = useRef<string | null>(null);
 
   const templateId = suggestion?.entityTemplateId;
   const template = templates.find(t => t._id.toString() === templateId);
@@ -105,20 +108,16 @@ const PDFSidepanel = ({
     if (highlights && !selectedText) {
       const page = Object.keys(highlights)[0];
       const firstHighlight = highlights[page]?.[0];
-
-      const handlePdfReady = () => {
-        pdfEventBus.dispatch('scrollToHighlight', firstHighlight.key);
-      };
-
-      const { unsubscribe } = pdfEventBus.on('pdfReady', handlePdfReady);
-
-      return () => {
-        unsubscribe();
-      };
+      highlightKeyToScrollRef.current = firstHighlight?.key ?? null;
+    } else {
+      highlightKeyToScrollRef.current = null;
     }
-
-    return undefined;
   }, [highlights, selectedText]);
+
+  const handlePdfReady = () => {
+    const key = highlightKeyToScrollRef.current;
+    if (key) pdfRef.current?.scrollToHighlight(key);
+  };
 
   useEffect(() => {
     if (dirtyFields.field) {
@@ -202,8 +201,10 @@ const PDFSidepanel = ({
       <Sidepanel.Body className="overflow-y-auto">
         {pdfFile && (
           <PDF
+            ref={pdfRef}
             fileUrl={`/api/files/${pdfFile.filename}`}
             highlights={highlights}
+            onPdfReady={handlePdfReady}
             onSelect={selection => {
               if (!selection.selectionRectangles.length) {
                 setSelectionError('Could not detect the area for the selected text');

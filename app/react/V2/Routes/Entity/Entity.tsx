@@ -10,6 +10,7 @@ import {
   PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
+import type { PDFHandle } from 'V2/Components/PDFViewer';
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
@@ -25,6 +26,7 @@ import {
   ToCPanel,
   FileList,
 } from './Components';
+import { createPdfController } from './Components/PdfControllerContext';
 import { LoaderResponse } from './types';
 
 const MAIN_TABS = {
@@ -58,6 +60,11 @@ const Entity = () => {
   const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
+  const mainPdfRef = useRef<PDFHandle>(null);
+  const mainPdfController = useMemo(
+    () => createPdfController(mainPdfRef),
+    [mainPdfRef]
+  );
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -69,7 +76,7 @@ const Entity = () => {
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView entity={entity} pagePlaintext={pagePlaintext} />
+          <PDFView ref={mainPdfRef} mainPdfController={mainPdfController} entity={entity} pagePlaintext={pagePlaintext} />
         </Tabs.Tab>
       );
     }
@@ -126,6 +133,7 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
+              mainPdfController={mainPdfController}
               toc={entity?.mainDocument?.[0].toc}
               generatedToc={entity?.mainDocument?.[0].generatedToc}
               file={entity?.mainDocument?.[0]}
@@ -135,7 +143,13 @@ const Entity = () => {
         {
           id: SIDE_TABS.REFERENCES,
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <ReferencesPanel references={entity?.references} entity={entity} />,
+          content: (
+            <ReferencesPanel
+              mainPdfController={mainPdfController}
+              references={entity?.references}
+              entity={entity}
+            />
+          ),
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -150,7 +164,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.SEARCH,
           label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults />,
+          content: <SearchResults mainPdfController={mainPdfController} />,
         },
       ],
       [MAIN_TABS.METADATA]: [
@@ -167,7 +181,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.SEARCH,
           label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults />,
+          content: <SearchResults mainPdfController={mainPdfController} />,
         },
       ],
       [MAIN_TABS.RELATIONSHIPS]: [
@@ -179,7 +193,7 @@ const Entity = () => {
       ],
       [MAIN_TABS.FILES]: [],
     }),
-    [entity]
+    [entity, mainPdfController]
   );
 
   const activeMainTab = useMemo<MainTabId>(() => {

@@ -5,7 +5,6 @@ import { useRevalidator } from 'react-router';
 import { Panel } from 'V2/Components/Layouts/Panel';
 import { EntityReference } from 'app/V2/domain/entities/types';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { pdfEventBus } from 'V2/Components/PDFViewer';
 import { useAtomValue } from 'jotai';
 import { relationshipTypesAtom } from 'V2/atoms';
 import { Entity } from 'V2/domain';
@@ -18,11 +17,16 @@ import { BlankState } from '../BlankState';
 import { useReferences, useReferencesActions } from './referencesAtom';
 
 type ReferencesPanelProps = {
+  mainPdfController: PdfControllerApi;
   references?: EntityReference[];
   entity?: Entity;
 };
 
-const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
+const ReferencesPanel = ({
+  mainPdfController,
+  references = [],
+  entity,
+}: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const { createReferenceSelection, createReferenceMode } = useReferences();
@@ -39,18 +43,21 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
     []
   );
 
-  const handleReferenceClick = useCallback((reference: EntityReference) => {
-    setSelectedReferenceId(reference._id);
+  const handleReferenceClick = useCallback(
+    (reference: EntityReference) => {
+      setSelectedReferenceId(reference._id);
 
-    const selectionRectangles = reference.reference?.selectionRectangles;
-    if (selectionRectangles && selectionRectangles.length > 0) {
-      const rect = selectionRectangles.find(r => r.page);
-      if (rect?.page) {
-        const pageNumber = Number.parseInt(rect.page, 10);
-        pdfEventBus.dispatch('goToPage', pageNumber);
+      const selectionRectangles = reference.reference?.selectionRectangles;
+      if (selectionRectangles && selectionRectangles.length > 0) {
+        const rect = selectionRectangles.find(r => r.page);
+        if (rect?.page) {
+          const pageNumber = Number.parseInt(rect.page, 10);
+          mainPdfController.goToPage(pageNumber);
+        }
       }
-    }
-  }, []);
+    },
+    [mainPdfController]
+  );
 
   const handleView = useCallback((reference: EntityReference) => {
     // TODO: Implement view functionality
@@ -160,6 +167,12 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
       <Panel.Footer>
         <div className="flex items-center justify-between w-full" />
       </Panel.Footer>
+    </Panel>
+  );
+};
+
+export { ReferencesPanel };
+/Panel.Footer>
     </Panel>
   );
 };

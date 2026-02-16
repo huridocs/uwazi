@@ -8,12 +8,27 @@ import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V
 import { settingsAtom, userAtom } from 'V2/atoms';
 import * as utils from 'app/utils';
 import * as files from 'V2/api/files';
-import * as PDFViewerModule from 'V2/Components/PDFViewer';
 import { Entity } from '../Entity';
 
 jest.mock('V2/Components/PDFViewer', () => ({
   ...jest.requireActual('V2/Components/PDFViewer'),
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
+}));
+
+const mockGoToPage = jest.fn();
+const mockActivateSnippet = jest.fn();
+jest.mock('../Components/PdfControllerContext', () => ({
+  ...jest.requireActual('../Components/PdfControllerContext'),
+  createPdfController: () => ({
+    goToPage: mockGoToPage,
+    scrollToHighlight: jest.fn(),
+    activateSnippet: mockActivateSnippet,
+    deactivateSnippet: jest.fn(),
+    scrollToSnippet: jest.fn((snippet: { page: number }, currentPage: number) => {
+      if (currentPage !== snippet.page) mockGoToPage(snippet.page);
+      setTimeout(() => mockActivateSnippet(snippet), 200);
+    }),
+  }),
 }));
 
 const sampleEntity: Partial<EntityType> = {
@@ -414,8 +429,6 @@ describe('Entity view', () => {
         ],
       };
 
-      jest.spyOn(PDFViewerModule.pdfEventBus, 'dispatch');
-
       render(
         <TestRouterContext
           loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: snippets }}
@@ -430,17 +443,18 @@ describe('Entity view', () => {
 
       fireEvent.click(pageButton);
 
-      expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('goToPage', 5);
+      expect(mockGoToPage).toHaveBeenCalledWith(5);
 
       jest.advanceTimersByTime(200);
 
-      expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith(
-        'activateSnippet',
-        snippets.data[0].snippets.fullText[0]
-      );
+      expect(mockActivateSnippet).toHaveBeenCalledWith(snippets.data[0].snippets.fullText[0]);
 
       jest.useRealTimers();
       jest.clearAllMocks();
+    });
+  });
+});
+cks();
     });
   });
 });
