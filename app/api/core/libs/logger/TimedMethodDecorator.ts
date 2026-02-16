@@ -7,10 +7,6 @@ export function TimedMethod(operationName: string) {
     descriptor.value = async function (...args: any[]) {
       const telemetryCollector = DependenciesContext.getTelemetryCollector();
 
-      if (!telemetryCollector) {
-        return originalMethod.apply(this, args);
-      }
-
       const endTimer = telemetryCollector.startTimer(operationName);
 
       const result = await originalMethod.apply(this, args);
