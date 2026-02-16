@@ -3,7 +3,7 @@ import { collectDefaultMetrics, Counter, Histogram, Registry } from 'prom-client
 const registry = new Registry();
 
 const httpRequestCounter = new Counter({
-  name: 'http_request_count',
+  name: 'http_requests_total',
   help: 'Total number of HTTP requests',
   registers: [registry],
 
