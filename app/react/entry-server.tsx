@@ -22,6 +22,7 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
 import { tenants } from '../api/tenants';
@@ -74,6 +75,14 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
   });
 
   return headers;
+};
+
+const logSSRAborted = (req: ExpressRequest, step: string) => {
+  LoggerFactory.default().debug('SSR Aborted', {
+    aborted: req.aborted,
+    url: req.url,
+    step,
+  });
 };
 
 const createFetchRequest = (
@@ -262,28 +271,34 @@ const setReduxState = async (
   return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
-const prepareSSRContext = async (
+const prepareStoreData = async (
   req: ExpressRequest,
-  routes: RouteObject[],
   settings: ClientSettings,
   language?: string
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
-  const { fetchRequest, ssrError } = createFetchRequest(req);
-  const { query } = createStaticHandler(routes);
+
   const atomStore = getStore();
   hydrateAtomStore(atomStoreData, atomStore);
-  const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
   const reduxState = reduxStore.getState();
 
   return {
     reduxState,
+    atomStore,
     atomStoreData,
+  };
+};
+
+const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
+  const { fetchRequest, ssrError } = createFetchRequest(req);
+  const { query } = createStaticHandler(routes);
+  const staticHandleContext = await query(fetchRequest);
+  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+
+  return {
     staticHandleContext,
     router,
     ssrError,
-    atomStore,
   };
 };
 
@@ -301,6 +316,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   if (matched === null) {
     res.redirect('/404');
+    return;
+  }
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Matching routes');
     return;
   }
 
@@ -327,8 +347,19 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
-  const { reduxState, atomStoreData, staticHandleContext, router, ssrError, atomStore } =
-    await prepareSSRContext(req, routes, settings, language);
+  if (req.aborted) {
+    logSSRAborted(req, 'Store data');
+    return;
+  }
+
+  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(req, settings, language);
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Route data');
+    return;
+  }
+
+  const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
@@ -339,6 +370,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     reduxState,
     matched
   );
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Component HTML');
+    return;
+  }
 
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
