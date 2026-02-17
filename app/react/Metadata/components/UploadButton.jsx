@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import isEmpty from 'lodash/isEmpty.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { uploadDocument } from '#app/Uploads/actions/uploadsActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { socket } from '#app/socket.js';
@@ -137,8 +137,8 @@ UploadButton.defaultProps = {
   progress: Immutable.fromJS({}),
   storeKey: '',
   entitySharedId: '',
-  uploadDocument: () => { },
-  updateMainDocument: () => { },
+  uploadDocument: () => {},
+  updateMainDocument: () => {},
 };
 
 UploadButton.propTypes = {
@@ -160,5 +160,5 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-export { UploadButton };
-export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);
+const UploadButtonConnected = connect(mapStateToProps, mapDispatchToProps)(UploadButton);
+export { UploadButton as UploadButtonView, UploadButtonConnected as UploadButton };

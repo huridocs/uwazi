@@ -10,7 +10,7 @@ import {
 } from '#app/Library/actions/libraryActions.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import ModalTips from '#app/App/ModalTips.js';
+import { ModalTips } from '#app/App/ModalTips.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { submitNewSearch } from '#app/SemanticSearch/actions/actions.js';
 import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';

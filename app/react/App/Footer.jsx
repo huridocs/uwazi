@@ -92,4 +92,5 @@ export function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Footer);
+const FooterConnected = connect(mapStateToProps)(Footer);
+export { FooterConnected as Footer };

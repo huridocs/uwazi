@@ -82,4 +82,5 @@ export const mapDispatchToProps = dispatch =>
     wrapDispatch(dispatch, 'library')
   );
 
-export default connect(mapStateToProps, mapDispatchToProps, null)(MapComponent);
+const MarkdownMap = connect(mapStateToProps, mapDispatchToProps, null)(MapComponent);
+export { MarkdownMap };

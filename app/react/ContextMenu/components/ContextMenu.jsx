@@ -55,5 +55,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ openMenu, closeMenu }, dispatch);
 }
 
-export { ContextMenu };
-export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu);
+const ContextMenuConnected = connect(mapStateToProps, mapDispatchToProps)(ContextMenu);
+export { ContextMenu as ContextMenuView, ContextMenuConnected as ContextMenu };

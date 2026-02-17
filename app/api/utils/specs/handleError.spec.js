@@ -9,8 +9,8 @@ import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationE
 import { appContext } from '#api/utils/AppContext.js';
 import util from 'node:util';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { handleError, prettifyError } from '../handleError.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { handleError, prettifyError } from '../handleError.js';
 
 const contextRequestId = '1234';
 

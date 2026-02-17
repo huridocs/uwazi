@@ -5,11 +5,11 @@ import { shallow } from 'enzyme';
 
 import { t } from '#app/I18N/index.js';
 import { FiltersFromProperties, mapStateToProps } from '../FiltersFromProperties.js';
-import DateFilter from '../DateFilter.js';
-import NestedFilter from '../NestedFilter.js';
-import NumberRangeFilter from '../NumberRangeFilter.js';
-import SelectFilter from '../SelectFilter.js';
-import TextFilter from '../TextFilter.js';
+import { DateFilter } from '../DateFilter.js';
+import { NestedFilter } from '../NestedFilter.js';
+import { NumberRangeFilter } from '../NumberRangeFilter.js';
+import { SelectFilter } from '../SelectFilter.js';
+import { TextFilter } from '../TextFilter.js';
 import { defaultProperties } from './fixtures/FiltersFromPropertiesFixtures.js';
 
 jest.mock('react-router', () => ({

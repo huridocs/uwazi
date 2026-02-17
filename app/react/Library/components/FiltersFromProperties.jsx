@@ -5,16 +5,16 @@ import rison from '@huridocs/rison';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { t } from '#app/I18N/index.js';
-import FormGroup from '#app/DocumentForm/components/FormGroup.js';
+import { FormGroup } from '#app/DocumentForm/components/FormGroup.js';
 import { getAggregationSuggestions } from '#app/Library/actions/libraryActions.js';
 import { selectTemplates } from '#app/utils/coreSelectors.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 
-import DateFilter from './DateFilter.js';
-import NestedFilter from './NestedFilter.js';
-import NumberRangeFilter from './NumberRangeFilter.js';
-import SelectFilter from './SelectFilter.js';
-import TextFilter from './TextFilter.js';
+import { DateFilter } from './DateFilter.js';
+import { NestedFilter } from './NestedFilter.js';
+import { NumberRangeFilter } from './NumberRangeFilter.js';
+import { SelectFilter } from './SelectFilter.js';
+import { TextFilter } from './TextFilter.js';
 
 const extractRelationshipLabel = (filteredProperty, label, templates) => {
   const relatedTemplate = templates.find(template => template._id === filteredProperty.content);
@@ -104,7 +104,7 @@ const getPropertyType = (property, templates) => {
 };
 
 const FiltersFromProperties = ({
-  onChange = () => { },
+  onChange = () => {},
   properties,
   translationContext = '',
   modelPrefix = '',
@@ -200,5 +200,5 @@ export function mapStateToProps(state, props) {
   };
 }
 
-export { FiltersFromProperties };
-export default connect(mapStateToProps)(FiltersFromProperties);
+const FiltersFromPropertiesConnected = connect(mapStateToProps)(FiltersFromProperties);
+export { FiltersFromProperties, FiltersFromPropertiesConnected };

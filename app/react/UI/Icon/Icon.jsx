@@ -23,4 +23,4 @@ Icon.propTypes = {
   locale: PropTypes.string,
 };
 
-export default Icon;
+export { Icon };

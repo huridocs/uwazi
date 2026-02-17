@@ -45,5 +45,5 @@ const mapStateToProps = state => ({
   cookiepolicy: Boolean(state.settings.collection.get('cookiepolicy')),
 });
 
-export { Cookiepopup };
-export default connect(mapStateToProps)(Cookiepopup);
+const CookiepopupConnected = connect(mapStateToProps)(Cookiepopup);
+export { CookiepopupConnected as Cookiepopup };

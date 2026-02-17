@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field, Control } from 'react-redux-form';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { t } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { MultiSelect } from './MultiSelect.js';
 import { store } from '#app/store.js';
 
-export default class NestedMultiselect extends Component {
+export class NestedMultiselect extends Component {
   constructor(props) {
     super(props);
     const values = this.props.value || {};

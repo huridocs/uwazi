@@ -441,4 +441,4 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 };
 
 export type { TimeLink, MarkdownMediaProps };
-export default MarkdownMedia;
+export { MarkdownMedia };

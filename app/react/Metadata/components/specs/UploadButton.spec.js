@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 
 import { Icon } from '#UI/index.js';
 
-import { UploadButton } from '../UploadButton.js';
+import { UploadButtonView } from '../UploadButton.js';
 
 describe('UploadButton', () => {
   let component;
@@ -22,12 +22,13 @@ describe('UploadButton', () => {
       progress: Immutable.fromJS({}),
       entitySharedId: 'sharedabc1',
       uploadDocument: jasmine.createSpy('uploadDocument'),
+      updateMainDocument: jasmine.createSpy('updateMainDocument'),
       storeKey: 'storeKey',
     };
   });
 
   const render = () => {
-    component = shallow(<UploadButton {...props} />, { context });
+    component = shallow(<UploadButtonView {...props} />, { context });
   };
 
   describe('render', () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Nested from '../Nested.js';
+import { Nested } from '../Nested.js';
 import { MarkDown } from '../MarkDown.js';
 
 describe('Nested', () => {

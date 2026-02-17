@@ -29,4 +29,4 @@ MarkdownLink.propTypes = {
   ]),
 };
 
-export default MarkdownLink;
+export { MarkdownLink };

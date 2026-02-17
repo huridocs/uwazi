@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { MarkDown } from './MarkDown.js';
 
-export default class Nested extends Component {
+export class Nested extends Component {
   constructor(props) {
     super(props);
     this.state = { value: this.parseValue(this.props.value) };

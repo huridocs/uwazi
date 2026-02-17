@@ -11,4 +11,4 @@ SafeHTML.propTypes = {
   children: PropTypes.string.isRequired,
 };
 
-export default SafeHTML;
+export { SafeHTML };

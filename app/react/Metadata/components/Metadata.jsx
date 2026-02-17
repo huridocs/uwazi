@@ -4,14 +4,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import flattenDeep from 'lodash/flattenDeep.js';
 import { t, Translate } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { ClockIcon } from '@heroicons/react/24/outline/index.js';
-import MarkdownViewer from '#app/Markdown/index.js';
+import { MarkdownViewer } from '#app/Markdown/index.js';
 import { GroupedGeolocationViewer } from './GroupedGeolocationViewer.js';
 import { MediaPlayer } from '#V2/Components/UI/index.js';
-import GeolocationViewer from './GeolocationViewer.js';
+import { GeolocationViewer } from './GeolocationViewer.js';
 import { RelationshipLink } from './RelationshipLink.js';
-import ValueList from './ValueList.js';
+import { ValueList } from './ValueList.js';
 import { ImageViewer } from './ImageViewer.js';
 
 const getMediaUrlAndName = fileUrl => {
@@ -130,8 +130,8 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
           prop.value.map(_value =>
             _value.parent && Array.isArray(_value.value)
               ? flattenDeep(
-                _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` }))
-              )
+                  _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` }))
+                )
               : { ..._value, ...(_value.parent && { value: `${_value.parent}: ${_value.value}` }) }
           )
         );
@@ -310,4 +310,4 @@ Metadata.propTypes = {
   useV2Player: PropTypes.bool,
 };
 
-export default Metadata;
+export { Metadata };

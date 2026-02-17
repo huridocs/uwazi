@@ -8,7 +8,7 @@ import qs from 'qs';
 
 import { Loader } from '#app/components/Elements/Loader.js';
 import { arrayUtils } from '#app/Charts/index.js';
-import MarkdownLink from './MarkdownLink.js';
+import { MarkdownLink } from './MarkdownLink.js';
 import markdownDatasets from '../markdownDatasets.js';
 
 export const ListChartComponent = props => {
@@ -98,4 +98,6 @@ export const mapStateToProps = (state, props) => ({
   thesauris: state.thesauris,
 });
 
-export default connect(mapStateToProps)(ListChartComponent);
+
+const ListChartConnected = connect(mapStateToProps)(ListChartComponent);
+export { ListChartConnected as ListChart };
