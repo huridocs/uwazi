@@ -1,11 +1,6 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-if (typeof window !== 'undefined') {
-  import('./scss/stackTrace.scss');
-}
 import { Icon } from '#UI/Icon/Icon.js';
 import Immutable from 'immutable';
 

@@ -11,14 +11,14 @@ const ssrLog = (msg: string, data?: Record<string, unknown>) => {
 
 export type IndexDescriptor =
   | {
-    branch: 'libraryDefault';
-    defaultToLibrary: true;
-    libraryDefault: {
-      userId: string | undefined;
-      defaultLibraryView: string | undefined;
-      private: boolean | undefined;
-    };
-  }
+      branch: 'libraryDefault';
+      defaultToLibrary: true;
+      libraryDefault: {
+        userId: string | undefined;
+        defaultLibraryView: string | undefined;
+        private: boolean | undefined;
+      };
+    }
   | { branch: 'libraryCustom'; defaultToLibrary: true; libraryCustom: { customHomePage: string[] } }
   | { branch: 'page'; defaultToLibrary: false; parameters: { sharedId: string }; pageId: string }
   | { branch: 'entity'; defaultToLibrary: false; entityId: string }

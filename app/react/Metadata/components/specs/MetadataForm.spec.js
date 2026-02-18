@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { Form, Field } from 'react-redux-form';
 
 import { MetadataForm, mapStateToProps } from '../MetadataForm.js';
-import { MetadataFormFields, MetadataFormFieldsConnected } from '../MetadataFormFields.js';
+import { MetadataFormFieldsConnected } from '../MetadataFormFields.js';
 import { Select as SimpleSelect } from '../../../Forms.js';
 import { SupportingFiles } from '../SupportingFiles.js';
 
@@ -75,7 +75,9 @@ describe('MetadataForm', () => {
     const progress =
       props.progress !== undefined
         ? Immutable.fromJS(
-            props.metadata?.sharedId ? { [props.metadata.sharedId]: props.progress } : { NEW_ENTITY: props.progress }
+            props.metadata?.sharedId
+              ? { [props.metadata.sharedId]: props.progress }
+              : { NEW_ENTITY: props.progress }
           )
         : Immutable.fromJS({});
     return {
@@ -132,10 +134,30 @@ describe('MetadataForm', () => {
 
   it('should render templates sorted', () => {
     props.templates = Immutable.fromJS([
-      { name: 'Zues', _id: 'zues', commonProperties: [{ name: 'title', label: 'Title' }], properties: [] },
-      { name: 'Yezzy', _id: 'yezzy', commonProperties: [{ name: 'title', label: 'Title' }], properties: [] },
-      { name: 'Template1', _id: 'template1', commonProperties: [{ name: 'title', label: 'Title' }], properties: [] },
-      { name: 'Aaron', _id: 'Aaron', commonProperties: [{ name: 'title', label: 'Title' }], properties: [] },
+      {
+        name: 'Zues',
+        _id: 'zues',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
+      },
+      {
+        name: 'Yezzy',
+        _id: 'yezzy',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
+      },
+      {
+        name: 'Template1',
+        _id: 'template1',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
+      },
+      {
+        name: 'Aaron',
+        _id: 'Aaron',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
+      },
     ]);
     props.template = props.templates.get(0);
     render();

@@ -13,7 +13,7 @@ import { createSelector } from 'reselect';
 import { Icon } from '#UI/Icon/Icon.js';
 import { wrapEntityMetadata } from '#app/Metadata/index.js';
 import defaultTemplate from '../helpers/defaultTemplate.js';
-import { title as validator } from '../helpers/validator.js';
+import { validator } from '../helpers/validator.js';
 import { IconField } from './IconField.js';
 import { MetadataFormFieldsConnected as MetadataFormFields } from './MetadataFormFields.js';
 import { MetadataExtractor } from './MetadataExtractor.js';

@@ -2,7 +2,7 @@ import * as actions from './actions/actions.js';
 import { FormatMetadata } from './containers/FormatMetadata.js';
 import { ShowMetadata } from './components/ShowMetadata.js';
 import { formater } from './helpers/formater.js';
-import { title as validator } from './helpers/validator.js';
+import { validator } from './helpers/validator.js';
 import { MetadataForm } from './components/MetadataForm.js';
 import { MetadataFormButtons } from './components/MetadataFormButtons.js';
 import { MetadataFormFieldsConnected as MetadataFormFields } from './components/MetadataFormFields.js';
