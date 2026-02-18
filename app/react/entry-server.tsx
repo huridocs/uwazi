@@ -348,17 +348,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     settingsApi.get() as Promise<ClientSettings>,
     getAssets(),
   ]);
-  ssrLog('resolving AppShell');
   const { connection, ...headers } = req.headers;
-  const AppShellMod = await import('./App/AppShell.js');
-  const AppShellRaw =
-    (AppShellMod as { AppShell?: Parameters<typeof getRoutes>[3] }).AppShell ??
-    (AppShellMod as { default?: Parameters<typeof getRoutes>[3] }).default;
-  const AppShell =
-    typeof AppShellRaw === 'function'
-      ? (AppShellRaw as Parameters<typeof getRoutes>[3])
-      : undefined;
-  ssrLog('AppShell resolved', { type: typeof AppShell });
   ssrLog('building routes');
   let indexComponents: IndexComponents | undefined;
   const [lib, cards, table, map, login] = await Promise.all([
@@ -375,7 +365,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     LibraryMap: (map as { LibraryMap: IndexComponents['LibraryMap'] }).LibraryMap,
     Login: (login as { Login: IndexComponents['Login'] }).Login,
   };
-  const routes = getRoutes(settings, req.user && req.user._id, headers, AppShell, indexComponents);
+  const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
   const matched = matchRoutes(routes, req.path);
   ssrLog('matchRoutes done', {
     path: req.path,

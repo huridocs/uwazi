@@ -29,7 +29,7 @@ import '#app/Documents/components/styles/toc.css';
 import { store } from '../../store.js';
 import { SearchText } from './SearchText.js';
 import { ShowToc } from './ShowToc.js';
-import { SnippetsTab } from './SnippetsTab.js';
+import { SnippetsTabConnected as SnippetsTab } from './SnippetsTab.js';
 import helpers from '../helpers.js';
 
 class DocumentSidePanel extends Component {

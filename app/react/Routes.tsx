@@ -380,16 +380,12 @@ const languageLayout = (langKey: string, layout: React.JSX.Element) => (
   </Route>
 );
 
-type AppComponentType = React.ComponentType<{ customParams?: { sharedId?: string } }>;
-
 const getRoutes = (
   settings: ClientSettings | undefined,
   userId: string | undefined,
   headers?: IncomingHttpHeaders,
-  AppComponent?: AppComponentType,
   indexComponents?: IndexComponents
 ) => {
-  const Shell = AppComponent ?? App;
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents);
   const parameters = descriptor.parameters;
@@ -399,7 +395,7 @@ const getRoutes = (
   return createRoutesFromElements(
     <Route
       path="/"
-      element={<Shell customParams={parameters} />}
+      element={<App customParams={parameters} />}
       errorElement={<RouteErrorBoundary />}
     >
       {layout}
