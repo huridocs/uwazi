@@ -1,5 +1,6 @@
-import db from '#api/utils/testing_db.js';
 import SHA256 from 'crypto-js/sha256';
+import db from '#api/utils/testing_db.js';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 
 const userId = db.id();
 const group1Id = db.id();
@@ -54,6 +55,13 @@ export default {
       role: 'editor',
       using2fa: false,
     },
+    {
+      _id: PUBLIC_USER_ID,
+      username: 'PublicUser',
+      email: 'public@uwazi.local',
+      password: 'wontbeused',
+      role: 'collaborator',
+    },
   ],
   passwordrecoveries: [{ _id: db.id(), key: expectedKey, user: recoveryUserId }],
   settings: [
@@ -83,4 +91,5 @@ export {
   userToDelete,
   userToDelete2,
   blockedUserId,
+  PUBLIC_USER_ID,
 };

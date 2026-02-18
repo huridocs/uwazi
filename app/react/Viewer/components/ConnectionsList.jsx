@@ -7,11 +7,8 @@ import { Icon } from '#app/UI/index.js';
 import { Warning } from '#app/Layout/index.js';
 import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
 import { Connection } from './Connection.js';
+import '#app/Viewer/scss/viewReferencesPanel.css';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
-
-if (typeof window !== 'undefined') {
-  import('#app/Viewer/scss/viewReferencesPanel.scss');
-}
 
 class ConnectionsList extends Component {
   static blankStateMessage(title, message) {

@@ -1,9 +1,9 @@
-@use "../config/colors";
-@use "../config/commonLayout";
-@use "../config/materials";
-@use "../config/typography";
+@use '../config/colors';
+@use '../config/commonLayout';
+@use '../config/materials';
+@use '../config/typography';
 
-@use "sass:color";
+@use 'sass:color';
 
 .document-viewer {
   width: 100%;
@@ -159,7 +159,11 @@ mark.searchTerm {
     display: flex;
     position: fixed;
     z-index: 1;
-    background: linear-gradient(colors.$c-background 0%, colors.$c-background 70%, transparent 100%);
+    background: linear-gradient(
+      colors.$c-background 0%,
+      colors.$c-background 70%,
+      transparent 100%
+    );
     top: materials.$header-height;
     width: 100%;
     max-width: 900px;
@@ -381,4 +385,176 @@ mark.searchTerm {
       }
     }
   }
+}
+
+.content-header-document {
+  .content-header-title {
+    position: relative;
+    gap: 10px;
+  }
+
+  .paginator {
+    flex-grow: 1;
+    text-align: center;
+
+    a {
+      display: inline;
+    }
+  }
+
+  .ocr-service-display {
+    line-height: normal;
+    text-align: center;
+
+    & p {
+      margin: 0;
+    }
+
+    .status {
+      font-style: italic;
+      color: colors.$c-grey-dark;
+    }
+
+    .ocr-error {
+      padding: 7px 10px 7px 10px;
+      border: 1px solid colors.$c-black;
+      border-radius: 4px;
+      background-color: colors.$c-black;
+      color: white;
+      font-style: italic;
+    }
+
+    .complete {
+      color: colors.$c-type-9;
+    }
+
+    &:hover .ocr-tooltip {
+      display: block;
+      top: unset;
+      left: unset;
+      right: 10px;
+      bottom: unset;
+      white-space: normal;
+      transform: translateY(5px);
+      max-width: 300px;
+    }
+  }
+}
+
+.document {
+  background: colors.$c-white;
+  max-width: 900px;
+  margin: 0 -15px;
+  padding: 15px;
+
+  @media (min-width: 1024px) {
+    padding: 30px;
+    margin: 0 auto;
+  }
+
+  .fake-selection {
+    color: colors.$c-success;
+    background-color: colors.$c-success-light;
+  }
+
+  b {
+    font-weight: normal;
+    .creation-button {
+      opacity: 0;
+      display: block;
+      position: absolute;
+      background: colors.$c-white;
+      right: 0;
+      width: 31px;
+      height: 31px;
+      line-height: 31px;
+      text-align: center;
+      border-radius: 50%;
+      box-shadow: materials.$box-shadow;
+      border: 1px solid colors.$c-grey;
+      color: colors.$c-grey-dark;
+      transform: translateY(-100%) translateX(50%);
+      font-size: typography.$f-size-sm;
+      cursor: pointer;
+    }
+    &.is-active {
+      background: colors.$c-grey-light;
+      padding: 4px 0 0;
+      span {
+        opacity: 1;
+        background: colors.$c-success-light;
+        color: colors.$c-success;
+        border-color: colors.$c-success;
+      }
+    }
+    &.is-relation {
+      background: #ffffc5;
+      color: orange;
+      border-color: orange;
+      span {
+        opacity: 1;
+        background: #ffffc5;
+        color: orange;
+        border-color: orange;
+      }
+    }
+  }
+}
+
+.comments-button {
+  display: block;
+  position: absolute;
+  background: colors.$c-white;
+  right: -35px;
+  width: 31px;
+  height: 31px;
+  line-height: 31px;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: materials.$box-shadow;
+  border: 1px solid colors.$c-grey;
+  color: colors.$c-grey-dark;
+  transform: translateY(-100%) translateX(50%);
+  font-size: typography.$f-size-sm;
+  .fa {
+    margin-right: 2px;
+  }
+}
+
+.sourceDocument,
+.targetDocument {
+  padding: 0;
+  background: transparent;
+}
+
+.document.targetDocument {
+  padding-top: 54px;
+}
+
+.document.targetDocument._undefined {
+  display: none;
+}
+
+.document-viewer.show-target-document {
+  .sourceDocument {
+    display: none;
+  }
+  .targetDocument {
+    opacity: 1;
+  }
+}
+
+.loadingIcon {
+  width: 100%;
+  height: 150px;
+  background: url('../../../../public/document-loader.gif') center no-repeat;
+}
+
+.page .textLayer {
+  opacity: 1;
+  mix-blend-mode: darken;
+  z-index: 0;
+}
+.page .textLayer ::selection {
+  background: #acd8ff;
 }

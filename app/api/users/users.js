@@ -5,7 +5,6 @@ import { createError } from '#api/utils/index.js';
 import random from '#shared/uniqueID.js';
 import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
-
 import {
   getByMemberIdList,
   updateUserMemberships,
@@ -16,6 +15,7 @@ import model from './usersModel.js';
 import passwordRecoveriesModel from './passwordRecoveriesModel.js';
 import settings from '../settings/settings.js';
 import { generateUnlockCode } from './generateUnlockCode.js';
+import { PUBLIC_USER_ID } from './publicUser.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 
@@ -159,6 +159,10 @@ function unauthorizedAction(user, userInTheDatabase, currentUser) {
 
 export default {
   async save(user, currentUser) {
+    if (user._id && user._id.toString() === PUBLIC_USER_ID.toString()) {
+      return Promise.reject(createError('Cannot modify system users', 403));
+    }
+
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
 
     if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
@@ -234,11 +238,16 @@ export default {
 
   async delete(_ids, currentUser) {
     const ids = _ids.map(id => id.toString());
+
+    if (ids.includes(PUBLIC_USER_ID.toString())) {
+      return Promise.reject(createError('Cannot delete system users', 403));
+    }
+
     if (_ids.find(id => id.toString() === currentUser._id.toString())) {
       return Promise.reject(createError('Can not delete yourself', 403));
     }
 
-    const count = await model.count();
+    const count = await model.count({ _id: { $ne: PUBLIC_USER_ID } });
     if (count > _ids.length) {
       await removeUsersFromAllGroups(ids);
       return model.delete({ _id: { $in: _ids } });

@@ -1,21 +1,14 @@
-if (typeof window !== 'undefined') {
-  import('#app/Viewer/scss/conversion_base.scss');
-  import('#app/Viewer/scss/document.scss');
-}
-
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
-
+import Immutable from 'immutable';
 import { getStore } from '#shared/atomStore/index.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { PDF } from '#app/PDF/index.js';
-import Immutable from 'immutable';
 import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
-
+import '#app/Viewer/scss/conversion_base.css';
 import determineDirection from '../utils/determineDirection.js';
-
 import { APIURL } from '../../config.js';
 
 class Document extends Component {

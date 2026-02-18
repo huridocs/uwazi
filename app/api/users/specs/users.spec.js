@@ -1,11 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-
 import { createError } from '#api/utils/index.js';
 import mailer from '#api/utils/mailer.js';
 import db from '#api/utils/testing_db.js';
 import * as random from '#shared/uniqueID.js';
-
 import { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
@@ -15,6 +13,7 @@ import * as unlockCode from '../generateUnlockCode.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel.js';
 import users from '../users.js';
 import usersModel from '../usersModel.js';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 import fixtures, {
   blockedUserId,
   expectedKey,
@@ -805,16 +804,79 @@ describe('Users', () => {
   describe('get', () => {
     it('should return all users without group data', async () => {
       const userList = await users.get();
-      expect(userList.length).toBe(5);
+      expect(userList.length).toBe(6);
       const groupData = userList.filter(u => u.groups !== undefined);
       expect(groupData.length).toBe(0);
     });
 
     it('should return all users with groups to which they belong', async () => {
       const userList = await users.get({}, '+groups');
-      expect(userList.length).toBe(5);
+      expect(userList.length).toBe(6);
       expect(userList[0].groups[0].name).toBe('Group 2');
       expect(userList[1].groups[0].name).toBe('Group 1');
+    });
+  });
+
+  describe('protection of system users', () => {
+    describe('delete', () => {
+      it('should prevent deletion of the Public user', async () => {
+        try {
+          await users.delete([PUBLIC_USER_ID], { _id: userId, role: 'admin' });
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Cannot delete system users');
+          expect(error.code).toBe(403);
+        }
+      });
+
+      it('should prevent deletion when Public user is in bulk delete', async () => {
+        try {
+          await users.delete([userToDelete, PUBLIC_USER_ID], { _id: userId, role: 'admin' });
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Cannot delete system users');
+          expect(error.code).toBe(403);
+        }
+      });
+
+      it('should not count Public user when checking last user - cannot delete last regular user', async () => {
+        await users.delete([userToDelete.toString()], { _id: 'someone' });
+        await users.delete([userToDelete2.toString()], { _id: 'someone' });
+        await users.delete([recoveryUserId.toString()], { _id: 'someone' });
+        await users.delete([blockedUserId.toString()], { _id: 'someone' });
+
+        const userCount = await db.mongodb
+          .collection('users')
+          .countDocuments({ _id: { $ne: PUBLIC_USER_ID } });
+        expect(userCount).toBe(1);
+
+        try {
+          await users.delete([userId.toString()], { _id: 'someone' });
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Can not delete last user(s).');
+          expect(error.code).toBe(403);
+
+          const userAfterAttempt = await users.getById(userId);
+          expect(userAfterAttempt).toBeDefined();
+          expect(userAfterAttempt.username).toBe('username');
+        }
+      });
+    });
+
+    describe('save', () => {
+      it('should prevent updates to the Public user', async () => {
+        try {
+          await users.save(
+            { _id: PUBLIC_USER_ID.toString(), username: 'Modified' },
+            { _id: userId, role: 'admin' }
+          );
+          fail('should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Cannot modify system users');
+          expect(error.code).toBe(403);
+        }
+      });
     });
   });
 });

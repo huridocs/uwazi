@@ -25,15 +25,12 @@ import * as viewerActions from '#app/Viewer/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { ViewDocButton } from '#app/Library/components/ViewDocButton.js';
 import { getDocumentReferences } from '#app/Library/actions/libraryActions.js';
+import '#app/Documents/components/styles/toc.css';
 import { store } from '../../store.js';
 import { SearchText } from './SearchText.js';
 import { ShowToc } from './ShowToc.js';
 import { SnippetsTab } from './SnippetsTab.js';
 import helpers from '../helpers.js';
-
-if (typeof window !== 'undefined') {
-  import('./scss/toc.scss');
-}
 
 class DocumentSidePanel extends Component {
   constructor(props) {

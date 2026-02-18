@@ -9,6 +9,8 @@ if (typeof window !== 'undefined') {
 import { Icon } from '#UI/Icon/Icon.js';
 import Immutable from 'immutable';
 
+import '#app/components/Elements/scss/stackTrace.css';
+
 const conformValidations = (expand, validations) => {
   if (!expand || !validations) {
     return null;
