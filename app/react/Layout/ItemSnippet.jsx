@@ -61,4 +61,4 @@ export const mapStateToProps = (state, ownProps) => ({
 });
 
 const ItemSnippetConnected = connect(mapStateToProps)(ItemSnippet);
-export { ItemSnippetConnected as ItemSnippet };
+export { ItemSnippet as ItemSnippetView, ItemSnippetConnected as ItemSnippet };

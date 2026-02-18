@@ -361,7 +361,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
             <Icon icon="chevron-down" className="chevron-down" />
           </span>
           <span className="multiselectItem-name" onClick={clickEvent}>
-            <CustomIcon className="item-icon" data={option.icon} />
+            {option.icon ? <CustomIcon className="item-icon" data={option.icon} /> : null}
             {option[optionsLabel]}
           </span>
           &nbsp;
