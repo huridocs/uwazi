@@ -5,9 +5,11 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from '#app/UI/index.js';
-
 import { debounce } from '#app/utils/index.js';
-import { libraryHelpers as libraryHelper, prepareDefaultFilters } from '#app/Library/helpers/libraryFilters.js';
+import {
+  libraryHelpers as libraryHelper,
+  prepareDefaultFilters,
+} from '#app/Library/helpers/libraryFilters.js';
 import { searchDocuments } from '#app/Library/actions/libraryActions.js';
 import { Translate } from '#app/I18N/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
