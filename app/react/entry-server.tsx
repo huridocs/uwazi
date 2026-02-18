@@ -81,7 +81,7 @@ const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, rout
   let elapsedMs: number | undefined;
 
   const now = process.hrtime.bigint();
-  elapsedMs = Number(now - ssrStart) / 1_000_000;
+  elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
 
   LoggerFactory.default().debug('SSR Aborted', {
     aborted: req.aborted,
@@ -335,7 +335,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
   const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement | undefined;
   const isProtectedRoute = lastRouteElement?.type === ProtectedRoute;
-  const routeName = lastRouteMatched?.route?.path;
+  const routeName = lastRouteMatched?.route?.path || 'library';
 
   if (isProtectedRoute) {
     const userId = req.user?._id;
