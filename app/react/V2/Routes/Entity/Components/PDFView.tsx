@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+/* eslint-disable max-lines */
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
@@ -23,16 +24,15 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const pdfScale = useAtomValue(pdfScaleAtom);
   const user = useAtomValue(userAtom);
-  const [hydrated, setHydrated] = useState(false);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
 
   useEffect(() => {
     setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
   }, [user]);
 
-  const page = searchParams.get(PAGE_PARAM) || '1';
-  const pageNumber = Number.parseInt(page || '1', 10);
-  const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const pageNumber = Number.parseInt(searchParams.get(PAGE_PARAM) || '1', 10);
+  const initialPage = useRef<number>(pageNumber);
+  const isRaw = !isClient || searchParams.get(VIEW_MODE_PARAM) === 'true';
   const [selectedText, setSelectedText] = useState<TextSelection | undefined>(undefined);
   const { addEntry } = useTocActions();
   const { setCreateReferenceSelection } = useReferencesActions();
@@ -68,20 +68,6 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     },
     [searchParams, setSearchParams]
   );
-
-  useEffect(() => {
-    const handlePageChange = (p?: number) => {
-      updatePageParam(p || 1);
-    };
-
-    const { unsubscribe } = pdfEventBus.on('onPageChange', handlePageChange);
-
-    setHydrated(true);
-
-    return () => {
-      unsubscribe();
-    };
-  }, [updatePageParam]);
 
   const handleTextSelect = useCallback((selection: TextSelection) => {
     if (selection.selectionRectangles && selection.selectionRectangles.length > 0) {
@@ -152,8 +138,30 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
         scrollToPage(targetPage);
       }
     },
-    [isRaw, pageNumber, entity?.mainDocument?.[0]?.totalPages, updatePageParam]
+    [entity?.mainDocument, isRaw, pageNumber, updatePageParam]
   );
+
+  useEffect(() => {
+    const readyEvent = pdfEventBus.on('pdfReady', () => {
+      if (!isRaw) {
+        scrollToPage(initialPage.current);
+      }
+    });
+
+    return () => {
+      readyEvent.unsubscribe();
+    };
+  }, [isRaw]);
+
+  useEffect(() => {
+    const { unsubscribe } = pdfEventBus.on('onPageChange', p => {
+      updatePageParam(p || 1);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [updatePageParam]);
 
   if (!entity?.mainDocument) {
     return <Translate>Loading</Translate>;
