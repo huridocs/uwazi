@@ -1,7 +1,8 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { DeleteResult, UpdateResult } from 'mongodb';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { Translation } from '../model/Translation.js';
+import { Translation, TranslationContext } from '../model/Translation.js';
+import { TranslationContextModel } from '../model/TranslationContextModel.js';
 
 export type BulkDeleteKeysByContext = {
   contextId: string;
@@ -33,4 +34,12 @@ export interface TranslationsDataSource {
   updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void>;
 
   calculateNonexistentKeys(contextId: string, keys: string[]): Promise<string[]>;
+
+  // Domain model methods
+  getContext(
+    contextInfo: TranslationContext,
+    languages: LanguageISO6391[],
+    defaultLanguage: LanguageISO6391
+  ): Promise<TranslationContextModel>;
+  updateContext(context: TranslationContextModel): Promise<void>;
 }

@@ -24,6 +24,7 @@ import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
 import { tenants } from '../api/tenants/index.js';
@@ -103,6 +104,21 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
   });
 
   return headers;
+};
+
+const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, routeName?: string) => {
+  let elapsedMs: number | undefined;
+
+  const now = process.hrtime.bigint();
+  elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
+
+  LoggerFactory.default().debug('SSR Aborted', {
+    aborted: req.aborted,
+    url: req.url,
+    step,
+    elapsedMs,
+    routeName,
+  });
 };
 
 const createFetchRequest = (
@@ -292,32 +308,39 @@ const setReduxState = async (
   return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
-const prepareSSRContext = async (
+const prepareStoreData = async (
   req: ExpressRequest,
-  routes: RouteObject[],
   settings: ClientSettings,
   language?: string
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
-  const { fetchRequest, ssrError } = createFetchRequest(req);
-  const { query } = createStaticHandler(routes);
+
   const atomStore = getStore();
   hydrateAtomStore(atomStoreData, atomStore);
-  const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
   const reduxState = reduxStore.getState();
 
   return {
     reduxState,
+    atomStore,
     atomStoreData,
+  };
+};
+
+const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
+  const { fetchRequest, ssrError } = createFetchRequest(req);
+  const { query } = createStaticHandler(routes);
+  const staticHandleContext = await query(fetchRequest);
+  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+
+  return {
     staticHandleContext,
     router,
     ssrError,
-    atomStore,
   };
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
+  const ssrStart = process.hrtime.bigint();
   ssrLog('request', { path: req.path });
   RouteHandler.renderedFromServer = true;
   ssrLog('fetching settings + assets');
@@ -369,49 +392,15 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
+  if (req.aborted) {
+    logSSRAborted(req, 'Matching routes', ssrStart);
+    return;
+  }
+
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
-  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
-
-  const checkElementType = (el: React.ReactNode, path: string): void => {
-    if (el == null || typeof el !== 'object') return;
-    const elem = el as React.ReactElement & { $$typeof?: symbol };
-    if (elem.$$typeof !== Symbol.for('react.element')) return;
-    const t = elem.type;
-    if (t == null) {
-      throw new Error(
-        `SSR: element.type is ${String(t)} at ${path}. ` +
-          'The route component import is undefined (e.g. circular dependency or wrong export).'
-      );
-    }
-    const valid =
-      typeof t === 'string' ||
-      typeof t === 'function' ||
-      (typeof t === 'object' && '$$typeof' in t);
-    if (!valid) {
-      const keys = typeof t === 'object' && t !== null ? Object.keys(t).join(', ') : 'n/a';
-      throw new Error(
-        `SSR: invalid element type at ${path}: got ${typeof t}. ` +
-          (keys !== 'n/a' ? `Keys: ${keys}. ` : '') +
-          'Likely default/named import mismatch.'
-      );
-    }
-    const props = elem.props as { children?: React.ReactNode };
-    if (React.isValidElement(elem) && props?.children != null) {
-      const children = Array.isArray(props.children) ? props.children : [props.children];
-      children.forEach((child: React.ReactNode, i: number) =>
-        checkElementType(child, `${path}.children[${i}]`)
-      );
-    }
-  };
-  matched!.forEach((m, i) => {
-    const routeEl = m.route?.element as React.ReactNode;
-    if (routeEl != null) {
-      checkElementType(routeEl, `matched[${i}].route.path=${String(m.route.path)}.element`);
-    }
-  });
-  ssrLog('checkElementType passed for all matched route elements');
-
-  const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
+  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement | undefined;
+  const isProtectedRoute = lastRouteElement?.type === ProtectedRoute;
+  const routeName = lastRouteMatched?.route?.path || 'library';
 
   if (isProtectedRoute) {
     const userId = req.user?._id;
@@ -432,16 +421,29 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
-  ssrLog('prepareSSRContext');
-  const { reduxState, atomStoreData, staticHandleContext, router, ssrError, atomStore } =
-    await prepareSSRContext(req, routes, settings, language);
-  ssrLog('prepareSSRContext done', { ssrError: !!ssrError });
+  if (req.aborted) {
+    logSSRAborted(req, 'Store data', ssrStart, routeName);
+    return;
+  }
+
+  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(req, settings, language);
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Route data', ssrStart, routeName);
+    return;
+  }
+
+  const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
   };
   ssrLog('setReduxState');
+  if (req.aborted) {
+    logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
+    return;
+  }
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
@@ -449,64 +451,33 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
   ssrLog('setReduxState done', { loadingError: !!loadingError });
 
-  const origCreateElement = React.createElement.bind(React);
-  // @ts-expect-error - SSR diagnostic: throw with details when type is invalid
-  React.createElement = function (type: React.ElementType, ...args: unknown[]) {
-    if (type == null) {
-      throw new Error(
-        `SSR createElement called with type=${String(type)}. Stack: ${new Error().stack?.slice(0, 500)}`
-      );
-    }
-    if (
-      typeof type === 'object' &&
-      typeof (type as { $$typeof?: unknown }).$$typeof === 'undefined'
-    ) {
-      const keys = Object.keys(type as object);
-      throw new Error(
-        `SSR createElement called with plain object. Keys: ${keys.join(', ') || 'none'}. ` +
-          `Stack: ${new Error().stack?.slice(0, 600)}`
-      );
-    }
-    return origCreateElement(type, ...args);
-  };
-
-  let componentHtml: string;
-  ssrLog('renderToString (first pass: StaticRouterProvider)');
-  try {
-    componentHtml = ReactDOMServer.renderToString(
-      <ReduxProvider store={initialStore as any}>
-        <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-          <Provider store={atomStore}>
-            <React.StrictMode>
-              <ErrorBoundary error={loadingError || ssrError}>
-                <StaticRouterProvider
-                  router={router}
-                  context={staticHandleContext as any}
-                  nonce="the-nonce"
-                />
-              </ErrorBoundary>
-            </React.StrictMode>
-          </Provider>
-        </CustomProvider>
-      </ReduxProvider>
-    );
-  } catch (e) {
-    const err = e as Error & { componentStack?: string };
-    ssrLog('renderToString FAILED', {
-      message: err?.message,
-      componentStack: err?.componentStack ?? '(none)',
-      stack: err?.stack?.slice(0, 500),
-    });
-    if (err?.message?.includes('Element type is invalid')) {
-      throw new Error(
-        err.message + (err.componentStack ? `\nComponent stack:\n${err.componentStack}` : '')
-      );
-    }
-    throw e;
+  if (req.aborted) {
+    logSSRAborted(req, 'Component HTML', ssrStart, routeName);
+    return;
   }
-  ssrLog('renderToString (first pass) done');
 
-  ssrLog('renderToString (second pass: Root)');
+  const componentHtml = ReactDOMServer.renderToString(
+    <ReduxProvider store={initialStore as any}>
+      <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
+        <Provider store={atomStore}>
+          <React.StrictMode>
+            <ErrorBoundary error={loadingError || ssrError}>
+              <StaticRouterProvider
+                router={router}
+                context={staticHandleContext as any}
+                nonce="the-nonce"
+              />
+            </ErrorBoundary>
+          </React.StrictMode>
+        </Provider>
+      </CustomProvider>
+    </ReduxProvider>
+  );
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Root HTML', ssrStart, routeName);
+    return;
+  }
   const html = ReactDOMServer.renderToString(
     <Root
       language={atomStoreData.locale}
@@ -521,7 +492,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     />
   );
 
-  ssrLog('renderToString (second pass) done');
+  if (req.aborted) {
+    logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
+    return;
+  }
   const responseCode = loadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
   ssrLog('send response', { resStatus });

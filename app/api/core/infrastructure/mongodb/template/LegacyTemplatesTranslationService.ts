@@ -27,19 +27,14 @@ class LegacyTemplatesTranslationService implements TranslationService {
       .selectUpdatedProperties(updatedTemplate)
       .filter(update => update.updatedAttributes.includes('label'));
 
-    const deletedLabels: string[] = [];
-
     changedLabels.forEach(change => {
       updatedLabels[change.oldProperty.label] = change.newProperty.label;
-      deletedLabels.push(change.oldProperty.label);
     });
 
     await translations.updateContext(
       { id: currentTemplate.id.toString(), label: updatedTemplate.name, type: 'Entity' },
       updatedLabels,
-      deletedLabels.concat(
-        currentTemplate.selectDeletedProperties(updatedTemplate).map(p => p.label)
-      ),
+      currentTemplate.selectDeletedProperties(updatedTemplate).map(p => p.label),
       this.createTranslationContext(MongoTemplateMapper.toSchema(updatedTemplate))
     );
   }
