@@ -6,16 +6,12 @@ describe('Settings mobile menu', { viewportWidth: 384, viewportHeight: 768 }, ()
     cy.blankState();
   });
 
-  beforeEach(() => {
-    cy.intercept('GET', '/api/search*').as('search');
-  });
-
   it('should login', () => {
     clearCookiesAndLogin('admin', 'change this password now');
   });
 
   it('should only show the menu', () => {
-    cy.wait('@search');
+    cy.contains('Welcome to Uwazi').should('be.visible');
     cy.get('.menu-button').click();
     cy.contains('.only-mobile a', 'Settings').click();
     cy.location().should(location => {
