@@ -2,14 +2,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import DatePickerComponent, { registerLocale } from 'react-datepicker';
-// Note: react-datepicker requires date-fns for locale registration
 import * as localization from 'date-fns/locale';
 import { DateTime } from 'luxon';
-import { isClient } from '#app/utils/index.js';
-
-if (isClient) {
-  import('react-datepicker/dist/react-datepicker.css');
-}
+import 'react-datepicker/dist/react-datepicker.css';
 
 const removeOffset = (useTimezone, value) => {
   let datePickerValue = null;
