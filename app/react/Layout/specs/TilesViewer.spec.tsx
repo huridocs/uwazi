@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import Doc from '#app/Library/components/Doc.js';
+import { Doc } from '#app/Library/components/Doc.js';
 import { TilesViewer } from '#app/Layout/TilesViewer.js';
 import { renderConnected } from '#app/utils/test/renderConnected.js';
 

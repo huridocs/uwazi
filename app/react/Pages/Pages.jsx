@@ -1,10 +1,10 @@
 import React from 'react';
 
-import RouteHandler from '#app/App/RouteHandler.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
 import { actions } from '#app/BasicReducer/index.js';
-import PagesAPI from './PagesAPI.js';
+import { PagesAPI } from './PagesAPI.js';
 
-import PagesList from './components/PagesList.js';
+import { PagesList } from './components/PagesList.js';
 
 export class Pages extends RouteHandler {
   static async requestState(requestParams) {
@@ -20,5 +20,3 @@ export class Pages extends RouteHandler {
     );
   }
 }
-
-export default Pages;

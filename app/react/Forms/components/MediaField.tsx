@@ -9,7 +9,7 @@ import {
   MediaModalProps,
   MediaModalType,
 } from '#app/Metadata/components/MediaModal.js';
-import MarkdownMedia, { TimeLink } from '#app/Markdown/components/MarkdownMedia.js';
+import { MarkdownMedia, TimeLink } from '#app/Markdown/components/MarkdownMedia.js';
 import { ImageViewer } from '#app/Metadata/components/ImageViewer.js';
 
 type MediaFieldProps = MediaModalProps & {
@@ -160,4 +160,4 @@ const MediaField = (props: MediaFieldProps) => {
   );
 };
 
-export default MediaField;
+export { MediaField };

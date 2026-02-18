@@ -4,7 +4,7 @@ import superagent from 'superagent';
 import { APIURL } from '#app/config.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { updateEntity, selectSingleDocument } from '#app/Library/actions/libraryActions.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as basicReducerActions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';

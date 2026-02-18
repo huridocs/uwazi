@@ -24,7 +24,7 @@ const getTemplateInfo = createSelector(
   }
 );
 
-export class TemplateLabel extends Component {
+class TemplateLabel extends Component {
   render() {
     const { name, template, className, style } = this.props;
     return (
@@ -56,4 +56,5 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-export default connect(mapStateToProps)(TemplateLabel);
+const TemplateLabelConnected = connect(mapStateToProps)(TemplateLabel);
+export { TemplateLabel as TemplateLabelView, TemplateLabelConnected as TemplateLabel, mapStateToProps };

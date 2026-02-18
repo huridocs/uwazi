@@ -33,4 +33,4 @@ ExtendedTooltip.propTypes = {
   active: PropTypes.bool,
 };
 
-export default ExtendedTooltip;
+export { ExtendedTooltip };

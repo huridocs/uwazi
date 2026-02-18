@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import contextMenuReducer from '#app/ContextMenu/reducers/contextMenuReducer.js';
+import { contextMenuReducer } from '#app/ContextMenu/reducers/contextMenuReducer.js';
 import * as types from '#app/ContextMenu/actions/actionTypes.js';
 import * as ViewerTypes from '#app/Viewer/actions/actionTypes.js';
 import * as UploadActions from '#app/Uploads/actions/actionTypes.js';

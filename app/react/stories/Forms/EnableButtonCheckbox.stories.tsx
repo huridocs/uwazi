@@ -7,6 +7,8 @@ const meta: Meta<typeof EnableButtonCheckbox> = {
   component: EnableButtonCheckbox,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof EnableButtonCheckbox>;
 
 const Primary: Story = {
@@ -33,5 +35,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

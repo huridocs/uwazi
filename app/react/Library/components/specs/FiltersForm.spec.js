@@ -3,8 +3,8 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Form } from 'react-redux-form';
 
-import { FiltersForm, mapStateToProps } from '#app/Library/components/FiltersForm.js';
-import FiltersFromProperties from '../FiltersFromProperties.js';
+import { FiltersFormView, mapStateToProps } from '#app/Library/components/FiltersForm.js';
+import { FiltersFromProperties } from '../FiltersFromProperties.js';
 
 describe('FiltersForm', () => {
   let component;
@@ -95,7 +95,8 @@ describe('FiltersForm', () => {
   });
 
   const render = () => {
-    component = shallow(<FiltersForm {...props} />);
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    component = shallow(<FiltersFormView {...props} />);
   };
 
   describe('form on submit', () => {

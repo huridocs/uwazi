@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import Doc from '#app/Library/components/Doc.js';
-import Footer from '#app/App/Footer.js';
+import { Doc } from '#app/Library/components/Doc.js';
+import { Footer } from '#app/App/Footer.js';
 
 import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
 import { TilesViewer } from '#app/Layout/TilesViewer.js';

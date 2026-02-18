@@ -188,7 +188,7 @@ describe('entities get searchString', () => {
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {
-        class ErrorSample extends DomainError { }
+        class ErrorSample extends DomainError {}
 
         jest.spyOn(elastic, 'search').mockImplementation(() => {
           throw new ErrorSample('Error for test', 'error_code');

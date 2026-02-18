@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getField } from 'react-redux-form';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 // exported for testing.
 export class MultipleEditionFieldWarningBase extends Component {
@@ -36,4 +36,5 @@ export const mapStateToProps = (state, props) => {
   return { touched };
 };
 
-export default connect(mapStateToProps)(MultipleEditionFieldWarningBase);
+const MultipleEditionFieldWarning = connect(mapStateToProps)(MultipleEditionFieldWarningBase);
+export { MultipleEditionFieldWarning };

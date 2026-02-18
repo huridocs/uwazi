@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
 
-export default class LinkField extends Component {
+export class LinkField extends Component {
   constructor(props) {
     super(props);
     this.urlChange = this.urlChange.bind(this);

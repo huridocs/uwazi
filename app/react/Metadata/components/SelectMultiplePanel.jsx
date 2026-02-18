@@ -11,11 +11,11 @@ import * as metadataActions from '#app/Metadata/actions/actions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { ShareButton } from '#app/Permissions/components/ShareButton.js';
-import TemplateLabel from '#app/Layout/TemplateLabel.js';
-import SidePanel from '#app/Layout/SidePanel.js';
+import { TemplateLabel } from '#app/Layout/TemplateLabel.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import { Icon } from '#app/UI/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import MetadataForm from './MetadataForm.js';
+import { MetadataForm } from './MetadataForm.js';
 import comonTemplate from '../helpers/comonTemplate.js';
 
 const sortedTemplates = createSelector(
@@ -276,5 +276,3 @@ function mapDispatchToProps(dispatch, props) {
 }
 
 export { SelectMultiplePanel, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(withContext(SelectMultiplePanel));

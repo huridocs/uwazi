@@ -6,7 +6,7 @@ import { shallow } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { LocalForm } from '#app/Forms/Form.js';
 import { Captcha } from '#app/ReactReduxForms/index.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
 import { ContactForm } from '../ContactForm.js';
 

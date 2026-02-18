@@ -7,7 +7,7 @@ import { PageReferences } from '#app/Viewer/components/PageReferences.js';
 import { PageSelections } from '#app/Viewer/components/PageSelections.js';
 import { calculateScaling } from '#V2/Components/PDFViewer/index.js';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
-import PDFJS, { EventBus } from '../PDFJS.js';
+import { PDFJS, EventBus } from '../PDFJS.js';
 
 class PDFPage extends Component {
   constructor(props) {
@@ -169,9 +169,9 @@ class PDFPage extends Component {
 
 PDFPage.defaultProps = {
   getViewportContainer: () => (isClient ? document.querySelector('.document-viewer') : null),
-  onVisible: () => { },
-  onHidden: () => { },
-  highlightReference: () => { },
+  onVisible: () => {},
+  onHidden: () => {},
+  highlightReference: () => {},
 };
 
 PDFPage.propTypes = {
@@ -186,4 +186,4 @@ PDFPage.propTypes = {
   containerWidth: PropTypes.number.isRequired,
 };
 
-export default PDFPage;
+export { PDFPage };

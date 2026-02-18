@@ -9,6 +9,7 @@ const meta: Meta<typeof PDF> = {
   component: PDF,
   args: { onSelect: fn(), onDeselect: fn() },
 };
+export default meta;
 
 type Story = StoryObj<typeof PDF>;
 
@@ -47,5 +48,3 @@ const WithScroll: Story = {
 };
 
 export { Basic, WithSelections, WithScroll };
-
-export default meta;

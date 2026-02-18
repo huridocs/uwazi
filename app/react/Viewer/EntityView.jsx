@@ -8,8 +8,8 @@ import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
 
 import { notificationActions } from '#app/Notifications/index.js';
-import EntityViewer from '../Entities/components/EntityViewer.js';
-import entitiesAPI from '../Entities/EntitiesAPI.js';
+import { EntityViewer } from '../Entities/components/EntityViewer.js';
+import { EntitiesAPI as entitiesAPI } from '../Entities/EntitiesAPI.js';
 import { prepareAssets } from './pageAssets.js';
 
 class Entity extends Component {
@@ -78,4 +78,4 @@ Entity.contextTypes = {
   store: PropTypes.object,
 };
 
-export default Entity;
+export { Entity, Entity as EntityView };

@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import Icon from '#UI/Icon/Icon.js';
-import SidePanel from '#app/Layout/SidePanel.js';
+import { Icon } from '#UI/Icon/Icon.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { closePanel } from '../actions/uiActions.js';
 import { setRelationType, setTargetDocument } from '../actions/actions.js';
-import ActionButton from './ActionButton.js';
-import SearchForm from './SearchForm.js';
-import SearchResults from './SearchResults.js';
+import { ActionButtonConnected } from './ActionButton.js';
+import { SearchForm } from './SearchForm.js';
+import { SearchResults } from './SearchResults.js';
 
 class CreateConnectionPanel extends Component {
   renderCheckType(template) {
@@ -75,7 +75,7 @@ class CreateConnectionPanel extends Component {
               <Translate>Cancel</Translate>
             </button>
             {connection.type !== 'targetRanged' && (
-              <ActionButton
+              <ActionButtonConnected
                 action="save"
                 onCreate={reference => {
                   this.props.onCreate(reference);
@@ -83,7 +83,10 @@ class CreateConnectionPanel extends Component {
               />
             )}
             {connection.type === 'targetRanged' && (
-              <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect} />
+              <ActionButtonConnected
+                action="connect"
+                onRangedConnect={this.props.onRangedConnect}
+              />
             )}
           </div>
         </div>
@@ -129,6 +132,12 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ setRelationType, setTargetDocument, closePanel }, dispatch);
 }
 
-export { CreateConnectionPanel, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(CreateConnectionPanel);
+const CreateConnectionPanelConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateConnectionPanel);
+export {
+  CreateConnectionPanel as CreateConnectionPanelView,
+  CreateConnectionPanelConnected as CreateConnectionPanel,
+  mapStateToProps,
+};

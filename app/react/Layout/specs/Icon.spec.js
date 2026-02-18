@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Icon as UIIcon } from '#UI/index.js';
-import { Icon } from '../Icon.js';
+import { IconView } from '../Icon.js';
 
 describe('Icon', () => {
   let component;
@@ -17,7 +17,7 @@ describe('Icon', () => {
     });
 
     const render = () => {
-      component = shallow(<Icon {...props} />);
+      component = shallow(<IconView {...props} />);
     };
 
     it('should render a fontawesome icon', () => {
@@ -46,7 +46,7 @@ describe('Icon', () => {
     });
 
     const render = () => {
-      component = shallow(<Icon {...props} />);
+      component = shallow(<IconView {...props} />);
     };
 
     it('should render a Flag icon', () => {

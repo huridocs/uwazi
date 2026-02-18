@@ -13,6 +13,7 @@ const meta: Meta<typeof Geolocation> = {
     onChange: fn(),
   },
 };
+export default meta;
 
 type Story = StoryObj<typeof Geolocation>;
 
@@ -50,5 +51,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

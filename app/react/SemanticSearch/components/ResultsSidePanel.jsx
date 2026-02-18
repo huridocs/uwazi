@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import ResultsFiltersPanel from './ResultsFiltersPanel.js';
-import DocumentResultsPanel from './DocumentResultsPanel.js';
+import { ResultsFiltersPanel } from './ResultsFiltersPanel.js';
+import { DocumentResultsPanel } from './DocumentResultsPanel.js';
 
-export const ResultsSidePanel = () => (
+const ResultsSidePanel = () => (
   <>
     <ResultsFiltersPanel storeKey="library" />
     <DocumentResultsPanel />
   </>
 );
 
-export default connect()(ResultsSidePanel);
+const ResultsSidePanelConnected = connect()(ResultsSidePanel);
+export { ResultsSidePanelConnected as ResultsSidePanel };

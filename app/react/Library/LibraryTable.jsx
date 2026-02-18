@@ -1,8 +1,8 @@
 import React from 'react';
 import { TableViewer } from '#app/Layout/TableViewer.js';
 import { LibraryRootComponent } from '#app/Library/Library.js';
-import LibraryLayout from '#app/Library/LibraryLayout.js';
-import DocumentsList from '#app/Library/components/DocumentsList.js';
+import { LibraryLayout } from '#app/Library/LibraryLayout.js';
+import { LibraryDocumentsList } from '#app/Library/components/DocumentsList.js';
 import { requestState } from '#app/Library/helpers/requestState.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { trackPage } from '#app/App/GoogleAnalytics.js';
@@ -16,7 +16,7 @@ class LibraryTableComponent extends LibraryRootComponent {
     trackPage();
     return (
       <LibraryLayout sidePanelMode="unpinned-mode" noindex>
-        <DocumentsList
+        <LibraryDocumentsList
           storeKey="library"
           CollectionViewer={TableViewer}
           zoomIn={this.zoomIn}

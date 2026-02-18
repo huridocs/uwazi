@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Immutable from 'immutable';
 import { Icon } from '#app/UI/index.js';
-import Doc from '#app/Library/components/Doc.js';
+import { Doc } from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList.js';
 import * as actions from '../actions/actions.js';
-import HubRelationshipMetadata from './HubRelationshipMetadata.js';
+import { HubRelationshipMetadata } from './HubRelationshipMetadata.js';
 
 class LeftRelationship extends Component {
   static renderFigure() {
@@ -75,10 +75,11 @@ class LeftRelationship extends Component {
           />
         )}
         <div
-          className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing
-            ? 'docWithoutRelationshipType'
-            : ''
-            }`}
+          className={`leftDocument ${
+            !hub.getIn(['leftRelationship', 'template']) && !editing
+              ? 'docWithoutRelationshipType'
+              : ''
+          }`}
         >
           <Doc
             className="item-collapsed"
@@ -141,5 +142,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { LeftRelationship, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(LeftRelationship);
+const LeftRelationshipConnected = connect(mapStateToProps, mapDispatchToProps)(LeftRelationship);
+export { LeftRelationship, LeftRelationshipConnected, mapStateToProps };

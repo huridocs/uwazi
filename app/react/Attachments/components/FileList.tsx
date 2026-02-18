@@ -4,7 +4,7 @@ import { advancedSort } from '#app/utils/advancedSort.js';
 import { Translate } from '#app/I18N/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { EntitySchema } from '#shared/types/entityType.js';
-import UploadButton from '#app/Metadata/components/UploadButton.js';
+import { UploadButton } from '#app/Metadata/components/UploadButton.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { ConnectedFile as File } from './File.js';
@@ -38,8 +38,7 @@ const orderFilesByLanguage = (files: FileType[], systemLanguage: string) => {
   }
   return orderedFiles;
 };
-
-export class FileList extends Component<FileListProps> {
+class FileList extends Component<FileListProps> {
   static arrangeFiles(files: Array<FileType> = []) {
     return advancedSort(files, { property: 'originalname' });
   }
@@ -93,4 +92,5 @@ export class FileList extends Component<FileListProps> {
   }
 }
 
-export default withContext(FileList);
+const FileListConnected = withContext(FileList);
+export { FileListConnected as FileList };

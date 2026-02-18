@@ -25,6 +25,7 @@ const meta: Meta<typeof Dropdown> = {
     },
   },
 };
+export default meta;
 
 type Story = StoryObj<typeof Dropdown>;
 
@@ -135,4 +136,3 @@ const WithCustomStyling: Story = {
 };
 
 export { Basic, WithExternalLinks, MixedLinks, LongTitle, ManyItems, WithCustomStyling };
-export default meta;

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import ConfirmModal from './ConfirmModal.js';
+import { ConfirmModal } from './ConfirmModal.js';
 
 class ConfirmButton extends Component {
   constructor(props) {
@@ -66,4 +66,4 @@ ConfirmButton.propTypes = {
   ]),
 };
 
-export default ConfirmButton;
+export { ConfirmButton };

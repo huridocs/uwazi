@@ -7,6 +7,8 @@ const meta: Meta<typeof MediaPlayer> = {
   component: MediaPlayer,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof MediaPlayer>;
 
 const Primary: Story = {
@@ -55,5 +57,3 @@ const InvalidMedia: Story = {
 };
 
 export { Embedded, LocalFile, LocalFileWithThumbnail, InvalidMedia };
-
-export default meta;

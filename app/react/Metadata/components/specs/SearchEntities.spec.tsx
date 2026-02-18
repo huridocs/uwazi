@@ -1,11 +1,11 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import SearchInput from '#app/Layout/SearchInput.js';
+import { SearchInput } from '#app/Layout/SearchInput.js';
 import { sleep } from '#shared/tsUtils.js';
-import SearchApi from '#app/Search/SearchAPI.js';
+import { SearchAPI } from '#app/Search/SearchAPI.js';
 import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '../SearchEntities.js';
 
-import SearchResults from '#app/Connections/components/SearchResults.js';
+import { SearchResults } from '#app/Connections/components/SearchResults.js';
 
 describe('SearchEntities', () => {
   let component: ShallowWrapper<SearchEntitiesProps, SearchEntitiesState, SearchEntities>;
@@ -16,7 +16,7 @@ describe('SearchEntities', () => {
       onSelect: jasmine.createSpy('onSelect'),
       onFinishSearch: jasmine.createSpy('onFinishedSearch'),
     };
-    spyOn(SearchApi, 'search').and.returnValue(
+    spyOn(SearchAPI, 'search').and.returnValue(
       Promise.resolve({
         rows: [
           {
@@ -36,7 +36,7 @@ describe('SearchEntities', () => {
       render();
       component.find(SearchInput).simulate('change', { target: { value: 'test' } });
       await sleep(401);
-      expect(SearchApi.search).toHaveBeenLastCalledWith({
+      expect(SearchAPI.search).toHaveBeenLastCalledWith({
         data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
         headers: {},
       });
@@ -57,7 +57,7 @@ describe('SearchEntities', () => {
   describe('when initial search provided', () => {
     it('should should request for the entities after mounting', async () => {
       component = shallow(<SearchEntities {...{ ...props, initialSearchTerm: 'test' }} />);
-      expect(SearchApi.search).toHaveBeenLastCalledWith({
+      expect(SearchAPI.search).toHaveBeenLastCalledWith({
         data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
         headers: {},
       });

@@ -15,7 +15,7 @@ import {
 
 import arrayUtils from '../utils/arrayUtils.js';
 
-import colorScheme from '../utils/colorScheme.js';
+import { colorScheme } from '../utils/colorScheme.js';
 
 class ExtendedTooltip extends React.Component {
   render() {
@@ -107,4 +107,5 @@ RechartsBar.propTypes = {
   chartLabel: PropTypes.string,
 };
 
-export default connect()(RechartsBar);
+const RechartsBarConnected = connect(mapStateToProps)(RechartsBar);
+export { RechartsBarConnected as Bar };

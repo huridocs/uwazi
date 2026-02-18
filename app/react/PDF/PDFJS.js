@@ -25,5 +25,5 @@ const pdfjsLoader = async () => {
 
 await pdfjsLoader();
 
-export default { ...PDFJS, ...pdfjsLib };
-export { EventBus };
+const PDFJSExport = { ...PDFJS, ...pdfjsLib };
+export { PDFJSExport as PDFJS, EventBus };

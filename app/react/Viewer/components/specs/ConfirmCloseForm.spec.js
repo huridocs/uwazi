@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import Modal from '#app/Layout/Modal.js';
+import { Modal } from '#app/Layout/Modal.js';
 
-import { ConfirmCloseForm } from '../ConfirmCloseForm.js';
+import { ConfirmCloseFormView } from '../ConfirmCloseForm.js';
 
 describe('ConfirmCloseForm', () => {
   let component;
@@ -20,7 +20,7 @@ describe('ConfirmCloseForm', () => {
   });
 
   const render = () => {
-    component = shallow(<ConfirmCloseForm {...props} />);
+    component = shallow(<ConfirmCloseFormView {...props} />);
   };
 
   it('should open modal if doc is not undefined', () => {

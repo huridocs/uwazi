@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
-import UsersAPI from '#app/Users/UsersAPI.js';
-import api from '#app/utils/api.js';
+import { UsersAPI } from '#app/Users/UsersAPI.js';
+import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { ClientUserGroupSchema, ClientUserSchema } from '#app/apiResponseTypes.js';
 

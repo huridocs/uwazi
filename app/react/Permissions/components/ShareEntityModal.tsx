@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable max-statements */
-import Modal from '#app/Layout/Modal.js';
+import { Modal } from '#app/Layout/Modal.js';
 import React, { useState, useEffect } from 'react';
 import { Icon } from '#UI/index.js';
 import { Translate } from '#app/I18N/index.js';

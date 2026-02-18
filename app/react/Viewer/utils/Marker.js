@@ -2,7 +2,7 @@ import Mark from 'mark.js';
 import { isClient } from '#app/utils/index.js';
 
 let marker;
-export default {
+const Marker = {
   init(selector) {
     if (!isClient) return;
     marker = new Mark(selector);
@@ -21,3 +21,4 @@ export default {
     if (marker) marker.unmark();
   },
 };
+export { Marker };

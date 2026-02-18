@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 if (typeof window !== 'undefined') {
   import('./scss/alert.scss');
 }
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 class Alert extends Component {
   constructor(props) {
@@ -54,4 +54,4 @@ Alert.propTypes = {
   type: PropTypes.string,
 };
 
-export default Alert;
+export { Alert };

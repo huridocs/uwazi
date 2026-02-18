@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import countries from 'world-countries';
 import { iconNames } from '#UI/Icon/library.js';
 import DropdownList from 'react-widgets/lib/DropdownList.js';
-import IconSelector from '../IconSelector.js';
+import { IconSelector } from '../IconSelector.js';
 
 describe('IconSelector', () => {
   let component;

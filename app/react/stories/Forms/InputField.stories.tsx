@@ -8,6 +8,7 @@ const meta: Meta<typeof InputField> = {
   title: 'Forms/InputField',
   component: InputField,
 };
+export default meta;
 
 type Story = StoryObj<typeof InputField>;
 
@@ -176,5 +177,3 @@ export {
   WithIconAndClearButton,
   WithIconAndClearButtonWithValue,
 };
-
-export default meta;

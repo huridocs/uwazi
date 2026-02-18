@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { Icon } from '#app/UI/index.js';
 
 import { debounce } from '#app/utils/index.js';
-import libraryHelper, { prepareDefaultFilters } from '#app/Library/helpers/libraryFilters.js';
+import { libraryHelpers as libraryHelper, prepareDefaultFilters } from '#app/Library/helpers/libraryFilters.js';
 import { searchDocuments } from '#app/Library/actions/libraryActions.js';
 import { Translate } from '#app/I18N/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
@@ -17,7 +17,7 @@ import { AssigneeFilter } from '#app/Library/components/AssigneeFilter.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { PermissionsFilter } from './PermissionsFilter.js';
 import { PublishedFilters } from './PublishedFilters.js';
-import Filters from './FiltersFromProperties.js';
+import { FiltersFromProperties } from './FiltersFromProperties.js';
 
 class FiltersForm extends Component {
   constructor(props) {
@@ -60,7 +60,7 @@ class FiltersForm extends Component {
 
   render() {
     const { templates, documentTypes } = this.props;
-    const aggregations = this.props.aggregations.toJS();
+    const aggregations = (this.props.aggregations || Immutable.Map()).toJS();
     const translationContext =
       documentTypes.get(0) || (templates.get(0) || Immutable.fromJS({})).get('_id') || 'System';
     const allFields = this.props.fields.toJS();
@@ -81,11 +81,13 @@ class FiltersForm extends Component {
           <PublishedFilters onChange={this.activateAutoSearch} aggregations={aggregations} />
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
           <TemplatesFilter />
-          <Filters
+          <FiltersFromProperties
             onChange={this.activateAutoSearch}
             properties={fields}
             translationContext={translationContext}
             storeKey={this.props.storeKey}
+            templates={this.props.templates ? this.props.templates.toJS() : []}
+            aggregations={this.props.aggregations || Immutable.Map()}
           />
 
           <FilterTocGeneration onChange={this.activateAutoSearch} aggregations={aggregations} />
@@ -138,11 +140,14 @@ FiltersForm.propTypes = {
 };
 
 function mapStateToProps(state, props) {
+  const store = state[props.storeKey] || {};
+  const filters = store.filters || Immutable.fromJS({ properties: [], documentTypes: [] });
+  const get = key => (filters.get ? filters.get(key) : undefined);
   return {
-    fields: state[props.storeKey].filters.get('properties'),
-    aggregations: state[props.storeKey].aggregations,
-    templates: state.templates,
-    documentTypes: state[props.storeKey].filters.get('documentTypes'),
+    fields: get('properties') || Immutable.List(),
+    aggregations: store.aggregations || Immutable.Map(),
+    templates: state.templates || Immutable.List(),
+    documentTypes: get('documentTypes') || Immutable.List(),
   };
 }
 
@@ -150,5 +155,5 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({ searchDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 
-export { FiltersForm, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(FiltersForm));
+const FiltersFormConnected = connect(mapStateToProps, mapDispatchToProps)(withRouter(FiltersForm));
+export { FiltersForm as FiltersFormView, FiltersFormConnected as FiltersForm, mapStateToProps };

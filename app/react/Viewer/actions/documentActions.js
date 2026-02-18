@@ -1,13 +1,13 @@
 import omit from 'lodash/omit.js';
-import api from '#app/utils/api.js';
-import referencesAPI from '#app/Viewer/referencesAPI.js';
+import { api } from '#app/utils/api.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 import * as connectionsTypes from '#app/Connections/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
 import { getStore } from '#shared/atomStore/index.js';
-import { documentsApi } from '#app/Documents/index.js';
+import { documentsAPI } from '#app/Documents/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
@@ -18,7 +18,7 @@ import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.j
 import * as selectionActions from './selectionActions.js';
 import * as uiActions from './uiActions.js';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
-import EntitiesApi from '../../Entities/EntitiesAPI.js';
+import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {
   let docByFilename = entity.documents.find(d => d.filename === filename);
@@ -97,7 +97,7 @@ export function saveToc(toc, fileId) {
 
 export function deleteDocument(doc) {
   return async dispatch => {
-    await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await documentsAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));

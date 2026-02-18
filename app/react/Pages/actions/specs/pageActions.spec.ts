@@ -6,7 +6,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { actions as basicActions } from '#app/BasicReducer/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
-import api from '#app/Pages/PagesAPI.js';
+import { PagesAPI as api } from '#app/Pages/PagesAPI.js';
 
 import * as actions from '../pageActions.js';
 

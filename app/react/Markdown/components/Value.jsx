@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import markdownDatasets from '../markdownDatasets.js';
-import PagesContext from './Context.js';
+import { Context as PagesContext } from './Context.js';
 import { objectPath } from '../utils.js';
 
 export class ValueComponent extends Component {
@@ -37,4 +37,5 @@ ValueComponent.propTypes = {
 export const mapStateToProps = (state, props) =>
   props.property ? { value: markdownDatasets.getMetadataValue(state, props) } : {};
 
-export default connect(mapStateToProps)(ValueComponent);
+const Value = connect(mapStateToProps)(ValueComponent);
+export { Value };

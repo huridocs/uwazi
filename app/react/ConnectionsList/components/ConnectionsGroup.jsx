@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { t } from '#app/I18N/index.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { Icon } from '#app/UI/index.js';
 
 import { setFilter } from '../actions/actions.js';
@@ -150,5 +150,5 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-export { ConnectionsGroup, mapDispatchToProps };
-export default connect(null, mapDispatchToProps)(ConnectionsGroup);
+const ConnectionsGroupConnected = connect(null, mapDispatchToProps)(ConnectionsGroup);
+export { ConnectionsGroup, ConnectionsGroupConnected, mapDispatchToProps };

@@ -1,4 +1,4 @@
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';

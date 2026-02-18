@@ -2,7 +2,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import { ItemFooter } from '#app/Layout/Lists.js';
-import { UploadEntityStatus, mapStateToProps } from '../UploadEntityStatus.js';
+import { UploadEntityStatusView, mapStateToProps } from '../UploadEntityStatus.js';
 
 describe('UploadEntityStatus', () => {
   describe('render', () => {
@@ -14,7 +14,7 @@ describe('UploadEntityStatus', () => {
     });
 
     const render = () => {
-      component = shallow(<UploadEntityStatus {...props} />);
+      component = shallow(<UploadEntityStatusView {...props} />);
     };
 
     it('should not render anything on null status', () => {

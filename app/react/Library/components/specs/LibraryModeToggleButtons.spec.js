@@ -7,7 +7,7 @@ import Immutable from 'immutable';
 import { I18NLink } from '#app/I18N/index.js';
 
 import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.js';
-import { LibraryModeToggleButtons, mapStateToProps } from '../LibraryModeToggleButtons.js';
+import { LibraryModeToggleButtonsView, mapStateToProps } from '../LibraryModeToggleButtons.js';
 
 jest.mock('#app/utils/index.js', () => {
   const actual = jest.requireActual('#app/utils/index.js');
@@ -29,7 +29,7 @@ describe('LibraryModeToggleButtons', () => {
   };
 
   const render = () => {
-    component = shallow(<LibraryModeToggleButtons {...props} />);
+    component = shallow(<LibraryModeToggleButtonsView {...props} />);
   };
 
   describe('render()', () => {

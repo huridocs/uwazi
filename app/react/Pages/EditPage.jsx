@@ -1,15 +1,15 @@
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 
-import RouteHandler from '#app/App/RouteHandler.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
 
 import { PageCreator } from '#app/Pages/components/PageCreator.js';
 import { withRouter } from '#app/componentWrappers.js';
-import pagesAPI from './PagesAPI.js';
+import { PagesAPI } from './PagesAPI.js';
 
 class EditPageComponent extends RouteHandler {
   static async requestState(requestParams) {
-    const page = await pagesAPI.getById(requestParams);
+    const page = await PagesAPI.getById(requestParams);
 
     return [formActions.load('page.data', page)];
   }

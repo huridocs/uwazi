@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 const Warning = ({ children, inline }) =>
   inline ? (
@@ -24,4 +24,4 @@ Warning.propTypes = {
   inline: PropTypes.bool,
 };
 
-export default Warning;
+export { Warning };

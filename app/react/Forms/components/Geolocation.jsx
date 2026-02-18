@@ -9,7 +9,7 @@ function isCoordinateValid(coord) {
   return typeof coord === 'number' && !Number.isNaN(coord);
 }
 
-export default class Geolocation extends Component {
+export class Geolocation extends Component {
   constructor(props) {
     super(props);
     this.latChange = this.latChange.bind(this);

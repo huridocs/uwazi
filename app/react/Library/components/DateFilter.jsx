@@ -20,4 +20,4 @@ DateFilter.propTypes = {
   label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
-export default DateFilter;
+export { DateFilter };

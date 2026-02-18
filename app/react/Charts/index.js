@@ -1,8 +1,8 @@
 import loadable from '@loadable/component';
 
-import colorScheme from './utils/colorScheme.js';
+import { colorScheme } from './utils/colorScheme.js';
 import arrayUtils from './utils/arrayUtils.js';
-import ExtendedTooltip from './components/ExtendedTooltip.js';
+import { ExtendedTooltip } from './components/ExtendedTooltip.js';
 
 const Bar = loadable(
   async () => import(/* webpackChunkName: "LazyLoadBar" */ './components/Bar.js')

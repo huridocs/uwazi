@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import HubRelationshipMetadata, { mapStateToProps } from '../HubRelationshipMetadata.js';
+import { HubRelationshipMetadataView, mapStateToProps } from '../HubRelationshipMetadata.js';
 
 describe('HubRelationshipMetadata', () => {
   let props;
@@ -41,7 +41,7 @@ describe('HubRelationshipMetadata', () => {
   });
 
   function testSnapshot() {
-    const component = shallow(<HubRelationshipMetadata.WrappedComponent {...props} />);
+    const component = shallow(<HubRelationshipMetadataView {...props} />);
     expect(component).toMatchSnapshot();
   }
 

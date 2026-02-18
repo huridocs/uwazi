@@ -12,6 +12,8 @@ const meta: Meta<typeof RadioSelect> = {
   },
 };
 
+export default meta;
+
 type Story = StoryObj<typeof RadioSelect>;
 
 const Primary: Story = {
@@ -67,5 +69,3 @@ const Horizontal: Story = {
 };
 
 export { Basic, Horizontal };
-
-export default meta;

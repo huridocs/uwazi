@@ -143,7 +143,7 @@ const getPropertyType = (propertyName, templates) => {
   return 'text';
 };
 
-export default {
+const formater = {
   formatDateRange(daterange = {}) {
     let from = '';
     let to = '';
@@ -612,4 +612,4 @@ export default {
   },
 };
 
-export { propertyValueFormatter };
+export { propertyValueFormatter, formater };

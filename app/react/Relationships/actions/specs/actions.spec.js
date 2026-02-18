@@ -3,8 +3,8 @@ import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 import { mockID } from '#shared/uniqueID.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import SearchApi from '#app/Search/SearchAPI.js';
-import api from '#app/utils/api.js';
+import { SearchAPI } from '#app/Search/SearchAPI.js';
+import { api } from '#app/utils/api.js';
 import * as types from '../actionTypes.js';
 import * as actions from '../actions.js';
 import * as routeUtils from '../../utils/routeUtils.js';
@@ -653,7 +653,7 @@ describe('Relationships actions', () => {
 
     beforeEach(() => {
       store = mockStore({});
-      spyOn(SearchApi, 'search').and.returnValue(
+      spyOn(SearchAPI, 'search').and.returnValue(
         Promise.resolve({ rows: [{ type: 'entity' }, { type: 'doc' }] })
       );
     });
@@ -661,7 +661,7 @@ describe('Relationships actions', () => {
     describe('immidiateSearch', () => {
       it('should search for connectable entities', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        expect(SearchApi.search).toHaveBeenCalledWith(
+        expect(SearchAPI.search).toHaveBeenCalledWith(
           new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true })
         );
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_RELATIONSHIPS' });
@@ -682,17 +682,17 @@ describe('Relationships actions', () => {
     describe('search', () => {
       it('should update the state searchTerm and debounce server searching the term', () => {
         jasmine.clock().install();
-        SearchApi.search.calls.reset();
+        SearchAPI.search.calls.reset();
         actions.search('term', 'basic')(store.dispatch);
         expect(store.getActions()).toContainEqual({
           type: 'relationships/searchTerm/SET',
           value: 'term',
         });
-        expect(SearchApi.search).not.toHaveBeenCalled();
+        expect(SearchAPI.search).not.toHaveBeenCalled();
 
         jasmine.clock().tick(400);
 
-        expect(SearchApi.search).toHaveBeenCalledWith(
+        expect(SearchAPI.search).toHaveBeenCalledWith(
           new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true })
         );
         jasmine.clock().uninstall();

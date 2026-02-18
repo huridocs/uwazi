@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import reducer from '../connectionReducer.js';
+import { connectionReducer as reducer } from '../connectionReducer.js';
 
 describe('Connections connection reducer', () => {
   describe('when state is undefined', () => {

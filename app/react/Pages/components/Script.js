@@ -71,6 +71,5 @@ Script.propTypes = {
   onError: PropTypes.func,
 };
 
-const container = connect()(Script);
-
-export default container;
+const ScriptConnected = connect()(Script);
+export { Script, ScriptConnected };

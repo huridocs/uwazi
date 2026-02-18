@@ -9,7 +9,7 @@ import { actions as metadataActions } from '#app/Metadata/index.js';
 import * as actions from '#app/Uploads/actions/uploadsActions.js';
 import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import * as types from '#app/Uploads/actions/actionTypes.js';
-import entitiesApi from '#app/Entities/EntitiesAPI.js';
+import { EntitiesAPI as entitiesApi } from '#app/Entities/EntitiesAPI.js';
 import { mockID } from '#shared/uniqueID.js';
 
 const middlewares = [thunk];

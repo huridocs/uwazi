@@ -12,7 +12,7 @@ import { MetadataFormFields, validator, prepareMetadataAndFiles } from '#app/Met
 import { Translate } from '#app/I18N/index.js';
 import { publicSubmit } from '#app/Uploads/actions/uploadsActions.js';
 import { FormGroup } from '#app/Forms/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 
 if (typeof window !== 'undefined') {
@@ -181,8 +181,8 @@ class PublicFormComponent extends Component {
             </MobileView>
             <div className="preview-list">
               <ul>
-                {this.state.files.map(file => (
-                  <li key={file.preview}>
+                {this.state.files.map((file, index) => (
+                  <li key={file.preview ?? `file-${index}`}>
                     <div className="preview-title">{file.name}</div>
                     <div>
                       <span onClick={() => this.removeAttachment(file)}>
@@ -259,4 +259,3 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
 export { PublicFormComponent };
-export default connect(mapStateToProps, mapDispatchToProps)(PublicFormComponent);

@@ -1,18 +1,18 @@
 /* eslint-disable max-lines */
 import React from 'react';
-import { createRoutesFromElements, Route } from 'react-router';
+import { createRoutesFromElements, Navigate, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { App } from '#app/App/App.js';
-import LibraryRoot from '#app/Library/Library.js';
-import { LibraryMap } from '#app/Library/LibraryMap.js';
-import { LibraryCards } from '#app/Library/LibraryCards.js';
-import { LibraryTable } from '#app/Library/LibraryTable.js';
+import { LibraryRoot } from './Library/Library.js';
+import { LibraryMap } from './Library/LibraryMap.js';
+import { LibraryCards } from './Library/LibraryCards.js';
+import { LibraryTable } from './Library/LibraryTable.js';
 import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from '#V2/Routes/Settings/Settings.js';
-import { Login } from '#app/Users/Login.js';
+import { Login } from './Users/Login.js';
 import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.js';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
-import ViewerRoute from '#app/Viewer/ViewerRoute.js';
+import { ViewerRoute } from './Viewer/ViewerRoute.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
   TranslationsList,
@@ -77,11 +77,97 @@ import {
   privateRoute,
   ProtectedRoute,
 } from './ProtectedRoute.js';
-import { getIndexElement } from './getIndexElement.js';
+import type { IndexDescriptor } from './getIndexElement.js';
+import { getIndexDescriptor } from './getIndexElement.js';
 import { PageView } from './Pages/PageView.js';
-import ResetPassword from './Users/ResetPassword.js';
-import ConnectedUnlockAccount from './Users/UnlockAccount.js';
+import { ResetPassword } from './Users/ResetPassword.js';
+import { ConnectedUnlockAccount } from './Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
+
+const deconstructSearchQuery = (query?: string) => {
+  if (!query) return '';
+  if (query.startsWith('?q=')) return decodeURI(query.substring(1).split('=')[1]);
+  return `(${query.substring(1)})`;
+};
+
+export type IndexComponents = {
+  LibraryRoot: React.ComponentType<{ children?: React.ReactNode }>;
+  LibraryCards: React.ComponentType<{ params?: { q?: string } }>;
+  LibraryTable: React.ComponentType<{ params?: { q?: string } }>;
+  LibraryMap: React.ComponentType<{ params?: { q?: string } }>;
+  Login: React.ComponentType<Record<string, never>>;
+};
+
+const buildIndexElement = (
+  descriptor: IndexDescriptor,
+  indexComponents?: IndexComponents
+): React.ReactNode => {
+  const Root = indexComponents?.LibraryRoot ?? LibraryRoot;
+  const Cards = indexComponents?.LibraryCards ?? LibraryCards;
+  const Table = indexComponents?.LibraryTable ?? LibraryTable;
+  const Map = indexComponents?.LibraryMap ?? LibraryMap;
+  const LoginComp = indexComponents?.Login ?? Login;
+
+  switch (descriptor.branch) {
+    case 'libraryDefault': {
+      const { userId, defaultLibraryView, private: privateInstance } = descriptor.libraryDefault;
+      if (privateInstance && !userId) return <LoginComp />;
+      const params = { q: '(includeUnpublished:!t)' };
+      switch (defaultLibraryView) {
+        case 'table':
+          return (
+            <Root>
+              <Table params={params} />
+            </Root>
+          );
+        case 'map':
+          return (
+            <Root>
+              <Map params={params} />
+            </Root>
+          );
+        default:
+          return (
+            <Root>
+              <Cards params={params} />
+            </Root>
+          );
+      }
+    }
+    case 'libraryCustom': {
+      const { customHomePage } = descriptor.libraryCustom;
+      const [query] = customHomePage.filter((path: string) => path.startsWith('?'));
+      const queryString = query ? deconstructSearchQuery(query) : '';
+      if (customHomePage.includes('map')) {
+        return (
+          <Root>
+            <Map params={{ q: queryString }} />
+          </Root>
+        );
+      }
+      if (customHomePage.includes('table')) {
+        return (
+          <Root>
+            <Table params={{ q: queryString }} />
+          </Root>
+        );
+      }
+      return (
+        <Root>
+          <Cards params={{ q: queryString }} />
+        </Root>
+      );
+    }
+    case 'page':
+      return <PageView params={{ sharedId: descriptor.pageId }} />;
+    case 'entity':
+      return <ViewerRoute params={{ sharedId: descriptor.entityId }} />;
+    case 'navigate':
+      return <Navigate to={descriptor.navigateTo} />;
+    default:
+      return null;
+  }
+};
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -294,18 +380,26 @@ const languageLayout = (langKey: string, layout: React.JSX.Element) => (
   </Route>
 );
 
+type AppComponentType = React.ComponentType<{ customParams?: { sharedId?: string } }>;
+
 const getRoutes = (
   settings: ClientSettings | undefined,
   userId: string | undefined,
-  headers?: IncomingHttpHeaders
+  headers?: IncomingHttpHeaders,
+  AppComponent?: AppComponentType,
+  indexComponents?: IndexComponents
 ) => {
-  const { element, parameters, defaultToLibrary } = getIndexElement(settings, userId);
-  const layout = getRoutesLayout(settings, element, headers, defaultToLibrary);
+  const Shell = AppComponent ?? App;
+  const descriptor = getIndexDescriptor(settings, userId);
+  const indexElement = buildIndexElement(descriptor, indexComponents);
+  const parameters = descriptor.parameters;
+  const defaultToLibrary = descriptor.defaultToLibrary;
+  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route
       path="/"
-      element={<App customParams={parameters} />}
+      element={<Shell customParams={parameters} />}
       errorElement={<RouteErrorBoundary />}
     >
       {layout}
@@ -315,4 +409,13 @@ const getRoutes = (
   );
 };
 
-export { getRoutes };
+const getIndexElement = (settings: ClientSettings | undefined, userId: string | undefined) => {
+  const descriptor = getIndexDescriptor(settings, userId);
+  return {
+    element: buildIndexElement(descriptor),
+    parameters: descriptor.parameters,
+    defaultToLibrary: descriptor.defaultToLibrary,
+  };
+};
+
+export { getRoutes, getIndexElement };

@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import RouteHandler from '#app/App/RouteHandler.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
 import qs from 'qs';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 
@@ -52,16 +52,16 @@ class ResetPasswordComponent extends RouteHandler {
           <div className="col-xs-12 col-sm-4 col-sm-offset-4">
             {qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).createAccount ===
               'true' && (
-                <div className="alert alert-info">
-                  <Icon icon="info-circle" />
-                  <div>
-                    <Translate>
-                      To complete the account creation process, please create a password for your
-                      account
-                    </Translate>
-                  </div>
+              <div className="alert alert-info">
+                <Icon icon="info-circle" />
+                <div>
+                  <Translate>
+                    To complete the account creation process, please create a password for your
+                    account
+                  </Translate>
                 </div>
-              )}
+              </div>
+            )}
             <form onSubmit={this.submit}>
               <div className={`form-group login-email ${this.state.error ? 'has-error' : ''}`}>
                 <label className="form-group-label" htmlFor="password">
@@ -119,4 +119,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { ResetPasswordComponent };
-export default connect(null, mapDispatchToProps)(withRouter(ResetPasswordComponent));
+const ResetPasswordConnected = connect(
+  null,
+  mapDispatchToProps
+)(withRouter(ResetPasswordComponent));
+export { ResetPasswordConnected as ResetPassword };

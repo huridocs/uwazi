@@ -7,10 +7,10 @@ import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import * as actions from '../actions/actions.js';
 
-import LeftRelationship from './LeftRelationship.js';
-import RightRelationship from './RightRelationship.js';
+import { LeftRelationshipConnected as LeftRelationship } from './LeftRelationship.js';
+import { RightRelationship } from './RightRelationship.js';
 
-export class RelationshipsGraphEdit extends Component {
+class RelationshipsGraphEdit extends Component {
   componentDidMount() {
     this.props.parseResults(this.props.searchResults, this.props.parentEntity, this.props.editing);
   }
@@ -86,4 +86,8 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RelationshipsGraphEdit);
+const RelationshipsGraphEditConnected = connect(mapStateToProps, mapDispatchToProps)(RelationshipsGraphEdit);
+export {
+  RelationshipsGraphEdit as RelationshipsGraphEditView,
+  RelationshipsGraphEditConnected as RelationshipsGraphEdit,
+};

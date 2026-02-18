@@ -41,17 +41,18 @@ const determineAssets = (assets, languageData) => {
   }
   if (emptyKeyCss && Array.isArray(emptyKeyCss)) {
     emptyKeyCss.forEach(cssFile => {
-      if (cssFile && typeof cssFile === 'string' && cssFile.endsWith('.css') && !cssFile.includes('rtl-')) {
+      if (
+        cssFile &&
+        typeof cssFile === 'string' &&
+        cssFile.endsWith('.css') &&
+        !cssFile.includes('rtl-')
+      ) {
         cssArray.push(cssFile);
       }
     });
   }
   return {
-    JS: [
-      assets.nprogress?.js,
-      assets.vendor?.js,
-      assets.main?.js
-    ].filter(Boolean),
+    JS: [assets.nprogress?.js, assets.vendor?.js, assets.main?.js].filter(Boolean),
     CSS: cssArray.filter(Boolean),
   };
 };
@@ -73,11 +74,18 @@ const getFaviconURL = reduxData => {
   return favicon;
 };
 
+const safeHelmet = result => {
+  if (Array.isArray(result)) return result;
+  if (result != null && typeof result === 'object' && result.$$typeof) return result;
+  if (result != null && typeof result === 'object' && !Array.isArray(result)) return null;
+  return result;
+};
+
 const headTag = (head, CSS, reduxData) => (
   <head>
-    {head.title.toComponent()}
-    {head.meta.toComponent()}
-    {head.link.toComponent()}
+    {safeHelmet(head.title?.toComponent?.())}
+    {safeHelmet(head.meta?.toComponent?.())}
+    {safeHelmet(head.link?.toComponent?.())}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {CSS.map((style, key) => (
       <link key={key} href={style} rel="stylesheet" type="text/css" />
@@ -148,7 +156,7 @@ class Root extends Component {
             />
           )}
           {this.renderInitialData()}
-          {head.script.toComponent()}
+          {safeHelmet(head.script?.toComponent?.())}
           {JS.map((file, index) => (
             <script key={index} src={file} />
           ))}
@@ -173,5 +181,4 @@ Root.propTypes = {
   version: PropTypes.string,
 };
 
-export { headTag };
-export default Root;
+export { headTag, Root };

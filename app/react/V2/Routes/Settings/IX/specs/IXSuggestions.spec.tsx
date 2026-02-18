@@ -5,7 +5,7 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
 import { IXSuggestions } from '../IXSuggestions.js';

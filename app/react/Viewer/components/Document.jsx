@@ -195,5 +195,3 @@ Document.propTypes = {
 };
 
 export { Document };
-
-export default Document;

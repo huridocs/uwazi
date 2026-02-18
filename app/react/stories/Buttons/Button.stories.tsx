@@ -6,6 +6,7 @@ const meta: Meta<typeof Button> = {
   title: 'Components/Buttons/Button',
   component: Button,
 };
+export default meta;
 
 type Story = StoryObj<typeof Button>;
 
@@ -30,4 +31,3 @@ const Basic: Story = {
   },
 };
 export { Basic };
-export default meta;

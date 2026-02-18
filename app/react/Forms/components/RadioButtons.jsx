@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-export default class RadioButtons extends Component {
+export class RadioButtons extends Component {
   change(value) {
     this.props.onChange(value);
   }

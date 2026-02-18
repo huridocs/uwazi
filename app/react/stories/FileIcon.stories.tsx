@@ -6,6 +6,7 @@ const meta: Meta<typeof FileIcon> = {
   title: 'Components/FileIcon',
   component: FileIcon,
 };
+export default meta;
 
 type Story = StoryObj<typeof FileIcon>;
 
@@ -41,5 +42,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

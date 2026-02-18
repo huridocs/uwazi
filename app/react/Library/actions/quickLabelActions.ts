@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from '#app/BasicReducer/index.js';
-import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
+import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { IStore, QuickLabelState, QuickLabelMetadata } from '#app/istore.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';

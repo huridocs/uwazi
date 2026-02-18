@@ -52,4 +52,5 @@ export const mapDispatchToProps = dispatch =>
     wrapDispatch(dispatch, 'library')
   );
 
-export default connect(() => ({}), mapDispatchToProps)(EntityInfo);
+const EntityInfoConnected = connect(() => ({}), mapDispatchToProps)(EntityInfo);
+export { EntityInfo as EntityInfoView, EntityInfoConnected as EntityInfo };

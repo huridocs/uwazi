@@ -1,6 +1,6 @@
-import api from '#app/RelationTypes/RelationTypesAPI.js';
+import { api } from '#app/RelationTypes/RelationTypesAPI.js';
 import { actions as formActions } from 'react-redux-form';
-import referencesAPI from '#app/Viewer/referencesAPI.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 

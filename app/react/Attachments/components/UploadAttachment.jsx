@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 import { uploadAttachment } from '#app/Attachments/actions/actions.js';
 
-export class UploadAttachment extends Component {
+class UploadAttachment extends Component {
   onChangeSingle(e) {
     const file = e.target.files[0];
     this.props.uploadAttachment(this.props.entity, file, { __reducerKey: this.props.storeKey });
@@ -94,4 +94,5 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ uploadAttachment }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UploadAttachment);
+const UploadAttachmentConnected = connect(mapStateToProps, mapDispatchToProps)(UploadAttachment);
+export { UploadAttachmentConnected as UploadAttachment };

@@ -9,7 +9,7 @@ import { NeedAuthorization } from '#app/Auth/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { SettingsFilterSchema } from '#shared/types/settingsType.js';
 import { filterDocumentTypes } from '../actions/filterActions.js';
-import DocumentTypesList from './DocumentTypesList.js';
+import { DocumentTypesListConnected } from './DocumentTypesList.js';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;
@@ -113,7 +113,7 @@ class TemplatesFilterComponent extends React.Component<ComponentProps, Templates
             </NeedAuthorization>
           )}
           <li className="wide documentTypes-selector">
-            <DocumentTypesList
+            <DocumentTypesListConnected
               fromFilters={
                 this.state.documentTypeFromFilters && this.state.configuredFilters.length > 0
               }

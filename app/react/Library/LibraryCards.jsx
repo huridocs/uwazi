@@ -1,7 +1,7 @@
 import React from 'react';
 import { LibraryRootComponent } from '#app/Library/Library.js';
-import LibraryLayout from '#app/Library/LibraryLayout.js';
-import DocumentsList from '#app/Library/components/DocumentsList.js';
+import { LibraryLayout } from '#app/Library/LibraryLayout.js';
+import { LibraryDocumentsList } from '#app/Library/components/DocumentsList.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { trackPage } from '#app/App/GoogleAnalytics.js';
 import { requestState } from '#app/Library/helpers/requestState.js';
@@ -19,7 +19,7 @@ class LibraryCardsComponent extends LibraryRootComponent {
         scrollCallback={this.scrollCallback}
         scrollCount={this.state.scrollCount}
       >
-        <DocumentsList
+        <LibraryDocumentsList
           storeKey="library"
           CollectionViewer={this.props.viewer}
           zoomIn={this.zoomIn}

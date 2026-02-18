@@ -9,8 +9,8 @@ import { userAtom } from '#V2/atoms/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { store } from '#app/store.js';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components/index.js';
-import CustomHookComponents from './CustomHooks/index.js';
-import markdownToReact from './markdownToReact.js';
+import { CustomHookComponents } from './CustomHooks/index.js';
+import { markdownToReact } from './markdownToReact.js';
 import { ValidatedElement } from './ValidatedElement.js';
 import { errorCollector, visualizationHtmlTags } from './utils.js';
 
@@ -130,9 +130,9 @@ class MarkdownViewer extends Component {
     const sanitizedMarkdown = !this.props.sanitized
       ? this.props.markdown
       : sanitizeHtml(this.props.markdown, {
-        allowedTags: visualizationHtmlTags,
-        allowedAttributes: false,
-      });
+          allowedTags: visualizationHtmlTags,
+          allowedAttributes: false,
+        });
 
     const ReactFromMarkdown = markdownToReact(
       sanitizedMarkdown,
@@ -169,4 +169,4 @@ MarkdownViewer.propTypes = {
   sanitized: PropTypes.bool,
 };
 
-export default MarkdownViewer;
+export { MarkdownViewer };

@@ -7,10 +7,10 @@ import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Settings } from 'luxon';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { I18NUtils } from '#app/I18N/index.js';
-import RouteHandler from '../RouteHandler.js';
+import { RouteHandler } from '../RouteHandler.js';
 import { APIURL } from '../../config.js';
 
 class TestController extends RouteHandler {

@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 
-import SidePanel from '#app/Layout/SidePanel.js';
-import SearchResults from '#app/Connections/components/SearchResults.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
+import { SearchResults } from '#app/Connections/components/SearchResults.js';
 import { loadInReduxForm } from '#app/Metadata/actions/actions.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { closePanel } from '../actions/uiActions.js';
-import SearchForm from './SearchEntitiesForm.js';
+import { SearchEntitiesForm } from './SearchEntitiesForm.js';
 import * as actions from '../actions/actions.js';
 
 class AddEntities extends Component {
@@ -55,7 +55,7 @@ class AddEntities extends Component {
 
         <div className="sidepanel-body">
           <div className="search-box">
-            <SearchForm />
+            <SearchEntitiesForm />
           </div>
           <SearchResults
             results={searchResults}
@@ -108,6 +108,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { AddEntities, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddEntities);
+const AddEntitiesPanelConnected = connect(mapStateToProps, mapDispatchToProps)(AddEntities);
+export { AddEntities, AddEntitiesPanelConnected as AddEntitiesPanel, mapStateToProps };

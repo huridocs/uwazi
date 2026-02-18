@@ -26,4 +26,4 @@ TextFilter.propTypes = {
   label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
-export default TextFilter;
+export { TextFilter };

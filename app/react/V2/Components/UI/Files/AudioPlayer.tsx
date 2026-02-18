@@ -86,4 +86,4 @@ const AudioPlayer = ({ url, className, altText, onDuration }: AudioPlayerProps) 
   );
 };
 
-export default AudioPlayer;
+export { AudioPlayer };

@@ -8,9 +8,9 @@ import { Icon } from '#app/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import * as metadataActions from '#app/Metadata/actions/actions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import SidePanel from '#app/Layout/SidePanel.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import commonTemplate from '#app/Metadata/helpers/comonTemplate.js';
-import MetadataForm from '#app/Metadata/components/MetadataForm.js';
+import { MetadataForm } from '#app/Metadata/components/MetadataForm.js';
 import { setEditSearchEntities, getSearch } from '#app/SemanticSearch/actions/actions.js';
 
 const getTemplates = createSelector(
@@ -24,7 +24,7 @@ const commonTemplateSelector = createSelector(
   commonTemplate
 );
 
-export class SemanticSearchMultieditPanel extends Component {
+class SemanticSearchMultieditPanel extends Component {
   constructor(props) {
     super(props);
     this.close = this.close.bind(this);
@@ -188,4 +188,5 @@ export function mapDispatchToProps(dispatch, props) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchMultieditPanel);
+const SemanticSearchMultieditPanelConnected = connect(mapStateToProps, mapDispatchToProps)(SemanticSearchMultieditPanel);
+export { SemanticSearchMultieditPanelConnected as SemanticSearchMultieditPanel };

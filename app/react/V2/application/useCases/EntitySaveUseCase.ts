@@ -85,5 +85,3 @@ export class EntitySaveUseCaseImpl implements EntitySaveUseCase {
     });
   }
 }
-
-export default EntitySaveUseCaseImpl;

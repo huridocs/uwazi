@@ -164,4 +164,4 @@ FreeBarChart.defaultProps = {
   children: null,
 };
 
-export default FreeBarChart;
+export { FreeBarChart };

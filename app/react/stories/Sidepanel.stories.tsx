@@ -10,6 +10,8 @@ const meta: Meta<typeof Sidepanel> = {
   component: Sidepanel,
 };
 
+export default meta;
+
 const SidePanelContainer = (args: SidePanelProps) => {
   const [showSidepanel, setShowSidepanel] = useState(false);
 
@@ -100,5 +102,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

@@ -1,4 +1,4 @@
-import Immutable from '#shared/immutableWrapper.js';
+import Immutable from 'immutable';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 
 const initialState = { reference: {}, snippet: {}, enableClickAction: true, activeReferences: [] };

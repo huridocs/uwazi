@@ -1,11 +1,11 @@
 import { actions } from '#app/BasicReducer/index.js';
 import { getDocument } from '#app/Viewer/actions/documentActions.js';
-import referencesAPI from '#app/Viewer/referencesAPI.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import relationTypesAPI from '#app/RelationTypes/RelationTypesAPI.js';
 import * as relationships from '#app/Relationships/utils/routeUtils.js';
 
 import { setReferences } from './referencesActions.js';
-import entitiesAPI from '../../Entities/EntitiesAPI.js';
+import { EntitiesAPI as entitiesAPI } from '../../Entities/EntitiesAPI.js';
 
 export function setViewerState(state) {
   return dispatch => {

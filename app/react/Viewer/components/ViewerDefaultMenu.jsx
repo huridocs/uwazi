@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { Icon } from '#app/UI/index.js';
 
 import { openPanel } from '#app/Viewer/actions/uiActions.js';
 
-export class ViewerDefaultMenu extends Component {
+class ViewerDefaultMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
@@ -42,4 +42,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ openPanel }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewerDefaultMenu);
+const ViewerDefaultMenuConnected = connect(mapStateToProps, mapDispatchToProps)(ViewerDefaultMenu);
+export { ViewerDefaultMenuConnected as ViewerDefaultMenu };

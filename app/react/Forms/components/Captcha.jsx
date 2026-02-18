@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
-import api from '../../utils/api.js';
+import { api } from '../../utils/api.js';
 
 class Captcha extends Component {
   constructor(props) {
@@ -70,4 +70,4 @@ Captcha.propTypes = {
   remote: PropTypes.bool,
 };
 
-export default Captcha;
+export { Captcha };

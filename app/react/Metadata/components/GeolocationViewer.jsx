@@ -64,4 +64,4 @@ GeolocationViewer.propTypes = {
   onlyForCards: PropTypes.bool,
 };
 
-export default GeolocationViewer;
+export { GeolocationViewer };

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import libraryHelpers from '#app/Library/helpers/libraryFilters.js';
+import { libraryHelpers } from '#app/Library/helpers/libraryFilters.js';
 
 function getPropertyText(prop, values) {
   const options = values.map(value => prop.options.find(o => o.id === value));
@@ -56,5 +56,5 @@ function mapStateToProps({ templates }, { query }) {
   };
 }
 
-export { SearchDescription, mapStateToProps };
-export default connect(mapStateToProps)(SearchDescription);
+const SearchDescriptionConnected = connect(mapStateToProps)(SearchDescription);
+export { SearchDescription as SearchDescriptionView, SearchDescriptionConnected as SearchDescription, mapStateToProps };

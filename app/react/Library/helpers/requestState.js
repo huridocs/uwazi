@@ -1,7 +1,7 @@
 import { actions } from '#app/BasicReducer/index.js';
-import libraryHelpers from '#app/Library/helpers/libraryFilters.js';
-import api from '#app/Search/SearchAPI.js';
-import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
+import { libraryHelpers } from '#app/Library/helpers/libraryFilters.js';
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { getThesaurusPropertyNames } from '#shared/commonTopicClassification.js';
 import { setTableViewColumns } from '#app/Library/actions/libraryActions.js';

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Control } from 'react-redux-form';
 
 const mapProps = {
@@ -49,5 +48,3 @@ FormGroup.propTypes = {
   model: PropTypes.any,
   children: childrenType,
 };
-
-export default connect()(FormGroup);

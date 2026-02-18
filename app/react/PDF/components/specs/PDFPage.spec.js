@@ -5,16 +5,16 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import PDFJS from '../../PDFJS.js';
-import PDFPage from '../PDFPage.js';
+import { PDFJS } from '../../PDFJS.js';
+import { PDFPage } from '../PDFPage.js';
 
 const pdfObject = { numPages: 2 };
 
-jest.mock('../../PDFJS', () => ({
-  default: {
+jest.mock('../../PDFJS.js', () => ({
+  PDFJS: {
     getDocument: jest.fn().mockReturnValue(Promise.resolve(pdfObject)),
+    PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
   },
-  PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
   EventBus: function () {},
 }));
 

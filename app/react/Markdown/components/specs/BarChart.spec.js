@@ -7,7 +7,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
-import BarChartComponent, { mapStateToProps } from '../BarChart.js';
+import { BarChartView, mapStateToProps } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets.js';
 import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures.js';
 import { nestedThesauri } from './fixture/nestedThesauri.js';
@@ -53,7 +53,7 @@ describe('BarChart Markdown component', () => {
       ...overridenProps,
     };
 
-    return shallow(<BarChartComponent.WrappedComponent {...props} />);
+    return shallow(<BarChartView {...props} />);
   };
 
   const expectLabels = (component, labels) => {
@@ -96,7 +96,7 @@ describe('BarChart Markdown component', () => {
     let undefinedValue;
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(undefinedValue);
     const props = mapStateToProps(state, { prop2: 'propValue' });
-    const component = shallow(<BarChartComponent.WrappedComponent {...props} property="prop2" />);
+    const component = shallow(<BarChartView {...props} property="prop2" />);
 
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop2: 'propValue' });
     expect(component).toMatchSnapshot();

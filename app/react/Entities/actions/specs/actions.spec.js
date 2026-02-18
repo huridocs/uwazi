@@ -1,6 +1,6 @@
 import { getStore } from '#shared/atomStore/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
-import api from '#app/Entities/EntitiesAPI.js';
+import { EntitiesAPI as api } from '#app/Entities/EntitiesAPI.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { deletedEntityAtom } from '#V2/atoms.js';

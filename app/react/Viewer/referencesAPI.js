@@ -1,6 +1,6 @@
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 
-export default {
+const ReferencesAPI = {
   get(requestParams) {
     return api.get('references/by_document', requestParams).then(response => response.json);
   },
@@ -31,3 +31,4 @@ export default {
       .then(response => response.json);
   },
 };
+export { ReferencesAPI };

@@ -1,14 +1,14 @@
 import sortBy from 'lodash/sortBy.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { debounce } from '#app/utils/index.js';
 import { createSelector } from 'reselect';
 import { notificationActions } from '#app/Notifications/index.js';
 import { referencesActions } from '#app/Viewer/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import SearchApi from '#app/Search/SearchAPI.js';
+import { SearchAPI } from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
-import EntitiesApi from '../../Entities/EntitiesAPI.js';
+import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 import * as types from './actionTypes.js';
 import * as uiActions from './uiActions.js';
 import * as routeUtils from '../utils/routeUtils.js';
@@ -225,7 +225,7 @@ function immidiateSearch(dispatch, searchTerm) {
     includeUnpublished: true,
   });
 
-  return SearchApi.search(requestParams).then(({ rows: results }) => {
+  return SearchAPI.search(requestParams).then(({ rows: results }) => {
     dispatch(actions.set('relationships/searchResults', results));
   });
 }

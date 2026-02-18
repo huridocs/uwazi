@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 const normalizeIndex = (index, length) => (index >= 0 ? index % length : length + index);
 
@@ -28,7 +28,7 @@ const getVisibleItems = (data, currentIndex, visibleCount) => {
   return visibleItems;
 };
 
-export default class VictimSlider extends Component {
+export class VictimSlider extends Component {
   constructor(props) {
     super(props);
     this.state = {

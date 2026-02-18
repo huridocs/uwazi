@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux';
-import createReducer from '#app/BasicReducer/index.js';
+import { createReducer } from '#app/BasicReducer/index.js';
 
-import connection from './connectionReducer.js';
-import uiState from './uiReducer.js';
+import { connectionReducer as connection } from './connectionReducer.js';
+import { uiReducer as uiState } from './uiReducer.js';
 
-export default combineReducers({
+const reducer = combineReducers({
   connection,
   searchResults: createReducer('connections/searchResults', []),
   searchTerm: createReducer('connections/searchTerm', ''),
   uiState,
 });
+
+export { reducer };

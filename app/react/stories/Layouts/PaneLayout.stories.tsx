@@ -7,6 +7,8 @@ const meta: Meta<typeof PaneLayout> = {
   component: PaneLayout,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof PaneLayout>;
 
 const Component = ({
@@ -124,5 +126,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

@@ -8,6 +8,7 @@ const meta: Meta<typeof EmbededButton> = {
   title: 'Components/Buttons/EmbededButton',
   component: EmbededButton,
 };
+export default meta;
 
 type Story = StoryObj<typeof EmbededButton>;
 
@@ -37,4 +38,3 @@ const Basic: Story = {
   },
 };
 export { Basic };
-export default meta;

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-export default class NumericRangeSlide extends Component {
+export class NumericRangeSlide extends Component {
   static getDerivedStateFromProps({ value }) {
     if (value) {
       return { value };

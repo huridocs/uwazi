@@ -2,9 +2,9 @@
 import Immutable from 'immutable';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import searchApi from '#app/Search/SearchAPI.js';
-import entitiesApi from '#app/Entities/EntitiesAPI.js';
-import api from '#app/utils/api.js';
+import { SearchAPI as searchApi } from '#app/Search/SearchAPI.js';
+import { EntitiesAPI as entitiesApi } from '#app/Entities/EntitiesAPI.js';
+import { api } from '#app/utils/api.js';
 
 import markdownDatasets from '../markdownDatasets.js';
 import fixtures from './fixtures.js';

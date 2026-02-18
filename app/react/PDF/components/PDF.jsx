@@ -4,7 +4,7 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { PDFPage } from '#app/PDF/index.js';
 import { isClient } from '../../utils/index.js';
-import PDFJS from '../PDFJS.js';
+import { PDFJS } from '../PDFJS.js';
 
 const cMapUrl = '/legacy_character_maps/';
 const cMapPacked = true;
@@ -215,4 +215,4 @@ PDF.propTypes = {
   parentRef: PropTypes.object.isRequired,
 };
 
-export default PDF;
+export { PDF };

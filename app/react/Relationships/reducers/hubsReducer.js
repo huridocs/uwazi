@@ -57,7 +57,7 @@ const conformRelationships = action => {
   }, Immutable.fromJS([]));
 };
 
-export default function (state = initialState, action = {}) {
+const hubsReducer = (state = initialState, action = {}) => {
   let relationships;
   let value;
   let updatedHubs;
@@ -266,4 +266,6 @@ export default function (state = initialState, action = {}) {
     default:
       return Immutable.fromJS(state);
   }
-}
+};
+
+export { hubsReducer };

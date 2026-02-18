@@ -1,4 +1,4 @@
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import backend from 'fetch-mock';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';

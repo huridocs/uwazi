@@ -6,11 +6,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { CreateConnectionPanel } from '#app/Connections/index.js';
-import ContextMenu from '#app/ContextMenu/index.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ContextMenu } from '#app/ContextMenu/index.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { ConnectedViewer } from '../Viewer.js';
-import SourceDocument from '../SourceDocument.js';
-import TargetDocument from '../TargetDocument.js';
+import { SourceDocument } from '../SourceDocument.js';
+import { TargetDocument } from '../TargetDocument.js';
 import * as routeActions from '../../actions/routeActions.js';
 
 describe('Viewer', () => {

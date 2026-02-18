@@ -91,4 +91,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchBar);
+const ConnectionSearchBar = connect(mapStateToProps, mapDispatchToProps)(SearchBar);
+export { ConnectionSearchBar };

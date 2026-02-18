@@ -1,5 +1,3 @@
-/** @format */
-
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -8,7 +6,7 @@ import { Icon } from '#UI/index.js';
 import { bindActionCreators } from 'redux';
 import { closeImportProgress } from '#app/Uploads/actions/uploadsActions.js';
 import Immutable from 'immutable';
-import StackTrace from '#app/components/Elements/StackTrace.js';
+import { StackTrace } from '#app/components/Elements/StackTrace.js';
 
 class ImportProgress extends Component {
   render() {
@@ -120,5 +118,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ close: closeImportProgress }, dispatch);
 }
 
-export { ImportProgress, mapDispatchToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(ImportProgress);
+const ImportProgressConnected = connect(mapStateToProps, mapDispatchToProps)(ImportProgress);
+export { ImportProgress, ImportProgressConnected, mapDispatchToProps };

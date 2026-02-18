@@ -21,6 +21,7 @@ const meta: Meta<typeof ProgressBar> = {
     },
   },
 };
+export default meta;
 
 type Story = StoryObj<typeof ProgressBar>;
 
@@ -41,5 +42,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

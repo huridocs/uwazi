@@ -7,7 +7,7 @@ import { t } from '#app/I18N/index.js';
 import { removeDocuments, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import searchAPI from '#app/Search/SearchAPI.js';
+import { SearchAPI as searchAPI } from '#app/Search/SearchAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { generateID } from '#shared/IDGenerator.js';
 import emptyTemplate from '../helpers/defaultTemplate.js';

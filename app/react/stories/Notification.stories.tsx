@@ -7,6 +7,8 @@ const meta: Meta<typeof Notification> = {
   component: Notification,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof Notification>;
 
 const Primary: Story = {
@@ -53,5 +55,3 @@ const WithHeading: Story = {
 };
 
 export { Basic, WithHeading, WithDetails };
-
-export default meta;

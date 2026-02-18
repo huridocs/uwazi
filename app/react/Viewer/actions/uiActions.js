@@ -1,7 +1,7 @@
 import { actions } from '#app/BasicReducer/index.js';
 import { events } from '#app/utils/index.js';
 import { setTargetSelection } from '#app/Viewer/actions/selectionActions.js';
-import Marker from '#app/Viewer/utils/Marker.js';
+import { Marker } from '#app/Viewer/utils/Marker.js';
 import scroller from '#app/Viewer/utils/Scroller.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 

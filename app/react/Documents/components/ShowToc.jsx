@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { scrollToToc } from '#app/Viewer/actions/uiActions.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { t } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 
 if (typeof window !== 'undefined') {
@@ -79,5 +79,5 @@ function mapDispatchToProps() {
 
 const mapStateToProps = store => ({ documentScale: store.documentViewer.documentScale });
 
-export { ShowToc };
-export default connect(mapStateToProps, mapDispatchToProps)(ShowToc);
+const ShowTocConnected = connect(mapStateToProps, mapDispatchToProps)(ShowToc);
+export { ShowToc as ShowTocView, ShowTocConnected as ShowToc };

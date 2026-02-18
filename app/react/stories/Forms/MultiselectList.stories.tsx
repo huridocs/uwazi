@@ -8,6 +8,8 @@ const meta: Meta<typeof MultiselectList> = {
   component: MultiselectList,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof MultiselectList>;
 
 const StoryComponent = ({ args }: any) => {
@@ -169,5 +171,3 @@ const RemoteSearch: Story = {
 };
 
 export { Basic, WithError, WithGroups, InitialState, BlankState, RemoteSearch };
-
-export default meta;

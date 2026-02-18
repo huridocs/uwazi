@@ -21,7 +21,7 @@ const resetState = state => {
   return Immutable.fromJS(newState);
 };
 
-export default function (state = initialState, action = {}) {
+const connectionReducer = (state = initialState, action = {}) => {
   let newState;
 
   switch (action.type) {
@@ -52,4 +52,6 @@ export default function (state = initialState, action = {}) {
     default:
       return Immutable.fromJS(state);
   }
-}
+};
+
+export { connectionReducer };

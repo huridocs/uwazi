@@ -6,6 +6,7 @@ const meta: Meta<typeof Pill> = {
   title: 'Components/Pill',
   component: Pill,
 };
+export default meta;
 
 type Story = StoryObj<typeof Pill>;
 
@@ -29,5 +30,3 @@ const Basic = {
 };
 
 export { Basic };
-
-export default meta;

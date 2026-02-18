@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import PagesContext from './Context.js';
+import { Context as PagesContext } from './Context.js';
 import { objectPath } from '../utils.js';
 
 class Repeat extends Component {
@@ -26,4 +26,4 @@ Repeat.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
 };
 
-export default Repeat;
+export { Repeat };

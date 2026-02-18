@@ -5,7 +5,7 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 
 import comonProperties from '#shared/commonProperties.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { actions, ShowMetadata, wrapEntityMetadata } from '#app/Metadata/index.js';

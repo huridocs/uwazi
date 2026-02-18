@@ -1,5 +1,5 @@
 import { actions } from '#app/BasicReducer/index.js';
-import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
+import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { QuickLabelState } from '#app/istore.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { store } from '#app/store.js';

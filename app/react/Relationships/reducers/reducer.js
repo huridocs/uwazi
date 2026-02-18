@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
-import createReducer from '#app/BasicReducer/index.js';
-import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
-import hubs from './hubsReducer.js';
-import hubActions from './hubActionsReducer.js';
-import uiState from './uiReducer.js';
+import { createReducer } from '#app/BasicReducer/index.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
+import { hubsReducer as hubs } from './hubsReducer.js';
+import { hubActionsReducer as hubActions } from './hubActionsReducer.js';
+import { uiReducer as uiState } from './uiReducer.js';
 
-export default combineReducers({
+const reducer = combineReducers({
   hubs,
   hubActions,
   list: combineReducers({
@@ -26,3 +26,5 @@ export default combineReducers({
   metadata: modelReducer('relationships.metadata', {}),
   formState: formReducer('relationships.metadata'),
 });
+
+export { reducer };

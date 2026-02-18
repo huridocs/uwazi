@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Connection should render the reference 1`] = `
-<Connect(Item)
+<Item
   additionalMetadata={
     Array [
       Object {
@@ -39,7 +39,7 @@ exports[`Connection should render the reference 1`] = `
       <ShowIf
         if={true}
       >
-        <Connect(I18NLink)
+        <I18NLink
           className="item-shortcut btn btn-default"
           onClick={[Function]}
           to="/entity/undefined"
@@ -47,7 +47,7 @@ exports[`Connection should render the reference 1`] = `
           <Icon
             icon="file"
           />
-        </Connect(I18NLink)>
+        </I18NLink>
       </ShowIf>
     </div>
   }
@@ -59,9 +59,18 @@ exports[`Connection should render the reference 1`] = `
     }
   }
   evalPublished={true}
+  markAsDeleted={false}
   noMetadata={true}
   onClick={[Function]}
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}
+  search={
+    Object {
+      "order": "desc",
+      "sort": "creationDate",
+      "treatAs": "number",
+    }
+  }
+  titleProperty="title"
 />
 `;

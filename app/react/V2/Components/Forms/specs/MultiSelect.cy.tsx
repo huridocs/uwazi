@@ -62,7 +62,7 @@ describe('MultiSelect', () => {
       const onChangeSpy = cy.stub().as('onChange');
       mount(
         <MultiSelect
-          onChange={value => {
+          onChange={(value: string[]) => {
             onChangeSpy(value);
           }}
         />

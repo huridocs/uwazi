@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Rectangle } from 'recharts';
-import colorScheme, { light as colorSchemeLight } from '../utils/colorScheme.js';
+import {colorScheme, light as colorSchemeLight } from '../utils/colorScheme.js';
 
 const ColoredBar = props => {
   const { index, color } = props;
@@ -18,4 +18,4 @@ ColoredBar.propTypes = {
   index: PropTypes.number,
 };
 
-export default ColoredBar;
+export { ColoredBar };

@@ -1,8 +1,8 @@
 import * as types from '#app/Library/actions/actionTypes.js';
-import libraryHelper from '#app/Library/helpers/libraryFilters.js';
+import { libraryHelpers as libraryHelper } from '#app/Library/helpers/libraryFilters.js';
 import comonPropertiesHelper from '#shared/commonProperties.js';
 import * as libraryActions from '#app/Library/actions/libraryActions.js';
-import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 import { actions as formActions } from 'react-redux-form';
 
 export function filterDocumentTypes(documentTypes, location, navigate) {

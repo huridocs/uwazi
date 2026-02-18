@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { ResponsiveContainer, PieChart, Pie, Legend, Cell, Sector } from 'recharts';
 
 import Immutable from 'immutable';
 
-import colorScheme from '../utils/colorScheme.js';
+import { colorScheme } from '../utils/colorScheme.js';
 
 function ellipsisString(string, maxLength) {
   if (string.length <= maxLength) {
@@ -184,5 +183,3 @@ export class RechartsPie extends Component {
 RechartsPie.propTypes = {
   data: PropTypes.array,
 };
-
-export default connect()(RechartsPie);

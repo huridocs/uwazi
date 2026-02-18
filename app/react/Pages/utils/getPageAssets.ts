@@ -2,10 +2,10 @@ import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import get from 'lodash/get.js';
 import has from 'lodash/has.js';
 import uniq from 'lodash/uniq.js';
-import api from '#app/Search/SearchAPI.js';
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
 import { markdownDatasets } from '#app/Markdown/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import PagesAPI from '../PagesAPI.js';
+import { PagesAPI } from '../PagesAPI.js';
 import pageItemLists from './pageItemLists.js';
 
 type Query = { filters: {}; types: string[]; limit?: string };

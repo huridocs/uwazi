@@ -159,7 +159,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         className="multiselectItem-name"
         onClick={[Function]}
       >
-        <Icon
+        <Connect(Icon)
           className="item-icon"
         />
         Option1
@@ -239,7 +239,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         className="multiselectItem-name"
         onClick={[Function]}
       >
-        <Icon
+        <Connect(Icon)
           className="item-icon"
         />
         Option2
@@ -320,7 +320,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
           className="multiselectItem-name"
           onClick={[Function]}
         >
-          <Icon
+          <Connect(Icon)
             className="item-icon"
           />
           Sub Group
@@ -411,7 +411,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
               className="multiselectItem-name"
               onClick={[Function]}
             >
-              <Icon
+              <Connect(Icon)
                 className="item-icon"
               />
               Group option1
@@ -491,7 +491,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
               className="multiselectItem-name"
               onClick={[Function]}
             >
-              <Icon
+              <Connect(Icon)
                 className="item-icon"
               />
               Group option2

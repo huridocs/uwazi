@@ -1,11 +1,14 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
+import configureMockStore from 'redux-mock-store';
 import { FileType } from '#shared/types/fileType.js';
-import UploadButton from '#app/Metadata/components/UploadButton.js';
+import { UploadButton } from '#app/Metadata/components/UploadButton.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { ConnectedFile as File } from '../File.js';
 import { FileList, FileListProps } from '../FileList.js';
+
+const mockStore = configureMockStore([]);
 
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;
@@ -39,7 +42,8 @@ describe('FileList', () => {
   });
 
   const render = () => {
-    component = shallow(<FileList {...props} />);
+    const store = mockStore({});
+    component = shallow(<FileList {...props} />, { context: { store } }).dive();
   };
 
   it('should render the files correctly', () => {

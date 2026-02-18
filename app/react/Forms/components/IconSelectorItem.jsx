@@ -5,7 +5,7 @@ import { Translate } from '#app/I18N/index.js';
 
 const style = { display: 'inline-block', width: '25px' };
 
-export default class IconSelectorItem extends Component {
+export class IconSelectorItem extends Component {
   shouldComponentUpdate(nextProps) {
     return this.props.item._id !== nextProps.item._id;
   }

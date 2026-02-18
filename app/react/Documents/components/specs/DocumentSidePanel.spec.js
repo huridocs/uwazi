@@ -4,13 +4,13 @@ import Immutable from 'immutable';
 import { Tabs } from 'react-tabs-redux';
 
 import { ConnectionsGroups } from '#app/ConnectionsList/index.js';
-import SidePanel from '#app/Layout/SidePanel.js';
-import Connections from '#app/Viewer/components/ConnectionsList.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
+import { ConnectionsList as Connections } from '#app/Viewer/components/ConnectionsList.js';
 import * as viewerModule from '#app/Viewer/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
-import ShowToc from '../ShowToc.js';
-import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel.js';
+import { ShowToc } from '../ShowToc.js';
+import { DocumentSidePanelView, mapStateToProps } from '../DocumentSidePanel.js';
 
 jest.mock('shared/entityDefaultDocument');
 
@@ -54,7 +54,7 @@ describe('DocumentSidePanel', () => {
   });
 
   const render = () => {
-    component = shallow(<DocumentSidePanel {...props} />);
+    component = shallow(<DocumentSidePanelView {...props} />);
   };
 
   it('should have default props values assigned', () => {

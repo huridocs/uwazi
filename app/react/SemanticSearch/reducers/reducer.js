@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
-import createReducer from '#app/BasicReducer/index.js';
-import Immutable from '#shared/immutableWrapper.js';
+import { createReducer } from '#app/BasicReducer/index.js';
+import Immutable from 'immutable';
 
-export default combineReducers({
+const reducer = combineReducers({
   search: createReducer('semanticSearch/search', {}),
   searches: createReducer('semanticSearch/searches', []),
   resultsFiltersForm: formReducer('semanticSearch.resultsFilters'),
@@ -20,3 +20,5 @@ export default combineReducers({
   multipleEditForm: formReducer('semanticSearch.multipleEdit', { metadata: {} }),
   multiedit: createReducer('semanticSearch/multiedit', []),
 });
+
+export { reducer };

@@ -66,5 +66,3 @@ function mapDispatchToProps(dispatch, props) {
     wrapDispatch(dispatch, props.storeKey)
   );
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(SearchButton);

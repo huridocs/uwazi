@@ -6,11 +6,11 @@ import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
 
 import { hideModal } from '#app/Modals/actions/modalActions.js';
-import Modal from '#app/Layout/Modal.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Modal } from '#app/Layout/Modal.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { closePanel } from '../actions/uiActions.js';
 
-export class ConfirmCloseForm extends Component {
+class ConfirmCloseForm extends Component {
   confirm() {
     this.props.hideModal('ConfirmCloseForm');
     this.props.closePanel();
@@ -69,4 +69,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ closePanel, hideModal, resetForm: formActions.reset }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConfirmCloseForm);
+const ConfirmCloseFormConnected = connect(mapStateToProps, mapDispatchToProps)(ConfirmCloseForm);
+export { ConfirmCloseForm as ConfirmCloseFormView, ConfirmCloseFormConnected as ConfirmCloseForm };

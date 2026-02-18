@@ -71,5 +71,3 @@ const mapStateToProps = ({ documentViewer, templates }) => ({
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ loadInReduxForm: actions.loadInReduxForm }, dispatch);
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataPanelMenu);

@@ -24,4 +24,4 @@ NumberRangeFilter.propTypes = {
   label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
-export default NumberRangeFilter;
+export { NumberRangeFilter };

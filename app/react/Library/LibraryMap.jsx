@@ -3,8 +3,8 @@ import { withRouter } from '#app/componentWrappers.js';
 import { requestState } from '#app/Library/helpers/requestState.js';
 import { MapView } from '#app/Library/components/MapView.js';
 import { LibraryRootComponent } from '#app/Library/Library.js';
-import LibraryLayout from '#app/Library/LibraryLayout.js';
-import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
+import { LibraryLayout } from '#app/Library/LibraryLayout.js';
+import { LibraryModeToggleButtons } from '#app/Library/components/LibraryModeToggleButtons.js';
 import { trackPage } from '#app/App/GoogleAnalytics.js';
 
 class LibraryMapComponent extends LibraryRootComponent {

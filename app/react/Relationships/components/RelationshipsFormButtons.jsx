@@ -98,6 +98,8 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { RelationshipsFormButtons };
-
-export default connect(mapStateToProps, mapDispatchToProps)(RelationshipsFormButtons);
+const RelationshipsFormButtonsConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(RelationshipsFormButtons);
+export { RelationshipsFormButtons, RelationshipsFormButtonsConnected };

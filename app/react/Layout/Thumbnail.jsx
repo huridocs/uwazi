@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
 
@@ -37,5 +37,3 @@ Thumbnail.propTypes = {
   file: PropTypes.string.isRequired,
   alt: PropTypes.string,
 };
-
-export default Thumbnail;

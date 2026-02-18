@@ -7,7 +7,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 import { Loader } from '#app/components/Elements/Loader.js';
 import { arrayUtils } from '#app/Charts/index.js';
-import PieChartLabel from './PieChartLabel.js';
+import { PieChartLabel } from './PieChartLabel.js';
 import markdownDatasets from '../markdownDatasets.js';
 
 const formatData = (data, property, options) => {
@@ -114,5 +114,3 @@ export const mapStateToProps = (state, props) => ({
   data: markdownDatasets.getAggregations(state, props),
   thesauris: state.thesauris,
 });
-
-export default connect(mapStateToProps)(PieChartComponent);

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { FormatMetadata } from '../FormatMetadata.js';
+import { FormatMetadataView } from '../FormatMetadata.js';
 import { metadataSelectors } from '../../selectors.js';
 
 describe('FormatMetadata', () => {
@@ -16,7 +16,7 @@ describe('FormatMetadata', () => {
       entity: {},
       sortedProperty: 'sortedProperty',
     };
-    const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
+    const component = shallow(<FormatMetadataView {...props} />);
     expect(component).toMatchSnapshot();
   });
 
@@ -37,7 +37,7 @@ describe('FormatMetadata', () => {
       additionalMetadata: [{ more: 'data' }, { and: 'more' }],
     };
 
-    const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
+    const component = shallow(<FormatMetadataView {...props} />);
     expect(component).toMatchSnapshot();
   });
 });

@@ -7,6 +7,8 @@ const meta: Meta<typeof VerticalDrawer> = {
   component: VerticalDrawer,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof VerticalDrawer>;
 
 const Primary: Story = {
@@ -66,5 +68,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

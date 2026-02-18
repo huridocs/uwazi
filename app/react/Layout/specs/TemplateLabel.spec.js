@@ -1,8 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import TemplateLabel from '../TemplateLabel.js';
+
+import { TemplateLabel } from '../TemplateLabel.js';
+
+const mockStore = configureMockStore([]);
 
 describe('TemplateLabel', () => {
   let component;
@@ -19,30 +23,32 @@ describe('TemplateLabel', () => {
     };
   });
 
-  const render = () => {
-    const mockStore = configureMockStore();
-    const store = mockStore(initialState);
-    component = shallow(<TemplateLabel store={store} {...props} />);
+  const render = (state = initialState, componentProps = props) => {
+    const store = mockStore(state);
+    component = shallow(
+      <Provider store={store}>
+        <TemplateLabel {...componentProps} />
+      </Provider>
+    )
+      .find(TemplateLabel)
+      .dive();
   };
 
   it('should render the name of the template', () => {
-    render();
+    render(initialState, { template: 'templateId' });
     expect(component.prop('name')).toBe('title');
     expect(component.prop('template')).toBe('templateId');
 
-    props.template = 'templateId2';
-    render();
+    render(initialState, { template: 'templateId2' });
     expect(component.prop('name')).toBe('title 2');
     expect(component.prop('template')).toBe('templateId2');
   });
 
   it('should add consecutive type classNames for each template', () => {
-    props.template = 'templateId';
-    render();
+    render(initialState, { template: 'templateId' });
     expect(component.prop('className')).toBe('btn-color btn-color-0');
 
-    props.template = 'templateId2';
-    render();
+    render(initialState, { template: 'templateId2' });
     expect(component.prop('className')).toBe('btn-color btn-color-1');
   });
 
@@ -51,18 +57,16 @@ describe('TemplateLabel', () => {
     for (let i = 0; i < 20; i += 1) {
       templates.push({ _id: `templateId${i}`, name: `title ${i}` });
     }
-    initialState.templates = Immutable.fromJS(templates);
-    props.template = 'templateId19';
-    render();
+    const stateWithMany = { templates: Immutable.fromJS(templates) };
+    render(stateWithMany, { template: 'templateId19' });
     expect(component.prop('className')).toBe('btn-color btn-color-0');
   });
 
   it('should display the template color if template has a custom color', () => {
-    initialState.templates = Immutable.fromJS([
-      { _id: 'templateId', name: 'title', color: '#112233' },
-    ]);
-    props.template = 'templateId';
-    render();
+    const stateWithColor = {
+      templates: Immutable.fromJS([{ _id: 'templateId', name: 'title', color: '#112233' }]),
+    };
+    render(stateWithColor, { template: 'templateId' });
     expect(component.prop('className')).toBe('btn-color');
     expect(component.prop('style')).toEqual({ backgroundColor: '#112233' });
   });

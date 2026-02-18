@@ -1,9 +1,9 @@
 import Immutable from '#shared/immutableWrapper.js';
+import * as types from '#app/Connections/actions/actionTypes.js';
 
-import * as types from '../actions/actionTypes.js';
 const initialState = { open: false, connecting: false };
 
-export default function (state = initialState, action = {}) {
+const uiReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case types.OPEN_CONNECTION_PANEL:
       return state.set('open', true);
@@ -32,4 +32,6 @@ export default function (state = initialState, action = {}) {
     default:
       return Immutable.fromJS(state);
   }
-}
+};
+
+export { uiReducer };

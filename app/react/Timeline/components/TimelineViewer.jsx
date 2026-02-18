@@ -1,17 +1,15 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { Loader } from '#app/components/Elements/Loader.js';
 import { t as translate, I18NLink } from '#app/I18N/index.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 
-import DocumentsAPI from '#app/Documents/DocumentsAPI.js';
-import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
-import ReferencesAPI from '#app/Viewer/referencesAPI.js';
-import formater from '#app/Metadata/helpers/formater.js';
+import { documentsAPI } from '#app/Documents/DocumentsAPI.js';
+import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
+import { ReferencesAPI } from '#app/Viewer/referencesAPI.js';
+import { formater } from '#app/Metadata/helpers/formater.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { Icon } from '#app/UI/index.js';
@@ -46,7 +44,7 @@ const getRelatedReferences = (references, template) => {
 
 const fetchReferenceData = references => {
   const fetchPromises = references.map(reference => {
-    const get = reference.entityData.type === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
+    const get = reference.entityData.type === 'document' ? documentsAPI.get : EntitiesAPI.get;
     return get(new RequestParams({ sharedId: reference.entityData.sharedId }));
   });
 
@@ -94,7 +92,7 @@ const splitByOrigin = years =>
     { main: {}, related: {} }
   );
 
-export class TimelineViewer extends Component {
+class TimelineViewer extends Component {
   getTemplateType(itemTemplate) {
     return this.plainTemplates.reduce((result, template, index) => {
       if (template._id === itemTemplate) {
@@ -454,4 +452,5 @@ function mapStateToProps({ templates, thesauris }, { entity }) {
   };
 }
 
-export default connect(mapStateToProps)(TimelineViewer);
+const TimelineViewerConnected = connect(mapStateToProps)(TimelineViewer);
+export { TimelineViewerConnected as TimelineViewer };

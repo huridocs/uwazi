@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SearchItem should render search details with link to results page  1`] = `
-<Connect(I18NLink)
+<I18NLink
   className="semantic-search-list-item"
   to="semanticsearch/id"
 >
@@ -31,11 +31,11 @@ exports[`SearchItem should render search details with link to results page  1`] 
     </div>
   </div>
   <div />
-</Connect(I18NLink)>
+</I18NLink>
 `;
 
 exports[`SearchItem when search status is inProgress should render in-progress icon, progress bar and stop button 1`] = `
-<Connect(I18NLink)
+<I18NLink
   className="semantic-search-list-item"
   to="semanticsearch/id"
 >
@@ -80,11 +80,11 @@ exports[`SearchItem when search status is inProgress should render in-progress i
       value={0}
     />
   </div>
-</Connect(I18NLink)>
+</I18NLink>
 `;
 
 exports[`SearchItem when search status is stopped should render progress bar and resume button 1`] = `
-<Connect(I18NLink)
+<I18NLink
   className="semantic-search-list-item"
   to="semanticsearch/id"
 >
@@ -129,5 +129,5 @@ exports[`SearchItem when search status is stopped should render progress bar and
       value={0}
     />
   </div>
-</Connect(I18NLink)>
+</I18NLink>
 `;

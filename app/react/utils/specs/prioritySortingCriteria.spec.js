@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
-import prioritySorting from '../prioritySortingCriteria.js';
+import { prioritySortingCriteria as prioritySortingCriteriaModule } from '../prioritySortingCriteria.js';
 
-const prioritySortingCriteria = prioritySorting.get;
+const prioritySortingCriteria = prioritySortingCriteriaModule.get;
 
 describe('prioritySortingCriteria', () => {
   it('should return an object with global default sort and oder', () => {

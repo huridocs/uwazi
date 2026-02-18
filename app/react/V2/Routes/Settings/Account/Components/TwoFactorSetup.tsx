@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 

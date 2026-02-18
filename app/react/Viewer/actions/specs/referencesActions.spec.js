@@ -13,7 +13,7 @@ import { actions as relationshipsActions } from '#app/Relationships/index.js';
 import * as actions from '#app/Viewer/actions/referencesActions.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
-import referencesAPI from '#app/Viewer/referencesAPI.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import scroller from '#app/Viewer/utils/Scroller.js';
 
 const middlewares = [thunk];

@@ -46,4 +46,4 @@ Slideshow.propTypes = {
   ]).isRequired,
 };
 
-export default Slideshow;
+export { Slideshow };

@@ -7,7 +7,7 @@ import { t } from '#app/I18N/index.js';
 
 import { loadMoreReferences } from '../../ConnectionsList/actions/actions.js';
 
-export const LoadMoreRelationshipsButton = ({
+const LoadMoreRelationshipsButton = ({
   totalHubs,
   requestedHubs,
   action,
@@ -62,4 +62,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoadMoreRelationshipsButton);
+const LoadMoreRelationshipsButtonConnected = connect(mapStateToProps, mapDispatchToProps)(LoadMoreRelationshipsButton);
+export { LoadMoreRelationshipsButtonConnected as LoadMoreRelationshipsButton };

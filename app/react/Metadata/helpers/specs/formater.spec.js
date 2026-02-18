@@ -5,7 +5,7 @@ import { Settings } from 'luxon';
 
 import { metadataSelectors } from '../../selectors.js';
 
-import formater from '../formater.js';
+import { formater } from '../formater.js';
 import { doc, templates, thesauris, relationships } from './fixtures.js';
 
 describe('metadata formater', () => {

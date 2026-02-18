@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { withContext } from '#app/componentWrappers.js';
 import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from '#app/Metadata/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
-import SidePanel from '#app/Layout/SidePanel.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
 import { api as entitiesAPI } from '#app/Entities/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
@@ -220,7 +220,7 @@ const mapStateToProps = state => {
   return {
     selectedConnection: Boolean(
       (state.relationships.connection && state.relationships.connection.get('_id')) ||
-      entityBeingEdited
+        entityBeingEdited
     ),
     entity: connectionSelector(state),
     entityBeingEdited,
@@ -252,6 +252,8 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { RelationshipMetadata, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(withContext(RelationshipMetadata));
+const RelationshipMetadataConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withContext(RelationshipMetadata));
+export { RelationshipMetadata, RelationshipMetadataConnected, mapStateToProps };

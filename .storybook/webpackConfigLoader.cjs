@@ -1,6 +1,7 @@
 const configFactory = require('../webpack/config.cjs');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
 const rootPath = path.join(__dirname, '/../');
 
@@ -28,6 +29,9 @@ const HashPrefixPlugin = class {
           }
         } else if ((request.startsWith('./') || request.startsWith('../')) && resolveData.context) {
           newRequest = path.resolve(resolveData.context, request);
+          if (newRequest.includes('atomStore') && newRequest.includes('server.store') && !newRequest.includes('stub')) {
+            newRequest = path.join(rootPath, 'app/shared/atomStore/server.store.stub.ts');
+          }
         } else if (request.startsWith(rootPath) && (request.includes('/app/react/') || request.includes('/app/shared/') || request.includes('/app/api/'))) {
           newRequest = request;
         }
@@ -81,6 +85,13 @@ module.exports = function customizeWebpackConfig(config) {
   
   config.plugins.push(new MiniCssExtractPlugin({}));
   config.plugins.push(new HashPrefixPlugin());
+  const stubPath = path.join(rootPath, 'app/shared/atomStore/server.store.stub.ts');
+  config.plugins.push(
+    new webpack.NormalModuleReplacementPlugin(
+      /(^\.\/server\.store(\.ts|\.js)?$|[/\\]atomStore[/\\]server\.store(\.ts|\.js)?$)/,
+      stubPath
+    )
+  );
   
   config.externals = config.externals || {};
   if (typeof config.externals === 'object' && !Array.isArray(config.externals)) {
@@ -98,6 +109,8 @@ module.exports = function customizeWebpackConfig(config) {
       alias: {
         ...config.resolve?.alias,
         ...custom.resolve.alias,
+        [path.join(rootPath, 'app/shared/atomStore/server.store.ts')]: stubPath,
+        [path.join(rootPath, 'app/shared/atomStore/server.store.js')]: stubPath,
       },
       extensions: [...new Set([...(config.resolve?.extensions || []), ...custom.resolve.extensions])],
     },

@@ -10,12 +10,12 @@ import { connect } from 'react-redux';
 import { Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { wrapEntityMetadata } from '#app/Metadata/index.js';
 import defaultTemplate from '../helpers/defaultTemplate.js';
-import validator from '../helpers/validator.js';
+import { title as validator } from '../helpers/validator.js';
 import { IconField } from './IconField.js';
-import MetadataFormFields from './MetadataFormFields.js';
+import { MetadataFormFieldsConnected as MetadataFormFields } from './MetadataFormFields.js';
 import { MetadataExtractor } from './MetadataExtractor.js';
 import { SupportingFiles } from './SupportingFiles.js';
 import { PDFUpload } from './PDFUpload.js';
@@ -143,9 +143,9 @@ class MetadataForm extends Component {
     }
     const titleLabel = template.get('commonProperties')
       ? template
-        .get('commonProperties')
-        .find(p => p.get('name') === 'title')
-        .get('label')
+          .get('commonProperties')
+          .find(p => p.get('name') === 'title')
+          .get('label')
       : 'Title';
 
     return (
@@ -218,10 +218,10 @@ MetadataForm.defaultProps = {
   showSubset: undefined,
   version: undefined,
   initialTemplateId: undefined,
-  componentWillUnmount: () => { },
-  notify: () => { },
-  changeTemplate: () => { },
-  onSubmit: () => { },
+  componentWillUnmount: () => {},
+  notify: () => {},
+  changeTemplate: () => {},
+  onSubmit: () => {},
   highlightedProps: [],
   storeKey: '',
   attachments: [],
@@ -266,7 +266,7 @@ export const mapStateToProps = (state, ownProps) => {
     template: ownProps.template
       ? ownProps.template
       : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
-      immutableDefaultTemplate,
+        immutableDefaultTemplate,
     templateOptions: selectTemplateOptions(state),
     attachments,
     sharedId,
@@ -274,5 +274,5 @@ export const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export { MetadataForm };
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+const MetadataFormConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+export { MetadataFormConnected as MetadataForm };

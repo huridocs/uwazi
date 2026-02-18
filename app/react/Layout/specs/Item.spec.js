@@ -1,17 +1,17 @@
 import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { FavoriteBanner } from '#app/Favorites/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { FormatMetadata } from '../../Metadata.js';
 import { Item, mapStateToProps } from '../Item.js';
 import { RowList, ItemFooter } from '../Lists.js';
-import DocumentLanguage from '../DocumentLanguage.js';
-import * as Icon from '../Icon.js';
-import TemplateLabel from '../TemplateLabel.js';
-import ItemSnippet from '../ItemSnippet.js';
+import { DocumentLanguage } from '../DocumentLanguage.js';
+import { Icon } from '../Icon.js';
+import { TemplateLabel } from '../TemplateLabel.js';
+import { ItemSnippet } from '../ItemSnippet.js';
 
 describe('Item', () => {
   let component;
@@ -102,7 +102,7 @@ describe('Item', () => {
     render();
     expect(component.find('.item-name').text()).toContain('additionalIcon');
     expect(component.find('.item-name').text()).toContain('doc title');
-    expect(component.find('.item-name').find(Icon.default).props().data).toEqual({
+    expect(component.find('.item-name').find(Icon).props().data).toEqual({
       _id: 'icon',
       type: 'Icons',
     });

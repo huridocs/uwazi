@@ -2,14 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import SidePanel from '#app/Layout/SidePanel.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 
 import { Icon } from '#UI/index.js';
 
-import { CreateConnectionPanel } from '../CreateConnectionPanel.js';
-import SearchForm from '../SearchForm.js';
-import ActionButton from '../ActionButton.js';
-import SearchResults from '../SearchResults.js';
+import { CreateConnectionPanelView } from '../CreateConnectionPanel.js';
+import { SearchForm } from '../SearchForm.js';
+import { ActionButtonConnected } from '../ActionButton.js';
+import { SearchResults } from '../SearchResults.js';
 
 describe('CreateConnectionPanel', () => {
   let component;
@@ -37,7 +37,7 @@ describe('CreateConnectionPanel', () => {
   });
 
   function render() {
-    component = shallow(<CreateConnectionPanel {...props} />);
+    component = shallow(<CreateConnectionPanelView {...props} />);
   }
 
   it('should allow to select the connection types and set its value', () => {
@@ -87,17 +87,17 @@ describe('CreateConnectionPanel', () => {
 
   it('should have save button with an onCreate callback for most connection types', () => {
     render();
-    const saveButton = component.find(ActionButton).at(0);
+    const saveButton = component.find(ActionButtonConnected).at(0);
     expect(saveButton.props().action).toBe('save');
     saveButton.props().onCreate();
     expect(props.onCreate).toHaveBeenCalled();
-    expect(component.find(ActionButton).at(1).length).toBe(0);
+    expect(component.find(ActionButtonConnected).at(1).length).toBe(0);
   });
 
   it('should have connect button with an onRangedConnect callback for targetRanged connections', () => {
     props.connection = props.connection.set('type', 'targetRanged');
     render();
-    const connectButton = component.find(ActionButton).at(0);
+    const connectButton = component.find(ActionButtonConnected).at(0);
     expect(connectButton.props().action).toBe('connect');
     expect(connectButton.props().onRangedConnect).toBe(props.onRangedConnect);
   });

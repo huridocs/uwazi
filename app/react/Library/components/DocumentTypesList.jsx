@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { Link } from 'react-router';
 import rison from '@huridocs/rison';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { t, Translate } from '#app/I18N/index.js';
@@ -281,5 +281,8 @@ function mapDispatchToProps(dispatch, _ownProps) {
   return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 
-export { DocumentTypesList, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(DocumentTypesList));
+const DocumentTypesListConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(DocumentTypesList));
+export { DocumentTypesList, DocumentTypesListConnected, mapStateToProps };

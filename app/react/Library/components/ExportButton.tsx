@@ -6,7 +6,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { exportDocuments } from '#app/Library/actions/exportActions.js';
 import { User } from '#api/users/usersModel.js';
-import Modal from '#app/Layout/Modal.js';
+import { Modal } from '#app/Layout/Modal.js';
 import { CaptchaValue } from '#shared/types/Captcha.js';
 import { Captcha, FormGroup } from '#app/ReactReduxForms/index.js';
 import { IImmutable } from '#shared/types/Immutable.js';
@@ -122,4 +122,5 @@ function mapStateToProps(state: ExportStore) {
 
 export type { ExportButtonProps };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExportButton);
+const ExportButtonConnected = connect(mapStateToProps, mapDispatchToProps)(ExportButton);
+export { ExportButtonConnected as ExportButton };

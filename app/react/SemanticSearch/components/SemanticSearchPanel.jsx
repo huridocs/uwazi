@@ -4,10 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { socket } from '#app/socket.js';
-import Icon from '#UI/Icon/Icon.js';
-import ShowIf from '#app/App/ShowIf.js';
-
-import SidePanel from '#app/Layout/SidePanel.js';
+import { Icon } from '#UI/Icon/Icon.js';
+import { ShowIf } from '#app/App/ShowIf.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import {
   fetchSearches,
   submitNewSearch,
@@ -16,8 +15,7 @@ import {
   hideSemanticSearch,
 } from '../actions/actions.js';
 
-import SearchList from './SearchList.js';
-
+import { SearchList } from './SearchList.js';
 
 export class SemanticSearchSidePanel extends Component {
   constructor(props) {
@@ -99,4 +97,8 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchSidePanel);
+const SemanticSearchPanelConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SemanticSearchSidePanel);
+export { SemanticSearchPanelConnected as SemanticSearchPanel };

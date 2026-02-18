@@ -7,7 +7,7 @@ const initialState = {
   addTo: { hubIndex: null, rightRelationshipIndex: null },
 };
 
-export default function (state = initialState, action = {}) {
+const hubActionsReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case types.EDIT_RELATIONSHIPS:
       return state.set('editing', action.value);
@@ -26,4 +26,6 @@ export default function (state = initialState, action = {}) {
     default:
       return Immutable.fromJS(state);
   }
-}
+};
+
+export { hubActionsReducer };

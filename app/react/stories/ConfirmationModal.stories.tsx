@@ -16,6 +16,8 @@ const meta: Meta<typeof ConfirmationModal> = {
   },
 };
 
+export default meta;
+
 type Story = StoryObj<typeof ConfirmationModal>;
 
 const Primary: Story = {
@@ -88,5 +90,3 @@ const PasswordConfirm: Story = {
 };
 
 export { BasicConfirmation, TextConfirmation, WarningConfirmation, PasswordConfirm };
-
-export default meta;

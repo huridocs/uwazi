@@ -5,11 +5,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import FreeBarChart, {
+import {
+  FreeBarChart,
   FreeBarChartProps,
   CustomTooltip,
   CustomTooltipProps,
-} from '../FreeBarChart.js';
+} from '#app/Markdown/components/FreeBarChart.js';
 
 describe('FreeBarChart', () => {
   let component: any;

@@ -79,5 +79,3 @@ export class EntityCompositionSanitizer {
     return { value: item };
   }
 }
-
-export default EntityCompositionSanitizer;

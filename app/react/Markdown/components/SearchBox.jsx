@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router';
 import React from 'react';
 import PropTypes from 'prop-types';
 import rison from '@huridocs/rison';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { t } from '#app/I18N/index.js';
-import ModalTips from '#app/App/ModalTips.js';
+import { ModalTips } from '#app/App/ModalTips.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 
 const SearchBox = ({ placeholder, classname }) => {
@@ -46,4 +46,4 @@ SearchBox.propTypes = {
   classname: PropTypes.string,
 };
 
-export default SearchBox;
+export { SearchBox };

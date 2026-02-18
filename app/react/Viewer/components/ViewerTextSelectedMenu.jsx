@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 import { actions as connectionsActions } from '#app/Connections/index.js';
 import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
@@ -101,5 +101,8 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewerTextSelectedMenu);
-export { ViewerTextSelectedMenu };
+const ViewerTextSelectedMenuConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ViewerTextSelectedMenu);
+export { ViewerTextSelectedMenu, ViewerTextSelectedMenuConnected };

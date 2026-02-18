@@ -2,17 +2,18 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Immutable from 'immutable';
 import { withRouter } from '#app/componentWrappers.js';
 import { t } from '#app/I18N/index.js';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from '#app/Library/actions/libraryActions.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
-import Icon from '#UI/Icon/Icon.js';
-import ModalTips from '#app/App/ModalTips.js';
+import { Icon } from '#UI/Icon/Icon.js';
+import { ModalTips } from '#app/App/ModalTips.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
-import SnippetList from './SnippetList.js';
+import { SnippetList } from './SnippetList.js';
 
 class SearchText extends Component {
   constructor(props) {
@@ -40,7 +41,7 @@ class SearchText extends Component {
     this.formDispatch = dispatch;
   }
 
-  resetSearch() { }
+  resetSearch() {}
 
   searchSnippets(searchTerm, sharedId) {
     if (sharedId) {
@@ -61,10 +62,14 @@ class SearchText extends Component {
   }
 
   render() {
-    const { doc, snippets } = this.props;
+    const { doc } = this.props;
     const documentViewUrl = doc.get('file')
       ? `/document/${doc.get('sharedId')}/text-search`
       : `/entity/${doc.get('sharedId')}/text-search`;
+    const snippets =
+      this.props.snippets && typeof this.props.snippets.get === 'function'
+        ? this.props.snippets
+        : Immutable.fromJS(this.props.snippets || { count: 0, metadata: [], fullText: [] });
     return (
       <div>
         <LocalForm
@@ -119,6 +124,7 @@ class SearchText extends Component {
             selectSnippet={this.props.selectSnippet}
             searchTerm={this.props.searchTerm}
             documentViewUrl={documentViewUrl}
+            selectedSnippet={this.props.selectedSnippet}
           />
         ) : (
           ''
@@ -145,6 +151,7 @@ SearchText.propTypes = {
   }).isRequired,
   searchParams: PropTypes.instanceOf(Object).isRequired,
   navigate: PropTypes.func,
+  selectedSnippet: PropTypes.shape({ get: PropTypes.func }),
 };
 
 SearchText.defaultProps = {
@@ -166,5 +173,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ searchSnippets, selectSnippet }, dispatch);
 }
 
-export { SearchText };
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(SearchText));
+const SearchTextConnected = connect(mapStateToProps, mapDispatchToProps)(withRouter(SearchText));
+export { SearchText, SearchTextConnected };

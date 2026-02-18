@@ -45,4 +45,4 @@ NestedFilter.propTypes = {
   label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
-export default NestedFilter;
+export { NestedFilter };

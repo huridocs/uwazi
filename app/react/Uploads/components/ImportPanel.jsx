@@ -5,11 +5,11 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 
 import { Translate } from '#app/I18N/index.js';
-import SidePanel from '#app/Layout/SidePanel.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import { Icon } from '#UI/index.js';
 import { LocalForm, Control } from 'react-redux-form';
 import { closeImportPanel, importData } from '#app/Uploads/actions/uploadsActions.js';
-import ImportProgress from './ImportProgress.js';
+import { ImportProgress } from './ImportProgress.js';
 
 class ImportPanel extends Component {
   constructor(props) {
@@ -27,7 +27,7 @@ class ImportPanel extends Component {
   }
 
   renderForm() {
-    const { templates } = this.props;
+    const templates = this.props.templates || Immutable.List();
     const template = templates.find(templ => templ.get('default'))?.get('_id');
     return (
       <div>
@@ -146,17 +146,16 @@ ImportPanel.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  open: state.importEntities.showImportPanel,
-  templates: state.templates,
-  uploadProgress: state.importEntities.importUploadProgress,
-  importStart: state.importEntities.importStart,
-  importProgress: state.importEntities.importProgress,
+  open: state.importEntities?.showImportPanel,
+  templates: state.templates || Immutable.List(),
+  uploadProgress: state.importEntities?.importUploadProgress ?? 0,
+  importStart: state.importEntities?.importStart ?? false,
+  importProgress: state.importEntities?.importProgress ?? 0,
 });
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ closeImportPanel, importData }, dispatch);
 }
 
-export { ImportPanel, mapDispatchToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(ImportPanel);
+const ImportPanelConnected = connect(mapStateToProps, mapDispatchToProps)(ImportPanel);
+export { ImportPanel, ImportPanelConnected, mapDispatchToProps };

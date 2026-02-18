@@ -7,6 +7,7 @@ const meta: Meta<typeof Checkbox> = {
   title: 'Forms/Checkbox',
   component: Checkbox,
 };
+export default meta;
 
 type Story = StoryObj<typeof Checkbox>;
 
@@ -84,5 +85,3 @@ const DisabledChecked: Story = {
 };
 
 export { Basic, Checked, Disabled, DisabledChecked };
-
-export default meta;

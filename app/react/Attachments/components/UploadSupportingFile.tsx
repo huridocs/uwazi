@@ -68,5 +68,9 @@ const UploadSupportingFile = (props: UploadSupportingFileProps) => {
   );
 };
 
-export { mapDispatchToProps, mapStateToProps };
-export default connector(UploadSupportingFile);
+const UploadSupportingFileConnected = connector(UploadSupportingFile);
+export {
+  mapDispatchToProps,
+  mapStateToProps,
+  UploadSupportingFileConnected as UploadSupportingFile,
+};

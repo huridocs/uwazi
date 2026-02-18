@@ -7,10 +7,9 @@ import { connect } from 'react-redux';
 
 import { Translate, I18NLink } from '#app/I18N/index.js';
 import { Icon } from '#UI/index.js';
-import { actions } from '#app/BasicReducer/index.js';
 import url from 'url';
+import { actions } from '#app/BasicReducer/index.js';
 import Immutable from 'immutable';
-
 
 function getDocumentUrlQuery(searchTerm, targetReference) {
   const query = {};
@@ -23,7 +22,7 @@ function getDocumentUrlQuery(searchTerm, targetReference) {
   return query;
 }
 
-export class ViewDocButton extends Component {
+class ViewDocButton extends Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -97,4 +96,5 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewDocButton);
+const ViewDocButtonConnected = connect(mapStateToProps, mapDispatchToProps)(ViewDocButton);
+export { ViewDocButton as ViewDocButtonView, ViewDocButtonConnected as ViewDocButton };

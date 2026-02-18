@@ -20,23 +20,24 @@ import omit from 'lodash/omit.js';
 import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
 import { getStore } from '#shared/atomStore/index.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
 import { tenants } from '../api/tenants/index.js';
-import CustomProvider from './App/Provider.js';
-import Root from './App/Root.js';
-import RouteHandler from './App/RouteHandler.js';
+import { CustomProvider } from './App/Provider.js';
+import { Root } from './App/Root.js';
+import { RouteHandler } from './App/RouteHandler.js';
 import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
 import { ClientFeatureFlags } from './V2/shared/types.js';
 import { hydrateAtomStore } from './V2/atoms/index.js';
 import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
+import type { IndexComponents } from './Routes.js';
 import { getRoutes } from './Routes.js';
-import createReduxStore from './store.js';
+import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
@@ -44,6 +45,29 @@ import { loadIcons } from '#UI/Icon/library.js';
 loadIcons();
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
+
+const ssrLog = (msg: string, data?: Record<string, unknown>) => {
+  if (process.env.DEBUG_SSR) {
+    const payload = data ? ` ${JSON.stringify(data)}` : '';
+    // eslint-disable-next-line no-console
+    console.log(`[SSR] ${msg}${payload}`);
+  }
+};
+
+const describeElementType = (el: React.ReactNode): string => {
+  if (el == null) return String(el);
+  if (typeof el !== 'object') return typeof el;
+  const elem = el as React.ReactElement & { $$typeof?: symbol };
+  if (elem.$$typeof !== Symbol.for('react.element')) return 'not-element';
+  const t = elem.type;
+  if (typeof t === 'string') return `tag:${t}`;
+  if (typeof t === 'function') {
+    return `fn:${(t as { displayName?: string; name?: string }).displayName ?? (t as { name?: string }).name ?? '?'}`;
+  }
+  if (t != null && typeof t === 'object' && '$$typeof' in t) return 'memo/forwardRef';
+  if (typeof t === 'object' && t !== null) return `object:${Object.keys(t as object).join(',')}`;
+  return String(t);
+};
 
 class ServerRenderingFetchError extends Error {
   status: number;
@@ -189,7 +213,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   const reduxStore = createReduxStore({
     ...reduxData,
     locale,
-  });
+  } as unknown as IStore);
 
   return {
     reduxStore,
@@ -294,16 +318,51 @@ const prepareSSRContext = async (
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
+  ssrLog('request', { path: req.path });
   RouteHandler.renderedFromServer = true;
+  ssrLog('fetching settings + assets');
   const [settings, assets] = await Promise.all([
     settingsApi.get() as Promise<ClientSettings>,
     getAssets(),
   ]);
-  //https://github.com/trpc/trpc/issues/1811#issuecomment-1242222057
-  //for Node18 we have to remove the connection header
+  ssrLog('resolving AppShell');
   const { connection, ...headers } = req.headers;
-  const routes = getRoutes(settings, req.user && req.user._id, headers);
+  const AppShellMod = await import('./App/AppShell.js');
+  const AppShellRaw =
+    (AppShellMod as { AppShell?: Parameters<typeof getRoutes>[3] }).AppShell ??
+    (AppShellMod as { default?: Parameters<typeof getRoutes>[3] }).default;
+  const AppShell =
+    typeof AppShellRaw === 'function'
+      ? (AppShellRaw as Parameters<typeof getRoutes>[3])
+      : undefined;
+  ssrLog('AppShell resolved', { type: typeof AppShell });
+  ssrLog('building routes');
+  let indexComponents: IndexComponents | undefined;
+  const [lib, cards, table, map, login] = await Promise.all([
+    import('./Library/Library.js'),
+    import('./Library/LibraryCards.js'),
+    import('./Library/LibraryTable.js'),
+    import('./Library/LibraryMap.js'),
+    import('./Users/Login.js'),
+  ]);
+  indexComponents = {
+    LibraryRoot: (lib as { LibraryRoot: IndexComponents['LibraryRoot'] }).LibraryRoot,
+    LibraryCards: (cards as { LibraryCards: IndexComponents['LibraryCards'] }).LibraryCards,
+    LibraryTable: (table as { LibraryTable: IndexComponents['LibraryTable'] }).LibraryTable,
+    LibraryMap: (map as { LibraryMap: IndexComponents['LibraryMap'] }).LibraryMap,
+    Login: (login as { Login: IndexComponents['Login'] }).Login,
+  };
+  const routes = getRoutes(settings, req.user && req.user._id, headers, AppShell, indexComponents);
   const matched = matchRoutes(routes, req.path);
+  ssrLog('matchRoutes done', {
+    path: req.path,
+    matched: matched?.map((m, i) => ({
+      i,
+      pathname: m.pathname,
+      routePath: m.route.path,
+      elementType: describeElementType(m.route.element),
+    })),
+  });
 
   if (matched === null) {
     res.redirect('/404');
@@ -312,6 +371,46 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
   const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
+
+  const checkElementType = (el: React.ReactNode, path: string): void => {
+    if (el == null || typeof el !== 'object') return;
+    const elem = el as React.ReactElement & { $$typeof?: symbol };
+    if (elem.$$typeof !== Symbol.for('react.element')) return;
+    const t = elem.type;
+    if (t == null) {
+      throw new Error(
+        `SSR: element.type is ${String(t)} at ${path}. ` +
+          'The route component import is undefined (e.g. circular dependency or wrong export).'
+      );
+    }
+    const valid =
+      typeof t === 'string' ||
+      typeof t === 'function' ||
+      (typeof t === 'object' && '$$typeof' in t);
+    if (!valid) {
+      const keys = typeof t === 'object' && t !== null ? Object.keys(t).join(', ') : 'n/a';
+      throw new Error(
+        `SSR: invalid element type at ${path}: got ${typeof t}. ` +
+          (keys !== 'n/a' ? `Keys: ${keys}. ` : '') +
+          'Likely default/named import mismatch.'
+      );
+    }
+    const props = elem.props as { children?: React.ReactNode };
+    if (React.isValidElement(elem) && props?.children != null) {
+      const children = Array.isArray(props.children) ? props.children : [props.children];
+      children.forEach((child: React.ReactNode, i: number) =>
+        checkElementType(child, `${path}.children[${i}]`)
+      );
+    }
+  };
+  matched!.forEach((m, i) => {
+    const routeEl = m.route?.element as React.ReactNode;
+    if (routeEl != null) {
+      checkElementType(routeEl, `matched[${i}].route.path=${String(m.route.path)}.element`);
+    }
+  });
+  ssrLog('checkElementType passed for all matched route elements');
+
   const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
 
   if (isProtectedRoute) {
@@ -333,37 +432,81 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
+  ssrLog('prepareSSRContext');
   const { reduxState, atomStoreData, staticHandleContext, router, ssrError, atomStore } =
     await prepareSSRContext(req, routes, settings, language);
+  ssrLog('prepareSSRContext done', { ssrError: !!ssrError });
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
   };
+  ssrLog('setReduxState');
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
     matched
   );
+  ssrLog('setReduxState done', { loadingError: !!loadingError });
 
-  const componentHtml = ReactDOMServer.renderToString(
-    <ReduxProvider store={initialStore as any}>
-      <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-        <Provider store={atomStore}>
-          <React.StrictMode>
-            <ErrorBoundary error={loadingError || ssrError}>
-              <StaticRouterProvider
-                router={router}
-                context={staticHandleContext as any}
-                nonce="the-nonce"
-              />
-            </ErrorBoundary>
-          </React.StrictMode>
-        </Provider>
-      </CustomProvider>
-    </ReduxProvider>
-  );
+  const origCreateElement = React.createElement.bind(React);
+  // @ts-expect-error - SSR diagnostic: throw with details when type is invalid
+  React.createElement = function (type: React.ElementType, ...args: unknown[]) {
+    if (type == null) {
+      throw new Error(
+        `SSR createElement called with type=${String(type)}. Stack: ${new Error().stack?.slice(0, 500)}`
+      );
+    }
+    if (
+      typeof type === 'object' &&
+      typeof (type as { $$typeof?: unknown }).$$typeof === 'undefined'
+    ) {
+      const keys = Object.keys(type as object);
+      throw new Error(
+        `SSR createElement called with plain object. Keys: ${keys.join(', ') || 'none'}. ` +
+          `Stack: ${new Error().stack?.slice(0, 600)}`
+      );
+    }
+    return origCreateElement(type, ...args);
+  };
 
+  let componentHtml: string;
+  ssrLog('renderToString (first pass: StaticRouterProvider)');
+  try {
+    componentHtml = ReactDOMServer.renderToString(
+      <ReduxProvider store={initialStore as any}>
+        <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
+          <Provider store={atomStore}>
+            <React.StrictMode>
+              <ErrorBoundary error={loadingError || ssrError}>
+                <StaticRouterProvider
+                  router={router}
+                  context={staticHandleContext as any}
+                  nonce="the-nonce"
+                />
+              </ErrorBoundary>
+            </React.StrictMode>
+          </Provider>
+        </CustomProvider>
+      </ReduxProvider>
+    );
+  } catch (e) {
+    const err = e as Error & { componentStack?: string };
+    ssrLog('renderToString FAILED', {
+      message: err?.message,
+      componentStack: err?.componentStack ?? '(none)',
+      stack: err?.stack?.slice(0, 500),
+    });
+    if (err?.message?.includes('Element type is invalid')) {
+      throw new Error(
+        err.message + (err.componentStack ? `\nComponent stack:\n${err.componentStack}` : '')
+      );
+    }
+    throw e;
+  }
+  ssrLog('renderToString (first pass) done');
+
+  ssrLog('renderToString (second pass: Root)');
   const html = ReactDOMServer.renderToString(
     <Root
       language={atomStoreData.locale}
@@ -378,8 +521,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     />
   );
 
+  ssrLog('renderToString (second pass) done');
   const responseCode = loadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
+  ssrLog('send response', { resStatus });
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };
 

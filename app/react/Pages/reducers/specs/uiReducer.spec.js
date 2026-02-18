@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
 import * as actions from '#app/Pages/actions/actionTypes.js';
-import reducer from '../uiReducer.js';
+import { pagesUI as reducer } from '../uiReducer.js';
 
 describe('uiReducer', () => {
   describe('when state is undefined', () => {

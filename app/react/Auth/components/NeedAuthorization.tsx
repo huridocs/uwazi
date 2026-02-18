@@ -57,4 +57,5 @@ const NeedAuthorization: React.FC<PropTypes> = ({
 
 const mapStateToProps = ({ user }: any) => ({ user });
 
-export default connect(mapStateToProps)(NeedAuthorization);
+const NeedAuthorizationConnected = connect(mapStateToProps)(NeedAuthorization);
+export { NeedAuthorizationConnected as NeedAuthorization };

@@ -1,14 +1,21 @@
 import React from 'react';
-import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import Doc from '#app/Library/components/Doc.js';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import { shallow } from 'enzyme';
+import { Doc } from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList.js';
+import * as types from '../../actions/actionTypes.js';
 
 import { RightRelationship } from '../RightRelationship.js';
-import HubRelationshipMetadata from '../HubRelationshipMetadata.js';
+import { HubRelationshipMetadata } from '../HubRelationshipMetadata.js';
+
+const mockStore = configureStore([thunk]);
 
 describe('RelationshipsGraphEdit', () => {
   let component;
+  let store;
   let props;
   let hub;
 
@@ -54,8 +61,28 @@ describe('RelationshipsGraphEdit', () => {
     };
   });
 
+  const getStoreData = () => ({
+    locale: 'en',
+    relationships: {
+      list: { sort: props.search },
+      hubs: Immutable.List([props.hub]),
+      hubActions: props.hubActions,
+    },
+    relationTypes: Immutable.fromJS(props.relationTypes),
+    translations: Immutable.fromJS([
+      { locale: 'en', contexts: props.relationTypes.map(r => ({ id: r._id })) },
+    ]),
+  });
+
   const render = () => {
-    component = shallow(<RightRelationship {...props} />);
+    store = mockStore(getStoreData());
+    component = shallow(
+      <Provider store={store}>
+        <RightRelationship {...props} />
+      </Provider>
+    )
+      .dive({ context: { store } })
+      .dive();
   };
 
   describe('render()', () => {
@@ -78,7 +105,9 @@ describe('RelationshipsGraphEdit', () => {
     it('should select that connection', () => {
       render();
       component.find(Doc).at(0).simulate('click');
-      expect(props.selectConnection).toHaveBeenCalled();
+      expect(store.getActions()).toContainEqual(
+        jasmine.objectContaining({ type: 'relationships/connection/SET' })
+      );
     });
   });
 
@@ -107,29 +136,49 @@ describe('RelationshipsGraphEdit', () => {
     describe('clicking on the delete button next to a relationship', () => {
       it('should mark that relationship to be deleted', () => {
         component.find('.removeEntity button').at(0).simulate('click');
-        expect(props.toggleRemoveEntity).toHaveBeenCalledWith(0, 0, 0);
+        expect(store.getActions()).toContainEqual({
+          type: types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY,
+          index: 0,
+          rightIndex: 0,
+          relationshipIndex: 0,
+        });
       });
     });
 
     describe('clicking on the delete button next to a right group', () => {
       it('should mark that entire gtoup to be deleted', () => {
         component.find('.removeRightRelationshipGroup button').at(0).simulate('click');
-        expect(props.toggleRemoveRightRelationshipGroup).toHaveBeenCalledWith(0, 0);
+        expect(store.getActions()).toContainEqual({
+          type: types.TOGGLE_REMOVE_RELATIONSHIPS_RIGHT_GROUP,
+          index: 0,
+          rightIndex: 0,
+        });
       });
     });
 
     describe('clicking on the add new relationship', () => {
       it('should call setAddToData and openAddEntitiesPanel', () => {
         component.find('.relationships-new').at(0).simulate('click');
-        expect(props.setAddToData).toHaveBeenCalledWith(0, 0);
-        expect(props.openAddEntitiesPanel).toHaveBeenCalled();
+        expect(store.getActions()).toContainEqual({
+          type: types.SET_RELATIONSHIPS_ADD_TO_DATA,
+          index: 0,
+          rightIndex: 0,
+        });
+        expect(store.getActions()).toContainEqual({ type: types.OPEN_RELATIONSHIPS_PANEL });
       });
     });
 
     describe('changing the template of a group', () => {
       it('should call updateRightRelationshipType', () => {
         component.find(DropdownList).at(0).simulate('change', { _id: 3 });
-        expect(props.updateRightRelationshipType).toHaveBeenCalledWith(0, 0, 3);
+        expect(store.getActions()).toContainEqual(
+          jasmine.objectContaining({
+            type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE,
+            index: 0,
+            rightIndex: 0,
+            _id: 3,
+          })
+        );
       });
     });
   });

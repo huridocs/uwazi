@@ -5,9 +5,9 @@ import { Link } from 'react-router';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import rison from '@huridocs/rison';
 import { SearchBar } from '#app/Library/components/SearchBar.js';
-import ConnectionSearchBar from '#app/ConnectionsList/components/SearchBar.js';
+import { ConnectionSearchBar } from '#app/ConnectionsList/components/SearchBar.js';
 import { Loader } from '#app/components/Elements/Loader.js';
-import Footer from '#app/App/Footer.js';
+import { Footer } from '#app/App/Footer.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { t, Translate } from '#app/I18N/index.js';
@@ -16,7 +16,7 @@ import { Icon } from '#app/UI/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
-import Welcome from './components/Welcome.js';
+import { Welcome } from './components/Welcome.js';
 import { TilesViewer } from './TilesViewer.js';
 import blankState from '../Library/helpers/blankState.js';
 
@@ -318,6 +318,5 @@ DocumentsList.propTypes = {
   scrollCount: PropTypes.number,
 };
 
-export { DocumentsList };
-
-export default withRouter(DocumentsList);
+const DocumentsListWithRouter = withRouter(DocumentsList);
+export { DocumentsList, DocumentsListWithRouter };

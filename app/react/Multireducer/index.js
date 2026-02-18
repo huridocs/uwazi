@@ -1,7 +1,4 @@
-import wrapDispatch from './wrapDispatch.js';
+import { wrapDispatch } from './wrapDispatch.js';
 
-export { wrapDispatch };
-
-export default {
-  wrapDispatch,
-};
+const multiReducer = { wrapDispatch };
+export { wrapDispatch, multiReducer };

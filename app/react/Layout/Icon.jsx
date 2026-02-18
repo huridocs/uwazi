@@ -21,7 +21,7 @@ function getFaSize(size) {
   }
 }
 
-export class Icon extends Component {
+class Icon extends Component {
   getJSData() {
     const { data } = this.props;
     let _data = data;
@@ -76,4 +76,5 @@ Icon.propTypes = {
   size: PropTypes.string,
 };
 
-export default connect()(Icon);
+const IconConnected = connect()(Icon);
+export { Icon as IconView, IconConnected as Icon };

@@ -5,7 +5,7 @@ import backend from 'fetch-mock';
 import { APIURL } from '#app/config.js';
 import { store } from '#app/store.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import loadingBar from '#app/App/LoadingProgressBar.js';
+import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
 import * as notifyActions from '#app/Notifications/actions/notificationsActions.js';
 
 const mockRedirect = jest.fn();
@@ -19,7 +19,7 @@ jest.mock('#app/I18N', () => {
   };
 });
 
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import * as I18N from '#app/I18N/index.js';
 
 jest.mock('react-router', () => ({

@@ -11,7 +11,7 @@ import {
   unselectAllDocuments,
   selectDocuments,
 } from '#app/Library/actions/libraryActions.js';
-import DocumentsList from '../../Layout/DocumentsList.js';
+import { DocumentsListWithRouter } from '../../Layout/DocumentsList.js';
 
 function clickOnDocument(e, doc, active, multipleSelection = false) {
   const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
@@ -91,4 +91,5 @@ function mapDispatchToProps(dispatch, props) {
 
 export { clickOnDocument, selectAllDocuments, mapStateToProps };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);
+const LibraryDocumentsList = connect(mapStateToProps, mapDispatchToProps)(DocumentsListWithRouter);
+export { LibraryDocumentsList };

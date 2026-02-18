@@ -20,4 +20,4 @@ FormGroup.propTypes = {
   children: childrenType,
 };
 
-export default FormGroup;
+export { FormGroup };

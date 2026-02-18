@@ -4,14 +4,14 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component, Suspense } from 'react';
 
-import Footer from '#app/App/Footer.js';
-import MarkdownViewer from '#app/Markdown/index.js';
+import { Footer } from '#app/App/Footer.js';
+import { MarkdownViewer } from '#app/Markdown/index.js';
 import { Context } from '#app/Markdown/components/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { ErrorBoundary, ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
-import Script from './Script.js';
+import { ScriptConnected } from './Script.js';
 
 class PageViewer extends Component {
   constructor(props) {
@@ -55,6 +55,7 @@ class PageViewer extends Component {
     );
   }
 
+  // eslint-disable-next-line max-statements
   render() {
     const { page, itemLists, datasets, error: _error, setBrowserTitle } = this.props;
     const errorDetails = _error.toJS?.();
@@ -120,9 +121,12 @@ class PageViewer extends Component {
                   <Footer />
                 </div>
               </main>
-              <Script scriptRendered={scriptRendered} onError={e => this.warningPageError(e)}>
+              <ScriptConnected
+                scriptRendered={scriptRendered}
+                onError={e => this.warningPageError(e)}
+              >
                 {scriptCode}
-              </Script>
+              </ScriptConnected>
             </>
           )}
           {processedError && (

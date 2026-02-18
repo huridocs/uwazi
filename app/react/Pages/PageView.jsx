@@ -3,9 +3,9 @@ import { isClient } from '#app/utils/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import RouteHandler from '#app/App/RouteHandler.js';
-import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
-import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
+import { ViewMetadataPanel } from '#app/Library/components/ViewMetadataPanel.js';
+import { SelectMultiplePanelContainer } from '#app/Library/containers/SelectMultiplePanelContainer.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { trackPage } from '#app/App/GoogleAnalytics.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
@@ -76,5 +76,3 @@ const SSRPageView = withRouter(PageViewComponent);
 export const PageView = Object.assign(SSRPageView, {
   requestState: PageViewComponent.requestState,
 });
-
-export default PageViewComponent;

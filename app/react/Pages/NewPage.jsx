@@ -1,8 +1,8 @@
 import React from 'react';
 import { PageCreator } from '#app/Pages/components/PageCreator.js';
-import RouteHandler from '#app/App/RouteHandler.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
 
-export default class NewPage extends RouteHandler {
+class NewPage extends RouteHandler {
   render() {
     return (
       <div className="settings-content">
@@ -11,3 +11,5 @@ export default class NewPage extends RouteHandler {
     );
   }
 }
+
+export { NewPage };

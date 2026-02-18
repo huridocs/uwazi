@@ -2,7 +2,7 @@
 
 import { I18NUtils } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { Settings } from 'luxon';
 import PropTypes from 'prop-types';
@@ -111,4 +111,4 @@ RouteHandler.propTypes = {
   matches: PropTypes.array,
 };
 
-export default RouteHandler;
+export { RouteHandler };

@@ -7,6 +7,8 @@ const meta: Meta<typeof FileDropzone> = {
   component: FileDropzone,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof FileDropzone>;
 
 const Primary: Story = {
@@ -26,5 +28,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

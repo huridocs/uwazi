@@ -6,7 +6,7 @@ import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
 import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
 import { PDFView } from '#app/Viewer/PDFView.js';
-import EntityView from '#app/Viewer/EntityView.js';
+import { EntityView } from '#app/Viewer/EntityView.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
 

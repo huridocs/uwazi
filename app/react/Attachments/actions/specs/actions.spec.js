@@ -1,5 +1,5 @@
 import { APIURL } from '#app/config.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';

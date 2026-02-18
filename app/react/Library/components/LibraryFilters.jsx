@@ -1,7 +1,7 @@
 import { t, Translate } from '#app/I18N/index.js';
-import SidePanel from '#app/Layout/SidePanel.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import { resetFilters } from '#app/Library/actions/filterActions.js';
-import FiltersForm from '#app/Library/components/FiltersForm.js';
+import { FiltersForm } from '#app/Library/components/FiltersForm.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -30,8 +30,9 @@ class LibraryFilters extends Component {
             <div className="filter-buttons">
               <button
                 type="button"
-                className={`closeSidepanel ${this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
-                  }`}
+                className={`closeSidepanel ${
+                  this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
+                }`}
                 onClick={this.props.hideFilters}
                 aria-label="Close side panel"
               >
@@ -58,7 +59,7 @@ LibraryFilters.defaultProps = {
   open: false,
   storeKey: 'library',
   sidePanelMode: '',
-  hideFilters: () => { },
+  hideFilters: () => {},
 };
 
 LibraryFilters.propTypes = {
@@ -83,6 +84,12 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({ resetFilters, hideFilters }, wrapDispatch(dispatch, props.storeKey));
 }
 
-export { LibraryFilters, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(LibraryFilters));
+const LibraryFiltersConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(LibraryFilters));
+export {
+  LibraryFilters as LibraryFiltersView,
+  LibraryFiltersConnected,
+  mapStateToProps,
+};

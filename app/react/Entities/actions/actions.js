@@ -1,6 +1,6 @@
 import { getStore } from '#shared/atomStore/index.js';
 import { actions } from '#app/BasicReducer/index.js';
-import api from '#app/Entities/EntitiesAPI.js';
+import { EntitiesAPI as api } from '#app/Entities/EntitiesAPI.js';
 import { t } from '#app/I18N/index.js';
 
 import {

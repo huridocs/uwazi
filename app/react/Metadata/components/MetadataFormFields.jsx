@@ -10,7 +10,7 @@ import uuid from 'node-uuid';
 import { FormGroup } from '#app/Forms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { getSuggestions } from '#app/Metadata/actions/actions.js';
-import Tip from '#app/Layout/Tip.js';
+import { Tip } from '#app/Layout/Tip.js';
 import { generateID } from '#shared/IDGenerator.js';
 
 import { saveThesaurus } from '#app/Thesauri/actions/thesauriActions.js';
@@ -31,7 +31,7 @@ import {
   LookupMultiSelect,
   MediaField,
 } from '../../ReactReduxForms/index.js';
-import MultipleEditionFieldWarning from './MultipleEditionFieldWarning.js';
+import { MultipleEditionFieldWarning } from './MultipleEditionFieldWarning.js';
 import { MediaModalType } from './MediaModal.js';
 import { MetadataExtractor } from './MetadataExtractor.js';
 import { DeleteSelectionButton } from './DeleteSelectionButton.js';
@@ -485,5 +485,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   );
 };
 
-export { MetadataFormFields, translateOptions };
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);
+const MetadataFormFieldsConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);
+export { MetadataFormFields, MetadataFormFieldsConnected, translateOptions };

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { removeNotification } from '../actions/notificationsActions.js';
 
 export class Notification extends Component {
@@ -23,12 +23,12 @@ export class Notification extends Component {
     const FormattedMessage = isNode
       ? message
       : message.split('\n').map((item, i) => (
-        //eslint-disable-next-line react/no-array-index-key
-        <React.Fragment key={i}>
-          {item}
-          <br />
-        </React.Fragment>
-      ));
+          //eslint-disable-next-line react/no-array-index-key
+          <React.Fragment key={i}>
+            {item}
+            <br />
+          </React.Fragment>
+        ));
 
     return (
       <div className={cssClass} onClick={this.close.bind(this)}>
@@ -54,5 +54,3 @@ Notification.propTypes = {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeNotification }, dispatch);
 }
-
-export default connect(null, mapDispatchToProps)(Notification);

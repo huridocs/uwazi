@@ -1,7 +1,7 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { ConnectionsGroup } from '../ConnectionsGroup.js';
 
 describe('ConnectionsGroup', () => {

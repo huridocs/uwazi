@@ -12,7 +12,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
         className="menuNav-item"
         key="1"
       >
-        <Connect(I18NLink)
+        <I18NLink
           activeclassname="active-link"
           className="btn menuNav-btn"
           onClick={[Function]}
@@ -23,7 +23,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
           >
             Internal url
           </Translate>
-        </Connect(I18NLink)>
+        </I18NLink>
       </li>
       <li
         className="menuNav-item"
@@ -46,7 +46,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
         className="menuNav-item"
         key="3"
       >
-        <Connect(I18NLink)
+        <I18NLink
           activeclassname="active-link"
           className="btn menuNav-btn"
           onClick={[Function]}
@@ -57,13 +57,13 @@ exports[`Menu Links returns the expected HTML 1`] = `
           >
             undefined url
           </Translate>
-        </Connect(I18NLink)>
+        </I18NLink>
       </li>
       <li
         className="menuNav-item"
         key="4"
       >
-        <Connect(I18NLink)
+        <I18NLink
           activeclassname="active-link"
           className="btn menuNav-btn"
           onClick={[Function]}
@@ -74,7 +74,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
           >
             single slash url
           </Translate>
-        </Connect(I18NLink)>
+        </I18NLink>
       </li>
     </ul>
   </li>
@@ -111,7 +111,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
       <li
         className="menuNav-item"
       >
-        <Connect(I18NLink)
+        <I18NLink
           activeclassname="active-link"
           aria-label="Library"
           className="menuNav-btn btn btn-default public-documents"
@@ -128,7 +128,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
               Library
             </Translate>
           </span>
-        </Connect(I18NLink)>
+        </I18NLink>
       </li>
       <Connect(NeedAuthorization)
         roles={
@@ -142,7 +142,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
         <li
           className="menuNav-item only-desktop"
         >
-          <Connect(I18NLink)
+          <I18NLink
             activeclassname="active-link"
             aria-label="Settings"
             className="menuNav-btn btn btn-default settings-section"
@@ -159,7 +159,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
                 Settings
               </Translate>
             </span>
-          </Connect(I18NLink)>
+          </I18NLink>
         </li>
       </Connect(NeedAuthorization)>
       <Connect(NeedAuthorization)
@@ -174,7 +174,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
         <li
           className="menuNav-item only-mobile"
         >
-          <Connect(I18NLink)
+          <I18NLink
             activeclassname="active-link"
             aria-label="Settings"
             className="menuNav-btn btn btn-default settings-section"
@@ -191,7 +191,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
                 Settings
               </Translate>
             </span>
-          </Connect(I18NLink)>
+          </I18NLink>
         </li>
       </Connect(NeedAuthorization)>
       <Connect(NeedAuthorization)

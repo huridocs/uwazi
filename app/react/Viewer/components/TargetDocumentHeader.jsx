@@ -27,6 +27,7 @@ class TargetDocumentHeader extends Component {
 
   save() {
     const { reference, connection } = this.props;
+    if (!reference) return;
     const { targetRange, targetFile } = reference;
     return this.props.saveTargetRangedReference(connection.toJS(), targetRange, targetFile, ref => {
       this.props.addReference(ref, true);
@@ -35,7 +36,7 @@ class TargetDocumentHeader extends Component {
 
   render() {
     const { targetDocument, reference } = this.props;
-    const { targetRange } = reference;
+    const targetRange = reference?.targetRange;
 
     let className = 'hidden btn btn-default';
 
@@ -105,4 +106,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { TargetDocumentHeader };
-export default connect(mapStateToProps, mapDispatchToProps)(TargetDocumentHeader);

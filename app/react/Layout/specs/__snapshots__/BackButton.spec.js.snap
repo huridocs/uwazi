@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Icon should render the back button to the provided url 1`] = `
-<Connect(I18NLink)
+<I18NLink
   className="btn btn-default extra-class"
   to="/some/url"
 >
@@ -17,5 +17,5 @@ exports[`Icon should render the back button to the provided url 1`] = `
       Back
     </Translate>
   </span>
-</Connect(I18NLink)>
+</I18NLink>
 `;

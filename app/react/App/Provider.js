@@ -56,4 +56,4 @@ CustomProvider.childContextTypes = {
   language: PropTypes.string,
 };
 
-export default CustomProvider;
+export { CustomProvider };

@@ -48,4 +48,4 @@ ToggleDisplay.propTypes = {
   open: PropTypes.bool,
 };
 
-export default ToggleDisplay;
+export { ToggleDisplay };

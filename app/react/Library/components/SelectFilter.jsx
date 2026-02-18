@@ -48,4 +48,4 @@ SelectFilter.propTypes = {
   allowSelectGroup: PropTypes.bool,
 };
 
-export default SelectFilter;
+export { SelectFilter };

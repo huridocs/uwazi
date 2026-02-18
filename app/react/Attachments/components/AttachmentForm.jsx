@@ -6,9 +6,9 @@ import { Form, Field } from 'react-redux-form';
 import { FormGroup, Select } from '#app/ReactReduxForms/index.js';
 import { elasticLanguages } from '#shared/language/index.js';
 import { t } from '#app/I18N/index.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 
-export class AttachmentForm extends Component {
+class AttachmentForm extends Component {
   render() {
     const { model } = this.props;
     const validators = { originalname: { required: val => !!val && val.trim() !== '' } };
@@ -47,4 +47,5 @@ AttachmentForm.propTypes = {
   onSubmit: PropTypes.func,
 };
 
-export default connect()(AttachmentForm);
+const AttachmentFormConnected = connect()(AttachmentForm);
+export { AttachmentFormConnected as AttachmentForm };

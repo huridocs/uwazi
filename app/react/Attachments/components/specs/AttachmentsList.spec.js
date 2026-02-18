@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.js';
-import AttachmentsList from '../AttachmentsList.js';
+import { UploadSupportingFile } from '#app/Attachments/components/UploadSupportingFile.js';
+import { AttachmentsList } from '../AttachmentsList.js';
 
 describe('AttachmentsList', () => {
   let component;

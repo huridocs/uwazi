@@ -1,6 +1,6 @@
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 
-export default {
+const I18NApi = {
   get(requestParams) {
     return api.get('translations', requestParams).then(response => response.json.rows);
   },
@@ -31,3 +31,4 @@ export default {
     return response;
   },
 };
+export { I18NApi };

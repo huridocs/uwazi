@@ -16,6 +16,7 @@ const meta: Meta<typeof ColorPicker> = {
     },
   },
 };
+export default meta;
 
 type Story = StoryObj<typeof ColorPicker>;
 
@@ -45,5 +46,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

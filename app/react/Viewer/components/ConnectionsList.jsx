@@ -6,7 +6,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { Icon } from '#app/UI/index.js';
 import { Warning } from '#app/Layout/index.js';
 import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
-import Connection from './Connection.js';
+import { Connection } from './Connection.js';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
 
 if (typeof window !== 'undefined') {
@@ -81,4 +81,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { ConnectionsList };
-export default connect(null, mapDispatchToProps)(ConnectionsList);

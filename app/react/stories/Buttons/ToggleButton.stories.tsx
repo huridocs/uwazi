@@ -6,6 +6,7 @@ const meta: Meta<typeof ToggleButton> = {
   title: 'Components/Buttons/ToggleButton',
   component: ToggleButton,
 };
+export default meta;
 
 type Story = StoryObj<typeof ToggleButton>;
 
@@ -34,5 +35,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

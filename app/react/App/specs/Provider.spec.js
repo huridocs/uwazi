@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
 
-import Provider from '../Provider.js';
+import { CustomProvider as Provider } from '../Provider.js';
 
 describe('Provider', () => {
   let component;

@@ -2,7 +2,7 @@ import backend from 'fetch-mock';
 import { APIURL } from '#app/config.js';
 
 import * as actions from '#app/Thesauri/actions/thesaurisActions.js';
-import api from '#app/Thesauri/ThesauriAPI.js';
+import { thesauriAPI as api } from '#app/Thesauri/ThesauriAPI.js';
 
 describe('thesaurisActions', () => {
   describe('async action', () => {

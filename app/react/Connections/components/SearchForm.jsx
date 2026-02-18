@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import SearchInput from '#app/Layout/SearchInput.js';
+import { SearchInput } from '#app/Layout/SearchInput.js';
 import { search } from '../actions/actions.js';
 
-export class SearchForm extends Component {
+class SearchForm extends Component {
   render() {
     return (
       <SearchInput
@@ -33,4 +33,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ search }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchForm);
+const SearchFormConnected = connect(mapStateToProps, mapDispatchToProps)(SearchForm);
+export { SearchForm as SearchFormView, SearchFormConnected as SearchForm };

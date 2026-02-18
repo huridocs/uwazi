@@ -6,6 +6,7 @@ const meta: Meta<typeof TemplateLabel> = {
   title: 'Components/Metadata/TemplateLabel',
   component: TemplateLabel,
 };
+export default meta;
 
 type Story = StoryObj<typeof TemplateLabel>;
 
@@ -66,4 +67,3 @@ const Green: Story = {
 };
 
 export { Basic, LightBlue, Red, Purple, Dark, Green };
-export default meta;

@@ -2,15 +2,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { DocumentSidePanel } from '#app/Documents/index.js';
+import { DocumentSidePanelWithRouter } from '#app/Documents/components/DocumentSidePanel.js';
 import { actions as actionCreators } from '#app/BasicReducer/index.js';
 import { actions } from '#app/Metadata/index.js';
 import { deleteDocument, searchSnippets } from '#app/Library/actions/libraryActions.js';
 import { deleteEntity } from '#app/Entities/actions/actions.js';
-import multiReducer from '#app/Multireducer/index.js';
+import { multiReducer } from '#app/Multireducer/index.js';
 import modals from '#app/Modals/index.js';
 
-import EntityForm from '#app/Library/containers/EntityForm.js';
+import { EntityForm } from '#app/Library/containers/EntityForm.js';
 
 import { getDocumentReferences, saveDocument } from '#app/Library/actions/libraryActions.js';
 import semanticSearchActions from '../actions/index.js';
@@ -51,4 +51,8 @@ export function mapDispatchToProps(dispatch, props) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
+const DocumentResultsPanel = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DocumentSidePanelWithRouter);
+export { DocumentResultsPanel };

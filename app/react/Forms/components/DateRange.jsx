@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import DatePicker from './DatePicker.js';
+import { DatePicker } from './DatePicker.js';
 
 class DateRange extends Component {
   onChange(prop, propValue) {
@@ -64,4 +64,4 @@ DateRange.propTypes = {
   useTimezone: PropTypes.bool,
 };
 
-export default DateRange;
+export { DateRange };

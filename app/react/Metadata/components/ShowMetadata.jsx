@@ -1,7 +1,7 @@
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { DocumentLanguage, TemplateLabel } from '#app/Layout/index.js';
 import { Icon } from '#app/Layout/Icon.js';
-import TimelineViewer from '#app/Timeline/components/TimelineViewer.js';
+import { TimelineViewer } from '#app/Timeline/components/TimelineViewer.js';
 import { caseTemplate, matterTemplate } from '#app/Timeline/utils/timelineFixedData.js';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
@@ -81,5 +81,5 @@ ShowMetadata.propTypes = {
 
 const mapStateToProps = ({ templates }) => ({ templates });
 
-export { ShowMetadata };
-export default connect(mapStateToProps)(ShowMetadata);
+const ShowMetadataConnected = connect(mapStateToProps)(ShowMetadata);
+export { ShowMetadata as ShowMetadataView, ShowMetadataConnected as ShowMetadata };

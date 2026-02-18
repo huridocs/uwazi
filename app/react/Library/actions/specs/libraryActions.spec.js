@@ -12,12 +12,12 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import * as types from '#app/Library/actions/actionTypes.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import * as actions from '#app/Library/actions/libraryActions.js';
-import { documentsApi } from '#app/Documents/index.js';
+import { documentsAPI } from '#app/Documents/index.js';
 import { mockID } from '#shared/uniqueID.js';
 
 import { api } from '#app/Entities/index.js';
-import referencesAPI from '#app/Viewer/referencesAPI.js';
-import SearchApi from '#app/Search/SearchAPI.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
+import { SearchAPI } from '#app/Search/SearchAPI.js';
 import * as saveEntityWithFiles from '../saveEntityWithFiles.js';
 
 const middlewares = [thunk];
@@ -360,7 +360,7 @@ describe('libraryActions', () => {
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', done => {
         mockID();
-        spyOn(documentsApi, 'save').and.callFake(async () => Promise.resolve('response'));
+        spyOn(documentsAPI, 'save').and.callFake(async () => Promise.resolve('response'));
         const doc = { name: 'doc' };
 
         const expectedActions = [
@@ -378,7 +378,7 @@ describe('libraryActions', () => {
         store
           .dispatch(actions.saveDocument(doc, 'library.sidepanel.metadata'))
           .then(() => {
-            expect(documentsApi.save).toHaveBeenCalledWith(new RequestParams(doc));
+            expect(documentsAPI.save).toHaveBeenCalledWith(new RequestParams(doc));
             expect(store.getActions()).toEqual(expectedActions);
           })
           .then(done)
@@ -424,7 +424,7 @@ describe('libraryActions', () => {
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', done => {
         mockID();
-        spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
+        spyOn(documentsAPI, 'delete').and.callFake(async () => Promise.resolve('response'));
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [
@@ -440,7 +440,7 @@ describe('libraryActions', () => {
         store
           .dispatch(actions.deleteDocument(doc))
           .then(() => {
-            expect(documentsApi.delete).toHaveBeenCalledWith(
+            expect(documentsAPI.delete).toHaveBeenCalledWith(
               new RequestParams({ sharedId: doc.sharedId })
             );
             expect(store.getActions()).toEqual(expectedActions);
@@ -452,7 +452,7 @@ describe('libraryActions', () => {
 
     describe('searchSnippets', () => {
       it('should search snippets for the searchTerm', async () => {
-        spyOn(SearchApi, 'searchSnippets').and.returnValue(
+        spyOn(SearchAPI, 'searchSnippets').and.returnValue(
           Promise.resolve({ data: [{ snippets: [] }] })
         );
 
@@ -467,7 +467,7 @@ describe('libraryActions', () => {
           filter: { sharedId: 'sharedId', searchString: 'query' },
           fields: ['snippets'],
         });
-        expect(SearchApi.searchSnippets).toHaveBeenCalledWith(new RequestParams(expectedParam));
+        expect(SearchAPI.searchSnippets).toHaveBeenCalledWith(new RequestParams(expectedParam));
         expect(store.getActions()).toEqual(expectedActions);
       });
     });

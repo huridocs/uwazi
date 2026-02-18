@@ -8,6 +8,8 @@ const meta: Meta<ComponentClass<ErrorBoundaryProps, any>> = {
   component: ErrorBoundary,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof ErrorBoundary>;
 
 const Primary: Story = {
@@ -31,5 +33,3 @@ const BasicErrorBoundary: Story = {
 };
 
 export { BasicErrorBoundary };
-
-export default meta;

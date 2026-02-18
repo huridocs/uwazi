@@ -3,7 +3,7 @@ import { SettingsAPI } from '#app/Settings/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { ClientSettings, ClientSettingsLinkSchema } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<ClientSettings> => {
   const requestParams = new RequestParams({}, headers);

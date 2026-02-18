@@ -6,9 +6,8 @@ import React, { Component } from 'react';
 if (typeof window !== 'undefined') {
   import('./scss/stackTrace.scss');
 }
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import Immutable from 'immutable';
-
 
 const conformValidations = (expand, validations) => {
   if (!expand || !validations) {
@@ -68,4 +67,4 @@ StackTrace.propTypes = {
   validations: PropTypes.instanceOf(Immutable.List),
 };
 
-export default StackTrace;
+export { StackTrace };

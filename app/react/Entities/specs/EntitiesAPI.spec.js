@@ -1,8 +1,8 @@
 import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import api from '#app/utils/api.js';
-import entitiesAPI from '../EntitiesAPI.js';
+import { api } from '#app/utils/api.js';
+import { EntitiesAPI as entitiesAPI } from '../EntitiesAPI.js';
 
 describe('EntitiesAPI', () => {
   const arrayResponse = [{ entities: 'array' }];

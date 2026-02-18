@@ -2,12 +2,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import SafeHTML from '#app/utils/SafeHTML.js';
+import { SafeHTML } from '#app/utils/SafeHTML.js';
 import getFieldLabel from '#app/Templates/utils/getFieldLabel.js';
 
 import { t } from '#app/I18N/index.js';
 
-export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
+const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
   let content;
   let source;
   if (snippets.metadata.length) {
@@ -60,4 +60,5 @@ export const mapStateToProps = (state, ownProps) => ({
   template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.template),
 });
 
-export default connect(mapStateToProps)(ItemSnippet);
+const ItemSnippetConnected = connect(mapStateToProps)(ItemSnippet);
+export { ItemSnippetConnected as ItemSnippet };

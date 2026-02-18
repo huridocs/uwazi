@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import FormGroup from '#app/DocumentForm/components/FormGroup.js';
+import { FormGroup } from '#app/DocumentForm/components/FormGroup.js';
 
 import { Aggregations } from '#shared/types/aggregations.js';
 

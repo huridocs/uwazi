@@ -1,6 +1,6 @@
-import I18NLink from './components/I18NLink.js';
-import I18NUtils from './utils.js';
-import I18NApi from './I18NApi.js';
+import { I18NLink } from './components/I18NLink.js';
+import { I18NUtils } from './utils.js';
+import { I18NApi } from './I18NApi.js';
 
 export { I18NApi };
 export { I18N } from './components/I18N.js';

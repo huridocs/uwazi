@@ -3,7 +3,7 @@
  */
 import Immutable from 'immutable';
 import { Store } from 'redux';
-import create from '#app/store.js';
+import { create } from '#app/store.js';
 import { IStore } from '#app/istore.js';
 import { updatePageDatasets } from '../updatePageDatasets.js';
 
@@ -18,7 +18,7 @@ describe('Update page datasets', () => {
           dataset1: { rows: [], totalRows: 10, aggregations: {} },
         }),
       },
-    });
+    } as IStore);
 
     spyOn(ReduxStore, 'dispatch');
   });

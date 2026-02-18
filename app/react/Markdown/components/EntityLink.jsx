@@ -3,9 +3,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { I18NLink } from '#app/I18N/index.js';
-import PagesContext from './Context.js';
+import { Context as PagesContext } from './Context.js';
 
-export default class EntityLink extends Component {
+class EntityLink extends Component {
   render() {
     const { children } = this.props;
     return (
@@ -31,3 +31,5 @@ EntityLink.propTypes = {
     PropTypes.string,
   ]),
 };
+
+export { EntityLink };

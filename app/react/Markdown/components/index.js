@@ -2,25 +2,26 @@ import loadable from '@loadable/component';
 
 import { Link } from 'react-router';
 import { Icon } from '#app/UI/index.js';
-import Counter from './Counter.js';
-import ContactForm from './ContactForm.js';
+import { Counter } from './Counter.js';
+import { ContactForm } from './ContactForm.js';
 import { EntityData } from './EntityData.js';
 import { EntitySection } from './EntitySection.js';
-import EntityLink from './EntityLink.js';
-import ItemList from './ItemList.js';
-import Repeat from './Repeat.js';
-import Context from './Context.js';
-import Map from './Map.js';
-import MarkdownLink from './MarkdownLink.js';
-import MarkdownMedia from './MarkdownMedia.js';
-import PayPalDonateLink from './PayPalDonateLink.js';
-import PublicForm from './PublicForm.js';
-import Value from './Value.js';
-import SearchBox from './SearchBox.js';
-import EntityInfo from './EntityInfo.js';
+import { EntityLink } from './EntityLink.js';
+import { ItemList } from './ItemList.js';
+import { Repeat } from './Repeat.js';
+import { Context } from './Context.js';
+import { MarkdownMap as Map } from './Map.js';
+import { MarkdownLink } from './MarkdownLink.js';
+import { MarkdownMedia } from './MarkdownMedia.js';
+import { PayPalDonateLink } from './PayPalDonateLink.js';
+import { PublicFormComponent } from './PublicForm.js';
+import { Value } from './Value.js';
+import { SearchBox } from './SearchBox.js';
+import { EntityInfo } from './EntityInfo.js';
 
 const BarChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js')
+  () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js'),
+  { resolveComponent: m => m.BarChartComponent }
 );
 const FreeBarChart = loadable(
   async () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx')
@@ -51,7 +52,7 @@ export {
   Slideshow,
   MarkdownLink,
   PayPalDonateLink,
-  PublicForm,
+  PublicFormComponent as PublicForm,
   SearchBox,
   Counter,
   BarChart,

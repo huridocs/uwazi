@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
 import { t } from '#app/I18N/index.js';
-import formater from '#app/Metadata/helpers/formater.js';
+import { formater } from '#app/Metadata/helpers/formater.js';
 import { Icon } from '#app/UI/index.js';
 
 const conformQuote = text => (
@@ -85,4 +85,8 @@ export function mapStateToProps({ relationTypes, thesauris }) {
   return { relationTypes, thesauris };
 }
 
-export default connect(mapStateToProps)(HubRelationshipMetadata);
+const HubRelationshipMetadataConnected = connect(mapStateToProps)(HubRelationshipMetadata);
+export {
+  HubRelationshipMetadata as HubRelationshipMetadataView,
+  HubRelationshipMetadataConnected as HubRelationshipMetadata,
+};

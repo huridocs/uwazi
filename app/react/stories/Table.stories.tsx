@@ -243,6 +243,8 @@ const meta: Meta<StoryProps> = {
   component: StoryComponent,
 };
 
+export default meta;
+
 type Story = StoryObj<StoryProps>;
 
 const Primary: Story = {
@@ -327,4 +329,3 @@ const Custom = {
 };
 
 export { Basic, BasicWithDisabledDnD, Nested, NestedWithDisabledDnD, Custom };
-export default meta;

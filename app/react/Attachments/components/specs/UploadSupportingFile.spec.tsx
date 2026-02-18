@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.js';
+import { UploadSupportingFile } from '#app/Attachments/components/UploadSupportingFile.js';
 import { Provider } from 'react-redux';
 import { fireEvent, screen, RenderResult } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';

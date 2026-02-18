@@ -3,7 +3,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { ClientTemplateSchema, IStore } from '#app/istore.js';
-import formatter from '#app/Metadata/helpers/formater.js';
+import { formater as formatter } from '#app/Metadata/helpers/formater.js';
 import { safeName } from '#shared/propertyNames.js';
 import { showByType } from '#app/Metadata/components/Metadata.js';
 import { Translate } from '#app/I18N/index.js';

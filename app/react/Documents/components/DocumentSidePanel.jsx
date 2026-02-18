@@ -4,18 +4,18 @@ import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { withContext, withRouter } from '#app/componentWrappers.js';
 import { MetadataFormButtons, ShowMetadata } from '#app/Metadata/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { I18NLinkV2 as I18NLink, t, Translate } from '#app/I18N/index.js';
 import { AttachmentsList } from '#app/Attachments/index.js';
 import { FileList } from '#app/Attachments/components/FileList.js';
-import Connections from '#app/Viewer/components/ConnectionsList.js';
+import { ConnectionsList as Connections } from '#app/Viewer/components/ConnectionsList.js';
 import { ConnectionsGroups } from '#app/ConnectionsList/index.js';
-import ShowIf from '#app/App/ShowIf.js';
-import SidePanel from '#app/Layout/SidePanel.js';
-import DocumentSemanticSearchResults from '#app/SemanticSearch/components/DocumentResults.js';
+import { ShowIf } from '#app/App/ShowIf.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
+import { DocumentSemanticSearchResults } from '#app/SemanticSearch/components/DocumentResults.js';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
 import { TocGeneratedLabel, ReviewTocButton } from '#app/ToggledFeatures/tocGeneration/index.js';
 import { actions } from '#app/BasicReducer/index.js';
@@ -23,12 +23,12 @@ import { Item } from '#app/Layout/index.js';
 import * as viewerModule from '#app/Viewer/index.js';
 import * as viewerActions from '#app/Viewer/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
-import ViewDocButton from '#app/Library/components/ViewDocButton.js';
+import { ViewDocButton } from '#app/Library/components/ViewDocButton.js';
 import { getDocumentReferences } from '#app/Library/actions/libraryActions.js';
 import { store } from '../../store.js';
-import SearchText from './SearchText.js';
-import ShowToc from './ShowToc.js';
-import SnippetsTab from './SnippetsTab.js';
+import { SearchText } from './SearchText.js';
+import { ShowToc } from './ShowToc.js';
+import { SnippetsTab } from './SnippetsTab.js';
 import helpers from '../helpers.js';
 
 if (typeof window !== 'undefined') {
@@ -167,14 +167,14 @@ class DocumentSidePanel extends Component {
 
     const {
       excludeConnectionsTab,
-      connectionsGroups,
+      connectionsGroups = Immutable.List(),
       isTargetDoc,
       references,
       currentSidepanelView,
       location,
     } = this.props;
 
-    const summary = connectionsGroups.reduce(
+    const summary = (connectionsGroups || Immutable.List()).reduce(
       (summaryData, group) => {
         const summarizedData = { ...summaryData };
         group.get('templates').forEach(template => {
@@ -554,6 +554,10 @@ class DocumentSidePanel extends Component {
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
               copyFrom={this.toggleCopyFrom}
+              loadInReduxForm={this.props.loadInReduxForm}
+              resetForm={this.props.resetForm}
+              clearMetadataSelections={this.props.clearMetadataSelections}
+              templates={this.props.templates}
             />
           </div>
         </ShowIf>
@@ -631,6 +635,11 @@ class DocumentSidePanel extends Component {
                 doc={doc}
                 storeKey={this.props.storeKey}
                 searchTerm={this.props.searchTerm}
+                snippets={this.props.snippets}
+                selectSnippet={this.props.selectSnippet}
+                location={this.props.location}
+                searchParams={this.props.searchParams || {}}
+                selectedSnippet={this.props.selectedSnippet}
               />
             </TabContent>
             <TabContent for="toc" className="toc">
@@ -748,7 +757,7 @@ DocumentSidePanel.defaultProps = {
   EntityForm: () => false,
   raw: false,
   file: {},
-  leaveEditMode: () => { },
+  leaveEditMode: () => {},
   selectedDocument: undefined,
   // relationships v2
   newRelationshipsEnabled: false,
@@ -836,11 +845,16 @@ const mapStateToProps = (state, ownProps) => {
     formState: state[ownProps.storeKey].sidepanel.metadataForm,
     currentSidepanelView: state.library.sidepanel.view,
     selectedDocument,
-    // relationships v2
+    selectedSnippet: state.documentViewer?.uiState?.get?.('snippet') || Immutable.Map(),
     newRelationshipsEnabled: !!state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };
 
-export { DocumentSidePanel, mapStateToProps };
-
-export default connect(mapStateToProps)(withContext(withRouter(DocumentSidePanel)));
+const DocumentSidePanelWithRouter = withContext(withRouter(DocumentSidePanel));
+const DocumentSidePanelConnected = connect(mapStateToProps)(DocumentSidePanelWithRouter);
+export {
+  DocumentSidePanel as DocumentSidePanelView,
+  DocumentSidePanelWithRouter,
+  DocumentSidePanelConnected as DocumentSidePanel,
+  mapStateToProps,
+};

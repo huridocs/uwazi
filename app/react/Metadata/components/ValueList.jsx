@@ -64,4 +64,4 @@ const ValueList = ({ property, compact }) => {
   return compact ? renderCompact(propertyWithGroupedValues) : renderList(propertyWithGroupedValues);
 };
 
-export default ValueList;
+export { ValueList };

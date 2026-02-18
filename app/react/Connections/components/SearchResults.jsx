@@ -44,5 +44,3 @@ SearchResults.propTypes = {
   searching: PropTypes.bool,
   onClick: PropTypes.func,
 };
-
-export default SearchResults;

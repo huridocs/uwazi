@@ -84,6 +84,8 @@ const meta: Meta<typeof MetadataDisplayComponent> = {
   component: MetadataDisplayComponent,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof MetadataDisplayComponent>;
 
 const Primary: Story = {
@@ -117,5 +119,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

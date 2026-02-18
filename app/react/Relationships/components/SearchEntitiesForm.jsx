@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import SearchInput from '#app/Layout/SearchInput.js';
+import { SearchInput } from '#app/Layout/SearchInput.js';
 
 import { search } from '../actions/actions.js';
 
-export class SearchEntitiesForm extends Component {
+class SearchEntitiesForm extends Component {
   constructor(props) {
     super(props);
     this.search = this.search.bind(this);
@@ -37,4 +37,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ search }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchEntitiesForm);
+const SearchEntitiesFormConnected = connect(mapStateToProps, mapDispatchToProps)(SearchEntitiesForm);
+export { SearchEntitiesFormConnected as SearchEntitiesForm };

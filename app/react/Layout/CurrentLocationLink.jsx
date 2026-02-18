@@ -38,5 +38,3 @@ CurrentLocationLink.propTypes = {
 };
 
 export { CurrentLocationLink };
-
-export default CurrentLocationLink;

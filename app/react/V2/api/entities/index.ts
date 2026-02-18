@@ -1,4 +1,4 @@
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { IncomingHttpHeaders } from 'http';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';

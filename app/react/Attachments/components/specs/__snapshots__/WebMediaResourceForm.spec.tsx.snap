@@ -19,8 +19,9 @@ exports[`Should match render of wem media form 1`] = `
     }
   }
 >
-  <Connect(FormGroup)
+  <FormGroup
     className="has-feedback"
+    hasError={false}
     model=".url"
   >
     <Modeled(Connect(Field))
@@ -33,7 +34,7 @@ exports[`Should match render of wem media form 1`] = `
         type="text"
       />
     </Modeled(Connect(Field))>
-  </Connect(FormGroup)>
+  </FormGroup>
   <button
     className="btn hover:bg-blue-600"
     disabled={false}
@@ -72,8 +73,9 @@ exports[`should also display a name field when hasName is true 1`] = `
     }
   }
 >
-  <Connect(FormGroup)
+  <FormGroup
     className="has-feedback"
+    hasError={false}
     model=".url"
   >
     <Modeled(Connect(Field))
@@ -86,9 +88,10 @@ exports[`should also display a name field when hasName is true 1`] = `
         type="text"
       />
     </Modeled(Connect(Field))>
-  </Connect(FormGroup)>
-  <Connect(FormGroup)
+  </FormGroup>
+  <FormGroup
     className="form-group"
+    hasError={false}
     model=".name"
   >
     <Modeled(Connect(Field))
@@ -101,7 +104,7 @@ exports[`should also display a name field when hasName is true 1`] = `
         type="text"
       />
     </Modeled(Connect(Field))>
-  </Connect(FormGroup)>
+  </FormGroup>
   <button
     className="btn hover:bg-blue-600"
     disabled={false}

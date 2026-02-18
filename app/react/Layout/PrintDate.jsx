@@ -23,4 +23,4 @@ PrintDate.propTypes = {
   toLocal: PropTypes.bool,
 };
 
-export default PrintDate;
+export { PrintDate };

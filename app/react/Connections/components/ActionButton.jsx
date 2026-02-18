@@ -92,6 +92,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ saveConnection, selectRangedTarget }, dispatch);
 }
 
-export { ActionButton, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(ActionButton);
+const ActionButtonConnected = connect(mapStateToProps, mapDispatchToProps)(ActionButton);
+export { ActionButton, ActionButtonConnected, mapStateToProps };

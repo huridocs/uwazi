@@ -6,11 +6,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import entitiesAPI from '#app/Entities/EntitiesAPI.js';
+import { EntitiesAPI as entitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { PDFView, PDFViewComponent } from '#app/Viewer/PDFView.js';
 import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.js';
-import RouteHandler from '#app/App/RouteHandler.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
 import * as utils from '#app/utils/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
@@ -55,9 +55,11 @@ jest.mock('react-router', () => ({
   useNavigate: () => path => mockNavigate(path),
   useMatches: () => {},
 }));
-jest.mock('#app/ContextMenu', () => () => <div>ContextMenu</div>);
-jest.mock('#app/App/Footer', () => () => <div>Footer</div>);
-jest.mock('#app/Viewer/components/ViewMetadataPanel', () => () => <div>ViewMetadataPanel</div>);
+jest.mock('#app/ContextMenu', () => ({ ContextMenu: () => <div>ContextMenu</div> }));
+jest.mock('#app/App/Footer', () => ({ Footer: () => <div>Footer</div> }));
+jest.mock('#app/Viewer/components/ViewMetadataPanel', () => ({
+  ViewMetadataPanel: () => <div>ViewMetadataPanel</div>,
+}));
 jest.mock('#app/Connections', () => ({
   CreateConnectionPanel: () => <div>CreateConnectionPanel</div>,
 }));

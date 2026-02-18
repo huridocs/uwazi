@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import { Item } from '#app/Layout/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { mapStateToProps } from '../Doc.js';
-import { Doc } from '../Doc.js';
+import { DocView } from '../Doc.js';
 
 describe('Doc', () => {
   let component;
@@ -40,7 +40,7 @@ describe('Doc', () => {
   });
 
   const render = () => {
-    component = shallow(<Doc {...props} />);
+    component = shallow(<DocView {...props} />);
   };
 
   describe('Item data', () => {

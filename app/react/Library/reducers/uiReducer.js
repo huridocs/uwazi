@@ -1,4 +1,4 @@
-import Immutable from '#shared/immutableWrapper.js';
+import Immutable from 'immutable';
 
 import * as types from '#app/Library/actions/actionTypes.js';
 import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
@@ -13,7 +13,7 @@ const initialState = Immutable.fromJS({
   tableViewColumns: [],
 });
 
-export default function ui(state = initialState, action = {}) {
+const uiReducer = (state = initialState, action = {}) => {
   if (action.type === types.SET_SEARCHTERM) {
     let newState = state.set('searchTerm', action.searchTerm);
     if (!action.searchTerm) {
@@ -166,4 +166,6 @@ export default function ui(state = initialState, action = {}) {
   }
 
   return Immutable.fromJS(state);
-}
+};
+
+export { uiReducer };

@@ -1,6 +1,6 @@
 /** @format */
 
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { t } from '#app/I18N/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';

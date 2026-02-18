@@ -2,13 +2,17 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { t } from '#app/I18N/index.js';
-import LibraryFilters from '#app/Library/components/LibraryFilters.js';
-import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
-import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
+import { resetFilters } from '#app/Library/actions/filterActions.js';
+import { hideFilters } from '#app/Entities/actions/uiActions.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { LibraryFiltersConnected } from '#app/Library/components/LibraryFilters.js';
+import { ViewMetadataPanel } from '#app/Library/components/ViewMetadataPanel.js';
+import { SelectMultiplePanelContainer } from '#app/Library/containers/SelectMultiplePanelContainer.js';
 import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import SemanticSearchPanel from '#app/SemanticSearch/components/SemanticSearchPanel.js';
-import ImportPanel from '#app/Uploads/components/ImportPanel.js';
+import { SemanticSearchPanel } from '#app/SemanticSearch/components/SemanticSearchPanel.js';
+import { ImportPanelConnected } from '#app/Uploads/components/ImportPanel.js';
 import { LibraryFooter } from './components/LibraryFooter.js';
 
 class LibraryLayoutBase extends Component {
@@ -21,6 +25,8 @@ class LibraryLayoutBase extends Component {
       scrollCallback,
       scrollCount,
       noindex,
+      resetFilters,
+      hideFilters,
     } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
@@ -35,13 +41,20 @@ class LibraryLayoutBase extends Component {
         <div className={contentDivClass} onScroll={scrollCallback}>
           <main className={`${className}`}>{children}</main>
           <LibraryFooter storeKey="library" scrollCount={scrollCount} />
-          <LibraryFilters storeKey="library" sidePanelMode={sidePanelMode} />
+          <LibraryFiltersConnected
+            storeKey="library"
+            sidePanelMode={sidePanelMode}
+            resetFilters={resetFilters}
+            hideFilters={hideFilters}
+          />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
-          {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
+          {!quickLabelThesaurus && (
+            <SelectMultiplePanelContainer storeKey="library" />
+          )}
           <FeatureToggleSemanticSearch>
             <SemanticSearchPanel storeKey="library" />
           </FeatureToggleSemanticSearch>
-          <ImportPanel />
+          <ImportPanelConnected />
         </div>
       </div>
     );
@@ -65,15 +78,25 @@ LibraryLayoutBase.propTypes = {
   scrollCallback: PropTypes.instanceOf(Function),
   scrollCount: PropTypes.number,
   noindex: PropTypes.bool,
+  resetFilters: PropTypes.func,
+  hideFilters: PropTypes.func,
 };
 
-export { LibraryLayoutBase };
-
-export default connect((state, { noindex }) => {
+const mapStateToProps = (state, { noindex }) => {
   const { filters } = state.library.search;
   const _noindex = (filters && Object.keys(filters).length > 0) || noindex;
   return {
     quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),
     noindex: _noindex,
   };
-})(LibraryLayoutBase);
+};
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    { resetFilters, hideFilters },
+    wrapDispatch(dispatch, 'library')
+  );
+
+const LibraryLayout = connect(mapStateToProps, mapDispatchToProps)(LibraryLayoutBase);
+
+export { LibraryLayoutBase, LibraryLayout };

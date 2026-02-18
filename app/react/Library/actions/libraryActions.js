@@ -6,12 +6,12 @@ import { t } from '#app/I18N/index.js';
 import { store } from '#app/store.js';
 import * as types from '#app/Library/actions/actionTypes.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { documentsApi } from '#app/Documents/index.js';
+import { documentsAPI } from '#app/Documents/index.js';
 import { api as entitiesAPI } from '#app/Entities/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import searchAPI from '#app/Search/SearchAPI.js';
-import referencesAPI from '#app/Viewer/referencesAPI.js';
+import { SearchAPI as searchAPI } from '#app/Search/SearchAPI.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions.js';
@@ -308,7 +308,7 @@ function searchSnippets(searchString, sharedId, storeKey) {
 
 function saveDocument(doc, formKey) {
   return async dispatch => {
-    const updatedDoc = await documentsApi.save(new RequestParams(doc));
+    const updatedDoc = await documentsAPI.save(new RequestParams(doc));
     dispatch(notificationActions.notify(t('System', 'Entity updated', null, false), 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
@@ -380,7 +380,7 @@ function removeDocuments(docs) {
 
 function deleteDocument(doc) {
   return async dispatch => {
-    await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await documentsAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     await dispatch(unselectAllDocuments());
     dispatch(removeDocument(doc));

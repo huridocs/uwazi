@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import Footer from '#app/App/Footer.js';
+import { Footer } from '#app/App/Footer.js';
 import { renderConnected } from '#app/utils/test/renderConnected.js';
 
 describe('Footer', () => {

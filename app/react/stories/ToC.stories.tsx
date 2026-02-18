@@ -12,6 +12,7 @@ const meta: Meta<typeof ToC> = {
     layout: 'padded',
   },
 };
+export default meta;
 
 type Story = StoryObj<typeof ToC>;
 
@@ -254,5 +255,3 @@ export const Simple = {
 export const Nested: Story = {
   render: () => <ToCWithControls toc={nestedToc} />,
 };
-
-export default meta;

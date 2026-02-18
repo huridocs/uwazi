@@ -3,7 +3,7 @@ import * as types from '../actions/actionTypes.js';
 
 const initialState = {};
 
-export default function documents(state = initialState, action = {}) {
+const documents = (state = initialState, action = {}) => {
   if (action.type === types.START_UPLOAD_ATTACHMENT) {
     return state.set(action.entity, 0);
   }
@@ -21,4 +21,6 @@ export default function documents(state = initialState, action = {}) {
   }
 
   return Immutable.fromJS(state);
-}
+};
+
+export { documents };

@@ -2,13 +2,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { Translate, t } from '#app/I18N/index.js';
-import Doc from '#app/Library/components/Doc.js';
+import { Doc } from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList.js';
 import * as actions from '../actions/actions.js';
 import * as uiActions from '../actions/uiActions.js';
-import HubRelationshipMetadata from './HubRelationshipMetadata.js';
+import { HubRelationshipMetadata } from './HubRelationshipMetadata.js';
 
 class RightRelationship extends Component {
   constructor(props) {
@@ -56,16 +56,18 @@ class RightRelationship extends Component {
       <div className="rightRelationships">
         {hub.get('rightRelationships').map((rightRelationshipGroup, rightRelationshipIndex) => (
           <div
-            className={`rightRelationshipsTypeGroup ${rightRelationshipGroup.get('deleted') ? 'deleted' : ''
-              }`}
+            className={`rightRelationshipsTypeGroup ${
+              rightRelationshipGroup.get('deleted') ? 'deleted' : ''
+            }`}
             key={rightRelationshipIndex}
           >
             <div
               className={`rightRelationshipType
-                             ${rightRelationshipIndex === hub.get('rightRelationships').size - 1
-                  ? 'last-of-type'
-                  : ''
-                }`}
+                             ${
+                               rightRelationshipIndex === hub.get('rightRelationships').size - 1
+                                 ? 'last-of-type'
+                                 : ''
+                             }`}
             >
               {!editing && (
                 <div className="rw-dropdown-list rw-widget no-edit">
@@ -134,8 +136,9 @@ class RightRelationship extends Component {
               const move = relationship.get('move');
               return (
                 <div
-                  className={`rightRelationship ${!rightRelationshipDeleted && deleted ? 'deleted' : ''
-                    } ${move ? 'move' : ''}`}
+                  className={`rightRelationship ${
+                    !rightRelationshipDeleted && deleted ? 'deleted' : ''
+                  } ${move ? 'move' : ''}`}
                   key={relationshipIndex}
                 >
                   <div className="rightRelationshipType">
@@ -263,5 +266,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { RightRelationship, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(RightRelationship);
+const RightRelationshipConnected = connect(mapStateToProps, mapDispatchToProps)(RightRelationship);
+export { RightRelationshipConnected as RightRelationship, mapStateToProps };

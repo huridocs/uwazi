@@ -61,5 +61,4 @@ CejilChart.propTypes = {
   prepareData: PropTypes.func.isRequired,
 };
 
-export default CejilChart;
-export { countriesTemplate, countryKey };
+export { CejilChart, countriesTemplate, countryKey };

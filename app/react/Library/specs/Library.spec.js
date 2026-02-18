@@ -4,8 +4,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { LibraryRootComponent } from '#app/Library/Library.js';
-import RouteHandler from '#app/App/RouteHandler.js';
-import createStore from '#app/store.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
+import { create as createStore } from '#app/store.js';
 
 const routes = [
   {
@@ -135,18 +135,24 @@ describe('Library', () => {
       ['/en', false],
       ['/some-path', true],
       ['/no-match', true],
-    ])('should %s call emptyState when unmounting and route is %s', (pathname, shouldCall) => {
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { pathname },
-      });
+    ])(
+      'should %s call emptyState when unmounting and route is %s',
+      async (pathname, shouldCall) => {
+        Object.defineProperty(window, 'location', {
+          writable: true,
+          value: { pathname },
+        });
 
-      component.unmount();
-      if (shouldCall) {
-        expect(instance.emptyState).toHaveBeenCalled();
-      } else {
-        expect(instance.emptyState).not.toHaveBeenCalled();
+        component.unmount();
+        await new Promise(resolve => {
+          setTimeout(resolve, 0);
+        });
+        if (shouldCall) {
+          expect(instance.emptyState).toHaveBeenCalled();
+        } else {
+          expect(instance.emptyState).not.toHaveBeenCalled();
+        }
       }
-    });
+    );
   });
 });

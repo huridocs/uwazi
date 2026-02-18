@@ -39,4 +39,4 @@ const loadingProgressBar = {
   },
 };
 
-export default loadingProgressBar;
+export { loadingProgressBar };

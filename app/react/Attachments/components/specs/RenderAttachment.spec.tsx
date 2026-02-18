@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
-import MarkdownMedia, { MarkdownMediaProps } from '#app/Markdown/components/MarkdownMedia.js';
+import { MarkdownMedia, MarkdownMediaProps } from '#app/Markdown/components/MarkdownMedia.js';
 import ReactPlayer from 'react-player';
 import { RenderAttachment } from '../RenderAttachment.js';
 

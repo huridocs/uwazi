@@ -5,7 +5,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import AttachmentForm from '#app/Attachments/components/AttachmentForm.js';
+import { AttachmentForm } from '#app/Attachments/components/AttachmentForm.js';
 import { Icon } from '#app/UI/index.js';
 
 import { Attachment, mapStateToProps } from '../Attachment.js';

@@ -1,5 +1,5 @@
 import * as types from '#app/Viewer/actions/actionTypes.js';
-import referencesAPI from '#app/Viewer/referencesAPI.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';

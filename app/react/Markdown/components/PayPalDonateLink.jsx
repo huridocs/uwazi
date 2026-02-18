@@ -31,4 +31,4 @@ PayPalDonateLink.propTypes = {
   ]),
 };
 
-export default PayPalDonateLink;
+export { PayPalDonateLink };

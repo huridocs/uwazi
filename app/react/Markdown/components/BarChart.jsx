@@ -145,9 +145,10 @@ BarChartComponent.propTypes = {
   pluckCategories: PropTypes.string,
 };
 
-export const mapStateToProps = (state, props) => ({
+const mapStateToProps = (state, props) => ({
   data: markdownDatasets.getAggregations(state, props),
   thesauris: state.thesauris,
 });
 
-export default connect(mapStateToProps)(BarChartComponent);
+const BarChartConnected = connect(mapStateToProps)(BarChartComponent);
+export { BarChartComponent as BarChartView, BarChartConnected as BarChartComponent, mapStateToProps };

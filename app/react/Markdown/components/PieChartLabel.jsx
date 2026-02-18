@@ -47,4 +47,4 @@ PieChartLabel.propTypes = {
   ).isRequired,
 };
 
-export default PieChartLabel;
+export { PieChartLabel };

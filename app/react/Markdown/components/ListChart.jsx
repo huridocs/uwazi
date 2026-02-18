@@ -98,6 +98,5 @@ export const mapStateToProps = (state, props) => ({
   thesauris: state.thesauris,
 });
 
-
 const ListChartConnected = connect(mapStateToProps)(ListChartComponent);
 export { ListChartConnected as ListChart };

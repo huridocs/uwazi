@@ -1,11 +1,11 @@
 import { actions as formActions } from 'react-redux-form';
 import { store } from '#app/store.js';
 import Immutable from 'immutable';
-import SettingsAPI from '#app/Settings/SettingsAPI.js';
+import { SettingsAPI } from '#app/Settings/SettingsAPI.js';
 import { actions as basicActions } from '#app/BasicReducer/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import I18NApi from '../../I18NApi.js';
+import { I18NApi } from '../../I18NApi.js';
 import * as actions from '../I18NActions.js';
 
 describe('I18NActions', () => {

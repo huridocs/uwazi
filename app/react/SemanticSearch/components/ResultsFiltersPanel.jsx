@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
-import SidePanel from '#app/Layout/SidePanel.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
 import { t, Translate } from '#app/I18N/index.js';
 
 const filters = [
@@ -34,7 +34,7 @@ const filterValue = (filter, filtersValues) =>
     ? `${(filtersValues[filter.model] * 100).toFixed(2)}%`
     : filtersValues[filter.model];
 
-export const ResultsFiltersPanel = ({ open, filtersValues }) => {
+const ResultsFiltersPanel = ({ open, filtersValues }) => {
   return (
     <SidePanel open={open}>
       <div className="sidepanel-body">
@@ -107,4 +107,5 @@ function mapStateToProps({ semanticSearch }) {
   };
 }
 
-export default connect(mapStateToProps)(ResultsFiltersPanel);
+const ResultsFiltersPanelConnected = connect(mapStateToProps)(ResultsFiltersPanel);
+export { ResultsFiltersPanelConnected as ResultsFiltersPanel };

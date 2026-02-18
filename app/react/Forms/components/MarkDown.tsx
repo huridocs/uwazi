@@ -1,4 +1,4 @@
-import MarkdownViewer from '#app/Markdown/index.js';
+import { MarkdownViewer } from '#app/Markdown/index.js';
 import React, { Component } from 'react';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { Translate } from '#app/I18N/index.js';

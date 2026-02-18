@@ -8,6 +8,8 @@ const meta: Meta<typeof Tabs> = {
   component: Tabs,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof Tabs>;
 
 const Primary: Story = {
@@ -49,5 +51,3 @@ export const Basic = {
     tabListAriaLabel: 'Entity detail sections',
   },
 };
-
-export default meta;

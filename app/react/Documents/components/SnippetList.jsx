@@ -5,7 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { t, I18NLink } from '#app/I18N/index.js';
-import SafeHTML from '#app/utils/SafeHTML.js';
+import { SafeHTML } from '#app/utils/SafeHTML.js';
 import getFieldLabel from '#app/Templates/utils/getFieldLabel.js';
 import Immutable from 'immutable';
 
@@ -86,30 +86,36 @@ const SnippetList = ({
   selectSnippet,
   template,
   selectedSnippet,
-}) => (
-  <ul className="snippet-list">
-    {snippets.get('metadata').map(fieldSnippets => (
-      <MetadataFieldSnippets
-        key={fieldSnippets.get('field')}
-        fieldSnippets={fieldSnippets}
-        template={template}
-        documentViewUrl={documentViewUrl}
-        searchTerm={searchTerm}
-      />
-    ))}
-    {snippets.get('fullText').size ? (
-      <DocumentContentSnippets
-        documentSnippets={snippets.get('fullText')}
-        documentViewUrl={documentViewUrl}
-        selectSnippet={selectSnippet}
-        selectedSnippet={selectedSnippet}
-        searchTerm={searchTerm}
-      />
-    ) : (
-      ''
-    )}
-  </ul>
-);
+}) => {
+  const safeSelectedSnippet =
+    selectedSnippet && typeof selectedSnippet.get === 'function'
+      ? selectedSnippet
+      : Immutable.Map();
+  return (
+    <ul className="snippet-list">
+      {snippets.get('metadata').map(fieldSnippets => (
+        <MetadataFieldSnippets
+          key={fieldSnippets.get('field')}
+          fieldSnippets={fieldSnippets}
+          template={template}
+          documentViewUrl={documentViewUrl}
+          searchTerm={searchTerm}
+        />
+      ))}
+      {snippets.get('fullText').size ? (
+        <DocumentContentSnippets
+          documentSnippets={snippets.get('fullText')}
+          documentViewUrl={documentViewUrl}
+          selectSnippet={selectSnippet}
+          selectedSnippet={safeSelectedSnippet}
+          searchTerm={searchTerm}
+        />
+      ) : (
+        ''
+      )}
+    </ul>
+  );
+};
 
 SnippetList.propTypes = {
   documentViewUrl: PropTypes.string.isRequired,
@@ -117,7 +123,7 @@ SnippetList.propTypes = {
   searchTerm: PropTypes.string.isRequired,
   selectedSnippet: PropTypes.shape({
     get: PropTypes.func,
-  }).isRequired,
+  }),
   snippets: PropTypes.shape({
     get: PropTypes.func,
   }).isRequired,
@@ -131,5 +137,11 @@ const mapStateToProps = (state, ownProps) => ({
   selectedSnippet: state.documentViewer.uiState.get('snippet'),
 });
 
-export { DocumentContentSnippets, MetadataFieldSnippets, SnippetList, mapStateToProps };
-export default connect(mapStateToProps)(SnippetList);
+const SnippetListConnected = connect(mapStateToProps)(SnippetList);
+export {
+  DocumentContentSnippets,
+  MetadataFieldSnippets,
+  SnippetList,
+  SnippetListConnected,
+  mapStateToProps,
+};

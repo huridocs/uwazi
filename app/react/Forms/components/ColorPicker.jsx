@@ -64,4 +64,4 @@ ColorPicker.propTypes = {
   disabled: PropTypes.bool,
 };
 
-export default ColorPicker;
+export { ColorPicker };

@@ -1,5 +1,5 @@
-import libraryHelper from '#app/Library/helpers/libraryFilters.js';
-import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
+import { libraryHelpers as libraryHelper } from '#app/Library/helpers/libraryFilters.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 
 describe('library helper', () => {
   const templates = [

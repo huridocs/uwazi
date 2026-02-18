@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import NProgress from 'nprogress';
-import LoadingProgressBar from '../LoadingProgressBar.js';
+import { loadingProgressBar as LoadingProgressBar } from '../LoadingProgressBar.js';
 
 describe('Load ingProgressBar', () => {
   beforeEach(() => {

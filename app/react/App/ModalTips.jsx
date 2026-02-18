@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { t } from '#app/I18N/index.js';
-import Modal from '#app/Layout/Modal.js';
-// eslint-disable-next-line import/exports-last
-export default class ModalTips extends Component {
+import { Modal } from '#app/Layout/Modal.js';
+
+class ModalTips extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,3 +47,5 @@ ModalTips.propTypes = {
   title: PropTypes.string.isRequired,
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
 };
+
+export { ModalTips };

@@ -4,8 +4,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
-import Modal from '#app/Layout/Modal.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Modal } from '#app/Layout/Modal.js';
+import { Icon } from '#UI/Icon/Icon.js';
 import { saveRelationType } from '../actions/relationTypeActions.js';
 
 type FormInputs = {

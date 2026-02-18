@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'http';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { IXSuggestionsQuery } from '#shared/types/suggestionType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';

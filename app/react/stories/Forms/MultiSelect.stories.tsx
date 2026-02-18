@@ -7,6 +7,8 @@ const meta: Meta<typeof MultiSelect> = {
   component: MultiSelect,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof MultiSelect>;
 
 const Primary: Story = {
@@ -70,5 +72,3 @@ const WithError: Story = {
 };
 
 export { Basic, WithError };
-
-export default meta;

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import EntityView from '#app/Viewer/EntityView.js';
+import { Entity } from '#app/Viewer/EntityView.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
@@ -29,7 +29,7 @@ class EntityViewerComponent extends Component {
       return <Loader />;
     }
 
-    return entity.get('defaultDoc') ? <PDFView {...this.props} /> : <EntityView {...this.props} />;
+    return entity.get('defaultDoc') ? <PDFView {...this.props} /> : <Entity {...this.props} />;
   }
 }
 

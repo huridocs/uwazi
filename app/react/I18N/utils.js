@@ -24,4 +24,4 @@ const I18NUtils = {
   },
 };
 
-export default I18NUtils;
+export { I18NUtils };

@@ -1,6 +1,6 @@
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 
-export default {
+const SemanticSearchAPI = {
   search(requestParams) {
     const url = 'semantic-search';
     return api.post(url, requestParams).then(response => response.json);
@@ -34,3 +34,5 @@ export default {
     return api.post(url, requestParams).then(response => response.json);
   },
 };
+
+export { SemanticSearchAPI as api };

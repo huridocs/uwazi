@@ -6,7 +6,7 @@ import {
   PXTable,
 } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
 import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
-import api from '#app/utils/api.js';
+import { api } from '#app/utils/api.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<Extractor[]> => {
   const requestParams = new RequestParams({}, headers);

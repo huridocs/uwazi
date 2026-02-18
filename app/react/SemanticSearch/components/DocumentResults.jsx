@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
 import { Translate, t } from '#app/I18N/index.js';
-import SnippetList from '#app/Documents/components/SnippetList.js';
+import { SnippetList, SnippetListConnected } from '#app/Documents/components/SnippetList.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
@@ -51,7 +51,7 @@ const getSnippetsFromResults = (results, template) => {
 export class DocumentResults extends Component {
   renderSnippetsList(doc, snippets, documentViewUrl) {
     return (
-      <SnippetList
+      <SnippetListConnected
         doc={Immutable.fromJS(doc)}
         documentViewUrl={documentViewUrl}
         snippets={snippets}
@@ -164,4 +164,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ selectSnippet }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentResults);
+const DocumentSemanticSearchResults = connect(mapStateToProps, mapDispatchToProps)(DocumentResults);
+export { DocumentSemanticSearchResults };

@@ -4,7 +4,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { IImmutable } from '#shared/types/Immutable.js';
-import api from '#app/Entities/EntitiesAPI.js';
+import { EntitiesAPI as api } from '#app/Entities/EntitiesAPI.js';
 import { ClientFile } from '#app/istore.js';
 import { updateSelection, updateFormField, deleteSelection } from '../metadataExtractionActions.js';
 

@@ -108,4 +108,5 @@ const mapStateToProps = (state, ownProps) => ({
   locale: ownProps.locale || state.locale,
 });
 
-export default connect(mapStateToProps)(DatePicker);
+const DatePickerConnected = connect(mapStateToProps)(DatePicker);
+export { DatePickerConnected as DatePicker };

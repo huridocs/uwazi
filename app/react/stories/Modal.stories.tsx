@@ -9,6 +9,7 @@ const meta: Meta<typeof Modal> = {
   title: 'Components/Modal',
   component: Modal,
 };
+export default meta;
 
 type Story = StoryObj<typeof Modal>;
 
@@ -97,5 +98,3 @@ const LargeContent = {
 };
 
 export { Basic, Warning, LargeContent };
-
-export default meta;

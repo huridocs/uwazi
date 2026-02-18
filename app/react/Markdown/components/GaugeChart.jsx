@@ -89,5 +89,3 @@ export const mapStateToProps = (state, props) => ({
   max: Number(props.max) || 100,
   height: Number(props.height) || 110,
 });
-
-export default connect(mapStateToProps)(GaugeChartComponent);

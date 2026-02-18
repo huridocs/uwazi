@@ -4,8 +4,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import api from '#app/Search/SearchAPI.js';
-import CejilChart, {
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
+import {
+  CejilChart002 as CejilChart,
   mapStateToProps,
   judgesCommisionersTemplate as template,
   male,

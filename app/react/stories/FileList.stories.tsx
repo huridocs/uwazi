@@ -14,6 +14,8 @@ const meta: Meta<typeof FileList> = {
   component: FileList,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof FileList>;
 
 const Empty: Story = {
@@ -109,4 +111,3 @@ const WithFiles: Story = {
 };
 
 export { Empty, WithFiles };
-export default meta;

@@ -4,16 +4,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { PDFPage } from '#app/PDF/index.js';
-import PDFJS from '../../PDFJS.js';
-import PDF from '../PDF.js';
+import { PDFJS } from '../../PDFJS.js';
+import { PDF } from '../PDF.js';
 
 const legacyCharacterMapUrl = '/legacy_character_maps/';
 
-jest.mock('../../PDFJS', () => ({
-  default: {
-    getDocument: () => {},
-  },
-  getDocument: () => {},
+jest.mock('../../PDFJS.js', () => ({
+  PDFJS: { getDocument: jest.fn() },
   EventBus: function () {},
 }));
 
@@ -25,7 +22,7 @@ describe('PDF', () => {
   let props;
 
   beforeEach(() => {
-    jest.spyOn(PDFJS, 'getDocument').mockReturnValue({ promise: Promise.resolve(pdfObject) });
+    PDFJS.getDocument.mockReturnValue({ promise: Promise.resolve(pdfObject) });
     props = {
       file: 'file_url',
       filename: 'original.pdf',
@@ -35,7 +32,7 @@ describe('PDF', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    PDFJS.getDocument.mockReset();
   });
 
   const render = async () => {

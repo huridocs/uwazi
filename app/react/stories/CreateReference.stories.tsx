@@ -175,6 +175,7 @@ const meta: Meta<typeof CreateReference> = {
   title: 'EntityViewer/CreateReference',
   component: CreateReference,
 };
+export default meta;
 
 type Story = StoryObj<typeof CreateReference>;
 
@@ -286,4 +287,3 @@ const TextMode: Story = {
 
 export { Default, EmptyRelationshipTypes, LongSelection, TextMode };
 // eslint-disable-next-line import/no-default-export
-export default meta;

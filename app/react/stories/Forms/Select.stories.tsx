@@ -6,6 +6,7 @@ const meta: Meta<typeof Select> = {
   title: 'Forms/Select',
   component: Select,
 };
+export default meta;
 
 type Story = StoryObj<typeof Select>;
 
@@ -56,5 +57,3 @@ const Basic = {
 };
 
 export { Basic };
-
-export default meta;

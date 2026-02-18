@@ -1,10 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import configureMockStore from 'redux-mock-store';
 
-import { RelationshipsGraphEdit } from '../RelationshipsGraphEdit.js';
-import LeftRelationship from '../LeftRelationship.js';
-import RightRelationship from '../RightRelationship.js';
+import { RelationshipsGraphEditView } from '../RelationshipsGraphEdit.js';
+import { LeftRelationshipConnected } from '../LeftRelationship.js';
+import { RightRelationship } from '../RightRelationship.js';
+
+const mockStore = configureMockStore([]);
 
 describe('RelationshipsGraphEdit', () => {
   let component;
@@ -59,12 +62,21 @@ describe('RelationshipsGraphEdit', () => {
   });
 
   const render = () => {
-    component = shallow(<RelationshipsGraphEdit {...props} />);
+    const store = mockStore({
+      relationships: {
+        list: { sort: Immutable.fromJS({}) },
+        hubs: props.hubs,
+        hubActions: Immutable.fromJS({}),
+      },
+    });
+    component = shallow(<RelationshipsGraphEditView {...props} />, {
+      context: { store },
+    });
   };
 
   it('should render a LeftRelationship component for each hub', () => {
     render();
-    const leftRelationshipComponents = component.find(LeftRelationship);
+    const leftRelationshipComponents = component.find(LeftRelationshipConnected);
     expect(leftRelationshipComponents.length).toBe(2);
     expect(leftRelationshipComponents.at(0).props().index).toBe(0);
     expect(leftRelationshipComponents.at(0).props().hub).toEqual(Immutable.fromJS(hubs[0]));

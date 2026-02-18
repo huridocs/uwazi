@@ -17,4 +17,5 @@ export const mapStateToProps = (state, props) => ({
   count: markdownDatasets.getAggregation(state, props),
 });
 
-export default connect(mapStateToProps)(CounterComponent);
+const Counter = connect(mapStateToProps)(CounterComponent);
+export { CounterComponent as CounterView, Counter };

@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import api from '#app/Search/SearchAPI.js';
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
 
-import CejilChart from './CejilChart.js';
+import { CejilChart } from './CejilChart.js';
 import parsingUtils from '../utils/parsingUtils.js';
 
 const judgesCommisionersTemplate = '58b2f3a35d59f31e1345b4b6';
@@ -53,8 +53,9 @@ function mapStateToProps({ filterProperty = 'mandatos_de_la_corte' }) {
   return { getData, prepareData, filterProperty };
 }
 
-export default connect(mapStateToProps)(CejilChart);
+const CejilChart002 = connect(mapStateToProps)(CejilChart);
 export {
+  CejilChart002,
   judgesCommisionersTemplate,
   countryKey,
   male,

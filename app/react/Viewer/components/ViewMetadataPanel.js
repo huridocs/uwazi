@@ -77,4 +77,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
+const ViewMetadataPanel = connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
+export { ViewMetadataPanel };

@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
 import { FormGroup } from '#app/Forms/index.js';
-import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning.js';
+import { MultipleEditionFieldWarning } from '../MultipleEditionFieldWarning.js';
 import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms.js';
 import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields.js';
 import { AddThesauriValueButton } from '../AddThesauriValueButton.js';

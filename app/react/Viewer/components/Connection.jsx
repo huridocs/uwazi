@@ -8,7 +8,7 @@ import { Icon } from '#app/UI/index.js';
 import { I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withContext } from '#app/componentWrappers.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { deleteReference } from '#app/Viewer/actions/referencesActions.js';
 import {
   highlightReference,
@@ -91,8 +91,9 @@ class Connection extends Component {
         onClick={this.clickReference.bind(this, reference)}
         doc={doc}
         noMetadata
-        className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${this.props.readOnly ? 'readOnly' : ''
-          }`}
+        className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${
+          this.props.readOnly ? 'readOnly' : ''
+        }`}
         data-id={reference._id}
         additionalText={
           reference.associatedRelationship.reference
@@ -184,5 +185,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { Connection };
-export default connect(mapStateToProps, mapDispatchToProps)(withContext(Connection));
+const ConnectionConnected = connect(mapStateToProps, mapDispatchToProps)(withContext(Connection));
+export { Connection, ConnectionConnected };

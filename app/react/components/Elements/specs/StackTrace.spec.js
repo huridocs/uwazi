@@ -5,7 +5,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Icon } from '#app/UI/index.js';
 
-import StackTrace from '../StackTrace.js';
+import { StackTrace } from '../StackTrace.js';
 
 describe('StackTrace', () => {
   let component;

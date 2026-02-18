@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { I18NLink } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
-import api from '#app/Search/SearchAPI.js';
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
 
 const processesIds = ['58b2f3a35d59f31e1345b48a'];
 const provisionalMeasuresIds = ['58b2f3a35d59f31e1345b4a4'];
@@ -99,5 +99,3 @@ cejilChart001.propTypes = {
 export function mapStateToProps({ templates, thesauris }) {
   return { templates, thesauris };
 }
-
-export default connect(mapStateToProps)(cejilChart001);

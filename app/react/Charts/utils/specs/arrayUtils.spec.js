@@ -7,7 +7,7 @@ import {
   expectNestedResult,
   expectNestedResultWithNoZeros,
 } from './fixtures/arrayUtilsFixtures.js';
-import colorScheme from '../colorScheme.js';
+import { colorScheme } from '../colorScheme.js';
 import arrayUtils from '../arrayUtils.js';
 
 const { sortValues, formatPayload, formatDataForChart } = arrayUtils;

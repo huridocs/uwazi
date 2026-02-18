@@ -69,8 +69,9 @@ const LibraryModeToggleButtons = ({
     <div className="list-view-mode">
       {!mapViewMode && (
         <div
-          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${tableViewMode ? 'unpinned-mode' : ''
-            }`}
+          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
+            tableViewMode ? 'unpinned-mode' : ''
+          }`}
         >
           <button
             className="btn btn-default zoom-out"
@@ -144,5 +145,5 @@ export function mapStateToProps(state, props) {
         : state.library.ui.get('zoomLevel'),
   };
 }
-export { LibraryModeToggleButtons };
-export default connect(mapStateToProps)(LibraryModeToggleButtons);
+const LibraryModeToggleButtonsConnected = connect(mapStateToProps)(LibraryModeToggleButtons);
+export { LibraryModeToggleButtons as LibraryModeToggleButtonsView, LibraryModeToggleButtonsConnected as LibraryModeToggleButtons };

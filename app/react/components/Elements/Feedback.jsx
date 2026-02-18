@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import './scss/feedback.scss';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 class Feedback extends Component {
   render() {
@@ -35,4 +35,4 @@ Feedback.propTypes = {
   children: PropTypes.array,
 };
 
-export default Feedback;
+export { Feedback };

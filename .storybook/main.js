@@ -42,21 +42,21 @@ export default {
     if (typeof process === 'undefined' || !process.versions?.node) {
       return config;
     }
-    
+
     const path = await import('path');
     const { fileURLToPath } = await import('url');
     const webpack = await import('webpack');
     const __filename = fileURLToPath(import.meta.url);
     const rootPath = path.dirname(path.dirname(__filename));
     const cssLoaderPath = path.join(rootPath, 'node_modules/css-loader');
-    
+
     const existingExtensions = config.resolve?.extensions || [];
     const newExtensions = ['.webpack.js', '.web.js', '.js', '.jsx', '.tsx', '.ts'];
     const allExtensions = [...new Set([...existingExtensions, ...newExtensions])];
-    
+
     const fs = await import('fs');
     const MiniCssExtractPlugin = (await import('mini-css-extract-plugin')).default;
-    
+
     const cssLoaderFixPlugin = {
       apply: (compiler) => {
         compiler.hooks.normalModuleFactory.tap('CssLoaderFixPlugin', (nmf) => {
@@ -75,7 +75,7 @@ export default {
         });
       },
     };
-    
+
     const hashPrefixModuleFactoryPlugin = {
       apply: (compiler) => {
         compiler.hooks.normalModuleFactory.tap('HashPrefixModuleFactoryPlugin', (nmf) => {
@@ -83,10 +83,10 @@ export default {
             if (!resolveData.request || typeof resolveData.request !== 'string') {
               return;
             }
-            
+
             const request = resolveData.request;
             let newRequest = request;
-            
+
             if (request.startsWith('#')) {
               if (request.startsWith('#app/')) {
                 newRequest = request.replace('#app/', path.join(rootPath, 'app/react/'));
@@ -104,6 +104,9 @@ export default {
               if (contextPath) {
                 try {
                   newRequest = path.resolve(contextPath, request);
+                  if (newRequest.includes('atomStore') && newRequest.includes('server.store') && !newRequest.includes('stub')) {
+                    newRequest = path.join(rootPath, 'app/shared/atomStore/server.store.stub.ts');
+                  }
                 } catch (e) {
                   return;
                 }
@@ -115,7 +118,7 @@ export default {
                 newRequest = path.join(rootPath, 'node_modules/entities/lib/esm/decode.js');
               }
             }
-            
+
             if (newRequest !== request && typeof newRequest === 'string') {
               const ext = path.extname(newRequest);
               if (fs.existsSync(newRequest)) {
@@ -159,7 +162,7 @@ export default {
         });
       },
     };
-    
+
     const resolveFileExtension = (filePath, contextPath) => {
       if (typeof filePath !== 'string') {
         return filePath;
@@ -167,7 +170,7 @@ export default {
       if (fs.existsSync(filePath)) {
         return filePath;
       }
-      
+
       const ext = path.extname(filePath);
       if (ext === '.js' || ext === '.jsx' || !ext) {
         const basePath = ext ? filePath.slice(0, -ext.length) : filePath;
@@ -201,18 +204,18 @@ export default {
       }
       return filePath;
     };
-    
+
     class HashPrefixResolverPlugin {
       apply(resolver) {
         resolver.hooks.resolve.tapAsync('HashPrefixResolverPlugin', (request, resolveContext, callback) => {
           if (!request.request || typeof request.request !== 'string') {
             return callback();
           }
-          
+
           const originalRequest = request.request;
           let newRequest = originalRequest;
           let shouldProcess = false;
-          
+
           if (originalRequest.startsWith('#')) {
             shouldProcess = true;
             if (originalRequest.startsWith('#app/')) {
@@ -240,7 +243,7 @@ export default {
               }
             }
           }
-          
+
           if (shouldProcess && typeof newRequest === 'string') {
             const finalRequest = resolveFileExtension(newRequest, request.context);
             if (typeof finalRequest === 'string' && finalRequest !== newRequest && fs.existsSync(finalRequest)) {
@@ -252,16 +255,23 @@ export default {
               return;
             }
           }
-          
+
           callback();
         });
       }
     }
-    
+
     const hashPrefixPlugin = new HashPrefixResolverPlugin();
-    
+
+    const serverStoreStubPath = path.join(rootPath, 'app/shared/atomStore/server.store.stub.ts');
+    const Webpack = webpack.default || webpack;
+    const atomStoreServerStoreReplacementPlugin = new Webpack.NormalModuleReplacementPlugin(
+      /[/\\]atomStore[/\\]server\.store(\.ts|\.js)?$/,
+      serverStoreStubPath
+    );
+
     const interopRequireDefaultPath = path.join(rootPath, 'node_modules/@babel/runtime/helpers/interopRequireDefault.js');
-    
+
     const fixDomHelpersSourcePlugin = {
       apply: (compiler) => {
         compiler.hooks.normalModuleFactory.tap('FixDomHelpersSourcePlugin', (nmf) => {
@@ -293,20 +303,51 @@ export default {
         });
       },
     };
-    
+
+    const excludeHeadlessUIFromVendorChunk = (module, defaultTest) => {
+      const id = module.identifier?.() ?? '';
+      if (id.includes('@headlessui')) return false;
+      if (typeof defaultTest === 'function') return defaultTest(module);
+      if (defaultTest instanceof RegExp) return defaultTest.test(id);
+      return true;
+    };
+
+    const existingCacheGroups = config.optimization?.splitChunks?.cacheGroups ?? {};
+    const defaultVendors = existingCacheGroups.defaultVendors ?? { test: /[\\/]node_modules[\\/]/ };
+    const defaultVendorsTest = defaultVendors.test;
+
     return {
       ...config,
+      output: {
+        ...config.output,
+        publicPath: config.output?.publicPath ?? '/',
+      },
+      optimization: {
+        ...config.optimization,
+        splitChunks: {
+          ...config.optimization?.splitChunks,
+          cacheGroups: {
+            ...existingCacheGroups,
+            defaultVendors: {
+              ...defaultVendors,
+              test: (module) => excludeHeadlessUIFromVendorChunk(module, defaultVendorsTest),
+            },
+          },
+        },
+      },
       plugins: [
         ...(config.plugins || []),
         new MiniCssExtractPlugin({}),
         cssLoaderFixPlugin,
         hashPrefixModuleFactoryPlugin,
+        atomStoreServerStoreReplacementPlugin,
         fixDomHelpersSourcePlugin,
       ],
       resolve: {
         ...config.resolve,
         alias: {
           ...config.resolve?.alias,
+          [path.join(rootPath, 'app/shared/atomStore/server.store.ts')]: serverStoreStubPath,
           'api': path.join(rootPath, 'app/api'),
           'app': path.join(rootPath, 'app/react'),
           'shared': path.join(rootPath, 'app/shared'),
@@ -447,9 +488,9 @@ export default {
       ],
       plugins: [
         ...(config.plugins || []).filter(
-          (plugin) => !(Array.isArray(plugin) && plugin[0]?.includes?.('ignore-scss')) && 
-                      !(typeof plugin === 'string' && plugin.includes('ignore-scss')) &&
-                      !(typeof plugin === 'function' && plugin.toString().includes('ignore-scss'))
+          (plugin) => !(Array.isArray(plugin) && plugin[0]?.includes?.('ignore-scss')) &&
+            !(typeof plugin === 'string' && plugin.includes('ignore-scss')) &&
+            !(typeof plugin === 'function' && plugin.toString().includes('ignore-scss'))
         ),
         '@babel/plugin-proposal-object-rest-spread',
         '@babel/plugin-proposal-class-properties',

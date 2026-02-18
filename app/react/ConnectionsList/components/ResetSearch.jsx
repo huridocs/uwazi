@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from '#app/UI/index.js';
 
@@ -40,6 +40,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ resetSearch }, dispatch);
 }
 
-export { ResetSearch };
-
-export default connect(mapStateToProps, mapDispatchToProps)(ResetSearch);
+const ResetSearchConnected = connect(mapStateToProps, mapDispatchToProps)(ResetSearch);
+export { ResetSearch, ResetSearchConnected };

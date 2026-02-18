@@ -61,32 +61,28 @@ const validMediaFile = file =>
   (file.mimetype && (file.mimetype.includes('video') || file.mimetype.includes('audio'))) ||
   (file.url && ReactPlayer.canPlay(file.url));
 
-export { notEmpty, labelAndUrl, latAndLon, validImageFile, validMediaFile };
+export {
+  notEmpty,
+  labelAndUrl,
+  latAndLon,
+  geolocationValidation,
+  linkValidation,
+  validImageFile,
+  validMediaFile,
+};
 
-export default {
-  generate(template, noTitle = false) {
+const validator = {
+  generate(template, _multipleEdition) {
     const validationObject = {
       title: { required: notEmpty },
     };
-
-    if (noTitle) {
-      delete validationObject.title;
-    }
-
-    template.properties.forEach(property => {
+    (template.properties || []).forEach(property => {
       if (property.required) {
         validationObject[`metadata.${property.name}`] = { required: notEmpty };
       }
-
-      if (property.type === 'link') {
-        Object.assign(validationObject, linkValidation(property));
-      }
-
-      if (property.type === 'geolocation') {
-        Object.assign(validationObject, geolocationValidation(property));
-      }
     });
-
     return validationObject;
   },
 };
+
+export { validator };

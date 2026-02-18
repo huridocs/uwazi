@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import ReactModal from 'react-modal';
 import { Translate } from '#app/I18N/index.js';
 
-export default class Modal extends Component {
+class Modal extends Component {
   render() {
     const style = {
       overlay: { zIndex: this.props.zIndex, backgroundColor: 'rgba(0, 0, 0, 0.75)' },
@@ -67,3 +67,5 @@ Modal.Header = Header;
 Modal.Footer = Footer;
 Modal.Title = Title;
 Modal.Close = Close;
+
+export { Modal };

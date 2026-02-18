@@ -27,5 +27,5 @@ SearchListComponent.propTypes = {
   ),
 };
 
-export { SearchListComponent };
-export default connect()(SearchListComponent);
+const SearchListConnected = connect()(SearchListComponent);
+export { SearchListConnected as SearchList };

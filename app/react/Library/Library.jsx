@@ -1,11 +1,15 @@
 import React from 'react';
 import { Outlet, matchPath } from 'react-router';
-import RouteHandler from '#app/App/RouteHandler.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from '#app/Library/actions/libraryActions.js';
+import {
+  enterLibrary,
+  unsetDocuments,
+  zoomIn,
+  zoomOut,
+} from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { withRouter } from '#app/componentWrappers.js';
-import { getAppRoutes } from '#app/appRoutes.js';
 
 class LibraryRootComponent extends RouteHandler {
   constructor(props, context) {
@@ -59,10 +63,12 @@ class LibraryRootComponent extends RouteHandler {
 
   componentWillUnmount() {
     const nextLocation = window?.location?.pathname;
-    const matchedRoute = this.findMatchingRoute(nextLocation, getAppRoutes());
-    if (!matchedRoute && !nextLocation.includes('library')) {
-      this.emptyState();
-    }
+    import('#app/appRoutes.js').then(({ getAppRoutes }) => {
+      const matchedRoute = this.findMatchingRoute(nextLocation, getAppRoutes());
+      if (!matchedRoute && !nextLocation.includes('library')) {
+        this.emptyState();
+      }
+    });
   }
 
   emptyState() {
@@ -94,4 +100,3 @@ export const LibraryRoot = Object.assign(SSRLibrary, {
 });
 
 export { LibraryRootComponent };
-export default LibraryRoot;

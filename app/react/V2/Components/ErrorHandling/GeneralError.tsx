@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams } from 'react-router';
 import has from 'lodash/has.js';
 
-import Footer from '#app/App/Footer.js';
+import { Footer } from '#app/App/Footer.js';
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 import { t } from '#app/I18N/index.js';
 import { handledErrors } from '#V2/shared/errorUtils.js';

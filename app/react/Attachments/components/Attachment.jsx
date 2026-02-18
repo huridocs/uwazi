@@ -6,9 +6,9 @@ import { filesize } from 'filesize';
 import { Icon } from '#app/UI/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { ShowIf } from '#app/App/ShowIf.js';
 import { Translate, t } from '#app/I18N/index.js';
-import AttachmentForm from '#app/Attachments/components/AttachmentForm.js';
+import { AttachmentForm } from '#app/Attachments/components/AttachmentForm.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { store } from '#app/store.js';
@@ -42,7 +42,7 @@ class Attachment extends Component {
 
     if (file.filename && getFileExtension(file.filename) === 'pdf') {
       thumbnail = (
-        <span no-translate>
+        <span no-translate="true">
           <Icon icon="file-pdf" /> pdf
         </span>
       );
@@ -300,5 +300,5 @@ export function mapStateToProps({ attachments }, ownProps) {
   };
 }
 
-export { Attachment };
-export default connect(mapStateToProps, mapDispatchToProps)(withContext(Attachment));
+const AttachmentConnected = connect(mapStateToProps, mapDispatchToProps)(withContext(Attachment));
+export { Attachment, AttachmentConnected };

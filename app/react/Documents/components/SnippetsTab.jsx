@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 const SnippetsTab = ({ snippets }) => (
   <div>
@@ -22,4 +22,5 @@ function mapStateToProps(state, props) {
   };
 }
 
-export default connect(mapStateToProps)(SnippetsTab);
+const SnippetsTabConnected = connect(mapStateToProps)(SnippetsTab);
+export { SnippetsTab, SnippetsTabConnected };

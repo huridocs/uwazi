@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-export default class Numeric extends Component {
+export class Numeric extends Component {
   onChange(e) {
     const { value } = e.target;
     const { onChange } = this.props;

@@ -84,7 +84,7 @@ const getNodeTypeAndConfig = (_config, node, isCustomComponentPlaceholder, isCus
   return { type, config };
 };
 
-export default (_markdown, callback, withHtml = false) => {
+const markdownToReact = (_markdown, callback, withHtml = false) => {
   let renderer = markdownIt;
   if (withHtml) {
     renderer = markdownItWithHtml;
@@ -151,3 +151,5 @@ export default (_markdown, callback, withHtml = false) => {
 
   return myParser.parseWithInstructions(html, isValidNode, processingInstructions);
 };
+
+export { markdownIt, markdownToReact };

@@ -13,8 +13,8 @@ import {
 
 import arrayUtils from '../utils/arrayUtils.js';
 
-import ExtendedTooltip from './ExtendedTooltip.js';
-import ColoredBar from './ColoredBar.js';
+import { ExtendedTooltip } from './ExtendedTooltip.js';
+import { ColoredBar } from './ColoredBar.js';
 
 const StackedDualBarChart = props => {
   const { data, chartLabel } = props;
@@ -43,4 +43,4 @@ StackedDualBarChart.propTypes = {
   chartLabel: PropTypes.string,
 };
 
-export default StackedDualBarChart;
+export { StackedDualBarChart };

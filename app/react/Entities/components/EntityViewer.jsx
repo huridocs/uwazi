@@ -18,19 +18,19 @@ import { RelationshipsFormButtons } from '#app/Relationships/index.js';
 import { TemplateLabel, Icon as PropertyIcon } from '#app/Layout/index.js';
 import { connectionsChanged, deleteConnection } from '#app/ConnectionsList/actions/actions.js';
 import { t, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
-import AddEntitiesPanel from '#app/Relationships/components/AddEntities.js';
-import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
-import ShowIf from '#app/App/ShowIf.js';
-import SidePanel from '#app/Layout/SidePanel.js';
-import ContextMenu from '#app/ContextMenu/index.js';
+import { AddEntitiesPanel } from '#app/Relationships/components/AddEntities.js';
+import { RelationshipMetadata } from '#app/Relationships/components/RelationshipMetadata.js';
+import { ShowIf } from '#app/App/ShowIf.js';
+import { SidePanel } from '#app/Layout/SidePanel.js';
+import { ContextMenu } from '#app/ContextMenu/index.js';
 import { FileList } from '#app/Attachments/components/FileList.js';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
 import { PageViewer } from '#app/Pages/components/PageViewer.js';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu.js';
-import V2NewRelationshipsBoard from './V2NewRelationshipsBoard.js';
+import { V2NewRelationshipsBoard } from './V2NewRelationshipsBoard.js';
 import { deleteEntity } from '../actions/actions.js';
 import { showTab } from '../actions/uiActions.js';
-import EntityForm from '../containers/EntityForm.js';
+import { EntityForm } from '../containers/EntityForm.js';
 
 class EntityViewer extends Component {
   constructor(props, context) {
@@ -130,8 +130,9 @@ class EntityViewer extends Component {
 
     const includeFooter = user.get('_id') && ['info', 'relationships'].includes(selectedTab);
     const hasHeader = ['info', 'relationships'].includes(selectedTab);
-    const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${user.get('_id') && includeFooter ? 'with-footer' : ''
-      } ${panelOpen ? 'with-panel' : ''}`;
+    const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${
+      user.get('_id') && includeFooter ? 'with-footer' : ''
+    } ${panelOpen ? 'with-panel' : ''}`;
 
     return (
       <div className="row">
@@ -463,5 +464,8 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { EntityViewer, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withContext(EntityViewer)));
+const EntityViewerConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(withContext(EntityViewer)));
+export { EntityViewer, EntityViewerConnected, mapStateToProps };

@@ -15,7 +15,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { getStore } from '#shared/atomStore/index.js';
 import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
 import './App/sockets.js';
-import CustomProvider from './App/Provider.js';
+import { CustomProvider } from './App/Provider.js';
 import { store } from './store.js';
 import { getAppRoutes } from './appRoutes.js';
 import { loadIcons } from '#UI/Icon/library.js';

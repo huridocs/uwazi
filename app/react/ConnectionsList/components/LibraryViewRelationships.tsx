@@ -6,8 +6,8 @@ import { Icon } from '#app/UI/index.js';
 import { Item } from '#app/Layout/index.js';
 import { Collapsible } from '#app/App/Collapsible.js';
 import { StickyHeader } from '#app/App/StickyHeader.js';
-import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
-import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
+import { RelationshipMetadata } from '#app/Relationships/components/RelationshipMetadata.js';
+import { LoadMoreRelationshipsButton } from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
 import { IStore } from '#app/istore.js';
 import * as actions from '../../Relationships/actions/actions.js';
 

@@ -6,6 +6,7 @@ const meta: Meta<typeof Card> = {
   title: 'Components/Cards',
   component: Card,
 };
+export default meta;
 
 type Story = StoryObj<typeof Card>;
 
@@ -28,5 +29,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

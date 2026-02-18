@@ -1,5 +1,5 @@
-import SemanticSearchPanel from './components/SemanticSearchSidePanel.js';
+import { SemanticSearchPanel } from './components/SemanticSearchPanel.js';
 
 export default {
-  SemanticSearchPanel,
+  SemanticSearchPanel: SemanticSearchPanel,
 };

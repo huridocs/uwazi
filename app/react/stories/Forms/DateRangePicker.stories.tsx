@@ -17,6 +17,7 @@ const meta: Meta<typeof DateRangePicker> = {
     },
   },
 };
+export default meta;
 
 type Story = StoryObj<typeof DateRangePicker>;
 
@@ -57,5 +58,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

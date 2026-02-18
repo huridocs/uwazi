@@ -5,4 +5,4 @@ declare const Immutable: {
   [key: string]: unknown;
 };
 
-export default Immutable;
+export { Immutable };

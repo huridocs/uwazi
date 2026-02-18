@@ -9,7 +9,7 @@ import {
   scrollToActive,
   deactivateReference,
 } from '#app/Viewer/actions/uiActions.js';
-import Document from '#app/Viewer/components/Document.js';
+import { Document } from '#app/Viewer/components/Document.js';
 import { createSelector } from 'reselect';
 import { selectDoc, selectReferences } from '../selectors.js';
 
@@ -62,4 +62,5 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     unsetSelection: dispatchProps.unsetSelection,
   };
 }
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Document);
+const SourceDocument = connect(mapStateToProps, mapDispatchToProps, mergeProps)(Document);
+export { SourceDocument };

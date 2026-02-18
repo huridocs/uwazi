@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { setTargetSelection, unsetTargetSelection } from '#app/Viewer/actions/selectionActions.js';
-import Document from '#app/Viewer/components/Document.js';
+import { Document } from '#app/Viewer/components/Document.js';
 import {
   highlightReference,
   selectReference,
@@ -10,7 +10,7 @@ import {
 } from '#app/Viewer/actions/uiActions.js';
 import { selectTargetDoc, selectTargetReferences } from '../selectors.js';
 
-import TargetDocumentHeader from './TargetDocumentHeader.js';
+import { TargetDocumentHeader } from './TargetDocumentHeader.js';
 
 const mapStateToProps = state => {
   const { documentViewer } = state;
@@ -44,4 +44,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Document);
+const TargetDocument = connect(mapStateToProps, mapDispatchToProps)(Document);
+export { TargetDocument };

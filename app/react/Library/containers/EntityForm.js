@@ -23,4 +23,5 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+const EntityForm = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+export { EntityForm };

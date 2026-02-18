@@ -8,6 +8,8 @@ const meta: Meta<typeof Paginator> = {
   component: Paginator,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof Paginator>;
 
 const Primary: Story = {
@@ -38,5 +40,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Notification from './Notification.js';
+import { Notification } from './Notification.js';
 
-export class Notifications extends Component {
+class Notifications extends Component {
   render() {
     return (
       <div className="alert-wrapper">
@@ -20,6 +20,11 @@ Notifications.propTypes = {
   notifications: PropTypes.array,
 };
 
+Notifications.defaultProps = {
+  notifications: [],
+};
+
 const mapStateToProps = state => ({ notifications: state.notifications.toJS() });
 
-export default connect(mapStateToProps)(Notifications);
+const NotificationsConnected = connect(mapStateToProps)(Notifications);
+export { Notifications as NotificationsView, NotificationsConnected as Notifications };

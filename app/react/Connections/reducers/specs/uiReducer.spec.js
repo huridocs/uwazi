@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import uiReducer from '../uiReducer.js';
+import { uiReducer } from '../uiReducer.js';
 
 describe('Connections uiReducer', () => {
   describe('when state is undefined', () => {

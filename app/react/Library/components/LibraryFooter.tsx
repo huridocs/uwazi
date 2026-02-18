@@ -9,7 +9,7 @@ import {
 } from '#app/Uploads/actions/uploadsActions.js';
 import { connect } from 'react-redux';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import Export from './ExportButton.js';
+import { ExportButton } from './ExportButton.js';
 import { PDFUploadButton } from './PDFUploadButton.js';
 
 interface LibraryFooterOwnProps {
@@ -74,7 +74,7 @@ const LibraryFooterComponent = ({
               </span>
             </button>
           </NeedAuthorization>
-          <Export className="sm-order-1" storeKey={storeKey} />
+          <ExportButton className="sm-order-1" storeKey={storeKey} />
         </div>
       </div>
       <div className={`open-actions-button ${footerVisible ? 'closed' : ''}`}>

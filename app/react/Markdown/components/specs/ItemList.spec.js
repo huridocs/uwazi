@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import { RowList } from '#app/Layout/Lists.js';
 import { I18NLink } from '#app/I18N/index.js';
 import { ItemList } from '../ItemList.js';
-import Slider from '../slider.js';
+import { VictimSlider as Slider } from '../slider.js';
 
 describe('ItemList', () => {
   let component;

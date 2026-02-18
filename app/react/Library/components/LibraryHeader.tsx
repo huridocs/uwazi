@@ -8,7 +8,7 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 import { Icon } from '#UI/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { SortDropdown } from '#app/Library/components/SortDropdown.js';
-import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
+import { LibraryModeToggleButtons } from '#app/Library/components/LibraryModeToggleButtons.js';
 import { SearchBar as SearchBarComponent } from '#app/Library/components/SearchBar.js';
 import {
   zoomIn as zoomInAction,

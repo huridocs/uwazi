@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import Modal from './Modal.js';
+import { Modal } from './Modal.js';
 
 class ConfirmModal extends Component {
   render() {
@@ -53,4 +53,4 @@ ConfirmModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
 };
 
-export default ConfirmModal;
+export { ConfirmModal };
