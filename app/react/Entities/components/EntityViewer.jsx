@@ -19,7 +19,7 @@ import { TemplateLabel, Icon as PropertyIcon } from '#app/Layout/index.js';
 import { connectionsChanged, deleteConnection } from '#app/ConnectionsList/actions/actions.js';
 import { t, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import { AddEntitiesPanel } from '#app/Relationships/components/AddEntities.js';
-import { RelationshipMetadata } from '#app/Relationships/components/RelationshipMetadata.js';
+import { RelationshipMetadataConnected as RelationshipMetadata } from '#app/Relationships/components/RelationshipMetadata.js';
 import { ShowIf } from '#app/App/ShowIf.js';
 import { SidePanel } from '#app/Layout/SidePanel.js';
 import { ContextMenu } from '#app/ContextMenu/index.js';

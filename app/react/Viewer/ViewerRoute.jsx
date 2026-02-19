@@ -28,6 +28,16 @@ class ViewerRouteComponent extends RouteHandler {
     this.emptyState();
   }
 
+  componentDidMount() {
+    this.selectTab(this.props.params);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.params?.tabView !== this.props.params?.tabView) {
+      this.selectTab(this.props.params);
+    }
+  }
+
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
     this.context.store.dispatch(actions.unset('viewer/templates'));
@@ -62,7 +72,6 @@ class ViewerRouteComponent extends RouteHandler {
 
   render() {
     trackPage();
-    this.selectTab(this.props.params);
     return (
       <ErrorBoundary error={this.state.loadingError}>
         <ViewerComponent {...this.props} />

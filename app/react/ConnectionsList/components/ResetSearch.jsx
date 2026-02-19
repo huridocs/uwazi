@@ -13,7 +13,7 @@ class ResetSearch extends Component {
   render() {
     const { connectionsGroups } = this.props;
     return (
-      <ShowIf if={Boolean(connectionsGroups.size)}>
+      <ShowIf if={Boolean(connectionsGroups?.size)}>
         <button type="button" onClick={this.props.resetSearch} className="btn btn-default">
           <Icon icon="times" />
           <span className="btn-label">

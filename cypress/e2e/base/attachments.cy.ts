@@ -168,9 +168,11 @@ describe('attachments', () => {
           cy.get('ul.dropdown-menu').within(() => {
             cy.contains('Rename').click();
           });
-          cy.get('input').should('have.value', 'MockPDF_again.pdf');
-          cy.get('input').clear();
-          cy.get('input').type('new name.pdf', { delay: 0 });
+          cy.get('input[name="attachments.edit.attachment.originalname"]')
+            .should('have.value', 'MockPDF_again.pdf')
+            .and('not.be.disabled')
+            .clear()
+            .type('new name.pdf', { delay: 0 });
           cy.get('button.btn.btn-success').click();
           cy.contains('span', 'new name.pdf');
         });

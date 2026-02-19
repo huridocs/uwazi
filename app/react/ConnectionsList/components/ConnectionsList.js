@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import { ConnectionSearchBar } from '#app/ConnectionsList/components/SearchBar.js';
 import { RelationshipsGraphEdit } from '#app/Relationships/components/RelationshipsGraphEdit.js';
 import { LoadMoreRelationshipsButton } from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
-import { DocumentsList } from '#app/Layout/DocumentsList.js';
+import { DocumentsListWithRouter } from '#app/Layout/DocumentsList.js';
 import { SortButtons } from '#app/Library/components/SortButtons.js';
 import { searchReferences } from '../actions/actions.js';
 
@@ -40,5 +40,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const ConnectionsListConnected = connect(mapStateToProps, mapDispatchToProps)(DocumentsList);
+const ConnectionsListConnected = connect(mapStateToProps, mapDispatchToProps)(DocumentsListWithRouter);
 export { ConnectionsListConnected as ConnectionsList };
