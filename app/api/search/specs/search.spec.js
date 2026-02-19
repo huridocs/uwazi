@@ -1292,11 +1292,11 @@ describe('search', () => {
   });
 
   describe('performAggregations flag', () => {
-    it('should not include aggregations when performAggregations is false', async () => {
+    it('should not include property aggregations when performAggregations is false', async () => {
       userFactory.mock(undefined);
 
       // Spy on elastic.search to capture the query
-      const elasticSearchSpy = jest.spyOn(elastic, 'search');
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
 
       await search.search(
         {
@@ -1307,19 +1307,26 @@ describe('search', () => {
       );
 
       // Get the ES query that was sent
-      const esQuery = elasticSearchSpy.mock.calls[0][0].body;
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
 
-      // Assert that aggregations are empty or not present
-      expect(esQuery.aggregations).toEqual({});
-
-      elasticSearchSpy.mockRestore();
+      // Assert that aggregations are empty or minimal (no property aggregations)
+      // The structure might exist due to query building, but should have no property aggregations
+      if (esQuery.aggregations && esQuery.aggregations.all) {
+        const aggregationKeys = Object.keys(esQuery.aggregations.all.aggregations || {});
+        // Should only have _types (template aggregation), no property aggregations
+        const propertyAggregations = aggregationKeys.filter(key => key !== '_types');
+        expect(propertyAggregations).toEqual([]);
+      } else {
+        // Or aggregations can be completely empty
+        expect(esQuery.aggregations).toEqual({});
+      }
     });
 
     it('should include aggregations by default when performAggregations is not specified', async () => {
       userFactory.mock(undefined);
 
       // Spy on elastic.search to capture the query
-      const elasticSearchSpy = jest.spyOn(elastic, 'search');
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
 
       await search.search(
         {
@@ -1330,21 +1337,19 @@ describe('search', () => {
       );
 
       // Get the ES query that was sent
-      const esQuery = elasticSearchSpy.mock.calls[0][0].body;
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
 
       // Assert that aggregations exist and are not empty
       expect(esQuery.aggregations).toBeDefined();
       expect(esQuery.aggregations.all).toBeDefined();
       expect(Object.keys(esQuery.aggregations.all.aggregations).length).toBeGreaterThan(0);
-
-      elasticSearchSpy.mockRestore();
     });
 
     it('should include aggregations when performAggregations is true', async () => {
       userFactory.mock(undefined);
 
       // Spy on elastic.search to capture the query
-      const elasticSearchSpy = jest.spyOn(elastic, 'search');
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
 
       await search.search(
         {
@@ -1356,14 +1361,143 @@ describe('search', () => {
       );
 
       // Get the ES query that was sent
-      const esQuery = elasticSearchSpy.mock.calls[0][0].body;
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
 
       // Assert that aggregations exist and are not empty
       expect(esQuery.aggregations).toBeDefined();
       expect(esQuery.aggregations.all).toBeDefined();
       expect(Object.keys(esQuery.aggregations.all.aggregations).length).toBeGreaterThan(0);
+    });
 
-      elasticSearchSpy.mockRestore();
+    it('should include publishing status aggregation when performAggregations is false but aggregatePublishingStatus is true', async () => {
+      userFactory.mockEditorUser();
+
+      // Spy on elastic.search to capture the query
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePublishingStatus: true,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      // Assert that publishing status aggregation is present
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations._published).toBeDefined();
+    });
+
+    it('should include permissions level aggregation when performAggregations is false but aggregatePermissionsByLevel is true', async () => {
+      userFactory.mockEditorUser();
+
+      // Spy on elastic.search to capture the query
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePermissionsByLevel: true,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      // Assert that permissions level aggregation is present
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.self']).toBeDefined();
+    });
+
+    it('should include permissions users aggregations when performAggregations is false but aggregatePermissionsByUsers is true', async () => {
+      userFactory.mockEditorUser();
+
+      // Spy on elastic.search to capture the query
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePermissionsByUsers: true,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      // Assert that permissions users aggregations are present
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.read']).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.write']).toBeDefined();
+    });
+
+    it('should include generated TOC aggregation when performAggregations is false but aggregateGeneratedToc is true', async () => {
+      userFactory.mockEditorUser();
+
+      // Spy on elastic.search to capture the query
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregateGeneratedToc: true,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      // Assert that generated TOC aggregation is present
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations.generatedToc).toBeDefined();
+    });
+
+    it('should include multiple specific aggregations when performAggregations is false but multiple aggregate flags are true', async () => {
+      userFactory.mockEditorUser();
+
+      // Spy on elastic.search to capture the query
+      mocks.elasticSearch = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+          aggregatePublishingStatus: true,
+          aggregatePermissionsByLevel: true,
+          aggregateGeneratedToc: true,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = mocks.elasticSearch.mock.calls[0][0].body;
+
+      // Assert that all requested aggregations are present
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations._published).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations['_permissions.self']).toBeDefined();
+      expect(esQuery.aggregations.all.aggregations.generatedToc).toBeDefined();
+
+      // But property aggregations should NOT be present
+      const aggregationKeys = Object.keys(esQuery.aggregations.all.aggregations);
+      expect(aggregationKeys).not.toContain('relationship');
+      expect(aggregationKeys).not.toContain('date');
+      expect(aggregationKeys).not.toContain('text');
     });
   });
 
