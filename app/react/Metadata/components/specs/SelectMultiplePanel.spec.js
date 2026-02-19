@@ -3,7 +3,10 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { NeedAuthorization } from '#app/Auth/components/NeedAuthorization.js';
 import { TemplateLabel, SidePanel } from '#app/Layout/index.js';
-import { SelectMultiplePanelView as SelectMultiplePanel, mapStateToProps } from '../SelectMultiplePanel.js';
+import {
+  SelectMultiplePanelView as SelectMultiplePanel,
+  mapStateToProps,
+} from '../SelectMultiplePanel.js';
 
 describe('SelectMultiplePanel', () => {
   let component;

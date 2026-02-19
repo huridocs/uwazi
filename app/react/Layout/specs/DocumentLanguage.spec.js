@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { DocumentLanguage, mapStateToProps } from '../DocumentLanguage.js';
+import { DocumentLanguageView as DocumentLanguage, mapStateToProps } from '../DocumentLanguage.js';
 
 jest.mock('app/I18N', () => ({
   t: (_context, key) => key,

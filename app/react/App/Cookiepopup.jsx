@@ -46,4 +46,4 @@ const mapStateToProps = state => ({
 });
 
 const CookiepopupConnected = connect(mapStateToProps)(Cookiepopup);
-export { CookiepopupConnected as Cookiepopup };
+export { Cookiepopup as CookiepopupView, CookiepopupConnected as Cookiepopup };

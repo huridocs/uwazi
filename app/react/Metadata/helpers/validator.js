@@ -72,15 +72,29 @@ export {
 };
 
 const validator = {
-  generate(template, _multipleEdition) {
+  generate(template, noTitle = false) {
     const validationObject = {
       title: { required: notEmpty },
     };
+
+    if (noTitle) {
+      delete validationObject.title;
+    }
+
     (template.properties || []).forEach(property => {
       if (property.required) {
         validationObject[`metadata.${property.name}`] = { required: notEmpty };
       }
+
+      if (property.type === 'link') {
+        Object.assign(validationObject, linkValidation(property));
+      }
+
+      if (property.type === 'geolocation') {
+        Object.assign(validationObject, geolocationValidation(property));
+      }
     });
+
     return validationObject;
   },
 };

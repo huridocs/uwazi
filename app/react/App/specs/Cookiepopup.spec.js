@@ -4,7 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import * as Cookie from 'tiny-cookie';
-import { Cookiepopup } from '../Cookiepopup.js';
+import { CookiepopupView as Cookiepopup } from '../Cookiepopup.js';
 
 let cookieValue;
 const mockCookieGet = jest.fn().mockImplementation(() => cookieValue);

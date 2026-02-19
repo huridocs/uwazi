@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { UploadAttachment } from '../UploadAttachment.js';
+import { UploadAttachmentView as UploadAttachment } from '../UploadAttachment.js';
 
 describe('UploadAttachment', () => {
   let component;

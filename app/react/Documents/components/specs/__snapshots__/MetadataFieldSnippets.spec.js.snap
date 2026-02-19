@@ -5,7 +5,7 @@ exports[`SnippetList should properly render title snippets with Title label as h
   <li
     className="snippet-list-item-header metadata-snippet-header"
   >
-    <I18NLink
+    <Connect(I18NLink)
       to="/document/sharedId?searchTerm=snippet"
     >
       <Translate
@@ -13,7 +13,7 @@ exports[`SnippetList should properly render title snippets with Title label as h
       >
         Summary
       </Translate>
-    </I18NLink>
+    </Connect(I18NLink)>
   </li>
   <li
     className="snippet-list-item metadata-snippet"
@@ -43,7 +43,7 @@ exports[`SnippetList should render all metadata snippets with the field label as
   <li
     className="snippet-list-item-header metadata-snippet-header"
   >
-    <I18NLink
+    <Connect(I18NLink)
       to="/document/sharedId?searchTerm=snippet"
     >
       <Translate
@@ -51,7 +51,7 @@ exports[`SnippetList should render all metadata snippets with the field label as
       >
         Summary
       </Translate>
-    </I18NLink>
+    </Connect(I18NLink)>
   </li>
   <li
     className="snippet-list-item metadata-snippet"

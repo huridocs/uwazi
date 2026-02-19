@@ -44,4 +44,4 @@ DocumentLanguage.propTypes = {
 export const mapStateToProps = ({ locale }) => ({ locale });
 
 const DocumentLanguageConnected = connect(mapStateToProps)(DocumentLanguage);
-export { DocumentLanguageConnected as DocumentLanguage };
+export { DocumentLanguage as DocumentLanguageView, DocumentLanguageConnected as DocumentLanguage };
