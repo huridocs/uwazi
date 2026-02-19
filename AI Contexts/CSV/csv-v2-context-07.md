@@ -75,6 +75,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - **TODO (next iteration):**
   - Add pagination/filtering (status/template/date) for list endpoint.
   - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
+  - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
+    collections performant and improve UX load times.
   - Include already-persisted extraction metadata in the detail response so UX can render
     extraction completeness without relying on inferred socket progress:
     - `file.originalName` (original uploaded filename)
