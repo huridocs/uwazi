@@ -9,7 +9,7 @@ import { Icon } from '#app/UI/index.js';
 
 import { resetSearch } from '../actions/actions.js';
 
-class ResetSearch extends Component {
+class ResetSearchView extends Component {
   render() {
     const { connectionsGroups } = this.props;
     return (
@@ -25,7 +25,7 @@ class ResetSearch extends Component {
   }
 }
 
-ResetSearch.propTypes = {
+ResetSearchView.propTypes = {
   connectionsGroups: PropTypes.object,
   resetSearch: PropTypes.func,
 };
@@ -40,5 +40,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ resetSearch }, dispatch);
 }
 
-const ResetSearchConnected = connect(mapStateToProps, mapDispatchToProps)(ResetSearch);
-export { ResetSearch, ResetSearchConnected };
+const ResetSearchConnected = connect(mapStateToProps, mapDispatchToProps)(ResetSearchView);
+export {
+  ResetSearchView,
+  ResetSearchConnected as ResetSearch,
+};

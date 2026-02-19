@@ -81,7 +81,7 @@ import type { IndexDescriptor } from './getIndexElement.js';
 import { getIndexDescriptor } from './getIndexElement.js';
 import { PageView } from './Pages/PageView.js';
 import { ResetPassword } from './Users/ResetPassword.js';
-import { ConnectedUnlockAccount } from './Users/UnlockAccount.js';
+import { UnlockAccount } from './Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
 
 const deconstructSearchQuery = (query?: string) => {
@@ -208,7 +208,7 @@ const getRoutesLayout = (
     <Route path="page/:sharedId" element={<PageView />} />
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
-    <Route path="unlockaccount/:username/:code" element={<ConnectedUnlockAccount />} />
+    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route

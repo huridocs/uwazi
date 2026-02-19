@@ -102,4 +102,7 @@ const RelationshipsFormButtonsConnected = connect(
   mapStateToProps,
   mapDispatchToProps
 )(RelationshipsFormButtons);
-export { RelationshipsFormButtons, RelationshipsFormButtonsConnected };
+export {
+  RelationshipsFormButtons as RelationshipsFormButtonsView,
+  RelationshipsFormButtonsConnected as RelationshipsFormButtons,
+};

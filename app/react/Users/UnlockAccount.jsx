@@ -7,7 +7,7 @@ import { Translate } from '#app/I18N/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 import auth from '#app/Auth/index.js';
 
-class UnlockAccount extends RouteHandler {
+class UnlockAccountView extends RouteHandler {
   unlockAccount() {
     const { username, code } = this.props.params;
     this.props
@@ -37,7 +37,7 @@ class UnlockAccount extends RouteHandler {
   }
 }
 
-UnlockAccount.propTypes = {
+UnlockAccountView.propTypes = {
   unlockAccount: PropTypes.func,
   params: PropTypes.shape({
     username: PropTypes.string,
@@ -54,6 +54,9 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { UnlockAccount };
-const ConnectedUnlockAccount = connect(null, mapDispatchToProps)(withRouter(UnlockAccount));
-export { ConnectedUnlockAccount };
+const UnlockAccountConnected = connect(null, mapDispatchToProps)(withRouter(UnlockAccountView));
+export {
+  UnlockAccountView,
+  UnlockAccountConnected as UnlockAccount,
+  UnlockAccountConnected as ConnectedUnlockAccount,
+};

@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import { AccessLevels } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
-import { RelationshipsFormButtons } from '../RelationshipsFormButtons.js';
+import { RelationshipsFormButtonsView as RelationshipsFormButtons } from '../RelationshipsFormButtons.js';
 
 describe('RelationshipsFormButtons', () => {
   const middlewares = [thunk];

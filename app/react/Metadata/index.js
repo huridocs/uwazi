@@ -4,8 +4,8 @@ import { ShowMetadata } from './components/ShowMetadata.js';
 import { formater } from './helpers/formater.js';
 import { validator } from './helpers/validator.js';
 import { MetadataForm } from './components/MetadataForm.js';
-import { MetadataFormButtonsConnected as MetadataFormButtons } from './components/MetadataFormButtons.js';
-import { MetadataFormFieldsConnected as MetadataFormFields } from './components/MetadataFormFields.js';
+import { MetadataFormButtons } from './components/MetadataFormButtons.js';
+import { MetadataFormFields } from './components/MetadataFormFields.js';
 import { SelectMultiplePanel } from './components/SelectMultiplePanel.js';
 
 export * from './helpers/wrapper.js';

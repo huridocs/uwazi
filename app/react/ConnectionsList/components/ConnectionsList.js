@@ -44,4 +44,8 @@ const ConnectionsListConnected = connect(
   mapStateToProps,
   mapDispatchToProps
 )(DocumentsListWithRouter);
-export { ConnectionsListConnected as ConnectionsList };
+const ConnectionsListView = DocumentsListWithRouter;
+export {
+  ConnectionsListView,
+  ConnectionsListConnected as ConnectionsList,
+};

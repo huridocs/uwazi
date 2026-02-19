@@ -118,9 +118,12 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ resetPassword: auth.actions.resetPassword }, dispatch);
 }
 
-export { ResetPasswordComponent };
 const ResetPasswordConnected = connect(
   null,
   mapDispatchToProps
 )(withRouter(ResetPasswordComponent));
-export { ResetPasswordConnected as ResetPassword };
+export {
+  ResetPasswordComponent,
+  ResetPasswordComponent as ResetPasswordView,
+  ResetPasswordConnected as ResetPassword,
+};

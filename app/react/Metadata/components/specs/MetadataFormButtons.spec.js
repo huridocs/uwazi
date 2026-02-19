@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 import { I18NLink } from '#app/I18N/index.js';
 
 import { ShareButton } from '#app/Permissions/components/ShareButton.js';
-import { MetadataFormButtons } from '../MetadataFormButtons.js';
+import { MetadataFormButtonsView as MetadataFormButtons } from '../MetadataFormButtons.js';
 
 describe('MetadataFormButtons', () => {
   let component;

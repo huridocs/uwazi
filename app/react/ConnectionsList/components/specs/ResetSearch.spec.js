@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { ResetSearch } from '../ResetSearch.js';
+import { ResetSearchView as ResetSearch } from '../ResetSearch.js';
 
 describe('ResetSearch', () => {
   let component;

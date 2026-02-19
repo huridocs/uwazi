@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { Form, Field } from 'react-redux-form';
 
 import { MetadataForm, mapStateToProps } from '../MetadataForm.js';
-import { MetadataFormFieldsConnected } from '../MetadataFormFields.js';
+import { MetadataFormFields } from '../MetadataFormFields.js';
 import { Select as SimpleSelect } from '../../../Forms.js';
 import { SupportingFiles } from '../SupportingFiles.js';
 
@@ -126,7 +126,7 @@ describe('MetadataForm', () => {
 
   it('should render MetadataFormFields passing thesauris state and template', () => {
     render();
-    const formFields = component.find(MetadataFormFieldsConnected);
+    const formFields = component.find(MetadataFormFields);
 
     expect(formFields.props().thesauris).toBe(props.thesauris);
     expect(formFields.props().template).toBe(props.templates.get(0));
@@ -172,7 +172,7 @@ describe('MetadataForm', () => {
     render();
     const form = component.find(Form);
     expect(form.props().model).toBe('metadata');
-    const metadataFields = component.find(MetadataFormFieldsConnected);
+    const metadataFields = component.find(MetadataFormFields);
     expect(metadataFields.props().model).toBe('metadata');
   });
 

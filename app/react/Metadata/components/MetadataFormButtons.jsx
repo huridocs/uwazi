@@ -194,4 +194,7 @@ const MetadataFormButtonsConnected = connect(
   mapDispatchToProps
 )(MetadataFormButtons);
 
-export { MetadataFormButtons, MetadataFormButtonsConnected };
+export {
+  MetadataFormButtons as MetadataFormButtonsView,
+  MetadataFormButtonsConnected as MetadataFormButtons,
+};

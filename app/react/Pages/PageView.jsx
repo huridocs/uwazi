@@ -72,7 +72,9 @@ class PageViewComponent extends RouteHandler {
 }
 
 const SSRPageView = withRouter(PageViewComponent);
+const PageViewView = PageViewComponent;
 
 export const PageView = Object.assign(SSRPageView, {
   requestState: PageViewComponent.requestState,
 });
+export { PageViewView };

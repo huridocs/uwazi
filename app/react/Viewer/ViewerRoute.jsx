@@ -87,4 +87,4 @@ const ViewerRoute = Object.assign(withRouter(ViewerRouteComponent), {
   requestState: ViewerRouteComponent.requestState,
 });
 
-export { ViewerRouteComponent, ViewerRoute };
+export { ViewerRouteComponent, ViewerRouteComponent as ViewerRouteView, ViewerRoute };

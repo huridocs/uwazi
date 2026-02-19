@@ -15,7 +15,7 @@ import { wrapEntityMetadata } from '#app/Metadata/index.js';
 import defaultTemplate from '../helpers/defaultTemplate.js';
 import { validator } from '../helpers/validator.js';
 import { IconField } from './IconField.js';
-import { MetadataFormFieldsConnected as MetadataFormFields } from './MetadataFormFields.js';
+import { MetadataFormFields } from './MetadataFormFields.js';
 import { MetadataExtractor } from './MetadataExtractor.js';
 import { SupportingFiles } from './SupportingFiles.js';
 import { PDFUpload } from './PDFUpload.js';
@@ -275,4 +275,7 @@ export const mapStateToProps = (state, ownProps) => {
 };
 
 const MetadataFormConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
-export { MetadataFormConnected as MetadataForm };
+export {
+  MetadataForm as MetadataFormView,
+  MetadataFormConnected as MetadataForm,
+};
