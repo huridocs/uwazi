@@ -188,9 +188,9 @@ describe('Pages', () => {
       cy.contains('Acevedo Jaramillo');
       cy.get('.item-document:nth-child(2) > .item-info').click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
-      cy.get('.page-viewer.document-viewer').matchImageSnapshot();
+      cy.get('.page-viewer.document-viewer').matchImageSnapshot('entity view 1');
       cy.get('#entity-datasets-value').scrollIntoView();
-      cy.get('.page-viewer.document-viewer').matchImageSnapshot();
+      cy.get('.page-viewer.document-viewer').matchImageSnapshot('entity view 2');
     });
 
     it('should run the scripts of a page', () => {
