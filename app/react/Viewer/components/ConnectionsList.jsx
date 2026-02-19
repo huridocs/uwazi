@@ -77,4 +77,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ closePanel, deactivateReference }, dispatch);
 }
 
-export { ConnectionsList };
+const ConnectionsListConnected = connect(null, mapDispatchToProps)(ConnectionsList);
+export { ConnectionsList as ConnectionsListView, ConnectionsListConnected as ConnectionsList };

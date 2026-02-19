@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Field, Control } from 'react-redux-form';
-import { FormGroup } from '../FormGroup.js';
+import { FormGroupView as FormGroup } from '../FormGroup.js';
 
 describe('FormGroup', () => {
   let component;

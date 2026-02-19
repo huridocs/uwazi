@@ -255,4 +255,5 @@ export const mapStateToProps = (state, props) => {
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
-export { PublicFormComponent };
+const PublicFormConnected = connect(mapStateToProps, mapDispatchToProps)(PublicFormComponent);
+export { PublicFormComponent as PublicFormView, PublicFormConnected as PublicForm };

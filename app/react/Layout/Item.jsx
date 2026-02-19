@@ -139,4 +139,6 @@ const mapStateToProps = ({ templates, thesauris }, ownProps) => {
   const _templates = ownProps.templates || templates;
   return { templates: _templates, thesauris, search };
 };
-export { Item, mapStateToProps };
+
+const ItemConnected = connect(mapStateToProps)(Item);
+export { Item as ItemView, mapStateToProps, ItemConnected as Item };

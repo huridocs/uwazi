@@ -7,7 +7,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Loader } from '#app/components/Elements/Loader.js';
 import markdownDatasets from '../markdownDatasets.js';
 
-export const GaugeChartComponent = props => {
+const GaugeChartComponent = props => {
   const { dataset, property, value, max, height, classname, colors, children } = props;
   let output = <Loader />;
 
@@ -89,3 +89,6 @@ export const mapStateToProps = (state, props) => ({
   max: Number(props.max) || 100,
   height: Number(props.height) || 110,
 });
+
+const GaugeChartConnected = connect(mapStateToProps)(GaugeChartComponent);
+export { GaugeChartComponent as GaugeChartView, GaugeChartConnected as GaugeChart };

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Icon } from '#UI/Icon/Icon.js';
 import { removeNotification } from '../actions/notificationsActions.js';
 
-export class Notification extends Component {
+class Notification extends Component {
   close() {
     this.props.removeNotification(this.props.id);
   }
@@ -54,3 +54,7 @@ Notification.propTypes = {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeNotification }, dispatch);
 }
+
+const NotificationConnected = connect(undefined, mapDispatchToProps)(Notification);
+
+export { Notification, NotificationConnected };

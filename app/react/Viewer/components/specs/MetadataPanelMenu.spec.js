@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { MenuButtons } from '#app/ContextMenu/index.js';
-import { MetadataPanelMenu } from '../MetadataPanelMenu.js';
+import { MetadataPanelMenuView as MetadataPanelMenu } from '../MetadataPanelMenu.js';
 
 describe('MetadataPanelMenu', () => {
   let component;

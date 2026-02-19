@@ -8,7 +8,7 @@ import { MenuButtons } from '#app/ContextMenu/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { Icon } from '#app/UI/index.js';
 
-export class MetadataPanelMenu extends Component {
+class MetadataPanelMenu extends Component {
   render() {
     if (this.props.targetDoc) {
       return false;
@@ -71,3 +71,6 @@ const mapStateToProps = ({ documentViewer, templates }) => ({
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ loadInReduxForm: actions.loadInReduxForm }, dispatch);
 }
+
+const MetadataPanelMenuConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataPanelMenu);
+export { MetadataPanelMenu as MetadataPanelMenuView, MetadataPanelMenuConnected as MetadataPanelMenu };

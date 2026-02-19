@@ -24,7 +24,7 @@ const formatData = (data, property, options) => {
   return formattedData;
 };
 
-export const PieChartComponent = props => {
+const PieChartComponent = props => {
   const {
     showLabel,
     outerRadius,
@@ -114,3 +114,6 @@ export const mapStateToProps = (state, props) => ({
   data: markdownDatasets.getAggregations(state, props),
   thesauris: state.thesauris,
 });
+
+const PieChartConnected = connect(mapStateToProps)(PieChartComponent);
+export { PieChartComponent as PieChartView, PieChartConnected as PieChart };

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Control } from 'react-redux-form';
-
+import { connect } from 'react-redux';
 const mapProps = {
   className: ({ fieldValue }) => {
     const _fieldValue = fieldValue.$form || fieldValue;
@@ -14,7 +14,7 @@ function controlComponent(className) {
   return props => <div className={`${className} ${props.className}`}>{props.children}</div>;
 }
 
-export class FormGroup extends Component {
+class FormGroup extends Component {
   render() {
     if (this.props.model) {
       const className = `form-group ${this.props.className || ''}`;
@@ -48,3 +48,6 @@ FormGroup.propTypes = {
   model: PropTypes.any,
   children: childrenType,
 };
+
+const FormGroupConnected = connect()(FormGroup);
+export { FormGroup as FormGroupView, FormGroupConnected as FormGroup };

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { Icon } from '#app/UI/index.js';
+import { switchView as switchViewAction } from '../actions/actions.js';
 
-export class ToggleStyleButtons extends Component {
+class ToggleStyleButtons extends Component {
   constructor(props) {
     super(props);
     this.switchView = this.switchView.bind(this);
@@ -45,3 +48,15 @@ export function mapStateToProps({ connectionsList }) {
     view: connectionsList.view,
   };
 }
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      switchView: switchViewAction,
+    },
+    dispatch
+  );
+}
+
+const ToggleStyleButtonsConnected = connect(mapStateToProps, mapDispatchToProps)(ToggleStyleButtons);
+export { ToggleStyleButtons as ToggleStyleButtonsView, ToggleStyleButtonsConnected as ToggleStyleButtons };

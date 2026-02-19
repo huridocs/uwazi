@@ -124,4 +124,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify }, dispatch);
 }
 
-export { ContactForm };
+const ContactFormConnected = connect(null, mapDispatchToProps)(ContactForm);
+export { ContactForm as ContactFormView, ContactFormConnected as ContactForm };

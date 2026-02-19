@@ -9,7 +9,7 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 import { Icon } from '#UI/index.js';
 import { unselectAllDocuments } from '../actions/libraryActions.js';
 
-export class SearchButton extends Component {
+class SearchButton extends Component {
   render() {
     let toggle = this.props.open ? this.props.hideFilters : this.props.showFilters;
     let activeClass = this.props.open ? ' is-active' : '';
@@ -66,3 +66,6 @@ function mapDispatchToProps(dispatch, props) {
     wrapDispatch(dispatch, props.storeKey)
   );
 }
+
+const SearchButtonConnected = connect(mapStateToProps, mapDispatchToProps)(SearchButton);
+export { SearchButton as SearchButtonView, SearchButtonConnected as SearchButton };

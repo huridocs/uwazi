@@ -16,7 +16,7 @@ const documentsIds = [
   '58b2f3a35d59f31e1345b479',
 ];
 
-export class cejilChart001 extends Component {
+class cejilChart001 extends Component {
   getData() {
     api.search({ limit: 0 }).then(results => {
       this.setState({ data: results.aggregations.all });
@@ -99,3 +99,6 @@ cejilChart001.propTypes = {
 export function mapStateToProps({ templates, thesauris }) {
   return { templates, thesauris };
 }
+
+const cejilChart001Connected = connect(mapStateToProps)(cejilChart001);
+export { cejilChart001 as cejilChart001View, cejilChart001Connected as cejilChart001 };

@@ -6,7 +6,7 @@ import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { FavoriteBanner } from '#app/Favorites/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { FormatMetadata } from '../../Metadata.js';
-import { Item, mapStateToProps } from '../Item.js';
+import { ItemView as Item, mapStateToProps } from '../Item.js';
 import { RowList, ItemFooter } from '../Lists.js';
 import { DocumentLanguage } from '../DocumentLanguage.js';
 import { Icon } from '../Icon.js';

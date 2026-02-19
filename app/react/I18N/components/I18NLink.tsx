@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, NavLink, useLocation } from 'react-router';
 import omit from 'lodash/omit.js';
+import { connect } from 'react-redux';
 
 type I18NLinkProps = {
   to: string;
@@ -105,4 +106,5 @@ export function mapStateToProps({ locale }: { locale?: string }, ownProps: any) 
 }
 
 export type { I18NLinkProps };
-export { I18NLink };
+const I18NLinkConnected = connect(mapStateToProps)(I18NLink);
+export { I18NLink as I18NLinkView, I18NLinkConnected as I18NLink };

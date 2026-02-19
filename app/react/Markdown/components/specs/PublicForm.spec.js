@@ -8,7 +8,7 @@ import Dropzone from 'react-dropzone-esm';
 import { MetadataFormFields } from '#app/Metadata/index.js';
 import { Captcha } from '#app/ReactReduxForms/index.js';
 import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
-import { PublicFormComponent as PublicForm } from '../PublicForm.js';
+import { PublicFormView as PublicForm } from '../PublicForm.js';
 
 const mockApiGet = jest.fn().mockResolvedValue({
   json: {

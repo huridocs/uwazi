@@ -14,7 +14,7 @@ import { MarkdownMap as Map } from './Map.js';
 import { MarkdownLink } from './MarkdownLink.js';
 import { MarkdownMedia } from './MarkdownMedia.js';
 import { PayPalDonateLink } from './PayPalDonateLink.js';
-import { PublicFormComponent } from './PublicForm.js';
+import { PublicForm } from './PublicForm.js';
 import { Value } from './Value.js';
 import { SearchBox } from './SearchBox.js';
 import { EntityInfo } from './EntityInfo.js';
@@ -52,7 +52,7 @@ export {
   Slideshow,
   MarkdownLink,
   PayPalDonateLink,
-  PublicFormComponent as PublicForm,
+  PublicForm,
   SearchBox,
   Counter,
   BarChart,
