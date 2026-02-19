@@ -44,4 +44,15 @@ export interface CsvImportDBO {
     lastProcessedRow: number;
     batchSize: number;
   };
+  extraction?: {
+    sourceType: 'zip' | 'csv';
+    originalUploadSizeBytes: number;
+    extractedFilesCount: number;
+    totalFilesInZip?: number;
+    files: Array<{
+      filename: string;
+      sizeBytes: number;
+      compressedSizeBytes?: number;
+    }>;
+  };
 }

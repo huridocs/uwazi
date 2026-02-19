@@ -65,6 +65,20 @@ type CsvImportProgress = {
   batchSize: number;
 };
 
+type CsvImportExtractedFile = {
+  filename: string;
+  sizeBytes: number;
+  compressedSizeBytes?: number;
+};
+
+type CsvImportExtraction = {
+  sourceType: 'zip' | 'csv';
+  originalUploadSizeBytes: number;
+  extractedFilesCount: number;
+  totalFilesInZip?: number;
+  files: CsvImportExtractedFile[];
+};
+
 type CsvImportFailure = {
   message: string;
   retryable: boolean;
@@ -80,6 +94,7 @@ type CsvImportProps = CsvImportToCreate & {
   rowErrors?: any;
   stats?: CsvImportStats;
   progress?: CsvImportProgress;
+  extraction?: CsvImportExtraction;
   failure?: CsvImportFailure;
 };
 
@@ -105,6 +120,8 @@ class CsvImportDomain {
   readonly stats?: CsvImportStats;
 
   readonly progress?: CsvImportProgress;
+
+  readonly extraction?: CsvImportExtraction;
 
   readonly failure?: CsvImportFailure;
 
@@ -169,6 +186,13 @@ class CsvImportDomain {
     });
   }
 
+  withExtraction(extraction: CsvImportExtraction) {
+    return this.clone({
+      extraction,
+      updatedAt: Date.now(),
+    });
+  }
+
   withFailure(failure: CsvImportFailure) {
     return this.clone({
       failure,
@@ -196,6 +220,7 @@ class CsvImportDomain {
       rowErrors: this.rowErrors,
       stats: this.stats,
       progress: this.progress,
+      extraction: this.extraction,
       failure: this.failure,
     };
   }
@@ -231,6 +256,10 @@ class CsvImportDomain {
     return CsvImportDomain.toDomain(csvImport).clearFailure();
   }
 
+  static withExtraction(csvImport: CsvImport | CsvImportDomain, extraction: CsvImportExtraction) {
+    return CsvImportDomain.toDomain(csvImport).withExtraction(extraction);
+  }
+
   private static toDomain(csvImport: CsvImport | CsvImportDomain) {
     return csvImport instanceof CsvImportDomain ? csvImport : CsvImportDomain.from(csvImport);
   }
@@ -247,5 +276,7 @@ export type {
   CsvImportFailureIssue,
   CsvImportStats,
   CsvImportProgress,
+  CsvImportExtractedFile,
+  CsvImportExtraction,
   CsvImportFailure,
 };

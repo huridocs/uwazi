@@ -113,6 +113,14 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
     expect(updated.status).toBe(CsvImportStatus.ExtractingFilesDone);
     expect(updated.failure ?? undefined).toBeUndefined();
+    expect(updated.extraction).toEqual(
+      expect.objectContaining({
+        sourceType: 'csv',
+        originalUploadSizeBytes: 10,
+        extractedFilesCount: 1,
+        files: [expect.objectContaining({ filename: 'orig', sizeBytes: 10 })],
+      })
+    );
     const extractedPath = pathManager.createPath({
       type: 'customPath',
       destination: `${destination}/extracted`,
@@ -253,6 +261,20 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
     expect(updated.status).toBe(CsvImportStatus.ExtractingFilesDone);
     expect(updated.failure ?? undefined).toBeUndefined();
+    expect(updated.extraction).toEqual(
+      expect.objectContaining({
+        sourceType: 'zip',
+        originalUploadSizeBytes: 10,
+        extractedFilesCount: 2,
+        totalFilesInZip: 2,
+      })
+    );
+    expect(updated.extraction?.files).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ filename: 'import.csv', sizeBytes: expect.any(Number) }),
+        expect.objectContaining({ filename: '1.pdf', sizeBytes: expect.any(Number) }),
+      ])
+    );
     const extractedDir = pathManager.createPath({
       type: 'customPath',
       destination: `${destination}/extracted`,
