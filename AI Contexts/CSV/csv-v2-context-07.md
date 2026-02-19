@@ -71,6 +71,13 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - **TODO:** Add API endpoints to query CSV import progress directly (not only via socket events):
   - List imports (paginated, filterable by status/template/date).
   - Get import details (status, progress counters, row errors summary, report paths, failures).
+  - Include extraction counters in import details so UX can render extraction completeness without
+    relying on inferred socket progress:
+    - Number of files extracted from the original ZIP (`extractedFilesCount`).
+    - Total files detected in the original ZIP (`totalFilesInZip`) when available.
+    - Original upload file size in bytes (`originalUploadSizeBytes`).
+    - Per-extracted-file metadata for diagnostics/progress drill-down, including at least:
+      `filename`, `sizeBytes`, and (optionally) `mimeType`.
   - This enables UI polling and recovery when socket events are missed.
 
 #### 3.8 Discuss with team
