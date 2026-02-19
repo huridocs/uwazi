@@ -73,7 +73,6 @@ It is also a handoff guide: a new agent should be able to continue by reading th
   - `GET /api/csvImportEntities/imports/:id` returns the raw import object body.
   - List rows include `status` as a first-class field for UX list rendering.
 - **TODO (next iteration):**
-  - Add pagination/filtering (status/template/date) for list endpoint.
   - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
   - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
     collections performant and improve UX load times.
