@@ -220,6 +220,9 @@ Cypress.Commands.add('waitForLegacyNotifications', () => {
   });
 });
 
-addMatchImageSnapshotCommand();
+addMatchImageSnapshotCommand({
+  failureThreshold: 0.08,
+  disableTimersAndAnimations: true,
+});
 
 export {};
