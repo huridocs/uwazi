@@ -30,4 +30,9 @@ export class MongoCsvImportsDataSource
     }
     return Result.ok(CsvImportMapper.toDomain(result));
   }
+
+  async getAll(): Promise<CsvImport[]> {
+    const results = await this.getCollection().find({}).sort({ createdAt: -1 }).toArray();
+    return results.map(CsvImportMapper.toDomain);
+  }
 }

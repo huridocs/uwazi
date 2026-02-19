@@ -68,9 +68,13 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 #### 3.7 Progress query endpoints
 
-- **TODO:** Add API endpoints to query CSV import progress directly (not only via socket events):
-  - List imports (paginated, filterable by status/template/date).
-  - Get import details (status, progress counters, row errors summary, report paths, failures).
+- **Implemented (Feb 2026):** Added CSV entities-import read endpoints in `csv.v2`:
+  - `GET /api/csvImportEntities/imports` returns `{ rows: [...] }`.
+  - `GET /api/csvImportEntities/imports/:id` returns the raw import object body.
+  - List rows include `status` as a first-class field for UX list rendering.
+- **TODO (next iteration):**
+  - Add pagination/filtering (status/template/date) for list endpoint.
+  - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
   - Include already-persisted extraction metadata in the detail response so UX can render
     extraction completeness without relying on inferred socket progress:
     - `file.originalName` (original uploaded filename)
