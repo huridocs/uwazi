@@ -7,7 +7,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 import { SearchText } from '../SearchText.js';
-import { SnippetList } from '../SnippetList.js';
+import { SnippetListConnected as SnippetList } from '../SnippetList.js';
 
 describe('SearchText', () => {
   let component;
@@ -59,14 +59,18 @@ describe('SearchText', () => {
     props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
     render();
     const snippets = component.find(SnippetList);
-    expect(snippets).toMatchSnapshot();
+    expect(snippets.length).toBe(1);
+    expect(snippets.props().doc).toBe(props.doc);
+    expect(snippets.props().snippets).toBe(props.snippets);
+    expect(snippets.props().searchTerm).toBe('');
+    expect(snippets.props().documentViewUrl).toBe('/entity/sharedId/text-search');
   });
 
   it('should use entity view url if doc type is entity', () => {
     props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'entity' });
     render();
     const snippets = component.find(SnippetList);
-    expect(snippets.props().documentViewUrl).toMatchSnapshot();
+    expect(snippets.props().documentViewUrl).toBe('/entity/sharedId/text-search');
   });
 
   describe('blankState', () => {

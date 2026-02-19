@@ -40,5 +40,8 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const ConnectionsListConnected = connect(mapStateToProps, mapDispatchToProps)(DocumentsListWithRouter);
+const ConnectionsListConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DocumentsListWithRouter);
 export { ConnectionsListConnected as ConnectionsList };

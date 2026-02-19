@@ -6,7 +6,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { Icon } from '#app/UI/index.js';
 import { Warning } from '#app/Layout/index.js';
 import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
-import { Connection } from './Connection.js';
+import { ConnectionConnected as Connection } from './Connection.js';
 import '#app/Viewer/scss/viewReferencesPanel.css';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
 

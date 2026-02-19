@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Icon } from '#app/UI/index.js';
 import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
-import { ConnectionsGroup } from './ConnectionsGroup.js';
+import { ConnectionsGroupConnected as ConnectionsGroup } from './ConnectionsGroup.js';
 import { LibraryViewRelationships } from './LibraryViewRelationships.js';
 
 class ConnectionsGroupsComponent extends Component {

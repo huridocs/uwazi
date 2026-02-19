@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
 import { Translate, t } from '#app/I18N/index.js';
-import { SnippetList, SnippetListConnected } from '#app/Documents/components/SnippetList.js';
+import { SnippetListConnected } from '#app/Documents/components/SnippetList.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';

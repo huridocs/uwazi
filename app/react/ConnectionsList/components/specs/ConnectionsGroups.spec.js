@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { ConnectionsGroupsView } from '../ConnectionsGroups.js';
-import { ConnectionsGroup } from '../ConnectionsGroup.js';
+import { ConnectionsGroupConnected as ConnectionsGroup } from '../ConnectionsGroup.js';
 
 describe('ConnectionsGroups', () => {
   let component;

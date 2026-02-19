@@ -39,7 +39,7 @@ exports[`Viewer relationships should display the document relationships 1`] = `
       <ShowIf
         if={true}
       >
-        <Connect(DocumentsList)
+        <Connect(Component)
           hideFooter={true}
           searchCentered={true}
         />
@@ -76,13 +76,7 @@ exports[`Viewer relationships should display the document relationships 1`] = `
     onCreate={[Function]}
     onRangedConnect={[Function]}
   />
-  <RelationshipMetadata
-    entityBeingEdited={false}
-    hubIndex={null}
-    hubsBeingEdited={false}
-    rightRelationshipIndex={null}
-    selectedConnection={false}
-  />
+  <Connect(Component) />
   <Connect(AddEntities) />
   <Connect(ContextMenu)
     align="bottom"
@@ -95,7 +89,7 @@ exports[`Viewer relationships should display the document relationships 1`] = `
     align="center"
     overrideShow={true}
   >
-    <ViewerTextSelectedMenu
+    <Connect(ViewerTextSelectedMenu)
       file={
         Object {
           "language": "eng",

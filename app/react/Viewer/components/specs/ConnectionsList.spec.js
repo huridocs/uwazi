@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { ConnectionsListView as ConnectionsList } from '#app/Viewer/components/ConnectionsList.js';
+import { ConnectionConnected as Connection } from '#app/Viewer/components/Connection.js';
 
 describe('ConnectionsList', () => {
   let component;
@@ -63,7 +64,12 @@ describe('ConnectionsList', () => {
 
   it('should merge and render references in order with the proper document titles', () => {
     render();
-    expect(component).toMatchSnapshot();
+    const renderedConnections = component.find(Connection);
+    expect(renderedConnections.length).toBe(4);
+    expect(renderedConnections.at(0).key()).toBe('ref4');
+    expect(renderedConnections.at(1).key()).toBe('ref2');
+    expect(renderedConnections.at(2).key()).toBe('ref3');
+    expect(renderedConnections.at(3).key()).toBe('ref1');
   });
 
   describe('when there are no references', () => {
