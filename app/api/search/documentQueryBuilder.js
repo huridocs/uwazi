@@ -106,19 +106,23 @@ export default function () {
     aggregations: getBaseAggregationsStructure(),
   };
 
-  const { aggregations } = baseQuery.aggregations.all;
   const fullTextBool = baseQuery.query.bool.must[0];
-  const aggregationsFullTextBool = aggregations._types.aggregations.filtered.filter.bool.must[0];
   function addFullTextFilter(filter) {
     fullTextBool.bool.should.push(filter);
-    aggregationsFullTextBool.bool.should.push(filter);
+    if (baseQuery.aggregations.all) {
+      baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.must[0].bool.should.push(
+        filter
+      );
+    }
   }
 
   function addFilter(filter) {
     baseQuery.query.bool.filter.push(filter);
-    baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.filter.push(
-      filter
-    );
+    if (baseQuery.aggregations.all) {
+      baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.filter.push(
+        filter
+      );
+    }
   }
 
   function addPermissionsAssigneeFilter(filter) {
@@ -231,7 +235,11 @@ export default function () {
     language(language) {
       const match = { term: { language } };
       baseQuery.query.bool.filter.push(match);
-      aggregations._types.aggregations.filtered.filter.bool.must.push(match);
+      if (baseQuery.aggregations.all) {
+        baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.must.push(
+          match
+        );
+      }
       return this;
     },
 
@@ -239,7 +247,9 @@ export default function () {
       baseQuery.query.bool.filter[0].bool.must = baseQuery.query.bool.filter[0].bool.should;
       baseQuery.query.bool.filter[0].bool.must[0].term.published = false;
       delete baseQuery.query.bool.filter[0].bool.should;
-      matchAggregationsToFilter(aggregations, baseQuery);
+      if (baseQuery.aggregations.all) {
+        matchAggregationsToFilter(baseQuery.aggregations.all.aggregations, baseQuery);
+      }
       return this;
     },
 
@@ -251,12 +261,17 @@ export default function () {
           delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
         }
       }
-      matchAggregationsToFilter(aggregations, baseQuery);
+      if (baseQuery.aggregations.all) {
+        matchAggregationsToFilter(baseQuery.aggregations.all.aggregations, baseQuery);
+      }
       return this;
     },
 
     publishingStatusAggregations() {
       if (permissionsContext.getUserInContext()) {
+        if (!baseQuery.aggregations.all) {
+          baseQuery.aggregations = getBaseAggregationsStructure();
+        }
         baseQuery.aggregations.all.aggregations._published =
           publishingStatusAgreggations(baseQuery);
       }
@@ -340,16 +355,28 @@ export default function () {
     },
 
     generatedTocAggregations() {
+      if (!baseQuery.aggregations.all) {
+        baseQuery.aggregations = getBaseAggregationsStructure();
+      }
       baseQuery.aggregations.all.aggregations.generatedToc = generatedTocAggregations(baseQuery);
+      return this;
     },
 
     permissionsLevelAgreggations() {
+      if (!baseQuery.aggregations.all) {
+        baseQuery.aggregations = getBaseAggregationsStructure();
+      }
       baseQuery.aggregations.all.aggregations['_permissions.self'] =
         permissionsLevelAgreggations(baseQuery);
+      return this;
     },
 
     permissionsUsersAgreggations() {
-      if (!permissionsContext.getUserInContext()) return;
+      if (!permissionsContext.getUserInContext()) return this;
+
+      if (!baseQuery.aggregations.all) {
+        baseQuery.aggregations = getBaseAggregationsStructure();
+      }
 
       baseQuery.aggregations.all.aggregations['_permissions.read'] = permissionsUsersAgreggations(
         baseQuery,
@@ -359,10 +386,10 @@ export default function () {
         baseQuery,
         'write'
       );
+      return this;
     },
 
     aggregations(properties) {
-      // Ensure aggregations structure exists (it might have been cleared by resetAggregations)
       if (!baseQuery.aggregations.all) {
         baseQuery.aggregations = getBaseAggregationsStructure();
       }
@@ -451,7 +478,6 @@ export default function () {
     },
 
     resetAggregations() {
-      // Completely clear aggregations - no global scan, no property aggregations
       baseQuery.aggregations = {};
       return this;
     },

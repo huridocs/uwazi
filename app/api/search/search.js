@@ -643,7 +643,6 @@ const processResponse = async (response, templates, dictionaries, language, filt
     return result;
   });
 
-  // Handle case where aggregations might be completely absent (when performAggregations: false)
   const aggregationsAll = response.body.aggregations?.all || {};
   const sanitizedAggregations = await _sanitizeAggregations(
     aggregationsAll,
@@ -788,7 +787,6 @@ const buildQuery = async (query, language, user, resources) => {
     const aggregations = await aggregationProperties(properties, allProps);
     queryBuilder.aggregations(aggregations);
   } else {
-    // When aggregations are explicitly disabled, clear them completely
     queryBuilder.resetAggregations();
   }
 
