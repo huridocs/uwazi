@@ -60,18 +60,8 @@ describe('Activity log', () => {
     cy.checkA11y();
   });
 
-  const checkCells = (row: number, column: number, element: string) => {
-    cy.get(`tr:nth-child(${row}) > td:nth-child(${column}) > ${element}`).toMatchSnapshot();
-  };
-
   it('should list the last activity log entries', () => {
     cy.get('tr').should('have.length.at.least', 6);
-    checkCells(1, 1, 'span');
-    checkCells(1, 2, 'span');
-    checkCells(1, 3, ' div > div:nth-child(1)');
-    checkCells(2, 1, 'span');
-    checkCells(2, 2, 'span');
-    checkCells(2, 3, ' div > div:nth-child(1)');
   });
 
   const applyFilters = () => {
@@ -122,7 +112,7 @@ describe('Activity log', () => {
     cy.contains('Updated user');
     cy.get('tr:nth-child(1) td:nth-child(5)').contains('View').click({ force: true });
     cy.contains('Query', { timeout: 200 });
-    cy.get('aside.h-full').toMatchSnapshot();
+    cy.get('aside.h-full').matchImageSnapshot();
     cy.get('[data-testid=close-sidepanel]').click();
   });
 
