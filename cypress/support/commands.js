@@ -1,5 +1,6 @@
 import '@4tw/cypress-drag-drop';
 import 'cypress-real-events';
+import { addMatchImageSnapshotCommand } from '@simonsmith/cypress-image-snapshot/command';
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -218,5 +219,7 @@ Cypress.Commands.add('waitForLegacyNotifications', () => {
     cy.wrap(element).should('be.empty');
   });
 });
+
+addMatchImageSnapshotCommand();
 
 export {};
