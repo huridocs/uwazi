@@ -512,6 +512,13 @@ Required behavior:
 - Errors should identify property + raw relationship value + reason (`not_found` or `ambiguous`).
 - Do not fallback to "first match wins".
 
+**Status (Feb 2026): Implemented**
+
+- ANY-template relationships (`content: ''`) are now scanned and resolved across all templates.
+- Missing values in ANY scope are **not created** and now fail the row as `not_found`.
+- Ambiguous ANY matches now fail the row as `ambiguous`.
+- Decision: these are treated as **row errors** (not warnings) so rows are skipped deterministically.
+
 ### 14) TODO — Relationship title ambiguity (targeted and ANY) must fail rows
 
 Problem:
@@ -537,6 +544,13 @@ Required behavior (split by scenario):
   other rows according to existing row-error policy.
 - Persist enough conflict detail for debugging/reporting (at minimum: row index, property, token,
   candidate count and template scope context).
+
+**Status (Feb 2026): Implemented**
+
+- Constrained relationships now fail rows when more than one candidate entity matches a title.
+- ANY-template relationships now fail rows for both `not_found` and `ambiguous`.
+- Row-error messages now include property, token, reason, candidate count, and scope context.
+- No fallback behavior remains (`first/last match` resolution removed).
 
 ### 8) Next agent checklist (quick start)
 

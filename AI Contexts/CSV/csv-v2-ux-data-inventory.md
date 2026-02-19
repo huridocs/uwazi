@@ -143,7 +143,9 @@ Stores resolved relationship mapping used by entity import stage.
 - `templateId`
 - `values[]`:
   - `label`
-  - `sharedId`
+  - `matches[]`:
+    - `sharedId`
+    - `templateId`
 - `createdAt`
 
 ## Notes for UX terminology

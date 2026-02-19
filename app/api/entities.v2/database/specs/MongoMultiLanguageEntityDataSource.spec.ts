@@ -296,4 +296,42 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       );
     });
   });
+
+  describe('getSharedIdsByTitles', () => {
+    it('should return sharedIds across all templates for matching titles', async () => {
+      const db = getConnection();
+      const transactionManager = TransactionManagerFactory.default();
+      const ds = new MongoMultiLanguageEntityDataSource(db, transactionManager);
+
+      const templateId = new ObjectId().toString();
+      const otherTemplateId = new ObjectId().toString();
+      const template = createTemplateWithId(templateId);
+      const otherTemplate = createTemplateWithId(otherTemplateId);
+
+      const entity1 = createEntity(['en'], template);
+      entity1.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Alpha' }] }),
+      ]);
+      const entity2 = createEntity(['en'], template);
+      entity2.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Beta' }] }),
+      ]);
+      const entityOtherTemplate = createEntity(['en'], otherTemplate);
+      entityOtherTemplate.setPropertyAssignmentsInAllLanguages([
+        otherTemplate.createPropertyAssignment('title', { value: [{ value: 'Alpha' }] }),
+      ]);
+
+      await ds.bulkInsert([entity1, entity2, entityOtherTemplate]);
+
+      const results = await ds.getSharedIdsByTitles(['Alpha', 'Gamma']);
+
+      expect(results).toHaveLength(2);
+      expect(results).toEqual(
+        expect.arrayContaining([
+          { title: 'Alpha', sharedId: entity1.sharedId, templateId },
+          { title: 'Alpha', sharedId: entityOtherTemplate.sharedId, templateId: otherTemplateId },
+        ])
+      );
+    });
+  });
 });

@@ -7,7 +7,7 @@ import { CsvImportRelationshipValues } from '../../domain/CsvImportRelationshipV
 type RelationshipValuesDBO = {
   importId: string;
   templateId: string;
-  values: Array<{ label: string; sharedId: string }>;
+  values: Array<{ label: string; matches: Array<{ sharedId: string; templateId: string }> }>;
   createdAt: number;
 };
 

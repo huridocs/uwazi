@@ -40,6 +40,7 @@ type BuildAppliedValuesParams = {
   chunkSize: number;
 };
 const MULTI_VALUE_SEPARATOR = '|';
+const ANY_TEMPLATE_RELATIONSHIP_KEY = '';
 
 const splitRelationshipValues = (rawValue: unknown) => {
   if (rawValue === null || rawValue === undefined) {
@@ -48,7 +49,8 @@ const splitRelationshipValues = (rawValue: unknown) => {
   const stringValue = String(rawValue);
   return stringValue
     .split(MULTI_VALUE_SEPARATOR)
-    .filter(value => value.trim() !== '')
+    .map(value => value.trim())
+    .filter(Boolean)
     .filter((value, index, list) => list.indexOf(value) === index);
 };
 const buildRelationshipColumnMap = (params: { template: Template; sanitizedHeaders: string[] }) => {
@@ -70,10 +72,7 @@ const addTitlesForRow = (params: {
 }) => {
   const { rowValues, columns, titlesByTemplate } = params;
   columns.forEach(({ property, index }) => {
-    const templateId = property.content;
-    if (!templateId) {
-      return;
-    }
+    const templateId = property.content || ANY_TEMPLATE_RELATIONSHIP_KEY;
     const titles = splitRelationshipValues(rowValues[index]);
     if (!titles.length) {
       return;
@@ -142,6 +141,19 @@ const collectKnownTitles = async (params: {
   }
   return knownTitles;
 };
+
+const fetchRelationshipMatches = async (params: {
+  entitiesDS: MultiLanguageEntityDataSource;
+  templateId: string;
+  chunk: string[];
+}) => {
+  const { entitiesDS, templateId, chunk } = params;
+  if (templateId === ANY_TEMPLATE_RELATIONSHIP_KEY) {
+    return entitiesDS.getSharedIdsByTitles(chunk);
+  }
+  const existing = await entitiesDS.getSharedIdsByTemplateAndTitles(templateId, chunk);
+  return existing.map(entry => ({ ...entry, templateId }));
+};
 // eslint-disable-next-line max-statements
 const collectRelationshipTitlesForImport = async (params: CollectTitlesParams) => {
   const { rowsDS, importId, template, sanitizedHeaders, totalRows, batchSize, onProgress } = params;
@@ -176,28 +188,30 @@ const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParam
   let templateIndex = 0;
 
   for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
-    const titles = Array.from(titlesSet);
-    if (titles.length) {
-      const chunks = chunkList(titles, chunkSize);
-      // eslint-disable-next-line no-await-in-loop
-      const knownTitles = await collectKnownTitles({
-        entitiesDS,
-        templateId,
-        titles,
-        chunkSize,
-      });
-      for (const chunk of chunks) {
-        const missingTitles = buildMissingTitles(chunk, knownTitles);
-        if (missingTitles.length) {
-          onBatch?.({
-            processedTemplates: Math.min(templateIndex + 1, totalTemplates),
-            totalTemplates,
-            createdEntities,
-            pendingTitles: missingTitles.length,
-          });
-          // eslint-disable-next-line no-await-in-loop
-          createdEntities += await createEntities({ templateId, titles: missingTitles });
-          mergeKnownTitles(knownTitles, missingTitles);
+    if (templateId !== ANY_TEMPLATE_RELATIONSHIP_KEY) {
+      const titles = Array.from(titlesSet);
+      if (titles.length) {
+        const chunks = chunkList(titles, chunkSize);
+        // eslint-disable-next-line no-await-in-loop
+        const knownTitles = await collectKnownTitles({
+          entitiesDS,
+          templateId,
+          titles,
+          chunkSize,
+        });
+        for (const chunk of chunks) {
+          const missingTitles = buildMissingTitles(chunk, knownTitles);
+          if (missingTitles.length) {
+            onBatch?.({
+              processedTemplates: Math.min(templateIndex + 1, totalTemplates),
+              totalTemplates,
+              createdEntities,
+              pendingTitles: missingTitles.length,
+            });
+            // eslint-disable-next-line no-await-in-loop
+            createdEntities += await createEntities({ templateId, titles: missingTitles });
+            mergeKnownTitles(knownTitles, missingTitles);
+          }
         }
       }
     }
@@ -216,19 +230,26 @@ const buildRelationshipAppliedValues = async (params: BuildAppliedValuesParams) 
     const titles = Array.from(titlesSet);
     if (titles.length) {
       const chunks = chunkList(titles, chunkSize);
-      const values: CsvImportRelationshipValue[] = [];
-      const seen = new Set<string>();
+      const matchesByLabel = new Map<string, Map<string, string>>();
       for (const chunk of chunks) {
         // eslint-disable-next-line no-await-in-loop
-        const existing = await entitiesDS.getSharedIdsByTemplateAndTitles(templateId, chunk);
+        const existing = await fetchRelationshipMatches({ entitiesDS, templateId, chunk });
         existing.forEach(entry => {
-          if (seen.has(entry.sharedId)) {
-            return;
-          }
-          seen.add(entry.sharedId);
-          values.push({ label: entry.title, sharedId: entry.sharedId });
+          const bySharedId = matchesByLabel.get(entry.title) || new Map<string, string>();
+          bySharedId.set(entry.sharedId, entry.templateId);
+          matchesByLabel.set(entry.title, bySharedId);
         });
       }
+      const values: CsvImportRelationshipValue[] = titles.map(label => {
+        const candidates = matchesByLabel.get(label) || new Map<string, string>();
+        return {
+          label,
+          matches: Array.from(candidates.entries()).map(([sharedId, matchedTemplateId]) => ({
+            sharedId,
+            templateId: matchedTemplateId,
+          })),
+        };
+      });
       docs.push(
         CsvImportRelationshipValues.create({
           importId,
@@ -243,6 +264,7 @@ const buildRelationshipAppliedValues = async (params: BuildAppliedValuesParams) 
   return docs;
 };
 export {
+  ANY_TEMPLATE_RELATIONSHIP_KEY,
   buildRelationshipAppliedValues,
   collectRelationshipTitlesFromRows,
   collectRelationshipTitlesForImport,

@@ -13,6 +13,7 @@ import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipP
 import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer';
 import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
 import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
+import { ANY_TEMPLATE_RELATIONSHIP_KEY } from './CsvPreflightRelationshipsService';
 
 type AppliedValueIndex = Map<
   string,
@@ -26,7 +27,10 @@ type AppliedValueDoc = {
   appliedValues?: Array<{ label: string; parentLabel?: string; valueId: string }>;
 };
 
-type RelationshipValueIndex = Map<string, Map<string, { sharedId: string; label: string }>>;
+type RelationshipValueIndex = Map<
+  string,
+  Map<string, { label: string; matches: Array<{ sharedId: string; templateId: string }> }>
+>;
 
 const sanitizeHeaders = (headers: string[], newNameGeneration: boolean) =>
   headers.map(header => PropertyName.fromLabel(header, { newNameGeneration }).value);
@@ -177,21 +181,35 @@ const buildRelationshipEntries = ({
   value: string;
   relationshipIndex: RelationshipValueIndex;
 }) => {
-  if (!property.content) {
-    return [];
-  }
-  const titles = splitMultiValues(value);
+  const titles = splitMultiValues(value).filter(
+    (title, index, list) => list.indexOf(title) === index
+  );
   if (!titles.length) {
-    return [];
+    return { entries: [], unresolved: [] as string[] };
   }
-  const map = relationshipIndex.get(property.content);
-  if (!map) {
-    return [];
-  }
-  return titles
-    .map(title => map.get(title))
-    .filter(Boolean)
-    .map(entry => ({ value: entry!.sharedId }));
+  const scope = property.content || ANY_TEMPLATE_RELATIONSHIP_KEY;
+  const scopeLabel = property.content ? `template ${property.content}` : 'any-template';
+  const map = relationshipIndex.get(scope);
+
+  const entries: Array<{ value: string }> = [];
+  const unresolved: string[] = [];
+  titles.forEach(title => {
+    const resolution = map?.get(title);
+    const matches = resolution?.matches || [];
+    if (!matches.length) {
+      unresolved.push(`"${title}" (not_found, scope: ${scopeLabel})`);
+      return;
+    }
+    if (matches.length > 1) {
+      unresolved.push(
+        `"${title}" (ambiguous, candidates: ${matches.length}, scope: ${scopeLabel})`
+      );
+      return;
+    }
+    entries.push({ value: matches[0].sharedId });
+  });
+
+  return { entries, unresolved };
 };
 
 const buildRelationshipAssignments = ({
@@ -205,7 +223,12 @@ const buildRelationshipAssignments = ({
   language: LanguageISO6391;
   relationshipIndex: RelationshipValueIndex;
 }): MappedAssignment[] => {
-  const entries = buildRelationshipEntries({ property, value, relationshipIndex });
+  const { entries, unresolved } = buildRelationshipEntries({ property, value, relationshipIndex });
+  if (unresolved.length) {
+    throw new Error(
+      `Unresolvable relationship value(s) for property "${property.name}": ${unresolved.join('; ')}`
+    );
+  }
   if (!entries.length) {
     return [];
   }
@@ -611,9 +634,15 @@ class CsvEntitiesImportMapper {
     const docs = await this.relationshipValuesDS.getByImport(importId);
     const index: RelationshipValueIndex = new Map();
     docs.forEach(doc => {
-      const values = new Map<string, { sharedId: string; label: string }>();
+      const values = new Map<
+        string,
+        { label: string; matches: Array<{ sharedId: string; templateId: string }> }
+      >();
       doc.values.forEach(value => {
-        values.set(value.label.trim(), { sharedId: value.sharedId, label: value.label });
+        values.set(value.label.trim(), {
+          label: value.label,
+          matches: value.matches,
+        });
       });
       index.set(doc.templateId, values);
     });

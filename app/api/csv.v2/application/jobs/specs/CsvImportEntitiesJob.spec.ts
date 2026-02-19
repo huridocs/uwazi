@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
@@ -28,6 +29,12 @@ const fixtures = {
   ],
   templates: [
     fixturesFactory.template('csvImportTemplate', [
+      fixturesFactory.property('description', 'text'),
+      fixturesFactory.property('rel_any', 'relationship', {
+        content: '',
+      }),
+    ]),
+    fixturesFactory.template('relatedAnyTemplate', [
       fixturesFactory.property('description', 'text'),
     ]),
   ],
@@ -169,6 +176,7 @@ const expectEntityContent = (entity: Entity) => {
 describe('CsvImportEntitiesJob (integration)', () => {
   const template = fixtures.templates[0];
   const templateId = template._id.toString();
+  const relatedTemplateId = fixtures.templates[1]._id.toString();
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv-import-entities-job');
@@ -221,5 +229,179 @@ describe('CsvImportEntitiesJob (integration)', () => {
     const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
     expect(entities).toHaveLength(1);
     expectEntityContent(entities[0]);
+  });
+
+  it('should import rows with any-template relationship when there is a unique match', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-any-relationship');
+    const userId = fixturesFactory.idString('import-entities-any-user');
+    const relatedSharedId = fixturesFactory.idString('related-any-shared');
+
+    await testingEnvironment.db.getCollection('entities')!.insertMany([
+      {
+        _id: fixturesFactory.id('related-any-en'),
+        sharedId: relatedSharedId,
+        title: 'Related Any',
+        language: 'en',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-any-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+      {
+        _id: fixturesFactory.id('related-any-es'),
+        sharedId: relatedSharedId,
+        title: 'Related Any',
+        language: 'es',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-any-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+    ]);
+
+    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+      importId,
+      templateId: '',
+      values: [
+        {
+          label: 'Related Any',
+          matches: [{ sharedId: relatedSharedId, templateId: relatedTemplateId }],
+        },
+      ],
+      createdAt: Date.now(),
+    });
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title,description,rel_any\nMy Title,Some description,Related Any',
+    });
+
+    const callbacks = createCallbacks();
+    await useCase.execute({ importId, callbacks });
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+
+    expectCallbacksForSingleRow(callbacks, importId);
+    expectImportState(updatedImport);
+    expect(rowErrorsCount).toBe(0);
+
+    const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+    expect(entities).toHaveLength(1);
+    const translation = entities[0].getTranslation('en');
+    expect(translation.getValue('rel_any').value).toEqual([
+      expect.objectContaining({ value: relatedSharedId }),
+    ]);
+  });
+
+  it('should import rows with multiple any-template relationships separated by pipe', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-any-relationship-multi');
+    const userId = fixturesFactory.idString('import-entities-any-multi-user');
+    const relatedSharedIdA = fixturesFactory.idString('related-any-shared-a');
+    const relatedSharedIdB = fixturesFactory.idString('related-any-shared-b');
+
+    await testingEnvironment.db.getCollection('entities')!.insertMany([
+      {
+        _id: fixturesFactory.id('related-any-a-en'),
+        sharedId: relatedSharedIdA,
+        title: 'Related Any A',
+        language: 'en',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-any-multi-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+      {
+        _id: fixturesFactory.id('related-any-a-es'),
+        sharedId: relatedSharedIdA,
+        title: 'Related Any A',
+        language: 'es',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-any-multi-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+      {
+        _id: fixturesFactory.id('related-any-b-en'),
+        sharedId: relatedSharedIdB,
+        title: 'Related Any B',
+        language: 'en',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-any-multi-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+      {
+        _id: fixturesFactory.id('related-any-b-es'),
+        sharedId: relatedSharedIdB,
+        title: 'Related Any B',
+        language: 'es',
+        template: fixtures.templates[1]._id,
+        metadata: {},
+        user: fixturesFactory.id('import-entities-any-multi-user'),
+        creationDate: Date.now(),
+        editDate: Date.now(),
+        published: false,
+      },
+    ]);
+
+    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+      importId,
+      templateId: '',
+      values: [
+        {
+          label: 'Related Any A',
+          matches: [{ sharedId: relatedSharedIdA, templateId: relatedTemplateId }],
+        },
+        {
+          label: 'Related Any B',
+          matches: [{ sharedId: relatedSharedIdB, templateId: relatedTemplateId }],
+        },
+      ],
+      createdAt: Date.now(),
+    });
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title,description,rel_any\nMy Title,Some description,Related Any A|Related Any B',
+    });
+
+    const callbacks = createCallbacks();
+    await useCase.execute({ importId, callbacks });
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+
+    expectCallbacksForSingleRow(callbacks, importId);
+    expectImportState(updatedImport);
+    expect(rowErrorsCount).toBe(0);
+
+    const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+    expect(entities).toHaveLength(1);
+    const translation = entities[0].getTranslation('en');
+    expect(translation.getValue('rel_any').value).toEqual([
+      expect.objectContaining({ value: relatedSharedIdA }),
+      expect.objectContaining({ value: relatedSharedIdB }),
+    ]);
   });
 });

@@ -1,6 +1,6 @@
 type CsvImportRelationshipValue = {
   label: string;
-  sharedId: string;
+  matches: Array<{ sharedId: string; templateId: string }>;
 };
 
 type CsvImportRelationshipValuesProps = {
@@ -12,8 +12,11 @@ type CsvImportRelationshipValuesProps = {
 
 class CsvImportRelationshipValues {
   readonly importId!: string;
+
   readonly templateId!: string;
+
   readonly values!: CsvImportRelationshipValue[];
+
   readonly createdAt!: number;
 
   private constructor(props: CsvImportRelationshipValuesProps) {

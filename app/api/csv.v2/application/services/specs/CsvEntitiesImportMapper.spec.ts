@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import moment from 'moment';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
@@ -35,7 +36,10 @@ const buildAssignments = (params: {
   headers: string[];
   rowValues: string[];
   thesaurusIndex?: AppliedValueIndex;
-  relationshipIndex?: Map<string, Map<string, { sharedId: string; label: string }>>;
+  relationshipIndex?: Map<
+    string,
+    Map<string, { label: string; matches: Array<{ sharedId: string; templateId: string }> }>
+  >;
   attachmentLookup?: (filename: string) => number | undefined;
 }) => {
   const {
@@ -78,7 +82,6 @@ const mapThesaurus = (id: string, values: Array<{ label: string; valueId: string
 };
 
 describe('CsvEntitiesImportMapper', () => {
-  // eslint-disable-next-line max-statements
   it('should use default-language columns for select and multiselect', () => {
     const select = new SelectProperty({
       id: 'select',
@@ -193,8 +196,20 @@ describe('CsvEntitiesImportMapper', () => {
       [
         'related-template',
         new Map([
-          ['related-title', { sharedId: 'shared-1', label: 'related-title' }],
-          ['related-two', { sharedId: 'shared-2', label: 'related-two' }],
+          [
+            'related-title',
+            {
+              label: 'related-title',
+              matches: [{ sharedId: 'shared-1', templateId: 'related-template' }],
+            },
+          ],
+          [
+            'related-two',
+            {
+              label: 'related-two',
+              matches: [{ sharedId: 'shared-2', templateId: 'related-template' }],
+            },
+          ],
         ]),
       ],
     ]);
@@ -211,6 +226,167 @@ describe('CsvEntitiesImportMapper', () => {
     expect(getValueEntries(byName.media.value)[0].value).toBe('video.mp4');
     expect(byName.preview.value).toEqual([{ value: 'ignored' }]);
     expect(byName.relationship.value).toEqual([{ value: 'shared-1' }, { value: 'shared-2' }]);
+  });
+
+  it('should fail constrained relationships when title is ambiguous', () => {
+    const relationship = new V1RelationshipProperty(
+      'rel',
+      'relationship',
+      'Relationship',
+      'related',
+      TEMPLATE_ID,
+      'related-template'
+    );
+    expect(() =>
+      buildAssignments({
+        properties: [relationship],
+        headers: ['relationship'],
+        rowValues: ['duplicate'],
+        relationshipIndex: new Map([
+          [
+            'related-template',
+            new Map([
+              [
+                'duplicate',
+                {
+                  label: 'duplicate',
+                  matches: [
+                    { sharedId: 'shared-1', templateId: 'related-template' },
+                    { sharedId: 'shared-2', templateId: 'related-template' },
+                  ],
+                },
+              ],
+            ]),
+          ],
+        ]),
+      })
+    ).toThrow('ambiguous');
+  });
+
+  it('should fail any-template relationships when title is not found', () => {
+    const relationship = new V1RelationshipProperty(
+      'rel',
+      'relationship',
+      'Relationship',
+      'related',
+      TEMPLATE_ID,
+      ''
+    );
+    expect(() =>
+      buildAssignments({
+        properties: [relationship],
+        headers: ['relationship'],
+        rowValues: ['missing-title'],
+        relationshipIndex: new Map([['', new Map()]]),
+      })
+    ).toThrow('not_found');
+  });
+
+  it('should map any-template relationships when there is a unique match', () => {
+    const relationship = new V1RelationshipProperty(
+      'rel',
+      'relationship',
+      'Relationship',
+      'related',
+      TEMPLATE_ID,
+      ''
+    );
+    const assignments = buildAssignments({
+      properties: [relationship],
+      headers: ['relationship'],
+      rowValues: ['related-any'],
+      relationshipIndex: new Map([
+        [
+          '',
+          new Map([
+            [
+              'related-any',
+              {
+                label: 'related-any',
+                matches: [{ sharedId: 'shared-any-1', templateId: 'related-template' }],
+              },
+            ],
+          ]),
+        ],
+      ]),
+    });
+
+    expect(assignments).toHaveLength(1);
+    expect(assignments[0].name).toBe('relationship');
+    expect(assignments[0].value).toEqual([{ value: 'shared-any-1' }]);
+  });
+
+  it('should map multiple any-template relationship values separated by pipe', () => {
+    const relationship = new V1RelationshipProperty(
+      'rel',
+      'relationship',
+      'Relationship',
+      'related',
+      TEMPLATE_ID,
+      ''
+    );
+    const assignments = buildAssignments({
+      properties: [relationship],
+      headers: ['relationship'],
+      rowValues: ['related-any-a|related-any-b'],
+      relationshipIndex: new Map([
+        [
+          '',
+          new Map([
+            [
+              'related-any-a',
+              {
+                label: 'related-any-a',
+                matches: [{ sharedId: 'shared-any-a', templateId: 'related-template-a' }],
+              },
+            ],
+            [
+              'related-any-b',
+              {
+                label: 'related-any-b',
+                matches: [{ sharedId: 'shared-any-b', templateId: 'related-template-b' }],
+              },
+            ],
+          ]),
+        ],
+      ]),
+    });
+
+    expect(assignments).toHaveLength(1);
+    expect(assignments[0].name).toBe('relationship');
+    expect(assignments[0].value).toEqual([{ value: 'shared-any-a' }, { value: 'shared-any-b' }]);
+  });
+
+  it('should fail any-template relationships with multiple values when one token is missing', () => {
+    const relationship = new V1RelationshipProperty(
+      'rel',
+      'relationship',
+      'Relationship',
+      'related',
+      TEMPLATE_ID,
+      ''
+    );
+    expect(() =>
+      buildAssignments({
+        properties: [relationship],
+        headers: ['relationship'],
+        rowValues: ['related-any-a|missing-any'],
+        relationshipIndex: new Map([
+          [
+            '',
+            new Map([
+              [
+                'related-any-a',
+                {
+                  label: 'related-any-a',
+                  matches: [{ sharedId: 'shared-any-a', templateId: 'related-template-a' }],
+                },
+              ],
+            ]),
+          ],
+        ]),
+      })
+    ).toThrow('not_found');
   });
 
   it('should map image and media to attachments when present', () => {
