@@ -43,8 +43,6 @@ const cypressWebpackConfig = {
   },
 };
 
-const { initPlugin } = require('cypress-plugin-snapshots/plugin');
-
 const retries = process.env.CYPRESS_RETRIES ? parseInt(process.env.CYPRESS_RETRIES, 10) : 0;
 
 export default defineConfig({
@@ -55,9 +53,6 @@ export default defineConfig({
   env: {
     FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'false',
     FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'run',
-    'cypress-plugin-snapshots': {
-      serverEnabled: false,
-    },
   },
   e2e: {
     baseUrl: 'http://localhost:3000',
