@@ -2,19 +2,51 @@ import api from 'app/utils/api';
 
 export default {
   get(requestParams) {
-    return api.get('references/by_document', requestParams).then(response => response.json);
+    const start = performance.now();
+    return api.get('references/by_document', requestParams).then(response => {
+      console.log(
+        '[PERF][ReferencesAPI] GET by_document:',
+        (performance.now() - start).toFixed(2),
+        'ms'
+      );
+      return response.json;
+    });
   },
 
   getGroupedByConnection(requestParams) {
-    return api.get('references/group_by_connection', requestParams).then(response => response.json);
+    const start = performance.now();
+    return api.get('references/group_by_connection', requestParams).then(response => {
+      console.log(
+        '[PERF][ReferencesAPI] GET group_by_connection:',
+        (performance.now() - start).toFixed(2),
+        'ms'
+      );
+      return response.json;
+    });
   },
 
   getInbound(requestParams) {
-    return api.get('references/by_target/', requestParams).then(response => response.json.rows);
+    const start = performance.now();
+    return api.get('references/by_target/', requestParams).then(response => {
+      console.log(
+        '[PERF][ReferencesAPI] GET by_target:',
+        (performance.now() - start).toFixed(2),
+        'ms'
+      );
+      return response.json.rows;
+    });
   },
 
   search(requestParams) {
-    return api.get('references/search', requestParams).then(response => response.json);
+    const start = performance.now();
+    return api.get('references/search', requestParams).then(response => {
+      console.log(
+        '[PERF][ReferencesAPI] GET search:',
+        (performance.now() - start).toFixed(2),
+        'ms'
+      );
+      return response.json;
+    });
   },
 
   save(requestParams) {

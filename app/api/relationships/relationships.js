@@ -57,6 +57,7 @@ export default {
   },
 
   async getDocumentHubs(entity, file, onlyTextReferences) {
+    const hubsStart = performance.now();
     let ownRelations;
     if (onlyTextReferences) {
       ownRelations = await model.get(
@@ -80,8 +81,30 @@ export default {
           : {}),
       });
     }
+    console.log(
+      '[PERF][Relationships] getDocumentHubs - ownRelations query:',
+      (performance.now() - hubsStart).toFixed(2),
+      'ms',
+      '- Relations count:',
+      ownRelations.length
+    );
+
     const hubsIds = ownRelations.map(relationship => relationship.hub);
-    return model.get({ hub: { $in: hubsIds } });
+    const allHubsStart = performance.now();
+    const result = await model.get({ hub: { $in: hubsIds } });
+    console.log(
+      '[PERF][Relationships] getDocumentHubs - allHubs query:',
+      (performance.now() - allHubsStart).toFixed(2),
+      'ms',
+      '- Hubs count:',
+      result.length
+    );
+    console.log(
+      '[PERF][Relationships] getDocumentHubs TOTAL:',
+      (performance.now() - hubsStart).toFixed(2),
+      'ms'
+    );
+    return result;
   },
 
   getByDocument(
@@ -92,9 +115,12 @@ export default {
     onlyTextReferences = false,
     unrestricted = true
   ) {
+    const byDocStart = performance.now();
     return this.getDocumentHubs(sharedId, file, onlyTextReferences).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       const method = unrestricted ? 'getUnrestrictedWithDocuments' : 'get';
+
+      const entitiesStart = performance.now();
       return entities[method]({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
         'template',
         'creationDate',
@@ -108,6 +134,15 @@ export default {
         'metadata',
         'icon',
       ]).then(_connectedDocuments => {
+        console.log(
+          '[PERF][Relationships] getByDocument - entities query:',
+          (performance.now() - entitiesStart).toFixed(2),
+          'ms',
+          '- Connected docs count:',
+          _connectedDocuments.length
+        );
+
+        const processStart = performance.now();
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
@@ -119,6 +154,16 @@ export default {
           sharedId,
           unpublished
         );
+        console.log(
+          '[PERF][Relationships] getByDocument - processing:',
+          (performance.now() - processStart).toFixed(2),
+          'ms'
+        );
+        console.log(
+          '[PERF][Relationships] getByDocument TOTAL:',
+          (performance.now() - byDocStart).toFixed(2),
+          'ms'
+        );
 
         return relationshipsCollection;
       });
@@ -126,24 +171,44 @@ export default {
   },
 
   getGroupsByConnection(id, language, options = {}) {
+    const groupsStart = performance.now();
     return Promise.all([
       this.getByDocument(id, language, undefined, undefined, undefined, false),
       templatesAPI.get(),
       relationtypes.get(),
     ]).then(([references, templates, relationTypes]) => {
+      const filterStart = performance.now();
       const relevantReferences = filterRelevantRelationships(
         references,
         id,
         language,
         options.user
       );
+      console.log(
+        '[PERF][Relationships] getGroupsByConnection - filtering:',
+        (performance.now() - filterStart).toFixed(2),
+        'ms'
+      );
+
+      const groupingStart = performance.now();
       const groupedReferences = groupRelationships(relevantReferences, templates, relationTypes);
+      console.log(
+        '[PERF][Relationships] getGroupsByConnection - grouping:',
+        (performance.now() - groupingStart).toFixed(2),
+        'ms'
+      );
 
       if (options.excludeRefs) {
         groupedReferences.forEach(g => {
           g.templates = g.templates.map(excludeRefs);
         });
       }
+
+      console.log(
+        '[PERF][Relationships] getGroupsByConnection TOTAL:',
+        (performance.now() - groupsStart).toFixed(2),
+        'ms'
+      );
       return groupedReferences;
     });
   },

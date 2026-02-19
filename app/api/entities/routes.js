@@ -212,10 +212,17 @@ export default app => {
       },
     }),
     (req, res, next) => {
+      const apiStart = performance.now();
       const { omitRelationships, include = [], ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
       const language = req.language ? { language: req.language } : {};
+      console.log(
+        '[PERF][API] GET /api/entities - Action:',
+        action,
+        '- Query:',
+        JSON.stringify({ ...query, ...published, ...language })
+      );
       entities[action](
         { ...query, ...published, ...language },
         include.map(field => `+${field}`).join(' '),
@@ -224,6 +231,13 @@ export default app => {
         }
       )
         .then(_entities => {
+          console.log(
+            '[PERF][API] GET /api/entities TOTAL:',
+            (performance.now() - apiStart).toFixed(2),
+            'ms',
+            '- Entities returned:',
+            _entities.length
+          );
           if (!_entities.length) {
             res.status(404);
             res.json({ rows: [] });

@@ -160,6 +160,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const translations = await translationsApi.get();
 
+  const globalResourcesStart = performance.now();
   const [
     userApiResponse = { json: {} },
     settingsApiResponse = {
@@ -184,6 +185,19 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
           Promise.resolve({ json: { rows: translations } }),
         ])
       : [];
+  console.log(
+    '[PERF][SSR] Global resources fetch:',
+    (performance.now() - globalResourcesStart).toFixed(2),
+    'ms'
+  );
+  console.log(
+    '[PERF][SSR] Templates count:',
+    templatesApiResponse.json.rows.length,
+    '- Thesauri count:',
+    thesaurisApiResponse.json.rows.length,
+    '- RelationTypes count:',
+    relationTypesApiResponse.json.rows.length
+  );
 
   const reduxData = {
     user: userApiResponse.json,
@@ -221,6 +235,7 @@ const setReduxState = async (
   reduxState: IStore,
   matched: { route: RouteObject; params: {} }[] | null
 ) => {
+  const extractStart = performance.now();
   let routeParams = {};
   const dataLoaders = matched
     ?.map(({ route, params }) => {
@@ -240,6 +255,13 @@ const setReduxState = async (
       return null;
     })
     .filter(v => v);
+  console.log(
+    '[PERF][SSR] Component extraction:',
+    (performance.now() - extractStart).toFixed(2),
+    'ms',
+    '- Data loaders count:',
+    dataLoaders?.length || 0
+  );
   const initialStore = createReduxStore(reduxState);
   let loadingError: FetchResponseError | undefined;
   if (dataLoaders && dataLoaders.length > 0) {
@@ -255,8 +277,17 @@ const setReduxState = async (
 
     try {
       await Promise.all(
-        dataLoaders.map(async loader => {
+        dataLoaders.map(async (loader, index) => {
+          const loaderStart = performance.now();
           const actions = await loader(requestParams, reduxState);
+          const loaderTime = (performance.now() - loaderStart).toFixed(2);
+          console.log(
+            `[PERF][SSR] Data loader ${index} execution:`,
+            loaderTime,
+            'ms',
+            '- Actions count:',
+            Array.isArray(actions) ? actions.length : 0
+          );
           if (Array.isArray(actions)) {
             actions.forEach(action => {
               initialStore.dispatch(action);
@@ -311,16 +342,28 @@ const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
+  const perfStart = performance.now();
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await Promise.all([
     settingsApi.get() as Promise<ClientSettings>,
     getAssets(),
   ]);
+  console.log(
+    '[PERF][SSR] Settings & assets loaded:',
+    (performance.now() - perfStart).toFixed(2),
+    'ms'
+  );
   //https://github.com/trpc/trpc/issues/1811#issuecomment-1242222057
   //for Node18 we have to remove the connection header
   const { connection, ...headers } = req.headers;
+  const routeMatchStart = performance.now();
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
+  console.log(
+    '[PERF][SSR] Route matching:',
+    (performance.now() - routeMatchStart).toFixed(2),
+    'ms'
+  );
 
   if (matched === null) {
     res.redirect('/404');
@@ -361,7 +404,13 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
+  const storeDataStart = performance.now();
   const { reduxState, atomStore, atomStoreData } = await prepareStoreData(req, settings, language);
+  console.log(
+    '[PERF][SSR] Store data preparation:',
+    (performance.now() - storeDataStart).toFixed(2),
+    'ms'
+  );
 
   if (req.aborted) {
     logSSRAborted(req, 'Route data', ssrStart, routeName);
@@ -380,10 +429,16 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
+  const requestStateStart = performance.now();
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
     matched
+  );
+  console.log(
+    '[PERF][SSR] RequestState execution:',
+    (performance.now() - requestStateStart).toFixed(2),
+    'ms'
   );
 
   if (req.aborted) {
@@ -391,6 +446,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
+  const componentRenderStart = performance.now();
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
@@ -408,12 +464,18 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       </CustomProvider>
     </ReduxProvider>
   );
+  console.log(
+    '[PERF][SSR] React component rendering:',
+    (performance.now() - componentRenderStart).toFixed(2),
+    'ms'
+  );
 
   if (req.aborted) {
     logSSRAborted(req, 'Root HTML', ssrStart, routeName);
     return;
   }
 
+  const htmlRenderStart = performance.now();
   const html = ReactDOMServer.renderToString(
     <Root
       language={atomStoreData.locale}
@@ -427,6 +489,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
   );
+  console.log(
+    '[PERF][SSR] HTML document rendering:',
+    (performance.now() - htmlRenderStart).toFixed(2),
+    'ms'
+  );
 
   if (req.aborted) {
     logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
@@ -435,6 +502,16 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const responseCode = loadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
+  const totalSSRTime = (performance.now() - perfStart).toFixed(2);
+  console.log(
+    '[PERF][SSR] TOTAL SSR TIME:',
+    totalSSRTime,
+    'ms',
+    '- Route:',
+    routeName,
+    '- Status:',
+    resStatus
+  );
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };
 

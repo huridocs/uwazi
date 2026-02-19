@@ -330,10 +330,18 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
 };
 
 const withDocuments = async (entities, documentsFullText) => {
+  const filesStart = performance.now();
   const sharedIds = entities.map(entity => entity.sharedId);
   const allFiles = await files.get(
     { entity: { $in: sharedIds } },
     documentsFullText ? '+fullText ' : ' '
+  );
+  console.log(
+    '[PERF][Entities] files.get() query:',
+    (performance.now() - filesStart).toFixed(2),
+    'ms',
+    '- Files count:',
+    allFiles.length
   );
   const idFileMap = new Map();
   allFiles.forEach(file => {
@@ -473,16 +481,38 @@ export default {
   },
 
   async get(query, select, options = {}) {
+    const getStart = performance.now();
     const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
-    const entities = await model.get(query, extendedSelect, restOfOptions);
 
-    return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
+    const modelQueryStart = performance.now();
+    const entities = await model.get(query, extendedSelect, restOfOptions);
+    console.log(
+      '[PERF][Entities] model.get() query:',
+      (performance.now() - modelQueryStart).toFixed(2),
+      'ms',
+      '- Entities count:',
+      entities.length
+    );
+
+    const result = withoutDocuments ? entities : await withDocuments(entities, documentsFullText);
+    console.log('[PERF][Entities] get() TOTAL:', (performance.now() - getStart).toFixed(2), 'ms');
+    return result;
   },
 
   async getWithRelationships(query, select, pagination) {
+    const withRelStart = performance.now();
+
+    const entitiesStart = performance.now();
     const entities = await this.get(query, select, pagination);
-    return Promise.all(
+    console.log(
+      '[PERF][Entities] get() call in getWithRelationships:',
+      (performance.now() - entitiesStart).toFixed(2),
+      'ms'
+    );
+
+    const relStart = performance.now();
+    const result = await Promise.all(
       entities.map(async entity => {
         entity.relations = await relationships.getByDocument(
           entity.sharedId,
@@ -495,6 +525,18 @@ export default {
         return entity;
       })
     );
+    console.log(
+      '[PERF][Entities] relationships loading:',
+      (performance.now() - relStart).toFixed(2),
+      'ms'
+    );
+    console.log(
+      '[PERF][Entities] getWithRelationships() TOTAL:',
+      (performance.now() - withRelStart).toFixed(2),
+      'ms'
+    );
+
+    return result;
   },
 
   async getById(sharedId, language) {

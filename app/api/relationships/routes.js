@@ -135,12 +135,26 @@ export default app => {
   );
 
   app.get('/api/references/group_by_connection/', (req, res, next) => {
+    const apiStart = performance.now();
+    console.log(
+      '[PERF][API] GET /api/references/group_by_connection - sharedId:',
+      req.query.sharedId,
+      '- language:',
+      req.language
+    );
     relationships
       .getGroupsByConnection(req.query.sharedId, req.language, {
         excludeRefs: true,
         user: req.user,
       })
       .then(response => {
+        console.log(
+          '[PERF][API] GET /api/references/group_by_connection TOTAL:',
+          (performance.now() - apiStart).toFixed(2),
+          'ms',
+          '- Groups count:',
+          response.length
+        );
         res.json(response);
       })
       .catch(next);
@@ -167,11 +181,27 @@ export default app => {
       required: ['query'],
     }),
     (req, res, next) => {
+      const apiStart = performance.now();
+      console.log(
+        '[PERF][API] GET /api/references/search - sharedId:',
+        req.query.sharedId,
+        '- language:',
+        req.language
+      );
       req.query.filter = JSON.parse(req.query.filter || '{}');
       const { sharedId, ...query } = req.query;
       relationships
         .search(req.query.sharedId, query, req.language, req.user)
-        .then(results => res.json(results))
+        .then(results => {
+          console.log(
+            '[PERF][API] GET /api/references/search TOTAL:',
+            (performance.now() - apiStart).toFixed(2),
+            'ms',
+            '- Results:',
+            results.rows?.length || 0
+          );
+          res.json(results);
+        })
         .catch(next);
     }
   );

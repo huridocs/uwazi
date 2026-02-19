@@ -15,13 +15,34 @@ import { setReferences } from './actions/referencesActions';
 
 class ViewerRouteComponent extends RouteHandler {
   static async requestState(requestParams, globalResources) {
+    const viewerRouteStart = performance.now();
     const { sharedId } = requestParams.data;
+
+    const entityCheckStart = performance.now();
     const [entity] = await EntitiesAPI.get(
       requestParams.set({ sharedId, omitRelationships: true })
     );
-    return entity.documents.length
+    console.log(
+      '[PERF][ViewerRoute] Entity check (omitRelationships):',
+      (performance.now() - entityCheckStart).toFixed(2),
+      'ms'
+    );
+
+    const result = entity.documents.length
       ? PDFViewComponent.requestState(requestParams, globalResources)
       : EntityView.requestState(requestParams, globalResources);
+
+    console.log(
+      '[PERF][ViewerRoute] Delegating to:',
+      entity.documents.length ? 'PDFViewComponent' : 'EntityView'
+    );
+    console.log(
+      '[PERF][ViewerRoute] TOTAL requestState:',
+      (performance.now() - viewerRouteStart).toFixed(2),
+      'ms'
+    );
+
+    return result;
   }
 
   componentWillUnmount() {

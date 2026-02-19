@@ -93,7 +93,16 @@ async function validateTypeInTemplates(id) {
 
 export default {
   get(query) {
-    return model.get(query);
+    const start = performance.now();
+    return model.get(query).then(result => {
+      console.log(
+        '[PERF][RelationTypes] model.get():',
+        (performance.now() - start).toFixed(2),
+        'ms - RelationTypes count:',
+        result.length
+      );
+      return result;
+    });
   },
 
   count(query) {
@@ -101,7 +110,15 @@ export default {
   },
 
   getById(id) {
-    return model.getById(id);
+    const start = performance.now();
+    return model.getById(id).then(result => {
+      console.log(
+        '[PERF][RelationTypes] model.getById():',
+        (performance.now() - start).toFixed(2),
+        'ms'
+      );
+      return result;
+    });
   },
 
   async save(relationtype) {

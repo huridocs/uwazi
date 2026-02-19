@@ -20,31 +20,71 @@ export function setViewerState(state) {
 }
 
 export async function requestViewerState(requestParams, globalResources) {
+  const viewerStateStart = performance.now();
   const { sharedId, raw, page } = requestParams.data;
   const defaultLanguage = globalResources.settings.collection
     .get('languages')
     .find(l => l.get('default'));
 
+  const parallelStart = performance.now();
   const [doc, relationTypes, [connectionsGroups, searchResults, sort]] = await Promise.all([
-    getDocument(
-      requestParams.set({ sharedId }),
-      defaultLanguage ? defaultLanguage.get('key') : 'en',
-      requestParams.data.file
-    ),
-    relationTypesAPI.get(requestParams.onlyHeaders()),
-    relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
+    (async () => {
+      const start = performance.now();
+      const result = await getDocument(
+        requestParams.set({ sharedId }),
+        defaultLanguage ? defaultLanguage.get('key') : 'en',
+        requestParams.data.file
+      );
+      console.log('[PERF][PDFView] getDocument():', (performance.now() - start).toFixed(2), 'ms');
+      return result;
+    })(),
+    (async () => {
+      const start = performance.now();
+      const result = await relationTypesAPI.get(requestParams.onlyHeaders());
+      console.log(
+        '[PERF][PDFView] relationTypesAPI.get():',
+        (performance.now() - start).toFixed(2),
+        'ms'
+      );
+      return result;
+    })(),
+    (async () => {
+      const start = performance.now();
+      const result = await relationships.requestState(
+        requestParams.set({ sharedId }),
+        globalResources.templates
+      );
+      console.log(
+        '[PERF][PDFView] relationships.requestState():',
+        (performance.now() - start).toFixed(2),
+        'ms'
+      );
+      return result;
+    })(),
   ]);
+  console.log(
+    '[PERF][PDFView] Parallel Promise.all completed:',
+    (performance.now() - parallelStart).toFixed(2),
+    'ms'
+  );
 
   const { defaultDoc } = doc;
   const rawText = raw
     ? await entitiesAPI.getRawPage(requestParams.set({ _id: defaultDoc._id, page }))
     : '';
 
+  const referencesStart = performance.now();
   const references = await referencesAPI.get(
     requestParams.set({ sharedId, file: doc.defaultDoc._id, onlyTextReferences: true })
   );
+  console.log(
+    '[PERF][PDFView] referencesAPI.get():',
+    (performance.now() - referencesStart).toFixed(2),
+    'ms'
+  );
 
-  return [
+  const statePreparationStart = performance.now();
+  const result = [
     setViewerState({
       documentViewer: {
         doc: {
@@ -69,4 +109,16 @@ export async function requestViewerState(requestParams, globalResources) {
       relationTypes,
     }),
   ];
+  console.log(
+    '[PERF][PDFView] State preparation:',
+    (performance.now() - statePreparationStart).toFixed(2),
+    'ms'
+  );
+  console.log(
+    '[PERF][PDFView] TOTAL requestViewerState:',
+    (performance.now() - viewerStateStart).toFixed(2),
+    'ms'
+  );
+
+  return result;
 }

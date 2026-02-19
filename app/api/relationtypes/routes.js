@@ -65,15 +65,40 @@ export default app => {
       required: ['query'],
     }),
     (req, res, next) => {
+      const apiStart = performance.now();
       if (req.query._id) {
+        console.log(
+          '[PERF][API] GET /api/relationtypes - Action: getById - Query:',
+          JSON.stringify(req.query)
+        );
         return relationtypes
           .getById(req.query._id)
-          .then(response => res.json({ rows: [response] }))
+          .then(response => {
+            console.log(
+              '[PERF][API] GET /api/relationtypes TOTAL:',
+              (performance.now() - apiStart).toFixed(2),
+              'ms - RelationTypes returned:',
+              1
+            );
+            return res.json({ rows: [response] });
+          })
           .catch(next);
       }
+      console.log(
+        '[PERF][API] GET /api/relationtypes - Action: get - Query:',
+        JSON.stringify(req.query)
+      );
       relationtypes
         .get()
-        .then(response => res.json({ rows: response }))
+        .then(response => {
+          console.log(
+            '[PERF][API] GET /api/relationtypes TOTAL:',
+            (performance.now() - apiStart).toFixed(2),
+            'ms - RelationTypes returned:',
+            response.length
+          );
+          return res.json({ rows: response });
+        })
         .catch(next);
     }
   );

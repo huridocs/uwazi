@@ -65,7 +65,15 @@ const filterMatchingConnections = (connections, searchResults, filterCombination
   });
 
 const destructureHubsIntoEntities = async (entitySharedId, hubs, searchResults, language) => {
+  const getEntityStart = performance.now();
   const leftSideEntity = await entities.getById(entitySharedId, language);
+  console.log(
+    '[PERF][RelationshipsSearch] destructureHubsIntoEntities - getById:',
+    (performance.now() - getEntityStart).toFixed(2),
+    'ms'
+  );
+
+  const buildMapStart = performance.now();
   let foundEntities = searchResults.rows;
   if (leftSideEntity) {
     foundEntities = foundEntities.concat([leftSideEntity]);
@@ -81,10 +89,26 @@ const destructureHubsIntoEntities = async (entitySharedId, hubs, searchResults, 
     });
     return memo;
   }, {});
+  console.log(
+    '[PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap:',
+    (performance.now() - buildMapStart).toFixed(2),
+    'ms',
+    '- Entities in map:',
+    Object.keys(connectionsPerEntity).length
+  );
 
+  const getEntitiesStart = performance.now();
   return entities
     .get({ sharedId: { $in: Object.keys(connectionsPerEntity) }, language })
     .then(entitiesInvolved => {
+      console.log(
+        '[PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get:',
+        (performance.now() - getEntitiesStart).toFixed(2),
+        'ms',
+        '- Entities:',
+        entitiesInvolved.length
+      );
+      const processStart = performance.now();
       entitiesInvolved.forEach(e => {
         e.connections = connectionsPerEntity[e.sharedId].reduce((unique, connection) => {
           if (!unique.some(existingConn => existingConn._id.equals(connection._id))) {
@@ -93,6 +117,11 @@ const destructureHubsIntoEntities = async (entitySharedId, hubs, searchResults, 
           return unique;
         }, []);
       });
+      console.log(
+        '[PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections:',
+        (performance.now() - processStart).toFixed(2),
+        'ms'
+      );
       return entitiesInvolved;
     });
 };
@@ -175,8 +204,17 @@ const sortBySearchResultOrder = (entitiesWithConnections, entitySharedId, search
   });
 
 const getRightSideConnections = async (entitySharedId, relationTypeFilter) => {
+  const hubsQueryStart = performance.now();
   const hubsIds = (await model.get({ entity: entitySharedId }, 'hub')).map(r => r.hub);
+  console.log(
+    '[PERF][RelationshipsSearch] getRightSideConnections - hubsIds query:',
+    (performance.now() - hubsQueryStart).toFixed(2),
+    'ms',
+    '- Hubs:',
+    hubsIds.length
+  );
 
+  const connectionsQueryStart = performance.now();
   const rightSideConnections = await model.get(
     {
       hub: { $in: hubsIds },
@@ -185,15 +223,40 @@ const getRightSideConnections = async (entitySharedId, relationTypeFilter) => {
     },
     { entity: 1, template: 1 }
   );
+  console.log(
+    '[PERF][RelationshipsSearch] getRightSideConnections - connections query:',
+    (performance.now() - connectionsQueryStart).toFixed(2),
+    'ms',
+    '- Connections:',
+    rightSideConnections.length
+  );
   return rightSideConnections;
 };
 
 export const relationshipsSearch = async (entitySharedId, query, language, user) => {
+  const searchStart = performance.now();
+  console.log('[PERF][RelationshipsSearch] START - entitySharedId:', entitySharedId);
+
+  const filterStart = performance.now();
   const { relationTypeFilter, entityTemplateFilter, filterCombinations } =
     processFilterCombinations(query);
+  console.log(
+    '[PERF][RelationshipsSearch] processFilterCombinations:',
+    (performance.now() - filterStart).toFixed(2),
+    'ms'
+  );
 
+  const rightSideStart = performance.now();
   const rightSideConnections = await getRightSideConnections(entitySharedId, relationTypeFilter);
+  console.log(
+    '[PERF][RelationshipsSearch] getRightSideConnections:',
+    (performance.now() - rightSideStart).toFixed(2),
+    'ms',
+    '- Connections:',
+    rightSideConnections.length
+  );
 
+  const elasticSearchStart = performance.now();
   const searchResult = await search.search(
     {
       ...query,
@@ -207,35 +270,96 @@ export const relationshipsSearch = async (entitySharedId, query, language, user)
     language,
     user
   );
+  console.log(
+    '[PERF][RelationshipsSearch] ElasticSearch search.search:',
+    (performance.now() - elasticSearchStart).toFixed(2),
+    'ms',
+    '- Results:',
+    searchResult.rows?.length || 0
+  );
 
+  const mapStart = performance.now();
   const filteredSharedIds = searchResult.rows.map(r => r.sharedId);
+  console.log(
+    '[PERF][RelationshipsSearch] map filteredSharedIds:',
+    (performance.now() - mapStart).toFixed(2),
+    'ms'
+  );
 
+  const filterConnStart = performance.now();
   const matchingConnections = filterMatchingConnections(
     rightSideConnections,
     searchResult,
     filterCombinations
   );
   const filteredConnections = matchingConnections.map(r => r._id);
+  console.log(
+    '[PERF][RelationshipsSearch] filterMatchingConnections:',
+    (performance.now() - filterConnStart).toFixed(2),
+    'ms',
+    '- Matching:',
+    matchingConnections.length
+  );
 
+  const countStart = performance.now();
   const totalHubs = await getMatchingHubsCount(
     entitySharedId,
     filteredSharedIds,
     filteredConnections
   );
+  console.log(
+    '[PERF][RelationshipsSearch] getMatchingHubsCount:',
+    (performance.now() - countStart).toFixed(2),
+    'ms',
+    '- Total hubs:',
+    totalHubs
+  );
 
   const limit = Number(query.limit) || 10;
 
+  const hubsStart = performance.now();
+  const hubs = await getHubs(entitySharedId, filteredConnections, filteredSharedIds, limit);
+  console.log(
+    '[PERF][RelationshipsSearch] getHubs:',
+    (performance.now() - hubsStart).toFixed(2),
+    'ms',
+    '- Hubs:',
+    hubs.length
+  );
+
+  const destructureStart = performance.now();
   const entitiesWithConnections = await destructureHubsIntoEntities(
     entitySharedId,
-    await getHubs(entitySharedId, filteredConnections, filteredSharedIds, limit),
+    hubs,
     searchResult,
     language
+  );
+  console.log(
+    '[PERF][RelationshipsSearch] destructureHubsIntoEntities:',
+    (performance.now() - destructureStart).toFixed(2),
+    'ms',
+    '- Entities:',
+    entitiesWithConnections.length
+  );
+
+  const sortStart = performance.now();
+  const sortedRows = sortBySearchResultOrder(entitiesWithConnections, entitySharedId, searchResult);
+  console.log(
+    '[PERF][RelationshipsSearch] sortBySearchResultOrder:',
+    (performance.now() - sortStart).toFixed(2),
+    'ms'
+  );
+
+  console.log(
+    '[PERF][RelationshipsSearch] TOTAL:',
+    (performance.now() - searchStart).toFixed(2),
+    'ms'
   );
 
   return {
     totalRows: new Set(matchingConnections.map(r => r.entity)).size || searchResult.totalRows,
     requestedHubs: limit,
     totalHubs,
-    rows: sortBySearchResultOrder(entitiesWithConnections, entitySharedId, searchResult),
+    rows: sortedRows,
   };
 };

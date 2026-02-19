@@ -108,9 +108,29 @@ export function deleteDocument(doc) {
 }
 
 export async function getDocument(requestParams, defaultLanguage, filename) {
-  const [entity] = await EntitiesApi.get(requestParams.add({ omitRelationships: true }));
+  const getDocStart = performance.now();
 
+  const apiCallStart = performance.now();
+  const [entity] = await EntitiesApi.get(requestParams.add({ omitRelationships: true }));
+  console.log(
+    '[PERF][Document] Entity API call:',
+    (performance.now() - apiCallStart).toFixed(2),
+    'ms'
+  );
+
+  const docSelectionStart = performance.now();
   entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
+  console.log(
+    '[PERF][Document] Document selection (getEntityDoc):',
+    (performance.now() - docSelectionStart).toFixed(2),
+    'ms'
+  );
+
+  console.log(
+    '[PERF][Document] TOTAL getDocument:',
+    (performance.now() - getDocStart).toFixed(2),
+    'ms'
+  );
   return entity;
 }
 

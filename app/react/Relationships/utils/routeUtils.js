@@ -8,7 +8,17 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import referencesAPI from 'app/Viewer/referencesAPI';
 
 function requestState(requestParams, state) {
+  const relStateStart = performance.now();
+
+  const getGroupedStart = performance.now();
   return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {
+    console.log(
+      '[PERF][Relationships] getGroupedByConnection API:',
+      (performance.now() - getGroupedStart).toFixed(2),
+      'ms'
+    );
+
+    const processingStart = performance.now();
     const filteredTemplates = connectionsGroups.reduce(
       (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),
       []
@@ -24,12 +34,31 @@ function requestState(requestParams, state) {
     params.filters = fromJS({ limit: 10 });
     params.sharedId = requestParams.data.sharedId;
     const newParams = requestParams.add(params);
+    console.log(
+      '[PERF][Relationships] Data processing (template filtering, sort options):',
+      (performance.now() - processingStart).toFixed(2),
+      'ms'
+    );
+
+    const searchStart = performance.now();
     return Promise.all([
       connectionsGroups,
       connectionsListActions.search(newParams),
       params.sort,
       params.filters,
-    ]);
+    ]).then(result => {
+      console.log(
+        '[PERF][Relationships] connectionsListActions.search:',
+        (performance.now() - searchStart).toFixed(2),
+        'ms'
+      );
+      console.log(
+        '[PERF][Relationships] TOTAL requestState:',
+        (performance.now() - relStateStart).toFixed(2),
+        'ms'
+      );
+      return result;
+    });
   });
 }
 
