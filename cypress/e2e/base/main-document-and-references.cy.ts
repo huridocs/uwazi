@@ -209,7 +209,7 @@ describe('Entity with main documents', () => {
     });
     cy.contains('Saved successfully.');
     cy.get('#p3R_mc0').scrollIntoView();
-    cy.get('.row').toMatchImageSnapshot();
+    cy.get('.row').matchImageSnapshot();
   });
 
   it('should edit the entity and the documents', () => {

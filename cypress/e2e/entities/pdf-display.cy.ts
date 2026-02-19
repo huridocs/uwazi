@@ -65,7 +65,7 @@ describe('PDF display', () => {
 
     it('should check the document', () => {
       cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS');
-      cy.get('.row').eq(0).toMatchImageSnapshot();
+      cy.get('.row').eq(0).matchImageSnapshot();
       cy.get('div[data-region-selector-id="1"]').toMatchSnapshot({ name: 'PDF library render' });
     });
 

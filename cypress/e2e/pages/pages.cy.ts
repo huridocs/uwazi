@@ -188,14 +188,14 @@ describe('Pages', () => {
       cy.contains('Acevedo Jaramillo');
       cy.get('.item-document:nth-child(2) > .item-info').click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
-      cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
+      cy.get('.page-viewer.document-viewer').matchImageSnapshot();
       cy.get('#entity-datasets-value').scrollIntoView();
-      cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
+      cy.get('.page-viewer.document-viewer').matchImageSnapshot();
     });
 
     it('should run the scripts of a page', () => {
       cy.visit('http://localhost:3000/en/entity/t8plml296d23mcxr');
-      cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
+      cy.get('.page-viewer.document-viewer').matchImageSnapshot();
     });
   });
 
@@ -210,7 +210,7 @@ describe('Pages', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Country page');
-      cy.get('table').toMatchImageSnapshot({
+      cy.get('table').matchImageSnapshot({
         disableTimersAndAnimations: true,
         threshold: 0.08,
       });

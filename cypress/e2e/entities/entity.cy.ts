@@ -100,10 +100,10 @@ const addInvalidImageFile = (field: string) => {
 
 const checkMediaSnapshots = (selector: string, options = {}) => {
   cy.get(selector).scrollIntoView({ offset: { top: -30, left: 0 } });
-  cy.get(selector).toMatchImageSnapshot({
+  cy.get(selector).matchImageSnapshot({
     ...options,
     disableTimersAndAnimations: true,
-    threshold: 0.08,
+    failureThreshold: 0.08,
   });
 };
 
@@ -321,7 +321,7 @@ describe('Entities', () => {
     });
 
     it('should render the player for internal media on library card and entity view', () => {
-      cy.contains('.item-document:nth-child(1)', 'Entity with all props').toMatchImageSnapshot();
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
       cy.get('.react-player').within(() => {
@@ -354,7 +354,7 @@ describe('Entities', () => {
     });
 
     it('should show the external player on library card and entity view', () => {
-      cy.contains('.item-document:nth-child(1)', 'Entity with all props').toMatchImageSnapshot();
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
       checkExternalMedia();
