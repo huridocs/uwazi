@@ -11,7 +11,7 @@ const shouldSample = (route: RouteType): route is string => {
 
   if (EXCLUDED_ROUTES.includes(route)) return false;
 
-  // Sampling 10% of the requests for security reasons.
+  // Sampling 10% of the requests for performance reasons.
   return Math.random() <= 0.1;
 };
 
@@ -30,7 +30,6 @@ const metricsMiddleware = (request: Request, response: Response, next: NextFunct
       method: request.method,
       route,
       env: config.ENVIRONMENT,
-      port: String(config.PORT),
     };
 
     httpRequestCounter.inc({
