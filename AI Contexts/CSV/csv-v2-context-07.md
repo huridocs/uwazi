@@ -71,13 +71,14 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - **TODO:** Add API endpoints to query CSV import progress directly (not only via socket events):
   - List imports (paginated, filterable by status/template/date).
   - Get import details (status, progress counters, row errors summary, report paths, failures).
-  - Include extraction counters in import details so UX can render extraction completeness without
-    relying on inferred socket progress:
-    - Number of files extracted from the original ZIP (`extractedFilesCount`).
-    - Total files detected in the original ZIP (`totalFilesInZip`) when available.
-    - Original upload file size in bytes (`originalUploadSizeBytes`).
-    - Per-extracted-file metadata for diagnostics/progress drill-down, including at least:
-      `filename`, `sizeBytes`, and (optionally) `mimeType`.
+  - Include already-persisted extraction metadata in the detail response so UX can render
+    extraction completeness without relying on inferred socket progress:
+    - `file.originalName` (original uploaded filename)
+    - `file.size` (original uploaded size)
+    - `extraction.extractedFilesCount` (files extracted from ZIP)
+    - `extraction.totalFilesInZip` (when available)
+    - `extraction.originalUploadSizeBytes`
+    - `extraction.files[]` (`filename`, `sizeBytes`, `compressedSizeBytes?`)
   - This enables UI polling and recovery when socket events are missed.
 
 #### 3.8 Discuss with team
@@ -341,6 +342,25 @@ is confusing and inconsistent with thesauri preflight behavior.
     - `CsvCreateThesauriValuesJobHandler`
     - `CsvCreateRelationshipEntitiesJobHandler`
     - `CsvImportEntitiesJobHandler`
+
+14. **Extraction metadata persisted on imports (Feb 2026)**
+
+- `CsvExtractUploadedZipJob` now persists extraction/source metadata into `csv_imports.extraction`
+  on successful extraction:
+  - `sourceType` (`zip` or `csv`)
+  - `originalUploadSizeBytes`
+  - `extractedFilesCount`
+  - `totalFilesInZip` (ZIP only)
+  - `files[]` with per-file size metadata (`filename`, `sizeBytes`, `compressedSizeBytes?`).
+- Upload identity metadata remains on `csv_imports.file` and includes:
+  - `originalName`
+  - `mimeType`
+  - `size`
+- Integration coverage updated in:
+  - `app/api/csv.v2/application/jobs/specs/CsvExtractUploadedZipJob.spec.ts`
+  (CSV + ZIP assertions for extraction metadata persistence).
+- UX data inventory doc added:
+  - `AI Contexts/CSV/csv-v2-ux-data-inventory.md`
 
 #### How to remove v1 compat (when v2 UI is ready)
 
