@@ -19,12 +19,11 @@ const metricsMiddleware = (request: Request, response: Response, next: NextFunct
   const startTimeMs = Date.now();
 
   response.on('finish', () => {
+    const route = request.route?.path as RouteType;
+    if (!shouldSample(route)) return;
+
     const endTimeMs = Date.now();
     const durationSeconds = (endTimeMs - startTimeMs) / 1000;
-
-    const route = request.route?.path as RouteType;
-
-    if (!shouldSample(route)) return;
 
     const labels = {
       method: request.method,
