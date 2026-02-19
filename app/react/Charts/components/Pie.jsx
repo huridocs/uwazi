@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { ResponsiveContainer, PieChart, Pie, Legend, Cell, Sector } from 'recharts';
 
@@ -14,7 +15,7 @@ function ellipsisString(string, maxLength) {
   return `${string.substring(0, maxLength - 3)}...`;
 }
 
-export class RechartsPie extends Component {
+class RechartsPie extends Component {
   static getDerivedStateFromProps(props) {
     return RechartsPie.mountData(props);
   }
@@ -183,3 +184,6 @@ export class RechartsPie extends Component {
 RechartsPie.propTypes = {
   data: PropTypes.array,
 };
+
+const RechartsPieConnected =  connect()(RechartsPie);
+export { RechartsPieConnected as RechartsPie };

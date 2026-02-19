@@ -10,7 +10,7 @@ import {
 } from '#app/Viewer/actions/uiActions.js';
 import { selectTargetDoc, selectTargetReferences } from '../selectors.js';
 
-import { TargetDocumentHeader } from './TargetDocumentHeader.js';
+import { TargetDocumentHeaderConnected as TargetDocumentHeader } from './TargetDocumentHeader.js';
 
 const mapStateToProps = state => {
   const { documentViewer } = state;

@@ -27,7 +27,7 @@ import { ViewDocButton } from '#app/Library/components/ViewDocButton.js';
 import { getDocumentReferences } from '#app/Library/actions/libraryActions.js';
 import '#app/Documents/components/styles/toc.css';
 import { store } from '../../store.js';
-import { SearchText } from './SearchText.js';
+import { SearchTextConnected as SearchText } from './SearchText.js';
 import { ShowToc } from './ShowToc.js';
 import { SnippetsTabConnected as SnippetsTab } from './SnippetsTab.js';
 import helpers from '../helpers.js';

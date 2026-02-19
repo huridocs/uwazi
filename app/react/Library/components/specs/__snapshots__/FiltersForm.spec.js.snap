@@ -1,7 +1,90 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`FiltersForm render() should render diferent type fileds 1`] = `
-<Connect(FiltersFromProperties)
+<FiltersFromProperties
+  aggregations={
+    Immutable.Map {
+      "all": Immutable.Map {
+        "select": Immutable.Map {
+          "count": 10,
+          "buckets": Immutable.List [
+            Immutable.Map {
+              "key": "a",
+              "label": "a",
+              "filtered": Immutable.Map {
+                "doc_count": 1,
+              },
+            },
+            Immutable.Map {
+              "key": "b",
+              "label": "b",
+              "filtered": Immutable.Map {
+                "doc_count": 1,
+              },
+            },
+            Immutable.Map {
+              "key": "c",
+              "label": "c",
+              "filtered": Immutable.Map {
+                "doc_count": 1,
+              },
+              "values": Immutable.List [
+                Immutable.Map {
+                  "key": "d",
+                  "label": "d",
+                  "filtered": Immutable.Map {
+                    "doc_count": 1,
+                  },
+                },
+              ],
+            },
+            Immutable.Map {
+              "key": "missing",
+              "label": "No Label",
+              "filtered": Immutable.Map {
+                "doc_count": 6,
+              },
+            },
+          ],
+        },
+        "multiselect": Immutable.Map {
+          "count": 3,
+          "buckets": Immutable.List [
+            Immutable.Map {
+              "key": "a",
+              "label": "a",
+              "filtered": Immutable.Map {
+                "doc_count": 1,
+              },
+            },
+            Immutable.Map {
+              "key": "b",
+              "label": "b",
+              "filtered": Immutable.Map {
+                "doc_count": 1,
+              },
+            },
+            Immutable.Map {
+              "key": "c",
+              "label": "c",
+              "filtered": Immutable.Map {
+                "doc_count": 1,
+              },
+              "values": Immutable.List [
+                Immutable.Map {
+                  "key": "d",
+                  "label": "d",
+                  "filtered": Immutable.Map {
+                    "doc_count": 1,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
+    }
+  }
   onChange={[Function]}
   properties={
     Array [
@@ -97,6 +180,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
     ]
   }
   storeKey="library"
+  templates={Array []}
   translationContext="System"
 />
 `;

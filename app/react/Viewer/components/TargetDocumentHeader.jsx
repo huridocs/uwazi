@@ -105,4 +105,9 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { TargetDocumentHeader };
+const TargetDocumentHeaderConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TargetDocumentHeader);
+
+export { TargetDocumentHeader, TargetDocumentHeaderConnected };

@@ -189,4 +189,9 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-export { MetadataFormButtons };
+const MetadataFormButtonsConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MetadataFormButtons);
+
+export { MetadataFormButtons, MetadataFormButtonsConnected };
