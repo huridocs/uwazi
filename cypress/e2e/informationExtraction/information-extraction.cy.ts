@@ -252,10 +252,7 @@ describe('Information Extraction', () => {
     it('should display suggestions and be accessible', () => {
       cy.contains('Extractor 1 edited');
       cy.getByTestId('settings-ix').scrollTo('top', { ensureScrollable: false });
-      cy.getByTestId('settings-content').matchImageSnapshot({
-        disableTimersAndAnimations: true,
-        failureThreshold: 0.08,
-      });
+      cy.getByTestId('settings-content').matchImageSnapshot();
       cy.checkA11y(undefined, undefined, logA11yViolations);
     });
 

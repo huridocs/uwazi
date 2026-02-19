@@ -210,10 +210,7 @@ describe('Pages', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Country page');
-      cy.get('table').matchImageSnapshot({
-        disableTimersAndAnimations: true,
-        failureThreshold: 0.08,
-      });
+      cy.get('table').matchImageSnapshot();
     });
 
     it('should allow to cancel deletion', () => {

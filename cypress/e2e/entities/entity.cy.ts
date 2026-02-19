@@ -102,8 +102,6 @@ const checkMediaSnapshots = (selector: string, options = {}) => {
   cy.get(selector).scrollIntoView({ offset: { top: -30, left: 0 } });
   cy.get(selector).matchImageSnapshot({
     ...options,
-    disableTimersAndAnimations: true,
-    failureThreshold: 0.08,
   });
 };
 

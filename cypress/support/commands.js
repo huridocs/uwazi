@@ -224,6 +224,7 @@ addMatchImageSnapshotCommand({
   comparisonMethod: 'ssim',
   failureThreshold: 0.02,
   failureThresholdType: 'percent',
+  disableTimersAndAnimations: true,
 });
 
 export {};
