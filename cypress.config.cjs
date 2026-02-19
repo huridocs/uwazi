@@ -43,7 +43,6 @@ const cypressWebpackConfig = {
     fallback: {
       ...webpackConfig.resolve.fallback,
       fs: false,
-      path: false,
     },
   },
 };
