@@ -212,7 +212,7 @@ describe('Pages', () => {
       cy.contains('Country page');
       cy.get('table').matchImageSnapshot({
         disableTimersAndAnimations: true,
-        threshold: 0.08,
+        failureThreshold: 0.08,
       });
     });
 
