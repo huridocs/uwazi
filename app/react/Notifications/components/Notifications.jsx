@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { NotificationConnected as Notification } from './Notification.js';
+import { Notification } from './Notification.js';
 
 class Notifications extends Component {
   render() {

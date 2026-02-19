@@ -200,4 +200,7 @@ export function mapStateToProps(state, props) {
 }
 
 const FiltersFromPropertiesConnected = connect(mapStateToProps)(FiltersFromProperties);
-export { FiltersFromProperties, FiltersFromPropertiesConnected };
+export {
+  FiltersFromProperties as FiltersFromPropertiesView,
+  FiltersFromPropertiesConnected as FiltersFromProperties,
+};

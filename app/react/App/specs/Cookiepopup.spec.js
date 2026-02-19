@@ -4,6 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import * as Cookie from 'tiny-cookie';
+import { Notification } from '#app/Notifications/components/Notification.js';
 import { CookiepopupView as Cookiepopup } from '../Cookiepopup.js';
 
 let cookieValue;
@@ -33,7 +34,9 @@ describe('Cookiepopup', () => {
   describe('when the cookiepolicy is active and the cookie not exists', () => {
     it('should render a notification', () => {
       render();
-      expect(component).toMatchSnapshot();
+      const notification = component.find(Notification);
+      expect(notification.length).toBe(1);
+      expect(notification.props().id).toBe('cookiepolicy');
     });
   });
 

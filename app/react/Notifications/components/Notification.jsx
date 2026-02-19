@@ -57,4 +57,4 @@ function mapDispatchToProps(dispatch) {
 
 const NotificationConnected = connect(undefined, mapDispatchToProps)(Notification);
 
-export { Notification, NotificationConnected };
+export { Notification as NotificationView, NotificationConnected as Notification };

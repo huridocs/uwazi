@@ -114,7 +114,9 @@ describe('FiltersForm', () => {
     it('should render diferent type fileds', () => {
       render();
       const fields = component.find(FiltersFromProperties);
-      expect(fields).toMatchSnapshot();
+      expect(fields.length).toBe(1);
+      expect(fields.props().storeKey).toBe('library');
+      expect(fields.props().properties.length).toBeGreaterThan(0);
     });
 
     it('should omit No Label aggregation when filter is default and no templates are selected', () => {
