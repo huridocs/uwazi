@@ -1,6 +1,6 @@
-import { DateRange } from '#app/ReactReduxForms/index.js';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { DateRange } from '#app/ReactReduxForms/index.js';
 
 const DateFilter = ({ onChange = () => {}, model, label = '', format = '' }) => (
   <ul className="search__filter is-active">

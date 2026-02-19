@@ -9,7 +9,6 @@ import { FormGroup } from '#app/DocumentForm/components/FormGroup.js';
 import { getAggregationSuggestions } from '#app/Library/actions/libraryActions.js';
 import { selectTemplates } from '#app/utils/coreSelectors.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
-
 import { DateFilter } from './DateFilter.js';
 import { NestedFilter } from './NestedFilter.js';
 import { NumberRangeFilter } from './NumberRangeFilter.js';

@@ -1,12 +1,12 @@
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { t, Translate } from '#app/I18N/index.js';
 import { SidePanel } from '#app/Layout/SidePanel.js';
 import { resetFilters } from '#app/Library/actions/filterActions.js';
 import { FiltersForm } from '#app/Library/components/FiltersForm.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Icon } from '#UI/index.js';
 import { hideFilters } from '#app/Entities/actions/uiActions.js';
 import { withRouter } from '#app/componentWrappers.js';
@@ -88,8 +88,4 @@ const LibraryFiltersConnected = connect(
   mapStateToProps,
   mapDispatchToProps
 )(withRouter(LibraryFilters));
-export {
-  LibraryFilters as LibraryFiltersView,
-  LibraryFiltersConnected,
-  mapStateToProps,
-};
+export { LibraryFilters as LibraryFiltersView, LibraryFiltersConnected, mapStateToProps };
