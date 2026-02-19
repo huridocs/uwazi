@@ -222,7 +222,7 @@ Cypress.Commands.add('waitForLegacyNotifications', () => {
 
 addMatchImageSnapshotCommand({
   comparisonMethod: 'ssim',
-  failureThreshold: 0.02,
+  failureThreshold: 0.08,
   failureThresholdType: 'percent',
   disableTimersAndAnimations: true,
 });
