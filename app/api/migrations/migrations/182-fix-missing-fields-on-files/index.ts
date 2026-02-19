@@ -56,9 +56,7 @@ export default {
 
       if (!file.size) {
         const size = await fileSizeResolver.getFileSize(file);
-        if (size !== undefined) {
-          updateSet.size = size;
-        }
+        updateSet.size = size ?? 0;
       }
 
       if (Object.keys(updateSet).length) {

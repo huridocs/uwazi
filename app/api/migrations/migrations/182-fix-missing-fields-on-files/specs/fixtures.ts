@@ -5,6 +5,8 @@ const fileMissingCreationDateId = ObjectId.createFromTime(1715000000);
 const fileMissingSizeLocalId = new ObjectId();
 const fileMissingSizeS3Id = new ObjectId();
 const fileAlreadyCompleteId = new ObjectId();
+const fileMissingBothLocalId = ObjectId.createFromTime(1716000000);
+const fileMissingBothS3Id = ObjectId.createFromTime(1717000000);
 
 const fileMissingCreationDate = {
   _id: fileMissingCreationDateId,
@@ -35,6 +37,18 @@ const fileAlreadyComplete = {
   size: 222,
 };
 
+const fileMissingBothLocal = {
+  _id: fileMissingBothLocalId,
+  filename: 'local-file-missing-both.pdf',
+  type: 'document' as const,
+};
+
+const fileMissingBothS3 = {
+  _id: fileMissingBothS3Id,
+  filename: 's3-file-missing-both.pdf',
+  type: 'document' as const,
+};
+
 export const fixtures: Fixture = {
   settings: [
     {
@@ -42,7 +56,14 @@ export const fixtures: Fixture = {
     },
   ],
 
-  files: [fileAlreadyComplete, fileMissingCreationDate, fileMissingSizeLocal, fileMissingSizeS3],
+  files: [
+    fileAlreadyComplete,
+    fileMissingCreationDate,
+    fileMissingSizeLocal,
+    fileMissingSizeS3,
+    fileMissingBothLocal,
+    fileMissingBothS3,
+  ],
 };
 
 export {
@@ -54,4 +75,8 @@ export {
   fileMissingSizeLocalId,
   fileMissingSizeS3,
   fileMissingSizeS3Id,
+  fileMissingBothLocal,
+  fileMissingBothLocalId,
+  fileMissingBothS3,
+  fileMissingBothS3Id,
 };

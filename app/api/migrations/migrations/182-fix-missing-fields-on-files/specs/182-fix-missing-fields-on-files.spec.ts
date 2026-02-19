@@ -11,6 +11,8 @@ import {
 import testingDB from 'api/utils/testing_db';
 import {
   fileAlreadyCompleteId,
+  fileMissingBothLocalId,
+  fileMissingBothS3Id,
   fileMissingCreationDateId,
   fileMissingSizeLocal,
   fileMissingSizeLocalId,
@@ -168,6 +170,40 @@ describe('migration fix-missing-fields-on-files', () => {
         Key: key,
       })
     );
+  });
+
+  it('should set size to zero and creationDate from _id when local file does not exist', async () => {
+    const { sut } = createSut();
+
+    await sut.up();
+
+    const file = await testingDB
+      .mongodb!.collection('files')
+      .findOne({ _id: fileMissingBothLocalId });
+
+    expect(file!.size).toBe(0);
+    expect(file!.creationDate).toBe(fileMissingBothLocalId.getTimestamp().getTime());
+  });
+
+  it('should set size to zero and creationDate from _id when s3 file does not exist', async () => {
+    const { sut } = createSut();
+
+    await testingDB
+      .db('uwazi_shared_db')
+      .collection('tenants')
+      .updateOne({ dbName: testingDB.dbName }, { $set: { featureFlags: { s3Storage: true } } });
+
+    await sut.up();
+
+    const file = await testingDB.mongodb!.collection('files').findOne({ _id: fileMissingBothS3Id });
+
+    expect(file!.size).toBe(0);
+    expect(file!.creationDate).toBe(fileMissingBothS3Id.getTimestamp().getTime());
+
+    await testingDB
+      .db('uwazi_shared_db')
+      .collection('tenants')
+      .updateOne({ dbName: testingDB.dbName }, { $set: { featureFlags: { s3Storage: false } } });
   });
 
   it('should not update files that already have creationDate and size', async () => {
