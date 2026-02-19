@@ -18,7 +18,9 @@ const httpRequestDuration = new Histogram({
   help: 'Duration of HTTP requests in seconds',
   registers: [registry],
   labelNames: ['method', 'route', 'env', 'port'],
-  buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10],
+
+  //        50ms 100ms 250ms 500ms 750ms 1s 2.5s 5s 10s
+  buckets: [0.05, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 10],
 });
 
 const collectNodeProcessMetrics = () => collectDefaultMetrics({ register: registry });

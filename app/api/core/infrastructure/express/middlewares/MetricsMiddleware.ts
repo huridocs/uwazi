@@ -11,7 +11,8 @@ const shouldSample = (route: RouteType): route is string => {
 
   if (EXCLUDED_ROUTES.includes(route)) return false;
 
-  return true;
+  // Sampling 50% of the requests for security reasons.
+  return Math.random() <= 0.5;
 };
 
 const metricsMiddleware = (request: Request, response: Response, next: NextFunction) => {
