@@ -44,6 +44,31 @@ export default function () {
     },
   ];
 
+  const getBaseAggregationsStructure = () => ({
+    all: {
+      global: {},
+      aggregations: {
+        _types: {
+          terms: {
+            field: 'template.raw',
+            missing: 'missing',
+            size: preloadOptionsSearch(),
+          },
+          aggregations: {
+            filtered: {
+              filter: {
+                bool: {
+                  must: [{ bool: { should: [] } }],
+                  filter: getDefaultFilter(),
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
   const baseQuery = {
     explain: false,
     _source: {
@@ -78,30 +103,7 @@ export default function () {
       },
     },
     sort: [],
-    aggregations: {
-      all: {
-        global: {},
-        aggregations: {
-          _types: {
-            terms: {
-              field: 'template.raw',
-              missing: 'missing',
-              size: preloadOptionsSearch(),
-            },
-            aggregations: {
-              filtered: {
-                filter: {
-                  bool: {
-                    must: [{ bool: { should: [] } }],
-                    filter: getDefaultFilter(),
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    aggregations: getBaseAggregationsStructure(),
   };
 
   const { aggregations } = baseQuery.aggregations.all;
@@ -360,6 +362,11 @@ export default function () {
     },
 
     aggregations(properties) {
+      // Ensure aggregations structure exists (it might have been cleared by resetAggregations)
+      if (!baseQuery.aggregations.all) {
+        baseQuery.aggregations = getBaseAggregationsStructure();
+      }
+
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
@@ -444,7 +451,8 @@ export default function () {
     },
 
     resetAggregations() {
-      baseQuery.aggregations.all.aggregations = {};
+      // Completely clear aggregations - no global scan, no property aggregations
+      baseQuery.aggregations = {};
       return this;
     },
 

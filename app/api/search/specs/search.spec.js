@@ -1291,6 +1291,82 @@ describe('search', () => {
     expect(resultsFound.rows.length).toBe(1);
   });
 
+  describe('performAggregations flag', () => {
+    it('should not include aggregations when performAggregations is false', async () => {
+      userFactory.mock(undefined);
+
+      // Spy on elastic.search to capture the query
+      const elasticSearchSpy = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          performAggregations: false,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = elasticSearchSpy.mock.calls[0][0].body;
+
+      // Assert that aggregations are empty or not present
+      expect(esQuery.aggregations).toEqual({});
+
+      elasticSearchSpy.mockRestore();
+    });
+
+    it('should include aggregations by default when performAggregations is not specified', async () => {
+      userFactory.mock(undefined);
+
+      // Spy on elastic.search to capture the query
+      const elasticSearchSpy = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          types: [ids.template1],
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = elasticSearchSpy.mock.calls[0][0].body;
+
+      // Assert that aggregations exist and are not empty
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(Object.keys(esQuery.aggregations.all.aggregations).length).toBeGreaterThan(0);
+
+      elasticSearchSpy.mockRestore();
+    });
+
+    it('should include aggregations when performAggregations is true', async () => {
+      userFactory.mock(undefined);
+
+      // Spy on elastic.search to capture the query
+      const elasticSearchSpy = jest.spyOn(elastic, 'search');
+
+      await search.search(
+        {
+          searchTerm: 'Batman',
+          types: [ids.template1],
+          performAggregations: true,
+        },
+        'en'
+      );
+
+      // Get the ES query that was sent
+      const esQuery = elasticSearchSpy.mock.calls[0][0].body;
+
+      // Assert that aggregations exist and are not empty
+      expect(esQuery.aggregations).toBeDefined();
+      expect(esQuery.aggregations.all).toBeDefined();
+      expect(Object.keys(esQuery.aggregations.all.aggregations).length).toBeGreaterThan(0);
+
+      elasticSearchSpy.mockRestore();
+    });
+  });
+
   describe('bulkDeleteBySharedId()', () => {
     const getBySharedIds = sharedIds =>
       elastic.search({

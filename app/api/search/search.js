@@ -642,8 +642,11 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result.obsoleteMetadata = v2processors.obsoleteMetadata(hit);
     return result;
   });
+
+  // Handle case where aggregations might be completely absent (when performAggregations: false)
+  const aggregationsAll = response.body.aggregations?.all || {};
   const sanitizedAggregations = await _sanitizeAggregations(
-    response.body.aggregations.all,
+    aggregationsAll,
     templates,
     dictionaries,
     language
@@ -781,10 +784,12 @@ const buildQuery = async (query, language, user, resources) => {
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  query.performAggregations = query.performAggregations || true;
-  if (query.performAggregations) {
+  if (query.performAggregations !== false) {
     const aggregations = await aggregationProperties(properties, allProps);
     queryBuilder.aggregations(aggregations);
+  } else {
+    // When aggregations are explicitly disabled, clear them completely
+    queryBuilder.resetAggregations();
   }
 
   return queryBuilder;
@@ -816,8 +821,10 @@ const search = {
       queryBuilder.publishingStatusAggregations();
     }
 
+    const esQuery = queryBuilder.query();
+
     return elastic
-      .search({ body: queryBuilder.query() })
+      .search({ body: esQuery })
       .then(async response => {
         const processed = await processResponse(
           response,
