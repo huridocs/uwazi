@@ -191,11 +191,12 @@ describe('Entity with main documents', () => {
     cy.waitForLegacyNotifications();
   });
 
+  // eslint-disable-next-line max-statements
   it('should create a reference from main document', () => {
     cy.contains('a', 'Library').click();
     cy.contains('.item-document', 'Entity with main documents').contains('View').click();
-    cy.contains('span', 'La Sentencia de fondo');
-    cy.get('#p3R_mc24 > span:nth-child(2)').realClick({ clickCount: 3 });
+    cy.contains('span', 'La Sentencia de fondo').should('be.visible');
+    cy.contains('span', 'La Sentencia de fondo').realClick({ clickCount: 3 });
     cy.get('.fa-file', { timeout: 5000 }).then(() => {
       cy.get('.fa-file').realClick();
     });
