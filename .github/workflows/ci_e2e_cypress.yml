@@ -281,9 +281,6 @@ jobs:
           REDIS_PORT: 6379
         run: .github/scripts/start-uwazi.sh
 
-      - name: Clear Cypress app data
-        run: rm -rf /github/home/.config/Cypress/cy
-
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
@@ -303,7 +300,8 @@ jobs:
               "pageLoadTimeout": 30000,
               "video": true,
               "screenshotOnRunFailure": true,
-              "trashAssetsBeforeRuns": false
+              "trashAssetsBeforeRuns": false,
+              "failFast": false
             }
         timeout-minutes: 25
         env:

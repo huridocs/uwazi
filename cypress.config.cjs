@@ -45,6 +45,9 @@ const cypressWebpackConfig = {
       fs: false,
     },
   },
+  plugins: (webpackConfig.plugins || []).filter(
+    plugin => plugin?.constructor?.name !== 'CleanWebpackPlugin'
+  ),
 };
 
 const retries = process.env.CYPRESS_RETRIES ? parseInt(process.env.CYPRESS_RETRIES, 10) : 0;
