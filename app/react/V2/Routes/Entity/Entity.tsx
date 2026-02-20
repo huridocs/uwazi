@@ -61,10 +61,7 @@ const Entity = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
   const mainPdfRef = useRef<PDFHandle>(null);
-  const mainPdfController = useMemo(
-    () => createPdfController(mainPdfRef),
-    [mainPdfRef]
-  );
+  const mainPdfController = useMemo(() => createPdfController(mainPdfRef), [mainPdfRef]);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -76,7 +73,12 @@ const Entity = () => {
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView ref={mainPdfRef} mainPdfController={mainPdfController} entity={entity} pagePlaintext={pagePlaintext} />
+          <PDFView
+            ref={mainPdfRef}
+            mainPdfController={mainPdfController}
+            entity={entity}
+            pagePlaintext={pagePlaintext}
+          />
         </Tabs.Tab>
       );
     }

@@ -267,4 +267,3 @@ const ToCPanel = ({
 };
 
 export { ToCPanel };
-anel };

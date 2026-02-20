@@ -172,9 +172,3 @@ const ReferencesPanel = ({
 };
 
 export { ReferencesPanel };
-/Panel.Footer>
-    </Panel>
-  );
-};
-
-export { ReferencesPanel };
