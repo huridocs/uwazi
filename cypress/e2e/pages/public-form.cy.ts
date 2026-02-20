@@ -71,7 +71,7 @@ describe('Public Form', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
-      cy.get('body').toMatchImageSnapshot();
+      cy.get('body').matchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Test public submit entity', {
         force: true,
         delay: 0,
@@ -115,7 +115,7 @@ describe('Public Form', () => {
     it('should revisit the page and fill the text, select and date fields', () => {
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
-      cy.get('body').toMatchImageSnapshot();
+      cy.get('body').matchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Entity with image and media fields', {
         force: true,
         delay: 0,
@@ -192,9 +192,6 @@ describe('Public Form', () => {
 
       // Wait for attachment files to be present instead of network requests (caching compatible)
       cy.get('.attachment-name span:first-of-type').should('have.length', 3);
-
-      //cy.get('.attachments-list-parent').eq(0).scrollIntoView();
-      //cy.get('.attachments-list-parent').eq(0).toMatchImageSnapshot();
 
       // get the names of the supporting files in first span of .attachment-name
       cy.get('.attachment-name span:first-of-type').then($spans => {

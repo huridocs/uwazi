@@ -203,7 +203,7 @@ describe('Information Extraction', () => {
     });
 
     it('should check table display and accessibility', () => {
-      cy.getByTestId('settings-ix').toMatchImageSnapshot();
+      cy.getByTestId('settings-ix').matchImageSnapshot();
       cy.checkA11y(undefined, undefined, logA11yViolations);
     });
 
@@ -252,10 +252,7 @@ describe('Information Extraction', () => {
     it('should display suggestions and be accessible', () => {
       cy.contains('Extractor 1 edited');
       cy.getByTestId('settings-ix').scrollTo('top', { ensureScrollable: false });
-      cy.getByTestId('settings-content').toMatchImageSnapshot({
-        disableTimersAndAnimations: true,
-        threshold: 0.08,
-      });
+      cy.getByTestId('settings-content').matchImageSnapshot();
       cy.checkA11y(undefined, undefined, logA11yViolations);
     });
 
