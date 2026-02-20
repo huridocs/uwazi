@@ -21,20 +21,20 @@ describe('Library responsive view', () => {
     it('should open the toolbar', () => {
       cy.contains('button', 'Show toolbar').realTouch();
       cy.get('div.search-list').should('be.visible');
-      cy.get('#root').toMatchImageSnapshot();
+      cy.get('#root').matchImageSnapshot();
     });
 
     it('show sould the filters sidepanel', () => {
       cy.contains('button', 'Show filters').realTouch();
       cy.contains('.sidepanel-title', 'Filters');
-      cy.get('#root').toMatchImageSnapshot();
+      cy.get('#root').matchImageSnapshot();
       cy.get('.closeSidepanel.only-mobile').realTouch();
       cy.contains('button', 'Hide toolbar').realTouch();
     });
 
     it('should open the actions bar', () => {
       cy.contains('button', 'Show actions').realTouch();
-      cy.get('#root').toMatchImageSnapshot();
+      cy.get('#root').matchImageSnapshot();
       cy.contains('button', 'Hide actions').realTouch();
     });
   });
@@ -49,7 +49,7 @@ describe('Library responsive view', () => {
         .realTouch();
 
       cy.get('.side-panel.metadata-sidepanel.is-active').should('be.visible');
-      cy.get('#root').toMatchImageSnapshot();
+      cy.get('#root').matchImageSnapshot();
     });
 
     it('should check some of the metadata', () => {

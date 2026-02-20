@@ -3,10 +3,10 @@
   "compilerOptions": {
     "types": [
       "cypress",
-      "cypress-plugin-snapshots",
       "webpack-env",
       "@4tw/cypress-drag-drop",
-      "cypress-real-events"
+      "cypress-real-events",
+      "@simonsmith/cypress-image-snapshot/types"
     ]
   },
   "include": [

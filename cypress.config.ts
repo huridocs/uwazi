@@ -2,6 +2,7 @@ import fs from 'fs';
 import { defineConfig } from 'cypress';
 import webpackConfig from './webpack.config';
 import cypressFailFast from 'cypress-fail-fast/plugin';
+import { addMatchImageSnapshotPlugin } from '@simonsmith/cypress-image-snapshot/plugin';
 
 const cypressWebpackConfig = {
   ...webpackConfig,
@@ -42,8 +43,6 @@ const cypressWebpackConfig = {
   },
 };
 
-const { initPlugin } = require('cypress-plugin-snapshots/plugin');
-
 const retries = process.env.CYPRESS_RETRIES ? parseInt(process.env.CYPRESS_RETRIES, 10) : 0;
 
 export default defineConfig({
@@ -54,9 +53,6 @@ export default defineConfig({
   env: {
     FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'false',
     FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'run',
-    'cypress-plugin-snapshots': {
-      serverEnabled: false,
-    },
   },
   e2e: {
     baseUrl: 'http://localhost:3000',
@@ -66,7 +62,7 @@ export default defineConfig({
     testIsolation: false,
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     setupNodeEvents(on, config) {
-      initPlugin(on, config);
+      addMatchImageSnapshotPlugin(on);
       cypressFailFast(on, config);
 
       // Add logging tasks for accessibility violations
@@ -123,8 +119,7 @@ export default defineConfig({
       webpackConfig: cypressWebpackConfig,
     },
     specPattern: 'app/react/**/*.cy.tsx',
-    setupNodeEvents(on, config) {
-      initPlugin(on, config);
+    setupNodeEvents(on) {
       on('task', {
         log(message) {
           console.log(message);
