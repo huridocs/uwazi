@@ -1,4 +1,4 @@
-type EventPayload<ExtendedPayload> = ExtendedPayload & { tenantName: string; userId: string };
+type EventPayload<ExtendedPayload> = ExtendedPayload & { userId: string };
 
 abstract class Event<ExtendedPayload> {
   payload: EventPayload<ExtendedPayload>;

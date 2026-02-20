@@ -13,6 +13,7 @@ import { Property } from 'api/core/domain/template/Property';
 import { Result, ResultType } from 'api/core/libs/Result';
 import { Settings as SettingsType } from 'shared/types/settingsType';
 import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
+import { EntityDoesNotExistError } from 'api/core/domain/entity/errors';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -30,6 +31,27 @@ export class MongoMultiLanguageEntityDataSource
     transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
     });
+  }
+
+  async getById(id: string): Promise<ResultType<Entity, EntityDoesNotExistError>> {
+    const [entity] = await (await this.getByQuery({ sharedId: id })).all();
+
+    if (!entity) {
+      return Result.fail(new EntityDoesNotExistError(id));
+    }
+
+    return Result.ok(entity);
+  }
+
+  async update(entity: Entity): Promise<void> {
+    const dbos = MongoEntityMapper.toDBO(entity);
+
+    await this.getCollection().bulkWrite(
+      dbos.map(dbo => ({ updateOne: { filter: { _id: dbo._id }, update: { $set: dbo } } })),
+      { ignoreUndefined: true }
+    );
+
+    this.modifiedSharedIds.add(entity.sharedId);
   }
 
   async bulkUpdate(entities: Entity[]): Promise<void> {
@@ -316,6 +338,13 @@ export class MongoMultiLanguageEntityDataSource
     const aggregation = [
       { $match: query },
       {
+        $group: {
+          _id: '$sharedId',
+          template: { $first: '$template' },
+          entities: { $push: '$$ROOT' },
+        },
+      },
+      {
         $lookup: {
           from: 'templates',
           localField: 'template',
@@ -325,16 +354,9 @@ export class MongoMultiLanguageEntityDataSource
       },
       { $unwind: '$templateData' },
       {
-        $group: {
-          _id: '$sharedId',
-          template: { $first: '$templateData' },
-          entities: { $push: '$$ROOT' },
-        },
-      },
-      {
         $project: {
           _id: 0,
-          template: 1,
+          template: '$templateData',
           entities: 1,
         },
       },

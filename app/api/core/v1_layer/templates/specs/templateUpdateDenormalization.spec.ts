@@ -163,13 +163,21 @@ describe('Templates Update', () => {
         'entityA3',
         'templateA',
         {},
-        { title: 'entityA3 english', icon: { label: 'icon' }, language: 'en' }
+        {
+          title: 'entityA3 english',
+          icon: { _id: 'id', type: 'type', label: 'icon' },
+          language: 'en',
+        }
       ),
       f.entity(
         'entityA3',
         'templateA',
         {},
-        { title: 'entityA3 spanish', icon: { label: 'icon' }, language: 'es' }
+        {
+          title: 'entityA3 spanish',
+          icon: { _id: 'id', type: 'type', label: 'icon' },
+          language: 'es',
+        }
       ),
     ],
     connections: [...createConnection('entityB1', 'entityA3', 'rel', 'hub1')],
@@ -824,6 +832,152 @@ describe('Templates Update', () => {
         'generated_id',
         'generated_id',
         'generated_id',
+      ]);
+    });
+  });
+
+  describe('fullReindex: true - ensuring entities are reindexed when adding non-relationship properties', () => {
+    it('should reindex current template entities when adding text properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexText', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexText1',
+            'templateFullReindexText',
+            {},
+            { title: 'Text Entity 1', language: 'en' }
+          ),
+          f.entity(
+            'entityFullReindexText2',
+            'templateFullReindexText',
+            {},
+            { title: 'Text Entity 2', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexText', [
+        f.property('new_text_field', 'text', { label: 'New Text Field' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate('templateFullReindexText', 'elastic');
+      expect(entitiesInElastic.length).toBe(2);
+      expect(entitiesInElastic).toMatchObject([
+        { sharedId: 'entityFullReindexText1', title: 'Text Entity 1' },
+        { sharedId: 'entityFullReindexText2', title: 'Text Entity 2' },
+      ]);
+    });
+
+    it('should reindex current template entities when adding numeric properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexNumeric', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexNumeric1',
+            'templateFullReindexNumeric',
+            {},
+            { title: 'Numeric Entity 1', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexNumeric', [
+        f.property('new_numeric_field', 'numeric', { label: 'New Numeric Field' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate(
+        'templateFullReindexNumeric',
+        'elastic'
+      );
+      expect(entitiesInElastic.length).toBe(1);
+      expect(entitiesInElastic[0]).toMatchObject({
+        sharedId: 'entityFullReindexNumeric1',
+        title: 'Numeric Entity 1',
+      });
+    });
+
+    it('should reindex current template entities when adding date properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexDate', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexDate1',
+            'templateFullReindexDate',
+            {},
+            { title: 'Date Entity 1', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexDate', [
+        f.property('new_date_field', 'date', { label: 'New Date Field' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate('templateFullReindexDate', 'elastic');
+      expect(entitiesInElastic.length).toBe(1);
+      expect(entitiesInElastic[0]).toMatchObject({
+        sharedId: 'entityFullReindexDate1',
+        title: 'Date Entity 1',
+      });
+    });
+
+    it('should reindex current template with multiple entities when adding multiple properties with fullReindex=true', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [...fixtures.templates, f.template('templateFullReindexMultiple', [])],
+        entities: [
+          ...(fixtures.entities || []),
+          f.entity(
+            'entityFullReindexMultiple1',
+            'templateFullReindexMultiple',
+            {},
+            { title: 'Multiple Entity 1', language: 'en' }
+          ),
+          f.entity(
+            'entityFullReindexMultiple2',
+            'templateFullReindexMultiple',
+            {},
+            { title: 'Multiple Entity 2', language: 'en' }
+          ),
+          f.entity(
+            'entityFullReindexMultiple3',
+            'templateFullReindexMultiple',
+            {},
+            { title: 'Multiple Entity 3', language: 'en' }
+          ),
+        ],
+      });
+
+      const template = f.template('templateFullReindexMultiple', [
+        f.property('new_text', 'text', { label: 'New Text' }),
+        f.property('new_numeric', 'numeric', { label: 'New Numeric' }),
+        f.property('new_date', 'date', { label: 'New Date' }),
+        f.property('new_markdown', 'markdown', { label: 'New Markdown' }),
+      ]);
+
+      await updateTemplate(template, true);
+
+      const entitiesInElastic = await getEntitiesByTemplate(
+        'templateFullReindexMultiple',
+        'elastic'
+      );
+      expect(entitiesInElastic.length).toBe(3);
+      expect(entitiesInElastic).toMatchObject([
+        { sharedId: 'entityFullReindexMultiple1', title: 'Multiple Entity 1' },
+        { sharedId: 'entityFullReindexMultiple2', title: 'Multiple Entity 2' },
+        { sharedId: 'entityFullReindexMultiple3', title: 'Multiple Entity 3' },
       ]);
     });
   });

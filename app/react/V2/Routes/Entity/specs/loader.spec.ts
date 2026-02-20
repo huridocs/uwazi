@@ -69,7 +69,7 @@ describe('Entity loader with cache integration', () => {
     it('should fetch plaintext when not cached', async () => {
       await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
 
-      expect(files.getPagePlaintext).toHaveBeenCalledWith('doc1', 1);
+      expect(files.getPagePlaintext).toHaveBeenCalledWith('doc1', 1, undefined);
     });
 
     it('should use cached plaintext and not fetch again', async () => {
@@ -109,11 +109,14 @@ describe('Entity loader with cache integration', () => {
     it('should fetch search results when not cached', async () => {
       await loadEntity('http://localhost/entity/shared1?searchTerm=test');
 
-      expect(search.snippets).toHaveBeenCalledWith({
-        sharedId: 'shared1',
-        limit: 0,
-        searchString: 'test',
-      });
+      expect(search.snippets).toHaveBeenCalledWith(
+        {
+          sharedId: 'shared1',
+          limit: 0,
+          searchString: 'test',
+        },
+        undefined
+      );
     });
 
     it('should use cached search results and not fetch again', async () => {

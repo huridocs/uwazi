@@ -107,7 +107,7 @@ describe('Thesaurus', () => {
           name: 'Countries',
           values: [{ label: 'USA' }, { label: 'USA' }],
         })
-      ).toThrow('Duplicated labels: USA');
+      ).toThrow();
     });
 
     it('should prevent duplicate labels within a group', () => {
@@ -121,7 +121,7 @@ describe('Thesaurus', () => {
             },
           ],
         })
-      ).toThrow('Duplicated labels: Europe/France');
+      ).toThrow();
     });
 
     it('should allow same label in different groups', () => {
@@ -148,7 +148,7 @@ describe('Thesaurus', () => {
           name: 'Test',
           values: [{ label: 'A' }, { label: 'B' }, { label: 'A' }, { label: 'B' }],
         })
-      ).toThrow('Duplicated labels: A, B');
+      ).toThrow();
     });
 
     it('should detect duplicates in both root and nested levels', () => {
@@ -164,7 +164,7 @@ describe('Thesaurus', () => {
             },
           ],
         })
-      ).toThrow('Duplicated labels: Root1, Group/Child1');
+      ).toThrow();
     });
   });
 

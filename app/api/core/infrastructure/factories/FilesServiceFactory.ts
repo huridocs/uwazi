@@ -1,8 +1,8 @@
-import { FilesService } from 'api/core/application/FilesService';
+import { FilesService, FilesServiceDeps } from 'api/core/application/FilesService';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { DefaultDispatcher, NoOpDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants';
 import { FileContentsIO } from '../files/FileContentIO';
 import { PathManager } from '../files/PathManager';
@@ -15,8 +15,14 @@ import { IdGeneratorFactory } from './IdGeneratorFactory';
 class FilesServiceFactory {
   static default(
     transactionManager: MongoTransactionManager,
-    deps: Partial<ConstructorParameters<typeof FilesService>[0]> = {}
+    deps: Partial<FilesServiceDeps> = {}
   ) {
+    const jobsDispatcher =
+      deps.jobsDispatcher ||
+      (process.env.NODE_ENV === 'test'
+        ? NoOpDispatcher()
+        : DefaultDispatcher(tenants.current().name, transactionManager));
+
     return new FilesService({
       transactionManager,
       filesDS: FilesDataSourceFactory.default(transactionManager),
@@ -24,7 +30,7 @@ class FilesServiceFactory {
       pathManager: new PathManager({ tenant: tenants.current() }),
       idGenerator: IdGeneratorFactory.default(),
       fileStorage: FileStorageFactory.default(),
-      jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      jobsDispatcher,
       pdfService: new PDFService(),
       filesIO: new FileContentsIO(),
       eventBus: applicationEventsBus,

@@ -17,10 +17,12 @@ import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
 import { omit, sortBy } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
+import { getStore } from 'shared/atomStore';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
 import { tenants } from '../api/tenants';
@@ -29,7 +31,7 @@ import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { ClientFeatureFlags } from './V2/shared/types';
-import { atomStore, hydrateAtomStore } from './V2/atoms';
+import { hydrateAtomStore } from './V2/atoms';
 import { I18NUtils } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
@@ -73,6 +75,21 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
   });
 
   return headers;
+};
+
+const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, routeName?: string) => {
+  let elapsedMs: number | undefined;
+
+  const now = process.hrtime.bigint();
+  elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
+
+  LoggerFactory.default().debug('SSR Aborted', {
+    aborted: req.aborted,
+    url: req.url,
+    step,
+    elapsedMs,
+    routeName,
+  });
 };
 
 const createFetchRequest = (
@@ -261,22 +278,31 @@ const setReduxState = async (
   return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
-const getSSRProperties = async (
+const prepareStoreData = async (
   req: ExpressRequest,
-  routes: RouteObject[],
   settings: ClientSettings,
   language?: string
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
-  const { fetchRequest, ssrError } = createFetchRequest(req);
-  const { query } = createStaticHandler(routes);
-  const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+
+  const atomStore = getStore();
+  hydrateAtomStore(atomStoreData, atomStore);
   const reduxState = reduxStore.getState();
 
   return {
     reduxState,
+    atomStore,
     atomStoreData,
+  };
+};
+
+const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
+  const { fetchRequest, ssrError } = createFetchRequest(req);
+  const { query } = createStaticHandler(routes);
+  const staticHandleContext = await query(fetchRequest);
+  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
+
+  return {
     staticHandleContext,
     router,
     ssrError,
@@ -284,6 +310,7 @@ const getSSRProperties = async (
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
+  const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await Promise.all([
     settingsApi.get() as Promise<ClientSettings>,
@@ -300,9 +327,15 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
+  if (req.aborted) {
+    logSSRAborted(req, 'Matching routes', ssrStart);
+    return;
+  }
+
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
-  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
-  const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
+  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement | undefined;
+  const isProtectedRoute = lastRouteElement?.type === ProtectedRoute;
+  const routeName = lastRouteMatched?.route?.path || 'library';
 
   if (isProtectedRoute) {
     const userId = req.user?._id;
@@ -323,20 +356,41 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
-  const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =
-    await getSSRProperties(req, routes, settings, language);
+  if (req.aborted) {
+    logSSRAborted(req, 'Store data', ssrStart, routeName);
+    return;
+  }
+
+  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(req, settings, language);
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Route data', ssrStart, routeName);
+    return;
+  }
+
+  const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
   };
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
+    return;
+  }
+
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
     matched
   );
 
-  hydrateAtomStore(atomStoreData);
+  if (req.aborted) {
+    logSSRAborted(req, 'Component HTML', ssrStart, routeName);
+    return;
+  }
+
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
@@ -355,6 +409,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     </ReduxProvider>
   );
 
+  if (req.aborted) {
+    logSSRAborted(req, 'Root HTML', ssrStart, routeName);
+    return;
+  }
+
   const html = ReactDOMServer.renderToString(
     <Root
       language={atomStoreData.locale}
@@ -368,6 +427,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
   );
+
+  if (req.aborted) {
+    logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
+    return;
+  }
 
   const responseCode = loadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;

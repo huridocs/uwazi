@@ -1,8 +1,9 @@
 import React from 'react';
 import { captureException } from '@sentry/react';
+import { getStore } from 'shared/atomStore';
 import { isClient } from 'app/utils';
 import { Translate } from 'app/I18N';
-import { notificationAtom, atomStore } from 'app/V2/atoms';
+import { notificationAtom } from 'app/V2/atoms';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {
@@ -42,7 +43,7 @@ const reportErrorToSentry = (error: Error, key: string) => {
 
 const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   reportErrorToSentry(error, key);
-  atomStore.set(notificationAtom, () => ({
+  getStore().set(notificationAtom, () => ({
     type: 'error',
     text: <Translate>An error occurred</Translate>,
     details:
