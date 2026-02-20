@@ -3,8 +3,9 @@ const path = require('path');
 const { defineConfig } = require('cypress');
 const cypressFailFast = require('cypress-fail-fast/plugin');
 const webpackPreprocessor = require('@cypress/webpack-preprocessor');
-const configFactory = require('./webpack/config.cjs');
 const { addMatchImageSnapshotPlugin } = require('@simonsmith/cypress-image-snapshot/plugin');
+const configFactory = require('./webpack/config.cjs');
+
 const webpackConfig = configFactory(false);
 
 const cypressWebpackConfig = {
@@ -13,7 +14,7 @@ const cypressWebpackConfig = {
   optimization: {
     ...webpackConfig.optimization,
     minimize: false,
-    moduleIds: 'named',addMatchImageSnapshotPlugin
+    moduleIds: 'named',
     chunkIds: 'named',
   },
   module: {
