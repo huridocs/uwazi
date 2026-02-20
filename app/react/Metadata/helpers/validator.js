@@ -57,9 +57,13 @@ const linkValidation = property => {
 
 const validImageFile = file => file.mimetype && file.mimetype.includes('image');
 
-const validMediaFile = file =>
-  (file.mimetype && (file.mimetype.includes('video') || file.mimetype.includes('audio'))) ||
-  (file.url && ReactPlayer.canPlay(file.url));
+const validMediaFile = file => {
+  const mimeType = file.mimetype || file.headers?.get?.('content-type') || '';
+  return (
+    (mimeType && (mimeType.includes('video') || mimeType.includes('audio'))) ||
+    (file.url && ReactPlayer.canPlay(file.url))
+  );
+};
 
 export {
   notEmpty,

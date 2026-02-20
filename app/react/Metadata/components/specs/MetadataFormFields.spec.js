@@ -7,7 +7,7 @@ import { actions as formActions } from 'react-redux-form';
 import { FormGroup } from '#app/Forms/index.js';
 import { MultipleEditionFieldWarning } from '../MultipleEditionFieldWarning.js';
 import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms.js';
-import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields.js';
+import { MetadataFormFieldsView as MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields.js';
 import { AddThesauriValueButton } from '../AddThesauriValueButton.js';
 
 describe('MetadataFormFields with one entity to edit ', () => {
@@ -70,8 +70,8 @@ describe('MetadataFormFields with one entity to edit ', () => {
       model: 'metadata',
       storeKey: 'library',
       change: jest.fn(),
-      push: () => {},
-      saveThesaurus: () => {},
+      push: () => { },
+      saveThesaurus: () => { },
     };
 
     const componentProps = { ...props, ...args };
@@ -169,7 +169,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
     it('should allow passing an already-bound change (for LocalForm implementations)', () => {
       const dispatch = {};
-      const boundChange = () => {};
+      const boundChange = () => { };
       mapDispatchToProps(dispatch, {});
 
       expect(redux.bindActionCreators).toHaveBeenCalledWith(

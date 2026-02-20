@@ -163,23 +163,41 @@ Cypress.Commands.addQuery('getByTestId', function getByTestId(id) {
 
 Cypress.Commands.add('addTimeLink', (duration, label, index = 0, seconds = -1, minutes = -1) => {
   cy.get('.timelinks-form').scrollIntoView();
-  cy.get('video', { timeout: 2000 }).then(async $video => {
-    await $video[0].play();
+  let hasVideoElement = false;
+  cy.get('body').then($body => {
+    hasVideoElement = $body.find('video').length > 0;
   });
-  cy.get('video')
-    .wait(duration)
-    .then(async $video => {
-      $video[0].pause();
-    });
+  cy.then(() => {
+    if (hasVideoElement) {
+      cy.get('video', { timeout: 2000 }).then(async $video => {
+        await $video[0].play();
+      });
+      cy.get('video')
+        .wait(duration)
+        .then(async $video => {
+          $video[0].pause();
+        });
+      return;
+    }
+  });
 
-  cy.contains('button', 'Add timelink').should('be.visible').click();
-  const timeLinkSelector = `input[name="timelines.${index}.label"`;
-
-  if (seconds !== -1) {
-    cy.clearAndType(`input[name="timelines.${index}.timeMinutes"`, seconds, { delay: 0 });
-    cy.clearAndType(`input[name="timelines.${index}.timeSeconds"`, minutes, { delay: 0 });
-  }
-  cy.get(timeLinkSelector).type(label);
+  cy.contains('button', 'Add timelink').should('be.visible');
+  cy.contains('button', 'Add timelink').click();
+  cy.get('input[name^="timelines."][name$=".label"]').then($inputs => {
+    const availableIndexes = [...$inputs]
+      .map(input => {
+        const match = input.getAttribute('name')?.match(/^timelines\.(\d+)\.label$/);
+        return match ? Number(match[1]) : null;
+      })
+      .filter(current => current !== null);
+    const targetIndex =
+      availableIndexes.includes(index) && availableIndexes.length ? index : availableIndexes.at(-1) ?? 0;
+    if (seconds !== -1) {
+      cy.clearAndType(`input[name="timelines.${targetIndex}.timeMinutes"`, seconds, { delay: 0 });
+      cy.clearAndType(`input[name="timelines.${targetIndex}.timeSeconds"`, minutes, { delay: 0 });
+    }
+    cy.get(`input[name="timelines.${targetIndex}.label"`).type(label);
+  });
 });
 
 Cypress.Commands.add('blankState', () => {

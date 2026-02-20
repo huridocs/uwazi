@@ -298,7 +298,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
         .then(async res => {
-          if (validMediaFile(res)) {
+          const isValidMediaResponse = validMediaFile(res);
+          if (isValidMediaResponse) {
             return res.blob();
           }
           setErrorFlag(true);

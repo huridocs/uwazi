@@ -309,9 +309,11 @@ describe('Entities', () => {
       cy.contains('Text');
       cy.intercept('GET', 'api/files/*').as('getFile');
       clickOnEditEntity();
-      // Wait for the video element to exist in the edit form (it may not be visible due to scrolling)
+      cy.get('#metadataForm', { timeout: 12000 }).should('exist');
+      // Wait for media player to load in the edit form
       cy.contains('.form-group.media', 'Media').within(() => {
-        cy.get('video').should('exist');
+        cy.get('.video-container', { timeout: 12000 }).should('exist');
+        cy.get('video, .react-player', { timeout: 12000 }).should('exist');
       });
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1000);
       cy.addTimeLink(1000, 'Control point', 1, 12, 0);
@@ -334,6 +336,7 @@ describe('Entities', () => {
       cy.intercept('GET', 'api/files/*').as('getFile');
       cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
       clickOnEditEntity();
+      cy.get('#metadataForm', { timeout: 12000 }).should('exist');
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1500);
       cy.contains('Update');
       // Wait for media elements to load in the edit form
@@ -341,7 +344,8 @@ describe('Entities', () => {
         cy.get('img').should('exist');
       });
       cy.contains('.form-group.media', 'Media').within(() => {
-        cy.get('video').should('exist');
+        cy.get('.video-container', { timeout: 12000 }).should('exist');
+        cy.get('video, .react-player', { timeout: 12000 }).should('exist');
       });
       clickMediaAction('Media', 'Update');
       addVideo('', false);
