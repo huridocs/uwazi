@@ -178,7 +178,6 @@ Cypress.Commands.add('addTimeLink', (duration, label, index = 0, seconds = -1, m
         .then(async $video => {
           $video[0].pause();
         });
-      return;
     }
   });
 
@@ -192,7 +191,9 @@ Cypress.Commands.add('addTimeLink', (duration, label, index = 0, seconds = -1, m
       })
       .filter(current => current !== null);
     const targetIndex =
-      availableIndexes.includes(index) && availableIndexes.length ? index : availableIndexes.at(-1) ?? 0;
+      availableIndexes.includes(index) && availableIndexes.length
+        ? index
+        : (availableIndexes.at(-1) ?? 0);
     if (seconds !== -1) {
       cy.clearAndType(`input[name="timelines.${targetIndex}.timeMinutes"`, seconds, { delay: 0 });
       cy.clearAndType(`input[name="timelines.${targetIndex}.timeSeconds"`, minutes, { delay: 0 });

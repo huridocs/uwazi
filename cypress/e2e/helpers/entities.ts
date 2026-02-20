@@ -17,11 +17,14 @@ const clickOnEditEntity = (buttonTitle: string = 'Edit') => {
     if (sidePanelEditButton.length) {
       cy.get('aside.metadata-sidepanel.is-active')
         .contains('button.edit-metadata', buttonTitle)
-        .scrollIntoView()
-        .click({ force: true });
+        .as('editButton');
+      cy.get('@editButton').scrollIntoView();
+      cy.get('@editButton').click({ force: true });
       return;
     }
-    cy.contains('button', buttonTitle).scrollIntoView().click({ force: true });
+    cy.contains('button', buttonTitle).as('editButton');
+    cy.get('@editButton').scrollIntoView();
+    cy.get('@editButton').click({ force: true });
   });
   cy.then(() => {
     if (didFetchDictionaries) {
