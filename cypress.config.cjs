@@ -81,7 +81,7 @@ module.exports = defineConfig({
         },
       });
 
-      on('after:spec', (spec, results) => {
+      on('after:spec', (_spec, results) => {
         if (results && results.video) {
           const failures = results.tests.some(test =>
             test.attempts.some(attempt => attempt.state === 'failed')
