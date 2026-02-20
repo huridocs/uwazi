@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Start MongoDB replica set
         run: /usr/local/bin/setup-mongo-replica.sh
 
@@ -88,7 +88,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('patches/**') }}
       - name: install dependencies
         run: yarn install
-      
+
       - name: Clone dummy services
         if: matrix.needs_setup
         uses: actions/checkout@v4
@@ -116,100 +116,100 @@ jobs:
           key: cypress-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             cypress-${{ runner.os }}-
-      
+
       - name: Install Cypress binary if not cached
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
       - name: Forward ports for container networking
         run: |
-            echo "Setting up port forwarding for container networking..."
-            
-            # Check if socat is available
-            if ! command -v socat >/dev/null 2>&1; then
-              echo "ERROR: socat is not installed. Cannot set up port forwarding."
-              echo "Installing socat now..."
-              apt-get update -qq && apt-get install -y socat
-            fi
-            
-            # Try to find the actual IP addresses of the services
-            echo "Finding service IP addresses..."
-            REDIS_IP=""
-            ELASTICSEARCH_IP=""
-            
-            # Scan for Redis IP
-            for ip in $(seq 1 10); do
-              test_ip="172.18.0.$ip"
-              if [ "$test_ip" != "172.18.0.2" ]; then
-                if nc -z $test_ip 6379 2>/dev/null; then
-                  REDIS_IP="$test_ip"
-                  echo "Found Redis at $REDIS_IP:6379"
-                  break
-                fi
+          echo "Setting up port forwarding for container networking..."
+
+          # Check if socat is available
+          if ! command -v socat >/dev/null 2>&1; then
+            echo "ERROR: socat is not installed. Cannot set up port forwarding."
+            echo "Installing socat now..."
+            apt-get update -qq && apt-get install -y socat
+          fi
+
+          # Try to find the actual IP addresses of the services
+          echo "Finding service IP addresses..."
+          REDIS_IP=""
+          ELASTICSEARCH_IP=""
+
+          # Scan for Redis IP
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 6379 2>/dev/null; then
+                REDIS_IP="$test_ip"
+                echo "Found Redis at $REDIS_IP:6379"
+                break
               fi
-            done
-            
-            # Scan for Elasticsearch IP
-            for ip in $(seq 1 10); do
-              test_ip="172.18.0.$ip"
-              if [ "$test_ip" != "172.18.0.2" ]; then
-                if nc -z $test_ip 9200 2>/dev/null; then
-                  ELASTICSEARCH_IP="$test_ip"
-                  echo "Found Elasticsearch at $ELASTICSEARCH_IP:9200"
-                  break
-                fi
+            fi
+          done
+
+          # Scan for Elasticsearch IP
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 9200 2>/dev/null; then
+                ELASTICSEARCH_IP="$test_ip"
+                echo "Found Elasticsearch at $ELASTICSEARCH_IP:9200"
+                break
               fi
-            done
-            
-            # Set up port forwarding with IP addresses if found, otherwise use hostnames
-            if [ -n "$REDIS_IP" ]; then
-              echo "Forwarding localhost:6379 to $REDIS_IP:6379"
-              nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:$REDIS_IP:6379 > socat-redis.log 2>&1 &
-              echo "Redis socat command started with PID: $!"
-            else
-              echo "Using hostname for Redis forwarding: localhost:6379 to redis:6379"
-              nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
-              echo "Redis socat command started with PID: $!"
             fi
-            
-            if [ -n "$ELASTICSEARCH_IP" ]; then
-              echo "Forwarding localhost:9200 to $ELASTICSEARCH_IP:9200"
-              nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:$ELASTICSEARCH_IP:9200 > socat-elasticsearch.log 2>&1 &
-              echo "Elasticsearch socat command started with PID: $!"
-            else
-              echo "Using hostname for Elasticsearch forwarding: localhost:9200 to elasticsearch:9200"
-              nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
-              echo "Elasticsearch socat command started with PID: $!"
-            fi
-            
-            sleep 2
-            echo "Port forwarding setup complete"
-            echo ""
-            echo "=== VERIFYING PORT FORWARDING ==="
-            echo "Checking socat processes:"
-            ps aux | grep socat | grep -v grep || echo "No socat processes found"
-            echo ""
-            echo "Testing forwarded ports:"
-            echo "  localhost:6379 (should forward to redis:6379):"
-            nc -z localhost 6379 && echo "  ✅ localhost:6379 is now open" || echo "  ❌ localhost:6379 still closed"
-            echo "  localhost:9200 (should forward to elasticsearch:9200):"
-            curl -s --connect-timeout 5 http://localhost:9200/_cluster/health && echo "  ✅ localhost:9200 is now accessible" || echo "  ❌ localhost:9200 still not accessible"
-            echo ""
-            echo "Testing socat connectivity:"
-            echo "  Testing if socat can reach redis:6379:"
-            nc -z redis 6379 && echo "  ✅ redis:6379 reachable from socat" || echo "  ❌ redis:6379 not reachable from socat"
-            echo "  Testing if socat can reach elasticsearch:9200:"
-            nc -z elasticsearch 9200 && echo "  ✅ elasticsearch:9200 reachable from socat" || echo "  ❌ elasticsearch:9200 not reachable from socat"
-            echo ""
-            echo "Checking socat logs for errors:"
-            if [ -f socat-redis.log ]; then
-              echo "Redis socat log:"
-              cat socat-redis.log
-            fi
-            if [ -f socat-elasticsearch.log ]; then
-              echo "Elasticsearch socat log:"
-              cat socat-elasticsearch.log
-            fi  
+          done
+
+          # Set up port forwarding with IP addresses if found, otherwise use hostnames
+          if [ -n "$REDIS_IP" ]; then
+            echo "Forwarding localhost:6379 to $REDIS_IP:6379"
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:$REDIS_IP:6379 > socat-redis.log 2>&1 &
+            echo "Redis socat command started with PID: $!"
+          else
+            echo "Using hostname for Redis forwarding: localhost:6379 to redis:6379"
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
+            echo "Redis socat command started with PID: $!"
+          fi
+
+          if [ -n "$ELASTICSEARCH_IP" ]; then
+            echo "Forwarding localhost:9200 to $ELASTICSEARCH_IP:9200"
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:$ELASTICSEARCH_IP:9200 > socat-elasticsearch.log 2>&1 &
+            echo "Elasticsearch socat command started with PID: $!"
+          else
+            echo "Using hostname for Elasticsearch forwarding: localhost:9200 to elasticsearch:9200"
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
+            echo "Elasticsearch socat command started with PID: $!"
+          fi
+
+          sleep 2
+          echo "Port forwarding setup complete"
+          echo ""
+          echo "=== VERIFYING PORT FORWARDING ==="
+          echo "Checking socat processes:"
+          ps aux | grep socat | grep -v grep || echo "No socat processes found"
+          echo ""
+          echo "Testing forwarded ports:"
+          echo "  localhost:6379 (should forward to redis:6379):"
+          nc -z localhost 6379 && echo "  ✅ localhost:6379 is now open" || echo "  ❌ localhost:6379 still closed"
+          echo "  localhost:9200 (should forward to elasticsearch:9200):"
+          curl -s --connect-timeout 5 http://localhost:9200/_cluster/health && echo "  ✅ localhost:9200 is now accessible" || echo "  ❌ localhost:9200 still not accessible"
+          echo ""
+          echo "Testing socat connectivity:"
+          echo "  Testing if socat can reach redis:6379:"
+          nc -z redis 6379 && echo "  ✅ redis:6379 reachable from socat" || echo "  ❌ redis:6379 not reachable from socat"
+          echo "  Testing if socat can reach elasticsearch:9200:"
+          nc -z elasticsearch 9200 && echo "  ✅ elasticsearch:9200 reachable from socat" || echo "  ❌ elasticsearch:9200 not reachable from socat"
+          echo ""
+          echo "Checking socat logs for errors:"
+          if [ -f socat-redis.log ]; then
+            echo "Redis socat log:"
+            cat socat-redis.log
+          fi
+          if [ -f socat-elasticsearch.log ]; then
+            echo "Elasticsearch socat log:"
+            cat socat-elasticsearch.log
+          fi
 
       - name: Wait For and Download Artifact
         run: |
@@ -242,7 +242,7 @@ jobs:
           echo "Timed out waiting for artifact."
           exit 1
         timeout-minutes: 6
-      
+
       - name: Configure IX settings
         if: matrix.needs_ix_config
         run: yarn ix-config
@@ -280,7 +280,7 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
         run: .github/scripts/start-uwazi.sh
-          
+
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
@@ -309,12 +309,12 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:9200
           TRANSPILED: true
           CYPRESS_FAIL_FAST_ENABLED: false
-          
+
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: snapshots-${{ matrix.name }}
-          path: cypress/e2e/**/__image_snapshots__/
+          path: cypress/snapshots/
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
