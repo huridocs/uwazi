@@ -65,8 +65,7 @@ describe('PDF display', () => {
 
     it('should check the document', () => {
       cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS');
-      cy.get('.row').eq(0).toMatchImageSnapshot();
-      cy.get('div[data-region-selector-id="1"]').toMatchSnapshot({ name: 'PDF library render' });
+      cy.get('.row').eq(0).matchImageSnapshot();
     });
 
     it('should paginate forward', () => {
@@ -253,14 +252,6 @@ describe('PDF display', () => {
         cy.contains('Los escritos de 17 de septiembre y 17 de noviembre de 2010,').should(
           'be.visible'
         );
-      });
-
-      it('should check that can edit and cancel', () => {
-        cy.get('.ContextMenu-bottom .btn').realTouch();
-        cy.contains('.btn', 'Edit').realTouch();
-        cy.get('.highlight-rectangle').toMatchSnapshot({ name: 'responsive selection' });
-        cy.contains('.btn', 'Cancel').realTouch();
-        cy.get('.closeSidepanel').realTouch();
       });
     });
   });

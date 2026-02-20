@@ -45,7 +45,7 @@ const newPage = () => {
 const takeSnapshot = () => {
   cy.get('.markdown-viewer').should('be.visible');
   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.get('.markdown-viewer').wait(2000).toMatchImageSnapshot();
+  cy.get('.markdown-viewer').wait(2000).matchImageSnapshot();
 };
 
 const testChart = (chart: string, name: string) => {
