@@ -118,8 +118,12 @@ describe('Translations', () => {
       });
 
       it('Should discard changes', () => {
-        //this reload is needed to clear several legacy notifications
-        cy.reload();
+        cy.contains('a', 'Settings').click();
+        cy.contains('button', 'Discard changes').click();
+        cy.contains('span', 'Translations').click();
+        cy.get('[data-testid=settings-translations]').should('be.visible');
+        cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
+        cy.get('form').should('be.visible');
         cy.get('input[type=text]').eq(0).type('unwanted change', { delay: 0 });
         cy.contains('button', 'Cancel').click();
         cy.contains('button', 'Discard changes').click();
