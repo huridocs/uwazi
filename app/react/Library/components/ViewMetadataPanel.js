@@ -60,7 +60,7 @@ const mapStateToProps = (state, props) => {
     EntityForm,
     connectionsGroups: state.relationships?.list?.connectionsGroups || Immutable.List(),
     excludeConnectionsTab: Boolean(state.relationships?.list?.connectionsGroups?.length),
-    currentSidepanelView: state.library?.sidepanel?.view ?? 'entity',
+    currentSidepanelView: state.library?.sidepanel?.view,
     selectedDocument,
     defaultLanguage,
     newRelationshipsEnabled: !!state.settings?.collection?.get('features')?.get('newRelationships'),

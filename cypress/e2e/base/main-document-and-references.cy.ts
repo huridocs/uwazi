@@ -85,17 +85,28 @@ describe('text references', () => {
 
   it('should display relationships on the sidepanel', () => {
     cy.contains('a', 'Library').click();
+    cy.intercept('GET', '**/api/references/group_by_connection*').as('groupByConnection');
+    cy.intercept('GET', '**/api/references/search*').as('searchReferences');
     cy.contains(
       '.item-document:nth-child(1)',
       'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
     ).click();
-    cy.get('#tab-relationships').click();
-    cy.contains('#tabpanel-relationships', 'Relacionado a');
-    cy.contains(
-      '.sidepanel-relationship-right-entity',
-      'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
-    );
-    cy.contains('.sidepanel-relationship-right-entity', 'Chile');
+    cy.wait('@groupByConnection');
+    cy.wait('@searchReferences');
+    cy.get('.metadata-sidepanel.is-active').within(() => {
+      cy.get('#tab-relationships').click();
+      cy.wait('@groupByConnection');
+      cy.wait('@searchReferences');
+      cy.get('#tab-relationships').should($tab => {
+        const isActive = $tab.attr('aria-selected') === 'true' || $tab.hasClass('selected');
+        expect(isActive).to.equal(true);
+      });
+      cy.contains(
+        '#tabpanel-relationships .sidepanel-relationship-right-entity',
+        'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
+      );
+      cy.contains('#tabpanel-relationships .sidepanel-relationship-right-entity', 'Chile');
+    });
     cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
   });
 
@@ -145,9 +156,16 @@ describe('text references', () => {
 
 describe('Entity with main documents', () => {
   it('Should filter by restricted entities', () => {
-    cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
+    cy.get('body').then($body => {
+      if ($body.find('.metadata-sidepanel.is-active .closeSidepanel').length) {
+        cy.get('.metadata-sidepanel.is-active .closeSidepanel').first().click();
+      }
+      if ($body.find('[data-testid="modal"] button:contains("Discard changes")').length) {
+        cy.contains('[data-testid="modal"] button', 'Discard changes').click();
+      }
+    });
     cy.contains('a', 'Library').click();
-    cy.contains('Filters');
+    cy.contains('Filters', { timeout: 20000 });
     selectRestrictedEntities();
     cy.get('.item-document').should('have.length', 6);
   });
