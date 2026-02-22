@@ -117,3 +117,4 @@ export const mapStateToProps = (state, props) => ({
 
 const PieChartConnected = connect(mapStateToProps)(PieChartComponent);
 export { PieChartComponent as PieChartView, PieChartConnected as PieChart };
+export default PieChartConnected;

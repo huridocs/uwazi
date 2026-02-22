@@ -187,9 +187,9 @@ module.exports = production => {
     },
     plugins: [
       process.env.CYPRESS &&
-        new webpack.ProvidePlugin({
-          process: 'process/browser',
-        }),
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
@@ -218,6 +218,7 @@ module.exports = production => {
       }),
       new MonacoWebpackPlugin({
         languages: ['typescript', 'html', 'css'],
+        publicPath: '/',
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),

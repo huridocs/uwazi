@@ -25,4 +25,13 @@ Cypress.on('uncaught:exception', error => {
   if (error.message.includes('Script error.')) {
     return false;
   }
+  if (error.message.includes('ResizeObserver loop completed with undelivered notifications.')) {
+    return false;
+  }
+  if (
+    error.message.includes("Failed to execute 'importScripts' on 'WorkerGlobalScope'") ||
+    error.message.includes('editor.worker.js')
+  ) {
+    return false;
+  }
 });

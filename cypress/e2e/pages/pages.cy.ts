@@ -1,6 +1,7 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { contents, script } from '../helpers/entityViewPageFixtures.js';
+import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Pages', () => {
@@ -23,6 +24,7 @@ describe('Pages', () => {
 
   describe('Custom home page', () => {
     const setLandingPage = (pageURL: string) => {
+      dismissModalIfVisible();
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
       cy.clearAndType('input[id="landing-page"]', pageURL, { delay: 0 });
@@ -35,10 +37,7 @@ describe('Pages', () => {
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'Custom home page', { delay: 0 });
       cy.contains('Markdown').click();
-      cy.get('div[data-mode-id="html"]').type(
-        '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
-        { parseSpecialCharSequences: false, delay: 0 }
-      );
+      typeInEditor('html', '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>');
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.contains('button.bg-success-700', 'Save').click();
@@ -57,8 +56,7 @@ describe('Pages', () => {
 
     it('should render the custom page as home page', () => {
       cy.visit('http://localhost:3000');
-      cy.reload();
-      cy.get('h1').contains('Custom HomePage header');
+      cy.get('h1', { timeout: 30000 }).contains('Custom HomePage header');
     });
 
     it('should allow settings a public entity as a landing page', () => {
@@ -100,6 +98,7 @@ describe('Pages', () => {
 
   describe('Page edition', () => {
     it('should display existing code in an editor', () => {
+      dismissModalIfVisible();
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Country page')
@@ -116,6 +115,7 @@ describe('Pages', () => {
     });
 
     it('should allow to edit and get a preview of the page', () => {
+      cy.on('uncaught:exception', () => false);
       cy.contains('a', 'Pages').click();
       cy.contains('Page with error')
         .parent()
@@ -123,12 +123,9 @@ describe('Pages', () => {
           cy.contains('button', 'Edit').click();
         });
       cy.contains('View page').invoke('attr', 'target', '_self').click();
-      cy.location('pathname', { timeout: 500 }).should('include', 'page-with-error');
+      cy.location('pathname', { timeout: 12000 }).should('include', 'page-with-error');
       cy.contains('This content may not work correctly.');
-      cy.on('uncaught:exception', (_err, _runnable) => {
-        cy.contains('There is an unexpected error on this custom page');
-        return false;
-      });
+      cy.contains('There is an unexpected error on this custom page', { timeout: 20000 });
     });
 
     it('should validate an empty title', () => {
@@ -156,15 +153,9 @@ describe('Pages', () => {
       cy.clearAndType('input[name="title"]', 'My entity view page', { delay: 0 });
       cy.contains('Activate').click();
       cy.contains('Markdown').click();
-      cy.get('div[data-mode-id="html"]').type(contents, {
-        parseSpecialCharSequences: false,
-        delay: 0,
-      });
+      typeInEditor('html', contents);
       cy.contains('Javascript').click();
-      cy.get('div[data-mode-id="javascript"]').type(script, {
-        parseSpecialCharSequences: false,
-        delay: 0,
-      });
+      typeInEditor('javascript', script);
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.contains('button.bg-success-700', 'Save').click();

@@ -153,7 +153,7 @@ PageViewer.propTypes = {
   page: PropTypes.instanceOf(Immutable.Map),
   itemLists: PropTypes.instanceOf(Immutable.List),
   datasets: PropTypes.instanceOf(Immutable.Map),
-  error: PropTypes.instanceOf(Immutable.Map) || PropTypes.object,
+  error: PropTypes.oneOfType([PropTypes.instanceOf(Immutable.Map), PropTypes.object]),
   setBrowserTitle: PropTypes.bool,
 };
 

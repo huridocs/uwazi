@@ -100,3 +100,4 @@ export const mapStateToProps = (state, props) => ({
 
 const ListChartConnected = connect(mapStateToProps)(ListChartComponent);
 export { ListChartConnected as ListChart };
+export default ListChartConnected;
