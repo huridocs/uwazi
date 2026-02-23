@@ -17,7 +17,7 @@ interface MediaPlayerProps extends ReactPlayerProps {
 }
 
 const verifyUrl = (url: string): MediaType => {
-  if (!ReactPlayer.canPlay(url)) {
+  if (ReactPlayer.canPlay && !ReactPlayer.canPlay(url)) {
     return 'invalid';
   }
 

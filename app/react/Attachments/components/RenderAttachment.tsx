@@ -1,6 +1,6 @@
 import React from 'react';
-import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import ReactPlayer from 'react-player';
+import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import { ClientFile } from '#app/istore.js';
 import { MarkdownMedia } from '#app/Markdown/components/MarkdownMedia.js';
 import { isSerializedFile, prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
@@ -20,7 +20,8 @@ export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema 
 
   const isVideoAudio = mimetype.includes('video') || mimetype.includes('audio');
 
-  const isFromSupportedSite = attachment.url && ReactPlayer.canPlay(attachment.url);
+  const isFromSupportedSite =
+    attachment.url && ReactPlayer.canPlay && ReactPlayer.canPlay(attachment.url);
 
   if (isVideoAudio || isFromSupportedSite) {
     return fileURL ? (
