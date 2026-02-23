@@ -227,7 +227,7 @@ describe('CreateReference Component', () => {
     cy.contains('EN').should('be.visible');
   });
 
-  it('should allow selecting a PDF file', () => {
+  it('should allow selecting a PDF file and show Continue instead of Save', () => {
     cy.get('input[type="search"]').type('Human Rights');
     cy.contains('Document about Human Rights').click();
     cy.contains('Human Rights Document.pdf').click();
@@ -238,6 +238,9 @@ describe('CreateReference Component', () => {
         'satisfy',
         $el => $el.hasClass('border-primary-500') || $el.find('.border-primary-500').length > 0
       );
+    // In text mode with file selected, Continue is shown and Save is not (step 1)
+    cy.contains('Continue').closest('button').should('be.visible');
+    cy.contains('Save').should('not.exist');
   });
 
   it('should only allow selecting one file at a time', () => {
@@ -310,27 +313,51 @@ describe('CreateReference Component', () => {
     });
   });
 
-  it('should call onSave with file data when save is clicked in text mode', () => {
+  it('should keep Save disabled in step 2 until target text is selected and Back returns to step 1', () => {
+    // We cannot simulate PDF text selection in Cypress, so we only assert step 2 UI and Back.
     cy.contains('Related to').click();
     cy.get('input[type="search"]').type('Human Rights');
     cy.contains('Document about Human Rights').click();
-    // Select a file
     cy.contains('Human Rights Document.pdf').click();
-    cy.contains('Save').closest('button').click();
-    cy.get('@onSave').should('have.been.calledWith', {
-      selection: mockSelection,
-      targetEntityId: 'shared-1', // Should use sharedId, not _id
-      relationshipType: 'rel-1',
-      targetFileId: 'file-1',
-    });
+    cy.contains('Continue').closest('button').click();
+    cy.contains('Select text in the document below').should('be.visible');
+    cy.contains('Save').closest('button').should('be.disabled');
+    cy.contains('Back').closest('button').click();
+    cy.contains('Continue').should('be.visible');
   });
 
-  it('should disable save button in text mode when file is not selected', () => {
+  it('should disable Save in text mode when file is not selected', () => {
     cy.contains('Related to').click();
     cy.get('input[type="search"]').type('Human Rights');
     cy.contains('Document about Human Rights').click();
-    // Save button should be disabled without file selection in text mode
+    // No file selected: Save is shown and disabled (no Continue yet)
     cy.contains('Save').closest('button').should('be.disabled');
+  });
+
+  it('should show step 2 (target PDF) when Continue is clicked in text mode', () => {
+    cy.contains('Related to').click();
+    cy.get('input[type="search"]').type('Human Rights');
+    cy.contains('Document about Human Rights').click();
+    cy.contains('Human Rights Document.pdf').click();
+    cy.contains('Continue').closest('button').click();
+    // Step 2: instruction, Back and Save (Save disabled until text selected in target PDF)
+    cy.contains('Select text in the document below to create the reference').should('be.visible');
+    cy.contains('Back').closest('button').should('be.visible');
+    cy.contains('Save').closest('button').should('be.disabled');
+  });
+
+  it('should return to step 1 when Back is clicked from step 2', () => {
+    cy.contains('Related to').click();
+    cy.get('input[type="search"]').type('Human Rights');
+    cy.contains('Document about Human Rights').click();
+    cy.contains('Human Rights Document.pdf').click();
+    cy.contains('Continue').closest('button').click();
+    cy.contains('Select text in the document below').should('be.visible');
+    cy.contains('Back').closest('button').click();
+    // Back to step 1: search and file list
+    cy.get('input[type="search"]').should('be.visible');
+    cy.contains('Document about Human Rights').should('be.visible');
+    cy.contains('Continue').closest('button').should('be.visible');
   });
 
   it('should clear search results when clear button is clicked', () => {

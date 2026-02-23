@@ -80,6 +80,7 @@ const ReferencesPanel = ({
       targetEntityId: string;
       relationshipType: string;
       targetFileId?: string;
+      targetSelection?: TextSelection;
     }) => {
       if (!entity) {
         console.error('Cannot save reference: entity is not available');
@@ -106,6 +107,7 @@ const ReferencesPanel = ({
           targetEntitySharedId: data.targetEntityId,
           relationshipType: data.relationshipType,
           ...(data.targetFileId && { targetFileId: data.targetFileId }),
+          ...(data.targetSelection && { targetSelection: data.targetSelection }),
         });
 
         // Clear the create reference selection after successful save
