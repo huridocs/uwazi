@@ -7,6 +7,7 @@ import { EntityReference } from 'app/V2/domain/entities/types';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { useAtomValue } from 'jotai';
 import { relationshipTypesAtom } from 'V2/atoms';
+import type { PdfControllerApi } from '../PdfControllerContext';
 import { Entity } from 'V2/domain';
 import { searchByTitle } from 'V2/api/entities';
 import { saveTextReference } from 'V2/api/relationships';

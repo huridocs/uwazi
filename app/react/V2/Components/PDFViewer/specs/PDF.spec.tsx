@@ -107,10 +107,10 @@ describe('PDF', () => {
   let pdfRef: React.RefObject<PDFHandle | null>;
 
   const renderComponet = (props: Partial<PDFProps> = {}) => {
-    pdfRef = React.createRef<PDFHandle>();
+    pdfRef = React.createRef<PDFHandle | null>();
     renderResult = render(
       <PDF
-        ref={pdfRef}
+        ref={pdfRef as React.RefObject<PDFHandle>}
         fileUrl="url/of/file.pdf"
         highlights={highlights}
         onPdfReady={props.onPdfReady}

@@ -55,16 +55,11 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
 
     const updatePageParam = useCallback(
       (pageParam: number | string) => {
-        setSearchParams(
-          prev => {
-            const next = new URLSearchParams(prev.toString());
-            next.set(PAGE_PARAM, String(pageParam));
-            return next;
-          },
-          { replace: true, preventScrollReset: true }
-        );
+        const next = new URLSearchParams(searchParams.toString());
+        next.set(PAGE_PARAM, String(pageParam));
+        setSearchParams(next, { replace: true, preventScrollReset: true });
       },
-      [setSearchParams]
+      [searchParams, setSearchParams]
     );
 
     const onDisplayModeChange = useCallback(

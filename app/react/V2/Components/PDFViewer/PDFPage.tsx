@@ -32,6 +32,8 @@ const PDFPage = ({
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const pageViewerRef = useRef<typeof PDFJSViewer.PDFPageView.prototype | null>(null);
   const pdfPageRef = useRef<PDFPageProxy | null>(null);
+  const onPageChangeRef = useRef(onPageChange);
+  onPageChangeRef.current = onPageChange;
 
   useEffect(() => {
     const currentContainer = pageContainerRef.current;
@@ -74,7 +76,7 @@ const PDFPage = ({
                 pageViewer
                   .draw()
                   .then(() => {
-                    onPageChange?.(pdfPage.pageNumber);
+                    onPageChangeRef.current?.(pdfPage.pageNumber);
                   })
                   .catch(e => {
                     setError(e.message);
