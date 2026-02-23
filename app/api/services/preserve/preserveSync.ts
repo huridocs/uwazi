@@ -171,7 +171,7 @@ const saveEvidence =
         entity.template,
         []
       );
-      entity.setPropertyAssignmentsInAllLanguages(assignments);
+      entity.setPropertyAssignmentsInAllLanguages(assignments, false);
 
       const { sharedId } = entity;
 

@@ -38,7 +38,7 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
             entity.template
           );
 
-        entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
+        entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, false);
       });
 
       await this.deps.entitiesDS.bulkUpdate(withoutRelationships);
@@ -52,7 +52,7 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
             ],
             entity.template
           );
-        entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
+        entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, false);
       });
 
       await this.deps.entitiesDS.bulkUpdate(withRelationships);
