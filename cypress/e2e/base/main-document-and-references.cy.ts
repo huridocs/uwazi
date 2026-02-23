@@ -95,8 +95,6 @@ describe('text references', () => {
     cy.wait('@searchReferences');
     cy.get('.metadata-sidepanel.is-active').within(() => {
       cy.get('#tab-relationships').click();
-      cy.wait('@groupByConnection');
-      cy.wait('@searchReferences');
       cy.get('#tab-relationships').should($tab => {
         const isActive = $tab.attr('aria-selected') === 'true' || $tab.hasClass('selected');
         expect(isActive).to.equal(true);

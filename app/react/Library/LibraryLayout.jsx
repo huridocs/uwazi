@@ -4,8 +4,8 @@ import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t } from '#app/I18N/index.js';
-import { resetFilters } from '#app/Library/actions/filterActions.js';
-import { hideFilters } from '#app/Entities/actions/uiActions.js';
+import { resetFilters as resetFiltersAction } from '#app/Library/actions/filterActions.js';
+import { hideFilters as hideFiltersAction } from '#app/Entities/actions/uiActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { LibraryFiltersConnected } from '#app/Library/components/LibraryFilters.js';
 import { ViewMetadataPanel } from '#app/Library/components/ViewMetadataPanel.js';
@@ -48,9 +48,7 @@ class LibraryLayoutBase extends Component {
             hideFilters={hideFilters}
           />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
-          {!quickLabelThesaurus && (
-            <SelectMultiplePanelContainer storeKey="library" />
-          )}
+          {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
           <FeatureToggleSemanticSearch>
             <SemanticSearchPanel storeKey="library" />
           </FeatureToggleSemanticSearch>
@@ -93,7 +91,7 @@ const mapStateToProps = (state, { noindex }) => {
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { resetFilters, hideFilters },
+    { resetFilters: resetFiltersAction, hideFilters: hideFiltersAction },
     wrapDispatch(dispatch, 'library')
   );
 

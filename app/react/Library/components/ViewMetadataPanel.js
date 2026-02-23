@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-import { DocumentSidePanelWithRouter } from '#app/Documents/components/DocumentSidePanel.js';
+import { DocumentSidePanel } from '#app/Documents/components/DocumentSidePanel.js';
 import { actions as actionCreators } from '#app/BasicReducer/index.js';
 import { actions } from '#app/Metadata/index.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
@@ -98,8 +98,5 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-const ViewMetadataPanelConnected = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DocumentSidePanelWithRouter);
+const ViewMetadataPanelConnected = connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
 export { ViewMetadataPanelConnected as ViewMetadataPanel };
