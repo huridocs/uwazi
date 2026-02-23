@@ -170,7 +170,7 @@ describe('Entities', () => {
         if (propertyType === 'Relationship') {
           cy.get('select[name="relationType"]').select(2);
           cy.get('select[name="content"]').select(5);
-        } else if (propertyType === 'media') {
+        } else if (propertyType === 'Media') {
           cy.get('input[name="showInCard"]').check();
         }
 
@@ -321,6 +321,7 @@ describe('Entities', () => {
     });
 
     it('should render the player for internal media on library card and entity view', () => {
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
@@ -356,6 +357,7 @@ describe('Entities', () => {
     });
 
     it('should show the external player on library card and entity view', () => {
+      cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
@@ -437,6 +439,7 @@ describe('Entities', () => {
       cy.get('.metadata-type-multiselect').should('contain.text', 'MultiselectActivoNew Value');
     });
   });
+
   describe('Entity Translations', () => {
     it('should change the entity in Spanish', () => {
       changeLanguage('Español');
@@ -491,6 +494,7 @@ describe('Entities', () => {
       cy.contains('.metadata-type-text > dd', 'Texto de prueba en Español').should('exist');
     });
   });
+
   describe('Empty properties', () => {
     it('should be able to remove all the values from properties.', () => {
       changeLanguage('English');
