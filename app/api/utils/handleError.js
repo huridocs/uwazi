@@ -107,7 +107,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
       code: 422,
       message: util.inspect(error),
       validations: error.issues || error.errors,
-      logLevel: 'info',
+      logLevel: 'debug',
     };
   }
 
@@ -192,14 +192,6 @@ const sendLog = (data, error, errorOptions) => {
   if (data.logLevel === 'debug') {
     legacyLogger.debug(messageToLog, errorOptions);
     return;
-  }
-
-  if (data.logLevel === 'info') {
-    // treat expected validation errors as info in Graylog
-    if (typeof legacyLogger.info === 'function') {
-      legacyLogger.info(messageToLog, errorOptions);
-      return;
-    }
   }
 
   legacyLogger.error(messageToLog, errorOptions);

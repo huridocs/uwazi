@@ -25,7 +25,6 @@ describe('handleError', () => {
     jest.resetAllMocks();
     jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     jest.spyOn(legacyLogger, 'debug').mockImplementation(() => {});
-    jest.spyOn(legacyLogger, 'info').mockImplementation(() => {});
     jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
 
@@ -264,8 +263,8 @@ original error: {
           z.string().url().parse('not-a-valid-url');
         } catch (e) {
           const error = handleError(e);
-          expect(error).toMatchObject({ code: 422, logLevel: 'info' });
-          expect(legacyLogger.info).toHaveBeenCalled();
+          expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
+          expect(legacyLogger.debug).toHaveBeenCalled();
         }
       });
     });
