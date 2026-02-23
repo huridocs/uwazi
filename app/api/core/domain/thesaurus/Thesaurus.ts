@@ -101,8 +101,8 @@ class Thesaurus {
 
   private hashedValuesByLabel = new Map<string, ThesaurusValue>();
 
-  constructor(props: Props) {
-    const parsed = Schema.parse(props);
+  constructor(props: Props, validate = true) {
+    const parsed = validate ? Schema.parse(props) : props;
 
     this.id = parsed.id;
     this.name = parsed.name;
