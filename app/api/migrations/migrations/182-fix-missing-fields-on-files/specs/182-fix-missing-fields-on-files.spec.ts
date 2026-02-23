@@ -8,7 +8,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import testingDB from 'api/utils/testing_db';
+import testingDB from '#api/utils/testing_db.js';
 import {
   fileAlreadyCompleteId,
   fileMissingBothLocalId,
@@ -19,8 +19,8 @@ import {
   fileMissingSizeS3,
   fileMissingSizeS3Id,
   fixtures,
-} from './fixtures';
-import migration from '..';
+} from './fixtures.js';
+import migration from '../index.js';
 
 const createSut = () => ({
   sut: {

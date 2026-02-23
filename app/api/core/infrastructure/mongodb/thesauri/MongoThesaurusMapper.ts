@@ -1,5 +1,5 @@
-import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { ObjectId } from 'mongodb';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { ThesaurusDBO } from './ThesaurusDBO.js';
 
 export class MongoThesaurusMapper {
