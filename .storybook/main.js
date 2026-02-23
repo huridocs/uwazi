@@ -13,7 +13,7 @@ export default {
     '@storybook/addon-viewport',
     '@storybook/addon-actions',
     '@storybook/addon-webpack5-compiler-babel',
-    '@chromatic-com/storybook'
+    '@chromatic-com/storybook',
   ],
 
   framework: {
@@ -58,28 +58,34 @@ export default {
     const MiniCssExtractPlugin = (await import('mini-css-extract-plugin')).default;
 
     const cssLoaderFixPlugin = {
-      apply: (compiler) => {
-        compiler.hooks.normalModuleFactory.tap('CssLoaderFixPlugin', (nmf) => {
-          nmf.hooks.beforeResolve.tap('CssLoaderFixPlugin', (resolveData) => {
+      apply: compiler => {
+        compiler.hooks.normalModuleFactory.tap('CssLoaderFixPlugin', nmf => {
+          nmf.hooks.beforeResolve.tap('CssLoaderFixPlugin', resolveData => {
             if (resolveData.request && resolveData.request.includes('css-loader.mjs')) {
               resolveData.request = cssLoaderPath;
             }
           });
         });
-        compiler.hooks.compilation.tap('CssLoaderFixPlugin', (compilation) => {
-          compilation.hooks.normalModuleLoader.tap('CssLoaderFixPlugin', (loaderContext, module) => {
-            if (module.userRequest && module.userRequest.includes('css-loader.mjs')) {
-              module.userRequest = module.userRequest.replace(/\.\/css-loader\.mjs/, cssLoaderPath);
+        compiler.hooks.compilation.tap('CssLoaderFixPlugin', compilation => {
+          compilation.hooks.normalModuleLoader.tap(
+            'CssLoaderFixPlugin',
+            (loaderContext, module) => {
+              if (module.userRequest && module.userRequest.includes('css-loader.mjs')) {
+                module.userRequest = module.userRequest.replace(
+                  /\.\/css-loader\.mjs/,
+                  cssLoaderPath
+                );
+              }
             }
-          });
+          );
         });
       },
     };
 
     const hashPrefixModuleFactoryPlugin = {
-      apply: (compiler) => {
-        compiler.hooks.normalModuleFactory.tap('HashPrefixModuleFactoryPlugin', (nmf) => {
-          nmf.hooks.beforeResolve.tap('HashPrefixModuleFactoryPlugin', (resolveData) => {
+      apply: compiler => {
+        compiler.hooks.normalModuleFactory.tap('HashPrefixModuleFactoryPlugin', nmf => {
+          nmf.hooks.beforeResolve.tap('HashPrefixModuleFactoryPlugin', resolveData => {
             if (!resolveData.request || typeof resolveData.request !== 'string') {
               return;
             }
@@ -99,13 +105,17 @@ export default {
               } else if (request.startsWith('#V2/')) {
                 newRequest = request.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
               }
-            } else if ((request.startsWith('./') || request.startsWith('../')) && resolveData.context) {
-              const contextPath = typeof resolveData.context === 'string' ? resolveData.context : '';
+            } else if (
+              (request.startsWith('./') || request.startsWith('../')) &&
+              resolveData.context
+            ) {
+              const contextPath =
+                typeof resolveData.context === 'string' ? resolveData.context : '';
               if (contextPath) {
                 try {
                   newRequest = path.resolve(contextPath, request);
-                  if (newRequest.includes('atomStore') && newRequest.includes('server.store') && !newRequest.includes('stub')) {
-                    newRequest = path.join(rootPath, 'app/shared/atomStore/server.store.stub.ts');
+                  if (newRequest.includes('atomStore') && newRequest.includes('server.store')) {
+                    newRequest = path.join(rootPath, 'app/shared/atomStore/client.store.ts');
                   }
                 } catch (e) {
                   return;
@@ -207,87 +217,105 @@ export default {
 
     class HashPrefixResolverPlugin {
       apply(resolver) {
-        resolver.hooks.resolve.tapAsync('HashPrefixResolverPlugin', (request, resolveContext, callback) => {
-          if (!request.request || typeof request.request !== 'string') {
-            return callback();
-          }
-
-          const originalRequest = request.request;
-          let newRequest = originalRequest;
-          let shouldProcess = false;
-
-          if (originalRequest.startsWith('#')) {
-            shouldProcess = true;
-            if (originalRequest.startsWith('#app/')) {
-              newRequest = originalRequest.replace('#app/', path.join(rootPath, 'app/react/'));
-            } else if (originalRequest.startsWith('#api/')) {
-              newRequest = originalRequest.replace('#api/', path.join(rootPath, 'app/api/'));
-            } else if (originalRequest.startsWith('#shared/')) {
-              newRequest = originalRequest.replace('#shared/', path.join(rootPath, 'app/shared/'));
-            } else if (originalRequest.startsWith('#UI/')) {
-              newRequest = originalRequest.replace('#UI/', path.join(rootPath, 'app/react/UI/'));
-            } else if (originalRequest.startsWith('#V2/')) {
-              newRequest = originalRequest.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
+        resolver.hooks.resolve.tapAsync(
+          'HashPrefixResolverPlugin',
+          (request, resolveContext, callback) => {
+            if (!request.request || typeof request.request !== 'string') {
+              return callback();
             }
-          } else if ((originalRequest.startsWith('./') || originalRequest.startsWith('../'))) {
-            const contextPath = typeof request.context === 'string' ? request.context : (request.context?.issuer || request.context?.context || '');
-            if (contextPath && typeof contextPath === 'string') {
-              try {
-                const resolvedPath = path.resolve(contextPath, originalRequest);
-                if (typeof resolvedPath === 'string') {
-                  shouldProcess = true;
-                  newRequest = resolvedPath;
+
+            const originalRequest = request.request;
+            let newRequest = originalRequest;
+            let shouldProcess = false;
+
+            if (originalRequest.startsWith('#')) {
+              shouldProcess = true;
+              if (originalRequest.startsWith('#app/')) {
+                newRequest = originalRequest.replace('#app/', path.join(rootPath, 'app/react/'));
+              } else if (originalRequest.startsWith('#api/')) {
+                newRequest = originalRequest.replace('#api/', path.join(rootPath, 'app/api/'));
+              } else if (originalRequest.startsWith('#shared/')) {
+                newRequest = originalRequest.replace(
+                  '#shared/',
+                  path.join(rootPath, 'app/shared/')
+                );
+              } else if (originalRequest.startsWith('#UI/')) {
+                newRequest = originalRequest.replace('#UI/', path.join(rootPath, 'app/react/UI/'));
+              } else if (originalRequest.startsWith('#V2/')) {
+                newRequest = originalRequest.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
+              }
+            } else if (originalRequest.startsWith('./') || originalRequest.startsWith('../')) {
+              const contextPath =
+                typeof request.context === 'string'
+                  ? request.context
+                  : request.context?.issuer || request.context?.context || '';
+              if (contextPath && typeof contextPath === 'string') {
+                try {
+                  const resolvedPath = path.resolve(contextPath, originalRequest);
+                  if (typeof resolvedPath === 'string') {
+                    shouldProcess = true;
+                    newRequest = resolvedPath;
+                  }
+                } catch (e) {
+                  return callback();
                 }
-              } catch (e) {
-                return callback();
               }
             }
-          }
 
-          if (shouldProcess && typeof newRequest === 'string') {
-            const finalRequest = resolveFileExtension(newRequest, request.context);
-            if (typeof finalRequest === 'string' && finalRequest !== newRequest && fs.existsSync(finalRequest)) {
-              const newRequestObj = {
-                ...request,
-                request: finalRequest,
-              };
-              resolver.doResolve(resolver.hooks.resolve, newRequestObj, null, resolveContext, callback);
-              return;
+            if (shouldProcess && typeof newRequest === 'string') {
+              const finalRequest = resolveFileExtension(newRequest, request.context);
+              if (
+                typeof finalRequest === 'string' &&
+                finalRequest !== newRequest &&
+                fs.existsSync(finalRequest)
+              ) {
+                const newRequestObj = {
+                  ...request,
+                  request: finalRequest,
+                };
+                resolver.doResolve(
+                  resolver.hooks.resolve,
+                  newRequestObj,
+                  null,
+                  resolveContext,
+                  callback
+                );
+                return;
+              }
             }
-          }
 
-          callback();
-        });
+            callback();
+          }
+        );
       }
     }
 
-    const hashPrefixPlugin = new HashPrefixResolverPlugin();
-
-    const serverStoreStubPath = path.join(rootPath, 'app/shared/atomStore/server.store.stub.ts');
-    const Webpack = webpack.default || webpack;
-    const atomStoreServerStoreReplacementPlugin = new Webpack.NormalModuleReplacementPlugin(
-      /[/\\]atomStore[/\\]server\.store(\.ts|\.js)?$/,
-      serverStoreStubPath
+    const interopRequireDefaultPath = path.join(
+      rootPath,
+      'node_modules/@babel/runtime/helpers/interopRequireDefault.js'
     );
 
-    const interopRequireDefaultPath = path.join(rootPath, 'node_modules/@babel/runtime/helpers/interopRequireDefault.js');
-
     const fixDomHelpersSourcePlugin = {
-      apply: (compiler) => {
-        compiler.hooks.normalModuleFactory.tap('FixDomHelpersSourcePlugin', (nmf) => {
-          nmf.hooks.beforeResolve.tap('FixDomHelpersSourcePlugin', (resolveData) => {
-            if (resolveData.request && resolveData.request.includes('@babel/runtime/helpers/interopRequireDefault')) {
+      apply: compiler => {
+        compiler.hooks.normalModuleFactory.tap('FixDomHelpersSourcePlugin', nmf => {
+          nmf.hooks.beforeResolve.tap('FixDomHelpersSourcePlugin', resolveData => {
+            if (
+              resolveData.request &&
+              resolveData.request.includes('@babel/runtime/helpers/interopRequireDefault')
+            ) {
               resolveData.request = interopRequireDefaultPath;
             }
           });
         });
-        compiler.hooks.compilation.tap('FixDomHelpersSourcePlugin', (compilation) => {
-          compilation.hooks.buildModule.tap('FixDomHelpersSourcePlugin', (module) => {
+        compiler.hooks.compilation.tap('FixDomHelpersSourcePlugin', compilation => {
+          compilation.hooks.buildModule.tap('FixDomHelpersSourcePlugin', module => {
             if (module.resource && module.resource.includes('dom-helpers/activeElement.js')) {
               const originalSource = module._source;
               if (originalSource && originalSource._value) {
                 const sourceCode = originalSource._value.toString();
-                if (sourceCode.includes('require("@babel/runtime/helpers/interopRequireDefault")')) {
+                if (
+                  sourceCode.includes('require("@babel/runtime/helpers/interopRequireDefault")')
+                ) {
                   const helperFunction = `function _interopRequireDefault(e) {
   return e && e.__esModule ? e : { default: e };
 }`;
@@ -330,7 +358,7 @@ export default {
             ...existingCacheGroups,
             defaultVendors: {
               ...defaultVendors,
-              test: (module) => excludeHeadlessUIFromVendorChunk(module, defaultVendorsTest),
+              test: module => excludeHeadlessUIFromVendorChunk(module, defaultVendorsTest),
             },
           },
         },
@@ -340,36 +368,42 @@ export default {
         new MiniCssExtractPlugin({}),
         cssLoaderFixPlugin,
         hashPrefixModuleFactoryPlugin,
-        atomStoreServerStoreReplacementPlugin,
         fixDomHelpersSourcePlugin,
       ],
       resolve: {
         ...config.resolve,
         alias: {
           ...config.resolve?.alias,
-          [path.join(rootPath, 'app/shared/atomStore/server.store.ts')]: serverStoreStubPath,
-          'api': path.join(rootPath, 'app/api'),
-          'app': path.join(rootPath, 'app/react'),
-          'shared': path.join(rootPath, 'app/shared'),
-          'UI': path.join(rootPath, 'app/react/UI'),
-          'V2': path.join(rootPath, 'app/react/V2'),
+          'shared/atomStore/server.store': path.join(rootPath, 'app/shared/atomStore/client.store'),
+          './app/shared/atomStore/server.store': path.join(
+            rootPath,
+            'app/shared/atomStore/client.store'
+          ),
+          [path.join(rootPath, 'app/shared/atomStore/server.store')]: path.join(
+            rootPath,
+            'app/shared/atomStore/client.store'
+          ),
+          './server.store.js': path.join(rootPath, 'app/shared/atomStore/client.store'),
+          api: path.join(rootPath, 'app/api'),
+          app: path.join(rootPath, 'app/react'),
+          shared: path.join(rootPath, 'app/shared'),
+          UI: path.join(rootPath, 'app/react/UI'),
+          V2: path.join(rootPath, 'app/react/V2'),
           'entities/decode': path.join(rootPath, 'node_modules/entities/lib/esm/decode.js'),
           '@babel/runtime': path.join(rootPath, 'node_modules/@babel/runtime'),
-          '@babel/runtime/helpers/interopRequireDefault': path.join(rootPath, 'node_modules/@babel/runtime/helpers/interopRequireDefault.js'),
+          '@babel/runtime/helpers/interopRequireDefault': path.join(
+            rootPath,
+            'node_modules/@babel/runtime/helpers/interopRequireDefault.js'
+          ),
         },
         fallback: {
           ...config.resolve?.fallback,
         },
         extensions: allExtensions,
-        modules: [
-          path.join(rootPath, 'node_modules'),
-          ...(config.resolve?.modules || []),
-        ],
+        modules: [path.join(rootPath, 'node_modules'), ...(config.resolve?.modules || [])],
         mainFields: ['browser', 'module', 'main'],
         conditionNames: ['import', 'require', 'default'],
-        plugins: [
-          ...(config.resolve?.plugins || []),
-        ],
+        plugins: [...(config.resolve?.plugins || [])],
       },
       module: {
         ...config.module,
@@ -421,10 +455,7 @@ export default {
           },
           {
             test: /\.css$/,
-            exclude: [
-              /node_modules\/monaco-editor\/min\/vs/,
-              /tailwind\.css$/,
-            ],
+            exclude: [/node_modules\/monaco-editor\/min\/vs/, /tailwind\.css$/],
             use: [
               MiniCssExtractPlugin.loader,
               { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -449,10 +480,7 @@ export default {
       },
       resolveLoader: {
         ...config.resolveLoader,
-        modules: [
-          path.join(rootPath, 'node_modules'),
-          ...(config.resolveLoader?.modules || []),
-        ],
+        modules: [path.join(rootPath, 'node_modules'), ...(config.resolveLoader?.modules || [])],
         alias: {
           ...config.resolveLoader?.alias,
           'css-loader': cssLoaderPath,
@@ -467,10 +495,10 @@ export default {
   },
 
   typescript: {
-    reactDocgen: 'react-docgen-typescript'
+    reactDocgen: 'react-docgen-typescript',
   },
 
-  babel: async (config) => {
+  babel: async config => {
     return {
       ...config,
       presets: [
@@ -488,7 +516,8 @@ export default {
       ],
       plugins: [
         ...(config.plugins || []).filter(
-          (plugin) => !(Array.isArray(plugin) && plugin[0]?.includes?.('ignore-scss')) &&
+          plugin =>
+            !(Array.isArray(plugin) && plugin[0]?.includes?.('ignore-scss')) &&
             !(typeof plugin === 'string' && plugin.includes('ignore-scss')) &&
             !(typeof plugin === 'function' && plugin.toString().includes('ignore-scss'))
         ),
