@@ -1,6 +1,8 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
+import { ZodError } from 'zod';
+import util from 'node:util';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
@@ -13,7 +15,6 @@ import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationE
 import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { createError } from '#api/utils/index.js';
-import util from 'node:util';
 import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
@@ -99,6 +100,15 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof Ajv.ValidationError) {
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
+  }
+
+  if (error instanceof ZodError) {
+    result = {
+      code: 422,
+      message: util.inspect(error),
+      validations: error.issues || error.errors,
+      logLevel: 'debug',
+    };
   }
 
   if (error.name === 'ValidationError') {

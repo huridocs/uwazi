@@ -60,12 +60,15 @@ describe('LinkProperty', () => {
       const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
       expect(() =>
-        link.createPropertyAssignment({
-          value: [
-            { value: { url: 'https://uwazi.io', label: 'Uwazi' } },
-            { value: { url: 'https://huridocs.org', label: 'HURIDOCS' } },
-          ],
-        })
+        link.createPropertyAssignment(
+          {
+            value: [
+              { value: { url: 'https://uwazi.io', label: 'Uwazi' } },
+              { value: { url: 'https://huridocs.org', label: 'HURIDOCS' } },
+            ],
+          },
+          true
+        )
       ).toThrow('Link Property only accepts a single value.');
     });
 
@@ -152,7 +155,7 @@ describe('LinkProperty', () => {
       const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
       expect(() =>
-        link.createPropertyAssignment({ value: [{ value: { url: 'not-a-url' } }] })
+        link.createPropertyAssignment({ value: [{ value: { url: 'not-a-url' } }] }, true)
       ).toThrow();
     });
   });
