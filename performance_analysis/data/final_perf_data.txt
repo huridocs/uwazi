@@ -1,0 +1,100 @@
+[1] [PERF][API] GET /api/relationtypes TOTAL: 0.85 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 14.54 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 47.90 ms
+[1] [PERF][SSR] Component extraction: 0.01 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities TOTAL: 4.04 ms - Entities returned: 1
+[1] [PERF][API] GET /api/relationtypes TOTAL: 1.61 ms - RelationTypes returned: 2
+[1] [PERF][API] GET /api/entities TOTAL: 12.91 ms - Entities returned: 1
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 43.05 ms - Groups count: 0
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.01 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 3.19 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 5.80 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 9.06 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 6.81 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.01 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 41.97 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 45.97 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 3.23 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.01 ms - Entities in map: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 2.43 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 5.77 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.00 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 109.89 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 109.95 ms - Results: 0
+[1] [PERF][SSR] Data loader 0 execution: 188.78 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 193.13 ms
+[1] [PERF][SSR] React component rendering: 28.01 ms
+[1] [PERF][SSR] HTML document rendering: 12.56 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 286.95 ms - Route: entity/:sharedId - Status: 200
+[1] [PERF][SSR] Settings & assets loaded: 0.58 ms
+[1] [PERF][SSR] Route matching: 2.39 ms
+[1] [PERF][API] GET /api/relationtypes TOTAL: 2.21 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 16.41 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 54.35 ms
+[1] [PERF][SSR] Component extraction: 0.02 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities TOTAL: 7.96 ms - Entities returned: 1
+[1] [PERF][API] GET /api/entities TOTAL: 4.44 ms - Entities returned: 1
+[1] [PERF][API] GET /api/relationtypes TOTAL: 3.13 ms - RelationTypes returned: 2
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 38.68 ms - Groups count: 0
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.02 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 3.14 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 5.23 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 8.51 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 7.46 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.05 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 43.64 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 44.87 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 5.20 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.01 ms - Entities in map: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 1.46 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 6.84 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.00 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 111.75 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 111.84 ms - Results: 0
+[1] [PERF][SSR] Data loader 0 execution: 200.82 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 205.89 ms
+[1] [PERF][SSR] React component rendering: 34.94 ms
+[1] [PERF][SSR] HTML document rendering: 13.44 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 315.19 ms - Route: entity/:sharedId - Status: 200
+[1] [PERF][SSR] Settings & assets loaded: 0.56 ms
+[1] [PERF][SSR] Route matching: 1.82 ms
+[1] [PERF][API] GET /api/relationtypes TOTAL: 1.06 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 11.98 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 42.74 ms
+[1] [PERF][SSR] Component extraction: 0.01 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities TOTAL: 3.88 ms - Entities returned: 1
+[1] [PERF][API] GET /api/relationtypes TOTAL: 1.03 ms - RelationTypes returned: 2
+[1] [PERF][API] GET /api/entities TOTAL: 5.87 ms - Entities returned: 1
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 43.09 ms - Groups count: 0
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.01 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 3.13 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 5.52 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 8.73 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 7.86 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.01 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 46.74 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 47.40 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 3.26 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.01 ms - Entities in map: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 2.10 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 5.48 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.00 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 116.55 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 116.62 ms - Results: 0
+[1] [PERF][SSR] Data loader 0 execution: 191.64 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 195.49 ms
+[1] [PERF][SSR] React component rendering: 33.83 ms
+[1] [PERF][SSR] HTML document rendering: 12.34 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 288.99 ms - Route: entity/:sharedId - Status: 200

@@ -1,0 +1,2179 @@
+yarn run v1.22.22
+$ export HOT=true; export BABEL_ENV=debug; concurrently "yarn run watch-types" "yarn run dev-server" "yarn run webpack-server"
+[2] $ node --no-experimental-fetch ./webpack/webpack.server.js
+[0] $ tsc --noEmit --pretty --watch --preserveWatchOutput
+[1] $ nodemon --inspect --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'
+[1] [33m[nodemon] 3.1.9[39m
+[1] [33m[nodemon] to restart at any time, enter `rs`[39m
+[1] [33m[nodemon] watching path(s): app/api/**/* app/shared/**/*[39m
+[1] [33m[nodemon] watching extensions: ts,js,tsx[39m
+[1] [32m[nodemon] starting `node --inspect --no-experimental-fetch ./server.js`[39m
+[1] Debugger listening on ws://127.0.0.1:9229/fcd86644-ef35-43b7-b3b6-85cad9b02f70
+[1] For help, see: https://nodejs.org/en/docs/inspector
+[0] [[90m6:47:06 AM[0m] Starting compilation in watch mode...
+[0] 
+[2] clean-webpack-plugin: options.output.path not defined. Plugin disabled...
+[1] ==> Connecting to mongodb://127.0.0.1/
+[1] [info] - [System Logger]:'Starting worker'
+[1] 
+[1] 
+[1] ==> 🌎 Listening on port 3000. Open up http://localhost:3000/ in your browser.
+[1] 
+[1] ==> 📦 webpack is watching...
+[1] 
+[1] ██╗   ██╗██╗    ██╗ █████╗ ███████╗██╗
+[1] ██║   ██║██║    ██║██╔══██╗╚══███╔╝██║
+[1] ██║   ██║██║ █╗ ██║███████║  ███╔╝ ██║
+[1] ██║   ██║██║███╗██║██╔══██║ ███╔╝  ██║
+[1] ╚██████╔╝╚███╔███╔╝██║  ██║███████╗██║
+[1]  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚═╝
+[1] 
+[1] 
+[1] [info] - [System Logger]:'Connected to Redis'
+[1] 
+[1] 
+[1] [info] - [System Logger]:'Connected to MongoDB'
+[1] 
+[1] 
+[1] [info] - [System Logger]:'Set tenants up'
+[1] 
+[1] 
+[1] [info] - [System Logger]:'Registered jobs'
+[1] {
+[1]   jobs: [
+[1]     'TestJob',
+[1]     'CreateBlankStateSuggestionsJob',
+[1]     'PXExtractParagraphsFromEntityJob',
+[1]     'PXCreateParagraphsJob',
+[1]     'CreateParagraphExtractionEntityStatusesJob',
+[1]     'IXTrainModelJob',
+[1]     'PDFPostProcessJobHandler',
+[1]     'AcceptSuggestionsJob',
+[1]     'TemplatePostProcessEntitiesJob',
+[1]     'RelationshipSyncJob',
+[1]     'CsvExtractUploadedZipJobHandler',
+[1]     'CsvPreflightJobHandler',
+[1]     'CsvCreateThesauriValuesJobHandler',
+[1]     'BulkCleanupEntityJob',
+[1]     'DeleteFileFromStorageJobHandler',
+[1]     'DenormalizeThesaurusEntitiesChunkHandler',
+[1]     'DenormalizeThesaurusEntitiesHandler',
+[1]     'EntityUpdatedEvent:DenormalizeEntityUpdatedListener',
+[1]     'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener'
+[1]   ]
+[1] }
+[1] 
+[1] [info] - [System Logger]:'Queue worker started'
+[1] 
+[1] 
+[1] [info] - [System Logger]:'Performance metrics'
+[1] { processingTime: 0, count: 0, totalTime: 9.739618999999948 }
+[1] 
+[1] [info] - [System Logger]:'sleeping'
+[1] { waitTime: 1000 }
+[1] 
+[2] webpack built db1ad7efbca84e1ebdc9 in 6836ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5a9753219f54da473ee8 in 1001ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built adb9863dce2452d9df5b in 862ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c5a5ea2e9423519f630f in 849ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3411519a99b7e553aeb4 in 850ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7b6a9b780fe9b71ead2f in 768ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6c9bd5f098093e248eb0 in 801ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 31ead5576b01bff8b30f in 821ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f41aa2bf849a37c3f01a in 766ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6979a2a7ba5031577e70 in 785ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f67acd8f608096b141ff in 817ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 633144049d9207fd422d in 756ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f91031a2fa3336e7a4c0 in 759ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built efd042bf954a2ba467fd in 799ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 80d5975a20e9ab414e67 in 764ms
+[2] webpack compiled successfully
+[2] webpack building...
+[0] [[90m6:47:30 AM[0m] Found 0 errors. Watching for file changes.
+[0] 
+[2] webpack built 5918893283da31d85879 in 754ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b1ac810adc42b80d55da in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e21d2d8f4c51a269e29f in 700ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e904bc0f39e73350c880 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0f430ae30aae801ed8ad in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d2ade3f53add1e49c9ef in 693ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 04534da842e31a0fc740 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b1d60e70891bbdf5baba in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6b1690f533da5d9a8172 in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 33b1066f1495418bd783 in 700ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e300b9eeb1adbfc4f0f5 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 368e0813bcd99585ac98 in 692ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9d1a4dffc31448b63253 in 712ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built be3a15672b495a6548c9 in 754ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4a7609d16f2b1c3b075a in 700ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4dc16a0f000855df27a5 in 705ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a96e2172f9783c810733 in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 48b6a4a5d9a4cc6c0ce8 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8b81bf2d864b905ba958 in 705ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 97509cafdd6ff9b0e7a5 in 747ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1b8fd4665622c765e6da in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7d96b5739085dc449c5d in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ec5aa5be15ca83f33c7d in 749ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a27c38baf7a5a09f934e in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 949dc7fd182fff27131d in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1e983bca1d60fa7b2f55 in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 020faacd1402070b6d6e in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 55631b7cbc34a82d4bdc in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3ca0f6fb055bf569b0fd in 760ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 95148a7f34cc184090a0 in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c469e2f15f41beee9552 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5dc04c0d54ba57ff615a in 765ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ffcc6ca4ad1ff7e8ac01 in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built bf64ddb2c7034ca2a647 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 061df8353d65a29888c0 in 748ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c59c2eb33b7602f85b93 in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built aecce419d96785866c28 in 771ms
+[2] webpack compiled successfully
+[2] webpack building...
+[1] [PERF][SSR] Settings & assets loaded: 1.18 ms
+[1] [PERF][SSR] Route matching: 8.22 ms
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][RelationTypes] model.get(): 5.95 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 6.15 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 47.93 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 131.67 ms
+[1] [PERF][SSR] Component extraction: 0.07 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 25.45 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 10.49 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 36.56 ms
+[1] [PERF][API] GET /api/entities TOTAL: 36.94 ms - Entities returned: 1
+[1] [PERF][ViewerRoute] Entity check (omitRelationships): 49.20 ms
+[1] [PERF][ViewerRoute] Delegating to: PDFViewComponent
+[1] [PERF][ViewerRoute] TOTAL requestState: 51.37 ms
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 5.40 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 8.83 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 14.40 ms
+[1] [PERF][API] GET /api/entities TOTAL: 14.53 ms - Entities returned: 1
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][API] GET /api/references/group_by_connection - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationTypes] model.get(): 5.33 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 5.44 ms - RelationTypes returned: 2
+[1] [PERF][PDFView] relationTypesAPI.get(): 31.59 ms
+[1] [PERF][RelationTypes] model.get(): 4.63 ms - RelationTypes count: 2
+[1] [PERF][Document] Entity API call: 34.83 ms
+[1] [PERF][Document] Document selection (getEntityDoc): 0.14 ms
+[1] [PERF][Document] TOTAL getDocument: 35.05 ms
+[1] [PERF][PDFView] getDocument(): 35.15 ms
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 20.77 ms - Relations count: 892
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 24.99 ms - Hubs count: 1784
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 45.97 ms
+[1] [PERF][Entities] model.get() query: 139.18 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 1.16 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 140.52 ms
+[1] [PERF][Relationships] getByDocument - entities query: 140.63 ms - Connected docs count: 1
+[1] [PERF][Relationships] getByDocument - processing: 3.79 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 190.69 ms
+[1] [PERF][Relationships] getGroupsByConnection - filtering: 0.03 ms
+[1] [PERF][Relationships] getGroupsByConnection - grouping: 0.03 ms
+[1] [PERF][Relationships] getGroupsByConnection TOTAL: 190.93 ms
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 191.11 ms - Groups count: 0
+[1] [PERF][ReferencesAPI] GET group_by_connection: 217.15 ms
+[1] [PERF][Relationships] getGroupedByConnection API: 217.28 ms
+[1] [PERF][Relationships] Data processing (template filtering, sort options): 0.16 ms
+[1] [PERF][API] GET /api/references/search - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.05 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 4.24 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 47.18 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 51.60 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 77.31 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.09 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 44.67 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 47.23 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 3.49 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.02 ms - Entities in map: 0
+[1] [PERF][Entities] model.get() query: 0.85 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.55 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.49 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 1.56 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 5.37 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.04 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 226.84 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 227.20 ms - Results: 0
+[1] [PERF][ReferencesAPI] GET search: 232.91 ms
+[1] [PERF][Relationships] connectionsListActions.search: 233.60 ms
+[1] [PERF][Relationships] TOTAL requestState: 451.14 ms
+[1] [PERF][PDFView] relationships.requestState(): 451.25 ms
+[1] [PERF][PDFView] Parallel Promise.all completed: 452.28 ms
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 2.03 ms - Relations count: 0
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 0.65 ms - Hubs count: 0
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 2.80 ms
+[1] [PERF][Entities] model.get() query: 0.81 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.73 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.63 ms
+[1] [PERF][Relationships] getByDocument - entities query: 1.67 ms - Connected docs count: 0
+[1] [PERF][Relationships] getByDocument - processing: 0.04 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 4.63 ms
+[1] [PERF][ReferencesAPI] GET by_document: 9.52 ms
+[1] [PERF][PDFView] referencesAPI.get(): 9.61 ms
+[1] [PERF][PDFView] State preparation: 0.28 ms
+[1] [PERF][PDFView] TOTAL requestViewerState: 484.58 ms
+[1] [PERF][SSR] Data loader 0 execution: 534.24 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 551.58 ms
+[1] [PERF][SSR] React component rendering: 99.17 ms
+[2] webpack built 8ed6b40286dce924e204 in 851ms
+[2] webpack compiled successfully
+[1] [PERF][SSR] HTML document rendering: 14.28 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 813.06 ms - Route: entity/:sharedId - Status: 200
+[2] webpack building...
+[2] webpack built 153fbacd654937e8ab80 in 694ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built fce7c34858a1fbe6d825 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[1] [PERF][SSR] Settings & assets loaded: 0.87 ms
+[1] [PERF][SSR] Route matching: 4.10 ms
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][RelationTypes] model.get(): 0.85 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 0.94 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 15.12 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 53.13 ms
+[1] [PERF][SSR] Component extraction: 0.01 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 3.23 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.98 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 4.33 ms
+[1] [PERF][API] GET /api/entities TOTAL: 4.52 ms - Entities returned: 1
+[1] [PERF][ViewerRoute] Entity check (omitRelationships): 12.27 ms
+[1] [PERF][ViewerRoute] Delegating to: PDFViewComponent
+[1] [PERF][ViewerRoute] TOTAL requestState: 12.94 ms
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 3.42 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.98 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 4.50 ms
+[1] [PERF][API] GET /api/entities TOTAL: 4.59 ms - Entities returned: 1
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][API] GET /api/references/group_by_connection - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationTypes] model.get(): 3.59 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 3.68 ms - RelationTypes returned: 2
+[1] [PERF][RelationTypes] model.get(): 3.88 ms - RelationTypes count: 2
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 6.17 ms - Relations count: 892
+[1] [PERF][PDFView] relationTypesAPI.get(): 17.97 ms
+[1] [PERF][Document] Entity API call: 21.00 ms
+[1] [PERF][Document] Document selection (getEntityDoc): 0.01 ms
+[1] [PERF][Document] TOTAL getDocument: 21.08 ms
+[1] [PERF][PDFView] getDocument(): 21.10 ms
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 9.14 ms - Hubs count: 1784
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 15.41 ms
+[1] [PERF][Entities] model.get() query: 18.46 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.74 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 19.33 ms
+[1] [PERF][Relationships] getByDocument - entities query: 19.36 ms - Connected docs count: 1
+[1] [PERF][Relationships] getByDocument - processing: 2.74 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 37.63 ms
+[1] [PERF][Relationships] getGroupsByConnection - filtering: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection - grouping: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection TOTAL: 37.72 ms
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 37.78 ms - Groups count: 0
+[1] [PERF][ReferencesAPI] GET group_by_connection: 50.66 ms
+[1] [PERF][Relationships] getGroupedByConnection API: 50.70 ms
+[1] [PERF][Relationships] Data processing (template filtering, sort options): 0.04 ms
+[1] [PERF][API] GET /api/references/search - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.01 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 3.39 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 7.09 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 10.57 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 14.10 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.05 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 43.22 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 43.82 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 4.93 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.01 ms - Entities in map: 0
+[1] [PERF][Entities] model.get() query: 0.78 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.53 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.45 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 1.48 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 6.55 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.00 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 118.73 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 118.81 ms - Results: 0
+[1] [PERF][ReferencesAPI] GET search: 122.13 ms
+[1] [PERF][Relationships] connectionsListActions.search: 122.21 ms
+[1] [PERF][Relationships] TOTAL requestState: 173.01 ms
+[1] [PERF][PDFView] relationships.requestState(): 173.03 ms
+[1] [PERF][PDFView] Parallel Promise.all completed: 173.45 ms
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 1.68 ms - Relations count: 0
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 0.59 ms - Hubs count: 0
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 2.37 ms
+[1] [PERF][Entities] model.get() query: 0.88 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.50 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.47 ms
+[1] [PERF][Relationships] getByDocument - entities query: 1.50 ms - Connected docs count: 0
+[1] [PERF][Relationships] getByDocument - processing: 0.01 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 3.94 ms
+[1] [PERF][ReferencesAPI] GET by_document: 7.88 ms
+[1] [PERF][PDFView] referencesAPI.get(): 7.93 ms
+[1] [PERF][PDFView] State preparation: 0.03 ms
+[1] [PERF][PDFView] TOTAL requestViewerState: 188.16 ms
+[1] [PERF][SSR] Data loader 0 execution: 200.51 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 207.70 ms
+[1] [PERF][SSR] React component rendering: 36.10 ms
+[1] [PERF][SSR] HTML document rendering: 10.44 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 318.18 ms - Route: entity/:sharedId - Status: 200
+[2] webpack built 8761cb0c1f21281e80b5 in 771ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4c94e0a26d897c98e89b in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[1] [PERF][SSR] Settings & assets loaded: 0.57 ms
+[1] [PERF][SSR] Route matching: 1.95 ms
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][RelationTypes] model.get(): 0.83 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 0.93 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 16.03 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 46.41 ms
+[1] [PERF][SSR] Component extraction: 0.01 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 3.18 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.62 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 3.91 ms
+[1] [PERF][API] GET /api/entities TOTAL: 3.99 ms - Entities returned: 1
+[1] [PERF][ViewerRoute] Entity check (omitRelationships): 11.14 ms
+[1] [PERF][ViewerRoute] Delegating to: PDFViewComponent
+[1] [PERF][ViewerRoute] TOTAL requestState: 11.73 ms
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 3.10 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.84 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 4.05 ms
+[1] [PERF][API] GET /api/entities TOTAL: 4.13 ms - Entities returned: 1
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][API] GET /api/references/group_by_connection - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationTypes] model.get(): 1.28 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 1.36 ms - RelationTypes returned: 2
+[1] [PERF][RelationTypes] model.get(): 2.73 ms - RelationTypes count: 2
+[1] [PERF][PDFView] relationTypesAPI.get(): 13.59 ms
+[1] [PERF][Document] Entity API call: 15.55 ms
+[1] [PERF][Document] Document selection (getEntityDoc): 0.01 ms
+[1] [PERF][Document] TOTAL getDocument: 15.61 ms
+[1] [PERF][PDFView] getDocument(): 15.63 ms
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 7.36 ms - Relations count: 892
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 8.47 ms - Hubs count: 1784
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 15.94 ms
+[1] [PERF][Entities] model.get() query: 17.83 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.83 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 18.80 ms
+[1] [PERF][Relationships] getByDocument - entities query: 18.83 ms - Connected docs count: 1
+[1] [PERF][Relationships] getByDocument - processing: 2.18 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 37.15 ms
+[1] [PERF][Relationships] getGroupsByConnection - filtering: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection - grouping: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection TOTAL: 37.25 ms
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 37.32 ms - Groups count: 0
+[1] [PERF][ReferencesAPI] GET group_by_connection: 49.35 ms
+[1] [PERF][Relationships] getGroupedByConnection API: 49.39 ms
+[1] [PERF][Relationships] Data processing (template filtering, sort options): 0.04 ms
+[1] [PERF][API] GET /api/references/search - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.01 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 3.31 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 5.89 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 9.30 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 8.88 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.01 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 41.78 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 45.31 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 4.46 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.01 ms - Entities in map: 0
+[1] [PERF][Entities] model.get() query: 0.97 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.55 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.59 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 1.63 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 6.27 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.00 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 111.94 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 112.01 ms - Results: 0
+[1] [PERF][ReferencesAPI] GET search: 115.28 ms
+[1] [PERF][Relationships] connectionsListActions.search: 115.46 ms
+[1] [PERF][Relationships] TOTAL requestState: 164.98 ms
+[1] [PERF][PDFView] relationships.requestState(): 165.00 ms
+[1] [PERF][PDFView] Parallel Promise.all completed: 165.39 ms
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 2.03 ms - Relations count: 0
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 0.59 ms - Hubs count: 0
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 2.73 ms
+[1] [PERF][Entities] model.get() query: 0.69 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 1.56 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 2.34 ms
+[1] [PERF][Relationships] getByDocument - entities query: 2.38 ms - Connected docs count: 0
+[1] [PERF][Relationships] getByDocument - processing: 0.01 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 5.18 ms
+[1] [PERF][ReferencesAPI] GET by_document: 8.25 ms
+[1] [PERF][PDFView] referencesAPI.get(): 8.29 ms
+[1] [PERF][PDFView] State preparation: 0.03 ms
+[1] [PERF][PDFView] TOTAL requestViewerState: 179.80 ms
+[1] [PERF][SSR] Data loader 0 execution: 191.00 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 195.41 ms
+[1] [PERF][SSR] React component rendering: 37.85 ms
+[1] [PERF][SSR] HTML document rendering: 12.00 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 297.79 ms - Route: entity/:sharedId - Status: 200
+[2] webpack built 1f5c30145c6de6165633 in 721ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a2e466d2a67102c6119c in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6495f09a711b9bfc9bdd in 700ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3dc477a7909eefd0f393 in 747ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 721edfe8a8fa6516d0e2 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 75b3e1ae3f76f64f365e in 692ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0ffb1206ab49b364d3df in 705ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5a57d997a534bab3b37d in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 105b30e5fd561745db0b in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built fc5872df28890d90b84b in 704ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4fa9b3bd5385c60c5a5f in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f05fb9a39e6c9682d8d5 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9ad5c297cbf99bc11396 in 723ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 185469dce6a5cccb41f8 in 755ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 574af03d08d6b4442a14 in 714ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 618ed3da5e569f2c6710 in 723ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5ef4ef366c0eab950afc in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 86341b8fd3b9ffd345b3 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f011c1345ba8f66ca050 in 726ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 05eb1ca33b9b59be5478 in 772ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 06b1679facf743ac0e92 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5a2a888fc1b7e81725a5 in 732ms
+[2] webpack compiled successfully
+[2] webpack building...
+[1] [PERF][SSR] Settings & assets loaded: 0.58 ms
+[1] [PERF][SSR] Route matching: 3.13 ms
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][RelationTypes] model.get(): 1.28 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 1.39 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 14.33 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 53.01 ms
+[1] [PERF][SSR] Component extraction: 0.02 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 3.57 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.66 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 4.34 ms
+[1] [PERF][API] GET /api/entities TOTAL: 4.43 ms - Entities returned: 1
+[1] [PERF][ViewerRoute] Entity check (omitRelationships): 13.28 ms
+[1] [PERF][ViewerRoute] Delegating to: PDFViewComponent
+[1] [PERF][ViewerRoute] TOTAL requestState: 14.01 ms
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 5.68 ms - Entities count: 1
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][Entities] files.get() query: 1.47 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 7.29 ms
+[1] [PERF][API] GET /api/entities TOTAL: 7.41 ms - Entities returned: 1
+[1] [PERF][API] GET /api/references/group_by_connection - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationTypes] model.get(): 3.78 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 3.88 ms - RelationTypes returned: 2
+[1] [PERF][RelationTypes] model.get(): 1.22 ms - RelationTypes count: 2
+[1] [PERF][PDFView] relationTypesAPI.get(): 18.30 ms
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 5.34 ms - Relations count: 892
+[1] [PERF][Document] Entity API call: 24.51 ms
+[1] [PERF][Document] Document selection (getEntityDoc): 0.01 ms
+[1] [PERF][Document] TOTAL getDocument: 24.58 ms
+[1] [PERF][PDFView] getDocument(): 24.60 ms
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 8.72 ms - Hubs count: 1784
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 14.20 ms
+[1] [PERF][Entities] model.get() query: 17.51 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.77 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 18.40 ms
+[1] [PERF][Relationships] getByDocument - entities query: 18.44 ms - Connected docs count: 1
+[1] [PERF][Relationships] getByDocument - processing: 1.61 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 34.46 ms
+[1] [PERF][Relationships] getGroupsByConnection - filtering: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection - grouping: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection TOTAL: 34.54 ms
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 34.61 ms - Groups count: 0
+[1] [PERF][ReferencesAPI] GET group_by_connection: 51.05 ms
+[1] [PERF][Relationships] getGroupedByConnection API: 51.09 ms
+[1] [PERF][Relationships] Data processing (template filtering, sort options): 0.04 ms
+[1] [PERF][API] GET /api/references/search - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.01 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 4.03 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 5.52 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 9.64 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 8.49 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.01 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 44.12 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 46.79 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 5.36 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.01 ms - Entities in map: 0
+[1] [PERF][Entities] model.get() query: 0.99 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.76 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.83 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 1.86 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 7.35 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.00 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 116.80 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 116.88 ms - Results: 0
+[1] [PERF][ReferencesAPI] GET search: 120.07 ms
+[1] [PERF][Relationships] connectionsListActions.search: 120.15 ms
+[1] [PERF][Relationships] TOTAL requestState: 171.36 ms
+[1] [PERF][PDFView] relationships.requestState(): 171.39 ms
+[1] [PERF][PDFView] Parallel Promise.all completed: 171.88 ms
+[2] webpack built 762686743b6ddab2e04e in 799ms
+[2] webpack compiled successfully
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 1.63 ms - Relations count: 0
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 0.69 ms - Hubs count: 0
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 2.41 ms
+[1] [PERF][Entities] model.get() query: 0.85 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.64 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.57 ms
+[1] [PERF][Relationships] getByDocument - entities query: 1.60 ms - Connected docs count: 0
+[1] [PERF][Relationships] getByDocument - processing: 0.01 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 4.10 ms
+[1] [PERF][ReferencesAPI] GET by_document: 8.23 ms
+[1] [PERF][PDFView] referencesAPI.get(): 8.27 ms
+[1] [PERF][PDFView] State preparation: 0.04 ms
+[1] [PERF][PDFView] TOTAL requestViewerState: 187.87 ms
+[1] [PERF][SSR] Data loader 0 execution: 201.23 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 215.46 ms
+[2] webpack building...
+[1] [PERF][SSR] React component rendering: 56.61 ms
+[1] [PERF][SSR] HTML document rendering: 13.27 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 345.53 ms - Route: entity/:sharedId - Status: 200
+[2] webpack built 6ec00a9ef8ca36410864 in 716ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b775dc35725aad849df6 in 712ms
+[2] webpack compiled successfully
+[2] webpack building...
+[1] [PERF][SSR] Settings & assets loaded: 0.56 ms
+[1] [PERF][SSR] Route matching: 1.73 ms
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][RelationTypes] model.get(): 0.84 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 0.92 ms - RelationTypes returned: 2
+[1] [PERF][SSR] Global resources fetch: 12.11 ms
+[1] [PERF][SSR] Templates count: 2 - Thesauri count: 8 - RelationTypes count: 2
+[1] [PERF][SSR] Store data preparation: 45.66 ms
+[1] [PERF][SSR] Component extraction: 0.02 ms - Data loaders count: 1
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][Entities] model.get() query: 3.02 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.59 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 3.70 ms
+[1] [PERF][API] GET /api/entities TOTAL: 3.79 ms - Entities returned: 1
+[1] [PERF][ViewerRoute] Entity check (omitRelationships): 9.88 ms
+[1] [PERF][ViewerRoute] Delegating to: PDFViewComponent
+[1] [PERF][ViewerRoute] TOTAL requestState: 10.57 ms
+[1] [PERF][API] GET /api/relationtypes - Action: get - Query: {}
+[1] [PERF][API] GET /api/entities - Action: get - Query: {"sharedId":"egfjcp0mp1w","published":true,"language":"en"}
+[1] [PERF][RelationTypes] model.get(): 1.06 ms - RelationTypes count: 2
+[1] [PERF][API] GET /api/relationtypes TOTAL: 1.15 ms - RelationTypes returned: 2
+[1] [PERF][API] GET /api/references/group_by_connection - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][Entities] model.get() query: 5.40 ms - Entities count: 1
+[1] [PERF][PDFView] relationTypesAPI.get(): 10.87 ms
+[1] [PERF][Entities] files.get() query: 0.96 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 6.46 ms
+[1] [PERF][API] GET /api/entities TOTAL: 6.54 ms - Entities returned: 1
+[1] [PERF][RelationTypes] model.get(): 7.30 ms - RelationTypes count: 2
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 10.57 ms - Relations count: 892
+[1] [PERF][Document] Entity API call: 18.50 ms
+[1] [PERF][Document] Document selection (getEntityDoc): 0.01 ms
+[1] [PERF][Document] TOTAL getDocument: 18.56 ms
+[1] [PERF][PDFView] getDocument(): 18.58 ms
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 9.10 ms - Hubs count: 1784
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 19.84 ms
+[1] [PERF][Entities] model.get() query: 17.86 ms - Entities count: 1
+[1] [PERF][Entities] files.get() query: 0.76 ms - Files count: 2
+[1] [PERF][Entities] get() TOTAL: 18.75 ms
+[1] [PERF][Relationships] getByDocument - entities query: 18.79 ms - Connected docs count: 1
+[1] [PERF][Relationships] getByDocument - processing: 1.87 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 40.65 ms
+[1] [PERF][Relationships] getGroupsByConnection - filtering: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection - grouping: 0.00 ms
+[1] [PERF][Relationships] getGroupsByConnection TOTAL: 40.77 ms
+[1] [PERF][API] GET /api/references/group_by_connection TOTAL: 40.84 ms - Groups count: 0
+[1] [PERF][ReferencesAPI] GET group_by_connection: 47.12 ms
+[1] [PERF][Relationships] getGroupedByConnection API: 47.28 ms
+[1] [PERF][Relationships] Data processing (template filtering, sort options): 0.06 ms
+[1] [PERF][API] GET /api/references/search - sharedId: egfjcp0mp1w - language: en
+[1] [PERF][RelationshipsSearch] START - entitySharedId: egfjcp0mp1w
+[1] [PERF][RelationshipsSearch] processFilterCombinations: 0.02 ms
+[1] [PERF][RelationshipsSearch] getRightSideConnections - hubsIds query: 3.10 ms - Hubs: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections - connections query: 5.54 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] getRightSideConnections: 8.72 ms - Connections: 892
+[1] [PERF][RelationshipsSearch] ElasticSearch search.search: 8.09 ms - Results: 0
+[1] [PERF][RelationshipsSearch] map filteredSharedIds: 0.00 ms
+[1] [PERF][RelationshipsSearch] filterMatchingConnections: 0.01 ms - Matching: 0
+[1] [PERF][RelationshipsSearch] getMatchingHubsCount: 42.80 ms - Total hubs: 0
+[1] [PERF][RelationshipsSearch] getHubs: 47.23 ms - Hubs: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - getById: 3.30 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - build entityMap: 0.01 ms - Entities in map: 0
+[1] [PERF][Entities] model.get() query: 1.86 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.67 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 2.61 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - entities.get: 2.64 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities - process connections: 0.00 ms
+[1] [PERF][RelationshipsSearch] destructureHubsIntoEntities: 6.06 ms - Entities: 0
+[1] [PERF][RelationshipsSearch] sortBySearchResultOrder: 0.00 ms
+[1] [PERF][RelationshipsSearch] TOTAL: 113.27 ms
+[1] [PERF][API] GET /api/references/search TOTAL: 113.36 ms - Results: 0
+[1] [PERF][ReferencesAPI] GET search: 116.30 ms
+[1] [PERF][Relationships] connectionsListActions.search: 116.40 ms
+[1] [PERF][Relationships] TOTAL requestState: 163.91 ms
+[1] [PERF][PDFView] relationships.requestState(): 163.93 ms
+[1] [PERF][PDFView] Parallel Promise.all completed: 164.41 ms
+[1] [PERF][Relationships] getDocumentHubs - ownRelations query: 1.45 ms - Relations count: 0
+[1] [PERF][Relationships] getDocumentHubs - allHubs query: 0.52 ms - Hubs count: 0
+[1] [PERF][Relationships] getDocumentHubs TOTAL: 2.07 ms
+[1] [PERF][Entities] model.get() query: 0.60 ms - Entities count: 0
+[1] [PERF][Entities] files.get() query: 0.62 ms - Files count: 0
+[1] [PERF][Entities] get() TOTAL: 1.29 ms
+[1] [PERF][Relationships] getByDocument - entities query: 1.32 ms - Connected docs count: 0
+[1] [PERF][Relationships] getByDocument - processing: 0.02 ms
+[1] [PERF][Relationships] getByDocument TOTAL: 3.46 ms
+[1] [PERF][ReferencesAPI] GET by_document: 6.24 ms
+[1] [PERF][PDFView] referencesAPI.get(): 6.28 ms
+[1] [PERF][PDFView] State preparation: 0.11 ms
+[1] [PERF][PDFView] TOTAL requestViewerState: 177.49 ms
+[1] [PERF][SSR] Data loader 0 execution: 187.44 ms - Actions count: 1
+[1] [PERF][SSR] RequestState execution: 191.52 ms
+[1] [PERF][SSR] React component rendering: 27.36 ms
+[1] [PERF][SSR] HTML document rendering: 11.63 ms
+[1] [PERF][SSR] TOTAL SSR TIME: 281.05 ms - Route: entity/:sharedId - Status: 200
+[2] webpack built 82495d46b1b2b961d596 in 772ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4bf397ac6cbc4084e647 in 704ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built fff7d1f62dd5c98daf83 in 726ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cd7ea6c4fcad0d0aa895 in 761ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9a5ba224096e394cd3b8 in 709ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4decb919f230a6409071 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f7037928758376bef5ab in 755ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 40507fcf7b411abbae3c in 729ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 422e4eb41eaa802e2af2 in 712ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 85f421ba0fe60daac0d1 in 746ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built af1e5a8f7decff89ef0d in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7ccb00413c2138f16908 in 728ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 746e180abc2c9a8c85f6 in 754ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6d196d9a5772479b2e52 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 906cbb6718e130325877 in 714ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7ac650b4325a204fc0f9 in 765ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 07c12ea925e52d276284 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 281eff19339ae2c552cb in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1eba97e6446b0a6a7c0e in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b45c68407bf2bc453bf6 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 08880532ce334f829613 in 719ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9b021ee69b075850a8ca in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 900fcb765b419924fdb1 in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1911653e139173d5d630 in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a30372c172dc2d034b44 in 759ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 03224b0878ca0575aed9 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5f079cc44cf7df9ed863 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a4607558d1c606276666 in 753ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4459d6ed12bec5c8f9a4 in 704ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7727657daa8bd45a7dcc in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9c8ca20705695ab24fde in 746ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built dc548db145daeb020f19 in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5c2ddcf9e316d6403625 in 704ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 14729de89a0472c1276b in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 588e362157d039936cb6 in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 15bca6aeecf2cc484353 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d4613d9213424003e25b in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built df0a2400b5541906a768 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6a8c021cd53eda75cebf in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5561fbc17adf8249ebed in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5dd1d9378ab62c8b7c6e in 705ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 920fffadd9c7b836c472 in 758ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7605a3fa2254a3a688cb in 760ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 179cf785c3bd92dd86b1 in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e741b9cb3e9f8c22d0a6 in 713ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 78292127f8e1f463ff94 in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1c39b24c5ec3612de692 in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e4287db86d5be10c3367 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c842db35d8fdd3059d9b in 749ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 74d82b903c5998bed7f7 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0f47df10ffdb446decb6 in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 505a668255f6f85e4923 in 747ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c3c058d5bb24e2395280 in 718ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 02c108fea0b010f9327e in 717ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 931450bd69e7a5b01ae4 in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 082aaef3d65e0d468a4b in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 86a5c5ac0706bf8f2e00 in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3928e1e7d6f8dcdca890 in 756ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d660a62bb5113f0ffdd5 in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cc85a9ff65a12dd17802 in 709ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b0341935b7e5e1a8802c in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d58246c3773bd33d2200 in 694ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 287ae4d6ad02b904be28 in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e35a658702014fd31533 in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f3be9e25b780dc00ec28 in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a856ef73ce2c9ced8b33 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a65ca217a7f641d76ac5 in 772ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2943afa2c0d4cde4a4b9 in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 178071179b3881a2a793 in 700ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 20df7ba9d939ad614e4b in 749ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9618bd0104a0b918819b in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 478f913d3e453ea10577 in 705ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d9d32094612e70d34963 in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 58e7f0d767c3848450a1 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 701667c47adaf58add5f in 718ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9c9caa022840f2fd7f09 in 746ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5339ccabce095a676ac3 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built def81e2dfad9e02e5d17 in 716ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f531fcf5a7e4e9f5ed03 in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8cd31fc6a30ee177bb4d in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 640ef2516e6b6b7cab4e in 722ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built fb041d76ff2328c669a3 in 750ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1f8ce257eb41bf356cd2 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built dfae9eb55e0a2d8fa22c in 714ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ebf3d26a9268370a8805 in 754ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ac203faa3589dc427796 in 693ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 33497bb04c1ad5c2d465 in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1dd5745b0a92ccdb310d in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c6527eb78e17264d17e3 in 694ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 97f6f0f07da3333ce314 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0f4159e498a16707c3b6 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9758a491bb5db29050e1 in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e1127d958afde13f2b69 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f36f0369f57a2932ed96 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7e657ea4d4be11afc2fb in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7fc1dcb82ef1ec07421d in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 41940c7896db508f5a89 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 422dc26d61ed1063d362 in 700ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 56c80ef910077decd4a4 in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3b72e98625eae31cebdf in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 38b4aa147bf694cbf51f in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 405c81b6e111a84ca8f2 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 03bbcf6f051b376e34a6 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built dffd079340daf2aad994 in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0d9ff9c0c5f5264077af in 709ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 463f8e7a61aadc2c3493 in 748ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8ee18a2c9faaad8205fb in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 78c1264b2c984edecb82 in 717ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 60202195048ba46d9ffd in 739ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c563cc46c8760b109a64 in 692ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 87d171606230cc2a61fc in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 300550ccefd92c614f37 in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c80de88cb444b3a5457e in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a710a325a69ad5e80f02 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built afca0040c226e2aa6b49 in 739ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d08ee2135496a706deb0 in 692ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7c5d7f8de7d8dbd0576d in 722ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a8181063e222c7629d17 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 71d34fbe1cff7b232c3e in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d38d7c665315d79c4f9e in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d982cd3cb4a67f3a3706 in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 14318fc404bb714fa961 in 694ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5f578229b18327a5910f in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c94a48679d4829ad7a21 in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a0a8c12432e27f1869e8 in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c4b6215c09b6cf1f6a20 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1974b1667cddd944c426 in 753ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2cddc7375bd1348aa89f in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 18bd1d47160ba7dbb580 in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e62ed741c3ce97dffb9e in 734ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1b5df737ac4d3cebc60c in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f76e6b89ebfcc1602f7c in 694ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9c6eeb195bb1d6410650 in 763ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 098fb60f47f129fee3f1 in 687ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8629a4a09b7b84234c77 in 712ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 20451e31cbc43e4e24be in 753ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ce3059ef411ff629f6c7 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built bf7a04f29e9b73309b84 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cb76bcb9420e1976d1cf in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 38fa442471ae8b934df1 in 709ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4f5d8821ffa394bab2c3 in 727ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f304bf1270d5297b2a83 in 779ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f86e742a28bcf19b3837 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 194e88eabfdda955700b in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 737c9052c17b04745c93 in 713ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 09928610e16d8e2ba458 in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 03d170244d5d1f8daa47 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e0734f96e9a719a837ca in 748ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9a6a67cf2b243781d6f0 in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cd5b854f2980e35eed06 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a30b37ad82cad942b6e2 in 771ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 702a5b06e3e8d8caad75 in 714ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e1e2491a75b16a760a7e in 735ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6053044d5f6718ada9f2 in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b23f1ab5aa75f15743ee in 736ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 16eaa19651c9ddedc8c3 in 733ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 09de6e94c78efc9cc46d in 796ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ea8aa5561900b84868c4 in 792ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6437052fa7d27356f8b4 in 757ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6d1242c0c6d9ebba85fb in 777ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built db2aab6e78efe6a4bc8d in 723ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a0ea23aebcb2d34ddd09 in 759ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6517749545312eb1b6a4 in 784ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 64d23bc73054b9054df6 in 721ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 51d26e1a7de1a2f9ea93 in 723ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7c5dbd49dd1509da114a in 762ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ac86b9dff7df3227a371 in 725ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e46d48a5b1ea6c2df292 in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built afbf0a377205d2e1c447 in 777ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2d7c232da8cacd7a0b20 in 784ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 53006a37aaac420b048f in 757ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built bcf7c2086d2040ccc177 in 789ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6e2099094106814fbf41 in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6dc677ee7c847622f115 in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7a82ef9a7d2ccf983cfe in 789ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4a80d9a14b9e4559c323 in 739ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b1c11eba407b07b1f61e in 727ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 986e324c1527f11dd45a in 777ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 527ab649898b678c7e87 in 723ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c28b15abb075c352ffd2 in 737ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 05b4ea3ddd73c12e343d in 785ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built bd1127c607a677f6181f in 734ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3eb68875d78a05e71f73 in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ac364296518a40175f72 in 773ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 878184dd1e7c1d231b61 in 724ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8d6e9ae98f13a31037f2 in 737ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ed963bdc56cca2442575 in 779ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6c65aa409af2e6be11bc in 718ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f098a70565d6b2d9dac3 in 735ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6ca72bd482efb7d889bc in 800ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b82bd8735eb442d6572d in 733ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f28af920e5ee77f34826 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 336000a7112d05cff4f7 in 780ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b343bf0b03d0f923b521 in 721ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 418b489bd1580788690d in 734ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7424059157e94a95153d in 817ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e71dba84890da669aa7c in 729ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2871415fe53449c3f535 in 760ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 299ef169218c63b9a985 in 791ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 17d2b5f3f9c72b079e55 in 733ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 327815ed620414c86ba2 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cb78a5ba208b83bc7720 in 803ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d91c425ca8b13fc5366d in 730ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9a4f080757a40e8b9be9 in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a4cd8020c9ef74791cdc in 781ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 46f333bbcb778e6d7c15 in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b292dbac43c7b466bd79 in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 630dec453094a21417c0 in 790ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 830c659d2a2fb13bdc3a in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6197b38ed0e41def32c0 in 759ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5c5c9f96a6715f88bc55 in 797ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built beab8b523d152a4ec135 in 755ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8e19d3c429a7a5aa3a07 in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 41c6c9732c70e7b7f440 in 782ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ea7a6e7005a822c71233 in 748ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1a767e9a093e65046f22 in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a56a6d9697293f71535b in 794ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 79f3efbf6da397c77464 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 33e1608ee3b7542c3f11 in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4a0cab7109d8c7153643 in 781ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d3c331324481fcb84cc0 in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 21f1369dc1135c256c05 in 754ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7f82beaccb6816a8ff58 in 782ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6be4dfe84968a3a2fb58 in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 747c106ac8d040ef98c0 in 776ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built af72a9909272f9f56808 in 823ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3499c1fe69acdf28dc3a in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5de43f78cf0012dc49ae in 756ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 68a9b74befce52533154 in 785ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 63d6a0c3b1e52dfbba88 in 733ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7a4a943dff2f0f997c63 in 811ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c89d004279fcc35354d4 in 765ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2287ae5525bfe8298931 in 726ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 886e31f8ff898ef5a9b3 in 736ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ebccdf867e6de50e3314 in 762ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2b50e3bdd5b5fa051d61 in 734ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1960e5ef64e207cda60e in 731ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built fbdd8e3ee2f66e4df3a9 in 780ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 028849df91381b81747c in 726ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c68b00b56b684f0a222f in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2a2b711e39d08ae17e77 in 779ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 88292a08afbcaf8b6a8e in 719ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0ee22e60f5ce5326c7cd in 736ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1090cfcc598107b263b4 in 763ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 30f9b12b9edaa171050c in 720ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4224ee9d5a879bb499c3 in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a192c018300c51ba7441 in 763ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 92c8ae3d1adad7a511e0 in 762ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 09d439f0c4ccd6932362 in 724ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cba08ecf8cd5dd41d5b5 in 764ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e166405961fe17d56331 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 923c1bef7e45163d6dc5 in 737ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 88f922cf71b12f0f9fe2 in 791ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4e5c25d6f97d163e4c80 in 723ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built dec1206f8e10663edd21 in 731ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built bbfde0201e5d953c14d8 in 765ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built bcb6cc1fb5a7c6885318 in 704ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built eca3c550450980a2de61 in 728ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5bc15cb42e12cb84d6c0 in 763ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f9791294278b516c7d13 in 759ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 21c28dc294bb9bb2958d in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built dfd7e6d58df0ba6b240b in 818ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ca3c8448b42e4a53de5a in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 268a2cb534e9afb4b5ae in 747ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a93d2c6eb240fb2c2cf4 in 782ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 493eaaf03338efe26c21 in 771ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 68c0530dbd53cbe6c3e3 in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ecf8e37d6fe516f1f2ab in 766ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ce8993ee7e94a1c6f695 in 723ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 82ae816490b6b595ce53 in 749ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6340adef7075016e3425 in 779ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 26882f33fed148c02249 in 724ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 833b9f8410ae1224eef5 in 749ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 390cd14b6aef35a024c9 in 801ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 494f0ac6d91ebaa4c4ac in 739ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f44b2a9bdc36d2a995c1 in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cac93fc3cf6a753f567b in 781ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4ed7ab7fda43adfd5d33 in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b3d38d4b1f3c0293f156 in 737ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 719a821f6e1382f99eaa in 784ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9f24ee7e3f92226025d6 in 725ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b6a221f20e8db3eeb650 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 57a7b174dc0c8990b9d6 in 790ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4c3b99d6fed64c2106ec in 791ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 874dbb9926ce54185692 in 750ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ab6d7bf83d60c810f9ce in 783ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3b8336dbf5e6552f1724 in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0688863d0fae3e9376df in 758ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7abdcc2a22c5d705f1e1 in 794ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3fb2386482d27c1bb58f in 727ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 334e7200f1269df9d53f in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 29bfdd314ac2cee8e6a1 in 795ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f01f34bfd0168eb313c6 in 766ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f1461988b74a7acb4951 in 748ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2d3879dffb78539d6e75 in 790ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a0349752e04893a9575d in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 98379e3a437480782627 in 755ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e73a8bb14cd3ae521606 in 883ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built afdddc9b798ca4e720e0 in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c5a63cc17d4ea7d07350 in 762ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f8874087ae3cea54e9fd in 822ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5df7f705ae7005d1101f in 732ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f2781afd280458df16ab in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b5285b377a21c4a4b291 in 779ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 936b79d59b133aa6ea10 in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3ccb2fa1c0597f895508 in 775ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 239717c6b8399146228e in 786ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4f0ae5735f48c1d58bc2 in 732ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d209c6366efce64eda0d in 762ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e8efa1819a30d9e6c928 in 855ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0499d6e81e89c74abc8f in 763ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 47447bacd469ea137a8a in 753ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5d5a266ba779f94ea8f6 in 785ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 254b699b61ecef65ace5 in 732ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a24e8fed2f62e748d896 in 762ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9612380b37942010d436 in 806ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a9cdd4a3d4592a8a3245 in 750ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 543415d620e59606f55e in 772ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7eebf7804b79206dc0a4 in 796ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 42e0fc0c41d51a9b16c9 in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a97c8ef08c6081683c25 in 764ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9240729e13cf9f166f81 in 790ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c643a4e4d431de2fe53c in 746ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 60f52b5fe89f5156d1a5 in 752ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d607654371a60d2b5537 in 794ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 90aba7ba6f1718a23157 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 868d562995f4aafc8451 in 746ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4faed2e0ce91ab9bcd6f in 765ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9d1df8836d5c4fd8c226 in 727ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f9036e4c1c1aa5f5fc7f in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ec85866cdc2f36fa4818 in 834ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 51543e0ca9904619b3f2 in 721ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1dc65d76c1ba6d950cf6 in 733ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 586a58b4bac1e8d1f2f8 in 768ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cabdce6c4f72df470517 in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e7dd4afce869c29e9b85 in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e523c95c3eb2241059ff in 769ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c1b35b9c305654b2f908 in 726ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4eedc0a8b902c01698ee in 737ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 00d43f99797395e511e1 in 773ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9228e018d762002808b9 in 718ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4047f00e3419c344c6b5 in 736ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 13d34f6ac6e13534f933 in 782ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 12d0f57bbd65044a9435 in 722ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 47f98f78ac2bfb212702 in 737ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 15f231d8693b27b613b0 in 777ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built afe81a1f59d059b155c5 in 730ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built df2f091daf5dd39eca26 in 762ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d1e5cc9e82ea03daf226 in 782ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1311be3eafc5c4a4b47d in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b11fe0fa6634d7f962e1 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 98d8173a9559f11d2dba in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0a8abd19ebcd0b2e0262 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6f3fb46ff10a8f55b739 in 715ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 922b505cd5b1b44f5631 in 749ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d7038522dbc9df12e76e in 689ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built f733b9e4bcce20feb8e7 in 709ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0287e80a4bee6f109843 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e0a52dc418c1ee053f61 in 693ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 66afe20b78eeedd15b9c in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0cb1832278f85b14776e in 716ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 97351f0c40f9833855a1 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built fbabc3c69a149fa96277 in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e1260be62219247e95c8 in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 477464fcd49d3299ce09 in 691ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 09bfba9e612042f297bb in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8e723a88fec3b8e5aed9 in 737ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a1a15a5be49761c2ee31 in 683ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 378a4855b1e47d360112 in 729ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e0f26f024c0bf7031d0b in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 482afc47c79df4c86f26 in 686ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c87422d10b531768ca73 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ce72837cc8b7ada10e01 in 736ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4b4934fc89e562c994a1 in 689ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ff692efe0f727812588d in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cf13363d1545a1e0a7f6 in 734ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 132183d18c32f5d82cf9 in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4f310c9147004b975ac8 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 15527af1f075b97392c4 in 739ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a2adbbc8e56dc2537691 in 693ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1c04045125a7156ef013 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 51c7b1b1319091e5482c in 742ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8d5758a37fb9573b3124 in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 57077c5504e50d1596a7 in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 49bcffa3c5a3a6ebfd78 in 732ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6548964c12369099d28b in 692ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8dad92e9d035a5b0a8c1 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 886bb95a91b8a9ecc492 in 754ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9988be46950ccec4f78b in 692ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0e580a3100a8166102a3 in 718ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b5972eb9855bc243d7bf in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4e2e4b6a20d99da33372 in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 55621acef06f268c5a8a in 710ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 90d27cd8c91224d1b758 in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 19ecc49901943b418067 in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 575a447496423dbeb08e in 712ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 786410fcb9a683724f48 in 735ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 42004e3efb68ab364b6f in 691ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8964881d12fb5d0c1463 in 702ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d24a1acbb48e7b754622 in 730ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 89b6f8020035fc6e0176 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built abff1f97887102b434ac in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2e086f6bc0c52c07467b in 748ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 05348db73d91e28deb12 in 691ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 16e5388dd869ec16de7d in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d497f57258811f5dbcdd in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4b4ac485e6c6dcc308bd in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ee35dee7a37475111adb in 709ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 5d665c7bf7323990b34b in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9746694fdb402618cd0a in 691ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ca86c4a2756f7e0bef5e in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3fbbe507caed80591112 in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e5b378b4b2a985ae4cab in 694ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e3412ac5d8010a5922f9 in 714ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 4118b6e9b1eb0c1e25ad in 749ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1e215e9c67181159afb4 in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ac9e016ef22232bc2df0 in 721ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built df4c67ac7e0847b38b80 in 743ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c145d6cd8162beada3d8 in 688ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 127cc1ab98ee46e3e571 in 708ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9df74634967f9867ee2f in 741ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 48385f71e0e4940ee559 in 692ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 8e3ddb26e6cac4495f55 in 706ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ff5dcdfd0c3ee90cbcf8 in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 3db1cdeddca552c561dd in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 90ae9946e6b734ed8947 in 709ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d37900603d38cd76f553 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 0bfe981210f3d97ac631 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 47587c36bcdbd50cc267 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6a10e597af4f5bda8f85 in 738ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 77a81916223485a7c7a9 in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built da47abef3fc257f84f6c in 705ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 47dbce13d23f3634cb04 in 744ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7e6ddcd2d017daf30241 in 694ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a853b84e5d1f4251ec4b in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 92362b15890daa8b9791 in 750ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 48a7b141a064a5f09937 in 705ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built af6ff41b52545c0ccf32 in 711ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e8744162cccfea566ff4 in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 21e243d477bf64371ac0 in 697ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 1de809f23439511d84d4 in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built ce51e36d7ba68488e177 in 740ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 22620eab24f33303ecdf in 698ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 075acb98cb7e9da92f6f in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a3dce68b0c72e06a9d15 in 732ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e27ce8a17a15be838892 in 695ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 7d4102cde8c3a3de4165 in 707ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a5b57d4500f8621a78b1 in 736ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built cd93565b45bea022da89 in 696ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built b03360dc390872bc7f04 in 703ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built a5e8395c4c519ee2dc12 in 756ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built c1ae99f45690cae3f7b9 in 699ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 536b95fd34e9c97a131d in 751ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built af30e7812446f599f976 in 747ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built d5a5a0b978608fb298d3 in 701ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 9117a20e92bbed8b6d38 in 713ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 6082fee0010208d0a4ad in 765ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built e2b4228411888b73598e in 712ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built 2e2bb298ba20ca7eb7a8 in 745ms
+[2] webpack compiled successfully
+[2] webpack building...
+[2] webpack built dde87e2d4704a0c12a4b in 759ms
+[2] webpack compiled successfully
+[2] webpack building...
+[1] SIGINT signal received.
+[1] [info] - [System Logger]:'SIGTERM received. Stopping worker'
+[1] 
+[1] 
+[1] Gracefully closing express connections
+[1] Disconnected from Elasticsearch
+[1] Disconnected from Redis
+[1] Disconnected from database
+[1] Server closed succesfully
+[0] yarn run watch-types exited with code 1
+[2] yarn run webpack-server exited with code 1
+[1] yarn run dev-server exited with code 1

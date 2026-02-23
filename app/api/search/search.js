@@ -713,10 +713,15 @@ const _getTextFields = (query, templates) =>
     .concat(['title', 'fullText']);
 
 async function searchTypeFromSearchTermValidity(searchTerm) {
+  const perfStart = performance.now();
   const validationResult = await elastic.indices.validateQuery({
     body: { query: { query_string: { query: searchTerm } } },
   });
-  return validationResult.body.valid ? 'query_string' : 'simple_query_string';
+  const queryType = validationResult.body.valid ? 'query_string' : 'simple_query_string';
+  console.log(
+    `[PERF][Search] Query validation: ${(performance.now() - perfStart).toFixed(2)} ms - Type: ${queryType}, Valid: ${validationResult.body.valid}`
+  );
+  return queryType;
 }
 
 // eslint-disable-next-line max-statements
@@ -796,8 +801,18 @@ const buildQuery = async (query, language, user, resources) => {
 const search = {
   // eslint-disable-next-line max-statements
   async search(query, language, user) {
+    const perfTotalStart = performance.now();
+
+    // 1. Load templates and dictionaries
+    const perfResourcesStart = performance.now();
     const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
+    const perfResourcesTime = performance.now() - perfResourcesStart;
+    console.log(`[PERF][Search] Templates/Dictionaries load: ${perfResourcesTime.toFixed(2)} ms`);
+
     const [templates, dictionaries] = resources;
+
+    // 2. Build query
+    const perfBuildStart = performance.now();
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
       searchGeolocation(queryBuilder, templates);
@@ -820,10 +835,26 @@ const search = {
     }
 
     const esQuery = queryBuilder.query();
+    const perfBuildTime = performance.now() - perfBuildStart;
+    console.log(`[PERF][Search] Query building: ${perfBuildTime.toFixed(2)} ms`);
 
+    // Log search term if present
+    const searchTerm = query.searchTerm || query.search?.searchTerm || 'N/A';
+    console.log(`[PERF][Search] Search term: "${searchTerm}"`);
+
+    // 3. Execute ElasticSearch query
+    const perfEsStart = performance.now();
     return elastic
       .search({ body: esQuery })
       .then(async response => {
+        const perfEsTime = performance.now() - perfEsStart;
+        const resultCount = response.body.hits?.total?.value || response.body.hits?.total || 0;
+        console.log(
+          `[PERF][Search] ElasticSearch query: ${perfEsTime.toFixed(2)} ms - Results: ${resultCount}`
+        );
+
+        // 4. Process response
+        const perfProcessStart = performance.now();
         const processed = await processResponse(
           response,
           templates,
@@ -831,6 +862,18 @@ const search = {
           language,
           query.filters
         );
+        const perfProcessTime = performance.now() - perfProcessStart;
+        console.log(
+          `[PERF][Search] Response processing: ${perfProcessTime.toFixed(2)} ms - Rows: ${processed.rows?.length || 0}`
+        );
+
+        // Total time
+        const perfTotalTime = performance.now() - perfTotalStart;
+        console.log(`[PERF][Search] TOTAL: ${perfTotalTime.toFixed(2)} ms`);
+        console.log(
+          `[PERF][Search] Breakdown: Resources=${perfResourcesTime.toFixed(0)}ms (${((perfResourcesTime / perfTotalTime) * 100).toFixed(1)}%), Build=${perfBuildTime.toFixed(0)}ms (${((perfBuildTime / perfTotalTime) * 100).toFixed(1)}%), ES=${perfEsTime.toFixed(0)}ms (${((perfEsTime / perfTotalTime) * 100).toFixed(1)}%), Process=${perfProcessTime.toFixed(0)}ms (${((perfProcessTime / perfTotalTime) * 100).toFixed(1)}%)`
+        );
+
         return processed;
       })
       .catch(e => {
@@ -849,11 +892,26 @@ const search = {
   },
 
   async searchSnippets(searchTerm, sharedId, language, user) {
-    const templates = await templatesModel.get();
+    const perfTotalStart = performance.now();
+    console.log(
+      `[PERF][SearchSnippets] START - sharedId: ${sharedId}, searchTerm: "${searchTerm}"`
+    );
 
+    const perfTemplatesStart = performance.now();
+    const templates = await templatesModel.get();
+    console.log(
+      `[PERF][SearchSnippets] Templates load: ${(performance.now() - perfTemplatesStart).toFixed(2)} ms`
+    );
+
+    const perfValidationStart = performance.now();
     const searchTextType = searchTerm
       ? await searchTypeFromSearchTermValidity(searchTerm)
       : 'query_string';
+    console.log(
+      `[PERF][SearchSnippets] Query validation: ${(performance.now() - perfValidationStart).toFixed(2)} ms - Type: ${searchTextType}`
+    );
+
+    const perfBuildStart = performance.now();
     const searchFields = propertiesHelper
       .textFields(templates)
       .map(prop => `metadata.${prop.name}.value`)
@@ -866,19 +924,39 @@ const search = {
     if (user) {
       query.includeUnpublished();
     }
+    console.log(
+      `[PERF][SearchSnippets] Query building: ${(performance.now() - perfBuildStart).toFixed(2)} ms - Fields: ${searchFields.length}`
+    );
 
+    const perfEsStart = performance.now();
     const response = await elastic.search({
       body: query.query(),
     });
+    console.log(
+      `[PERF][SearchSnippets] ElasticSearch query: ${(performance.now() - perfEsStart).toFixed(2)} ms - Hits: ${response.body.hits.hits.length}`
+    );
 
     if (response.body.hits.hits.length === 0) {
+      console.log(
+        `[PERF][SearchSnippets] TOTAL: ${(performance.now() - perfTotalStart).toFixed(2)} ms - No results`
+      );
       return {
         count: 0,
         metadata: [],
         fullText: [],
       };
     }
-    return snippetsFromSearchHit(response.body.hits.hits[0]);
+
+    const perfSnippetStart = performance.now();
+    const result = snippetsFromSearchHit(response.body.hits.hits[0]);
+    console.log(
+      `[PERF][SearchSnippets] Snippet extraction: ${(performance.now() - perfSnippetStart).toFixed(2)} ms`
+    );
+    console.log(
+      `[PERF][SearchSnippets] TOTAL: ${(performance.now() - perfTotalStart).toFixed(2)} ms`
+    );
+
+    return result;
   },
 
   async indexEntities(query, select = '', limit = 50, batchCallback = () => {}) {

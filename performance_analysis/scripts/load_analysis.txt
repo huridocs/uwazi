@@ -1,0 +1,79 @@
+====================================================================================================
+PERFORMANCE ANALYSIS - CONCURRENT LOAD TEST WITH HIGH-RELATIONSHIP ENTITIES
+====================================================================================================
+
+### OVERALL OPERATION PERFORMANCE (All Requests) ###
+
+  requeststate                   avg=  808.4ms  med=  642.0ms  min=  104.8ms  max= 2285.8ms  std= 603.1ms  n=119
+  data_loader                    avg=  800.4ms  med=  639.5ms  min=  102.4ms  max= 2268.8ms  std= 602.8ms  n=119
+  store_prep                     avg=  295.4ms  med=  295.8ms  min=   37.2ms  max=  740.8ms  std= 213.6ms  n=119
+  relationships_api              avg=  125.2ms  med=  101.9ms  min=   20.4ms  max=  452.2ms  std=  81.4ms  n=119
+  getByDocument                  avg=   91.6ms  med=   73.9ms  min=    2.2ms  max=  451.2ms  std=  88.8ms  n=238
+  getDocumentHubs                avg=   48.1ms  med=   32.6ms  min=    1.3ms  max=  203.6ms  std=  51.4ms  n=238
+  react_render                   avg=   21.3ms  med=   20.7ms  min=   15.6ms  max=   39.5ms  std=   4.0ms  n=119
+
+
+### PERFORMANCE BY CONCURRENCY LEVEL ###
+
+
+--- Concurrency: 1 simultaneous requests ---
+  ssr_total                      avg=  316.5ms  med=  267.0ms  min=  170.7ms  max=  921.8ms  std= 175.5ms  n=30
+  requeststate                   avg=  229.9ms  med=  184.7ms  min=  104.8ms  max=  815.0ms  std= 164.2ms  n=30
+  data_loader                    avg=  221.8ms  med=  177.3ms  min=  102.4ms  max=  798.9ms  std= 160.9ms  n=30
+  relationships_api              avg=   77.3ms  med=   39.1ms  min=   20.4ms  max=  452.2ms  std=  96.1ms  n=34
+  store_prep                     avg=   64.8ms  med=   42.0ms  min=   37.2ms  max=  223.0ms  std=  54.9ms  n=34
+  react_render                   avg=   23.0ms  med=   21.7ms  min=   16.0ms  max=   39.5ms  std=   5.5ms  n=30
+
+--- Concurrency: 5 simultaneous requests ---
+  ssr_total                      avg=  701.1ms  med=  694.6ms  min=  493.6ms  max=  882.1ms  std= 105.4ms  n=30
+  requeststate                   avg=  471.6ms  med=  497.7ms  min=  305.8ms  max=  642.0ms  std=  98.1ms  n=30
+  data_loader                    avg=  463.9ms  med=  490.9ms  min=  303.4ms  max=  639.5ms  std=  94.8ms  n=30
+  store_prep                     avg=  228.3ms  med=  198.4ms  min=  155.2ms  max=  356.3ms  std=  62.4ms  n=35
+  relationships_api              avg=   94.0ms  med=   83.8ms  min=   42.7ms  max=  177.4ms  std=  34.6ms  n=35
+  react_render                   avg=   21.1ms  med=   21.9ms  min=   15.9ms  max=   27.1ms  std=   2.8ms  n=30
+
+  Performance degradation vs concurrency=1: +121.5%
+
+--- Concurrency: 10 simultaneous requests ---
+  ssr_total                      avg= 1312.3ms  med= 1311.2ms  min= 1012.7ms  max= 1594.3ms  std= 151.2ms  n=30
+  requeststate                   avg=  939.8ms  med=  943.9ms  min=  635.0ms  max= 1512.9ms  std= 169.9ms  n=30
+  data_loader                    avg=  931.2ms  med=  939.1ms  min=  631.1ms  max= 1496.8ms  std= 168.5ms  n=30
+  store_prep                     avg=  521.0ms  med=  521.8ms  min=  305.8ms  max=  740.8ms  std= 159.5ms  n=40
+  relationships_api              avg=  189.0ms  med=  166.2ms  min=   95.8ms  max=  290.7ms  std=  62.3ms  n=40
+  react_render                   avg=   20.8ms  med=   19.8ms  min=   15.6ms  max=   34.2ms  std=   4.1ms  n=30
+
+  Performance degradation vs concurrency=1: +314.6%
+
+--- Concurrency: 20 simultaneous requests ---
+  ssr_total                      avg= 2267.8ms  med= 2525.3ms  min= 1155.8ms  max= 3108.6ms  std= 661.9ms  n=30
+  requeststate                   avg= 1619.4ms  med= 1851.2ms  min=  718.2ms  max= 2285.8ms  std= 534.2ms  n=29
+  data_loader                    avg= 1611.7ms  med= 1848.7ms  min=  715.7ms  max= 2268.8ms  std= 534.4ms  n=29
+  store_prep                     avg=  412.2ms  med=  413.2ms  min=  336.4ms  max=  491.2ms  std=  48.2ms  n=10
+  relationships_api              avg=  141.6ms  med=  146.2ms  min=   81.2ms  max=  181.0ms  std=  29.0ms  n=10
+  react_render                   avg=   20.1ms  med=   20.1ms  min=   15.6ms  max=   25.2ms  std=   2.6ms  n=29
+
+  Performance degradation vs concurrency=1: +616.6%
+
+
+### PERFORMANCE BY RELATIONSHIP COUNT ###
+
+  Relationships |  Avg Query Time |   Requests |   Concurrency Levels
+--------------------------------------------------------------------------------
+            892 |         30.46ms |         23 | [1, 5, 10, 20]
+            874 |         35.18ms |         12 | [1, 5, 10, 20]
+            644 |         30.82ms |         12 | [1, 5, 10, 20]
+            469 |         24.99ms |         12 | [1, 5, 10, 20]
+            468 |         19.32ms |         12 | [1, 5, 10, 20]
+            442 |         26.53ms |         12 | [1, 5, 10, 20]
+            437 |         29.33ms |         12 | [1, 5, 10, 20]
+            436 |         34.73ms |         12 | [1, 5, 10, 20]
+            434 |         32.00ms |         12 | [1, 5, 10, 20]
+
+
+### CORRELATION ANALYSIS ###
+
+Relationship Count vs Query Time:
+  Pearson correlation coefficient: 0.389
+  ✓  MODERATE positive correlation - some impact from relationship count
+
+====================================================================================================
