@@ -201,6 +201,10 @@ describe('Pages', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Country page');
+      cy.window().then(async win => win.document.fonts.ready);
+      cy.get('table').then($table => {
+        $table[0].style.height = '260px';
+      });
       cy.get('table').matchImageSnapshot();
     });
 

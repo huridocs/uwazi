@@ -41,12 +41,13 @@ export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear =
       typeTarget(monacoSelector, value);
       return;
     }
-    const selector =
-      mode === 'javascript' || $body.find('textarea[name="metadata.markdown"]').length
-        ? mode === 'javascript'
+    let selector = 'textarea[name="metadata.content"]';
+    if (mode === 'javascript' || $body.find('textarea[name="metadata.markdown"]').length) {
+      selector =
+        mode === 'javascript'
           ? 'textarea[name="metadata.script"]'
-          : 'textarea[name="metadata.markdown"]'
-        : 'textarea[name="metadata.content"]';
+          : 'textarea[name="metadata.markdown"]';
+    }
     if (clear) {
       clearTarget(selector);
     }
