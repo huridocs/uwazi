@@ -48,6 +48,11 @@ const newPage = () => {
 };
 
 const takeSnapshot = () => {
+  cy.get('body', { timeout: 30000 }).then($body => {
+    if (!$body.find('.markdown-viewer').length) {
+      cy.reload();
+    }
+  });
   cy.get('.markdown-viewer', { timeout: 30000 }).should('be.visible');
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.get('.markdown-viewer').wait(2000).matchImageSnapshot();

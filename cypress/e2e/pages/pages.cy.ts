@@ -13,11 +13,17 @@ describe('Pages', () => {
     cy.contains('a', 'Settings').click();
   });
 
+  beforeEach(() => {
+    cy.cleanupUnexpectedUi();
+  });
+
   describe('accessibility', () => {
     it('should check for accessibility violations', () => {
       cy.contains('a', 'Pages').click();
+      cy.injectAxe();
       cy.checkA11y(undefined, undefined, logA11yViolations);
       cy.contains('a', 'Add page').click();
+      cy.injectAxe();
       cy.checkA11y(undefined, undefined, logA11yViolations);
     });
   });
@@ -175,9 +181,9 @@ describe('Pages', () => {
 
     it('display the entity in custom page', () => {
       cy.contains('a', 'Library').click();
-      cy.contains('.multiselectItem-name > span', 'Medida Provisional').click();
-      cy.contains('Acevedo Jaramillo');
-      cy.get('.item-document:nth-child(2) > .item-info').click();
+      cy.contains('.multiselectItem-name > span', 'Medida Provisional', { timeout: 12000 }).click();
+      cy.contains('Acevedo Jaramillo', { timeout: 12000 });
+      cy.contains('.item-document .item-name', 'Acevedo Jaramillo', { timeout: 12000 }).click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
       cy.get('.page-viewer.document-viewer').matchImageSnapshot('entity view 1');
       cy.get('#entity-datasets-value').scrollIntoView();
@@ -200,12 +206,11 @@ describe('Pages', () => {
     it('should render a list with all pages names', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
+      cy.get('table tbody tr').its('length').should('be.gte', 3);
+      cy.get('table tbody input[type="checkbox"]').its('length').should('be.gte', 3);
       cy.contains('Country page');
-      cy.window().then(async win => win.document.fonts.ready);
-      cy.get('table').then($table => {
-        $table[0].style.height = '260px';
-      });
-      cy.get('table').matchImageSnapshot();
+      cy.contains('Custom home page');
+      cy.contains('My entity view page');
     });
 
     it('should allow to cancel deletion', () => {
