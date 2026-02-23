@@ -15,7 +15,7 @@ module.exports = {
     '@storybook/addon-viewport',
     '@storybook/addon-actions',
     '@storybook/addon-webpack5-compiler-babel',
-    '@chromatic-com/storybook'
+    '@chromatic-com/storybook',
   ],
 
   framework: {
@@ -42,6 +42,13 @@ module.exports = {
         ...config.module,
         rules: custom.module.rules,
       },
+      resolve: {
+        ...config.resolve,
+        alias: {
+          ...config.resolve?.alias,
+          ...custom.resolve.alias,
+        },
+      },
     };
   },
 
@@ -50,6 +57,6 @@ module.exports = {
   },
 
   typescript: {
-    reactDocgen: 'react-docgen-typescript'
-  }
+    reactDocgen: 'react-docgen-typescript',
+  },
 };
