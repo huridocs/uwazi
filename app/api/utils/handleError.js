@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
+import { ZodError } from 'zod';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -99,6 +100,15 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof Ajv.ValidationError) {
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
+  }
+
+  if (error instanceof ZodError) {
+    result = {
+      code: 422,
+      message: util.inspect(error),
+      validations: error.issues || error.errors,
+      logLevel: 'debug',
+    };
   }
 
   if (error.name === 'ValidationError') {
