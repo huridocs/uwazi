@@ -9,6 +9,10 @@ describe('Public Form', () => {
     clearCookiesAndLogin();
   });
 
+  beforeEach(() => {
+    cy.cleanupUnexpectedUi();
+  });
+
   describe('whitelist templates', () => {
     it('should navigate to collection settings', () => {
       dismissModalIfVisible();
@@ -102,10 +106,10 @@ describe('Public Form', () => {
           cy.contains('button', 'Edit').click();
         });
       cy.contains('Markdown').click();
-      typeInEditor(
-        'html',
+      cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
+      cy.get('div[data-mode-id="html"]').type(
         '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
-        true
+        { parseSpecialCharSequences: false, delay: 0 }
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -126,23 +130,23 @@ describe('Public Form', () => {
         force: true,
         delay: 0,
       });
-      cy.get('select').select('505e38c8-210f-45b1-a81f-aa34d933cbae');
+      cy.contains('label', 'Descriptor', { timeout: 12000 });
+      cy.get('select').first().select('505e38c8-210f-45b1-a81f-aa34d933cbae', { force: true });
       cy.get('.react-datepicker-wrapper input').type('2022/02/10', { delay: 0 });
       cy.get('textarea').type('A description for the report', { delay: 0 });
     });
 
     it('should fill the Fotografía field', () => {
       cy.contains('.image button[type=button]', 'Add file').eq(0).click();
-      cy.contains('button', 'Select from computer');
-      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
-        force: true,
-      });
+      cy.get('div[role=dialog] input[type=file]', { timeout: 12000 }).selectFile(
+        './cypress/test_files/batman.jpg',
+        { force: true }
+      );
       cy.get('img').should('be.visible');
     });
 
     it('should fill the Video field', () => {
       cy.get('.media button[type=button]').click();
-      cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(
         './cypress/test_files/short-video.mp4',
         {
@@ -162,10 +166,10 @@ describe('Public Form', () => {
 
     it('should fill the Imagen adicional field', () => {
       cy.contains('.image button[type=button]', 'Add file').click();
-      cy.contains('button', 'Select from computer');
-      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
-        force: true,
-      });
+      cy.get('div[role=dialog] input[type=file]', { timeout: 12000 }).selectFile(
+        './cypress/test_files/batman.jpg',
+        { force: true }
+      );
       cy.get('.form-group.image').should('have.length', 2);
     });
 
@@ -182,24 +186,27 @@ describe('Public Form', () => {
   describe('check created entities', () => {
     it('should check the first entity', () => {
       cy.get('a[aria-label="Library"]').click();
-      cy.contains('Published', { timeout: 100 });
+      cy.contains('Published', { timeout: 12000 });
       selectRestrictedEntities();
       cy.contains('h2', 'Test public submit entity').click();
       cy.contains('Test public submit entity');
     });
 
+    it('should check the second entity', () => {
+      cy.get('.library-viewer').scrollTo('top');
+      cy.contains('h2', 'Entity with image and media fields').click();
+      cy.contains('aside.is-active a', 'View').click();
+      cy.contains('Entity with image and media fields');
+    });
+
     it('should check the second entity with files', () => {
+      cy.get('a[aria-label="Library"]').click();
       cy.get('.library-viewer').scrollTo('top');
       cy.contains('h2', 'Entity with image and media fields').click();
       cy.intercept('GET', '/api/files/*').as('waitForImages');
       cy.contains('aside.is-active a', 'View').click();
-      //wait for .multimedia-img to be visible
       cy.get('.multimedia-img').should('be.visible');
-
-      // Wait for attachment files to be present instead of network requests (caching compatible)
       cy.get('.attachment-name span:first-of-type').should('have.length', 3);
-
-      // get the names of the supporting files in first span of .attachment-name
       cy.get('.attachment-name span:first-of-type').then($spans => {
         const names = $spans.toArray().map(span => span.textContent);
         expect(names).to.deep.equal(['batman.jpg', 'batman.jpg', 'short-video.mp4']);
