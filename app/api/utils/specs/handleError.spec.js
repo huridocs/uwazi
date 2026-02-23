@@ -11,7 +11,6 @@ import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
 import { DomainError } from 'api/core/domain/error/DomainError';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { z } from 'zod';
 import { handleError, prettifyError } from '../handleError';
 
 const contextRequestId = '1234';
@@ -25,7 +24,6 @@ describe('handleError', () => {
     jest.resetAllMocks();
     jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     jest.spyOn(legacyLogger, 'debug').mockImplementation(() => {});
-    jest.spyOn(legacyLogger, 'info').mockImplementation(() => {});
     jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
 
@@ -256,18 +254,6 @@ original error: {
       expect(error.code).toBe(400);
       const expectedPrettymessage = 'hello\na property: an error';
       expect(error.prettyMessage).toEqual(expectedPrettymessage);
-    });
-
-    describe('when error is a ZodError', () => {
-      it('should be a 422 info logLevel and logged as info', () => {
-        try {
-          z.string().url().parse('not-a-valid-url');
-        } catch (e) {
-          const error = handleError(e);
-          expect(error).toMatchObject({ code: 422, logLevel: 'info' });
-          expect(legacyLogger.info).toHaveBeenCalled();
-        }
-      });
     });
   });
 

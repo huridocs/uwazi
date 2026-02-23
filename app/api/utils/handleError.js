@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
-import { ZodError } from 'zod';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -102,16 +101,6 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
   }
 
-  // Zod errors are expected validation errors; treat them as info-level validation results
-  if (error instanceof ZodError) {
-    result = {
-      code: 422,
-      message: util.inspect(error),
-      validations: error.issues || error.errors,
-      logLevel: 'info',
-    };
-  }
-
   if (error.name === 'ValidationError') {
     result = {
       code: 422,
@@ -193,14 +182,6 @@ const sendLog = (data, error, errorOptions) => {
   if (data.logLevel === 'debug') {
     legacyLogger.debug(messageToLog, errorOptions);
     return;
-  }
-
-  if (data.logLevel === 'info') {
-    // treat expected validation errors as info in Graylog
-    if (typeof legacyLogger.info === 'function') {
-      legacyLogger.info(messageToLog, errorOptions);
-      return;
-    }
   }
 
   legacyLogger.error(messageToLog, errorOptions);
