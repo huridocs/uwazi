@@ -20,10 +20,10 @@ const EntrySchema = z.object({
   }),
 });
 
-const createSchema = () =>
+const createSchema = (isRequired: boolean) =>
   z
     .array(EntrySchema)
-    .min(1, 'Link Property is required')
+    .min(isRequired ? 1 : 0, 'Link Property is required')
     .max(1, 'Link Property only accepts a single value.');
 
 class LinkProperty extends Property {
@@ -47,13 +47,9 @@ class LinkProperty extends Property {
     { value }: CreatePropertyAssignmentInput<LinkEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<LinkEntry> {
-    let parsed;
-
-    if (shouldValidateForRequired) {
-      parsed = createSchema().parse(value.filter(v => v?.value?.url?.trim()?.length));
-    } else {
-      parsed = value.filter(v => v?.value?.url?.trim()?.length);
-    }
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.url?.trim()?.length)
+    );
 
     return {
       name: this.name,
@@ -67,9 +63,7 @@ class LinkProperty extends Property {
     { value }: PropertyAssignment<LinkEntry>,
     shouldValidateForRequired = false
   ): void {
-    if (shouldValidateForRequired) {
-      createSchema().parse(value);
-    }
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 
