@@ -52,7 +52,7 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
             ],
             entity.template
           );
-        entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, false);
+        entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 
       await this.deps.entitiesDS.bulkUpdate(withRelationships);
