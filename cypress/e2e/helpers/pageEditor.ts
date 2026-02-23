@@ -4,10 +4,7 @@ const getTextareaSelector = (mode: 'html' | 'javascript') =>
     : 'textarea[name="metadata.markdown"], textarea[name="metadata.content"]';
 
 const clearTarget = (selector: string) => {
-  cy.get(selector).type('{selectAll}{backspace}', {
-    parseSpecialCharSequences: false,
-    delay: 0,
-  });
+  cy.get(selector).type('{selectAll}{backspace}', { delay: 0 });
 };
 
 const typeTarget = (selector: string, value: string) => {
