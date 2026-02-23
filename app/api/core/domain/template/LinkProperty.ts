@@ -47,12 +47,10 @@ class LinkProperty extends Property {
     { value }: CreatePropertyAssignmentInput<LinkEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<LinkEntry> {
-    let parsed;
+    let parsed = value.filter(v => v?.value?.url?.trim()?.length);
 
     if (shouldValidateForRequired) {
-      parsed = createSchema().parse(value.filter(v => v?.value?.url?.trim()?.length));
-    } else {
-      parsed = value.filter(v => v?.value?.url?.trim()?.length);
+      parsed = createSchema().parse(parsed);
     }
 
     return {
