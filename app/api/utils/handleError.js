@@ -102,7 +102,6 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
   }
 
-  // Zod errors are expected validation errors; treat them as info-level validation results
   if (error instanceof ZodError) {
     result = {
       code: 422,
