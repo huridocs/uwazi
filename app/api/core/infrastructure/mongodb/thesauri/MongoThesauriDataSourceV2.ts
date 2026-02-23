@@ -1,7 +1,7 @@
+import { Db, ObjectId } from 'mongodb';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
-import { Db, ObjectId } from 'mongodb';
 import {
   ThesaurusNameAlreadyExistsError,
   ThesaurusNotFoundError,
@@ -37,7 +37,7 @@ class MongoThesauriDataSourceV2
       return Result.fail(new ThesaurusNotFoundError(id));
     }
 
-    const thesaurus = MongoThesaurusMapper.toDomain(dbo);
+    const thesaurus = MongoThesaurusMapper.toDomain(dbo, false);
 
     return Result.ok(thesaurus);
   }

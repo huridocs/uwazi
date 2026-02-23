@@ -1,5 +1,5 @@
-import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { ObjectId } from 'mongodb';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { ThesaurusDBO } from './ThesaurusDBO.js';
 
 export class MongoThesaurusMapper {
@@ -18,18 +18,21 @@ export class MongoThesaurusMapper {
     };
   }
 
-  static toDomain(schema: ThesaurusDBO): Thesaurus {
-    return new Thesaurus({
-      id: schema._id.toHexString(),
-      name: schema.name,
-      values: schema.values?.map(value => ({
-        id: value.id,
-        label: value.label,
-        values: value.values?.map(subValue => ({
-          id: subValue.id,
-          label: subValue.label,
+  static toDomain(schema: ThesaurusDBO, validate = true): Thesaurus {
+    return new Thesaurus(
+      {
+        id: schema._id.toHexString(),
+        name: schema.name,
+        values: schema.values?.map(value => ({
+          id: value.id,
+          label: value.label,
+          values: value.values?.map(subValue => ({
+            id: subValue.id,
+            label: subValue.label,
+          })),
         })),
-      })),
-    });
+      },
+      validate
+    );
   }
 }
