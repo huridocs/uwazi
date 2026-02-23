@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+/* eslint-disable max-lines */
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
@@ -30,8 +31,8 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
   }, [user]);
 
-  const page = searchParams.get(PAGE_PARAM) || '1';
-  const pageNumber = Number.parseInt(page || '1', 10);
+  const pageNumber = Number(searchParams.get(PAGE_PARAM) || '1');
+  const initialPage = useRef<number>(pageNumber);
   const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
   const [selectedText, setSelectedText] = useState<TextSelection | undefined>(undefined);
   const { addEntry } = useTocActions();
@@ -57,31 +58,18 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const { value } = event.target;
       const next = new URLSearchParams(searchParams.toString());
+      const currentPage = searchParams.get(PAGE_PARAM) || '1';
       if (value === VIEW_MODE_PARAM) {
         next.set(VIEW_MODE_PARAM, 'true');
       } else {
-        const currentPage = searchParams.get(PAGE_PARAM) || '1';
         next.delete(VIEW_MODE_PARAM);
         next.set(PAGE_PARAM, currentPage);
       }
+      initialPage.current = Number(currentPage);
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
     [searchParams, setSearchParams]
   );
-
-  useEffect(() => {
-    const handlePageChange = (p?: number) => {
-      updatePageParam(p || 1);
-    };
-
-    const { unsubscribe } = pdfEventBus.on('onPageChange', handlePageChange);
-
-    setHydrated(true);
-
-    return () => {
-      unsubscribe();
-    };
-  }, [updatePageParam]);
 
   const handleTextSelect = useCallback((selection: TextSelection) => {
     if (selection.selectionRectangles && selection.selectionRectangles.length > 0) {
@@ -152,8 +140,32 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
         scrollToPage(targetPage);
       }
     },
-    [isRaw, pageNumber, entity?.mainDocument?.[0]?.totalPages, updatePageParam]
+    [entity?.mainDocument, isRaw, pageNumber, updatePageParam]
   );
+
+  useEffect(() => {
+    const readyEvent = pdfEventBus.on('pdfReady', () => {
+      if (initialPage.current > 1) {
+        scrollToPage(initialPage.current);
+      }
+    });
+
+    setHydrated(true);
+
+    return () => {
+      readyEvent.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const { unsubscribe } = pdfEventBus.on('onPageChange', p => {
+      updatePageParam(p || 1);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [updatePageParam]);
 
   if (!entity?.mainDocument) {
     return <Translate>Loading</Translate>;
