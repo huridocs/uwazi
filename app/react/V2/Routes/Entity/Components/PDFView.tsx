@@ -145,7 +145,9 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
 
   useEffect(() => {
     const readyEvent = pdfEventBus.on('pdfReady', () => {
-      scrollToPage(initialPage.current);
+      if (initialPage.current > 1) {
+        scrollToPage(initialPage.current);
+      }
     });
 
     setHydrated(true);
