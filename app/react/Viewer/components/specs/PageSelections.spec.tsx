@@ -100,8 +100,8 @@ describe('Page selections highlights', () => {
     expect(renderResult.container.children.length).toBe(2);
   });
 
-  it('should adjust selections by the pdf scaling factor', () => {
-    pdfScalingValue = 1.5;
+  it('should render highlights with scale factor 1', () => {
+    // Old viewer uses fixed scale 1 for selections (no pdfScaleAtom)
     render();
     expect(renderResult.baseElement).toMatchSnapshot();
   });

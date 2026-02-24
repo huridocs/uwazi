@@ -1,6 +1,5 @@
 import type { RefObject } from 'react';
-import type { PDFHandle } from 'V2/Components/PDFViewer';
-import type { Snippet } from 'V2/Components/PDFViewer';
+import type { PDFHandle, Snippet } from 'V2/Components/PDFViewer';
 
 export type PdfControllerApi = {
   goToPage: (pageNumber: number) => void;
@@ -15,9 +14,7 @@ export type PdfControllerApi = {
  * Pass the ref that is attached to the main (left) PDF; consumers receive
  * this api explicitly via props (no context).
  */
-export function createPdfController(
-  pdfRef: RefObject<PDFHandle | null>
-): PdfControllerApi {
+export function createPdfController(pdfRef: RefObject<PDFHandle | null>): PdfControllerApi {
   return {
     goToPage(pageNumber: number) {
       pdfRef.current?.goToPage(pageNumber);

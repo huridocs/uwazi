@@ -61,11 +61,7 @@ const parseSnippetToNodes = (html?: string) => {
   return document.children.map((node, i) => createNode(node as ChildNode, i));
 };
 
-const SearchResults = ({
-  mainPdfController,
-}: {
-  mainPdfController: PdfControllerApi;
-}) => {
+const SearchResults = ({ mainPdfController }: { mainPdfController: PdfControllerApi }) => {
   const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const openHints = useSetAtom(searchHintsModalAtom);

@@ -148,8 +148,8 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
     );
 
     const handlePageChange = useCallback(
-      (pageNumber: number) => {
-        updatePageParam(pageNumber);
+      (newPageNumber: number) => {
+        updatePageParam(newPageNumber);
       },
       [updatePageParam]
     );
