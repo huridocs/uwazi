@@ -1,4 +1,5 @@
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+/* eslint-disable max-lines */
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
@@ -39,6 +40,7 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
 
     const page = searchParams.get(PAGE_PARAM) || '1';
     const pageNumber = Number.parseInt(page || '1', 10);
+    const initialPage = useRef<number>(pageNumber);
     const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
     const [selectedText, setSelectedText] = useState<TextSelection | undefined>(undefined);
     const { addEntry } = useTocActions();
@@ -66,13 +68,14 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
       (event: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = event.target;
         const next = new URLSearchParams(searchParams.toString());
+        const currentPage = searchParams.get(PAGE_PARAM) || '1';
         if (value === VIEW_MODE_PARAM) {
           next.set(VIEW_MODE_PARAM, 'true');
         } else {
-          const currentPage = searchParams.get(PAGE_PARAM) || '1';
           next.delete(VIEW_MODE_PARAM);
           next.set(PAGE_PARAM, currentPage);
         }
+        initialPage.current = Number(currentPage);
         setSearchParams(next, { replace: true, preventScrollReset: true });
       },
       [searchParams, setSearchParams]
@@ -96,7 +99,6 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
 
     const handleConnectToParagraph = useCallback(
       (selection: TextSelection) => {
-        // Store selection in atom with text mode and switch to references tab
         setCreateReferenceSelection(selection, 'text');
         const next = new URLSearchParams(searchParams.toString());
         next.set(SIDE_TAB_PARAM, 'references');
@@ -107,7 +109,6 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
 
     const handleConnectToDocument = useCallback(
       (selection: TextSelection) => {
-        // Store selection in atom with entity mode and switch to references tab
         setCreateReferenceSelection(selection, 'entity');
         const next = new URLSearchParams(searchParams.toString());
         next.set(SIDE_TAB_PARAM, 'references');
