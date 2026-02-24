@@ -56,17 +56,12 @@ const CreateReference = ({
             onFileSelect={state.handleFileSelect}
           />
         ) : (
-          <>
-            <p className="text-sm text-gray-600">
-              <Translate>Select text in the document below to create the reference</Translate>
-            </p>
-            <SelectTextInTargetStep
-              selectedEntity={state.selectedEntity}
-              selectedFile={state.selectedFile}
-              onTargetPdfSelect={state.handleTargetPdfSelect}
-              onTargetPdfDeselect={state.handleTargetPdfDeselect}
-            />
-          </>
+          <SelectTextInTargetStep
+            selectedEntity={state.selectedEntity}
+            selectedFile={state.selectedFile}
+            onTargetPdfSelect={state.handleTargetPdfSelect}
+            onTargetPdfDeselect={state.handleTargetPdfDeselect}
+          />
         )}
       </Panel.Body>
 

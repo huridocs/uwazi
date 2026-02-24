@@ -1,11 +1,12 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import 'cypress-axe';
-import { ClientRelationshipType } from 'app/apiResponseTypes';
-import { Entity } from 'V2/domain';
-import { DateMetadataProperty } from 'V2/domain/entities/types';
+import { mount } from '@cypress/react18';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { FileType } from 'shared/types/fileType';
+import { ClientRelationshipType } from '../../../../../apiResponseTypes';
+import { Entity } from '../../../../domain';
+import { DateMetadataProperty } from '../../../../domain/entities/types';
+import { FileType } from '../../../../../../shared/types/fileType';
 import { CreateReference } from '../ReferencesPanel/CreateReference';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
 
@@ -151,7 +152,7 @@ describe('CreateReference Component', () => {
   };
 
   beforeEach(() => {
-    cy.mount(
+    mount(
       <div className="tw-content" style={{ width: '400px', height: '600px' }}>
         <CreateReference
           selection={mockSelection}
@@ -257,7 +258,7 @@ describe('CreateReference Component', () => {
   });
 
   it('should enable save button when relationship type and entity are selected in entity mode', () => {
-    cy.mount(
+    mount(
       <div className="tw-content" style={{ width: '400px', height: '600px' }}>
         <CreateReference
           selection={mockSelection}
@@ -289,7 +290,7 @@ describe('CreateReference Component', () => {
   });
 
   it('should call onSave with correct data when save is clicked in entity mode', () => {
-    cy.mount(
+    mount(
       <div className="tw-content" style={{ width: '400px', height: '600px' }}>
         <CreateReference
           selection={mockSelection}
@@ -340,8 +341,6 @@ describe('CreateReference Component', () => {
     cy.contains('Document about Human Rights').click();
     cy.contains('Human Rights Document.pdf').click();
     cy.contains('Continue').closest('button').click();
-    // Step 2: instruction, Back and Save (Save disabled until text selected in target PDF)
-    cy.contains('Select text in the document below to create the reference').should('be.visible');
     cy.contains('Back').closest('button').should('be.visible');
     cy.contains('Save').closest('button').should('be.disabled');
   });
