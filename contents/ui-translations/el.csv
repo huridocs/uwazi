@@ -93,6 +93,7 @@ Are you sure you want to delete this connection?,Θέλετε σίγουρα ν�
 Are you sure you want to delete this entity?,Θέλετε σίγουρα να διαγράψετε αυτή την οντότητα;
 Are you sure you want to delete this file?,Θέλετε σίγουρα να διαγράψετε αυτό το αρχείο;
 Are you sure you want to delete this item?,Θέλετε σίγουρα να διαγράψετε αυτό το στοιχείο;
+Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
 Are you sure?,Θέλετε σίγουρα να συνεχίσετε;
 Attachment,Το συνημμένο
 Attachment deleted,Το συνημμένο αρχείο διαγράφηκε
@@ -239,6 +240,7 @@ DELETE,ΔΙΑΓΡΑΦΗ
 Delete entities and documents,Διαγραφή οντοτήτων και εγγράφων
 Delete file,Διαγραφή αρχείου
 Delete language,Διαγραφή γλώσσας
+Delete reference,Delete reference
 Delete?,Delete?
 Deleted attachment,Διαγράφηκε συνημμένο αρχείο
 Deleted custom file,Διαγράφηκε προσαρμοσμένο αρχείο

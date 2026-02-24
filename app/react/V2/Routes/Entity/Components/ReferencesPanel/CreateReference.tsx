@@ -56,17 +56,27 @@ const CreateReference = ({
             onFileSelect={state.handleFileSelect}
           />
         ) : (
-          <SelectTextInTargetStep
-            selectedEntity={state.selectedEntity}
-            selectedFile={state.selectedFile}
-            onTargetPdfSelect={state.handleTargetPdfSelect}
-            onTargetPdfDeselect={state.handleTargetPdfDeselect}
-          />
+          <>
+            <p className="text-sm text-gray-600">
+              <Translate>Select text in the document below to create the reference</Translate>
+            </p>
+            <SelectTextInTargetStep
+              selectedEntity={state.selectedEntity}
+              selectedFile={state.selectedFile}
+              onTargetPdfSelect={state.handleTargetPdfSelect}
+              onTargetPdfDeselect={state.handleTargetPdfDeselect}
+            />
+          </>
         )}
       </Panel.Body>
 
       <Panel.Footer>
         <div className="flex justify-end w-full gap-2">
+          {state.step === 'selectTextInTarget' && (
+            <Button styling="outline" color="primary" onClick={state.handleBack}>
+              <Translate>Back</Translate>
+            </Button>
+          )}
           <Button styling="outline" color="primary" onClick={onCancel}>
             <Translate>Cancel</Translate>
           </Button>

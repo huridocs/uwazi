@@ -132,6 +132,10 @@ export function useCreateReferenceState({
     }
   }, [canContinue]);
 
+  const handleBack = useCallback(() => {
+    setStep('selectTarget');
+  }, []);
+
   const handleTargetPdfSelect = useCallback((targetSel: TextSelection) => {
     setTargetSelection(targetSel.selectionRectangles?.length ? targetSel : undefined);
   }, []);
@@ -186,6 +190,7 @@ export function useCreateReferenceState({
     handleEntitySelect,
     handleFileSelect,
     handleContinue,
+    handleBack,
     handleTargetPdfSelect,
     handleTargetPdfDeselect,
     handleSave,
