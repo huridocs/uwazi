@@ -99,9 +99,9 @@ module.exports = production => {
         {
           test: /\.css$/,
           exclude: [
-            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
             path.resolve(__dirname, '../node_modules/flowbite/dist'),
             /flowbite\.min\.css$/,
+            /node_modules\/monaco-editor/,
           ],
           use: [
             MiniCssExtractPlugin.loader,
@@ -117,12 +117,13 @@ module.exports = production => {
           ],
         },
         {
+          test: /\.css$/,
+          include: /node_modules\/monaco-editor/,
+          use: ['style-loader', 'css-loader'],
+        },
+        {
           test: /\.s?[ac]ss$/,
-          exclude: [
-            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
-            path.resolve(__dirname, '../node_modules/flowbite/dist'),
-            /\.css$/,
-          ],
+          exclude: [path.resolve(__dirname, '../node_modules/flowbite/dist'), /\.css$/],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -166,6 +167,10 @@ module.exports = production => {
             },
           ],
         },
+        {
+          test: /\.ttf$/,
+          type: 'asset/resource',
+        },
       ],
     },
     plugins: [
@@ -187,10 +192,6 @@ module.exports = production => {
       new CopyWebpackPlugin({
         patterns: [
           { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
-          {
-            from: 'node_modules/monaco-editor/min/vs/base/browser/ui/codicons/codicon/codicon.ttf',
-            to: 'codicon.ttf',
-          },
           { from: 'node_modules/flag-icons/flags/4x3/', to: 'flags/4x3/' },
           { from: 'node_modules/flag-icons/flags/1x1/', to: 'flags/1x1/' },
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
