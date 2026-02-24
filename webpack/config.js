@@ -100,8 +100,8 @@ module.exports = production => {
           test: /\.css$/,
           exclude: [
             path.resolve(__dirname, '../node_modules/flowbite/dist'),
+            path.resolve(__dirname, '../node_modules/monaco-editor/'),
             /flowbite\.min\.css$/,
-            /node_modules\/monaco-editor/,
           ],
           use: [
             MiniCssExtractPlugin.loader,
@@ -118,8 +118,11 @@ module.exports = production => {
         },
         {
           test: /\.css$/,
-          include: /node_modules\/monaco-editor/,
-          use: ['style-loader', 'css-loader'],
+          include: path.resolve(__dirname, '../node_modules/monaco-editor/'),
+          use: [
+            MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { url: true, sourceMap: true } },
+          ],
         },
         {
           test: /\.s?[ac]ss$/,
