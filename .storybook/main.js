@@ -417,7 +417,7 @@ export default {
                 loader: 'postcss-loader',
                 options: {
                   postcssOptions: {
-                    config: path.join(rootPath, 'postcss.config.js'),
+                    config: path.join(rootPath, 'postcss.config.cjs'),
                   },
                 },
               },
@@ -438,7 +438,7 @@ export default {
                 loader: 'postcss-loader',
                 options: {
                   postcssOptions: {
-                    config: path.join(rootPath, 'postcss.config.js'),
+                    config: path.join(rootPath, 'postcss.config.cjs'),
                   },
                 },
               },

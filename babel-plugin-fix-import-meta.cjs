@@ -9,7 +9,7 @@ module.exports = function (babel) {
           const decl = varPath.node.declarations[0];
           const filePath = varPath.hub.file.opts.filename;
           if (!filePath) return;
-          
+
           if (t.isIdentifier(decl.id) && decl.id.name === '__filename') {
             if (
               t.isCallExpression(decl.init) &&
@@ -27,12 +27,12 @@ module.exports = function (babel) {
               decl.init = t.stringLiteral(absPath);
             }
           }
-          
+
           if (t.isIdentifier(decl.id) && decl.id.name === '__dirname') {
             const init = decl.init;
             if (t.isCallExpression(init)) {
               let isDirnameCall = false;
-              
+
               if (
                 t.isIdentifier(init.callee) &&
                 init.callee.name === 'dirname' &&
@@ -57,7 +57,7 @@ module.exports = function (babel) {
               ) {
                 isDirnameCall = true;
               }
-              
+
               if (isDirnameCall) {
                 const absPath = path.resolve(filePath);
                 const dirnamePath = path.dirname(absPath);
