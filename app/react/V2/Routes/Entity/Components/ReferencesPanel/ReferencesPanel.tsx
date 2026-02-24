@@ -3,14 +3,15 @@ import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { useRevalidator } from 'react-router';
 import { Panel } from 'V2/Components/Layouts/Panel';
+import { ConfirmationModal } from 'V2/Components/UI/ConfirmationModal';
 import { EntityReference } from 'app/V2/domain/entities/types';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { pdfEventBus } from 'V2/Components/PDFViewer';
 import { useAtomValue } from 'jotai';
-import { pdfScaleAtom, relationshipTypesAtom } from 'V2/atoms';
+import { relationshipTypesAtom } from 'V2/atoms';
 import { Entity } from 'V2/domain';
 import { searchByTitle } from 'V2/api/entities';
-import { saveTextReference } from 'V2/api/relationships';
+import { saveTextReference, deleteReference } from 'V2/api/relationships';
+import type { PdfControllerApi } from '../PdfControllerContext';
 import { entityLoaderCache } from '../../EntityLoaderCache';
 import { CreateReference } from './CreateReference';
 import { Reference } from './Reference';
@@ -18,13 +19,15 @@ import { BlankState } from '../BlankState';
 import { useReferences, useReferencesActions } from './referencesAtom';
 
 type ReferencesPanelProps = {
+  mainPdfController: PdfControllerApi;
   references?: EntityReference[];
   entity?: Entity;
 };
 
-const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
+const ReferencesPanel = ({ mainPdfController, references = [], entity }: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
-  const pdfScale = useAtomValue(pdfScaleAtom);
+  const [referenceToDelete, setReferenceToDelete] = useState<EntityReference | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const { createReferenceSelection, createReferenceMode } = useReferences();
   const { setCreateReferenceSelection } = useReferencesActions();
@@ -44,72 +47,47 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
     (reference: EntityReference) => {
       setSelectedReferenceId(reference._id);
 
-      // Scroll to the reference in the PDF
-      const { selectionRectangles } = reference.reference;
+      const selectionRectangles = reference.reference?.selectionRectangles;
       if (selectionRectangles && selectionRectangles.length > 0) {
-        // Find the first rectangle with a page
         const rect = selectionRectangles.find(r => r.page);
-        if (rect && rect.page && rect.top !== undefined && rect.left !== undefined) {
+        if (rect?.page) {
           const pageNumber = Number.parseInt(rect.page, 10);
-
-          // Scale normalized coordinates (if stored at scale=1) to current display scale
-          const scaledTop = (rect.top || 0) * pdfScale;
-          const scaledLeft = (rect.left || 0) * pdfScale;
-
-          // Scroll to the page first
-          pdfEventBus.dispatch('goToPage', pageNumber);
-
-          // Then scroll to the rectangle position
-          setTimeout(() => {
-            const pdfContainer = document.getElementById('pdf-container');
-            const pageWrapper = pdfContainer?.querySelector(`#page-${pageNumber}-container`);
-            const pageContainer = pageWrapper?.querySelector(
-              '[data-testid="pdf-page"]'
-            ) as HTMLElement | null;
-
-            if (pageContainer) {
-              // Create a temporary element to scroll to
-              const scrollElement = document.createElement('div');
-              scrollElement.style.position = 'absolute';
-              scrollElement.style.left = `${scaledLeft}px`;
-              scrollElement.style.top = `${scaledTop}px`;
-              scrollElement.style.width = '1px';
-              scrollElement.style.height = '1px';
-              scrollElement.style.pointerEvents = 'none';
-
-              const currentPosition = getComputedStyle(pageContainer).position;
-              if (currentPosition === 'static') {
-                pageContainer.style.position = 'relative';
-              }
-
-              pageContainer.appendChild(scrollElement);
-              scrollElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-              setTimeout(() => {
-                if (scrollElement.parentNode) {
-                  scrollElement.parentNode.removeChild(scrollElement);
-                }
-                if (currentPosition === 'static') {
-                  pageContainer.style.position = '';
-                }
-              }, 1000);
-            }
-          }, 300);
+          mainPdfController.goToPage(pageNumber);
         }
       }
     },
-    [pdfScale]
+    [mainPdfController]
   );
 
-  const handleView = useCallback((reference: EntityReference) => {
+  const handleView = useCallback((_reference: EntityReference) => {
     // TODO: Implement view functionality
-    console.log('View reference:', reference);
   }, []);
 
-  const handleDelete = useCallback((reference: EntityReference) => {
-    // TODO: Implement delete functionality
-    console.log('Delete reference:', reference);
+  const handleDeleteClick = useCallback((reference: EntityReference) => {
+    setReferenceToDelete(reference);
   }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!referenceToDelete?._id || !entity?.sharedId) return;
+    setIsDeleting(true);
+    try {
+      await deleteReference(String(referenceToDelete._id));
+      setReferenceToDelete(null);
+      if (selectedReferenceId === referenceToDelete._id) {
+        setSelectedReferenceId(null);
+      }
+      entityLoaderCache.invalidateEntity(entity.sharedId);
+      await revalidator.revalidate();
+    } catch (error) {
+      console.error('Error deleting reference:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [referenceToDelete, entity?.sharedId, selectedReferenceId, revalidator]);
+
+  const handleCancelDelete = useCallback(() => {
+    if (!isDeleting) setReferenceToDelete(null);
+  }, [isDeleting]);
 
   const handleCancelCreate = useCallback(() => {
     setCreateReferenceSelection(undefined, undefined);
@@ -121,6 +99,7 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
       targetEntityId: string;
       relationshipType: string;
       targetFileId?: string;
+      targetSelection?: TextSelection;
     }) => {
       if (!entity) {
         console.error('Cannot save reference: entity is not available');
@@ -147,6 +126,7 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
           targetEntitySharedId: data.targetEntityId,
           relationshipType: data.relationshipType,
           ...(data.targetFileId && { targetFileId: data.targetFileId }),
+          ...(data.targetSelection && { targetSelection: data.targetSelection }),
         });
 
         // Clear the create reference selection after successful save
@@ -178,38 +158,57 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
 
   // Otherwise, show the references list
   return (
-    <Panel className="gap-4">
-      <Panel.Body className="pr-1">
-        <div className="flex flex-col gap-2 h-full">
-          {references.length > 0 ? (
-            references.map((reference, index) => (
-              <Reference
-                key={reference._id || `reference-${index}`}
-                reference={reference}
-                isSelected={selectedReferenceId === reference._id}
-                onClick={() => handleReferenceClick(reference)}
-                onView={() => handleView(reference)}
-                onDelete={() => handleDelete(reference)}
+    <>
+      <Panel className="gap-4">
+        <Panel.Body className="pr-1">
+          <div className="flex flex-col gap-2 h-full">
+            {references.length > 0 ? (
+              references.map((reference, index) => (
+                <Reference
+                  key={reference._id || `reference-${index}`}
+                  reference={reference}
+                  isSelected={selectedReferenceId === reference._id}
+                  onClick={() => handleReferenceClick(reference)}
+                  onView={() => handleView(reference)}
+                  onDelete={() => handleDeleteClick(reference)}
+                />
+              ))
+            ) : (
+              <BlankState
+                icon={<LinkIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />}
+                title={<Translate>No References</Translate>}
+                description={
+                  <Translate>
+                    To add references you can start by selecting text in the document
+                  </Translate>
+                }
               />
-            ))
-          ) : (
-            <BlankState
-              icon={<LinkIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />}
-              title={<Translate>No References</Translate>}
-              description={
-                <Translate>
-                  To add references you can start by selecting text in the document
-                </Translate>
-              }
-            />
-          )}
-        </div>
-      </Panel.Body>
+            )}
+          </div>
+        </Panel.Body>
 
-      <Panel.Footer>
-        <div className="flex items-center justify-between w-full" />
-      </Panel.Footer>
-    </Panel>
+        <Panel.Footer>
+          <div className="flex items-center justify-between w-full" />
+        </Panel.Footer>
+      </Panel>
+
+      {referenceToDelete && (
+        <ConfirmationModal
+          header={<Translate>Delete reference</Translate>}
+          body={
+            <Translate>
+              Are you sure you want to delete this reference? This action cannot be undone.
+            </Translate>
+          }
+          acceptButton={<Translate>Delete</Translate>}
+          cancelButton={<Translate>Cancel</Translate>}
+          dangerStyle
+          disabled={isDeleting}
+          onAcceptClick={handleConfirmDelete}
+          onCancelClick={handleCancelDelete}
+        />
+      )}
+    </>
   );
 };
 
