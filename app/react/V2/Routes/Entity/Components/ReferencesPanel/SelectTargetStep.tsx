@@ -7,7 +7,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { Card } from '#V2/Components/UI/index.js';
 import { InputField, Checkbox } from '#V2/Components/Forms/index.js';
 import { BlankState } from '../BlankState.js';
-import { EntitySearchResult } from './EntitySearchResult.jsx';
+import { EntitySearchResult } from './EntitySearchResult.js';
 import { ReferenceMode } from './useCreateReferenceState.js';
 
 type SelectTargetStepProps = {

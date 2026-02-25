@@ -2,7 +2,7 @@ import React from 'react';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { FileType } from '#shared/types/fileType.js';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
-import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.jsx';
+import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.js';
 import { Entity } from '#V2/domain/index.js';
 
 type SelectTextInTargetStepProps = {
