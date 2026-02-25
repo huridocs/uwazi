@@ -31,7 +31,6 @@ const properties: ClientProperty[] = [];
 // @ts-ignore
 const emptyTemplate: ClientTemplateSchema = {
   name: '',
-  color: '#C03B22',
   entityViewPage: '',
   properties,
   commonProperties: [commonPropertyTitle, commonPropertyDateAdded, commonPropertyDateModified],
