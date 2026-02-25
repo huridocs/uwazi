@@ -108,4 +108,17 @@ const saveTextReference = async (
   }
 };
 
-export { saveTextReference, type TextReferenceParams };
+const deleteReference = async (
+  referenceId: string,
+  headers?: IncomingHttpHeaders
+): Promise<unknown | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ _id: referenceId }, headers);
+    const response = await api.delete('references', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { saveTextReference, deleteReference, type TextReferenceParams };

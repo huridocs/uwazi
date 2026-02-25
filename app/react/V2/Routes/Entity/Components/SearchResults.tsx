@@ -14,8 +14,8 @@ import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { SEARCH_PARAM } from '../urlParams.js';
 import { searchHintsModalAtom } from './atoms.js';
 import { LoaderResponse } from '../types.js';
-import { scrollToSnippet } from './functions.js';
 import { NoSearch, NoResults } from './BlankState.js';
+import { PdfControllerApi } from './PdfControllerContext.js';
 
 type FormValues = {
   search: string;
@@ -61,7 +61,7 @@ const parseSnippetToNodes = (html?: string) => {
   return document.children.map((node, i) => createNode(node as ChildNode, i));
 };
 
-const SearchResults = () => {
+const SearchResults = ({ mainPdfController }: { mainPdfController: PdfControllerApi }) => {
   const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const openHints = useSetAtom(searchHintsModalAtom);
@@ -185,7 +185,7 @@ const SearchResults = () => {
                                   setActiveSnippet(newActive);
 
                                   if (newActive) {
-                                    scrollToSnippet(
+                                    mainPdfController.scrollToSnippet(
                                       { text: pageText.text, page: pageText.page },
                                       currentPage
                                     );
@@ -199,7 +199,7 @@ const SearchResults = () => {
                                     setActiveSnippet(newActive);
 
                                     if (newActive) {
-                                      scrollToSnippet(
+                                      mainPdfController.scrollToSnippet(
                                         { text: pageText.text, page: pageText.page },
                                         currentPage
                                       );

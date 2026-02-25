@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
+import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { TocSchema } from '#shared/types/commonTypes.js';
-import { Tooltip } from 'flowbite-react';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { update as updateFile } from '#V2/api/files/index.js';
 import { FileType } from '#shared/types/fileType.js';
@@ -14,16 +14,18 @@ import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { BlankState } from '../BlankState.js';
 import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
-import { scrollToPage } from '../functions.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { useToc, useTocActions } from './tocAtom.js';
 import { getPageNumber } from './utils.js';
+import { PdfControllerApi } from '../PdfControllerContext.js';
 
 const ToCPanel = ({
+  mainPdfController,
   toc,
   generatedToc,
   file,
 }: {
+  mainPdfController: PdfControllerApi;
   toc?: TocSchema[];
   generatedToc?: boolean;
   file?: FileType;
@@ -64,12 +66,15 @@ const ToCPanel = ({
     setIsAllCollapsed(collapsed);
   };
 
-  const handleToCEntryClick = useCallback((entry: ProcessedTocEntry) => {
-    const pageNumber = getPageNumber(entry.entry);
-    if (pageNumber !== null) {
-      scrollToPage(pageNumber);
-    }
-  }, []);
+  const handleToCEntryClick = useCallback(
+    (entry: ProcessedTocEntry) => {
+      const pageNumber = getPageNumber(entry.entry);
+      if (pageNumber !== null) {
+        mainPdfController.goToPage(pageNumber);
+      }
+    },
+    [mainPdfController]
+  );
 
   const handleEdit = () => {
     setEditMode(true);

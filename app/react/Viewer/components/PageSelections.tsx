@@ -1,11 +1,9 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import uniqBy from 'lodash/uniqBy';
-import { useAtomValue } from 'jotai';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { IStore } from '#app/istore.js';
 import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
-import { pdfScaleAtom } from '#V2/atoms/index.js';
 import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 
 interface Selection extends ExtractedMetadataSchema {
@@ -28,7 +26,7 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: mappedProps) => {
-  const pdfScaleFactor = useAtomValue(pdfScaleAtom);
+  const pdfScaleFactor = 1;
 
   if (!isEditing || !entityDocument?.get('_id')) {
     return null;

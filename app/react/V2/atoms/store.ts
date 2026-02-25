@@ -17,7 +17,6 @@ import { templatesAtom } from './templatesAtom.js';
 import { translationsAtom, localeAtom } from './translationsAtoms.js';
 import { userAtom } from './userAtom.js';
 import { thesauriAtom } from './thesauriAtom.js';
-import { pdfScaleAtom } from './pdfScaleAtom.js';
 import { serverIsMobileAtom } from './isMobileAtom.js';
 import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
 
@@ -70,10 +69,6 @@ if (isClient && window.__atomStoreData__) {
   atomStore.sub(thesauriAtom, () => {
     const value = atomStore.get(thesauriAtom);
     reduxStore?.dispatch({ type: 'dictionaries/SET', value });
-  });
-  atomStore.sub(pdfScaleAtom, () => {
-    const value = atomStore.get(pdfScaleAtom);
-    reduxStore?.dispatch({ type: 'viewer/documentScale/SET', value });
   });
   atomStore.sub(translationsAtom, () => {
     const value = atomStore.get(translationsAtom);

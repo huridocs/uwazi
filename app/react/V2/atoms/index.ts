@@ -8,7 +8,6 @@ export { globalMatomoAtom } from './globalMatomoAtom.js';
 export { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
 export { userAtom } from './userAtom.js';
 export { relationshipTypesAtom } from './relationshipTypes.js';
-export { pdfScaleAtom } from './pdfScaleAtom.js';
 export { deletedEntityAtom } from './deletedEntityAtom.js';
 export { serverIsMobileAtom } from './isMobileAtom.js';
 export type { AtomStoreData } from './store.js';

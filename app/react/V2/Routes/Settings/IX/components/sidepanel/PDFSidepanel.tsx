@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
@@ -15,8 +15,8 @@ import {
   Truncate,
   VerticalDrawer,
 } from '#V2/Components/UI/index.js';
-import { PDF, selectionHandlers, pdfEventBus } from '#V2/Components/PDFViewer/index.js';
-import { notificationAtom, pdfScaleAtom } from '#V2/atoms/index.js';
+import { PDF, PDFHandle, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
 import {
   coerceValue,
@@ -57,9 +57,10 @@ const PDFSidepanel = ({
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
   const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
   const selections = useAtomValue(selectionsAtom);
-  const pdfScalingValue = useAtomValue(pdfScaleAtom);
   const setNotifications = useSetAtom(notificationAtom);
   const setSelections = useSetAtom(selectionsAtom);
+  const pdfRef = useRef<PDFHandle>(null);
+  const highlightKeyToScrollRef = useRef<string | null>(null);
 
   const templateId = suggestion?.entityTemplateId;
   const template = templates.find(t => t._id.toString() === templateId);
@@ -117,19 +118,10 @@ const PDFSidepanel = ({
     if (highlights && !selectedText) {
       const page = Object.keys(highlights)[0];
       const firstHighlight = highlights[page]?.[0];
-
-      const handlePdfReady = () => {
-        pdfEventBus.dispatch('scrollToHighlight', firstHighlight.key);
-      };
-
-      const { unsubscribe } = pdfEventBus.on('pdfReady', handlePdfReady);
-
-      return () => {
-        unsubscribe();
-      };
+      highlightKeyToScrollRef.current = firstHighlight?.key ?? null;
+    } else {
+      highlightKeyToScrollRef.current = null;
     }
-
-    return undefined;
   }, [highlights, selectedText]);
 
   useEffect(() => {
@@ -174,20 +166,15 @@ const PDFSidepanel = ({
   const handleClickToFill = async () => {
     if (selectedText) {
       if (selectedText.selectionRectangles) {
-        const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
-          selectedText,
-          pdfScalingValue,
-          true
-        );
-
+        // Selection is already in scale=1 (normalized) from PDF onSelect
         setHighlights(
-          selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
+          selectionHandlers.getHighlightsFromSelection(selectedText, HighlightColors.NEW)
         );
         setSelections(
           selectionHandlers.updateFileSelection(
             { name: suggestion?.propertyName || '', id: property?._id as string },
             pdfFile?.extractedMetadata,
-            normalizedSelections
+            selectedText
           )
         );
       }
@@ -219,6 +206,7 @@ const PDFSidepanel = ({
       <Sidepanel.Body className="overflow-y-auto">
         {pdfFile && (
           <PDF
+            ref={pdfRef}
             fileUrl={`/api/files/${pdfFile.filename}`}
             highlights={highlights}
             onSelect={(selection: any) => {
