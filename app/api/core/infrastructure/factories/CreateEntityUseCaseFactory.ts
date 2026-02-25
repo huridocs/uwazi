@@ -6,6 +6,7 @@ import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
 import { DefaultDispatcher, NoOpDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { FilesServiceFactory } from './FilesServiceFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
@@ -14,7 +15,7 @@ import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory';
 
 class CreateEntityUseCaseFactory {
-  static default() {
+  static default(targetLanguage: LanguageISO6391) {
     const tenant = tenants.current();
 
     const transactionManager = TransactionManagerFactory.default();
@@ -59,7 +60,7 @@ class CreateEntityUseCaseFactory {
         transactionManager,
         eventBus,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant }
+      { actor: permissionsContext.getUserInContext()!, tenant, targetLanguage }
     );
 
     return useCase;
