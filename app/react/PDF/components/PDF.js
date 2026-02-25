@@ -54,7 +54,8 @@ class PDF extends Component {
       nextProps.file !== this.props.file ||
       nextProps.filename !== this.props.filename ||
       nextProps.style !== this.props.style ||
-      nextState.pdf !== this.state.pdf
+      nextState.pdf !== this.state.pdf ||
+      nextState.scale !== this.state.scale
     );
   }
 
