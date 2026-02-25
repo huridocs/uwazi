@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { FileAttachment } from 'api/core/domain/files/FileAttachment';
@@ -204,11 +205,14 @@ const saveEvidence =
 
       await filesService.storeFiles(attachments);
 
+      const defaultLanguage = await settings.getDefaultLanguage();
+
       await transactionManager.run(async () => {
         await filesService.insert(attachments);
         await entitiesService.insert(entity, {
           tenantName: tenants.current().name,
           actorId: user?._id?.toString() || 'system',
+          targetLanguage: defaultLanguage.key,
         });
       });
 
