@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Page selections highlights should adjust selections by the pdf scaling factor 1`] = `
+exports[`Page selections highlights should render highlights with scale factor 1 1`] = `
 <body>
   <div>
     <div
@@ -9,7 +9,7 @@ exports[`Page selections highlights should adjust selections by the pdf scaling 
     >
       <div
         class="highlight-rectangle"
-        style="top: 136.5px; left: 48px; width: 45px; height: 39px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
+        style="top: 91px; left: 32px; width: 30px; height: 26px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
       />
     </div>
     <div
@@ -18,7 +18,7 @@ exports[`Page selections highlights should adjust selections by the pdf scaling 
     >
       <div
         class="highlight-rectangle"
-        style="top: 52.5px; left: 391.5px; width: 408px; height: 61.5px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
+        style="top: 35px; left: 261px; width: 272px; height: 41px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
       />
     </div>
   </div>

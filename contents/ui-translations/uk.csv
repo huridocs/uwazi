@@ -93,6 +93,7 @@ Are you sure you want to delete this connection?,"Ви впевнені, що х
 Are you sure you want to delete this entity?,"Ви впевнені, що хочете видалити цю сутність?"
 Are you sure you want to delete this file?,"Ви впевнені, що хочете видалити цей файл?"
 Are you sure you want to delete this item?,"Ви впевнені, що хочете видалити цей елемент?"
+Are you sure you want to delete this reference? This action cannot be undone.,Are you sure you want to delete this reference? This action cannot be undone.
 Are you sure?,Ти впевнений?
 Attachment,Вкладення
 Attachment deleted,Вкладення видалено
@@ -240,6 +241,7 @@ DELETE,Видалити
 Delete entities and documents,Видалити документи та об'єкти
 Delete file,Видалити файл
 Delete language,Видалити мову
+Delete reference,Delete reference
 Delete?,Delete?
 Deleted attachment,Видалено вкладення
 Deleted custom file,Видалено користувацький файл

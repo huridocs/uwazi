@@ -13,7 +13,6 @@ import { templatesAtom } from './templatesAtom';
 import { translationsAtom, localeAtom } from './translationsAtoms';
 import { userAtom } from './userAtom';
 import { thesauriAtom } from './thesauriAtom';
-import { pdfScaleAtom } from './pdfScaleAtom';
 import { serverIsMobileAtom } from './isMobileAtom';
 import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms';
 
@@ -66,10 +65,6 @@ if (isClient && window.__atomStoreData__) {
   atomStore.sub(thesauriAtom, () => {
     const value = atomStore.get(thesauriAtom);
     reduxStore?.dispatch({ type: 'dictionaries/SET', value });
-  });
-  atomStore.sub(pdfScaleAtom, () => {
-    const value = atomStore.get(pdfScaleAtom);
-    reduxStore?.dispatch({ type: 'viewer/documentScale/SET', value });
   });
   atomStore.sub(translationsAtom, () => {
     const value = atomStore.get(translationsAtom);

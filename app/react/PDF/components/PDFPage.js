@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { getStore } from 'shared/atomStore';
+import 'shared/atomStore';
 import { isClient } from 'app/utils';
 import { PageReferences } from 'app/Viewer/components/PageReferences';
 import { PageSelections } from 'app/Viewer/components/PageSelections';
 import { calculateScaling } from 'V2/Components/PDFViewer';
-import { pdfScaleAtom } from 'V2/atoms';
 import PDFJS, { EventBus } from '../PDFJS';
 
 class PDFPage extends Component {
@@ -130,8 +129,6 @@ class PDFPage extends Component {
           textLayerMode: 1,
           eventBus: new EventBus(),
         });
-
-        getStore().set(pdfScaleAtom, scale);
 
         this.pdfPageView.setPdfPage(page);
         this.pdfPageView
