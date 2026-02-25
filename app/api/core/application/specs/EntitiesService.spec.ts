@@ -120,7 +120,11 @@ describe('EntitiesService', () => {
       const entity = createEntitySample();
 
       await transactionManager.run(async () => {
-        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+        await sut.insert(entity, {
+          targetLanguage: 'en',
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
       });
 
       const [entityCreated] = await testingEnvironment.db.getAllFrom('entities');
@@ -141,7 +145,11 @@ describe('EntitiesService', () => {
       let emitCalledDuringTransaction = false;
 
       await transactionManager.run(async () => {
-        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+        await sut.insert(entity, {
+          targetLanguage: 'en',
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
         emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
       });
 
@@ -154,7 +162,11 @@ describe('EntitiesService', () => {
       const entity = createEntitySample();
 
       await transactionManager.run(async () => {
-        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+        await sut.insert(entity, {
+          targetLanguage: 'en',
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
       });
 
       expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
@@ -178,6 +190,7 @@ describe('EntitiesService', () => {
         await sut.bulkInsert([entity1, entity2, entity3], {
           actorId: 'actorId',
           tenantName: 'tenantName',
+          targetLanguage: 'en',
         });
       });
 
@@ -204,6 +217,7 @@ describe('EntitiesService', () => {
 
       await transactionManager.run(async () => {
         await sut.bulkInsert([entity1, entity2, entity3], {
+          targetLanguage: 'en',
           actorId: 'testActor',
           tenantName: 'testTenant',
         });
@@ -244,6 +258,7 @@ describe('EntitiesService', () => {
 
       await transactionManager.run(async () => {
         await sut.bulkInsert([entity1, entity2], {
+          targetLanguage: 'en',
           actorId: 'actorId',
           tenantName: 'tenantName',
         });
@@ -274,6 +289,7 @@ describe('EntitiesService', () => {
 
       await transactionManager.run(async () => {
         await sut.bulkInsert([entity1, entity2], {
+          targetLanguage: 'en',
           actorId: 'actorId',
           tenantName: 'tenantName',
         });
@@ -289,6 +305,7 @@ describe('EntitiesService', () => {
 
       await transactionManager.run(async () => {
         await sut.bulkInsert([], {
+          targetLanguage: 'en',
           actorId: 'actorId',
           tenantName: 'tenantName',
         });
