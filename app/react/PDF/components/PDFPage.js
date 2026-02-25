@@ -121,6 +121,10 @@ class PDFPage extends Component {
         );
         const defaultViewport = page.getViewport({ scale });
 
+        if (this.props.onScaleChange) {
+          this.props.onScaleChange(scale);
+        }
+
         this.pdfPageView = new PDFJS.PDFPageView({
           container: this.pageContainer,
           id: this.props.page,
@@ -168,6 +172,7 @@ PDFPage.defaultProps = {
   onVisible: () => {},
   onHidden: () => {},
   highlightReference: () => {},
+  onScaleChange: () => {},
 };
 
 PDFPage.propTypes = {
@@ -180,6 +185,7 @@ PDFPage.propTypes = {
   pdf: PropTypes.object.isRequired,
   highlightReference: PropTypes.func,
   containerWidth: PropTypes.number.isRequired,
+  onScaleChange: PropTypes.func,
 };
 
 export default PDFPage;
