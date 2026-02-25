@@ -23,8 +23,8 @@ const customisationLoader =
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;
-  const [newCSS, setNewCSS] = useState<string | undefined>(undefined);
-  const [newJS, setNewJS] = useState<string | undefined>(undefined);
+  const [cssContent, setCssContent] = useState<string | undefined>(undefined);
+  const [jsContent, setJsContent] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const blocker = useBlocker(hasChanges);
@@ -37,8 +37,8 @@ const Customisation = () => {
   }, [blocker]);
 
   const handleSave = async () => {
-    if (newCSS || newJS) {
-      const response = await settingsAPI.save({ customCSS: newCSS, customJS: newJS });
+    if (hasChanges) {
+      const response = await settingsAPI.save({ customCSS: cssContent, customJS: jsContent });
 
       if (response instanceof FetchResponseError) {
         setNotifications({
@@ -71,7 +71,7 @@ const Customisation = () => {
                   onMount={editor => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
-                      setNewCSS(editor.getValue());
+                      setCssContent(editor.getValue());
                     });
                   }}
                 />
@@ -84,7 +84,7 @@ const Customisation = () => {
                   onMount={editor => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
-                      setNewJS(editor.getValue());
+                      setJsContent(editor.getValue());
                     });
                   }}
                 />
@@ -100,7 +100,7 @@ const Customisation = () => {
                   onMount={editor => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
-                      setNewCSS(editor.getValue());
+                      setCssContent(editor.getValue());
                     });
                   }}
                 />
