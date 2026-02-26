@@ -1,6 +1,6 @@
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { FileContents } from 'api/core/domain/files/FileContents';
-import { CsvImportRow } from 'api/csv.v2/domain/CsvImportRow';
+import { CsvImportRow } from '../../domain/CsvImportRow';
 import { CsvReader } from './CsvReader';
 import { CsvReaderError } from './CsvReaderError';
 

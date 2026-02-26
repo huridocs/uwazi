@@ -3,10 +3,14 @@ enum CsvImportStatus {
   Validating = 'validating',
   ExtractingFiles = 'extracting files',
   ExtractingFilesDone = 'extracting files:done',
-  PreflightThesauri = 'preflight:thesauri',
-  PreflightThesauriDone = 'preflight:thesauri:done',
+  PreflightScan = 'preflight:scan',
+  PreflightScanDone = 'preflight:scan:done',
   PreflightThesauriCreate = 'preflight:thesauri:create',
   PreflightThesauriCreateDone = 'preflight:thesauri:create:done',
+  PreflightRelationshipsCreate = 'preflight:relationships:create',
+  PreflightRelationshipsCreateDone = 'preflight:relationships:create:done',
+  ImportEntities = 'import:entities',
+  ImportEntitiesDone = 'import:entities:done',
   Retrying = 'retrying',
   Processing = 'processing',
   Completed = 'completed',
@@ -47,6 +51,32 @@ type CsvImportStats = {
   thesaurusValuesObserved?: number;
   thesaurusValuesCreated?: number;
   thesauriTouched?: number;
+  relationshipValuesObserved?: number;
+  relationshipValuesCreated?: number;
+  entitiesCreated?: number;
+  rowsProcessed?: number;
+  rowsFailed?: number;
+};
+
+type CsvImportProgress = {
+  totalRows: number;
+  processedRows: number;
+  lastProcessedRow: number;
+  batchSize: number;
+};
+
+type CsvImportExtractedFile = {
+  filename: string;
+  sizeBytes: number;
+  compressedSizeBytes?: number;
+};
+
+type CsvImportExtraction = {
+  sourceType: 'zip' | 'csv';
+  originalUploadSizeBytes: number;
+  extractedFilesCount: number;
+  totalFilesInZip?: number;
+  files: CsvImportExtractedFile[];
 };
 
 type CsvImportFailure = {
@@ -63,6 +93,8 @@ type CsvImportProps = CsvImportToCreate & {
   storage?: CsvImportStorage;
   rowErrors?: any;
   stats?: CsvImportStats;
+  progress?: CsvImportProgress;
+  extraction?: CsvImportExtraction;
   failure?: CsvImportFailure;
 };
 
@@ -86,6 +118,10 @@ class CsvImportDomain {
   readonly rowErrors?: any;
 
   readonly stats?: CsvImportStats;
+
+  readonly progress?: CsvImportProgress;
+
+  readonly extraction?: CsvImportExtraction;
 
   readonly failure?: CsvImportFailure;
 
@@ -136,6 +172,27 @@ class CsvImportDomain {
     });
   }
 
+  withRowErrors(rowErrors: any) {
+    return this.clone({
+      rowErrors,
+      updatedAt: Date.now(),
+    });
+  }
+
+  withProgress(progress: CsvImportProgress) {
+    return this.clone({
+      progress,
+      updatedAt: Date.now(),
+    });
+  }
+
+  withExtraction(extraction: CsvImportExtraction) {
+    return this.clone({
+      extraction,
+      updatedAt: Date.now(),
+    });
+  }
+
   withFailure(failure: CsvImportFailure) {
     return this.clone({
       failure,
@@ -162,6 +219,8 @@ class CsvImportDomain {
       storage: this.storage,
       rowErrors: this.rowErrors,
       stats: this.stats,
+      progress: this.progress,
+      extraction: this.extraction,
       failure: this.failure,
     };
   }
@@ -185,8 +244,20 @@ class CsvImportDomain {
     return CsvImportDomain.toDomain(csvImport).withFailure(failure);
   }
 
+  static withRowErrors(csvImport: CsvImport | CsvImportDomain, rowErrors: any) {
+    return CsvImportDomain.toDomain(csvImport).withRowErrors(rowErrors);
+  }
+
+  static withProgress(csvImport: CsvImport | CsvImportDomain, progress: CsvImportProgress) {
+    return CsvImportDomain.toDomain(csvImport).withProgress(progress);
+  }
+
   static clearFailure(csvImport: CsvImport | CsvImportDomain) {
     return CsvImportDomain.toDomain(csvImport).clearFailure();
+  }
+
+  static withExtraction(csvImport: CsvImport | CsvImportDomain, extraction: CsvImportExtraction) {
+    return CsvImportDomain.toDomain(csvImport).withExtraction(extraction);
   }
 
   private static toDomain(csvImport: CsvImport | CsvImportDomain) {
@@ -204,5 +275,8 @@ export type {
   CsvImportToCreate,
   CsvImportFailureIssue,
   CsvImportStats,
+  CsvImportProgress,
+  CsvImportExtractedFile,
+  CsvImportExtraction,
   CsvImportFailure,
 };
