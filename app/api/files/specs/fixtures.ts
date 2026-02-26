@@ -1,6 +1,7 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
+import { PUBLIC_USER_ID } from 'api/users/publicUser';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -121,6 +122,14 @@ const adminUser = {
   username: 'admin',
   role: UserRole.ADMIN,
   email: 'admin@tenant.xy',
+};
+
+const publicUser = {
+  _id: PUBLIC_USER_ID,
+  username: 'PublicUser',
+  role: UserRole.COLLABORATOR,
+  email: 'public@uwazi.local',
+  password: 'not-used-in-tests',
 };
 
 const fixtures: DBFixture = {
@@ -311,7 +320,7 @@ const fixtures: DBFixture = {
       openPublicEndpoint: true,
     },
   ],
-  users: [collabInGroupUser, collabUser, writerUser, adminUser],
+  users: [collabInGroupUser, collabUser, writerUser, adminUser, publicUser],
   groups: [
     {
       id: fixturesFactory.id('group 1'),
@@ -392,6 +401,7 @@ export {
   fixtures,
   importTemplate,
   mainDocument1,
+  publicUser,
   readOnlyUploadId,
   restrictedFileName,
   restrictedUploadId,

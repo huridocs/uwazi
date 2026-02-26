@@ -1,5 +1,7 @@
+/* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
+import { ZodError } from 'zod';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -13,8 +15,8 @@ import { IXValidationError } from 'api/services/informationextraction/IXValidati
 import { appContext } from 'api/utils/AppContext';
 import { createError } from 'api/utils/index';
 import util from 'node:util';
-import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -98,6 +100,15 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof Ajv.ValidationError) {
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
+  }
+
+  if (error instanceof ZodError) {
+    result = {
+      code: 422,
+      message: util.inspect(error),
+      validations: error.issues || error.errors,
+      logLevel: 'debug',
+    };
   }
 
   if (error.name === 'ValidationError') {
@@ -225,6 +236,11 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
 
   if (config.sentry.dsn && result.logLevel === 'error') {
     Sentry.captureException(error);
+  }
+
+  if (result.code >= 500) {
+    result.prettyMessage = 'A server side error has occurred';
+    result.error = 'A server side error has occurred';
   }
 
   return result;

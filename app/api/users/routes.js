@@ -2,6 +2,7 @@ import { parseQuery, validation } from 'api/utils';
 import { userSchema } from 'shared/types/userSchema';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
 import users from './users';
+import { PUBLIC_USER_ID } from './publicUser';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
 export default app => {
@@ -144,7 +145,12 @@ export default app => {
   app.get('/api/users', needsAuthorization(), (_req, res, next) => {
     users
       .get({}, '+groups +failedLogins +accountLocked')
-      .then(response => res.json(response))
+      .then(response => {
+        const filteredUsers = response.filter(
+          user => user._id.toString() !== PUBLIC_USER_ID.toString()
+        );
+        res.json(filteredUsers);
+      })
       .catch(next);
   });
 

@@ -8,22 +8,18 @@ import { Highlight } from '@huridocs/react-text-selection-handler';
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 import { IStore } from 'app/istore';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { pdfScaleAtom } from 'V2/atoms';
 import { PageReferences, groupByRectangle } from '../PageReferences';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 
 describe('FormConfigInput', () => {
   let props: any;
-  let pdfScale: number;
 
   beforeEach(() => {
     props = {
       page: '3',
       onClick: jest.fn(),
     };
-    pdfScale = 1;
   });
 
   afterEach(() => {});
@@ -123,20 +119,18 @@ describe('FormConfigInput', () => {
   });
 
   it('should scale references to match the pdf', () => {
-    pdfScale = 0.9;
     props.page = '5';
     const component = mount(
       <Provider store={store}>
-        <TestAtomStoreProvider initialValues={[[pdfScaleAtom, pdfScale]]}>
-          <PageReferences {...props} />
-        </TestAtomStoreProvider>
+        <PageReferences {...props} />
       </Provider>
     );
     const hihglights = component.find(Highlight);
     const firstHighlightProps: any = hihglights.at(0).props();
+    // PageReferences uses scale 1 (identity) when not in V2 Entity context
     expect(firstHighlightProps.textSelection.selectionRectangles).toEqual([
-      { height: 0.9, left: 1.8, regionId: '5', top: 0.9, width: 90 },
-      { height: 0.9, left: 3.6, regionId: '5', top: 2.7, width: 18 },
+      { height: 1, left: 2, regionId: '5', top: 1, width: 100 },
+      { height: 1, left: 4, regionId: '5', top: 3, width: 20 },
     ]);
   });
 });

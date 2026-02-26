@@ -4,6 +4,7 @@ import { isString } from 'lodash';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
+import { isClient } from 'app/utils';
 import { t, Translate } from 'app/I18N';
 import { Pill } from '../UI';
 
@@ -49,7 +50,7 @@ const MultiSelect = ({
       {
         name: 'preventOverflow',
         options: {
-          boundary: document.documentElement,
+          boundary: isClient ? document.documentElement : undefined,
           padding: 8,
         },
       },

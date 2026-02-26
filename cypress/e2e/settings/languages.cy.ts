@@ -57,7 +57,7 @@ describe('Languages', () => {
     });
 
     it('should render the list of installed languages', () => {
-      cy.get('[data-testid=settings-languages]').toMatchImageSnapshot();
+      cy.get('[data-testid=settings-languages]').matchImageSnapshot();
       cy.contains('tr', 'English');
       cy.contains('tr', 'Spanish');
       cy.contains('tr', 'French');

@@ -53,9 +53,10 @@ class TemplatePostProcessService {
       }
 
       if (context?.fullReindex) {
-        const templates = (await this.deps.templatesDS.getAll().all()).filter(
-          t => t.id !== after.id
-        );
+        let templates = await this.deps.templatesDS.getAll().all();
+        if (diff.hasAnyPostProcessChanges()) {
+          templates = templates.filter(t => t.id !== after.id);
+        }
 
         await ArrayUtils.sequentialFor(templates, async template =>
           this.dispatchPostProcessJob(

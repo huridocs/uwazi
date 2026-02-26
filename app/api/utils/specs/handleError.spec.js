@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { legacyLogger } from 'api/log';
 import { createError } from 'api/utils';
 
@@ -9,8 +10,9 @@ import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationEr
 import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
 import { DomainError } from 'api/core/domain/error/DomainError';
-import { handleError, prettifyError } from '../handleError';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { z } from 'zod';
+import { handleError, prettifyError } from '../handleError';
 
 const contextRequestId = '1234';
 
@@ -105,7 +107,7 @@ describe('handleError', () => {
 
         expect(error.code).toBe(500);
         expect(error.requestId).toBe(contextRequestId);
-        expect(error.prettyMessage).toEqual('error');
+        expect(error.prettyMessage).toEqual('A server side error has occurred');
         expect(error.message).toBeUndefined();
         expect(error.original).toBeUndefined();
       });
@@ -176,7 +178,7 @@ original error: {
     it('should return generate a new error with code 500', () => {
       const error = handleError();
       expect(error.code).toBe(500);
-      expect(error.prettyMessage).toMatch(/Unexpected error has occurred/i);
+      expect(error.prettyMessage).toMatch(/A server side error has occurred/i);
       expect(error.requestId).toBe(contextRequestId);
     });
   });
@@ -254,6 +256,18 @@ original error: {
       const expectedPrettymessage = 'hello\na property: an error';
       expect(error.prettyMessage).toEqual(expectedPrettymessage);
     });
+
+    describe('when error is a ZodError', () => {
+      it('should be a 422 info logLevel and logged as info', () => {
+        try {
+          z.string().url().parse('not-a-valid-url');
+        } catch (e) {
+          const error = handleError(e);
+          expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
+          expect(legacyLogger.debug).toHaveBeenCalled();
+        }
+      });
+    });
   });
 
   it('should handle URIError correctly', () => {
@@ -277,6 +291,73 @@ original error: {
       prettyMessage: '\nTest error',
     });
   });
+
+  describe('when the error is unexpected', () => {
+    it('should not expose error details', () => {
+      const sensitiveError = new Error('Sensitive error message', {
+        cause: 'Sensitive error cause',
+      });
+      const domainError = new TestDomainError('Test error', 'code');
+
+      expect(handleError(sensitiveError)).toMatchObject({
+        code: 500,
+        logLevel: 'error',
+        requestId: contextRequestId,
+        prettyMessage: 'A server side error has occurred',
+        error: 'A server side error has occurred',
+      });
+
+      expect(handleError(domainError)).toMatchObject({
+        code: 400,
+        logLevel: 'debug',
+        requestId: contextRequestId,
+        prettyMessage: '\nTest error',
+      });
+    });
+
+    it('should log errors correctly', () => {
+      const sensitiveError = new Error('Sensitive error message', {
+        cause: 'Sensitive error cause',
+      });
+
+      handleError(sensitiveError);
+
+      expect(legacyLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Sensitive error message'),
+        {}
+      );
+    });
+
+    it('should hide native Error subclasses (TypeError, RangeError, etc.)', () => {
+      const typeError = new TypeError('Cannot read property password of undefined');
+      const rangeError = new RangeError('Maximum call stack at sensitiveFunction');
+      const referenceError = new ReferenceError('secretApiKey is not defined');
+
+      expect(handleError(typeError)).toMatchObject({
+        code: 500,
+        logLevel: 'error',
+        requestId: contextRequestId,
+        prettyMessage: 'A server side error has occurred',
+        error: 'A server side error has occurred',
+      });
+
+      expect(handleError(rangeError)).toMatchObject({
+        code: 500,
+        logLevel: 'error',
+        requestId: contextRequestId,
+        prettyMessage: 'A server side error has occurred',
+        error: 'A server side error has occurred',
+      });
+
+      expect(handleError(referenceError)).toMatchObject({
+        code: 500,
+        logLevel: 'error',
+        requestId: contextRequestId,
+        prettyMessage: 'A server side error has occurred',
+        error: 'A server side error has occurred',
+      });
+    });
+  });
 });
 
 describe('handleError without context', () => {
@@ -284,7 +365,7 @@ describe('handleError without context', () => {
     jest.restoreAllMocks();
     jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     const error = handleError(new Error('original error message'));
-    expect(error.prettyMessage).toEqual('original error message');
+    expect(error.prettyMessage).toEqual('A server side error has occurred');
     expect(legacyLogger.error).toHaveBeenCalledWith(
       expect.stringMatching(
         /\nError: original error message[\w\W]*Accessing nonexistent async context/
