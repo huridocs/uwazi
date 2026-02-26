@@ -39,7 +39,7 @@ describe('migration fix-missing-fields-on-files', () => {
   );
 
   let s3Client: S3Client;
-  const bucket = process.env.S3_BUCKET || 'uwazi-development';
+  const { bucket } = config.s3;
 
   beforeAll(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
