@@ -5,6 +5,7 @@ import {
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -13,6 +14,7 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvPreflightJob;
   sockets: V1WebSocketsWrapper;
+  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
@@ -20,7 +22,7 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
     super();
   }
 
-  async handle(_heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
+  async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
     const { tenantName } = this;
 
     try {
@@ -30,19 +32,27 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
         userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
-            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:thesauri:start', {
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:start', {
               importId,
             });
           },
+          onProgress: ({ importId, processedRows, totalRows }) => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            heartbeat();
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:progress', {
+              importId,
+              processedRows,
+              totalRows,
+            });
+          },
           onSuccess: ({ importId }: { importId: string }) => {
-            this.deps.sockets.emitToTenantAdmins(
-              tenantName,
-              'csvImport:preflight:thesauri:success',
-              { importId }
-            );
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:success', {
+              importId,
+            });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
-            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:thesauri:error', {
+            this.deps.v1Compat?.error(tenantName, error);
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:error', {
               importId,
               message: error.message,
             });
