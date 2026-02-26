@@ -87,8 +87,7 @@ export const config = {
     },
   },
 
-  // db for tenants list and sessions
-  SHARED_DB: 'uwazi_shared_db',
+  SHARED_DB: process.env.NODE_ENV === 'test' ? 'uwazi_shared_db_testing' : 'uwazi_shared_db',
 
   multiTenant: process.env.MULTI_TENANT || false,
   clusterMode: CLUSTER_MODE,
@@ -114,6 +113,7 @@ export const config = {
       v2UpdateEntity: false,
       v2CSVImport: false,
       v2UpdateThesaurus: false,
+      v1CSVImportCompat: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

@@ -8,6 +8,7 @@ import {
   CsvCreateThesauriValuesJob,
   ThesauriCreationProgress,
 } from '../../application/jobs/CsvCreateThesauriValuesJob';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -16,6 +17,7 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvCreateThesauriValuesJob;
   sockets: V1WebSocketsWrapper;
+  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Params> {
@@ -29,6 +31,8 @@ export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Par
     try {
       await this.deps.useCase.execute({
         importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
             this.deps.sockets.emitToTenantAdmins(
@@ -60,6 +64,7 @@ export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Par
             );
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
+            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
               'csvImport:preflight:thesauri:create:error',
