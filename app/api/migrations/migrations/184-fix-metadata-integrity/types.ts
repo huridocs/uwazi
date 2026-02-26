@@ -1,8 +1,9 @@
 import { ObjectId } from 'mongodb';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 interface MetadataObject {
   value: string | null;
-  label?: string;
+  label?: string | null;
   inheritedValue?: { value: string | null; label?: string; [k: string]: unknown }[];
   inheritedType?: string;
   parent?: { label: string; value: string };
@@ -28,6 +29,7 @@ interface PropertySchema {
   label: string;
   name: string;
   type: string;
+  content?: string;
 }
 
 interface Template {
@@ -37,9 +39,22 @@ interface Template {
   [k: string]: unknown;
 }
 
+interface ThesaurusValue {
+  id: string;
+  label: string;
+  values?: { id: string; label: string }[];
+}
+
+interface Dictionary {
+  _id: ObjectId;
+  name: string;
+  values: ThesaurusValue[];
+}
+
 interface Fixture {
   templates: Template[];
   entities: Entity[];
+  dictionaries?: ThesaurusSchema[];
 }
 
-export type { Entity, Fixture, Template, MetadataObject };
+export type { Entity, Fixture, Template, MetadataObject, Dictionary, ThesaurusValue };

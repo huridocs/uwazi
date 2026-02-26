@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import migration from '../index';
 import { Entity } from '../types';
 import { fixtures, correctFixtures, correctEntities } from './fixtures';
@@ -8,7 +8,7 @@ import { fixtures, correctFixtures, correctEntities } from './fixtures';
 let db: Db | null;
 
 const initTest = async (fixture: typeof fixtures) => {
-  await testingDB.setupFixturesAndContext(fixture);
+  await testingDB.setupFixturesAndContext(fixture as unknown as DBFixture);
   db = testingDB.mongodb!;
   migration.reindex = false;
 
@@ -23,9 +23,9 @@ afterAll(async () => {
   await testingDB.tearDown();
 });
 
-describe('migration fix-empty-string-metadata', () => {
-  it('should have delta 183', () => {
-    expect(migration.delta).toBe(183);
+describe('migration fix-metadata-integrity', () => {
+  it('should have delta 184', () => {
+    expect(migration.delta).toBe(184);
   });
 
   describe('on a correct database', () => {
@@ -77,10 +77,53 @@ describe('migration fix-empty-string-metadata', () => {
           },
         ],
       },
+      {
+        sharedId: 'null_value_sharedId',
+        description: 'null values are treated as empty',
+        expectedMetadata: [
+          {
+            text: [],
+            select: [],
+            relationship: [],
+          },
+        ],
+      },
+      {
+        sharedId: 'ghost_ref_sharedId',
+        description: 'select property with only ghost refs becomes []',
+        expectedMetadata: [
+          {
+            text: [{ value: 'some text' }],
+            select: [],
+            relationship: [],
+          },
+        ],
+      },
+      {
+        sharedId: 'partial_ghost_ref_sharedId',
+        description: 'valid select entries survive, ghost entries are removed',
+        expectedMetadata: [
+          {
+            text: [],
+            select: [{ value: 'valid_id_1', label: 'Valid Option 1' }],
+            relationship: [],
+          },
+        ],
+      },
     ])('should fix case: $description', async ({ sharedId, expectedMetadata }) => {
       const entities = await db!.collection<Entity>('entities').find({ sharedId }).toArray();
       const metadata = entities.map(e => e.metadata);
       expect(metadata).toEqual(expectedMetadata);
+    });
+
+    it('should not touch non-select properties even if value looks like a ghost ref', async () => {
+      const entities = await db!
+        .collection<Entity>('entities')
+        .find({ sharedId: 'non_select_ghost_sharedId' })
+        .toArray();
+      expect(entities.map(e => e.metadata)).toEqual([
+        { text: [{ value: 'ghost_id' }], select: [], relationship: [] },
+      ]);
     });
 
     it('should signal a reindex', () => {
