@@ -9,6 +9,8 @@ import type { Application } from 'express';
 import { ParamsDictionary, Request, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { RegisterCsvImportController } from './RegisterCsvImportController.js';
+import { ListCsvImportEntitiesImportsController } from './ListCsvImportEntitiesImportsController.js';
+import { GetCsvImportEntitiesImportController } from './GetCsvImportEntitiesImportController.js';
 
 const csvImportRoutes = (app: Application) => {
   // eslint-disable-next-line max-statements
@@ -75,6 +77,18 @@ const csvImportRoutes = (app: Application) => {
       await v1Import(req, res);
       return undefined;
     }
+  );
+
+  app.get(
+    '/api/csvImportEntities/imports',
+    needsAuthorization(['admin']),
+    ListCsvImportEntitiesImportsController.createHandler()
+  );
+
+  app.get(
+    '/api/csvImportEntities/imports/:id',
+    needsAuthorization(['admin']),
+    GetCsvImportEntitiesImportController.createHandler()
   );
 };
 

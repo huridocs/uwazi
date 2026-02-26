@@ -648,6 +648,7 @@ per page,per page
 Permission,İzin
 Permission on entities explicitly shared with the user,Kullanıcıyla açıkça paylaşılan varlıklara ilişkin izin
 Permissions,İzinler
+Pick a color,Pick a color
 Plain text,Düz metin
 Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
 Please type in,Please type in
@@ -873,6 +874,7 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Şablon
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
+Template color,Template color
 Template conflict,Template conflict
 Template name,Template name
 Template name already exists,Template name already exists

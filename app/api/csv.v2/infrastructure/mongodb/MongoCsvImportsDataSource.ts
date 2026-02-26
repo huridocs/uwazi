@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
-import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js';
+import { CsvImportDoesNotExistError } from '../../domain/csvImporErrors.js';
 import { CsvImport } from '../../domain/CsvImport.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
 import { CsvImportMapper } from './CsvImportMapper.js';
@@ -29,5 +29,10 @@ export class MongoCsvImportsDataSource
       return Result.fail(new CsvImportDoesNotExistError(id));
     }
     return Result.ok(CsvImportMapper.toDomain(result));
+  }
+
+  async getAll(): Promise<CsvImport[]> {
+    const results = await this.getCollection().find({}).sort({ createdAt: -1 }).toArray();
+    return results.map(CsvImportMapper.toDomain);
   }
 }

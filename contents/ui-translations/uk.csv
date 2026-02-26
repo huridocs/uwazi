@@ -650,6 +650,7 @@ per page,на сторінку
 Permission,Дозвіл
 Permission on entities explicitly shared with the user,"Дозвіл на об'єкти, якими поділилися з користувачем"
 Permissions,Дозволи
+Pick a color,Pick a color
 Plain text,Звичайний текст
 Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
 Please type in,"Будь ласка, введіть"
@@ -875,6 +876,7 @@ Target template,Шаблон цілі
 Target's role in the relationship Source-Target.,Роль мішені у відносинах Джерело-Ціль.
 Template,Шаблон
 Template changes are being applied to all related entities.,Зміни шаблону застосовуються до всіх пов'язаних сутностей.
+Template color,Template color
 Template conflict,Конфлікт шаблонів
 Template name,Назва шаблону
 Template name already exists,Ім'я шаблону вже існує

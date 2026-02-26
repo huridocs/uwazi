@@ -159,6 +159,40 @@ export class MongoMultiLanguageEntityDataSource
     return entities.map(e => e.sharedId);
   }
 
+  async getSharedIdsByTemplateAndTitles(templateId: string, titles: string[]) {
+    if (!titles.length) {
+      return [];
+    }
+
+    const entities = await this.getCollection()
+      .find(
+        { template: new ObjectId(templateId), title: { $in: titles } },
+        { projection: { title: 1, sharedId: 1 } }
+      )
+      .toArray();
+
+    return entities.map(entity => ({
+      title: entity.title,
+      sharedId: entity.sharedId,
+    }));
+  }
+
+  async getSharedIdsByTitles(titles: string[]) {
+    if (!titles.length) {
+      return [];
+    }
+
+    const entities = await this.getCollection()
+      .find({ title: { $in: titles } }, { projection: { title: 1, sharedId: 1, template: 1 } })
+      .toArray();
+
+    return entities.map(entity => ({
+      title: entity.title,
+      sharedId: entity.sharedId,
+      templateId: entity.template.toString(),
+    }));
+  }
+
   private async findAffectedSharedIds(
     deletedSharedIds: string[],
     propertyNames: string[]

@@ -12,16 +12,13 @@ import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.j
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { createTestingZip } from '#api/csv/specs/helpers.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { CsvImportFileNormalizer } from '../../services/CsvImportFileNormalizer.js';
-import { CsvImportRowsStager } from '../../services/CsvImportRowsStager.js';
-import { CsvExtractUploadedZipJob, Callbacks } from '../CsvExtractUploadedZipJob.js';
+import { CsvExtractUploadedZipJobFactory } from '#api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory.js';
+import { Callbacks } from '../CsvExtractUploadedZipJob.js';
 
 const callbacks: Callbacks = {
   onStart: jest.fn(),
@@ -60,27 +57,17 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const setUp = (options?: { batchSize?: number }) => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
-    const fileNormalizer = new CsvImportFileNormalizer({
-      fileStorage,
-      filesIO: new FileContentsIO(),
-    });
-    const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options?.batchSize });
     const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-
-    const useCase = new CsvExtractUploadedZipJob({
-      csvImportsDS,
-      fileNormalizer,
-      rowsStager,
-      rowsDS,
+    const { useCase, csvImportsDS, rowsDS } = CsvExtractUploadedZipJobFactory.build({
       transactionManager,
+      fileStorage,
+      batchSize: options?.batchSize,
       jobsDispatcher,
     });
     return { useCase, csvImportsDS, rowsDS, pathManager, fileStorage, jobsDispatcher };
@@ -126,6 +113,14 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
     expect(updated.status).toBe(CsvImportStatus.ExtractingFilesDone);
     expect(updated.failure ?? undefined).toBeUndefined();
+    expect(updated.extraction).toEqual(
+      expect.objectContaining({
+        sourceType: 'csv',
+        originalUploadSizeBytes: 10,
+        extractedFilesCount: 1,
+        files: [expect.objectContaining({ filename: 'orig', sizeBytes: 10 })],
+      })
+    );
     const extractedPath = pathManager.createPath({
       type: 'customPath',
       destination: `${destination}/extracted`,
@@ -266,6 +261,20 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
     expect(updated.status).toBe(CsvImportStatus.ExtractingFilesDone);
     expect(updated.failure ?? undefined).toBeUndefined();
+    expect(updated.extraction).toEqual(
+      expect.objectContaining({
+        sourceType: 'zip',
+        originalUploadSizeBytes: 10,
+        extractedFilesCount: 2,
+        totalFilesInZip: 2,
+      })
+    );
+    expect(updated.extraction?.files).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ filename: 'import.csv', sizeBytes: expect.any(Number) }),
+        expect.objectContaining({ filename: '1.pdf', sizeBytes: expect.any(Number) }),
+      ])
+    );
     const extractedDir = pathManager.createPath({
       type: 'customPath',
       destination: `${destination}/extracted`,

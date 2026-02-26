@@ -646,6 +646,7 @@ per page,por página
 Permission,Permiso
 Permission on entities explicitly shared with the user,Permiso sobre las entidades compartidas explícitamente con el usuario
 Permissions,Permisos
+Pick a color,Pick a color
 Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
 Please type in,Por favor digite
@@ -871,6 +872,7 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Plantilla
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
+Template color,Template color
 Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla
 Template name already exists,Template name already exists

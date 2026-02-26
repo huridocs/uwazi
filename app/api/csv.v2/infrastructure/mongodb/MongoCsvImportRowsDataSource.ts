@@ -36,6 +36,18 @@ export class MongoCsvImportRowsDataSource
     });
   }
 
+  async getByImportAndIndexes(importId: string, indexes: number[]): Promise<CsvImportRow[]> {
+    if (!indexes.length) return [];
+    const results = await this.getCollection()
+      .find({ importId, index: { $in: indexes } })
+      .sort({ index: 1 })
+      .toArray();
+    return results.map(doc => {
+      const { _id, ...rest } = doc;
+      return CsvImportRow.fromObject(rest);
+    });
+  }
+
   async deleteByImport(importId: string): Promise<void> {
     await this.getCollection().deleteMany({ importId });
   }

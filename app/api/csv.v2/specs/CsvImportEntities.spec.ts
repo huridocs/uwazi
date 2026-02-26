@@ -11,11 +11,11 @@ import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStor
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 import { createUploadedInputFile } from '#api/core/infrastructure/files/specs/InputFileTestFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 import { CsvImportEntities } from '../CsvImportEntities.js';
-import { CSVImportEntitiesFactories } from '../infrastructure/factories/CSVImportEntitiesFactories.js';
+import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
 
 class FakeCsvExtractUploadedZipJobDispatcher {
   public calls: Array<{ params: any; jobInfo?: any }> = [];

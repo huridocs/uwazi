@@ -21,7 +21,7 @@ import * as templatesAPI from '#V2/api/templates/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
-import _ from 'lodash';
+import isEqual from 'lodash/isEqual.js';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
 import uniqueID from '#shared/uniqueID.js';
@@ -39,6 +39,7 @@ import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal.
 import { AddThesaurusModal } from './components/AddThesaurusModal.js';
 import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
 import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
+import { getRandomColor } from './components/defaultTemplateColors.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -49,7 +50,7 @@ const templatesEditorLoader =
       value: page.sharedId,
       label: page.title,
     }));
-    let loadedTemplate = emptyTemplate;
+    let loadedTemplate: ClientTemplateSchema = { ...emptyTemplate, color: getRandomColor() };
     const templates = await templatesAPI.get(headers);
 
     let entityCount = 0;
@@ -178,7 +179,7 @@ const TemplatesEditor = () => {
   const checkPendingChanges = useCallback(
     //ignore processing
     () =>
-      !_.isEqual(
+      !isEqual(
         { ...loadedTemplate, processing: undefined },
         { ...getCurrentStatus(), processing: undefined }
       ),
@@ -204,10 +205,10 @@ const TemplatesEditor = () => {
   const handleTableChange = (rows: PropertyRow[]) => {
     const newCommonProperties = rows.filter(row => row.isCommonProperty);
     const newProperties = rows.filter(row => !row.isCommonProperty);
-    if (!_.isEqual(newCommonProperties, commonProperties)) {
+    if (!isEqual(newCommonProperties, commonProperties)) {
       setCommonProperties(newCommonProperties);
     }
-    if (!_.isEqual(newProperties, properties)) {
+    if (!isEqual(newProperties, properties)) {
       setProperties(newProperties);
     }
   };
@@ -342,10 +343,10 @@ const TemplatesEditor = () => {
               <TemplateMetadata
                 value={{
                   name: template.name,
-                  color: template.color || '#C03B22',
+                  color: template.color!,
                   entityViewPage: template.entityViewPage || '',
                 }}
-                onChange={(values: any) => {
+                onChange={values => {
                   setTemplate({ ...template, ...values });
                   if (values.name) setNameError(false);
                   if (values.color) setColorError(false);

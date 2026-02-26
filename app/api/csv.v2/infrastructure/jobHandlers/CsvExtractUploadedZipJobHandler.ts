@@ -11,6 +11,7 @@ import {
   CsvExtractUploadedZipJob,
   ExtractionProgress,
 } from '../../application/jobs/CsvExtractUploadedZipJob.js';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -19,6 +20,7 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvExtractUploadedZipJob;
   sockets: V1WebSocketsWrapper;
+  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Params> {
@@ -36,6 +38,7 @@ export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Param
         userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
+            this.deps.v1Compat?.start(tenantName);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:start', {
               importId,
             });
@@ -64,6 +67,7 @@ export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Param
             });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
+            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:error', {
               importId,
               message: error.message,

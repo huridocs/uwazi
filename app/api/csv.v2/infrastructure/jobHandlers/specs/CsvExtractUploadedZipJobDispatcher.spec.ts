@@ -8,20 +8,16 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
 import { createTestingZip } from '#api/csv/specs/helpers.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
-import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
-import { CsvExtractUploadedZipJob } from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
-import { CsvImportFileNormalizer } from '#api/csv.v2/application/services/CsvImportFileNormalizer.js';
-import { CsvImportRowsStager } from '#api/csv.v2/application/services/CsvImportRowsStager.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { CsvPreflightJobHandler } from '../CsvPreflightJobHandler.js';
+import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler.js';
-import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories.js';
+import { CsvExtractUploadedZipJobFactory } from '../../factories/CsvExtractUploadedZipJobFactory.js';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];
@@ -53,26 +49,16 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const setUp = () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
-    const fileNormalizer = new CsvImportFileNormalizer({
-      fileStorage,
-      filesIO: new FileContentsIO(),
-    });
-    const rowsStager = new CsvImportRowsStager({ fileStorage });
     const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
-    const useCase = new CsvExtractUploadedZipJob({
-      csvImportsDS,
-      fileNormalizer,
-      rowsStager,
-      rowsDS,
+    const { useCase, csvImportsDS } = CsvExtractUploadedZipJobFactory.build({
       transactionManager,
+      fileStorage,
       jobsDispatcher,
     });
     const sockets = TestUtils.mockClass<V1WebSocketsWrapper>({
