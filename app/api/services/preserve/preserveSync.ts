@@ -93,134 +93,134 @@ const extractDate = async (
 
   return hasDateProperty
     ? {
-      preservation_date: [{ value: Date.parse(evidence.attributes.date) / 1000 }],
-    }
+        preservation_date: [{ value: Date.parse(evidence.attributes.date) / 1000 }],
+      }
     : {};
 };
 
 const saveEvidence =
   (config: PreserveConfig['config'][0], host: string) =>
-    async (previous: Promise<string | undefined>, evidence: any): Promise<string | undefined> => {
-      await previous;
+  async (previous: Promise<string | undefined>, evidence: any): Promise<string | undefined> => {
+    await previous;
 
-      try {
-        // Skip evidences with empty titles
-        if (!evidence.attributes.title) {
-          return undefined;
-        }
-
-        const template = await templates.getById(config.template);
-        const user = await users.getById(config.user);
-
-        // Set up V2 services
-        const transactionManager = TransactionManagerFactory.default();
-        const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
-        const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-        const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-        const translationsDS = DefaultTranslationsDataSource(transactionManager);
-
-        const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
-          entitiesDS,
-          settingsDS,
-          thesauriDS,
-          translationsDS,
-        });
-        const entitiesService = EntitiesServiceFactory.default({
-          entitiesDS,
-          transactionManager,
-        });
-
-        const entity = await entitiesService.create({
-          templateId: config.template.toString(),
-          userId: user?._id?.toString(),
-        });
-
-        const propertyAssignments: PropertyAssignmentInput[] = [
-          {
-            name: 'title',
-            value: [{ value: evidence.attributes.title }],
-          },
-        ];
-
-        const urlMetadata = await extractURL(template, evidence);
-        if (urlMetadata.url) {
-          propertyAssignments.push({
-            name: 'url',
-            value: urlMetadata.url,
-          });
-        }
-
-        const sourceMetadata = await extractSource(template, evidence);
-        if (sourceMetadata.source) {
-          propertyAssignments.push({
-            name: 'source',
-            value: sourceMetadata.source,
-          });
-        }
-
-        const dateMetadata = await extractDate(template, evidence);
-        if (dateMetadata.preservation_date) {
-          propertyAssignments.push({
-            name: 'preservation_date',
-            value: dateMetadata.preservation_date,
-          });
-        }
-
-        const assignments = await propertyAssignmentStrategy.bulkCreate(
-          propertyAssignments,
-          entity.template,
-          []
-        );
-        entity.setPropertyAssignmentsInAllLanguages(assignments);
-
-        const { sharedId } = entity;
-
-        const attachments: FileAttachment[] = [];
-        const filesService = FilesServiceFactory.default(transactionManager);
-
-        await Promise.all(
-          evidence.attributes.downloads.map(async (download: any) => {
-            const fileStream = (
-              await fetch(new URL(path.join(host, download.path)).toString(), {
-                headers: { Authorization: config.token },
-              })
-            ).body as unknown as Readable;
-
-            if (!fileStream) {
-              throw new Error(`Failed to fetch file from: ${download.path}`);
-            }
-
-            const inputFile = await InputFile.fromStream({
-              stream: fileStream,
-              originalname: path.basename(download.path),
-              mimetype: mimetypes.lookup(path.extname(download.path)) || 'application/octet-stream',
-              type: 'attachment',
-            });
-
-            const fileId = IdGeneratorFactory.default().generate();
-            attachments.push(inputFile.toEntityFile(sharedId, fileId) as FileAttachment);
-          })
-        );
-
-        await filesService.storeFiles(attachments);
-
-        const defaultLanguage = await settings.getDefaultLanguage();
-
-        await transactionManager.run(async () => {
-          await filesService.insert(attachments);
-          await entitiesService.insert(entity, {
-            tenantName: tenants.current().name,
-            actorId: user?._id?.toString() || 'system',
-            targetLanguage: defaultLanguage.key,
-          });
-        });
-
-        return sharedId;
-      } catch (error) {
-        legacyLogger.error(error);
+    try {
+      // Skip evidences with empty titles
+      if (!evidence.attributes.title) {
         return undefined;
       }
-    };
+
+      const template = await templates.getById(config.template);
+      const user = await users.getById(config.user);
+
+      // Set up V2 services
+      const transactionManager = TransactionManagerFactory.default();
+      const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+
+      const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
+        entitiesDS,
+        settingsDS,
+        thesauriDS,
+        translationsDS,
+      });
+      const entitiesService = EntitiesServiceFactory.default({
+        entitiesDS,
+        transactionManager,
+      });
+
+      const entity = await entitiesService.create({
+        templateId: config.template.toString(),
+        userId: user?._id?.toString(),
+      });
+
+      const propertyAssignments: PropertyAssignmentInput[] = [
+        {
+          name: 'title',
+          value: [{ value: evidence.attributes.title }],
+        },
+      ];
+
+      const urlMetadata = await extractURL(template, evidence);
+      if (urlMetadata.url) {
+        propertyAssignments.push({
+          name: 'url',
+          value: urlMetadata.url,
+        });
+      }
+
+      const sourceMetadata = await extractSource(template, evidence);
+      if (sourceMetadata.source) {
+        propertyAssignments.push({
+          name: 'source',
+          value: sourceMetadata.source,
+        });
+      }
+
+      const dateMetadata = await extractDate(template, evidence);
+      if (dateMetadata.preservation_date) {
+        propertyAssignments.push({
+          name: 'preservation_date',
+          value: dateMetadata.preservation_date,
+        });
+      }
+
+      const assignments = await propertyAssignmentStrategy.bulkCreate(
+        propertyAssignments,
+        entity.template,
+        []
+      );
+      entity.setPropertyAssignmentsInAllLanguages(assignments);
+
+      const { sharedId } = entity;
+
+      const attachments: FileAttachment[] = [];
+      const filesService = FilesServiceFactory.default(transactionManager);
+
+      await Promise.all(
+        evidence.attributes.downloads.map(async (download: any) => {
+          const fileStream = (
+            await fetch(new URL(path.join(host, download.path)).toString(), {
+              headers: { Authorization: config.token },
+            })
+          ).body as unknown as Readable;
+
+          if (!fileStream) {
+            throw new Error(`Failed to fetch file from: ${download.path}`);
+          }
+
+          const inputFile = await InputFile.fromStream({
+            stream: fileStream,
+            originalname: path.basename(download.path),
+            mimetype: mimetypes.lookup(path.extname(download.path)) || 'application/octet-stream',
+            type: 'attachment',
+          });
+
+          const fileId = IdGeneratorFactory.default().generate();
+          attachments.push(inputFile.toEntityFile(sharedId, fileId) as FileAttachment);
+        })
+      );
+
+      await filesService.storeFiles(attachments);
+
+      const defaultLanguage = await settings.getDefaultLanguage();
+
+      await transactionManager.run(async () => {
+        await filesService.insert(attachments);
+        await entitiesService.insert(entity, {
+          tenantName: tenants.current().name,
+          actorId: user?._id?.toString() || 'system',
+          targetLanguage: defaultLanguage.key,
+        });
+      });
+
+      return sharedId;
+    } catch (error) {
+      legacyLogger.error(error);
+      return undefined;
+    }
+  };
 
 const preserveSync = {
   async syncAllTenants() {
