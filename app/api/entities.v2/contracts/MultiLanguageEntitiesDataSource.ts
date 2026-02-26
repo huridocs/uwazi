@@ -30,6 +30,13 @@ export interface MultiLanguageEntityDataSource {
     entities: Entity[],
     properties: V1RelationshipProperty[]
   ): Promise<ResultSet<Entity>>;
+  getSharedIdsByTemplateAndTitles(
+    templateId: string,
+    titles: string[]
+  ): Promise<Array<{ title: string; sharedId: string }>>;
+  getSharedIdsByTitles(
+    titles: string[]
+  ): Promise<Array<{ title: string; sharedId: string; templateId: string }>>;
   getSharedIdsUsingThesaurus(thesaurusId: string): Promise<string[]>;
 
   create(entity: Entity): Promise<void>;
