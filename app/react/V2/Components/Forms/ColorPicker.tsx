@@ -62,11 +62,17 @@ const ColorPicker = ({
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
-    strategy: 'absolute',
+    strategy: 'fixed',
     modifiers: [
       {
         name: 'offset',
         options: { offset: [0, 8] },
+      },
+      {
+        name: 'preventOverflow',
+        options: {
+          boundary: undefined,
+        },
       },
     ],
   });
@@ -74,7 +80,7 @@ const ColorPicker = ({
   return (
     <div className={`${className}`}>
       <Popover className="relative">
-        {({ close }) => (
+        {() => (
           <>
             <Popover.Button
               ref={setReferenceElement}
@@ -104,7 +110,6 @@ const ColorPicker = ({
                       className="w-8 h-8 rounded-md flex items-center justify-center focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                       onClick={() => {
                         changeColor(color);
-                        close();
                       }}
                     >
                       <span className="sr-only">{color}</span>
