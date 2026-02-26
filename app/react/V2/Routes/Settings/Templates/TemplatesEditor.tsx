@@ -34,6 +34,7 @@ import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal'
 import { AddThesaurusModal } from './components/AddThesaurusModal';
 import { TemplatesEditorFooter } from './components/TemplatesEditorFooter';
 import { ConfigPropertyPanel } from './components/ConfigPropertyPanel';
+import { getRandomColor } from './components/defaultTemplateColors';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -44,7 +45,7 @@ const templatesEditorLoader =
       value: page.sharedId,
       label: page.title,
     }));
-    let loadedTemplate = emptyTemplate;
+    let loadedTemplate: ClientTemplateSchema = { ...emptyTemplate, color: getRandomColor() };
     const templates = await templatesAPI.get(headers);
 
     let entityCount = 0;
@@ -337,7 +338,7 @@ const TemplatesEditor = () => {
               <TemplateMetadata
                 value={{
                   name: template.name,
-                  color: template.color || '#C03B22',
+                  color: template.color!,
                   entityViewPage: template.entityViewPage || '',
                 }}
                 onChange={values => {
