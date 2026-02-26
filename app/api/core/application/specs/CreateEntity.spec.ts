@@ -273,6 +273,7 @@ describe('CreateEntityUseCase', () => {
   it('should create an Entity', async () => {
     const { sut, fileService } = createSut({
       context: {
+        targetLanguage: 'en',
         actor: {
           _id: factory.id('user1'),
           username: 'username',
@@ -545,6 +546,7 @@ describe('CreateEntityUseCase', () => {
   it('should add grant access when actor is present', async () => {
     const { sut } = createSut({
       context: {
+        targetLanguage: 'en',
         actor: {
           _id: factory.id('user1'),
           username: 'username',
@@ -582,5 +584,34 @@ describe('CreateEntityUseCase', () => {
         },
       ],
     ]);
+  });
+
+  it('should emit EntityCreatedEvent with request target language', async () => {
+    const { sut, eventBus } = createSut({
+      context: {
+        targetLanguage: 'es',
+        actor: {
+          _id: factory.id('user1'),
+          username: 'username',
+          email: 'email@email.com',
+          role: 'collaborator',
+        },
+        tenant: tenants.current(),
+      },
+    });
+
+    await sut.execute({
+      templateId: factory.id('Document').toHexString(),
+      propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
+    });
+
+    expect(eventBus.emit).toHaveBeenCalled();
+
+    const emittedArg = (eventBus.emit as jest.Mock).mock.calls.find(
+      c => c && c[0] && typeof c[0].getData === 'function'
+    )?.[0];
+
+    const targetLanguage = emittedArg.getData().targetLanguageKey;
+    expect(targetLanguage).toBe('es');
   });
 });

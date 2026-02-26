@@ -1,8 +1,9 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { UserSchema } from '#shared/types/userType.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { Logger } from './logger/contracts/Logger.js';
@@ -24,6 +25,7 @@ type Deps<ExtendedDeps> = {
 type Context = {
   actor: UserSchema; // Using legacy User for now.
   tenant: Tenant; // Using legacy Tenant for now
+  targetLanguage?: LanguageISO6391;
 };
 
 abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends any[] = []>
@@ -53,6 +55,14 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends an
       role: this.context?.actor?.role,
       groups: (this.context?.actor?.groups || []).map(g => g._id.toString()),
     });
+  }
+
+  protected get targetLanguage() {
+    if (!this.context?.targetLanguage) {
+      throw new Error(`Target language was not found. ${JSON.stringify(this.context)}`);
+    }
+
+    return this.context.targetLanguage;
   }
 
   protected get actorId() {

@@ -96,7 +96,7 @@ const routes = app => {
 
         permissionsContext.setUserInContext(userForContext);
 
-        const result = await EntityFacade.create(entity, req.inputFiles);
+        const result = await EntityFacade.create(entity, req.language, req.inputFiles);
 
         const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
         const entityWithFiles = await entityDAO

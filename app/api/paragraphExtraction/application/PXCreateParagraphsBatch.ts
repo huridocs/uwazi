@@ -49,6 +49,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
     sourceEntity,
     user,
   }: PXCreateParagraphsBatchInput): Promise<Output> {
+    const targetLanguage = paragraphs[0].translations.find(t => t.isMainLanguage);
     const entities: any[] = [];
     const mainParagraphsData: Array<{ entity: any; mainParagraph: any }> = [];
 
@@ -97,6 +98,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
       await this.dependencies.entitiesService.bulkInsert(entities, {
         tenantName: tenants.current().name,
         actorId: user._id.toString(),
+        targetLanguage: targetLanguage!.language,
       });
     });
 

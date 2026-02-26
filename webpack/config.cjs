@@ -115,8 +115,8 @@ module.exports = production => {
         {
           test: /\.css$/,
           exclude: [
-            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
             path.resolve(__dirname, '../node_modules/flowbite/dist'),
+            path.resolve(__dirname, '../node_modules/monaco-editor/'),
             /flowbite\.min\.css$/,
           ],
           use: [
@@ -133,12 +133,16 @@ module.exports = production => {
           ],
         },
         {
-          test: /\.s?[ac]ss$/,
-          exclude: [
-            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
-            path.resolve(__dirname, '../node_modules/flowbite/dist'),
-            /\.css$/,
+          test: /\.css$/,
+          include: path.resolve(__dirname, '../node_modules/monaco-editor/'),
+          use: [
+            MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { url: true, sourceMap: true } },
           ],
+        },
+        {
+          test: /\.s?[ac]ss$/,
+          exclude: [path.resolve(__dirname, '../node_modules/flowbite/dist'), /\.css$/],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -183,6 +187,10 @@ module.exports = production => {
             },
           ],
         },
+        {
+          test: /\.ttf$/,
+          type: 'asset/resource',
+        },
       ],
     },
     plugins: [
@@ -205,10 +213,6 @@ module.exports = production => {
       new CopyWebpackPlugin({
         patterns: [
           { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
-          {
-            from: 'node_modules/monaco-editor/min/vs/base/browser/ui/codicons/codicon/codicon.ttf',
-            to: 'codicon.ttf',
-          },
           { from: 'node_modules/flag-icons/flags/4x3/', to: 'flags/4x3/' },
           { from: 'node_modules/flag-icons/flags/1x1/', to: 'flags/1x1/' },
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
@@ -218,7 +222,6 @@ module.exports = production => {
       }),
       new MonacoWebpackPlugin({
         languages: ['typescript', 'html', 'css'],
-        publicPath: '/',
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),

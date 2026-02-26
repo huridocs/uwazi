@@ -14,6 +14,8 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
 import { PXCreateParagraphsInput } from '../PXCreateParagraphs.js';
 
@@ -746,6 +748,34 @@ describe('PXCreateParagraphs', () => {
     await expect(promise).rejects.toMatchObject({
       code: PXValidationError.codes.EXTRACTOR_NOT_FOUND,
     });
+  });
+
+  it('should emit EntityCreatedEvent with the paragraph main language as targetLanguage', async () => {
+    const { createParagraphs } = setUpUseCase();
+
+    const spy = spyOnEmit();
+
+    const input: PXCreateParagraphsInput = {
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            { isMainLanguage: false, language: 'en', needsUserReview: false, text: 'en' },
+            { isMainLanguage: true, language: 'es', needsUserReview: false, text: 'es' },
+          ],
+        },
+      ],
+    };
+
+    await createParagraphs.execute(input);
+
+    spy.expectToEmitEventWith(EntityCreatedEvent, {
+      targetLanguageKey: 'es',
+      entities: expect.any(Array),
+    });
+    spy.restore();
   });
 
   it('should execute onParagraphBatchCreated callback on each batch creation', async () => {

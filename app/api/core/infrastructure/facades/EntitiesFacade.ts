@@ -1,18 +1,23 @@
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { randomUUID } from 'node:crypto';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas.js';
 import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory.js';
 import { LoggerFactory } from '../factories/LoggerFactory.js';
 import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper.js';
 
 export class EntityFacade {
-  static async create(dto: CreateEntityDTO, inputFiles?: InputFile[]) {
+  static async create(
+    dto: CreateEntityDTO,
+    targetLanguage: LanguageISO6391,
+    inputFiles?: InputFile[]
+  ) {
     const logger = LoggerFactory.default();
     const startTime = Date.now();
     const requestId = randomUUID();
 
     try {
-      const useCase = CreateEntityUseCaseFactory.default();
+      const useCase = CreateEntityUseCaseFactory.default(targetLanguage);
 
       const parsed = CreateEntitySchema.parse(dto);
 

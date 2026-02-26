@@ -40,6 +40,7 @@ type Deps = {
 type InsertContext = {
   tenantName: string;
   actorId: string;
+  targetLanguage: LanguageISO6391;
 };
 
 type UpsertContext = {
@@ -89,7 +90,7 @@ class EntitiesService {
     });
 
     this.deps.transactionManager.onCommitted(async () => {
-      await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]));
+      await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage));
     });
   }
 
@@ -118,7 +119,7 @@ class EntitiesService {
       entities.forEach(entity => {
         dispatch(RelationshipSyncJob, {
           sharedId: entity.sharedId,
-          targetLanguage: entity.languages[0],
+          targetLanguage: context.targetLanguage,
           templateId: entity.template.id,
           tenantName: context.tenantName,
           userId: context.actorId,
@@ -129,7 +130,7 @@ class EntitiesService {
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
         entities.map(async entity =>
-          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]))
+          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage))
         )
       );
     });
