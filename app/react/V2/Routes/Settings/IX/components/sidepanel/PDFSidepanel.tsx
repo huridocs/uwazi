@@ -125,6 +125,19 @@ const PDFSidepanel = ({
   }, [highlights, selectedText]);
 
   useEffect(() => {
+    const key = highlightKeyToScrollRef.current;
+    if (!showSidepanel || !key) return;
+    const scrollToSelection = () => pdfRef.current?.scrollToHighlight(key);
+    scrollToSelection();
+    const raf = requestAnimationFrame(scrollToSelection);
+    const timers = [200, 500, 1000, 2000].map(d => setTimeout(scrollToSelection, d));
+    return () => {
+      cancelAnimationFrame(raf);
+      timers.forEach(t => clearTimeout(t));
+    };
+  }, [showSidepanel, highlights]);
+
+  useEffect(() => {
     if (dirtyFields.field) {
       setValue('inTrainingSet', true, { shouldDirty: true });
     }
@@ -209,6 +222,10 @@ const PDFSidepanel = ({
             ref={pdfRef}
             fileUrl={`/api/files/${pdfFile.filename}`}
             highlights={highlights}
+            onPdfReady={() => {
+              const key = highlightKeyToScrollRef.current;
+              if (key) pdfRef.current?.scrollToHighlight(key);
+            }}
             onSelect={(selection: any) => {
               if (!selection.selectionRectangles.length) {
                 setSelectionError('Could not detect the area for the selected text');
