@@ -24,6 +24,7 @@ import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
+import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
@@ -157,7 +158,7 @@ const getAssets = async () => {
     return Promise.resolve();
   }
 
-  const resolvedPath = join(process.cwd(), 'prod', 'dist', 'webpack-assets.json');
+  const resolvedPath = join(config.rootPath, 'dist', 'webpack-assets.json');
   return new Promise((resolve, reject) => {
     fs.readFile(resolvedPath, 'utf8', (err, data) => {
       if (err) {
