@@ -6,6 +6,7 @@ import { EventBus, PDFJSViewer, PDFJS } from './pdfjs';
 import { TextHighlight } from './types';
 import { calculateScaling } from './functions/calculateScaling';
 import { adjustSelectionsToScale } from './functions/handleTextSelection';
+
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
