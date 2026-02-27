@@ -10,10 +10,15 @@ import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesaur
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { CsvImportEntities } from '../../CsvImportEntities';
+import { ListCsvImportEntitiesImportsUseCase } from '../../application/useCases/ListCsvImportEntitiesImportsUseCase';
+import { GetCsvImportEntitiesImportUseCase } from '../../application/useCases/GetCsvImportEntitiesImportUseCase';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
 import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource';
 import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource';
 import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource';
+import { MongoCsvImportRowErrorsDataSource } from '../mongodb/MongoCsvImportRowErrorsDataSource';
+import { MongoCsvImportRelationshipValuesDataSource } from '../mongodb/MongoCsvImportRelationshipValuesDataSource';
+import { MongoCsvImportRelationshipPendingValuesDataSource } from '../mongodb/MongoCsvImportRelationshipPendingValuesDataSource';
 
 export class CSVImportEntitiesFactories {
   static CSVImportDSDefault(transactionManager: MongoTransactionManager) {
@@ -29,6 +34,21 @@ export class CSVImportEntitiesFactories {
   static CSVImportThesauriValuesDSDefault(transactionManager: MongoTransactionManager) {
     const db = getConnection();
     return new MongoCsvImportThesauriValuesDataSource(db, transactionManager);
+  }
+
+  static CSVImportRowErrorsDSDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportRowErrorsDataSource(db, transactionManager);
+  }
+
+  static CSVImportRelationshipValuesDSDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportRelationshipValuesDataSource(db, transactionManager);
+  }
+
+  static CSVImportRelationshipPendingValuesDSDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportRelationshipPendingValuesDataSource(db, transactionManager);
   }
 
   static default() {
@@ -62,8 +82,28 @@ export class CSVImportEntitiesFactories {
       settingsDS,
       thesauriDS,
       thesauriValuesDS: this.CSVImportThesauriValuesDSDefault(transactionManager),
+      relationshipPendingValuesDS:
+        this.CSVImportRelationshipPendingValuesDSDefault(transactionManager),
       jobsDispatcher,
       transactionManager,
+    });
+  }
+
+  static listCsvImportEntitiesImportsUseCaseDefault() {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
+
+    return new ListCsvImportEntitiesImportsUseCase({
+      csvImportEntitiesImportsDS,
+    });
+  }
+
+  static getCsvImportEntitiesImportUseCaseDefault() {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
+
+    return new GetCsvImportEntitiesImportUseCase({
+      csvImportEntitiesImportsDS,
     });
   }
 }

@@ -649,6 +649,7 @@ per page,ανά σελίδα
 Permission,Άδεια
 Permission on entities explicitly shared with the user,Άδεια σε οντότητες που έχουν κοινοποιηθεί ρητά στον χρήστη
 Permissions,Άδειες
+Pick a color,Pick a color
 Plain text,Απλό κείμενο
 Please contact an admin for details.,Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Please type in,Πληκτρολογήστε
@@ -874,6 +875,7 @@ Target template,Πρότυπο στόχου
 Target's role in the relationship Source-Target.,Ο ρόλος του στόχου στη σχέση πηγή-στόχος.
 Template,Πρότυπο
 Template changes are being applied to all related entities.,Οι αλλαγές προτύπων εφαρμόζονται σε όλες τις σχετικές οντότητες.
+Template color,Template color
 Template conflict,Σύγκρουση προτύπου
 Template name,Όνομα προτύπου
 Template name already exists,Το όνομα του προτύπου υπάρχει ήδη

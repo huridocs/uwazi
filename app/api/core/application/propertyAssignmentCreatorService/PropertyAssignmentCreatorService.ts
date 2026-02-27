@@ -8,7 +8,7 @@ type PropertyValueInput =
   | { attachment: number }
   | { value: string }
   | { value: number }
-  | { value: { from: number; to: number } }
+  | { value: { from: number | null; to: number | null } }
   | { value: { lat: number; lon: number; label?: string } }
   | { value: { url: string; label?: string } }
   | { value: { [childName: string]: { value: unknown; label?: string }[] } };

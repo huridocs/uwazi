@@ -22,13 +22,16 @@ interface PageReferencesProps {
   activeReference: string;
   onClick: (c: ConnectionSchema, groupedReferences: string[]) => {};
   enableClickAction?: boolean;
+  /** Scale at which the PDF page is rendered; references (stored in scale=1) are scaled by this for display */
+  renderScale?: number;
 }
 
 const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
   props: PageReferencesProps
 ) => {
   const referenceGroup = useRef<string[]>();
-  const pdfScaleFactor = 1;
+  // Stored references are in scale=1; multiply by renderScale to get display coordinates
+  const pdfScaleFactor = props.renderScale ?? 1;
 
   const handleClick = useCallback(
     (reference: ConnectionSchema) =>

@@ -8,7 +8,7 @@ interface Snippet {
 
 const SNIPPET_CONTEXT_CLASS = 'snippet-context';
 const SEARCH_TERM_CLASS = 'snippet-search-term';
-const SNIPPET_CONTEXT_BACKGROUND = 'rgba(247, 168, 168, 1)';
+const SNIPPET_CONTEXT_BACKGROUND = 'rgba(247, 168, 168, 0.5)';
 const SEARCH_TERM_BACKGROUND = 'rgba(255, 74, 74, 0.6)';
 
 const textToMatcherRegExp = (text: string): string => {
