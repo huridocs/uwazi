@@ -1,20 +1,20 @@
 import { ObjectId } from 'mongodb';
 
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { EntitiesService } from 'api/core/application/EntitiesService';
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { UseCase } from 'api/core/libs/UseCase';
-import relationshipsDS from 'api/relationships';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import relationshipsDS from '#api/relationships/index.js';
 
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { ParagraphOutput } from '../domain/PXExtractionService';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXValidationError } from '../domain/PXValidationError';
-import { PXCreateParagraphsBatch } from './PXCreateParagraphsBatch';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { ParagraphOutput } from '../domain/PXExtractionService.js';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
+import { PXValidationError } from '../domain/PXValidationError.js';
+import { PXCreateParagraphsBatch } from './PXCreateParagraphsBatch.js';
 
 type PXCreateParagraphsInput = {
   userId: string;

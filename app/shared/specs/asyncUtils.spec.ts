@@ -1,5 +1,5 @@
-import { sleep } from 'shared/tsUtils';
-import { sequentialPromises } from '../asyncUtils';
+import { sleep } from '#shared/tsUtils.js';
+import { sequentialPromises } from '../asyncUtils.js';
 
 describe('asyncUtils', () => {
   describe('sequentialPromises()', () => {

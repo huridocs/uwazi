@@ -1,6 +1,6 @@
-import { PropertyValue } from 'api/core/domain/template/PropertyValue';
-import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
-import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService';
+import { PropertyValue } from '#api/core/domain/template/PropertyValue.js';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
+import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService.js';
 
 export class DefaultPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   async create({ propertyAssignment, template }: CreatePropertyAssignmentInput) {

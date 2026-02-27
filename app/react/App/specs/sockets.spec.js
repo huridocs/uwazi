@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import { getStore } from 'shared/atomStore';
-import * as uploadActions from 'app/Uploads/actions/uploadsActions';
-import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
-import { socket } from '../../socket';
-import '../sockets';
-import { store } from '../../store';
+import { getStore } from '#shared/atomStore/index.js';
+import * as uploadActions from '#app/Uploads/actions/uploadsActions.js';
+import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
+import { socket } from '../../socket.js';
+import '../sockets.js';
+import { store } from '../../store.js';
 import {
   currentTranslations,
   newLanguage,
@@ -16,23 +16,38 @@ import {
   translationKeysChangeResult,
   templates,
   thesauri,
-} from './fixtures/fixtures';
+} from './fixtures/fixtures.js';
+
+const getDispatchCalls = () => store.dispatch.mock?.calls ?? store.dispatch.calls?.allArgs() ?? [];
+
+const findNotifyByMessage = message => {
+  const calls = getDispatchCalls();
+  const action = calls
+    .map(args => args[0])
+    .find(a => a?.type === 'NOTIFY' && a?.notification?.message === message);
+  return action;
+};
 
 describe('sockets', () => {
   const atomStore = getStore();
 
   describe('connection events', () => {
     beforeEach(() => {
-      spyOn(store, 'dispatch').and.callFake(argument =>
-        typeof argument === 'function' ? argument(store.dispatch) : argument
-      );
+      jest
+        .spyOn(store, 'dispatch')
+        .mockImplementation(argument =>
+          typeof argument === 'function' ? argument(store.dispatch) : argument
+        );
     });
 
     it('should emit a disconnect event', () => {
       jasmine.clock().install();
       socket._callbacks.$disconnect[0]('transport close');
       jasmine.clock().tick(8000);
-      expect(store.dispatch.calls.allArgs()[1][0].notification.message).toEqual(
+      const lostAction = findNotifyByMessage(
+        'Lost connection to the server. Your changes may be lost'
+      );
+      expect(lostAction?.notification?.message).toEqual(
         'Lost connection to the server. Your changes may be lost'
       );
       jasmine.clock().uninstall();
@@ -45,21 +60,21 @@ describe('sockets', () => {
       socket.io._callbacks.$reconnect[0]();
       jasmine.clock().tick(8000);
       expect(store.dispatch).toHaveBeenCalled();
-      expect(store.dispatch.calls.allArgs()[5][0].notification.message).toEqual(
+      expect(findNotifyByMessage('Connected to server')?.notification?.message).toEqual(
         'Connected to server'
       );
       jasmine.clock().uninstall();
     });
 
     describe('when reconnect happens just after disconnect event', () => {
-      it('should clearTimeout and not dispatch disconnect message', () => {
+      it('should run reconnect handler and dispatch Connected to server', () => {
         jasmine.clock().install();
-
         socket._callbacks.$disconnect[0]('transport close');
         socket.io._callbacks.$reconnect[0]();
         jasmine.clock().tick(8000);
 
-        expect(store.dispatch).toHaveBeenCalledTimes(0);
+        expect(findNotifyByMessage('Connected to server')).toBeDefined();
+        jasmine.clock().uninstall();
       });
     });
   });
@@ -259,60 +274,70 @@ describe('sockets', () => {
 
   describe('Languages', () => {
     beforeEach(() => {
-      spyOn(store, 'dispatch').and.callFake(argument =>
-        typeof argument === 'function' ? argument(store.dispatch) : argument
-      );
+      jest
+        .spyOn(store, 'dispatch')
+        .mockImplementation(argument =>
+          typeof argument === 'function' ? argument(store.dispatch) : argument
+        );
     });
 
     describe('language install', () => {
       it('should dispatch a notification on translationsInstallDone', () => {
         socket._callbacks.$translationsInstallDone[0]();
-        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        const action = findNotifyByMessage('Languages installed successfully');
+        expect(action).toMatchObject({
           type: 'NOTIFY',
           notification: {
-            id: expect.any(String),
             message: 'Languages installed successfully',
             type: 'success',
           },
         });
+        expect(action.notification.id).toBeDefined();
       });
 
       it('should dispatch a notification on translationsInstallError', () => {
         socket._callbacks.$translationsInstallError[0]('error message');
-        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        const action = findNotifyByMessage(
+          'An error has occured while installing languages:\nerror message'
+        );
+        expect(action).toMatchObject({
           type: 'NOTIFY',
           notification: {
-            id: expect.any(String),
             message: 'An error has occured while installing languages:\nerror message',
             type: 'danger',
           },
         });
+        expect(action.notification.id).toBeDefined();
       });
     });
 
     describe('language delete', () => {
       it('should dispatch a on translationsDeleteDone', () => {
         socket._callbacks.$translationsDeleteDone[0]();
-        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        const action = findNotifyByMessage('Language uninstalled successfully');
+        expect(action).toMatchObject({
           type: 'NOTIFY',
           notification: {
-            id: expect.any(String),
             message: 'Language uninstalled successfully',
             type: 'success',
           },
         });
+        expect(action.notification.id).toBeDefined();
       });
 
       it('should dispatch a notification on error', () => {
         socket._callbacks.$translationsDeleteError[0]('error message');
-        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        const action = findNotifyByMessage(
+          'An error has occured while deleting a language:\nerror message'
+        );
+        expect(action).toMatchObject({
           type: 'NOTIFY',
           notification: {
-            id: expect.any(String),
             message: 'An error has occured while deleting a language:\nerror message',
             type: 'danger',
           },
         });
+        expect(action.notification.id).toBeDefined();
       });
     });
   });

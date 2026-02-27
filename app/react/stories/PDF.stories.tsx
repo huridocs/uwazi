@@ -1,15 +1,16 @@
 import React, { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import { PDF, type PDFHandle } from 'V2/Components/PDFViewer';
-import { InputField } from 'V2/Components/Forms';
-import { highlights } from './fixtures/PDFStoryFixtures';
+import { PDF, type PDFHandle } from '#V2/Components/PDFViewer/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { highlights } from './fixtures/PDFStoryFixtures.js';
 
 const meta: Meta<typeof PDF> = {
   title: 'Viewers/PDF',
   component: PDF,
   args: { onSelect: fn(), onDeselect: fn() },
 };
+export default meta;
 
 type Story = StoryObj<typeof PDF>;
 
@@ -162,5 +163,3 @@ const WithScroll: Story = {
 };
 
 export { Basic, WithSelections, WithScroll };
-
-export default meta;

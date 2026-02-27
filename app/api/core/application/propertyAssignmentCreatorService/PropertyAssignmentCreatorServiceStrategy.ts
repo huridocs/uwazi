@@ -1,21 +1,21 @@
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { Template } from 'api/core/domain/template/Template';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { PropertyType } from 'api/core/domain/template/PropertyType';
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
-import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService.js';
+import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService.js';
+import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService.js';
+import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService.js';
 import {
   PropertyAssignmentCreatorService,
   PropertyAssignmentInput,
-} from './PropertyAssignmentCreatorService';
-import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService';
-import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
-import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
+} from './PropertyAssignmentCreatorService.js';
+import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService.js';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;

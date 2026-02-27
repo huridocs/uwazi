@@ -1,10 +1,10 @@
-import { FileAttachment } from '../FileAttachment';
-import { CustomUpload } from '../CustomUpload';
-import { ProcessingPDF } from '../ProcessingPDF';
-import { FileContents } from '../FileContents';
-import { ProcessedPDF } from '../ProcessedPDF';
-import { Thumbnail } from '../Thumbnail';
-import { URLAttachment } from '../URLAttachment';
+import { FileAttachment } from '../FileAttachment.js';
+import { CustomUpload } from '../CustomUpload.js';
+import { ProcessingPDF } from '../ProcessingPDF.js';
+import { FileContents } from '../FileContents.js';
+import { ProcessedPDF } from '../ProcessedPDF.js';
+import { Thumbnail } from '../Thumbnail.js';
+import { URLAttachment } from '../URLAttachment.js';
 
 type PartialFirstConstructorArg<T> = T extends new (arg: infer A, ...args: any[]) => any
   ? A extends object

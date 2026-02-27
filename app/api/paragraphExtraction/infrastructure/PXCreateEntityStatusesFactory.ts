@@ -1,12 +1,12 @@
 import { Db } from 'mongodb';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses';
-import { PXEntityStatusesQueryServiceFactory } from './PXEntityStatusesQueryServiceFactory';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses.js';
+import { PXEntityStatusesQueryServiceFactory } from './PXEntityStatusesQueryServiceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
+import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory.js';
 
 type Props = {
   batchSize: number;

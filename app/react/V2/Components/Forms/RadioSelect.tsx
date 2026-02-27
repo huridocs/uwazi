@@ -1,8 +1,8 @@
 import React, { ReactEventHandler } from 'react';
 import { Radio, Label } from 'flowbite-react';
-import { isString } from 'lodash';
-import { Translate } from 'app/I18N';
-import { Option } from './SelectTypes';
+import isString from 'lodash/isString.js';
+import { Translate } from '#app/I18N/index.js';
+import { Option } from './SelectTypes.js';
 
 interface RadioProps {
   legend?: string | React.ReactNode;

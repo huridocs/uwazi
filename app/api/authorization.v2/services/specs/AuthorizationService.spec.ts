@@ -1,14 +1,14 @@
-import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
-import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { User, UserRole } from 'api/users.v2/model/User';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { AccessLevels, AuthorizationService } from '../AuthorizationService';
+import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
+import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { Relationship } from '#api/relationships.v2/model/Relationship.js';
+import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { User, UserRole } from '#api/users.v2/model/User.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { AccessLevels, AuthorizationService } from '../AuthorizationService.js';
 
 const factory = getFixturesFactory();
 

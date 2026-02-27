@@ -1,4 +1,4 @@
-import { CsvImportRowError } from '../../domain/CsvImportRowError';
+import { CsvImportRowError } from '../../domain/CsvImportRowError.js';
 
 export interface CsvImportRowErrorsDataSource {
   insertMany(errors: CsvImportRowError[]): Promise<void>;

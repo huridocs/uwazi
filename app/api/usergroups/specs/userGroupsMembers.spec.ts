@@ -1,12 +1,12 @@
-import userGroups from 'api/usergroups/userGroups';
+import userGroups from '#api/usergroups/userGroups.js';
 import {
   getByMemberIdList,
   removeUsersFromAllGroups,
   updateUserMemberships,
-} from 'api/usergroups/userGroupsMembers';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserRole } from 'shared/types/userSchema';
-import { fixtures, group1Id, group2Id, user1Id, user2Id, user3Id } from './fixtures';
+} from '#api/usergroups/userGroupsMembers.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { fixtures, group1Id, group2Id, user1Id, user2Id, user3Id } from './fixtures.js';
 
 describe('userGroupsMembers', () => {
   beforeEach(async () => {

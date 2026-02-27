@@ -1,6 +1,6 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SetTemplateAsDefaultUseCase } from '#api/core/application/SetTemplateAsDefault.js';
 
 class SetTemplateAsDefaultUseCaseFactory {
   static create() {

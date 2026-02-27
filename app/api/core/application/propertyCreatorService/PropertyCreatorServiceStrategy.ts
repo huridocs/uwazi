@@ -1,16 +1,19 @@
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
-import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
-import { Context, Property } from '../../domain/template/Property';
-import { IdGenerator } from '../contracts/IdGenerator';
-import { PropertyType } from '../../domain/template/PropertyType';
-import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
-import { PropertyCreatorService } from './PropertyCreatorService';
-import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService';
-import { RelationshipPropertyCreatorService } from './RelationshipPropertyCreatorService';
-import { NestedPropertyCreatorService } from './NestedPropertyCreatorService';
+import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';
+import { Context, Property } from '../../domain/template/Property.js';
+import { IdGenerator } from '../contracts/IdGenerator.js';
+import { PropertyType } from '../../domain/template/PropertyType.js';
+import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory.js';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
+import { PropertyCreatorService } from './PropertyCreatorService.js';
+import {
+  SelectPropertyCreatorService,
+  ThesauriDataSource,
+} from './SelectPropertyCreatorService.js';
+import { RelationshipPropertyCreatorService } from './RelationshipPropertyCreatorService.js';
+import { NestedPropertyCreatorService } from './NestedPropertyCreatorService.js';
 
 type Props = {
   default: PropertyCreatorService;

@@ -1,12 +1,12 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/core/libs/UseCase';
-import { EntitySchema } from 'shared/types/entityType';
-import { Extractors } from 'api/services/informationextraction/ixextractors';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { IXServices } from 'api/services/informationextraction/IXServices';
-import { Suggestions } from '../suggestions';
-import { CreateBlankSuggestionStrategy } from './createBlankSuggestionStrategy';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { IXServices } from '#api/services/informationextraction/IXServices.js';
+import { Suggestions } from '../suggestions.js';
+import { CreateBlankSuggestionStrategy } from './createBlankSuggestionStrategy.js';
 
 type Input = {
   oldTemplateId: ObjectId;

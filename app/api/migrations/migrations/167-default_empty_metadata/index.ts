@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { Db } from 'mongodb';
-import { Entity, Template } from './types';
+import { Entity, Template } from './types.js';
 
 let entitiesToUpdate: Entity[] = [];
 

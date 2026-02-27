@@ -1,6 +1,6 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import * as auth from '../index';
-import { publicAPIMiddleware } from '../publicAPIMiddleware';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import * as auth from '../index.js';
+import { publicAPIMiddleware } from '../publicAPIMiddleware.js';
 
 jest.mock('../index', () => ({
   captchaAuthorization: jest.fn(),

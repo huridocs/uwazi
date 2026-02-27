@@ -2,7 +2,7 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 type BlankStateProps = {
   icon: ReactNode;

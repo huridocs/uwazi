@@ -1,8 +1,8 @@
 import React from 'react';
-import { LinkMetadataProperty } from 'V2/domain/entities/types';
-import { PropertyLabel } from './PropertyLabel';
-import { MetadataFieldProps } from './types';
-import { MetadataCard } from './MetadataCard';
+import { LinkMetadataProperty } from '#V2/domain/entities/types.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MetadataFieldProps } from './types.js';
+import { MetadataCard } from './MetadataCard.js';
 
 type LinkPropertyProps = MetadataFieldProps & {
   values: LinkMetadataProperty['values'];

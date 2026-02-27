@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
 
-import { RequestParams } from 'app/utils/RequestParams';
-import searchApi from 'app/Search/SearchAPI';
-import entitiesApi from 'app/Entities/EntitiesAPI';
-import api from 'app/utils/api';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { SearchAPI as searchApi } from '#app/Search/SearchAPI.js';
+import { EntitiesAPI as entitiesApi } from '#app/Entities/EntitiesAPI.js';
+import { api } from '#app/utils/api.js';
 
-import markdownDatasets from '../markdownDatasets';
-import fixtures from './fixtures';
+import markdownDatasets from '../markdownDatasets.js';
+import fixtures from './fixtures.js';
 
 describe('markdownDatasets', () => {
   let requestParams;

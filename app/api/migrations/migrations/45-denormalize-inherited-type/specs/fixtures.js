@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 const text = db.id();
 const multiselect = db.id();
 const numeric = db.id();

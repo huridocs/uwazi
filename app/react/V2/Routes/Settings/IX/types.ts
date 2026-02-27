@@ -1,7 +1,7 @@
-import { ClientIXExtractorType, ClientTemplateSchema } from 'V2/shared/types';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { TextHighlight } from 'V2/Components/PDFViewer/types';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { ClientIXExtractorType, ClientTemplateSchema } from '#V2/shared/types.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { TextHighlight } from '#V2/Components/PDFViewer/types.js';
+import { EntitySuggestionType } from '#shared/types/suggestionType.js';
 
 type SuggestionOptionValue = { id: string; label: string; segment?: string };
 

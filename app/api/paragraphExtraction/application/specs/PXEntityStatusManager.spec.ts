@@ -1,14 +1,14 @@
 import { ObjectId } from 'mongodb';
 
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoExtractorBuilder } from 'api/paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { MongoExtractorBuilder } from '#api/paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { PXEntityStatusManagerFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusManagerFactory';
+import { PXEntityStatusManagerFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusManagerFactory.js';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();

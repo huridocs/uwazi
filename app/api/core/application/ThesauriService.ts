@@ -1,8 +1,8 @@
-import { Thesaurus } from '../domain/thesaurus/Thesaurus';
-import { DenormalizeThesaurusEntitiesHandler } from '../infrastructure/jobs/DenormalizeThesaurusEntitiesHandler';
-import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
-import { ThesauriDataSource } from './contracts/ThesauriDataSource';
-import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService';
+import { Thesaurus } from '../domain/thesaurus/Thesaurus.js';
+import { DenormalizeThesaurusEntitiesHandler } from '../infrastructure/jobs/DenormalizeThesaurusEntitiesHandler.js';
+import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher.js';
+import { ThesauriDataSource } from './contracts/ThesauriDataSource.js';
+import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService.js';
 
 type Deps = {
   jobsDispatcher: JobsDispatcher;

@@ -2,13 +2,13 @@
 import {
   Dispatchable,
   HeartbeatCallback,
-} from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { tenants } from 'api/tenants';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { ExtractorNotFound, Extractors } from './ixextractors';
-import { TrainModelForPDF } from './TrainModelForPDF';
-import { NoEntitiesForTraining, TrainModelForText } from './TrainModelForText';
-import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './ixMaterials';
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { tenants } from '#api/tenants/index.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { ExtractorNotFound, Extractors } from './ixextractors.js';
+import { TrainModelForPDF } from './TrainModelForPDF.js';
+import { NoEntitiesForTraining, TrainModelForText } from './TrainModelForText.js';
+import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './ixMaterials.js';
 
 type CustomParams = {
   extractorId: string;

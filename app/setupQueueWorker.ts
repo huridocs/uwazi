@@ -1,27 +1,27 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
-import { config } from 'api/config';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { LogEntry } from 'api/core/libs/logger/infrastructure/LogEntry';
-import { LogWriter } from 'api/core/libs/logger/infrastructure/LogWriter';
-import { withFeature } from 'api/core/libs/logger/infrastructure/StandardLogger';
-import { StandardJSONWriter } from 'api/core/libs/logger/infrastructure/writers/StandardJSONWriter';
-import { Dispatchable } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { RoundRobinQueueAdapter } from 'api/core/libs/queue/configuration/factories';
+import { config } from '#api/config.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
+import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import {
   QueueWorker,
   QueueWorkerErrorHandler,
-} from 'api/core/libs/queue/infrastructure/QueueWorker';
-import { registerEventListeners } from 'api/eventListeners';
-import { Redis } from 'api/infrastructure/Redis';
-import { DB } from 'api/odm';
-import { setupWorkerSockets } from 'api/socketio/setupSockets';
-import { tenants } from 'api/tenants';
-import { prettifyError } from 'api/utils/handleError';
-import { initSentry } from './initSentry';
-import { registerJobs } from './queueRegistry';
+} from '#api/core/libs/queue/infrastructure/QueueWorker.js';
+import { registerEventListeners } from '#api/eventListeners.js';
+import { Redis } from '#api/infrastructure/Redis.js';
+import { DB } from '#api/odm/index.js';
+import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
+import { tenants } from '#api/tenants/index.js';
+import { prettifyError } from '#api/utils/handleError.js';
+import { initSentry } from './initSentry.js';
+import { registerJobs } from './queueRegistry.js';
 import { inspect } from 'util';
 
 type Props = {

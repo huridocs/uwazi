@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
-import testingDB from 'api/utils/testing_db';
-import migration, { PUBLIC_USER_ID } from '../index';
-import { fixtures } from './fixtures';
+import testingDB from '#api/utils/testing_db.js';
+import migration, { PUBLIC_USER_ID } from '../index.js';
+import { fixtures } from './fixtures.js';
 
 let db: Db | null;
 

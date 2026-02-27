@@ -1,4 +1,4 @@
-import testingDB from 'api/utils/testing_db';
+import testingDB from '#api/utils/testing_db.js';
 
 const translation1 = testingDB.id();
 const translation2 = testingDB.id();

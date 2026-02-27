@@ -1,10 +1,10 @@
 import React from 'react';
-import { Map } from 'app/Map';
-import { MapProps } from 'app/Map/MapContainer';
-import { MetadataFieldProps } from './types';
-import { PropertyLabel } from './PropertyLabel';
-import { MetadataCard } from './MetadataCard';
-import { GeolocationMetadataProperty } from 'app/V2/domain/entities/types';
+import { Map } from '#app/Map/index.js';
+import { MapProps } from '#app/Map/MapContainer.js';
+import { MetadataFieldProps } from './types.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MetadataCard } from './MetadataCard.js';
+import { GeolocationMetadataProperty } from '#app/V2/domain/entities/types.js';
 
 type GeolocationProps = MetadataFieldProps & {
   markers: GeolocationMetadataProperty['values'];

@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { IStore } from 'app/istore';
-import { ExtractedMetadataSchema, SelectionRectangleSchema } from 'shared/types/commonTypes';
-import { selectionHandlers } from 'app/V2/Components/PDFViewer';
+import { IStore } from '#app/istore.js';
+import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
+import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 
 interface Selection extends ExtractedMetadataSchema {
   isCurrent?: boolean;

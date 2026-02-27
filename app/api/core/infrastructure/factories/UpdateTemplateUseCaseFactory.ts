@@ -1,23 +1,23 @@
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService';
-import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
-import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { UpdateTemplateUseCase } from '#api/core/application/UpdateTemplate.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/index.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
+import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
+import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob.js';
 
 class UpdateTemplateUseCaseFactory {
   static async create() {

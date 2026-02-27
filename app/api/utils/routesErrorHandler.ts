@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import bodyParser from 'body-parser';
-import { Application } from 'express';
+import type { Application } from 'express';
 
 const wrapHandler = (originalHandler: any) => async (req: any, res: any, next: any) => {
   try {

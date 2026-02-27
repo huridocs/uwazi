@@ -1,7 +1,7 @@
-import { fromJS as Immutable } from 'immutable';
-import prioritySorting from '../prioritySortingCriteria';
+import Immutable from 'immutable';
+import { prioritySortingCriteria as prioritySortingCriteriaModule } from '../prioritySortingCriteria.js';
 
-const prioritySortingCriteria = prioritySorting.get;
+const prioritySortingCriteria = prioritySortingCriteriaModule.get;
 
 describe('prioritySortingCriteria', () => {
   it('should return an object with global default sort and oder', () => {
@@ -24,7 +24,7 @@ describe('prioritySortingCriteria', () => {
       options = {
         currentCriteria: { sort: 'title', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([]),
+        templates: Immutable.fromJS([]),
       };
 
       expect(prioritySortingCriteria(options)).toBe(options.currentCriteria);
@@ -32,7 +32,7 @@ describe('prioritySortingCriteria', () => {
       options = {
         currentCriteria: { sort: 'creationDate', order: 'asc', treatAs: 'number' },
         filteredTemplates: [],
-        templates: Immutable([]),
+        templates: Immutable.fromJS([]),
       };
 
       expect(prioritySortingCriteria(options)).toBe(options.currentCriteria);
@@ -42,7 +42,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.property1', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { properties: [{ name: 'property0', filter: false, type: 'text' }] },
           { properties: [{ name: 'property1', filter: true, type: 'date' }] },
         ]),
@@ -55,7 +55,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.property2', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { properties: [{ name: 'property0', filter: false, type: 'text' }] },
           { properties: [{ name: 'property1', filter: true, type: 'date' }] },
         ]),
@@ -72,7 +72,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.property1', order: 'asc', treatAs: 'string' },
         filteredTemplates: ['t2'],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
           { _id: 't2', properties: [{ name: 'property1', filter: true, type: 'date' }] },
         ]),
@@ -85,7 +85,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.property1', order: 'asc', treatAs: 'string' },
         filteredTemplates: ['t1'],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
           { _id: 't2', properties: [{ name: 'property1', filter: true, type: 'date' }] },
         ]),
@@ -102,7 +102,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: null,
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
           {
             _id: 't2',
@@ -131,7 +131,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.missingProperty', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
           {
             _id: 't2',
@@ -160,7 +160,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.missingProperty', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           {
             _id: 't1',
             commonProperties: [
@@ -204,7 +204,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.missingProperty', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
           {
             _id: 't2',
@@ -230,13 +230,13 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.property1', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { properties: [{ name: 'property0', filter: true, type: 'text' }] },
           {
             properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }],
           },
         ]),
-        selectedSorting: Immutable({
+        selectedSorting: Immutable.fromJS({
           sort: 'metadata.property0',
           order: 'desc',
           treatAs: 'string',
@@ -250,13 +250,13 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.nonExistentProperty', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { properties: [{ name: 'property0', filter: false, type: 'text' }] },
           {
             properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }],
           },
         ]),
-        selectedSorting: Immutable({
+        selectedSorting: Immutable.fromJS({
           sort: 'metadata.nonExistentProperty',
           order: 'desc',
           treatAs: 'string',
@@ -274,7 +274,7 @@ describe('prioritySortingCriteria', () => {
       const options = {
         currentCriteria: { sort: 'metadata.property0', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([
+        templates: Immutable.fromJS([
           { properties: [{ name: 'property0', filter: true, type: 'text' }] },
           {
             properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }],

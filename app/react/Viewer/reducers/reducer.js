@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux';
 
-import createReducer from 'app/BasicReducer';
+import { createReducer } from '#app/BasicReducer/index.js';
 import { modelReducer, formReducer } from 'react-redux-form';
 
-import { manageAttachmentsReducer } from 'app/Attachments';
-import references from './referencesReducer';
-import uiState from './uiReducer';
+import { manageAttachmentsReducer } from '#app/Attachments/index.js';
+import references from './referencesReducer.js';
+import uiState from './uiReducer.js';
 
-export default combineReducers({
+const reducer = combineReducers({
   doc: manageAttachmentsReducer(createReducer('viewer/doc', {})),
   targetDoc: createReducer('viewer/targetDoc', {}),
   rawText: createReducer('viewer/rawText', ''),
@@ -33,3 +33,5 @@ export default combineReducers({
   }),
   documentScale: createReducer('viewer/documentScale', 1),
 });
+
+export { reducer };

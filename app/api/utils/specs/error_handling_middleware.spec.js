@@ -1,6 +1,6 @@
-import { appContext } from 'api/utils/AppContext';
+import { appContext } from '#api/utils/AppContext.js';
 import middleware from '../error_handling_middleware.js';
-import { legacyLogger } from '../../log';
+import { legacyLogger } from '../../log.js';
 
 describe('Error handling middleware', () => {
   let next;

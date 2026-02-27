@@ -1,18 +1,18 @@
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import settings from 'api/settings';
-import { PUBLIC_USER_ID } from 'api/users/publicUser';
-import mailer from 'api/utils/mailer';
-import cors from 'cors';
 import proxy from 'express-http-proxy';
-import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
-import { createError, validation } from '../utils';
+import cors from 'cors';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import settings from '#api/settings/index.js';
+import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import mailer from '#api/utils/mailer.js';
+import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
+import { createError, validation } from '../utils/index.js';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');

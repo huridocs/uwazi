@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 import fetchMock from 'fetch-mock';
-import { ClientTemplateSchema } from 'app/istore';
-import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper';
+import { ClientTemplateSchema } from '#app/istore.js';
+import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper.js';
 
 describe('wrapEntityMetadata', () => {
   const template = {

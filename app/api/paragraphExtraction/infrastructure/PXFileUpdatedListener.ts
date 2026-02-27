@@ -1,11 +1,11 @@
-import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { LanguageUtils } from 'shared/language';
+import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { LanguageUtils } from '#shared/language/index.js';
 import { inspect } from 'util';
-import { PXValidationError } from '../domain/PXValidationError';
-import { PXEntityStatusManagerFactory } from './PXEntityStatusManagerFactory';
+import { PXValidationError } from '../domain/PXValidationError.js';
+import { PXEntityStatusManagerFactory } from './PXEntityStatusManagerFactory.js';
 
 export class PXFileUpdatedListener {
   private eventBus: EventsBus;

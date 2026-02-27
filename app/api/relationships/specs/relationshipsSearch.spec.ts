@@ -1,8 +1,8 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import relationships from '../relationships';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import relationships from '../relationships.js';
 
 const fixutreFactory = getFixturesFactory();
 

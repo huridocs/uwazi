@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 
-import { Item } from 'app/Layout';
-import { NeedAuthorization } from 'app/Auth';
-import { mapStateToProps } from '../Doc';
-import { Doc } from '../Doc';
+import { Item } from '#app/Layout/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { mapStateToProps } from '../Doc.js';
+import { DocView } from '../Doc.js';
 
 describe('Doc', () => {
   let component;
@@ -26,8 +26,8 @@ describe('Doc', () => {
     };
 
     props = {
-      doc: Immutable(doc),
-      user: Immutable({ _id: 'batId' }),
+      doc: Immutable.fromJS(doc),
+      user: Immutable.fromJS({ _id: 'batId' }),
       active: false,
       selectDocument: jasmine.createSpy('selectDocument'),
       deleteConnection: jasmine.createSpy('deleteConnection'),
@@ -40,13 +40,13 @@ describe('Doc', () => {
   });
 
   const render = () => {
-    component = shallow(<Doc {...props} />);
+    component = shallow(<DocView {...props} />);
   };
 
   describe('Item data', () => {
     it('should hold the entire Doc as Immutable', () => {
       render();
-      expect(component.find(Item).props().doc).toEqual(Immutable(props.doc));
+      expect(component.find(Item).props().doc).toEqual(Immutable.fromJS(props.doc));
     });
 
     describe('Connections header', () => {
@@ -111,14 +111,14 @@ describe('Doc', () => {
 
   describe('when target reference is specified', () => {
     it('should pass the target reference to the ViewDocButton', () => {
-      props.targetReference = Immutable({ range: { start: 100, end: 200 } });
+      props.targetReference = Immutable.fromJS({ range: { start: 100, end: 200 } });
       render();
       expect(component).toMatchSnapshot();
     });
     it('should update component if target reference changes', () => {
       props.targetReference = null;
       render();
-      const nextProps = { ...props, targetReference: Immutable({ range: {} }) };
+      const nextProps = { ...props, targetReference: Immutable.fromJS({ range: {} }) };
       expect(component.instance().shouldComponentUpdate(nextProps)).toBe(true);
     });
   });
@@ -138,18 +138,18 @@ describe('Doc', () => {
     beforeEach(() => {
       store = {
         library: {
-          ui: Immutable({ selectedDocuments: [{ _id: 'docId' }] }),
+          ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'docId' }] }),
         },
         uploads: {
-          progress: Immutable({}),
+          progress: Immutable.fromJS({}),
         },
-        user: Immutable({ _id: 'batId' }),
+        user: Immutable.fromJS({ _id: 'batId' }),
       };
     });
 
     it('should set active as true if ownProps match selected ID', () => {
       const state = mapStateToProps(store, {
-        doc: Immutable({ _id: 'docId' }),
+        doc: Immutable.fromJS({ _id: 'docId' }),
         storeKey: 'library',
       });
       expect(state.active).toBe(true);
@@ -157,7 +157,7 @@ describe('Doc', () => {
 
     it('should set active as false if ownProps holds unselected document', () => {
       const state = mapStateToProps(store, {
-        doc: Immutable({ _id: 'anotherId' }),
+        doc: Immutable.fromJS({ _id: 'anotherId' }),
         storeKey: 'library',
       });
       expect(state.active).toBe(false);

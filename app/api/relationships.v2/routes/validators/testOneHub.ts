@@ -1,4 +1,4 @@
-import { createValidator, ValidatorSchema } from 'api/common.v2/validation/routesValidation';
+import { createValidator, ValidatorSchema } from '#api/common.v2/validation/routesValidation.js';
 
 interface HubTestData {
   hubId: string;

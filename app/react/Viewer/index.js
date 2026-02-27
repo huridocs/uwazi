@@ -1,4 +1,4 @@
-import * as selectors from './selectors';
-import * as referencesActions from './actions/referencesActions';
+import * as selectors from './selectors.js';
+import * as referencesActions from './actions/referencesActions.js';
 
 export { selectors, referencesActions };

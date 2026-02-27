@@ -1,14 +1,14 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { MongoSaveStream } from 'api/core/infrastructure/mongodb/common/MongoSaveStream';
-import { MigrationHubRecordDBO } from './schemas/v1ConnectionTypes';
-import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource';
-import { MigrationHubRecord } from '../model/MigrationHubRecord';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoSaveStream } from '#api/core/infrastructure/mongodb/common/MongoSaveStream.js';
+import { MigrationHubRecordDBO } from './schemas/v1ConnectionTypes.js';
+import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource.js';
+import { MigrationHubRecord } from '../model/MigrationHubRecord.js';
 import {
   mapReadableConnectionToDBO,
   mapConnectionsWithEntityInfoToApp,
-} from './v1ConnectionMappers';
+} from './v1ConnectionMappers.js';
 
 const mapRecordToDBO = (record: MigrationHubRecord): MigrationHubRecordDBO => ({
   hubId: MongoIdHandler.mapToDb(record.hubId),

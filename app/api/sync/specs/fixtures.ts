@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import db, { DBFixture } from 'api/utils/testing_db';
-import { UpdateLog } from 'api/updatelogs';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
 
 const oldDoc1 = db.id();

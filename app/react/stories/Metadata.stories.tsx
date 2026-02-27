@@ -2,19 +2,19 @@ import React, { useMemo } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
-import { EntitySchema } from 'shared/types/entityType';
-import { ClientSettings, ClientThesaurus, Template } from 'app/apiResponseTypes';
-import { MetadataDisplay } from 'V2/Components/Metadata';
-import { settingsAtom } from 'V2/atoms';
-import { Entity } from 'V2/domain';
-import { FluentCompositionBuilder, ProcessingContext } from 'V2/application';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
+import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
+import { settingsAtom } from '#V2/atoms/index.js';
+import { Entity } from '#V2/domain/index.js';
+import { FluentCompositionBuilder, ProcessingContext } from '#V2/application/index.js';
 import {
   rawEntity,
   processingContextBase,
   thesauri,
   templates,
   settings,
-} from './fixtures/MetadataDisplayFixtures';
+} from './fixtures/MetadataDisplayFixtures.js';
 
 const store = createStore();
 store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
@@ -84,6 +84,8 @@ const meta: Meta<typeof MetadataDisplayComponent> = {
   component: MetadataDisplayComponent,
 };
 
+export default meta;
+
 type Story = StoryObj<typeof MetadataDisplayComponent>;
 
 const Primary: Story = {
@@ -117,5 +119,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

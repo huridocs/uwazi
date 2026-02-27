@@ -3,15 +3,15 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { FileType } from 'shared/types/fileType';
-import { Translate } from 'app/I18N';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import { getFileNameAndExtension } from 'V2/shared/formatHelpers';
-import { notificationAtom } from 'V2/atoms';
-import { update } from 'V2/api/files';
-import { CustomUpload } from '../CustomUploads';
+import { FileType } from '#shared/types/fileType.js';
+import { Translate } from '#app/I18N/index.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { update } from '#V2/api/files/index.js';
+import { CustomUpload } from '../CustomUploads.js';
 
 type EditFileSidepanelProps = {
   showSidepanel: boolean;

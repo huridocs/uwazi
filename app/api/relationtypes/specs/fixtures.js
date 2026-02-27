@@ -1,5 +1,5 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db from 'api/utils/testing_db';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db from '#api/utils/testing_db.js';
 
 const against = db.id();
 const canNotBeDeleted = db.id();

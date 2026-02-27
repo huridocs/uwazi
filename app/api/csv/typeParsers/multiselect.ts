@@ -1,17 +1,17 @@
 import _ from 'lodash';
 
-import thesauri from 'api/thesauri';
-import { RawEntity } from 'api/csv/entityRow';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import { ensure } from 'shared/tsUtils';
+import thesauri from '#api/thesauri/index.js';
+import { RawEntity } from '#api/csv/entityRow.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { ensure } from '#shared/tsUtils.js';
 
 import {
   LabelInfo,
   generateMetadataValue,
   splitMultiselectLabels,
   normalizeMultiselectLabels,
-} from './shared';
+} from './shared.js';
 
 type ParserResult = {
   data: MetadataObjectSchema[];

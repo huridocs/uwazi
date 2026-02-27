@@ -1,9 +1,9 @@
 import React from 'react';
 import { captureException } from '@sentry/react';
-import { getStore } from 'shared/atomStore';
-import { isClient } from 'app/utils';
-import { Translate } from 'app/I18N';
-import { notificationAtom } from 'app/V2/atoms';
+import { getStore } from '#shared/atomStore/index.js';
+import { isClient } from '#app/utils/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {

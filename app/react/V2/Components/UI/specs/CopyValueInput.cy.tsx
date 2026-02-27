@@ -1,7 +1,7 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { CopyValueInput } from '../CopyValueInput';
+import { CopyValueInput } from '../CopyValueInput.js';
 
 describe('CopyValueInput', { viewportWidth: 500, viewportHeight: 500 }, () => {
   const Component = () => (

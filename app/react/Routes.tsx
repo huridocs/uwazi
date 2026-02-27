@@ -1,78 +1,173 @@
 /* eslint-disable max-lines */
 import React from 'react';
-import { createRoutesFromElements, Route } from 'react-router';
+import { createRoutesFromElements, Navigate, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { App } from 'app/App/App';
-import LibraryRoot from 'app/Library/Library';
-import { LibraryMap } from 'app/Library/LibraryMap';
-import { LibraryCards } from 'app/Library/LibraryCards';
-import { LibraryTable } from 'app/Library/LibraryTable';
-import { Preserve } from 'V2/Routes/Settings/Preserve/Preserve';
-import { Settings } from 'V2/Routes/Settings/Settings';
-import { Login } from 'app/Users/Login';
-import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
-import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
-import ViewerRoute from 'app/Viewer/ViewerRoute';
-import { ClientSettings } from 'app/apiResponseTypes';
+import { App } from '#app/App/App.js';
+import { LibraryRoot } from './Library/Library.js';
+import { LibraryMap } from './Library/LibraryMap.js';
+import { LibraryCards } from './Library/LibraryCards.js';
+import { LibraryTable } from './Library/LibraryTable.js';
+import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.js';
+import { Settings } from '#V2/Routes/Settings/Settings.js';
+import { Login } from './Users/Login.js';
+import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.js';
+import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.js';
+import { ViewerRoute } from './Viewer/ViewerRoute.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
   TranslationsList,
   translationsListLoader,
-} from 'V2/Routes/Settings/Translations/TranslationsList';
+} from '#V2/Routes/Settings/Translations/TranslationsList.js';
 import {
   EditTranslations,
   editTranslationsLoader,
   editTranslationsAction,
-} from 'V2/Routes/Settings/Translations/EditTranslations';
-import { Dashboard, dashboardLoader } from 'V2/Routes/Settings/Dashboard/Dashboard';
-
+} from '#V2/Routes/Settings/Translations/EditTranslations.js';
+import { Dashboard, dashboardLoader } from '#V2/Routes/Settings/Dashboard/Dashboard.js';
 import {
   EditThesaurus,
   thesauriLoader,
   ThesauriList,
   editThesaurusLoader,
-} from 'app/V2/Routes/Settings/Thesauri';
-
-import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
+} from '#app/V2/Routes/Settings/Thesauri/index.js';
+import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
   RelationshipTypes,
   relationshipTypesLoader,
-} from 'V2/Routes/Settings/RelationshipTypes/RelationshipTypes';
-import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
-import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
-import { IXdashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
-import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
-import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
-import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
-import { ActivityLog, activityLogLoader } from 'V2/Routes/Settings/ActivityLog';
-import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
-import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
-import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
+} from '#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js';
+import { LanguagesList, languagesListLoader } from '#V2/Routes/Settings/Languages/LanguagesList.js';
+import { Account, accountLoader } from '#V2/Routes/Settings/Account/Account.js';
+import { IXdashboardLoader, IXDashboard } from '#V2/Routes/Settings/IX/IXDashboard.js';
+import { IXSuggestions, IXSuggestionsLoader } from '#V2/Routes/Settings/IX/IXSuggestions.js';
+import {
+  PageEditor,
+  pageEditorLoader,
+  PagesList,
+  pagesListLoader,
+} from '#V2/Routes/Settings/Pages/index.js';
+import {
+  customisationLoader,
+  Customisation,
+} from '#V2/Routes/Settings/Customization/Customization.js';
+import { ActivityLog, activityLogLoader } from '#V2/Routes/Settings/ActivityLog/index.js';
+import {
+  CustomUploads,
+  customUploadsLoader,
+} from '#V2/Routes/Settings/CustomUploads/CustomUploads.js';
+import { FiltersTable, filtersLoader } from '#V2/Routes/Settings/Filters/index.js';
+import { RouteErrorBoundary, GeneralError } from '#V2/Components/ErrorHandling/index.js';
 import {
   ParagraphExtractorLoader,
   PXEntityLoader,
   PXParagraphLoader,
-} from 'V2/Routes/Settings/ParagraphExtraction/Loaders';
-import { ParagraphExtractorDashboard } from 'V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
-import { PXEntityDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXEntities';
-import { PXParagraphDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
+} from '#V2/Routes/Settings/ParagraphExtraction/Loaders.js';
+import { ParagraphExtractorDashboard } from '#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js';
+import { PXEntityDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXEntities.js';
+import { PXParagraphDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js';
 import {
   Templates,
   templatesLoader,
   TemplatesEditor,
   templatesEditorLoader,
-} from 'V2/Routes/Settings/Templates';
-import { Entity, entityLoader } from 'V2/Routes/Entity';
+} from '#V2/Routes/Settings/Templates/index.js';
+import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
   privateRoute,
   ProtectedRoute,
-} from './ProtectedRoute';
-import { getIndexElement } from './getIndexElement';
-import { PageView } from './Pages/PageView';
-import ResetPassword from './Users/ResetPassword';
-import ConnectedUnlockAccount from './Users/UnlockAccount';
-import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+} from './ProtectedRoute.js';
+import type { IndexDescriptor } from './getIndexElement.js';
+import { getIndexDescriptor } from './getIndexElement.js';
+import { PageView } from './Pages/PageView.js';
+import { ResetPassword } from './Users/ResetPassword.js';
+import { UnlockAccount } from './Users/UnlockAccount.js';
+import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
+
+const deconstructSearchQuery = (query?: string) => {
+  if (!query) return '';
+  if (query.startsWith('?q=')) return decodeURI(query.substring(1).split('=')[1]);
+  return `(${query.substring(1)})`;
+};
+
+export type IndexComponents = {
+  LibraryRoot: React.ComponentType<{ children?: React.ReactNode }>;
+  LibraryCards: React.ComponentType<{ params?: { q?: string } }>;
+  LibraryTable: React.ComponentType<{ params?: { q?: string } }>;
+  LibraryMap: React.ComponentType<{ params?: { q?: string } }>;
+  Login: React.ComponentType<Record<string, never>>;
+};
+
+const buildIndexElement = (
+  descriptor: IndexDescriptor,
+  indexComponents?: IndexComponents
+): React.ReactNode => {
+  const Root = indexComponents?.LibraryRoot ?? LibraryRoot;
+  const Cards = indexComponents?.LibraryCards ?? LibraryCards;
+  const Table = indexComponents?.LibraryTable ?? LibraryTable;
+  const Map = indexComponents?.LibraryMap ?? LibraryMap;
+  const LoginComp = indexComponents?.Login ?? Login;
+
+  switch (descriptor.branch) {
+    case 'libraryDefault': {
+      const { userId, defaultLibraryView, private: privateInstance } = descriptor.libraryDefault;
+      if (privateInstance && !userId) return <LoginComp />;
+      const params = { q: '(includeUnpublished:!t)' };
+      switch (defaultLibraryView) {
+        case 'table':
+          return (
+            <Root>
+              <Table params={params} />
+            </Root>
+          );
+        case 'map':
+          return (
+            <Root>
+              <Map params={params} />
+            </Root>
+          );
+        default:
+          return (
+            <Root>
+              <Cards params={params} />
+            </Root>
+          );
+      }
+    }
+    case 'libraryCustom': {
+      const { customHomePage } = descriptor.libraryCustom;
+      const [query] = customHomePage.filter((path: string) => path.startsWith('?'));
+      const queryString = query ? deconstructSearchQuery(query) : '';
+      if (customHomePage.includes('map')) {
+        return (
+          <Root>
+            <Map params={{ q: queryString }} />
+          </Root>
+        );
+      }
+      if (customHomePage.includes('table')) {
+        return (
+          <Root>
+            <Table params={{ q: queryString }} />
+          </Root>
+        );
+      }
+      return (
+        <Root>
+          <Cards params={{ q: queryString }} />
+        </Root>
+      );
+    }
+    case 'page':
+      return <PageView params={{ sharedId: descriptor.pageId }} />;
+    case 'entity':
+      return <ViewerRoute params={{ sharedId: descriptor.entityId }} />;
+    case 'navigate':
+      return <Navigate to={descriptor.navigateTo} />;
+    default:
+      return null;
+  }
+};
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -113,7 +208,7 @@ const getRoutesLayout = (
     <Route path="page/:sharedId" element={<PageView />} />
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
-    <Route path="unlockaccount/:username/:code" element={<ConnectedUnlockAccount />} />
+    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route
@@ -288,10 +383,14 @@ const languageLayout = (langKey: string, layout: React.JSX.Element) => (
 const getRoutes = (
   settings: ClientSettings | undefined,
   userId: string | undefined,
-  headers?: IncomingHttpHeaders
+  headers?: IncomingHttpHeaders,
+  indexComponents?: IndexComponents
 ) => {
-  const { element, parameters, defaultToLibrary } = getIndexElement(settings, userId);
-  const layout = getRoutesLayout(settings, element, headers, defaultToLibrary);
+  const descriptor = getIndexDescriptor(settings, userId);
+  const indexElement = buildIndexElement(descriptor, indexComponents);
+  const parameters = descriptor.parameters;
+  const defaultToLibrary = descriptor.defaultToLibrary;
+  const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route
@@ -306,4 +405,13 @@ const getRoutes = (
   );
 };
 
-export { getRoutes };
+const getIndexElement = (settings: ClientSettings | undefined, userId: string | undefined) => {
+  const descriptor = getIndexDescriptor(settings, userId);
+  return {
+    element: buildIndexElement(descriptor),
+    parameters: descriptor.parameters,
+    defaultToLibrary: descriptor.defaultToLibrary,
+  };
+};
+
+export { getRoutes, getIndexElement };

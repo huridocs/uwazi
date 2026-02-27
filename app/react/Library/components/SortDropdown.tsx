@@ -2,15 +2,15 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { useLocation, Location } from 'react-router';
-import { Icon } from 'UI';
-import { I18NLink, t } from 'app/I18N';
-import { wrapDispatch } from 'app/Multireducer';
-import { IStore } from 'app/istore';
-import { IImmutable } from 'shared/types/Immutable';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
-import { encodeSearch } from '../actions/libraryActions';
+import { Icon } from '#UI/index.js';
+import { I18NLink, t } from '#app/I18N/index.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { IStore } from '#app/istore.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
+import { encodeSearch } from '../actions/libraryActions.js';
 
 import {
   getCurrentSortOption,
@@ -19,7 +19,8 @@ import {
   SortType,
   filterTemplates,
   getSortOptions,
-} from '../helpers/sortComponets';
+  selectedTemplatesCount,
+} from '../helpers/sortComponets.js';
 
 interface SortDropdownOwnProps {
   selectedTemplates: IImmutable<string[]>;
@@ -37,7 +38,7 @@ const getOptionUrl = (option: SortType, path: string, location: Location) => {
 const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
   let { templates } = state;
 
-  if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
+  if (selectedTemplatesCount(ownProps.selectedTemplates) > 0) {
     templates = filterTemplates(state.templates, ownProps.selectedTemplates);
   }
 

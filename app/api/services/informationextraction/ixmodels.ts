@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { ModelStatus } from 'shared/types/IXModelSchema';
-import { IXModelType } from 'shared/types/IXModelType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { IXModelsModel as model } from './IXModelsModel';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { ModelStatus } from '#shared/types/IXModelSchema.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { IXModelsModel as model } from './IXModelsModel.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
 

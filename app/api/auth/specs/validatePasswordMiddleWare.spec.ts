@@ -1,10 +1,10 @@
-import { Request, NextFunction, Response } from 'express';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { UserSchema } from 'shared/types/userType';
-import { UserRole } from 'shared/types/userSchema';
-import { encryptPassword } from '../encryptPassword';
-import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare';
+import type { Request, NextFunction, Response } from 'express';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { encryptPassword } from '../encryptPassword.js';
+import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare.js';
 
 const fixturesFactory = getFixturesFactory();
 

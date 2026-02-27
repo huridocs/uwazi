@@ -14,20 +14,20 @@ import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
-import { advancedSort } from 'app/utils/advancedSort';
-import { ClientTranslationSchema } from 'app/istore';
-import { InputField } from 'app/V2/Components/Forms';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { Translate } from '#app/I18N/index.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
+import { ClientTranslationSchema } from '#app/istore.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
-import { Button, ToggleButton, ConfirmNavigationModal } from 'V2/Components/UI';
-import * as translationsAPI from 'V2/api/translations';
-import * as settingsAPI from 'V2/api/settings';
-import { notificationAtom } from 'V2/atoms';
-import { availableLanguages } from 'shared/language';
-import { Settings } from 'shared/types/settingsType';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { LanguagePill } from './components/LanguagePill';
+import { Button, ToggleButton, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import * as translationsAPI from '#V2/api/translations/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { Settings } from '#shared/types/settingsType.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { LanguagePill } from './components/LanguagePill.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

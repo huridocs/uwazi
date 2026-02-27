@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Entity, Fixture, Settings, Template } from '../types';
+import { Entity, Fixture, Settings, Template } from '../types.js';
 
 const thesauriId = new ObjectId();
 const relTypeId = new ObjectId();

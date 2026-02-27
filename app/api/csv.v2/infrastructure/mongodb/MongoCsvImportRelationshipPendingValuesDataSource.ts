@@ -1,8 +1,8 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { Db } from 'mongodb';
-import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource';
-import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues';
+import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
+import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues.js';
 
 type RelationshipPendingValuesDBO = {
   importId: string;

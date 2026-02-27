@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import { EnableButtonCheckbox } from 'app/V2/Components/Forms';
-import { ClientSettings } from 'app/apiResponseTypes';
+import { EnableButtonCheckbox } from '#V2/Components/Forms/index.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 import { UseFormRegister } from 'react-hook-form';
 
 interface CollectionOptionToggleProps {

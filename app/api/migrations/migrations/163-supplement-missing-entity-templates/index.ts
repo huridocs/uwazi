@@ -1,5 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
-import { Language, Settings, Template, TranslationDBO } from './types';
+import { Language, Settings, Template, TranslationDBO } from './types.js';
 
 const recoveryTemplateId = new ObjectId();
 

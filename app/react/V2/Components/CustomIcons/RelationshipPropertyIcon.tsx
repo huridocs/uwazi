@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomIconProps } from './types';
+import { CustomIconProps } from './types.js';
 
 const RelationshipPropertyIcon = ({ className }: CustomIconProps) => (
   <svg

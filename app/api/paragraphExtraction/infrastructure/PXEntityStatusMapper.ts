@@ -1,5 +1,5 @@
-import { EntityStatus } from '../domain/PXEntityStatusModel';
-import { EntityStatusDTO } from '../types';
+import { EntityStatus } from '../domain/PXEntityStatusModel.js';
+import { EntityStatusDTO } from '../types.js';
 
 export class PXEntityStatusMapper {
   static toDTO(status: EntityStatus): EntityStatusDTO {

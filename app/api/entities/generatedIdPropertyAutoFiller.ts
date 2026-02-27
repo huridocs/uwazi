@@ -1,9 +1,11 @@
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-import { generateID } from 'shared/IDGenerator';
-import { propertyTypes } from 'shared/propertyTypes';
+import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { generateID } from '#shared/IDGenerator.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 //@ts-ignore
-import PromisePool from '@supercharge/promise-pool';
-import model from './entitiesModel';
+import PromisePoolModule from '@supercharge/promise-pool';
+const PromisePool =
+  (PromisePoolModule as { default?: typeof PromisePoolModule }).default ?? PromisePoolModule;
+import model from './entitiesModel.js';
 
 const updateRecursively = async (
   templateId: ObjectIdSchema,

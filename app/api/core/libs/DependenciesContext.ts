@@ -1,9 +1,9 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import { TransactionManager } from '../application/contracts/TransactionManager';
-import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher';
-import { IdGenerator } from '../application/contracts/IdGenerator';
-import { EventEmitter } from './eventEmitter/EventEmitter';
-import { Logger } from './logger/contracts/Logger';
+import { TransactionManager } from '../application/contracts/TransactionManager.js';
+import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js';
+import { IdGenerator } from '../application/contracts/IdGenerator.js';
+import { EventEmitter } from './eventEmitter/EventEmitter.js';
+import { Logger } from './logger/contracts/Logger.js';
 
 type Dependencies = {
   eventEmitter: EventEmitter;

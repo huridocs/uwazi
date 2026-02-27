@@ -2,19 +2,20 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { wrapDispatch } from 'app/Multireducer';
-import { Icon } from 'UI';
-import { DropdownList } from 'app/Forms';
-import { IImmutable } from 'shared/types/Immutable';
-import { IStore } from 'app/istore';
-import { omit } from 'lodash';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { Icon } from '#UI/index.js';
+import { DropdownList } from '#app/Forms/index.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { IStore } from '#app/istore.js';
+import omit from 'lodash/omit.js';
 import {
   filterTemplates,
   getPropertySortType,
   getSortOptions,
+  selectedTemplatesCount,
   SearchOptions,
   SortType,
-} from '../helpers/sortComponets';
+} from '../helpers/sortComponets.js';
 
 interface SortButtonsOwnProps {
   stateProperty: string;
@@ -26,7 +27,7 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
   let { templates } = state;
   const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'library.search';
 
-  if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
+  if (selectedTemplatesCount(ownProps.selectedTemplates) > 0) {
     templates = filterTemplates(state.templates, ownProps.selectedTemplates);
   }
   const search = stateProperty

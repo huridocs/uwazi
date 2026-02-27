@@ -1,10 +1,10 @@
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { CsvImportDomain } from '../../domain/CsvImport';
-import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource';
-import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
-import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { CsvImportDomain } from '../../domain/CsvImport.js';
+import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
+import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
+import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
 
 type RowErrorsReport = {
   failedRows: number;

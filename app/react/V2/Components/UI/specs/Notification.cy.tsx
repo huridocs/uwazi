@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/Notification.stories';
+import * as stories from '#app/stories/Notification.stories.js';
 
 const { Basic, WithHeading, WithDetails } = composeStories(stories);
 

@@ -1,4 +1,4 @@
-import typeParsers from '../../typeParsers';
+import typeParsers from '../../typeParsers.js';
 
 const rawEntityWithGeoValue = stringVal => ({
   propertiesFromColumns: {
