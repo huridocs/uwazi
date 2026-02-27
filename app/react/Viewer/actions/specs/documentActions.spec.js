@@ -134,6 +134,31 @@ describe('documentActions', () => {
         ]);
       });
     });
+
+    it('should add to empty toc when currentToc is undefined (new document)', () => {
+      spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
+      const reference = {
+        sourceDocument: '123',
+        sourceRange: {
+          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
+          text: 'Chapter 1',
+        },
+      };
+      const chapter1 = {
+        selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
+        label: 'Chapter 1',
+        indentation: 0,
+      };
+      const store = mockStore({
+        documentViewer: {
+          tocForm: [],
+        },
+      });
+
+      store.dispatch(actions.addToToc(reference, undefined));
+
+      expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [chapter1]);
+    });
   });
 
   describe('removeFromToc', () => {
