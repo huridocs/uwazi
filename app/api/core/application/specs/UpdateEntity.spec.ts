@@ -34,12 +34,13 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
   const idGenerator = IdGeneratorFactory.default();
 
-  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
-    entitiesDS,
-    settingsDS,
-    thesauriDS,
-    translationsDS,
-  });
+  const propertyAssignmentCreatorServiceStrategy =
+    PropertyAssignmentCreatorServiceStrategy.createWithRequired({
+      entitiesDS,
+      settingsDS,
+      thesauriDS,
+      translationsDS,
+    });
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
@@ -517,6 +518,17 @@ describe('UpdateEntityUseCase', () => {
           media: [{ value: 'https://example.com/video.mp4' }],
         },
       ]);
+    });
+    it('should throw when a required property has no value', async () => {
+      const { sut } = createSut();
+
+      await expect(
+        sut.execute({
+          sharedId: 'required_entity',
+          language: 'en',
+          propertyAssignments: [{ name: 'required_text', value: [{ value: '' }] }],
+        })
+      ).rejects.toThrow('Text Property is required');
     });
   });
 
