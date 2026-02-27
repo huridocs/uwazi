@@ -5,10 +5,22 @@ import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
 } from './PropertyAssignmentCreatorService';
+import {
+  defaultPropertyAssignmentCreatorServiceContext,
+  PropertyAssignmentCreatorServiceContext,
+} from './AbstractPropertyAssignmentCreatorService';
 
 type MediaValueInput = { value: string } | { attachment: number; timeLinks?: string };
 
 export class MediaPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
+  private context: PropertyAssignmentCreatorServiceContext;
+
+  constructor(
+    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
+  ) {
+    this.context = context;
+  }
+
   // eslint-disable-next-line max-statements
   async create({
     propertyAssignment,
@@ -38,7 +50,9 @@ export class MediaPropertyAssignmentCreatorService implements PropertyAssignment
       };
     });
 
-    createdAssignments.push(property.createPropertyAssignment({ value: mapped }, true));
+    createdAssignments.push(
+      property.createPropertyAssignment({ value: mapped }, this.context.validateRequired)
+    );
 
     return createdAssignments;
   }

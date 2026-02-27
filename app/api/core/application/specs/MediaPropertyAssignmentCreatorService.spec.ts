@@ -333,7 +333,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
     });
 
     it('should throw when required property has no value', async () => {
-      const { sut } = createSut();
+      const sut = new MediaPropertyAssignmentCreatorService({ validateRequired: true });
       const templateDBO = await testingEnvironment.db
         .getCollection('templates')!
         .findOne({ _id: factory.id('Document') });

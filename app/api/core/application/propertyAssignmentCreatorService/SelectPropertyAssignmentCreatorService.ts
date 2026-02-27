@@ -9,6 +9,10 @@ import {
   PropertyAssignmentCreatorService,
 } from './PropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
+import {
+  defaultPropertyAssignmentCreatorServiceContext,
+  PropertyAssignmentCreatorServiceContext,
+} from './AbstractPropertyAssignmentCreatorService';
 
 type Deps = {
   settingsDS: SettingsDataSource;
@@ -17,7 +21,14 @@ type Deps = {
 };
 
 export class SelectPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
-  constructor(private deps: Deps) {}
+  private context: PropertyAssignmentCreatorServiceContext;
+
+  constructor(
+    private deps: Deps,
+    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
+  ) {
+    this.context = context;
+  }
 
   // eslint-disable-next-line max-statements
   async create({
@@ -66,7 +77,11 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
       });
 
       propertyAssignments.push(
-        template.createPropertyAssignment(property.name, { value, language }, true)
+        template.createPropertyAssignment(
+          property.name,
+          { value, language },
+          this.context.validateRequired
+        )
       );
     });
 
