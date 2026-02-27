@@ -10,7 +10,7 @@ import PDFJS, { EventBus } from '../PDFJS';
 class PDFPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { rendered: false };
+    this.state = { rendered: false, renderScale: 1 };
   }
 
   componentDidMount() {
@@ -91,10 +91,15 @@ class PDFPage extends Component {
 
   renderReferences() {
     if (this.state.rendered) {
+      const renderScale = this.state.renderScale ?? 1;
       return (
         <>
-          <PageSelections />
-          <PageReferences page={this.props.page} onClick={this.props.highlightReference} />
+          <PageSelections renderScale={renderScale} />
+          <PageReferences
+            page={this.props.page}
+            onClick={this.props.highlightReference}
+            renderScale={renderScale}
+          />
         </>
       );
     }
@@ -121,6 +126,9 @@ class PDFPage extends Component {
         );
         const defaultViewport = page.getViewport({ scale });
 
+        if (this._mounted) {
+          this.setState({ renderScale: scale });
+        }
         if (this.props.onScaleChange) {
           this.props.onScaleChange(scale);
         }

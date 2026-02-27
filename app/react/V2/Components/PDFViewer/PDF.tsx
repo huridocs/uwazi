@@ -31,7 +31,9 @@ const PDFPage = loadable(
 );
 
 const eventBus = new EventBus();
-
+eventBus.on('pagechange', (pageNumber: number) => {
+  console.log('pagechanged', pageNumber);
+});
 interface PDFProps {
   fileUrl: string;
   /** Highlights in scale=1 (normalized) coordinates; converted to display scale when drawing */
