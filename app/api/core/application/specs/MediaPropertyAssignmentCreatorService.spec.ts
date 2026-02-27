@@ -400,5 +400,31 @@ describe('MediaPropertyAssignmentCreatorService', () => {
         },
       ]);
     });
+
+    it('should not throw when validateRequired is false (default) and a required media property has no value', async () => {
+      const { sut } = createSut();
+      const templateDBO = await testingEnvironment.db
+        .getCollection('templates')!
+        .findOne({ _id: factory.id('Document') });
+
+      const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+      await expect(
+        sut.create({
+          template,
+          propertyAssignment: {
+            name: 'required_media',
+            value: [],
+          },
+        })
+      ).resolves.toEqual([
+        {
+          isTranslatable: true,
+          name: 'required_media',
+          type: 'media',
+          value: [],
+        },
+      ]);
+    });
   });
 });

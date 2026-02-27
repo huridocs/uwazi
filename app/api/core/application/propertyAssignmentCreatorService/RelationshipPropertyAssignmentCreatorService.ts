@@ -7,12 +7,9 @@ import {
   RelationshipTemplateMismatchError,
 } from 'api/core/domain/entity/errors';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
 import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
-import {
-  defaultPropertyAssignmentCreatorServiceContext,
+  AbstractPropertyAssignmentCreatorService,
   PropertyAssignmentCreatorServiceContext,
 } from './AbstractPropertyAssignmentCreatorService';
 
@@ -21,16 +18,12 @@ type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
 };
 
-export class RelationshipPropertyAssignmentCreatorService
-  implements PropertyAssignmentCreatorService
-{
-  private context: PropertyAssignmentCreatorServiceContext;
-
+export class RelationshipPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   constructor(
     private deps: Deps,
-    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
+    context?: PropertyAssignmentCreatorServiceContext
   ) {
-    this.context = context;
+    super(context);
   }
 
   // eslint-disable-next-line max-statements

@@ -1,26 +1,12 @@
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { MediaProperty } from 'api/core/domain/template/MediaProperty';
 import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
-import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
-import {
-  defaultPropertyAssignmentCreatorServiceContext,
-  PropertyAssignmentCreatorServiceContext,
-} from './AbstractPropertyAssignmentCreatorService';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
+import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService';
 
 type MediaValueInput = { value: string } | { attachment: number; timeLinks?: string };
 
-export class MediaPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
-  private context: PropertyAssignmentCreatorServiceContext;
-
-  constructor(
-    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
-  ) {
-    this.context = context;
-  }
-
+export class MediaPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   // eslint-disable-next-line max-statements
   async create({
     propertyAssignment,

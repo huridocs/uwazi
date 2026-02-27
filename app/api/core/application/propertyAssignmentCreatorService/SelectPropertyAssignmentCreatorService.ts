@@ -4,13 +4,10 @@ import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSo
 import { ThesaurusValue } from 'api/core/domain/thesaurus/Thesaurus';
 import { TranslationCollection } from 'api/i18n.v2/model/TranslationCollection';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
 import {
-  defaultPropertyAssignmentCreatorServiceContext,
+  AbstractPropertyAssignmentCreatorService,
   PropertyAssignmentCreatorServiceContext,
 } from './AbstractPropertyAssignmentCreatorService';
 
@@ -20,14 +17,12 @@ type Deps = {
   thesauriDS: ThesauriDataSource;
 };
 
-export class SelectPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
-  private context: PropertyAssignmentCreatorServiceContext;
-
+export class SelectPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   constructor(
     private deps: Deps,
-    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
+    context?: PropertyAssignmentCreatorServiceContext
   ) {
-    this.context = context;
+    super(context);
   }
 
   // eslint-disable-next-line max-statements

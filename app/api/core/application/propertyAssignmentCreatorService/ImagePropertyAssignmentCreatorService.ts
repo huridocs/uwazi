@@ -1,26 +1,12 @@
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { ImageProperty } from 'api/core/domain/template/ImageProperty';
 import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
-import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
-import {
-  defaultPropertyAssignmentCreatorServiceContext,
-  PropertyAssignmentCreatorServiceContext,
-} from './AbstractPropertyAssignmentCreatorService';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
+import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService';
 
 type ImageValueInput = { value: string } | { attachment: number };
 
-export class ImagePropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
-  private context: PropertyAssignmentCreatorServiceContext;
-
-  constructor(
-    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
-  ) {
-    this.context = context;
-  }
-
+export class ImagePropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   // eslint-disable-next-line max-statements
   async create({
     propertyAssignment,
