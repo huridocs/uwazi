@@ -78,10 +78,10 @@ describe('PDF', () => {
       render();
       component.setProps({ filename: 'newfile.pdf' });
       expect(Object.keys(instance.pagesLoaded).length).toBe(0);
-      expect(instance.state).toEqual({ pdf: { numPages: 0 }, filename: 'newfile.pdf' });
+      expect(instance.state).toEqual({ pdf: { numPages: 0 }, filename: 'newfile.pdf', scale: 1 });
       expect(PDFJS.getDocument.calls.count()).toBe(2);
       setTimeout(() => {
-        expect(instance.state).toEqual({ pdf: pdfObject, filename: 'newfile.pdf' });
+        expect(instance.state).toEqual({ pdf: pdfObject, filename: 'newfile.pdf', scale: 1 });
         done();
       });
     });
