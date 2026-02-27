@@ -552,6 +552,41 @@ Required behavior (split by scenario):
 - Row-error messages now include property, token, reason, candidate count, and scope context.
 - No fallback behavior remains (`first/last match` resolution removed).
 
+### 15) TODO — Define and maintain Mongo indexes for CSV v2 collections
+
+Problem:
+
+- CSV v2 now relies on multiple collections (`csv_imports`, `csv_import_rows`,
+  `csv_import_row_errors`, `csv_import_thesauri_values`,
+  `csv_import_relationships_pending_values`, `csv_import_relationships_values`) but index strategy
+  is not explicitly documented/owned in the module.
+- As query patterns evolve (status polling, per-import scans, report generation), missing or stale
+  indexes can degrade performance and increase lock pressure.
+
+Required behavior:
+
+- Define baseline indexes based on current query practices (importId/status/templateId/rowIndex paths).
+- Add indexes via **Mongo migrations** (not mongoose model/index definitions), since we are moving
+  away from mongoose-managed indexes.
+- Before implementing, review existing migrations that add indexes and follow the same patterns
+  (idempotency, naming, rollback policy, and test strategy).
+- Add index migration coverage in tests where appropriate.
+- Revisit and evolve indexes whenever new query paths are introduced (treat as part of done criteria).
+
+### 16) TODO — Cleanup extracted/original files after import reaches terminal state
+
+Problem:
+
+- CSV artifacts under `csv-imports/{importId}` are currently retained indefinitely.
+- We do not need to keep original/extracted import files in S3/disk after the import is done.
+
+Required behavior:
+
+- Implement final cleanup when import reaches terminal status (`completed`, `failed`, `cancelled`):
+  remove original upload + extracted assets (idempotent, retry-safe).
+- Apply cleanup consistently for success and stop/error terminal paths.
+- Keep entity-owned files untouched; cleanup scope is only CSV import staging artifacts.
+
 ### 8) Next agent checklist (quick start)
 
 1. Skim `csv-v2-context-07.md` and confirm the pipeline chain in code:
