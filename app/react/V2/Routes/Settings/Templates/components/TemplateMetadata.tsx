@@ -4,19 +4,7 @@ import { InputField } from 'app/V2/Components/Forms/InputField';
 import { Checkbox } from 'app/V2/Components/Forms/Checkbox';
 import { Select, OptionSchema } from 'app/V2/Components/Forms/Select';
 import { Translate, t } from 'app/I18N';
-
-const templateColors = [
-  '#628ccf',
-  '#ff8282',
-  '#ff8a4c',
-  '#faca15',
-  '#16bdca',
-  '#31c48d',
-  '#9eb0fd',
-  '#f17eb8',
-  '#ac94fa',
-  '#9ca3af',
-];
+import { templateColors } from './defaultTemplateColors';
 
 export interface TemplateMetadataValues {
   name: string;
