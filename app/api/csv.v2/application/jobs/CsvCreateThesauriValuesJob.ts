@@ -1,6 +1,7 @@
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
 import { ThesauriRepository } from '../../application/contracts/ThesauriRepository';
@@ -18,6 +19,7 @@ import {
 } from '../../domain/CsvImportThesauriValues';
 import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
+import { CsvCreateRelationshipEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler';
 
 type ThesauriCreationProgress = {
   importId: string;
@@ -33,6 +35,8 @@ type Callbacks = BaseCallbacks & {
 
 type Input = {
   importId: string;
+  tenantName: string;
+  userId: string;
   callbacks: Callbacks;
 };
 
@@ -42,6 +46,7 @@ type Deps = {
   thesauriRepo: ThesauriRepository;
   translationsRepo: TranslationsRepository;
   transactionManager: TransactionManager;
+  jobsDispatcher: JobsDispatcher;
 };
 
 type PendingValuesProcessingResult = {
@@ -120,7 +125,7 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
     };
 
     let updatedDoc = pendingDoc;
-    if (updatedDoc.shouldPersist(summary)) {
+    if (updatedDoc.shouldPersist(summary, appliedValues)) {
       updatedDoc = await this.persistPendingValuesApplication({
         pendingDoc: updatedDoc,
         summary,
@@ -145,7 +150,14 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
     };
   }
 
-  private async finalizeSuccess(csvImport: CsvImport, pendingDocs: CsvImportThesauriValues[]) {
+  private async finalizeSuccess(params: {
+    csvImport: CsvImport;
+    pendingDocs: CsvImportThesauriValues[];
+    importId: string;
+    tenantName: string;
+    userId: string;
+  }) {
+    const { csvImport, pendingDocs, importId, tenantName, userId } = params;
     const totals = CsvImportThesauriValues.aggregateStats(pendingDocs);
     await this.transactionManager.run(async () => {
       const cleared = CsvImportDomain.clearFailure(csvImport);
@@ -160,6 +172,11 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         thesauriTouched: totals.touched,
       };
       await this.deps.csvImportsDS.update(withStatus.withStats(updatedStats));
+      await this.deps.jobsDispatcher.dispatch(CsvCreateRelationshipEntitiesJobHandler, {
+        tenantName,
+        userId,
+        importId,
+      });
     });
   }
 
@@ -188,7 +205,7 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
 
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<void> {
-    const { importId, callbacks } = input;
+    const { importId, callbacks, tenantName, userId } = input;
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightThesauriCreate);
@@ -198,12 +215,6 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
     try {
       csvImport = await this.getImport(importId);
       const pendingDocs = await this.getPendingThesauriValues(importId);
-
-      if (!pendingDocs.length) {
-        await this.finalizeSuccess(csvImport, pendingDocs);
-        callbacks.onSuccess({ importId });
-        return;
-      }
 
       let index = 0;
       for (const pendingDoc of pendingDocs) {
@@ -218,7 +229,13 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         pendingDocs[index - 1] = updatedDoc;
       }
 
-      await this.finalizeSuccess(csvImport, pendingDocs);
+      await this.finalizeSuccess({
+        csvImport,
+        pendingDocs,
+        importId,
+        tenantName,
+        userId,
+      });
       callbacks.onSuccess({ importId });
     } catch (error) {
       await this.persistFailure(importId, error as Error);

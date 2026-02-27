@@ -1,5 +1,5 @@
 import { ResultType } from 'api/core/libs/Result';
-import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
+import { CsvImportDoesNotExistError } from '../../domain/csvImporErrors';
 import { CsvImport } from '../../domain/CsvImport';
 
 export interface CsvImportsDataSource {

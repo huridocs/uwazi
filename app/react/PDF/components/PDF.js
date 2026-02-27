@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { advancedSort } from 'app/utils/advancedSort';
 import { PDFPage } from 'app/PDF';
+import { selectionHandlers } from 'V2/Components/PDFViewer';
 import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
 
@@ -21,7 +22,7 @@ class PDF extends Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { pdf: { numPages: 0 }, filename: props.filename };
+    this.state = { pdf: { numPages: 0 }, filename: props.filename, scale: 1 };
     this.pagesLoaded = {};
     this.loadDocument(props.file);
     this.currentPage = '1';
@@ -32,6 +33,7 @@ class PDF extends Component {
     this.pageLoading = this.pageLoading.bind(this);
     this.onPageVisible = this.onPageVisible.bind(this);
     this.onPageHidden = this.onPageHidden.bind(this);
+    this.handleScaleChange = this.handleScaleChange.bind(this);
     this.containerWidth = 0;
   }
 
@@ -52,7 +54,8 @@ class PDF extends Component {
       nextProps.file !== this.props.file ||
       nextProps.filename !== this.props.filename ||
       nextProps.style !== this.props.style ||
-      nextState.pdf !== this.state.pdf
+      nextState.pdf !== this.state.pdf ||
+      nextState.scale !== this.state.scale
     );
   }
 
@@ -70,6 +73,10 @@ class PDF extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  handleScaleChange(scale) {
+    this.setState({ scale });
   }
 
   onPageVisible(page, visibility) {
@@ -150,11 +157,13 @@ class PDF extends Component {
   }
 
   render() {
+    const { scale } = this.state;
+    const handleSelect = selection => {
+      const normalized = selectionHandlers.adjustSelectionsToScale(selection, scale, true);
+      this.props.onTextSelection(normalized);
+    };
     return (
-      <HandleTextSelection
-        onSelect={this.props.onTextSelection}
-        onDeselect={this.props.onTextDeselection}
-      >
+      <HandleTextSelection onSelect={handleSelect} onDeselect={this.props.onTextDeselection}>
         <div
           ref={ref => {
             this.pdfContainer = ref;
@@ -177,6 +186,7 @@ class PDF extends Component {
                       pdf={this.state.pdf}
                       highlightReference={this.props.highlightReference}
                       containerWidth={this.containerWidth}
+                      onScaleChange={this.handleScaleChange}
                     />
                   </SelectionRegion>
                 </div>
