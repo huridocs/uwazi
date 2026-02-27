@@ -78,6 +78,8 @@
     ]
   },
   "resolutions": {
+    "@types/express": "4.17.25",
+    "@types/express-serve-static-core": "4.17.33",
     "trim": "1.0.1",
     "node-fetch": "2.6.7",
     "ws": "8.18.0",
