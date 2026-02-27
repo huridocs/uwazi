@@ -16,7 +16,7 @@ export type TextPropertyValue = { value: string };
 export type NumericPropertyValue = { value: number };
 export type MarkdownEntry = { value: string };
 export type DateEntry = { value: number };
-export type DateRangeEntry = { value: { from: number; to: number } };
+export type DateRangeEntry = { value: { from: number | null; to: number | null } };
 export type GeolocationEntry = { value: { lat: number; lon: number; label?: string } };
 export type SelectionEntry = {
   value: string;

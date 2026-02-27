@@ -85,6 +85,24 @@ class PropertyAssignmentCreatorServiceStrategy {
       default: new DefaultPropertyAssignmentCreatorService(),
     });
   }
+
+  static createWithRequired({ settingsDS, thesauriDS, translationsDS, entitiesDS }: CreateProps) {
+    const context = { validateRequired: true };
+
+    return new PropertyAssignmentCreatorServiceStrategy({
+      select: new SelectPropertyAssignmentCreatorService(
+        { settingsDS, thesauriDS, translationsDS },
+        context
+      ),
+      relationship: new RelationshipPropertyAssignmentCreatorService(
+        { settingsDS, entitiesDS },
+        context
+      ),
+      image: new ImagePropertyAssignmentCreatorService(context),
+      media: new MediaPropertyAssignmentCreatorService(context),
+      default: new DefaultPropertyAssignmentCreatorService(context),
+    });
+  }
 }
 
 export { PropertyAssignmentCreatorServiceStrategy };
