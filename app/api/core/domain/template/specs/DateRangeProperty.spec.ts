@@ -111,12 +111,82 @@ describe('DateRangeProperty', () => {
       );
     });
 
+    it('should allow "to" to be null', () => {
+      const dateRange = new DateRangeProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = dateRange.createPropertyAssignment({
+        value: [{ value: { from: 1761576489, to: null } }],
+      });
+
+      expect(assignment).toEqual({
+        name: dateRange.name,
+        value: [{ value: { from: 1761576489, to: null } }],
+        type: dateRange.type,
+        isTranslatable: false,
+      });
+    });
+
+    it('should allow "from" to be null', () => {
+      const dateRange = new DateRangeProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = dateRange.createPropertyAssignment({
+        value: [{ value: { from: null, to: 1761576489 } }],
+      });
+
+      expect(assignment).toEqual({
+        name: dateRange.name,
+        value: [{ value: { from: null, to: 1761576489 } }],
+        type: dateRange.type,
+        isTranslatable: false,
+      });
+    });
+
+    it('should filter out entries where both "from" and "to" are null', () => {
+      const dateRange = new DateRangeProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = dateRange.createPropertyAssignment({
+        value: [{ value: { from: null, to: null } }],
+      });
+
+      expect(assignment).toEqual({
+        name: dateRange.name,
+        value: [],
+        type: dateRange.type,
+        isTranslatable: false,
+      });
+    });
+
     it('should throw if "to" is before "from"', () => {
       const dateRange = new DateRangeProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
       expect(() =>
         dateRange.createPropertyAssignment({ value: [{ value: { from: 20, to: 10 } }] })
       ).toThrow();
+    });
+
+    it('should not throw when "to" is null even if it would be before "from"', () => {
+      const dateRange = new DateRangeProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() =>
+        dateRange.createPropertyAssignment({ value: [{ value: { from: 20, to: null } }] })
+      ).not.toThrow();
+    });
+  });
+
+  describe('validatePropertyAssignment()', () => {
+    it('should throw if both "from" and "to" are null (safety net)', () => {
+      const dateRange = new DateRangeProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() =>
+        dateRange.validatePropertyAssignment({
+          name: dateRange.name,
+          type: dateRange.type,
+          isTranslatable: false,
+          value: [{ value: { from: null, to: null } }],
+        })
+      ).toThrow(
+        '"message": "Date Range Property requires at least one of \\"from\\" or \\"to\\"."'
+      );
     });
   });
 });

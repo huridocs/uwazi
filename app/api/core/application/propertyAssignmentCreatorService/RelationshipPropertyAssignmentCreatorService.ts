@@ -7,20 +7,25 @@ import {
   RelationshipTemplateMismatchError,
 } from 'api/core/domain/entity/errors';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
 import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
+  AbstractPropertyAssignmentCreatorService,
+  defaultPropertyAssignmentCreatorServiceContext,
+  PropertyAssignmentCreatorServiceContext,
+} from './AbstractPropertyAssignmentCreatorService';
 
 type Deps = {
   settingsDS: SettingsDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
 };
 
-export class RelationshipPropertyAssignmentCreatorService
-  implements PropertyAssignmentCreatorService
-{
-  constructor(private deps: Deps) {}
+export class RelationshipPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
+  constructor(
+    private deps: Deps,
+    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
+  ) {
+    super(context);
+  }
 
   // eslint-disable-next-line max-statements
   async create({
@@ -85,7 +90,13 @@ export class RelationshipPropertyAssignmentCreatorService
         return base;
       });
 
-      assignments.push(template.createPropertyAssignment(property.name, { value, language }, true));
+      assignments.push(
+        template.createPropertyAssignment(
+          property.name,
+          { value, language },
+          this.context.validateRequired
+        )
+      );
     });
 
     return assignments;

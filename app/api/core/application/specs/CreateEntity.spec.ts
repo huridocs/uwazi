@@ -166,6 +166,10 @@ const fixtures: DBFixture = {
       factory.property('attached_media_1', 'media'),
       factory.property('attached_media_2', 'media'),
     ]),
+
+    factory.template('Document With Required', [
+      factory.property('required_text', 'text', { required: true }),
+    ]),
   ],
 
   entities: [
@@ -234,12 +238,13 @@ const createSut = (props: CreateSutProps = {}) => {
     dispatcher: jobsDispatcher,
   });
 
-  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
-    entitiesDS,
-    settingsDS,
-    thesauriDS,
-    translationsDS,
-  });
+  const propertyAssignmentCreatorServiceStrategy =
+    PropertyAssignmentCreatorServiceStrategy.createWithRequired({
+      entitiesDS,
+      settingsDS,
+      thesauriDS,
+      translationsDS,
+    });
 
   jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
   jest.spyOn(fileService, 'insert').mockResolvedValue();
@@ -613,5 +618,19 @@ describe('CreateEntityUseCase', () => {
 
     const targetLanguage = emittedArg.getData().targetLanguageKey;
     expect(targetLanguage).toBe('es');
+  });
+
+  it('should throw when a required property has no value', async () => {
+    const { sut } = createSut();
+
+    await expect(
+      sut.execute({
+        templateId: factory.id('Document With Required').toHexString(),
+        propertyAssignments: [
+          { name: 'title', value: [{ value: 'My entity title' }] },
+          { name: 'required_text', value: [] },
+        ],
+      })
+    ).rejects.toThrow('Text Property is required');
   });
 });
