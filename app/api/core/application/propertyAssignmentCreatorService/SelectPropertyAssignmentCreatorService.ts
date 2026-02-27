@@ -8,6 +8,7 @@ import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorServic
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
 import {
   AbstractPropertyAssignmentCreatorService,
+  defaultPropertyAssignmentCreatorServiceContext,
   PropertyAssignmentCreatorServiceContext,
 } from './AbstractPropertyAssignmentCreatorService';
 
@@ -20,7 +21,7 @@ type Deps = {
 export class SelectPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   constructor(
     private deps: Deps,
-    context?: PropertyAssignmentCreatorServiceContext
+    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
   ) {
     super(context);
   }

@@ -10,6 +10,7 @@ import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
 import {
   AbstractPropertyAssignmentCreatorService,
+  defaultPropertyAssignmentCreatorServiceContext,
   PropertyAssignmentCreatorServiceContext,
 } from './AbstractPropertyAssignmentCreatorService';
 
@@ -21,7 +22,7 @@ type Deps = {
 export class RelationshipPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
   constructor(
     private deps: Deps,
-    context?: PropertyAssignmentCreatorServiceContext
+    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
   ) {
     super(context);
   }

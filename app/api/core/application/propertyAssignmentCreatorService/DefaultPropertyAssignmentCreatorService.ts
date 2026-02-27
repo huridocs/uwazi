@@ -3,7 +3,6 @@ import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorServic
 import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService';
 
 export class DefaultPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
-  // eslint-disable-next-line class-methods-use-this
   async create({ propertyAssignment, template }: CreatePropertyAssignmentInput) {
     const { name, value, language } = propertyAssignment;
 
