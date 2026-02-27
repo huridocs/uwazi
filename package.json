@@ -84,7 +84,7 @@
     "body-parser": "^1.20.4",
     "cross-spawn": "^7.0.5",
     "form-data": "^4.0.4",
-    "fast-xml-parser": "^5.3.4"
+    "fast-xml-parser": ">=5.3.6"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.744.0",
