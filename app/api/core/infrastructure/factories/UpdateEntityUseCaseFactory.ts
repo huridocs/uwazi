@@ -27,7 +27,7 @@ class UpdateEntityUseCaseFactory {
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =
-      PropertyAssignmentCreatorServiceStrategy.create({
+      PropertyAssignmentCreatorServiceStrategy.createWithRequired({
         entitiesDS,
         settingsDS,
         thesauriDS,

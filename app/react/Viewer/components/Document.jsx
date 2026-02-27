@@ -43,6 +43,7 @@ class Document extends Component {
     const selectionRectangles = textSelection.selectionRectangles.map(
       ({ regionId, ...otherProps }) => ({ ...otherProps, page: regionId })
     );
+    // Selection is already in scale=1 (normalized) from PDF onSelect
     const highlight = selectionHandlers.adjustSelectionsToScale(
       { ...textSelection, selectionRectangles },
       1,

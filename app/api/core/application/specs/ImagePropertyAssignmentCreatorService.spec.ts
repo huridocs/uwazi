@@ -140,4 +140,20 @@ describe('ImagePropertyAssignmentCreatorService', () => {
       })
     ).rejects.toThrow(PropertyNotFoundError);
   });
+
+  it('should throw when validateRequired is true and a required property has no value', async () => {
+    const sut = new ImagePropertyAssignmentCreatorService({ validateRequired: true });
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    await expect(
+      sut.create({
+        template,
+        propertyAssignment: { name: 'required_image', value: [] },
+      })
+    ).rejects.toThrow('Image Property is required');
+  });
 });

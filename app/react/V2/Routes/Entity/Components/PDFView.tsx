@@ -31,6 +31,7 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
     const [searchParams, setSearchParams] = useSearchParams();
     const { ocrServiceEnabled } = useAtomValue(settingsAtom);
     const user = useAtomValue(userAtom);
+    const pdfRef = useRef<PDFHandle | null>(null);
     const [hydrated, setHydrated] = useState(false);
     const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
 
@@ -155,6 +156,24 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
       [updatePageParam]
     );
 
+    const handlePdfReady = useCallback(() => {
+      const targetPage = initialPage.current || 1;
+      if (targetPage !== 1) {
+        pdfRef.current?.goToPage(targetPage);
+      }
+    }, []);
+
+    useEffect(() => {
+      if (ref) {
+        if (typeof ref === 'function') {
+          ref(pdfRef.current);
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          (ref as React.MutableRefObject<PDFHandle | null>).current = pdfRef.current;
+        }
+      }
+    }, [ref]);
+
     if (!entity?.mainDocument) {
       return <Translate>Loading</Translate>;
     }
@@ -197,12 +216,13 @@ const PDFView = forwardRef<PDFHandle, PDFViewProps>(
             </div>
             <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'hidden' : 'block'}`}>
               <PDF
-                ref={ref}
+                ref={pdfRef}
                 fileUrl={`/api/files/${filename}`}
                 size={{ height: '100%', width: '90%' }}
                 onSelect={handleTextSelect}
                 onDeselect={handleTextDeselect}
                 onPageChange={handlePageChange}
+                onPdfReady={handlePdfReady}
               />
             </div>
             <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>

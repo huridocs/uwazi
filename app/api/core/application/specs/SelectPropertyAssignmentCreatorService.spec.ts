@@ -264,6 +264,11 @@ const fixtures: DBFixture = {
       factory.property('select_grouped', 'select', {
         content: factory.id('GroupedFruits').toHexString(),
       }),
+
+      factory.property('required_select', 'select', {
+        content: factory.id('Fruits').toHexString(),
+        required: true,
+      }),
     ]),
   ],
 };
@@ -594,5 +599,30 @@ describe('SelectPropertyAssignmentCreatorService', () => {
 
     expect(assignmentsGrouped[0].value).toHaveLength(1);
     expect(assignmentsGrouped[0].value[0].value).toBe('cherry_id');
+  });
+
+  it('should throw when validateRequired is true and a required select property has no value', async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+
+    const sut = new SelectPropertyAssignmentCreatorService(
+      { thesauriDS, translationsDS, settingsDS },
+      { validateRequired: true }
+    );
+
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    await expect(
+      sut.create({
+        template,
+        propertyAssignment: { name: 'required_select', value: [] },
+      })
+    ).rejects.toThrow('Select/MultiSelect Property is required');
   });
 });

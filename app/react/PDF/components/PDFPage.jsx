@@ -9,7 +9,7 @@ import { PDFJS, EventBus } from '../PDFJS.js';
 class PDFPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { rendered: false };
+    this.state = { rendered: false, renderScale: 1 };
   }
 
   componentDidMount() {
@@ -90,10 +90,15 @@ class PDFPage extends Component {
 
   renderReferences() {
     if (this.state.rendered) {
+      const renderScale = this.state.renderScale ?? 1;
       return (
         <>
-          <PageSelections />
-          <PageReferences page={this.props.page} onClick={this.props.highlightReference} />
+          <PageSelections renderScale={renderScale} />
+          <PageReferences
+            page={this.props.page}
+            onClick={this.props.highlightReference}
+            renderScale={renderScale}
+          />
         </>
       );
     }
@@ -119,6 +124,13 @@ class PDFPage extends Component {
           this.props.containerWidth
         );
         const defaultViewport = page.getViewport({ scale });
+
+        if (this._mounted) {
+          this.setState({ renderScale: scale });
+        }
+        if (this.props.onScaleChange) {
+          this.props.onScaleChange(scale);
+        }
 
         this.pdfPageView = new PDFJS.PDFPageView({
           container: this.pageContainer,
@@ -167,6 +179,7 @@ PDFPage.defaultProps = {
   onVisible: () => {},
   onHidden: () => {},
   highlightReference: () => {},
+  onScaleChange: () => {},
 };
 
 PDFPage.propTypes = {
@@ -179,6 +192,7 @@ PDFPage.propTypes = {
   pdf: PropTypes.object.isRequired,
   highlightReference: PropTypes.func,
   containerWidth: PropTypes.number.isRequired,
+  onScaleChange: PropTypes.func,
 };
 
 export { PDFPage };

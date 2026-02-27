@@ -34,7 +34,7 @@ class CreateEntityUseCaseFactory {
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =
-      PropertyAssignmentCreatorServiceStrategy.create({
+      PropertyAssignmentCreatorServiceStrategy.createWithRequired({
         entitiesDS,
         settingsDS,
         thesauriDS,

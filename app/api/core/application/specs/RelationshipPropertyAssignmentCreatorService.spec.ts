@@ -240,6 +240,7 @@ const fixtures: DBFixture = {
         },
       }),
       factory.relationshipProp('rel_prop_no_inherit', 'Document B'),
+      factory.relationshipProp('required_rel', 'Document B', { required: true }),
     ]),
 
     factory.template('Document B', [
@@ -1431,5 +1432,29 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         propertyAssignment: { name: 'text_rel', value: [{ value: 'C1' }] },
       })
     ).rejects.toThrow('expects template');
+  });
+
+  it('should throw when validateRequired is true and a required relationship property has no value', async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+
+    const sut = new RelationshipPropertyAssignmentCreatorService(
+      { entitiesDS, settingsDS },
+      { validateRequired: true }
+    );
+
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document A') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    await expect(
+      sut.create({
+        template,
+        propertyAssignment: { name: 'required_rel', value: [] },
+      })
+    ).rejects.toThrow('Relationship Property is required');
   });
 });

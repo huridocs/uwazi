@@ -4,11 +4,13 @@ import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataS
 import { ThesaurusValue } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
-import {
-  CreatePropertyAssignmentInput,
-  PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
+import {
+  AbstractPropertyAssignmentCreatorService,
+  defaultPropertyAssignmentCreatorServiceContext,
+  PropertyAssignmentCreatorServiceContext,
+} from './AbstractPropertyAssignmentCreatorService.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;
@@ -16,8 +18,13 @@ type Deps = {
   thesauriDS: ThesauriDataSource;
 };
 
-export class SelectPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
-  constructor(private deps: Deps) {}
+export class SelectPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
+  constructor(
+    private deps: Deps,
+    context: PropertyAssignmentCreatorServiceContext = defaultPropertyAssignmentCreatorServiceContext
+  ) {
+    super(context);
+  }
 
   // eslint-disable-next-line max-statements
   async create({
@@ -66,7 +73,11 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
       });
 
       propertyAssignments.push(
-        template.createPropertyAssignment(property.name, { value, language }, true)
+        template.createPropertyAssignment(
+          property.name,
+          { value, language },
+          this.context.validateRequired
+        )
       );
     });
 
