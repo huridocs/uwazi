@@ -62,8 +62,8 @@ describe('migration fix-metadata-integrity', () => {
         sharedId: 'all_empty_string_sharedId',
         description: 'all properties have empty-string values',
         expectedMetadata: [
-          { text: [], select: [], relationship: [] },
-          { text: [], select: [], relationship: [] },
+          { text: [], select: [], relationship: [], daterange: [] },
+          { text: [], select: [], relationship: [], daterange: [] },
         ],
       },
       {
@@ -74,6 +74,7 @@ describe('migration fix-metadata-integrity', () => {
             text: [{ value: 'hello' }],
             select: [],
             relationship: [],
+            daterange: [],
           },
         ],
       },
@@ -85,6 +86,7 @@ describe('migration fix-metadata-integrity', () => {
             text: [],
             select: [],
             relationship: [],
+            daterange: [],
           },
         ],
       },
@@ -96,6 +98,7 @@ describe('migration fix-metadata-integrity', () => {
             text: [{ value: 'some text' }],
             select: [],
             relationship: [],
+            daterange: [],
           },
         ],
       },
@@ -107,6 +110,56 @@ describe('migration fix-metadata-integrity', () => {
             text: [],
             select: [{ value: 'valid_id_1', label: 'Valid Option 1' }],
             relationship: [],
+            daterange: [],
+          },
+        ],
+      },
+      {
+        sharedId: 'daterange_missing_from_sharedId',
+        description: 'daterange entry with absent from is normalized to { from: null, to: 12345 }',
+        expectedMetadata: [
+          {
+            text: [],
+            select: [],
+            relationship: [],
+            daterange: [{ value: { from: null, to: 12345 } }],
+          },
+        ],
+      },
+      {
+        sharedId: 'daterange_missing_to_sharedId',
+        description: 'daterange entry with absent to is normalized to { from: 12345, to: null }',
+        expectedMetadata: [
+          {
+            text: [],
+            select: [],
+            relationship: [],
+            daterange: [{ value: { from: 12345, to: null } }],
+          },
+        ],
+      },
+      {
+        sharedId: 'daterange_missing_both_sharedId',
+        description: 'daterange entry with both from and to absent is removed',
+        expectedMetadata: [
+          {
+            text: [],
+            select: [],
+            relationship: [],
+            daterange: [],
+          },
+        ],
+      },
+      {
+        sharedId: 'daterange_mixed_sharedId',
+        description:
+          'daterange: valid entry kept, missing-from normalized, both-absent entry removed',
+        expectedMetadata: [
+          {
+            text: [],
+            select: [],
+            relationship: [],
+            daterange: [{ value: { from: 1000, to: 2000 } }, { value: { from: null, to: 12345 } }],
           },
         ],
       },
@@ -122,7 +175,7 @@ describe('migration fix-metadata-integrity', () => {
         .find({ sharedId: 'non_select_ghost_sharedId' })
         .toArray();
       expect(entities.map(e => e.metadata)).toEqual([
-        { text: [{ value: 'ghost_id' }], select: [], relationship: [] },
+        { text: [{ value: 'ghost_id' }], select: [], relationship: [], daterange: [] },
       ]);
     });
 

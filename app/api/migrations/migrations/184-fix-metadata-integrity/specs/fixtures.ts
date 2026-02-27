@@ -34,6 +34,7 @@ const templates: Template[] = [
         content: dictionaryId.toString(),
       },
       { _id: new ObjectId(), label: 'Relationship', name: 'relationship', type: 'relationship' },
+      { _id: new ObjectId(), label: 'Date Range', name: 'daterange', type: 'daterange' },
     ],
   },
 ];
@@ -50,6 +51,7 @@ const correctEntities: Entity[] = [
       text: [],
       select: [],
       relationship: [],
+      daterange: [],
     },
   },
   {
@@ -62,6 +64,7 @@ const correctEntities: Entity[] = [
       text: [],
       select: [],
       relationship: [],
+      daterange: [],
     },
   },
   {
@@ -74,6 +77,7 @@ const correctEntities: Entity[] = [
       text: [{ value: 'some text' }],
       select: [{ value: 'valid_id_1', label: 'Valid Option 1' }],
       relationship: [{ value: 'other_sharedId', label: 'Other' }],
+      daterange: [{ value: { from: 1000, to: 2000 } }],
     },
   },
   {
@@ -86,6 +90,7 @@ const correctEntities: Entity[] = [
       text: [],
       select: [{ value: 'valid_id_2', label: 'Valid Option 2 (nested)' }],
       relationship: [],
+      daterange: [],
     },
   },
   {
@@ -106,6 +111,25 @@ const correctEntities: Entity[] = [
       text: [{ value: 'ghost_id' }],
       select: [],
       relationship: [],
+      daterange: [],
+    },
+  },
+  // Daterange entries that are already fully normalized — must not be touched
+  {
+    _id: new ObjectId(),
+    title: 'entity_daterange_already_normalized',
+    sharedId: 'daterange_normalized_sharedId',
+    template: templateId,
+    language: 'en',
+    metadata: {
+      text: [],
+      select: [],
+      relationship: [],
+      daterange: [
+        { value: { from: null, to: 12345 } },
+        { value: { from: 12345, to: null } },
+        { value: { from: null, to: null } },
+      ],
     },
   },
 ];
@@ -123,6 +147,7 @@ const faultyEntities: Entity[] = [
       text: [{ value: '' }],
       select: [{ value: '' }],
       relationship: [{ value: '' }],
+      daterange: [],
     },
   },
   {
@@ -135,6 +160,7 @@ const faultyEntities: Entity[] = [
       text: [{ value: '' }],
       select: [{ value: '' }],
       relationship: [{ value: '' }],
+      daterange: [],
     },
   },
   // Only one property has empty-string value
@@ -148,6 +174,7 @@ const faultyEntities: Entity[] = [
       text: [{ value: 'hello' }],
       select: [{ value: '' }],
       relationship: [],
+      daterange: [],
     },
   },
   // Null values → []
@@ -163,6 +190,7 @@ const faultyEntities: Entity[] = [
       //@ts-ignore
       select: [{ value: null }],
       relationship: [],
+      daterange: [],
     },
   },
   // Select property with only a ghost ref → select becomes []
@@ -176,6 +204,7 @@ const faultyEntities: Entity[] = [
       text: [{ value: 'some text' }],
       select: [{ value: 'ghost_id', label: null }],
       relationship: [],
+      daterange: [],
     },
   },
   // Select property mixing a valid entry and a ghost ref → ghost is removed, valid survives
@@ -192,6 +221,73 @@ const faultyEntities: Entity[] = [
         { value: 'ghost_id', label: null },
       ],
       relationship: [],
+      daterange: [],
+    },
+  },
+  // Daterange: from absent → normalize to { from: null, to: 12345 }
+  {
+    _id: new ObjectId(),
+    title: 'entity_daterange_missing_from',
+    sharedId: 'daterange_missing_from_sharedId',
+    template: templateId,
+    language: 'en',
+    metadata: {
+      text: [],
+      select: [],
+      relationship: [],
+      //@ts-ignore
+      daterange: [{ value: { to: 12345 } }],
+    },
+  },
+  // Daterange: to absent → normalize to { from: 12345, to: null }
+  {
+    _id: new ObjectId(),
+    title: 'entity_daterange_missing_to',
+    sharedId: 'daterange_missing_to_sharedId',
+    template: templateId,
+    language: 'en',
+    metadata: {
+      text: [],
+      select: [],
+      relationship: [],
+      //@ts-ignore
+      daterange: [{ value: { from: 12345 } }],
+    },
+  },
+  // Daterange: both absent → entry removed → []
+  {
+    _id: new ObjectId(),
+    title: 'entity_daterange_missing_both',
+    sharedId: 'daterange_missing_both_sharedId',
+    template: templateId,
+    language: 'en',
+    metadata: {
+      text: [],
+      select: [],
+      relationship: [],
+      //@ts-ignore
+      daterange: [{ value: {} }],
+    },
+  },
+  // Daterange: mixed — valid, missing-from, both-absent
+  // → valid kept, missing-from normalized, both-absent removed
+  {
+    _id: new ObjectId(),
+    title: 'entity_daterange_mixed',
+    sharedId: 'daterange_mixed_sharedId',
+    template: templateId,
+    language: 'en',
+    metadata: {
+      text: [],
+      select: [],
+      relationship: [],
+      daterange: [
+        { value: { from: 1000, to: 2000 } },
+        //@ts-ignore
+        { value: { to: 12345 } },
+        //@ts-ignore
+        { value: {} },
+      ],
     },
   },
 ];

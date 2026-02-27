@@ -1,8 +1,13 @@
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
+interface DateRangeValue {
+  from?: number | null;
+  to?: number | null;
+}
+
 interface MetadataObject {
-  value: string | null;
+  value: string | null | DateRangeValue;
   label?: string | null;
   inheritedValue?: { value: string | null; label?: string; [k: string]: unknown }[];
   inheritedType?: string;
@@ -57,4 +62,12 @@ interface Fixture {
   dictionaries?: ThesaurusSchema[];
 }
 
-export type { Entity, Fixture, Template, MetadataObject, Dictionary, ThesaurusValue };
+export type {
+  Entity,
+  Fixture,
+  Template,
+  MetadataObject,
+  Dictionary,
+  ThesaurusValue,
+  DateRangeValue,
+};
