@@ -17,7 +17,7 @@ export const TranslationMappers = {
   toModel(translation: TranslationDBO): Translation {
     return new Translation(
       translation.key,
-      translation.value,
+      translation.value ?? '',
       translation.language,
       translation.context
     );

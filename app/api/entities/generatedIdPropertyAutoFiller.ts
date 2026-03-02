@@ -1,10 +1,11 @@
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { generateID } from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
 //@ts-ignore
 import PromisePoolModule from '@supercharge/promise-pool';
-const PromisePool =
-  (PromisePoolModule as { default?: typeof PromisePoolModule }).default ?? PromisePoolModule;
+
+const PromisePool = resolveDefaultExport(PromisePoolModule);
 import model from './entitiesModel.js';
 
 const updateRecursively = async (

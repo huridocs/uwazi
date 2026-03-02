@@ -19,8 +19,19 @@ import { advancedSort } from '#app/utils/advancedSort.js';
 import { ClientTranslationSchema } from '#app/istore.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import RenderIfVisible from 'react-render-if-visible';
+import RenderIfVisibleModule from 'react-render-if-visible';
 import { Button, ToggleButton, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+// eslint-disable-next-line react/prop-types -- typed via ComponentType<>
+const Fallback: React.ComponentType<{ children: React.ReactNode }> = ({ children }) => (
+  <>{children}</>
+);
+const RenderIfVisible = resolveDefaultExport<React.ComponentType<{ children: React.ReactNode }>>(
+  RenderIfVisibleModule,
+  Fallback,
+  c => typeof c === 'function'
+);
 import * as translationsAPI from '#V2/api/translations/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
