@@ -20,6 +20,8 @@ describe('validatePasswordMiddleWare', () => {
   const users: UserSchema[] = [];
   const next: NextFunction = jest.fn();
 
+  const encodePassword = (password: string) => Buffer.from(password).toString('base64');
+
   const createRequest = (request: Partial<Request>): Request =>
     <Request>{
       ...request,
@@ -72,7 +74,7 @@ describe('validatePasswordMiddleWare', () => {
     const request = createRequest({
       user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
       body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
-      headers: { authorization: 'Basic wrongPass' },
+      headers: { authorization: `Basic ${encodePassword('wrongPass')}` },
     });
 
     await validatePasswordMiddleWare(request, res, next);
@@ -86,7 +88,7 @@ describe('validatePasswordMiddleWare', () => {
     const emptyPasswordRequest = createRequest({
       user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
       body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
-      headers: { authorization: 'Basic ' },
+      headers: { authorization: `Basic ${encodePassword('')}` },
     });
 
     const noAuthHeaderRequest = createRequest({
@@ -112,7 +114,7 @@ describe('validatePasswordMiddleWare', () => {
     const request = createRequest({
       user: { _id: users[1]._id, username: users[1].username, role: users[1].role },
       body: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-      headers: { authorization: 'Basic editor1234' },
+      headers: { authorization: `Basic ${encodePassword('editor1234')}` },
     });
 
     await validatePasswordMiddleWare(request, res, next);
