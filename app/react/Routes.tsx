@@ -90,7 +90,7 @@ const deconstructSearchQuery = (query?: string) => {
   return `(${query.substring(1)})`;
 };
 
-export type IndexComponents = {
+type IndexComponents = {
   LibraryRoot: React.ComponentType<{ children?: React.ReactNode }>;
   LibraryCards: React.ComponentType<{ params?: { q?: string } }>;
   LibraryTable: React.ComponentType<{ params?: { q?: string } }>;
@@ -414,4 +414,5 @@ const getIndexElement = (settings: ClientSettings | undefined, userId: string | 
   };
 };
 
+export type { IndexComponents };
 export { getRoutes, getIndexElement };

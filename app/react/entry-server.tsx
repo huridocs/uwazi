@@ -1,9 +1,10 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import type { Request as ExpressRequest, Response } from 'express';
-import { join } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   createStaticHandler,
   createStaticRouter,
@@ -24,7 +25,6 @@ import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
-import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
@@ -47,29 +47,6 @@ import { loadIcons } from '#UI/Icon/library.js';
 loadIcons();
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
-
-const ssrLog = (msg: string, data?: Record<string, unknown>) => {
-  if (process.env.DEBUG_SSR) {
-    const payload = data ? ` ${JSON.stringify(data)}` : '';
-    // eslint-disable-next-line no-console
-    console.log(`[SSR] ${msg}${payload}`);
-  }
-};
-
-const describeElementType = (el: React.ReactNode): string => {
-  if (el == null) return String(el);
-  if (typeof el !== 'object') return typeof el;
-  const elem = el as React.ReactElement & { $$typeof?: symbol };
-  if (elem.$$typeof !== Symbol.for('react.element')) return 'not-element';
-  const t = elem.type;
-  if (typeof t === 'string') return `tag:${t}`;
-  if (typeof t === 'function') {
-    return `fn:${(t as { displayName?: string; name?: string }).displayName ?? (t as { name?: string }).name ?? '?'}`;
-  }
-  if (t != null && typeof t === 'object' && '$$typeof' in t) return 'memo/forwardRef';
-  if (typeof t === 'object' && t !== null) return `object:${Object.keys(t as object).join(',')}`;
-  return String(t);
-};
 
 class ServerRenderingFetchError extends Error {
   status: number;
@@ -158,9 +135,10 @@ const getAssets = async () => {
     return Promise.resolve();
   }
 
-  const resolvedPath = join(config.rootPath, 'dist', 'webpack-assets.json');
   return new Promise((resolve, reject) => {
-    fs.readFile(resolvedPath, 'utf8', (err, data) => {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    fs.readFile(`${__dirname}/../../dist/webpack-assets.json`, (err, data) => {
       if (err) {
         reject(
           new Error(`${err}\nwebpack-assets.json do not exists or is malformed !,
@@ -342,16 +320,13 @@ const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
-  ssrLog('request', { path: req.path });
   RouteHandler.renderedFromServer = true;
-  ssrLog('fetching settings + assets');
   const [settings, assets] = await Promise.all([
     settingsApi.get() as Promise<ClientSettings>,
     getAssets(),
   ]);
   const { connection, ...headers } = req.headers;
-  ssrLog('building routes');
-  let indexComponents: IndexComponents | undefined;
+
   const [lib, cards, table, map, login] = await Promise.all([
     import('./Library/Library.js'),
     import('./Library/LibraryCards.js'),
@@ -359,24 +334,17 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     import('./Library/LibraryMap.js'),
     import('./Users/Login.js'),
   ]);
-  indexComponents = {
+
+  const indexComponents: IndexComponents | undefined = {
     LibraryRoot: (lib as { LibraryRoot: IndexComponents['LibraryRoot'] }).LibraryRoot,
     LibraryCards: (cards as { LibraryCards: IndexComponents['LibraryCards'] }).LibraryCards,
     LibraryTable: (table as { LibraryTable: IndexComponents['LibraryTable'] }).LibraryTable,
     LibraryMap: (map as { LibraryMap: IndexComponents['LibraryMap'] }).LibraryMap,
     Login: (login as { Login: IndexComponents['Login'] }).Login,
   };
+
   const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
   const matched = matchRoutes(routes, req.path);
-  ssrLog('matchRoutes done', {
-    path: req.path,
-    matched: matched?.map((m, i) => ({
-      i,
-      pathname: m.pathname,
-      routePath: m.route.path,
-      elementType: describeElementType(m.route.element),
-    })),
-  });
 
   if (matched === null) {
     res.redirect('/404');
@@ -430,7 +398,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
   };
-  ssrLog('setReduxState');
+
   if (req.aborted) {
     logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
     return;
@@ -440,7 +408,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     reduxState,
     matched
   );
-  ssrLog('setReduxState done', { loadingError: !!loadingError });
 
   if (req.aborted) {
     logSSRAborted(req, 'Component HTML', ssrStart, routeName);
@@ -489,7 +456,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   }
   const responseCode = loadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
-  ssrLog('send response', { resStatus });
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };
 
