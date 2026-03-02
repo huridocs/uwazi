@@ -155,6 +155,7 @@ describe('Metadata Display', () => {
           ],
           status_selection: [],
           related_people: [],
+          video_of_event: [{ value: '' }],
         },
       };
 

@@ -12,7 +12,7 @@ const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleVal
   const value = values?.[0]?.value ?? '';
 
   if (value === '') {
-    return undefined;
+    return null;
   }
 
   return (

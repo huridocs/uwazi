@@ -14,11 +14,11 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
 
   if (!values?.length) {
-    return undefined;
+    return null;
   }
 
   if (values.length && !values[0].value) {
-    return undefined;
+    return null;
   }
 
   return (

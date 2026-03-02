@@ -10,8 +10,8 @@ type DateProps = MetadataFieldProps & {
 };
 
 const Date = ({ values, label, translationContext, hideLabel }: DateProps) => {
-  if (values?.length === 0) {
-    return undefined;
+  if (!values?.length) {
+    return null;
   }
 
   return (

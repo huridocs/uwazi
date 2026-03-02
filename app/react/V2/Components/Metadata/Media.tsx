@@ -29,6 +29,10 @@ const Media = ({
     playerRef.current?.seekTo(time, 'seconds');
   };
 
+  if (!value) {
+    return null;
+  }
+
   return (
     <MetadataCard>
       <dt>

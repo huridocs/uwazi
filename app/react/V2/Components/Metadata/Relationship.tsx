@@ -13,7 +13,7 @@ type RelationshipProps = MetadataFieldProps & {
 
 const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => {
   if (!values?.length) {
-    return undefined;
+    return null;
   }
 
   return (

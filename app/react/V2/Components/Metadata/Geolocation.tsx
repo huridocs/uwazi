@@ -45,7 +45,7 @@ const Geolocation = ({
   height = 500,
 }: GeolocationProps) => {
   if (!markers?.length) {
-    return undefined;
+    return null;
   }
 
   return (

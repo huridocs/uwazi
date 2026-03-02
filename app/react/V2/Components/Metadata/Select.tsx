@@ -23,7 +23,7 @@ const formatSelectValue = (
 
 const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => {
   if (!values?.length) {
-    return undefined;
+    return null;
   }
 
   return (
@@ -39,7 +39,7 @@ const Select = ({ label, translationContext, values, hideLabel }: SelectProps) =
         {values.map(value => {
           const formatted = formatSelectValue(value);
           return (
-            <span key={formatted} className="font-medium  ext-gray-90 ">
+            <span key={formatted} className="font-medium text-gray-900">
               {formatted}
             </span>
           );
