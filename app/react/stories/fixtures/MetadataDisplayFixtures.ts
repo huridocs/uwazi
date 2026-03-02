@@ -90,7 +90,7 @@ const templates: Template[] = [
       {
         _id: '1.3',
         type: 'date',
-        label: 'Date',
+        label: 'Single Date',
         noLabel: false,
         name: 'single_date',
       },
