@@ -163,10 +163,48 @@ describe('migration fix-metadata-integrity', () => {
           },
         ],
       },
+      {
+        sharedId: 'mixed_valid_and_empty_sharedId',
+        description: 'mixed valid and empty-string entries: empty entries removed, valid kept',
+        expectedMetadata: [
+          {
+            text: [{ value: 'hello' }, { value: 'world' }],
+            select: [
+              { value: 'valid_id_1', label: 'Valid Option 1' },
+              { value: 'valid_id_2', label: 'Valid Option 2 (nested)' },
+            ],
+            relationship: [{ value: 'other_sharedId', label: 'Other' }],
+            daterange: [],
+          },
+        ],
+      },
     ])('should fix case: $description', async ({ sharedId, expectedMetadata }) => {
       const entities = await db!.collection<Entity>('entities').find({ sharedId }).toArray();
       const metadata = entities.map(e => e.metadata);
       expect(metadata).toEqual(expectedMetadata);
+    });
+
+    it('should not modify entity with metadata: null', async () => {
+      const entities = await db!
+        .collection<Entity>('entities')
+        .find({ sharedId: 'null_metadata_sharedId' })
+        .toArray();
+      expect(entities).toHaveLength(1);
+      expect(entities[0].metadata).toBeNull();
+    });
+
+    it('should not modify entity with a non-array metadata property value', async () => {
+      const entities = await db!
+        .collection<Entity>('entities')
+        .find({ sharedId: 'non_array_metadata_prop_sharedId' })
+        .toArray();
+      expect(entities).toHaveLength(1);
+      expect(entities[0].metadata).toEqual({
+        text: 'not_an_array',
+        select: [],
+        relationship: [],
+        daterange: [],
+      });
     });
 
     it('should not touch non-select properties even if value looks like a ghost ref', async () => {

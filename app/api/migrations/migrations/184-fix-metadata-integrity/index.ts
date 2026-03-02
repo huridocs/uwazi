@@ -17,10 +17,11 @@ export default {
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    // Phase 1: remove entries where value is '' or null from all metadata properties
+    // Phase 1: remove entries where value is '' or null from all metadata properties.
+    // $ne: null guards against entities where metadata is explicitly null (not just absent).
     const phase1Result = await db
       .collection('entities')
-      .updateMany({ metadata: { $exists: true } }, [
+      .updateMany({ metadata: { $exists: true, $ne: null } }, [
         {
           $set: {
             metadata: {
@@ -31,10 +32,17 @@ export default {
                   in: {
                     k: '$$prop.k',
                     v: {
-                      $filter: {
-                        input: '$$prop.v',
-                        as: 'item',
-                        cond: { $not: { $in: ['$$item.value', ['', null]] } },
+                      // $isArray guard: skip malformed properties whose value is not an array
+                      $cond: {
+                        if: { $isArray: '$$prop.v' },
+                        then: {
+                          $filter: {
+                            input: '$$prop.v',
+                            as: 'item',
+                            cond: { $not: { $in: ['$$item.value', ['', null]] } },
+                          },
+                        },
+                        else: '$$prop.v',
                       },
                     },
                   },
@@ -79,7 +87,7 @@ export default {
 
       const phase2Result = await db
         .collection('entities')
-        .updateMany({ metadata: { $exists: true } }, [
+        .updateMany({ metadata: { $exists: true, $ne: null } }, [
           {
             $set: {
               metadata: {
@@ -91,7 +99,12 @@ export default {
                       k: '$$prop.k',
                       v: {
                         $cond: {
-                          if: { $in: ['$$prop.k', Array.from(selectPropNames)] },
+                          if: {
+                            $and: [
+                              { $isArray: '$$prop.v' },
+                              { $in: ['$$prop.k', Array.from(selectPropNames)] },
+                            ],
+                          },
                           then: {
                             $filter: {
                               input: '$$prop.v',
@@ -133,7 +146,7 @@ export default {
     if (dateRangePropNames.length > 0) {
       const phase3Result = await db
         .collection('entities')
-        .updateMany({ metadata: { $exists: true } }, [
+        .updateMany({ metadata: { $exists: true, $ne: null } }, [
           {
             $set: {
               metadata: {
@@ -145,7 +158,12 @@ export default {
                       k: '$$prop.k',
                       v: {
                         $cond: {
-                          if: { $in: ['$$prop.k', dateRangePropNames] },
+                          if: {
+                            $and: [
+                              { $isArray: '$$prop.v' },
+                              { $in: ['$$prop.k', dateRangePropNames] },
+                            ],
+                          },
                           then: {
                             $map: {
                               input: {

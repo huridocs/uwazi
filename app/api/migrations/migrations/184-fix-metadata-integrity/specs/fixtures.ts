@@ -40,6 +40,7 @@ const templates: Template[] = [
 ];
 
 // Entities that are already correct — migration must not touch them
+// (includes edge cases the migration must survive without modifying)
 const correctEntities: Entity[] = [
   {
     _id: new ObjectId(),
@@ -131,6 +132,26 @@ const correctEntities: Entity[] = [
         { value: { from: null, to: null } },
       ],
     },
+  },
+  // Entity with metadata: null — must not be touched (all 3 phases skip it via $ne: null filter)
+  {
+    _id: new ObjectId(),
+    title: 'entity_null_metadata',
+    sharedId: 'null_metadata_sharedId',
+    template: templateId,
+    language: 'en',
+    //@ts-ignore
+    metadata: null,
+  },
+  // Entity with a non-array metadata property value (malformed data) — must not be touched
+  {
+    _id: new ObjectId(),
+    title: 'entity_non_array_metadata_prop',
+    sharedId: 'non_array_metadata_prop_sharedId',
+    template: templateId,
+    language: 'en',
+    //@ts-ignore
+    metadata: { text: 'not_an_array', select: [], relationship: [], daterange: [] },
   },
 ];
 
@@ -288,6 +309,24 @@ const faultyEntities: Entity[] = [
         //@ts-ignore
         { value: {} },
       ],
+    },
+  },
+  // Mixed valid and empty-string values in the same array — valid entries must survive
+  {
+    _id: new ObjectId(),
+    title: 'entity_mixed_valid_and_empty',
+    sharedId: 'mixed_valid_and_empty_sharedId',
+    template: templateId,
+    language: 'en',
+    metadata: {
+      text: [{ value: 'hello' }, { value: '' }, { value: 'world' }],
+      select: [
+        { value: 'valid_id_1', label: 'Valid Option 1' },
+        { value: '' },
+        { value: 'valid_id_2', label: 'Valid Option 2 (nested)' },
+      ],
+      relationship: [{ value: 'other_sharedId', label: 'Other' }, { value: '' }],
+      daterange: [],
     },
   },
 ];
