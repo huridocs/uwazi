@@ -190,9 +190,9 @@ export function indentTocElement(tocElement, indentation) {
 export function addToToc(textSelectedObject, currentToc) {
   return (dispatch, getState) => {
     const state = getState();
-    let toc = state.documentViewer.tocForm.concat();
-    if (!toc.length) {
-      toc = currentToc;
+    let toc = (state.documentViewer.tocForm || []).concat();
+    if (!toc.length && Array.isArray(currentToc)) {
+      toc = currentToc.concat();
     }
     const tocElement = {
       selectionRectangles: textSelectedObject.sourceRange.selectionRectangles,
