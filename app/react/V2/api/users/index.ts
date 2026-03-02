@@ -17,6 +17,9 @@ const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {
   return preparedUser;
 };
 
+// Encode password to base64 to avoid special characters in the password
+const encodePassword = (password: string) => Buffer.from(password).toString('base64');
+
 const newUser = async (
   user: ClientUserSchema,
   currentPassword: string,
@@ -26,7 +29,7 @@ const newUser = async (
     const createdUser = prepareUser(user);
     const requestParams = new RequestParams(createdUser, {
       ...headers,
-      authorization: `Basic ${currentPassword}`,
+      authorization: `Basic ${encodePassword(currentPassword)}`,
     });
     const response = await UsersAPI.new(requestParams);
     return response;
@@ -45,7 +48,7 @@ const updateUser = async (
 
     const requestParams = new RequestParams(updatedUser, {
       ...headers,
-      authorization: `Basic ${currentPassword}`,
+      authorization: `Basic ${encodePassword(currentPassword)}`,
     });
 
     const response = await UsersAPI.save(requestParams);
@@ -65,7 +68,7 @@ const deleteUser = async (
       { ids: users.map(user => user._id) },
       {
         ...headers,
-        authorization: `Basic ${currentPassword}`,
+        authorization: `Basic ${encodePassword(currentPassword)}`,
       }
     );
     const response = await UsersAPI.delete(requestParams);
@@ -112,7 +115,7 @@ const unlockAccount = async (
       { _id: user._id },
       {
         ...headers,
-        authorization: `Basic ${currentPassword}`,
+        authorization: `Basic ${encodePassword(currentPassword)}`,
       }
     );
     const response = await UsersAPI.unlockAccount(requestParams);
@@ -153,7 +156,7 @@ const reset2FA = async (
   try {
     const headersWithAuth = {
       ...headers,
-      authorization: `Basic ${currentPassword}`,
+      authorization: `Basic ${encodePassword(currentPassword)}`,
     };
 
     if (Array.isArray(data)) {

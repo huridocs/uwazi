@@ -14,7 +14,8 @@ const validatePasswordMiddleWare = async (req: Request, res: Response, next: Nex
   const submittedPassword = headers?.authorization?.split('Basic ')[1];
 
   if (submittedPassword) {
-    const validPassword = await validatePassword(submittedPassword, user);
+    const decodedPassword = Buffer.from(submittedPassword, 'base64').toString('utf8');
+    const validPassword = await validatePassword(decodedPassword, user);
 
     if (validPassword) {
       return next();
