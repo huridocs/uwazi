@@ -21,22 +21,32 @@ const formatSelectValue = (
   return displayValue;
 };
 
-const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => (
-  <MetadataCard>
-    <dt>
-      <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-    </dt>
-    <dd className="flex flex-col gap-1">
-      {values.map(value => {
-        const formatted = formatSelectValue(value);
-        return (
-          <span key={formatted} className="font-medium  ext-gray-90 ">
-            {formatted}
-          </span>
-        );
-      })}
-    </dd>
-  </MetadataCard>
-);
+const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => {
+  if (!values?.length) {
+    return undefined;
+  }
+
+  return (
+    <MetadataCard>
+      <dt>
+        <PropertyLabel
+          label={label}
+          translationContext={translationContext}
+          hideLabel={hideLabel}
+        />
+      </dt>
+      <dd className="flex flex-col gap-1">
+        {values.map(value => {
+          const formatted = formatSelectValue(value);
+          return (
+            <span key={formatted} className="font-medium  ext-gray-90 ">
+              {formatted}
+            </span>
+          );
+        })}
+      </dd>
+    </MetadataCard>
+  );
+};
 
 export { Select };

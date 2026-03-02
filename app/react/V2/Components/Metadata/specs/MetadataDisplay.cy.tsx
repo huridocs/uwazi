@@ -101,6 +101,21 @@ describe('Metadata Display', () => {
   });
 
   describe('Empty metadata fields', () => {
+    const checkProperties = () => {
+      cy.contains('dd', 'Title of the displayed entity');
+      cy.contains('dd', 'Oct 2, 2025');
+      cy.contains('dd', 'Oct 13, 2025');
+
+      cy.contains('dt', 'A basic simple text').should('not.exist');
+      cy.contains('dt', 'Single Date').should('not.exist');
+      cy.contains('dt', 'Markdown field using sanitized HTML tags').should('not.exist');
+      cy.contains('dt', 'Media with an image').should('not.exist');
+      cy.contains('dt', 'Grouped geolocation 1').should('not.exist');
+      cy.contains('dt', 'External link').should('not.exist');
+      cy.contains('dt', 'Single select').should('not.exist');
+      cy.contains('dt', 'Relationship with inheritance').should('not.exist');
+    };
+
     it('should not render empty metadata fields', () => {
       Basic.args.dbEntity = {
         _id: '1',
@@ -138,19 +153,32 @@ describe('Metadata Display', () => {
               value: null,
             },
           ],
+          status_selection: [],
+          related_people: [],
         },
       };
 
       mount(<Basic />);
 
-      cy.contains('dt', 'A basic simple text').should('not.exist');
-      cy.contains('dt', 'Single Date').should('not.exist');
-      cy.contains('dt', 'Markdown field using sanitized HTML tags').should('not.exist');
-      cy.contains('dt', 'Media with an image').should('not.exist');
-      cy.contains('dt', 'Grouped geolocation 1').should('not.exist');
-      cy.contains('dt', 'External link').should('not.exist');
+      checkProperties();
     });
 
-    it('should not render missing metadata fields', () => {});
+    it('should not render missing metadata fields', () => {
+      Basic.args.dbEntity = {
+        _id: '1',
+        language: 'en',
+        mongoLanguage: 'en',
+        sharedId: 'shared1',
+        title: 'Title of the displayed entity',
+        template: 'template1',
+        creationDate: 1759374706197, // Oct 2, 2025
+        editDate: 1760366924144, // Oct 13, 2025
+        metadata: {},
+      };
+
+      mount(<Basic />);
+
+      checkProperties();
+    });
   });
 });
