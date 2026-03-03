@@ -24,22 +24,28 @@ const BarChart = loadable(
   { resolveComponent: m => m.BarChartComponent }
 );
 const FreeBarChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx')
+  () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx'),
+  { resolveComponent: m => m.FreeBarChart }
 );
 
 const Slideshow = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js')
+  () => import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js'),
+  { resolveComponent: m => m.Slideshow }
 );
 
 const PieChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js')
+  () => import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js'),
+  { resolveComponent: m => m.PieChart }
 );
 
 const ListChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js')
+  () => import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js'),
+  { resolveComponent: m => m.ListChart }
 );
+
 const GaugeChart = loadable(
-  async () => import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js')
+  () => import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js'),
+  { resolveComponent: m => m.GaugeChart }
 );
 
 export {

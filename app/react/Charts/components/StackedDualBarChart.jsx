@@ -16,8 +16,7 @@ import arrayUtils from '../utils/arrayUtils.js';
 import { ExtendedTooltip } from './ExtendedTooltip.js';
 import { ColoredBar } from './ColoredBar.js';
 
-const StackedDualBarChart = props => {
-  const { data, chartLabel } = props;
+const StackedDualBarChart = ({ data = [], chartLabel = null }) => {
   return (
     <ResponsiveContainer height={320}>
       <BarChart height={300} data={data} margin={{ top: 0, right: 30, left: 0, bottom: 0 }}>
@@ -31,11 +30,6 @@ const StackedDualBarChart = props => {
       </BarChart>
     </ResponsiveContainer>
   );
-};
-
-StackedDualBarChart.defaultProps = {
-  data: [],
-  chartLabel: null,
 };
 
 StackedDualBarChart.propTypes = {

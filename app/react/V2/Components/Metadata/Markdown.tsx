@@ -28,6 +28,10 @@ const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProp
     });
   }, [value]);
 
+  if (safeHtml === '') {
+    return null;
+  }
+
   return (
     <MetadataCard>
       <dt>
