@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 
-import testingDB, { DBFixture } from 'api/utils/testing_db';
+import testingDB, { DBFixture } from '#api/utils/testing_db';
 import migration from '../index';
 import { Entity } from '../types';
 import { fixtures, correctFixtures, correctEntities } from './fixtures';

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from '#shared/types/thesaurusType';
 
 interface DateRangeValue {
   from?: number | null;
