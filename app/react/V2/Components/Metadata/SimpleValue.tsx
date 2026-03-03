@@ -11,6 +11,10 @@ type SimpleValueProps = MetadataFieldProps & {
 const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleValueProps) => {
   const value = values?.[0]?.value ?? '';
 
+  if (value === '') {
+    return null;
+  }
+
   return (
     <MetadataCard>
       <dt>
