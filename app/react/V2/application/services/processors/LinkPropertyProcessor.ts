@@ -1,7 +1,7 @@
-import { LinkMetadataProperty, ValuePropertyTypes } from 'app/V2/domain/entities/types';
-import { ProcessingContext, AdapterMetadataProperty } from './types';
-import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { LinkSchema, MetadataObjectSchema } from 'shared/types/commonTypes';
+import { LinkMetadataProperty, ValuePropertyTypes } from '#app/V2/domain/entities/types.js';
+import { ProcessingContext, AdapterMetadataProperty } from './types.js';
+import { BasePropertyProcessor } from './BasePropertyProcessor.js';
+import { LinkSchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
 export class LinkPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'LinkPropertyProcessor';

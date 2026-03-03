@@ -2,22 +2,21 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { t, Translate } from 'app/I18N';
-import { Entity } from 'V2/domain';
-import { PDF } from 'V2/Components/PDFViewer';
-import type { PDFHandle } from 'V2/Components/PDFViewer';
-import { TemplateLabel } from 'V2/Components/Metadata';
-import { NeedAuthorization, Truncate, Button } from 'V2/Components/UI';
-import { Panel } from 'V2/Components/Layouts/Panel';
-import { isClient } from 'app/utils';
-import { settingsAtom, userAtom } from 'V2/atoms';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { PlainText } from './PlainText';
-import { OCRButton } from './OCRButton';
-import { PAGE_PARAM, VIEW_MODE_PARAM, SIDE_TAB_PARAM } from '../urlParams';
-import type { PdfControllerApi } from './PdfControllerContext';
-import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom';
-import { useReferencesActions } from './ReferencesPanel/referencesAtom';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { t, Translate } from '#app/I18N/index.js';
+import { PDF, PDFHandle } from '#V2/Components/PDFViewer/index.js';
+import { TemplateLabel } from '#V2/Components/Metadata/index.js';
+import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js';
+import { Panel } from '#V2/Components/Layouts/Panel.js';
+import { Entity } from '#V2/domain/entities/Entity.js';
+import { isClient } from '#app/utils/index.js';
+import { settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { PlainText } from './PlainText.js';
+import { OCRButton } from './OCRButton.js';
+import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
+import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom.js';
+import { useReferencesActions } from './ReferencesPanel/referencesAtom.js';
+import { PdfControllerApi } from './PdfControllerContext.js';
 
 type PDFViewProps = {
   mainPdfController: PdfControllerApi;
@@ -27,6 +26,7 @@ type PDFViewProps = {
 
 // eslint-disable-next-line max-statements
 const PDFView = forwardRef<PDFHandle, PDFViewProps>(
+  // eslint-disable-next-line max-statements
   ({ mainPdfController, entity, pagePlaintext }, ref) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const { ocrServiceEnabled } = useAtomValue(settingsAtom);

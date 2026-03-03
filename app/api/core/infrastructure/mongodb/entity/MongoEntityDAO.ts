@@ -1,8 +1,8 @@
-import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { MongoDataSource } from '../common/MongoDataSource';
-import { fileDBO } from '../files/schemas/filesTypes';
-import { WithLookup } from '../common/WithLookup';
+import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { MongoDataSource } from '../common/MongoDataSource.js';
+import { fileDBO } from '../files/schemas/filesTypes.js';
+import { WithLookup } from '../common/WithLookup.js';
 
 type GetWithFilesMatch = {
   language?: LanguageISO6391;

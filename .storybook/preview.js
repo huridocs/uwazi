@@ -1,3 +1,4 @@
+import React from 'react';
 import { configureActions } from '@storybook/addon-actions';
 import '../app/react/App/styles/tailwind.css';
 
@@ -13,4 +14,12 @@ export const parameters = {
       date: /Date$/,
     },
   },
-}
+};
+
+export const decorators = [
+  (Story) => (
+    <div className="tw-content">
+      <Story />
+    </div>
+  ),
+];

@@ -2,7 +2,7 @@
 
 import Immutable from 'immutable';
 
-import { getMarkers } from '../helper';
+import { getMarkers } from '../helper.js';
 
 describe('map helper', () => {
   describe('getMarkers()', () => {

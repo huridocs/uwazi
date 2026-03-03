@@ -1,8 +1,8 @@
-import { UseCase } from 'api/core/libs/UseCase';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import { EntityStatus } from '../domain/PXEntityStatusModel.js';
 
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { PXExtractParagraphsFromEntities } from './PXExtractParagraphFromEntities';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
+import { PXExtractParagraphsFromEntities } from './PXExtractParagraphFromEntities.js';
 
 type Input = {
   userId: string;

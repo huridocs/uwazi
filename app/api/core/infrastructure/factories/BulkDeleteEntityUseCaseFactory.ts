@@ -1,8 +1,8 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { BulkDeleteEntityUseCase } from 'api/core/application/BulkDeleteEntity';
-import { EntitiesServiceFactory } from './EntitiesServiceFactory';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { BulkDeleteEntityUseCase } from '#api/core/application/BulkDeleteEntity.js';
+import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class BulkDeleteEntityUseCaseFactory {
   static default() {

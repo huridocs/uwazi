@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 const HTMLNotification = () => (
   <div className="flex items-center gap-4 p-4 text-primary-700 border-primary-300 bg-primary-100 w-fit">

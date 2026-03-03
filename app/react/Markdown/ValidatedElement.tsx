@@ -1,5 +1,5 @@
 import React from 'react';
-import { extendedHtmlTags, visualizationHtmlTags } from './utils';
+import { extendedHtmlTags, visualizationHtmlTags } from './utils.js';
 
 const isValidTagName = (tagName: string, sanitized: boolean): boolean =>
   !sanitized ? extendedHtmlTags.includes(tagName) : visualizationHtmlTags.includes(tagName);

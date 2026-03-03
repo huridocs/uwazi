@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { ClientTranslationSchema } from 'app/istore';
+import { ClientTranslationSchema } from '#app/istore.js';
 
 const translationsAtom = atom([] as ClientTranslationSchema[]);
 const localeAtom = atom('');

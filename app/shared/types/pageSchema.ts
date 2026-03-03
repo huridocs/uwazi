@@ -1,10 +1,8 @@
 import Ajv from 'ajv';
 
-import templatesModel from 'api/core/v1_layer/templates/templatesModel';
-
-import { objectIdSchema } from 'shared/types/commonSchemas';
-import { wrapValidator } from 'shared/tsUtils';
-import { PageType } from './pageType';
+import { objectIdSchema } from '#shared/types/commonSchemas.js';
+import { wrapValidator } from '#shared/tsUtils.js';
+import { PageType } from './pageType.js';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);
@@ -16,6 +14,9 @@ ajv.addKeyword({
   type: 'object',
   async validate(_fields: any, page: PageType) {
     if (page.sharedId) {
+      const { default: templatesModel } = await import(
+        '#api/core/v1_layer/templates/templatesModel.js'
+      );
       const templates = await templatesModel.get({
         entityViewPage: page.sharedId,
       });

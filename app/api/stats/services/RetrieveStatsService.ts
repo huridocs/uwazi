@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
-import { elastic } from 'api/search';
-import { UserSchema } from 'shared/types/userType';
+import { elastic } from '#api/search/index.js';
+import { UserSchema } from '#shared/types/userType.js';
 
 type RoleCount = {
   _id: UserSchema['role'];

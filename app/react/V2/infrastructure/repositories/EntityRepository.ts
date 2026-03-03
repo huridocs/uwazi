@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'http';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 export interface EntityRepository {
   getBySharedId(

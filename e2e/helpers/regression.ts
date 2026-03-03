@@ -1,11 +1,11 @@
 /*global page*/
 /*global browser*/
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
-import { kebabCase } from 'lodash';
+import _ from 'lodash';
 import { BoundingBox, ElementHandle, Page, ScreenshotOptions } from 'puppeteer';
 
-import { ensure } from 'shared/tsUtils';
-import { host, BROWSER_WINDOW_SIZE } from '../config';
+import { ensure } from '../../app/shared/tsUtils.js';
+import { host, BROWSER_WINDOW_SIZE } from '../config.js';
 
 const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0.3;
 
@@ -20,7 +20,7 @@ const displayGraph = async () => {
     input.getAttribute('value')
   );
 
-  const pageUrl = `${host}/page/${pageID}/${kebabCase(pageTitle || '')}`;
+  const pageUrl = `${host}/page/${pageID}/${_.kebabCase(pageTitle || '')}`;
 
   await expect(page).toClick('a', { text: '(view page)' });
 

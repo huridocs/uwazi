@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { LanguageISO6393 } from 'shared/language/languageISO639_3';
+import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 /**
  * Transforms DBO types (with ObjectId _id) to DTO types (with string _id).

@@ -1,4 +1,4 @@
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
 export type Relation = {
   hub: { toString(): string };

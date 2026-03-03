@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
-import * as types from 'app/Library/actions/actionTypes';
+import * as types from '#app/Library/actions/actionTypes.js';
 
-import uiReducer from 'app/Library/reducers/uiReducer';
+import { uiReducer } from '#app/Library/reducers/uiReducer.js';
 
 describe('uiReducer', () => {
   const initialState = Immutable.fromJS({

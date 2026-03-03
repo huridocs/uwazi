@@ -1,11 +1,11 @@
 import express, { Application } from 'express';
 import request from 'supertest';
-import { tenants } from 'api/tenants';
-import { TenantFeatureFlags } from 'api/tenants/tenantContext';
-import { appContextMiddleware } from '../appContextMiddleware';
-import { multitenantMiddleware } from '../multitenantMiddleware';
+import { tenants } from '#api/tenants/index.js';
+import { TenantFeatureFlags } from '#api/tenants/tenantContext.js';
+import { appContextMiddleware } from '../appContextMiddleware.js';
+import { multitenantMiddleware } from '../multitenantMiddleware.js';
 
-import { featureFlagEnabled } from '../featureFlagEnabledMiddleware';
+import { featureFlagEnabled } from '../featureFlagEnabledMiddleware.js';
 
 const testingRoutes = (app: Application) => {
   app.get(

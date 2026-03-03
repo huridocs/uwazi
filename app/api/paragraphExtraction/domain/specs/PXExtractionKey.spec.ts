@@ -1,4 +1,4 @@
-import { PXExtractionKey } from '../PXExtractionKey';
+import { PXExtractionKey } from '../PXExtractionKey.js';
 
 describe('PXExtractionKey', () => {
   it('should create a PXExtractionKey instance with correct properties', () => {

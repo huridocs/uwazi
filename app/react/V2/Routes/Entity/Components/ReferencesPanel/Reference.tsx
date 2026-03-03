@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { Translate } from 'app/I18N';
-import { EntityReference } from 'app/V2/domain/entities/types';
-import { Button } from 'V2/Components/UI/Button';
+import { Translate } from '#app/I18N/index.js';
+import { EntityReference } from '#V2/domain/entities/types.js';
+import { Button } from '#V2/Components/UI/Button.js';
 
 const getTextColor = (backgroundHex: string): string => {
   if (!backgroundHex) {

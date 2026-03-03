@@ -1,12 +1,12 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
-import ShowIf from 'app/App/ShowIf';
-import { filterOptions } from 'shared/optionsUtils';
-import { t, Translate } from 'app/I18N';
-import { TriStateSelectValue } from 'app/istore';
-import { Icon as CustomIcon } from 'app/Layout/Icon';
+import { ShowIf } from '#app/App/ShowIf.js';
+import { filterOptions } from '#shared/optionsUtils.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { TriStateSelectValue } from '#app/istore.js';
+import { Icon as CustomIcon } from '#app/Layout/Icon.js';
 import React, { Component, createRef, RefObject } from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 type Option = { options?: Option[]; results?: number } & { [k: string]: any };
 enum SelectStates {
@@ -361,7 +361,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
             <Icon icon="chevron-down" className="chevron-down" />
           </span>
           <span className="multiselectItem-name" onClick={clickEvent}>
-            <CustomIcon className="item-icon" data={option.icon} />
+            {option.icon ? <CustomIcon className="item-icon" data={option.icon} /> : null}
             {option[optionsLabel]}
           </span>
           &nbsp;

@@ -1,4 +1,4 @@
-import { clearCookiesAndLogin } from '../helpers';
+import { clearCookiesAndLogin } from '../helpers/index.js';
 import 'cypress-axe';
 
 describe('Settings mobile menu', { viewportWidth: 384, viewportHeight: 768 }, () => {

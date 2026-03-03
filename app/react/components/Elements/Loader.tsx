@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-ignore - SCSS import handled by webpack, ignored by Babel
 import './scss/loader.scss';
 
 const Loader = () => (

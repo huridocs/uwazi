@@ -15,7 +15,7 @@ import {
   addSearchResults,
   getSearch,
   getMoreSearchResults,
-} from './actions';
+} from './actions.js';
 
 export default {
   fetchSearches,

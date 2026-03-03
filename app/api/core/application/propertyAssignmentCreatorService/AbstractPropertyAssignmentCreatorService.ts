@@ -1,8 +1,8 @@
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
+} from './PropertyAssignmentCreatorService.js';
 
 type Context = {
   validateRequired: boolean;

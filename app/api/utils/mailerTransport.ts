@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import fakeMailer from './fakeMailer';
+import fakeMailer from './fakeMailer.js';
 
 export const getMailerTransport = () =>
   process.env.DATABASE_NAME !== 'uwazi_e2e' ? nodemailer : fakeMailer;

@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DeleteTemplateUseCaseFactory } from 'api/core/infrastructure/factories/DeleteTemplateUseCaseFactory';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
 import fixtures, {
   createEntitiesInAllLanguages,
   templateToBeDeleted,
@@ -8,15 +8,15 @@ import fixtures, {
   thesaurusTemplate2Id,
   thesaurusTemplate3Id,
   thesaurusTemplateId,
-} from 'api/core/v1_layer/templates/specs/fixtures/fixtures';
-import templates from 'api/core/v1_layer/templates';
-import db from 'api/utils/testing_db';
-import documents from 'api/documents';
-import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDeletedEvent';
-import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
+} from '#api/core/v1_layer/templates/specs/fixtures/fixtures.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import db from '#api/utils/testing_db.js';
+import documents from '#api/documents/index.js';
+import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import { ObjectId } from 'mongodb';
-import { TemplateInUseError } from 'api/core/domain/template/errors';
-import * as setupSockets from 'api/socketio/setupSockets';
+import { TemplateInUseError } from '#api/core/domain/template/errors.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 
 describe('DeleteTemplateUseCase', () => {
   beforeEach(async () => {

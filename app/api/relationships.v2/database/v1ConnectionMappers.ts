@@ -1,16 +1,16 @@
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import {
   ReadableV1Connection,
   V1Connection,
   V1SelectionRectangle,
   V1TextReference,
-} from '../model/V1Connection';
+} from '../model/V1Connection.js';
 import {
   RectangleDBO,
   ReferenceDBO,
   V1ConnectionDBO,
   V1ConnectionDBOWithEntityInfo,
-} from './schemas/v1ConnectionTypes';
+} from './schemas/v1ConnectionTypes.js';
 
 const mapRectangleToDBO = (rectangle: V1SelectionRectangle): RectangleDBO => ({
   page: rectangle.page,

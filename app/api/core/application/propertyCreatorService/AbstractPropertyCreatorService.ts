@@ -1,6 +1,6 @@
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
-import { Context, Property } from '../../domain/template/Property';
-import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory';
+import { TemplatesDataSource } from '../contracts/TemplatesDataSource.js';
+import { Context, Property } from '../../domain/template/Property.js';
+import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory.js';
 
 type Deps<ExtendedDeps> = {
   templatesDS: TemplatesDataSource;

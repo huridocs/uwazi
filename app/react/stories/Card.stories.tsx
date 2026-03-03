@@ -1,11 +1,12 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Card } from 'V2/Components/UI';
+import { Card } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Cards',
   component: Card,
 };
+export default meta;
 
 type Story = StoryObj<typeof Card>;
 
@@ -28,5 +29,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

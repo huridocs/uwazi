@@ -1,5 +1,5 @@
-import { MigrationFieldUniqueIdentifier } from './relationshipMigrationField.delete';
-import { ResponseElement } from './relationshipMigrationField.get';
+import { MigrationFieldUniqueIdentifier } from './relationshipMigrationField.delete.js';
+import { ResponseElement } from './relationshipMigrationField.get.js';
 
 type UpdateRelationshipMigrationFieldRequest = MigrationFieldUniqueIdentifier & {
   ignored?: boolean;

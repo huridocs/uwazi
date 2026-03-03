@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { ShowSidepanelMenu } from '../ShowSidepanelMenu';
+import { ShowSidepanelMenu } from '../ShowSidepanelMenu.js';
 
 describe('ShowSidepanelMenu', () => {
   let component;

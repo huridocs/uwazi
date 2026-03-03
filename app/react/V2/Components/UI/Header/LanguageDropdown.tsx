@@ -2,12 +2,12 @@ import React, { useRef, useState, useCallback } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
 import { ChevronDownIcon, ChevronUpIcon, LanguageIcon } from '@heroicons/react/20/solid';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
-import { inlineEditAtom, localeAtom, settingsAtom } from 'V2/atoms';
-import { Translate } from 'app/I18N';
-import { useIsMobile } from 'app/V2/CustomHooks/useIsMobile';
-import { NeedAuthorization } from 'V2/Components/UI';
+import { LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
+import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
+import { NeedAuthorization } from '#V2/Components/UI/index.js';
 
 interface LanguageDropdownProps {
   className?: string;

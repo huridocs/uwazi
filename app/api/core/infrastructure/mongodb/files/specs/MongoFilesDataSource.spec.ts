@@ -1,18 +1,18 @@
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { ProcessingPDF } from 'api/core/domain/files/ProcessingPDF';
-import { FileNotFound } from 'api/core/domain/files/errors';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
-import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { URLAttachment } from 'api/core/domain/files/URLAttachment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { search } from 'api/search';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoFilesDataSource } from '../MongoFilesDataSource';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { FileNotFound } from '#api/core/domain/files/errors.js';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { search } from '#api/search/index.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { MongoFilesDataSource } from '../MongoFilesDataSource.js';
 
 const f = getFixturesFactory();
 

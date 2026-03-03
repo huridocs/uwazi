@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { MongoEntityMapper } from '../entity/MongoEntityMapper';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { MongoEntityMapper } from '../entity/MongoEntityMapper.js';
 
 const factory = getFixturesFactory();
 

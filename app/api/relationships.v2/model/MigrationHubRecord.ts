@@ -1,4 +1,4 @@
-import { ReadableV1Connection } from './V1Connection';
+import { ReadableV1Connection } from './V1Connection.js';
 
 class MigrationHubRecord {
   hubId: string;

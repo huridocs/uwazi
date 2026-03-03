@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login.js';
 
 describe('Menu configuration', () => {
   before(() => {

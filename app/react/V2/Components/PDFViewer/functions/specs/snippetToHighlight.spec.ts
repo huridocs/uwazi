@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import { highlightSnippetInPage, clearSnippets } from '../snippetToHighlight';
+import { highlightSnippetInPage, clearSnippets } from '../snippetToHighlight.js';
 
 const joinText = (nodes: NodeListOf<Element>): string =>
   Array.from(nodes)

@@ -1,13 +1,13 @@
-import { generateFileName } from 'api/files';
-import { tenants } from 'api/tenants';
-import { NextFunction, Request, Response } from 'express';
+import { generateFileName } from '#api/files/index.js';
+import { tenants } from '#api/tenants/index.js';
+import type { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
-import { FileType } from 'shared/types/fileType';
-import { legacyLogger } from 'api/log';
+import { FileType } from '#shared/types/fileType.js';
+import { legacyLogger } from '#api/log/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { storage } from './storage';
+import { storage } from './storage.js';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 

@@ -1,10 +1,10 @@
 import { Store } from 'redux';
-import { AtomStoreData } from 'app/V2/atoms';
-import { ClientFeatureFlags } from 'app/V2/shared/types';
-import { RequestError } from 'app/V2/shared/errorUtils';
-import { IStore } from 'app/istore';
-import { updatePageDatasets } from 'app/Pages/utils/updatePageDatasets';
-import { openEntitySidePanel } from 'app/Pages/utils/openEntitySidePanel';
+import { AtomStoreData } from '#V2/atoms/index.js';
+import { ClientFeatureFlags } from '#app/V2/shared/types.js';
+import { RequestError } from '#app/V2/shared/errorUtils.js';
+import { IStore } from '#app/istore.js';
+import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
+import { openEntitySidePanel } from '#app/Pages/utils/openEntitySidePanel.js';
 
 declare global {
   namespace jest {

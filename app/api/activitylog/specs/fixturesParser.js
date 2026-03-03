@@ -1,4 +1,4 @@
-import { testingDB } from 'api/utils/testing_db';
+import { testingDB } from '#api/utils/testing_db.js';
 
 const firstTemplate = testingDB.id();
 const firstDoc = testingDB.id();

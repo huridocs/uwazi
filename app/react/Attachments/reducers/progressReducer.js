@@ -1,9 +1,9 @@
-import { fromJS as Immutable } from 'immutable';
-import * as types from '../actions/actionTypes';
+import Immutable from '#shared/immutableWrapper.js';
+import * as types from '../actions/actionTypes.js';
 
 const initialState = {};
 
-export default function documents(state = initialState, action = {}) {
+const documents = (state = initialState, action = {}) => {
   if (action.type === types.START_UPLOAD_ATTACHMENT) {
     return state.set(action.entity, 0);
   }
@@ -20,5 +20,7 @@ export default function documents(state = initialState, action = {}) {
     return state.delete(action.entity);
   }
 
-  return Immutable(state);
-}
+  return Immutable.fromJS(state);
+};
+
+export { documents };

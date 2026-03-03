@@ -1,20 +1,20 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ObjectId } from 'mongodb';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { ThesaurusNameAlreadyExistsError } from 'api/core/domain/thesaurus/errors';
-import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants/tenantContext';
-import { CreateThesaurusUseCase } from '../CreateThesaurus';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
-import { ThesauriService } from '../ThesauriService';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { ThesaurusNameAlreadyExistsError } from '#api/core/domain/thesaurus/errors.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { ThesauriService } from '../ThesauriService.js';
 
 const factory = getFixturesFactory();
 

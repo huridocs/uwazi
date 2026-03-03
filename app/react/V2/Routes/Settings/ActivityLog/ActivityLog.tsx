@@ -3,22 +3,23 @@ import React, { useState } from 'react';
 import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, PaginationState, Paginator, Pill, Table } from 'app/V2/Components/UI';
-import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
-import { getActivityLogColumns } from './components/TableElements';
-import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
-import { FiltersSidePanel } from './components/FiltersSidePanel';
-import type { LoaderData } from './ActivityLogLoader';
+
+import { Translate } from '#app/I18N/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, PaginationState, Paginator, Pill, Table } from '#V2/Components/UI/index.js';
+import { useIsFirstRender } from '#V2/CustomHooks/useIsFirstRender.js';
+import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
+import { getActivityLogColumns } from './components/TableElements.js';
+import { ActivityLogSidePanel } from './components/ActivityLogSidePanel.js';
+import { FiltersSidePanel } from './components/FiltersSidePanel.js';
+import type { LoaderData } from './ActivityLogLoader.js';
 import {
   getAppliedFilters,
   updateSearch,
   ActivityLogSearch,
   ITEMS_PER_PAGE,
   buildPageURL,
-} from './ActivityLogLoader';
+} from './ActivityLogLoader.js';
 
 const funnelColor = (appliedFiltersCount: number): string =>
   appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';

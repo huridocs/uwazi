@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 
-import logger from 'api/migrations/logger';
+import logger from '#api/migrations/logger.js';
 
 const migrationName = 'sanitize-string-geolocations';
 

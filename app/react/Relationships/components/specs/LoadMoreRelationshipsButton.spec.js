@@ -1,11 +1,16 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
-import { LoadMoreRelationshipsButton, mapStateToProps } from '../LoadMoreRelationshipsButton';
+import Immutable from 'immutable';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
+import { LoadMoreRelationshipsButton, mapStateToProps } from '../LoadMoreRelationshipsButton.jsx';
+import * as connectionsListActions from '#app/ConnectionsList/actions/actions.js';
 
 jest.mock('app/I18N', () => ({
   t: (_context, key) => key,
   Translate: ({ children }) => children,
+}));
+
+jest.mock('#app/ConnectionsList/actions/actions.js', () => ({
+  ...jest.requireActual('#app/ConnectionsList/actions/actions.js'),
+  loadMoreReferences: jest.fn(_limit => () => {}),
 }));
 
 describe('LoadMoreRelationshipsButton', () => {
@@ -16,13 +21,23 @@ describe('LoadMoreRelationshipsButton', () => {
     props = {
       totalHubs: 4,
       requestedHubs: 4,
-      action: jasmine.createSpy('action'),
       loadMoreAmmount: 2,
     };
+    jest.clearAllMocks();
   });
 
   const render = () => {
-    component = shallow(<LoadMoreRelationshipsButton {...props} />);
+    const storeData = {
+      relationships: {
+        list: {
+          searchResults: Immutable.fromJS({
+            totalHubs: props.totalHubs,
+            requestedHubs: props.requestedHubs,
+          }),
+        },
+      },
+    };
+    component = renderConnected(LoadMoreRelationshipsButton, props, storeData);
   };
 
   it('should not render a button when all hubs loaded', () => {
@@ -44,7 +59,7 @@ describe('LoadMoreRelationshipsButton', () => {
     it('should call on the passed function upon click with previously requestedHubs', () => {
       const button = component.find('button');
       button.simulate('click');
-      expect(props.action).toHaveBeenCalledWith(5);
+      expect(connectionsListActions.loadMoreReferences).toHaveBeenCalledWith(13);
     });
   });
 
@@ -53,7 +68,10 @@ describe('LoadMoreRelationshipsButton', () => {
       const state = {
         relationships: {
           list: {
-            searchResults: fromJS({ totalHubs: 'totalHubs', requestedHubs: 'requestedHubs' }),
+            searchResults: Immutable.fromJS({
+              totalHubs: 'totalHubs',
+              requestedHubs: 'requestedHubs',
+            }),
           },
         },
       };

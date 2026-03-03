@@ -1,20 +1,20 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { Entity } from 'api/core/domain/entity/Entity';
-import { Template } from 'api/core/domain/template/Template';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FilesService } from 'api/core/application/FilesService';
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { CsvImport, CsvImportDomain } from '../../domain/CsvImport';
-import { CsvImportRow } from '../../domain/CsvImportRow';
-import { CsvImportRowError } from '../../domain/CsvImportRowError';
-import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource';
-import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer';
-import { AppliedValueIndex, CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper';
-import { CsvImportRowFilesResolver } from '../services/CsvImportRowFilesResolver';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FilesService } from '#api/core/application/FilesService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { CsvImport, CsvImportDomain } from '../../domain/CsvImport.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
+import { CsvImportRowError } from '../../domain/CsvImportRowError.js';
+import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
+import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
+import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer.js';
+import { AppliedValueIndex, CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
+import { CsvImportRowFilesResolver } from '../services/CsvImportRowFilesResolver.js';
 
 type BatchContext = {
   csvImport: CsvImport;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 const DefaultNoDataMessage = () => (
   <div className="p-10 text-center">

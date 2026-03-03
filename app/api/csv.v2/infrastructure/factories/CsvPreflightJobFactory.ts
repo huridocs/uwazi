@@ -1,20 +1,20 @@
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { tenants } from 'api/tenants/tenantContext';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
-import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories';
-import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
-import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
-import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
-import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
+import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories.js';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
+import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
 
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;

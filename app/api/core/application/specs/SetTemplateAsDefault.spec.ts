@@ -1,11 +1,11 @@
 /* eslint-disable max-statements */
-import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { SetTemplateAsDefaultUseCaseFactory } from '#api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import {
   TemplateDoesNotExistError,
   DefaultTemplateConflictError,
-} from 'api/core/domain/template/errors';
+} from '#api/core/domain/template/errors.js';
 
 const factory = getFixturesFactory();
 

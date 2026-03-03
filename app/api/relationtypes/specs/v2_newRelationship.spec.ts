@@ -1,7 +1,7 @@
-import relationtypes from 'api/relationtypes/relationtypes';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import relationtypes from '#api/relationtypes/relationtypes.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 const factory = getFixturesFactory();
 

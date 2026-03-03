@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import { Job } from '../QueueAdapter';
-import { QueueAdapter } from '../QueueAdapter';
-import { JobDBO } from '../MongoQueueAdapter';
+import { Job } from '../QueueAdapter.js';
+import { QueueAdapter } from '../QueueAdapter.js';
+import { JobDBO } from '../MongoQueueAdapter.js';
 
 type TestJobData = Partial<JobDBO> & { failed?: boolean; timestamp?: number };
 

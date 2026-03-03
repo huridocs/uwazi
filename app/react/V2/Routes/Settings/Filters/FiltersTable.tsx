@@ -5,13 +5,13 @@ import { useSetAtom } from 'jotai';
 import { IncomingHttpHeaders } from 'http';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { Translate } from 'app/I18N';
-import { notificationAtom, settingsAtom } from 'V2/atoms';
-import * as settingsAPI from 'V2/api/settings';
-import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table, ConfirmNavigationModal } from 'V2/Components/UI';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { Translate } from '#app/I18N/index.js';
+import { notificationAtom, settingsAtom } from '#V2/atoms/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, Table, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import {
   createColumns,
   AddTemplatesModal,
@@ -25,7 +25,7 @@ import {
   sanitizeFilters,
   formatFilters,
   Filter,
-} from './components';
+} from './components/index.js';
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>

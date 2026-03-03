@@ -2,8 +2,8 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { SearchItemComponent as SearchItem, mapDispatchToProps } from '../SearchItem';
-import * as actions from '../../actions/actions';
+import { SearchItemComponent as SearchItem, mapDispatchToProps } from '../SearchItem.js';
+import * as actions from '../../actions/actions.js';
 
 describe('SearchItem', () => {
   let search;

@@ -1,4 +1,4 @@
-import db, { DBFixture } from 'api/utils/testing_db';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
 const templateWithMismatchesId = db.id();
 const templateCorrectId = db.id();

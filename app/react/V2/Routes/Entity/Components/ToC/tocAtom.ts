@@ -1,9 +1,9 @@
 import { atom, useAtomValue, useAtom } from 'jotai';
 import { atomWithReset, useResetAtom } from 'jotai/utils';
-import { TocSchema } from 'shared/types/commonTypes';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { sortTocEntries } from './ToC';
-import { normalizeToc, findItemsWithChildren } from './utils';
+import { TocSchema } from '#shared/types/commonTypes.js';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { sortTocEntries } from './ToC.js';
+import { normalizeToc, findItemsWithChildren } from './utils.js';
 
 type TocState = {
   toc: TocSchema[] | undefined;

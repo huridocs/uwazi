@@ -1,8 +1,8 @@
-import entities from 'api/entities/entities';
+import entities from '#api/entities/entities.js';
 
 import { ObjectId } from 'mongodb';
-import { search } from '../search';
-import model from './model';
+import { search } from '../search/index.js';
+import model from './model.js';
 
 const getMatchingHubsCount = async (entitySharedId, searchResultIds, filteredConnections) => {
   const [countResult] = await model.db.aggregate([

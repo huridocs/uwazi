@@ -1,9 +1,9 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ArrangeColumnsError } from '../validateColumns';
-import { CSVLoader } from '../csvLoader';
-import { mockCsvFileReadStream } from './helpers';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { ArrangeColumnsError } from '../validateColumns.js';
+import { CSVLoader } from '../csvLoader.js';
+import { mockCsvFileReadStream } from './helpers.js';
 
 const loader = new CSVLoader();
 const fixtureFactory = getFixturesFactory();

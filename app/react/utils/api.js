@@ -1,12 +1,12 @@
 import { redirect } from 'react-router';
-import { isClient } from 'app/utils';
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { store } from 'app/store';
-import loadingBar from 'app/App/LoadingProgressBar';
-import { t } from 'app/I18N';
+import { isClient } from '#app/utils/index.js';
+import { notify } from '#app/Notifications/actions/notificationsActions.js';
+import { store } from '#app/store.js';
+import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
+import { t } from '#app/I18N/index.js';
 
 import { APIURL } from '../config.js';
-import request from '../../shared/JSONRequest';
+import request from '../../shared/JSONRequest.js';
 
 let API_URL = APIURL;
 let language;
@@ -161,24 +161,20 @@ const _request = (url, req, method) => {
     });
 };
 
-export default {
+const api = {
   get: (url, req = {}) => _request(url, req, 'get'),
-
   post: (url, req = {}) => _request(url, req, 'post'),
-
   put: (url, req = {}) => _request(url, req, 'put'),
-
   delete: (url, req = {}) => _request(url, req, 'delete'),
-
   cookie(c) {
     request.cookie(c);
   },
-
   locale(locale) {
     language = locale;
   },
-
   APIURL(url) {
     API_URL = url;
   },
 };
+
+export { api };

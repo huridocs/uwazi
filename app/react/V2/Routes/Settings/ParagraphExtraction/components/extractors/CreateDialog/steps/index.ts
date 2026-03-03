@@ -1,6 +1,6 @@
-import { TargetTemplateStep } from './TargetTemplate';
-import { SourceTemplateStep } from './SourceTemplate';
-import { ExtractionConfigurationStep } from './ExtractionConfiguration';
+import { TargetTemplateStep } from './TargetTemplate/index.js';
+import { SourceTemplateStep } from './SourceTemplate/index.js';
+import { ExtractionConfigurationStep } from './ExtractionConfiguration/index.js';
 
 const AddExtractorSteps: Record<
   number,

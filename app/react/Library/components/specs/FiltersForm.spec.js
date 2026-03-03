@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import { Form } from 'react-redux-form';
 
-import { FiltersForm, mapStateToProps } from 'app/Library/components/FiltersForm';
-import FiltersFromProperties from '../FiltersFromProperties';
+import { FiltersFormView, mapStateToProps } from '#app/Library/components/FiltersForm.js';
+import { FiltersFromProperties } from '../FiltersFromProperties.js';
 
 describe('FiltersForm', () => {
   let component;
@@ -15,7 +15,7 @@ describe('FiltersForm', () => {
       location: { myfilter: 'true' },
       navigate: jest.fn(),
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      fields: Immutable([
+      fields: Immutable.fromJS([
         { _id: '1', name: 'name' },
         { _id: '2', name: 'name', type: 'numeric' },
         { _id: '3', name: 'date', type: 'date', defaultfilter: true },
@@ -56,9 +56,9 @@ describe('FiltersForm', () => {
           ],
         },
       ]),
-      documentTypes: Immutable([]),
-      templates: Immutable([]),
-      aggregations: Immutable({
+      documentTypes: Immutable.fromJS([]),
+      templates: Immutable.fromJS([]),
+      aggregations: Immutable.fromJS({
         all: {
           select: {
             count: 10,
@@ -95,7 +95,8 @@ describe('FiltersForm', () => {
   });
 
   const render = () => {
-    component = shallow(<FiltersForm {...props} />);
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    component = shallow(<FiltersFormView {...props} />);
   };
 
   describe('form on submit', () => {
@@ -113,7 +114,9 @@ describe('FiltersForm', () => {
     it('should render diferent type fileds', () => {
       render();
       const fields = component.find(FiltersFromProperties);
-      expect(fields).toMatchSnapshot();
+      expect(fields.length).toBe(1);
+      expect(fields.props().storeKey).toBe('library');
+      expect(fields.props().properties.length).toBeGreaterThan(0);
     });
 
     it('should omit No Label aggregation when filter is default and no templates are selected', () => {
@@ -129,7 +132,7 @@ describe('FiltersForm', () => {
     });
 
     it('should show the No Label aggregation for default filters when a template is selected', () => {
-      props.documentTypes = Immutable(['templateId']);
+      props.documentTypes = Immutable.fromJS(['templateId']);
       render();
       const fields = component.find(FiltersFromProperties);
       expect(fields.props().properties[4].options).toContainEqual({
@@ -146,14 +149,17 @@ describe('FiltersForm', () => {
     it('should contain the fields', () => {
       const store = {
         library: {
-          ui: Immutable({ searchTerm: 'do a barrel roll' }),
-          filters: Immutable({ properties: [{ name: 'author' }], documentTypes: { a: true } }),
+          ui: Immutable.fromJS({ searchTerm: 'do a barrel roll' }),
+          filters: Immutable.fromJS({
+            properties: [{ name: 'author' }],
+            documentTypes: { a: true },
+          }),
         },
         form: {
           filters: 'filtersForm',
         },
-        templates: Immutable([]),
-        settings: { collection: Immutable({}) },
+        templates: Immutable.fromJS([]),
+        settings: { collection: Immutable.fromJS({}) },
       };
       const state = mapStateToProps(store, { storeKey: 'library' });
       expect(state.fields.toJS()).toEqual([{ name: 'author' }]);

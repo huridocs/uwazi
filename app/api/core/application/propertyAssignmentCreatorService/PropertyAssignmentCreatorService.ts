@@ -1,7 +1,7 @@
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { Template } from 'api/core/domain/template/Template';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type PropertyValueInput =
   | { attachment: number; timeLinks?: string }

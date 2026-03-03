@@ -1,11 +1,11 @@
-import 'api/utils/jasmineHelpers';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import '#api/utils/jasmineHelpers.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { ObjectId } from 'mongodb';
-import instrumentRoutes from '../../utils/instrumentRoutes';
+import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import thesauriRoute from '../routes.js';
-import thesauri from '../thesauri';
-import { fixtures } from './fixtures';
+import thesauri from '../thesauri.js';
+import { fixtures } from './fixtures.js';
 
 describe('thesauri routes', () => {
   let routes;

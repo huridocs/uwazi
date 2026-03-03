@@ -1,6 +1,6 @@
 import Leaflet, { TileLayer } from 'leaflet';
-import { t } from 'app/I18N';
-import { getGoogleLayer } from 'app/Map/GoogleMapLayer';
+import { t } from '#app/I18N/index.js';
+import { getGoogleLayer } from '#app/Map/GoogleMapLayer.js';
 
 const DEFAULT_MAPBOX_TOKEN =
   'pk.eyJ1Ijoibnd5dSIsImEiOiJjazlta3liaWowMHBkM2pwaHFiaG0wcDBqIn0.47wbPKb2A4u3iCt34qrSRw';

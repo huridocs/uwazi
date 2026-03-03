@@ -1,8 +1,9 @@
 /* eslint-disable */
-'use strict';
+import configFactory from './webpack/config.cjs';
 
-var config = require('./webpack/config')();
-
-config.context = __dirname;
-
-module.exports = config;
+export default (env) => {
+  const isProduction = env?.production || process.env.NODE_ENV === 'production';
+  const config = configFactory(isProduction);
+  config.context = import.meta.url.replace('file://', '').replace('/webpack.config.js', '');
+  return config;
+};

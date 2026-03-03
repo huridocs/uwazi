@@ -45,7 +45,7 @@ exports[`Metadata should render title and templateType when and showTitle 1`] = 
   className="item-info"
 >
   <div>
-    <Icon
+    <Connect(Icon)
       className="item-icon item-icon-center"
     />
     <h1

@@ -1,13 +1,18 @@
-import { Template, ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
-import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
-import { Entity } from 'app/V2/domain';
+import {
+  Template,
+  ClientSettings,
+  ClientThesaurus,
+  ClientUserSchema,
+} from '#app/apiResponseTypes.js';
+import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/istore.js';
+import { Entity } from '#app/V2/domain/index.js';
 import {
   EntityReference,
   EntityTemplate,
   ExtendedPropertyInfo,
   MetadataProperty,
-} from 'app/V2/domain/entities/types';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
+} from '#app/V2/domain/entities/types.js';
+import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
 export interface ProcessingContext extends CompositionOptions {
   readonly userId?: string;

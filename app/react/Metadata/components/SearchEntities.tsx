@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-import SearchResults from 'app/Connections/components/SearchResults';
-import { EntitySchema } from 'shared/types/entityType';
-import SearchInput from 'app/Layout/SearchInput';
-import { debounce } from 'app/utils';
-import { RequestParams } from 'app/utils/RequestParams';
-import { IImmutable } from 'shared/types/Immutable';
+import { SearchResults } from '#app/Connections/components/SearchResults.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { SearchInput } from '#app/Layout/SearchInput.js';
+import { debounce } from '#app/utils/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 import Immutable from 'immutable';
-import SearchApi from 'app/Search/SearchAPI';
+import { SearchAPI } from '#app/Search/SearchAPI.js';
 
 export type SearchEntitiesProps = {
   onSelect: Function;
@@ -54,7 +54,7 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
       includeUnpublished: true,
     });
 
-    return SearchApi.search(requestParams).then(
+    return SearchAPI.search(requestParams).then(
       ({ rows: searchResults }: { rows: EntitySchema }) => {
         this.setState({
           searchResults: Immutable.fromJS(searchResults),

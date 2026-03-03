@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tooltip } from 'flowbite-react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 type TooltipProps = { content: 'accuracy' };
 

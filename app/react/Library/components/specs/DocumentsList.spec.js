@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable, { fromJS } from 'immutable';
+import Immutable from 'immutable';
 
-import { clickOnDocument, selectAllDocuments, mapStateToProps } from '../DocumentsList';
-import { DocumentsList } from '../../../Layout/DocumentsList';
+import { clickOnDocument, selectAllDocuments, mapStateToProps } from '../DocumentsList.js';
+import { DocumentsList } from '../../../Layout/DocumentsList.js';
 
 describe('Library DocumentsList container', () => {
   let component;
@@ -107,16 +107,20 @@ describe('Library DocumentsList container', () => {
 
   describe('maped state', () => {
     it('should contain the documents, library filters and search options', () => {
-      const filters = fromJS({ documentTypes: [] });
+      const filters = Immutable.fromJS({ documentTypes: [] });
 
       const store = {
         library: {
           documents,
           filters,
-          ui: fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'], zoomLevel: 2 }),
+          ui: Immutable.fromJS({
+            filtersPanel: 'panel',
+            selectedDocuments: ['selected'],
+            zoomLevel: 2,
+          }),
           search: { sort: 'sortProperty' },
         },
-        user: fromJS({ _id: 'uid' }),
+        user: Immutable.fromJS({ _id: 'uid' }),
       };
 
       const state = mapStateToProps(store, { storeKey: 'library' });

@@ -1,5 +1,5 @@
-import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from '../errors';
-import { TitleProperty } from '../TitleProperty';
+import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from '../errors.js';
+import { TitleProperty } from '../TitleProperty.js';
 
 describe('TitleProperty', () => {
   it('should set defaults values if not provided', () => {
