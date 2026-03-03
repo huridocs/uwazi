@@ -1,6 +1,7 @@
 import 'cypress-axe';
+// @ts-ignore
 import { SinonSpy } from 'cypress/types/sinon';
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 let spy: Cypress.Agent<SinonSpy<any[], any>>;

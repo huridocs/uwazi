@@ -1,12 +1,10 @@
-import React from 'react';
-
-import { shallow } from 'enzyme';
-import { ResultsSidePanel } from '../ResultsSidePanel';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
+import { ResultsSidePanel } from '../ResultsSidePanel.jsx';
 
 describe('DocumentResults', () => {
   let component;
   beforeEach(() => {
-    component = shallow(<ResultsSidePanel />);
+    component = renderConnected(ResultsSidePanel, {}, {});
   });
 
   describe('render', () => {

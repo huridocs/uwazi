@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import settings from 'api/settings/settings';
+import type { Request, Response, NextFunction } from 'express';
+import settings from '#api/settings/settings.js';
 
 const serviceMiddleware = async (_req: Request, res: Response, next: NextFunction) => {
   const { features } = await settings.get();

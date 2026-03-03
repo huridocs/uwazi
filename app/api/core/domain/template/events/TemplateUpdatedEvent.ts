@@ -1,6 +1,6 @@
-import { AbstractEvent } from 'api/core/libs/eventsbus';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
+import { AbstractEvent } from '#api/core/libs/eventsbus/index.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 export type TemplateUpdatedEventContext = {
   fullReindex: boolean;

@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer.js';
 
 type RowFiles = {
   attachments: InputFile[];

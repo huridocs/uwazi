@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb';
 import Ajv, { ErrorObject } from 'ajv';
 import { isUndefined, isNull } from 'util';
-import { ensure } from 'shared/tsUtils';
-import { propertyTypes } from 'shared/propertyTypes';
-import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
-import entities from 'api/entities';
-import thesauris from 'api/thesauri';
-import { flatThesaurusValues } from 'api/thesauri/thesauri';
-import { validators, customErrorMessages } from './metadataValidators';
+import { ensure } from '#shared/tsUtils.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { PropertySchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
+import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
+import entities from '#api/entities/index.js';
+import thesauris from '#api/thesauri/index.js';
+import { flatThesaurusValues } from '#api/thesauri/thesauri.js';
+import { validators, customErrorMessages } from './metadataValidators.js';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 

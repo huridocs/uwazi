@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { spawn } from 'child_process';
-import { Result, ResultType } from '../Result';
+import { Result, ResultType } from '../Result.js';
 
 export class ShellError extends Error {
   constructor(error: Error) {

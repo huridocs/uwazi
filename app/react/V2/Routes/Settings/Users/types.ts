@@ -1,4 +1,4 @@
-import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientUserGroupSchema, ClientUserSchema } from '#app/apiResponseTypes.js';
 
 type FormIntent =
   | 'new-user'

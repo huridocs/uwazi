@@ -1,17 +1,16 @@
-import { setUpApp } from 'api/utils/testingRoutes';
+import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-
-import { WithId } from 'api/odm/model.js';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { NextFunction, Request, Response } from 'express';
 import { DeleteResult } from 'mongodb';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
-import { DomainError } from 'api/core/domain/error/DomainError';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { WithId } from '#api/odm/model.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { UserSchema } from '#shared/types/userType.js';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';
-import { PUBLIC_USER_ID } from '../publicUser';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',

@@ -1,4 +1,4 @@
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 import React from 'react';
 
 const NoQualifiedTemplatesMessage = () => (

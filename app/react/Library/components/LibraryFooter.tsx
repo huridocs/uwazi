@@ -1,16 +1,16 @@
-import { Translate } from 'app/I18N';
-import { wrapDispatch } from 'app/Multireducer';
-import { Icon } from 'app/UI';
+import { Translate } from '#app/I18N/index.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { Icon } from '#app/UI/index.js';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {
   newEntity as newEntityAction,
   showImportPanel as showImportPanelAction,
-} from 'app/Uploads/actions/uploadsActions';
+} from '#app/Uploads/actions/uploadsActions.js';
 import { connect } from 'react-redux';
-import { NeedAuthorization } from 'app/Auth';
-import Export from './ExportButton';
-import { PDFUploadButton } from './PDFUploadButton';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { ExportButton } from './ExportButton.js';
+import { PDFUploadButton } from './PDFUploadButton.js';
 
 interface LibraryFooterOwnProps {
   storeKey: string;
@@ -74,7 +74,7 @@ const LibraryFooterComponent = ({
               </span>
             </button>
           </NeedAuthorization>
-          <Export className="sm-order-1" storeKey={storeKey} />
+          <ExportButton className="sm-order-1" storeKey={storeKey} />
         </div>
       </div>
       <div className={`open-actions-button ${footerVisible ? 'closed' : ''}`}>

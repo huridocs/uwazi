@@ -39,7 +39,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
       - name: install dependencies
         run: yarn install
       - run: yarn audit --level high --groups dependencies || if [ $? -gt 8 ]; then exit 1; else exit 0; fi

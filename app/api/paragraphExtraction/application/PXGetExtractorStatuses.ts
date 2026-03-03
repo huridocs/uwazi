@@ -1,14 +1,14 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { UseCase } from 'api/core/libs/UseCase';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 
 import {
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
   PXExtractorsQueryService,
-} from '../domain/PXExtractorsQueryService';
+} from '../domain/PXExtractorsQueryService.js';
 
 type PXGetExtractorStatusesOutput = Omit<GetExtractorStatusesOutput, 'rows'> & {
   rows: (GetExtractorStatusesOutput['rows'][0] & {

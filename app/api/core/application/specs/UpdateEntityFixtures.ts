@@ -1,7 +1,7 @@
-import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
-import { Listener } from 'api/core/libs/eventEmitter/Listener';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
+import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();

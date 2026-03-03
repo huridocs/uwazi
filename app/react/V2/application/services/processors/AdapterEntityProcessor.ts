@@ -1,13 +1,15 @@
 /* eslint-disable max-lines */
-import { flatMap, groupBy, map } from 'lodash';
-import { Entity, MetadataProperty } from 'app/V2/domain';
+import groupBy from 'lodash/groupBy.js';
+import map from 'lodash/map.js';
+import flatMap from 'lodash/flatMap.js';
+import { Entity, MetadataProperty } from '#V2/domain/index.js';
 import {
   DateMetadataProperty,
   EntityReference,
   EntityTemplate,
-} from 'app/V2/domain/entities/types';
-import { EntitySchema } from 'shared/types/entityType';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
+} from '#V2/domain/entities/types.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import {
   AdapterEntity,
   AdapterEntityTemplate,
@@ -17,19 +19,19 @@ import {
   ProcessingContext,
   ProcessingError,
   PropertyTypeProcessor,
-} from './types';
-import { AdapterTemplateProcessor } from './AdapterTemplateProcessor';
-import { DatePropertyProcessor } from './DatePropertyProcessor';
-import { SelectPropertyProcessor } from './SelectPropertyProcessor';
-import { GeolocationProcessor } from './GeolocationProcessor';
-import { RelationshipProcessor } from './RelationshipProcessor';
-import { ImagePropertyProcessor } from './ImagePropertyProcessor';
-import { MediaPropertyProcessor } from './MediaPropertyProcessor';
-import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
-import { LinkPropertyProcessor } from './LinkPropertyProcessor';
-import { PreviewPropertyProcessor } from './PreviewPropertyProcessor';
-import { SupportingFilesProcessor } from './SupportingFilesProcessor';
-import { ReferencesProcessor } from './ReferencesProcessor';
+} from './types.js';
+import { AdapterTemplateProcessor } from './AdapterTemplateProcessor.js';
+import { DatePropertyProcessor } from './DatePropertyProcessor.js';
+import { SelectPropertyProcessor } from './SelectPropertyProcessor.js';
+import { GeolocationProcessor } from './GeolocationProcessor.js';
+import { RelationshipProcessor } from './RelationshipProcessor.js';
+import { ImagePropertyProcessor } from './ImagePropertyProcessor.js';
+import { MediaPropertyProcessor } from './MediaPropertyProcessor.js';
+import { DefaultPropertyProcessor } from './DefaultPropertyProcessor.js';
+import { LinkPropertyProcessor } from './LinkPropertyProcessor.js';
+import { PreviewPropertyProcessor } from './PreviewPropertyProcessor.js';
+import { SupportingFilesProcessor } from './SupportingFilesProcessor.js';
+import { ReferencesProcessor } from './ReferencesProcessor.js';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;

@@ -1,6 +1,6 @@
-export * from './filesystem';
-export { storage } from './storage';
+export * from './filesystem.js';
+export { storage } from './storage.js';
 
-export { PDF } from './PDF';
-export { files } from './files';
-export { uploadMiddleware } from './uploadMiddleware';
+export { PDF } from './PDF.js';
+export { files } from './files.js';
+export { uploadMiddleware } from './uploadMiddleware.js';

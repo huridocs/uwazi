@@ -1,9 +1,9 @@
-import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { Property } from 'api/core/domain/template/Property';
-import { ResultType } from 'api/core/libs/Result';
-import { EntityDoesNotExistError } from 'api/core/domain/entity/errors';
-import { Entity } from '../../core/domain/entity/Entity';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { ResultType } from '#api/core/libs/Result.js';
+import { EntityDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import { Entity } from '../../core/domain/entity/Entity.js';
 
 export interface MultiLanguageEntityDataSource {
   bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[]): Promise<void>;

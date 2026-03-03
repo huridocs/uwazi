@@ -1,5 +1,5 @@
 import moment from 'moment';
-import typeParsers from '../typeParsers';
+import typeParsers from '../typeParsers.js';
 
 const rawEntityWithProps = props => ({
   propertiesFromColumns: props,

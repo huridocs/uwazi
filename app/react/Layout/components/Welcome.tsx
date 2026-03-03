@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Icon } from '#app/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-export default class Welcome extends Component {
+export class Welcome extends Component {
   render() {
     return (
       <div className="blank-state">

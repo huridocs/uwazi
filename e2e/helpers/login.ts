@@ -1,7 +1,7 @@
 /*global page*/
 
-import { host } from '../config';
-import disableTransitions from './disableTransitions';
+import { host } from '../config.js';
+import disableTransitions from './disableTransitions.js';
 
 export async function login(username: string, password: string) {
   await page.goto(host);

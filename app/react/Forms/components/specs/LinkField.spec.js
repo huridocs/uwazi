@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import LinkField from '../LinkField';
+import { LinkField } from '../LinkField.js';
 
 describe('LinkField', () => {
   let component;

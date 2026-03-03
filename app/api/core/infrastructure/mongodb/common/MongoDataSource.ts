@@ -1,9 +1,9 @@
 import { Db, Document } from 'mongodb';
-import { DocumentTracker } from 'api/core/infrastructure/mongodb/documentTracker/DocumentTracker';
-import { BulkWriteStream } from './BulkWriteStream';
-import { MongoTransactionManager } from './MongoTransactionManager';
-import { SessionScopedCollection } from './SessionScopedCollection';
-import { SyncedCollection } from './SyncedCollection';
+import { DocumentTracker } from '#api/core/infrastructure/mongodb/documentTracker/DocumentTracker.js';
+import { BulkWriteStream } from './BulkWriteStream.js';
+import { MongoTransactionManager } from './MongoTransactionManager.js';
+import { SessionScopedCollection } from './SessionScopedCollection.js';
+import { SyncedCollection } from './SyncedCollection.js';
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;

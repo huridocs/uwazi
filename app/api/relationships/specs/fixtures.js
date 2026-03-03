@@ -1,7 +1,7 @@
 /** @format */
 
 /* eslint-disable */
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 const connectionID1 = db.id();
 const connectionID2 = db.id();
 const connectionID3 = db.id();

@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
-import { isString } from 'lodash';
-import uniqueID from 'shared/uniqueID';
+import isString from 'lodash/isString.js';
+import uniqueID from '#shared/uniqueID.js';
 
 const isMediaProperty = property => {
   return property && (property.type === 'image' || property.type === 'media');

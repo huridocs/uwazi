@@ -1,13 +1,13 @@
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { elastic } from 'api/search';
-import { search } from 'api/search/search';
-import date from 'api/utils/date';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import * as searchLimitsConfig from 'shared/config';
-import { UserRole } from 'shared/types/userSchema';
-import elasticResult from './elasticResult';
-import { fixtures as elasticFixtures, fixturesTimeOut, ids } from './fixtures_elastic';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { elastic } from '#api/search/index.js';
+import { search } from '#api/search/search.js';
+import date from '#api/utils/date.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import * as searchLimitsConfig from '#shared/config.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import elasticResult from './elasticResult.js';
+import { fixtures as elasticFixtures, fixturesTimeOut, ids } from './fixtures_elastic.js';
 
 const editorUser = { _id: 'userId', role: 'editor' };
 

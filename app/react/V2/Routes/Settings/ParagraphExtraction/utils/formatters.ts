@@ -1,7 +1,7 @@
-import { Template } from 'app/apiResponseTypes';
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import { PXTemplate, PXTable } from '../types';
-import { getTemplateProperties } from './getTemplateProperties';
+import { Template } from '#app/apiResponseTypes.js';
+import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
+import { PXTemplate, PXTable } from '../types.js';
+import { getTemplateProperties } from './getTemplateProperties.js';
 
 const requiredTemplateProperties = ['_id', 'name', 'color'];
 

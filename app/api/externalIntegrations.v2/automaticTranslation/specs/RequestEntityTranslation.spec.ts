@@ -1,20 +1,20 @@
 /* eslint-disable max-classes-per-file */
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
-import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
-import { Redis } from 'api/infrastructure/Redis';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
-import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
-import { ValidationError, Validator } from '../infrastructure/Validator';
-import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
+import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
+import { Redis } from '#api/infrastructure/Redis.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
+import { ValidationError, Validator } from '../infrastructure/Validator.js';
+import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation.js';
 
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {

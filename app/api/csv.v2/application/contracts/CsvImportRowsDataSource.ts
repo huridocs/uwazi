@@ -1,4 +1,4 @@
-import { CsvImportRow } from '../../domain/CsvImportRow';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
 
 export interface CsvImportRowsDataSource {
   insertMany(rows: CsvImportRow[]): Promise<void>;

@@ -1,10 +1,10 @@
 import { Field } from 'react-redux-form';
-import { Icon } from 'UI';
+import { Icon } from '#UI/index.js';
 import React, { useState } from 'react';
-import { FormGroup } from 'app/Forms';
-import { LocalForm } from 'app/Forms/Form';
-import { Translate, t } from 'app/I18N';
-import { isValidUrl, sanitizeUrl, isValidUrlLength } from 'shared/urlValidationUtils';
+import { FormGroup } from '#app/Forms/index.js';
+import { LocalForm } from '#app/Forms/Form.js';
+import { Translate, t } from '#app/I18N/index.js';
+import { isValidUrl, sanitizeUrl, isValidUrlLength } from '#shared/urlValidationUtils.js';
 
 interface WebMediaResourceFormProps {
   handleSubmit: (args: any) => void;

@@ -1,15 +1,15 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { tenants } from 'api/tenants/tenantContext';
-import { CsvImportRowsStager } from '../../application/services/CsvImportRowsStager';
-import { CsvImportFileNormalizer } from '../../application/services/CsvImportFileNormalizer';
-import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploadedZipJob';
-import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { CsvImportRowsStager } from '../../application/services/CsvImportRowsStager.js';
+import { CsvImportFileNormalizer } from '../../application/services/CsvImportFileNormalizer.js';
+import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploadedZipJob.js';
+import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
 
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;

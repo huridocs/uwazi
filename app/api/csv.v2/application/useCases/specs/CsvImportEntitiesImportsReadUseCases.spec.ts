@@ -1,10 +1,10 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
-import { CSVImportEntitiesFactories } from '../../../infrastructure/factories/CSVImportEntitiesFactories';
-import { ListCsvImportEntitiesImportsUseCase } from '../ListCsvImportEntitiesImportsUseCase';
-import { GetCsvImportEntitiesImportUseCase } from '../GetCsvImportEntitiesImportUseCase';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
+import { CSVImportEntitiesFactories } from '../../../infrastructure/factories/CSVImportEntitiesFactories.js';
+import { ListCsvImportEntitiesImportsUseCase } from '../ListCsvImportEntitiesImportsUseCase.js';
+import { GetCsvImportEntitiesImportUseCase } from '../GetCsvImportEntitiesImportUseCase.js';
 
 describe('CsvImportEntities imports read use cases (integration)', () => {
   beforeEach(async () => {

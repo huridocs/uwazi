@@ -1,9 +1,13 @@
-import { FilePropertyTypes, MediaMetadataProperty, Timelink } from 'app/V2/domain/entities/types';
-import { reportErrorToSentry } from 'app/V2/shared/errorUtils';
-import { getMimetypeFromUrl } from 'app/V2/shared/formatHelpers';
-import { PropertyValueSchema } from 'shared/types/commonTypes';
-import { ProcessingContext, AdapterMetadataProperty } from './types';
-import { BasePropertyProcessor } from './BasePropertyProcessor';
+import {
+  FilePropertyTypes,
+  MediaMetadataProperty,
+  Timelink,
+} from '#app/V2/domain/entities/types.js';
+import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
+import { getMimetypeFromUrl } from '#app/V2/shared/formatHelpers.js';
+import { PropertyValueSchema } from '#shared/types/commonTypes.js';
+import { ProcessingContext, AdapterMetadataProperty } from './types.js';
+import { BasePropertyProcessor } from './BasePropertyProcessor.js';
 
 export class MediaPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'MediaPropertyProcessor';

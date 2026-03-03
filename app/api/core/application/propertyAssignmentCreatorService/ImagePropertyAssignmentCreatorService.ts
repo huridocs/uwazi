@@ -1,8 +1,8 @@
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { ImageProperty } from 'api/core/domain/template/ImageProperty';
-import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
-import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService';
-import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
+import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
+import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
+import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService.js';
 
 type ImageValueInput = { value: string } | { attachment: number };
 

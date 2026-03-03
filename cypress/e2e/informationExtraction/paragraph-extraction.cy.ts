@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers';
+import { clearCookiesAndLogin } from '../helpers/index.js';
 
 describe('Paragraph Extraction', () => {
   before(() => {

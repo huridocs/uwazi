@@ -4,8 +4,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider as JotaiProvider, createStore } from 'jotai';
-import { localeAtom } from 'V2/atoms/translationsAtoms';
-import Icon from '../Icon';
+import { localeAtom } from '#V2/atoms/translationsAtoms.js';
+import { Icon } from '../Icon.js';
 
 const renderWithLocale = (ui, locale) => {
   const store = createStore();

@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { UserRole } from 'shared/types/userSchema';
-import { tenants } from 'api/tenants/tenantContext';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { CsvImportDomain } from '../../../domain/CsvImport';
-import { CsvImportRelationshipPendingValues } from '../../../domain/CsvImportRelationshipPendingValues';
-import { CsvCreateRelationshipEntitiesJobFactory } from '../../../infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { CsvImportDomain } from '../../../domain/CsvImport.js';
+import { CsvImportRelationshipPendingValues } from '../../../domain/CsvImportRelationshipPendingValues.js';
+import { CsvCreateRelationshipEntitiesJobFactory } from '../../../infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 
 const fixturesFactory = getFixturesFactory();
 

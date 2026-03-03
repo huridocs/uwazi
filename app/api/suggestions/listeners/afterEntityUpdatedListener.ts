@@ -1,11 +1,11 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { isEqual } from 'lodash';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import isEqual from 'lodash/isEqual.js';
 import { ObjectId } from 'mongodb';
-import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';
-import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged';
+import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate.js';
+import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

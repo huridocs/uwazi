@@ -1,16 +1,16 @@
 import multer from 'multer';
 
-import { models, WithId } from 'api/odm';
-import { search } from 'api/search';
+import { models, WithId } from '#api/odm/index.js';
+import { search } from '#api/search/index.js';
 
-import { storage, uploadMiddleware } from 'api/files';
-import { updateMapping } from 'api/search/entitiesIndex';
-import { Application, Request } from 'express';
-import { TranslationType } from 'shared/translationType';
-import { FileType } from 'shared/types/fileType';
+import { storage, uploadMiddleware } from '#api/files/index.js';
+import { updateMapping } from '#api/search/entitiesIndex.js';
+import type { Application, Request } from 'express';
+import { TranslationType } from '#shared/translationType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { TemplateSchema } from 'shared/types/templateType';
-import { needsAuthorization } from '../auth';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { needsAuthorization } from '../auth/index.js';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {

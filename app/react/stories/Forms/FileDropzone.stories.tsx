@@ -1,11 +1,13 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { FileDropzone } from 'app/V2/Components/Forms';
+import { FileDropzone } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof FileDropzone> = {
   title: 'Forms/FileDropzone',
   component: FileDropzone,
 };
+
+export default meta;
 
 type Story = StoryObj<typeof FileDropzone>;
 
@@ -26,5 +28,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

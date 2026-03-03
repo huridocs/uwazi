@@ -1,6 +1,6 @@
 /** @format */
 
-import testingDB from 'api/utils/testing_db';
+import testingDB from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 

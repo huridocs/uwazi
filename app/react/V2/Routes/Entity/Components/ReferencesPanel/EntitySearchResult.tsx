@@ -1,10 +1,10 @@
 import React from 'react';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
-import { Entity } from 'V2/domain';
-import { Card } from 'V2/Components/UI';
-import { TemplateLabel } from 'V2/Components/Metadata/TemplateLabel';
-import { FileType } from 'shared/types/fileType';
-import { LanguageUtils } from 'shared/language';
+import { Entity } from '#V2/domain/index.js';
+import { Card } from '#V2/Components/UI/Card.js';
+import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.js';
+import { FileType } from '#shared/types/fileType.js';
+import { LanguageUtils } from '#shared/language/index.js';
 
 type EntitySearchResultProps = {
   entity: Entity;

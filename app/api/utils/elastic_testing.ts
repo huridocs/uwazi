@@ -1,6 +1,6 @@
-import { elastic, search } from 'api/search';
-import { IndicesPutMapping } from 'api/search/elasticTypes';
-import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
+import { elastic, search } from '#api/search/index.js';
+import { IndicesPutMapping } from '#api/search/elasticTypes.js';
+import elasticMapping from '../../../database/elastic_mapping/elastic_mapping.js';
 
 const elasticTesting = {
   async resetIndex() {

@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
-import { User } from 'api/users.v2/model/User';
-import { ResultType } from 'api/core/libs/Result';
-import { AccessLevel } from './AccessLevel';
-import { PermissionType } from './PermissionType';
-import { BaseFile } from '../files/BaseFile';
+import { User } from '#api/users.v2/model/User.js';
+import { ResultType } from '#api/core/libs/Result.js';
+import { AccessLevel } from './AccessLevel.js';
+import { PermissionType } from './PermissionType.js';
+import { BaseFile } from '../files/BaseFile.js';
 
 type SpecificationProps = {
   type: PermissionType;

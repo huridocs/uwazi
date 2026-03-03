@@ -1,10 +1,10 @@
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors';
-import { Translation } from '../model/Translation';
-import { CreateTranslationsData } from './CreateTranslationsService';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { objectIndex, objectIndexToArrays } from '#shared/data_utils/objectIndex.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
+import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors.js';
+import { Translation } from '../model/Translation.js';
+import { CreateTranslationsData } from './CreateTranslationsService.js';
 
 const languagesForKeyContext = (
   translations: Translation[]

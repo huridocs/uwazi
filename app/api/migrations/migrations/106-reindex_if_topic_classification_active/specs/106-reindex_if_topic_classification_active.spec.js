@@ -1,4 +1,4 @@
-import testingDB from 'api/utils/testing_db';
+import testingDB from '#api/utils/testing_db.js';
 import migration from '../index.js';
 
 describe('migration reindex_if_topic_classification_active', () => {

@@ -1,14 +1,14 @@
-import ID from 'shared/uniqueID';
-import { PageType } from 'shared/types/pageType';
-import { validatePage } from 'shared/types/pageSchema';
-import date from 'api/utils/date.js';
-import templates from 'api/core/v1_layer/templates';
-import { createError } from 'api/utils';
-import { UwaziFilterQuery } from 'api/odm';
-import { User } from 'api/users/usersModel';
+import ID from '#shared/uniqueID.js';
+import { PageType } from '#shared/types/pageType.js';
+import { validatePage } from '#shared/types/pageSchema.js';
+import date from '#api/utils/date.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { createError } from '#api/utils/index.js';
+import { UwaziFilterQuery } from '#api/odm/index.js';
+import { User } from '#api/users/usersModel.js';
 
-import model from './pagesModel';
-import settings from '../settings';
+import model from './pagesModel.js';
+import settings from '../settings/index.js';
 
 const assignUserAndDate = (page: PageType, user?: User) => {
   if (!user) {

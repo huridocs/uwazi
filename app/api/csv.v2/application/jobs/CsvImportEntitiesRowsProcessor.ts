@@ -1,16 +1,16 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FilesService } from 'api/core/application/FilesService';
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import { CsvImport } from '../../domain/CsvImport';
-import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource';
-import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
-import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { processImportBatch } from './CsvImportEntitiesBatchProcessor';
-import { evaluateStopPolicy } from '../services/CsvImportEntitiesErrorReporting';
-import { Callbacks, ImportContext } from './CsvImportEntitiesTypes';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FilesService } from '#api/core/application/FilesService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { CsvImport } from '../../domain/CsvImport.js';
+import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
+import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
+import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
+import { processImportBatch } from './CsvImportEntitiesBatchProcessor.js';
+import { evaluateStopPolicy } from '../services/CsvImportEntitiesErrorReporting.js';
+import { Callbacks, ImportContext } from './CsvImportEntitiesTypes.js';
 
 type ProcessRowsDeps = {
   rowsDS: CsvImportRowsDataSource;

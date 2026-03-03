@@ -1,5 +1,5 @@
-import { ValidatorSchema, createValidator } from 'api/common.v2/validation/routesValidation';
-import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
+import { ValidatorSchema, createValidator } from '#api/common.v2/validation/routesValidation.js';
+import { RelationshipPropertyData } from '#shared/types/api.v2/templates.createTemplateRequest.js';
 
 const createNewRelationshipPropertySchema: ValidatorSchema<
   RelationshipPropertyData,

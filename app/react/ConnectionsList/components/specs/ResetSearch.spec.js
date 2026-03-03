@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
-import { ResetSearch } from '../ResetSearch';
+import Immutable from 'immutable';
+import { ResetSearchView as ResetSearch } from '../ResetSearch.js';
 
 describe('ResetSearch', () => {
   let component;
@@ -9,7 +9,7 @@ describe('ResetSearch', () => {
 
   beforeEach(() => {
     props = {
-      connectionsGroups: Immutable([]),
+      connectionsGroups: Immutable.fromJS([]),
       resetSearch: jasmine.createSpy('resetSearch'),
     };
   });

@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
 import Immutable from 'immutable';
-import formater from './helpers/formater';
+import { formater } from './helpers/formater.js';
 
 const indexValues = t =>
   t.set(

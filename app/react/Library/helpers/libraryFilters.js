@@ -1,6 +1,6 @@
-import comonProperties from 'shared/commonProperties';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { queryToFilter } from './publishedStatusFilter';
+import comonProperties from '#shared/commonProperties.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
+import { queryToFilter } from './publishedStatusFilter.js';
 
 function getOptions(property, thesauris) {
   const matchingTHesauri = thesauris.find(thesauri => thesauri._id === property.content);
@@ -104,10 +104,11 @@ export const prepareDefaultFilters = fields =>
     return { ...field, options: filteredOptions };
   });
 
-export default {
-  URLQueryToState,
-  populateOptions,
-  parseWithAggregations,
-};
+export { populateOptions, URLQueryToState };
 
-export { populateOptions };
+export const libraryHelpers = {
+  populateOptions,
+  URLQueryToState,
+  parseWithAggregations,
+  prepareDefaultFilters,
+};

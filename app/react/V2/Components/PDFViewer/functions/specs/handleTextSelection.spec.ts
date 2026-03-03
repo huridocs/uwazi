@@ -4,14 +4,14 @@ import {
   updateFileSelection,
   deleteFileSelection,
   adjustSelectionsToScale,
-} from '../handleTextSelection';
+} from '../handleTextSelection.js';
 import {
   selectionsFromFile,
   selections,
   property1Selection,
   property2Selection,
   titleSelection,
-} from './fixtures';
+} from './fixtures.js';
 
 describe('PDF selections handlers', () => {
   describe('highlights from text selection', () => {

@@ -1,8 +1,8 @@
-import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { DeleteResult, UpdateResult } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Translation, TranslationContext } from '../model/Translation';
-import { TranslationContextModel } from '../model/TranslationContextModel';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { Translation, TranslationContext } from '../model/Translation.js';
+import { TranslationContextModel } from '../model/TranslationContextModel.js';
 
 export type BulkDeleteKeysByContext = {
   contextId: string;

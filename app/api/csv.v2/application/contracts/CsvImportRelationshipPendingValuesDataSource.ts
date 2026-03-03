@@ -1,4 +1,4 @@
-import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues';
+import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues.js';
 
 export interface CsvImportRelationshipPendingValuesDataSource {
   replacePendingValues(importId: string, docs: CsvImportRelationshipPendingValues[]): Promise<void>;

@@ -1,7 +1,7 @@
 import { atom, useAtomValue, useAtom } from 'jotai';
 import { atomWithReset, useResetAtom } from 'jotai/utils';
-import { EntityReference } from 'app/V2/domain/entities/types';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import { EntityReference } from '#V2/domain/entities/types.js';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
 
 export type ReferenceMode = 'entity' | 'text';
 

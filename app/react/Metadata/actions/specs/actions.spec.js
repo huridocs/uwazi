@@ -3,10 +3,10 @@ import * as reactReduxForm from 'react-redux-form';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mockID } from 'shared/uniqueID.js';
-import { api } from 'app/Entities';
-import { RequestParams } from 'app/utils/RequestParams';
-import * as actions from '../actions';
+import { mockID } from '#shared/uniqueID.js';
+import { api } from '#app/Entities/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import * as actions from '../actions.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

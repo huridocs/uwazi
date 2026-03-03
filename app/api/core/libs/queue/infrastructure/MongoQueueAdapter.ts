@@ -1,8 +1,8 @@
 import { Db, ObjectId } from 'mongodb';
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { Job, QueueAdapter } from './QueueAdapter';
-import { Params } from '../application/contracts/Dispatchable';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { Job, QueueAdapter } from './QueueAdapter.js';
+import { Params } from '../application/contracts/Dispatchable.js';
 
 export interface JobDBO {
   _id: ObjectId;

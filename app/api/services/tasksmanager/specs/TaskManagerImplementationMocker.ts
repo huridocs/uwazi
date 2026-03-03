@@ -1,4 +1,4 @@
-import { ResultsMessage, Service, TaskManager } from '../TaskManager';
+import { ResultsMessage, Service, TaskManager } from '../TaskManager.js';
 
 function mockTaskManagerImpl(taskManager: jest.Mock<TaskManager>) {
   const mock = {

@@ -1,18 +1,18 @@
 import { Writable } from 'stream';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
-import templates from 'api/core/v1_layer/templates';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import translate, { getLocaleTranslation, getContext } from 'shared/translate';
-import translations from 'api/i18n/translations';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
+import translations from '#api/i18n/translations.js';
 import {
   formatters,
   formatCreationDate,
   formatDocuments,
   formatAttachments,
-} from './typeFormatters';
-import { EntitySchema } from '../../shared/types/entityType';
+} from './typeFormatters.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
 export type SearchResults = {
   rows: any[];

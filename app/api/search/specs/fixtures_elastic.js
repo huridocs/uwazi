@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-len */
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const userId = db.id();
 const collaboratorId = db.id();

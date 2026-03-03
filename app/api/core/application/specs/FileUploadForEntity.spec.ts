@@ -1,21 +1,21 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { FileUploadForEntityFactory } from 'api/core/infrastructure/factories/FileUploadForEntityFactory';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { fileExistsOnPath } from 'api/files';
-import { tenants } from 'api/tenants';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
+import { FileUploadForEntityFactory } from '#api/core/infrastructure/factories/FileUploadForEntityFactory.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { fileExistsOnPath } from '#api/files/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { ObjectId } from 'mongodb';
 
 const f = getFixturesFactory();

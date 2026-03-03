@@ -6,8 +6,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { mapStateToProps, GaugeChartComponent } from '../GaugeChart.js';
-import markdownDatasets from '../../markdownDatasets';
+import { mapStateToProps, GaugeChartView as GaugeChartComponent } from '../GaugeChart.js';
+import markdownDatasets from '../../markdownDatasets.js';
 
 describe('GaugeChart Markdown component', () => {
   const state = {
