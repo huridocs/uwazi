@@ -9,12 +9,12 @@ import {
   MagnifyingGlassIcon,
   PaperClipIcon,
 } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import type { PDFHandle } from 'V2/Components/PDFViewer';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
-import { MetadataDisplay } from 'V2/Components/Metadata';
-import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
-import { Tabs } from 'V2/Components/UI';
+import { Translate } from '#app/I18N/index.js';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
+import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
+import { Tabs } from '#V2/Components/UI/index.js';
+import { PDFHandle } from '#V2/Components/PDFViewer/index.js';
 import {
   TabLabel,
   PDFView,
@@ -25,9 +25,9 @@ import {
   SearchResults,
   ToCPanel,
   FileList,
-} from './Components';
-import { createPdfController } from './Components/PdfControllerContext';
-import { LoaderResponse } from './types';
+} from './Components/index.js';
+import { LoaderResponse } from './types.js';
+import { createPdfController } from './Components/PdfControllerContext.js';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',

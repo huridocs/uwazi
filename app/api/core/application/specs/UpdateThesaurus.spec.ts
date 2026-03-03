@@ -1,33 +1,33 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoThesauriDataSourceV2 } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2.js';
 import {
   getConnection,
   getSharedConnection,
-} from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { ThesaurusDBO } from 'api/core/infrastructure/mongodb/thesauri/ThesaurusDBO';
+} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { tenants } from '#api/tenants/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
 import { ObjectId } from 'mongodb';
-import { UserSchema } from 'shared/types/userType';
+import { UserSchema } from '#shared/types/userType.js';
 import {
   ThesaurusNotFoundError,
   ThesaurusNameAlreadyExistsError,
-} from 'api/core/domain/thesaurus/errors';
-import { JobDBO } from 'api/core/libs/queue/infrastructure/MongoQueueAdapter';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { Result } from 'api/core/libs/Result';
-import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
-import { UpdateThesaurusUseCase } from '../UpdateThesaurus';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
-import { factory, fixtures } from './UpdateThesaurusFixtures';
-import { ThesauriService } from '../ThesauriService';
+} from '#api/core/domain/thesaurus/errors.js';
+import { JobDBO } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Result } from '#api/core/libs/Result.js';
+import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
+import { UpdateThesaurusUseCase } from '../UpdateThesaurus.js';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { factory, fixtures } from './UpdateThesaurusFixtures.js';
+import { ThesauriService } from '../ThesauriService.js';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;

@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import { render } from 'enzyme';
 
 import { createStore } from 'redux';
-import Repeat from '../Repeat';
-import Value from '../Value';
-import PagesContext from '../Context';
+import { Repeat } from '../Repeat.js';
+import { Value } from '../Value.js';
+import { Context as PagesContext } from '../Context.js';
 
 describe('Repeat', () => {
   let datasets;

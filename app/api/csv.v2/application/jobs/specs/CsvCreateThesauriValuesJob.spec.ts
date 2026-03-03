@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
-import { Result } from 'api/core/libs/Result';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
-import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues';
-import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues';
-import { CsvCreateThesauriValuesJobFactory } from '../../../infrastructure/factories/CsvCreateThesauriValuesJobFactory';
+import { Result } from '#api/core/libs/Result.js';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
+import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues.js';
+import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
+import { CsvCreateThesauriValuesJobFactory } from '../../../infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
 
 const createTransactionManager = () =>
   ({

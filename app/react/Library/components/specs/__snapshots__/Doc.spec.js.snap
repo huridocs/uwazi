@@ -21,7 +21,7 @@ exports[`Doc when target reference is specified should pass the target reference
       />
     </div>
   }
-  deleteConnection={[Function]}
+  deleteConnection={[MockFunction]}
   doc={
     Immutable.Map {
       "_id": "idOne",

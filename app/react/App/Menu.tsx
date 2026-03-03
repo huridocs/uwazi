@@ -3,23 +3,23 @@ import React from 'react';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { fromJS } from 'immutable';
-import { wrapDispatch } from 'app/Multireducer';
-import { NeedAuthorization } from 'app/Auth';
-import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from 'app/I18N';
-import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { showSemanticSearch as showSemanticSearchAction } from 'app/SemanticSearch/actions/actions';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
-import { libraryViewInfo } from 'app/App/libraryViewInfo';
-import { Icon } from 'UI';
-import { actions } from 'app/BasicReducer';
-import { IStore } from 'app/istore';
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
-import { DropdownMenu } from './DropdownMenu';
+import Immutable from 'immutable';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from '#app/I18N/index.js';
+import { processFilters, encodeSearch } from '#app/Library/actions/libraryActions.js';
+import { showSemanticSearch as showSemanticSearchAction } from '#app/SemanticSearch/actions/actions.js';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
+import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
+import { Icon } from '#app/UI/index.js';
+import { actions } from '#app/BasicReducer/index.js';
+import { IStore } from '#app/istore.js';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import { DropdownMenu } from './DropdownMenu.js';
 
 interface MenuProps {
   className: string;
-  defaultLibraryView: any;
+  defaultLibraryView?: string;
   toggleMobileMenu: (visible: boolean) => void;
 }
 
@@ -48,6 +48,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & MenuProps;
 
+const isLibraryView = (value: string | undefined): value is keyof typeof libraryViewInfo =>
+  typeof value === 'string' && value in libraryViewInfo;
+
 const MenuComponent = ({
   librarySearch,
   libraryFilters,
@@ -56,10 +59,11 @@ const MenuComponent = ({
   toggleMobileMenu,
   setSidePanelView,
   showSemanticSearch,
-  links = fromJS([]),
-  defaultLibraryView = 'cards',
+  links = Immutable.fromJS([]),
+  defaultLibraryView,
   privateInstance,
 }: mappedProps) => {
+  const resolvedLibraryView = isLibraryView(defaultLibraryView) ? defaultLibraryView : 'cards';
   const hideMobileMenu = () => toggleMobileMenu(false);
 
   const libraryUrl = () => {
@@ -70,8 +74,7 @@ const MenuComponent = ({
     const newParams = processFilters(librarySearch, libraryFilters.toJS());
     newParams.searchTerm = searchTerm;
 
-    // @ts-ignore
-    return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(newParams)}`;
+    return `/${libraryViewInfo[resolvedLibraryView].url}/${encodeSearch(newParams)}`;
   };
 
   const navLinks = links
@@ -108,7 +111,7 @@ const MenuComponent = ({
 
       return (
         <DropdownMenu
-          link={fromJS(link.toJS())}
+          link={Immutable.fromJS(link.toJS())}
           position={index!}
           key={index}
           hideMobileMenu={hideMobileMenu}
@@ -156,8 +159,7 @@ const MenuComponent = ({
                 activeclassname="active-link"
                 aria-label={t('System', 'Library', null, false)}
               >
-                {/* @ts-expect-error */}
-                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
+                <Icon icon={libraryViewInfo[resolvedLibraryView].icon} />
                 <span className="tab-link-label">
                   <Translate>Library</Translate>
                 </span>

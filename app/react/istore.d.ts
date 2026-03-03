@@ -1,17 +1,17 @@
-import { TaskStatus } from 'shared/tasks/tasks';
-import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
-import { LabelCountSchema } from 'app/Thesauri/types/labelCountType';
-import { IImmutable } from 'shared/types/Immutable';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import { EntitySchema } from 'shared/types/entityType';
-import { ConnectionSchema } from 'shared/types/connectionType';
-import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from 'app/apiResponseTypes';
-import { FileType } from 'shared/types/fileType';
-import { PageType } from 'shared/types/pageType';
-import { TranslationContext, TranslationType } from 'shared/translationType';
-import { ClientIXExtractorType } from 'V2/shared/types';
+import { TaskStatus } from '#shared/tasks/tasks.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { LabelCountSchema } from '#app/Thesauri/types/labelCountType.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { ExtractedMetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
+import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from '#app/apiResponseTypes.js';
+import { FileType } from '#shared/types/fileType.js';
+import { PageType } from '#shared/types/pageType.js';
+import { TranslationContext, TranslationType } from '#shared/translationType.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };
@@ -90,7 +90,7 @@ export interface QuickLabelMetadata {
 
 export interface ThesaurusSuggestions {
   property?: PropertySchema;
-  model?: ClassifierModelSchema;
+  model?: IXModelType;
   docsWithLabels?: LabelCountSchema;
   docsWithSuggestionsForPublish?: LabelCountSchema;
   docsWithSuggestionsForReview?: LabelCountSchema;

@@ -1,6 +1,6 @@
 import { inspect } from 'util';
-import { LogEntry } from '../LogEntry';
-import { LogWriter } from '../LogWriter';
+import { LogEntry } from '../LogEntry.js';
+import { LogWriter } from '../LogWriter.js';
 
 export const DevelopmentWritter: LogWriter = (log: LogEntry) => {
   process.stdout.write(

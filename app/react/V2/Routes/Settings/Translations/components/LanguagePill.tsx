@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pill } from 'V2/Components/UI';
+import { Pill } from '#V2/Components/UI/index.js';
 
 const LanguagePill = ({
   languageKey,

@@ -1,12 +1,12 @@
-import { EntitySchema } from 'shared/types/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { prepareAssets } from '../pageAssets';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { prepareAssets } from '../pageAssets.js';
 import {
   dbEntity,
   dbTemplates,
   thesauris,
   expectedFormattedEntity,
-} from './fixtures/pageAssets/pageAssets';
+} from './fixtures/pageAssets/pageAssets.js';
 import {
   otherEntities,
   relationTypes,
@@ -21,7 +21,7 @@ import {
   myTemplate,
   inheritingDocument,
   myEntity,
-} from './fixtures/pageAssets/relationsAggregations';
+} from './fixtures/pageAssets/relationsAggregations.js';
 
 describe('pageAssets', () => {
   describe('prepareAssets', () => {

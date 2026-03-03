@@ -4,8 +4,8 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
-import { TableRow } from './Table';
+import { Translate } from '#app/I18N/index.js';
+import { TableRow } from './Table.js';
 
 const dndHoverClass = 'dnd-hover-shadow';
 const childIndicatorClass = 'dnd-child-shadow';

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Translate } from 'app/I18N';
-import { ImageMetadataProperty } from 'V2/domain/entities/types';
-import { MetadataFieldProps } from './types';
-import { PropertyLabel } from './PropertyLabel';
-import { MetadataCard } from './MetadataCard';
+import { Translate } from '#app/I18N/index.js';
+import { ImageMetadataProperty } from '#V2/domain/entities/types.js';
+import { MetadataFieldProps } from './types.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MetadataCard } from './MetadataCard.js';
 
 type ImageProps = MetadataFieldProps & {
   values: ImageMetadataProperty['values'];

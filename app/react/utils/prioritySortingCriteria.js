@@ -49,7 +49,7 @@ function asessCriteriaValid(validTemplates, options) {
   }, false);
 }
 
-export default {
+const prioritySortingCriteria = {
   get: (options = {}) => {
     if (options.override) {
       return options.override;
@@ -116,3 +116,5 @@ export default {
     return sortingDefault;
   },
 };
+
+export { prioritySortingCriteria };

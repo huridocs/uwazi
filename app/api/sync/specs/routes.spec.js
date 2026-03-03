@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
-import { models } from 'api/odm';
-import { search } from 'api/search';
-import { storage } from 'api/files/storage';
-import 'api/utils/jasmineHelpers';
+import { models } from '#api/odm/index.js';
+import { search } from '#api/search/index.js';
+import { storage } from '#api/files/storage.js';
+import '#api/utils/jasmineHelpers.js';
 import { ObjectId } from 'mongodb';
 
-import * as index from 'api/search/entitiesIndex';
-import { LanguageUtils } from 'shared/language';
-import instrumentRoutes from '../../utils/instrumentRoutes';
-import syncRoutes from '../routes';
+import * as index from '#api/search/entitiesIndex.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import instrumentRoutes from '../../utils/instrumentRoutes.js';
+import syncRoutes from '../routes.js';
 
 describe('sync', () => {
   let routes;

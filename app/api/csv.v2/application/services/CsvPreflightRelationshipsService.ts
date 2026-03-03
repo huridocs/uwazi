@@ -1,11 +1,11 @@
-import { Template } from 'api/core/domain/template/Template';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
 import {
   CsvImportRelationshipValue,
   CsvImportRelationshipValues,
-} from '../../domain/CsvImportRelationshipValues';
+} from '../../domain/CsvImportRelationshipValues.js';
 
 type RelationshipColumn = {
   property: V1RelationshipProperty;

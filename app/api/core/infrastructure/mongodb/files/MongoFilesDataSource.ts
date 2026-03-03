@@ -1,31 +1,31 @@
 import { Db, ObjectId } from 'mongodb';
 
-import { LanguageUtils } from 'shared/language';
-import { SegmentationType } from 'shared/types/segmentationType';
+import { LanguageUtils } from '#shared/language/index.js';
+import { SegmentationType } from '#shared/types/segmentationType.js';
 
-import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { BaseFile } from 'api/core/domain/files/BaseFile';
-import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import {
   MongoDataSource,
   MongoDSOptions,
-} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { Result } from 'api/core/libs/Result';
-import { search } from 'api/search';
-import { FileStorage } from '../../../application/contracts/FileStorage';
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { Result } from '#api/core/libs/Result.js';
+import { search } from '#api/search/index.js';
+import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
   FilesDataSource,
   GetDocumentsForEntityOptions,
-} from '../../../application/contracts/FilesDataSource';
-import { ProcessingPDF } from '../../../domain/files/ProcessingPDF';
-import { ProcessedPDF } from '../../../domain/files/ProcessedPDF';
-import { Segmentation } from '../../../domain/files/Segmentation';
-import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors';
-import { FileMappers } from './FilesMappers';
-import { SegmentationMapper } from './SegmentationMapper';
-import { fileDBO } from './schemas/filesTypes';
+} from '../../../application/contracts/FilesDataSource.js';
+import { ProcessingPDF } from '../../../domain/files/ProcessingPDF.js';
+import { ProcessedPDF } from '../../../domain/files/ProcessedPDF.js';
+import { Segmentation } from '../../../domain/files/Segmentation.js';
+import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
+import { FileMappers } from './FilesMappers.js';
+import { SegmentationMapper } from './SegmentationMapper.js';
+import { fileDBO } from './schemas/filesTypes.js';
 
 type GetDocumentsForEntityQuery = {
   entity: string;

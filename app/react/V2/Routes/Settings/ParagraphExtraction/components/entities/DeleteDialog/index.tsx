@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'V2/Components/UI';
-import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
-import { notificationAtom } from 'V2/atoms';
-import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
+import { Translate } from '#app/I18N/index.js';
+import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
+import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import * as entitiesAPI from '#V2/api/paragraphExtractor/entities.js';
 
 const DeleteDialog = ({
   setIsProcessing,
@@ -36,7 +35,10 @@ const DeleteDialog = ({
       });
       onSuccess();
     } catch (error) {
-      handleUnexpectedError(error, 'Error deleting paragraphs');
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+      });
     }
 
     setIsOpen(false);

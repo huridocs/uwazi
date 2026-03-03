@@ -1,6 +1,6 @@
-import db from 'api/utils/testing_db';
 import SHA256 from 'crypto-js/sha256';
-import { PUBLIC_USER_ID } from '../publicUser';
+import db from '#api/utils/testing_db.js';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 
 const userId = db.id();
 const group1Id = db.id();

@@ -1,11 +1,11 @@
-import { wrapDispatch } from 'app/Multireducer';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import {
   addDocuments,
   setDocuments,
   initializeFiltersForm,
-} from 'app/Library/actions/libraryActions';
+} from '#app/Library/actions/libraryActions.js';
 import { actions as formActions } from 'react-redux-form';
-import { actions } from 'app/BasicReducer';
+import { actions } from '#app/BasicReducer/index.js';
 
 export default function setReduxState(state, key, addinsteadOfSet) {
   return _dispatch => {

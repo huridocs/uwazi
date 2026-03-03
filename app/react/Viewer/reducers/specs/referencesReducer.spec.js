@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import referencesReducer from 'app/Viewer/reducers/referencesReducer';
-import * as types from 'app/Viewer/actions/actionTypes';
+import referencesReducer from '#app/Viewer/reducers/referencesReducer.js';
+import * as types from '#app/Viewer/actions/actionTypes.js';
 
 describe('Viewer referencesReducer', () => {
   describe('when state is undefined', () => {

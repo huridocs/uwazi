@@ -1,11 +1,11 @@
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
-import { CustomDTO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
+import { CustomDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { ObjectId } from 'mongodb';
 import { z } from 'zod';
-import { AbstractUseCase } from 'api/core/libs/UseCase';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 
 type Deps = {
   filesDS: FilesDataSource;

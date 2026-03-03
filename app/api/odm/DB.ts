@@ -1,5 +1,5 @@
 import mongoose, { Connection, ConnectOptions } from 'mongoose';
-import { config } from 'api/config';
+import { config } from '#api/config.js';
 import { DbOptions } from 'mongodb';
 
 let connection: Connection;

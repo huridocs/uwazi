@@ -1,4 +1,4 @@
-export { TocGeneratedLabel } from './TocGeneratedLabel';
-export { ReviewTocButton } from './ReviewTocButton';
-export { FilterTocGeneration } from './FilterTocGeneration';
-export { tocGenerationUtils } from './utils';
+export { TocGeneratedLabel } from './TocGeneratedLabel.js';
+export { ReviewTocButton } from './ReviewTocButton.js';
+export { FilterTocGeneration } from './FilterTocGeneration.js';
+export { tocGenerationUtils } from './utils.js';

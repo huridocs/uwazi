@@ -1,8 +1,8 @@
 import React from 'react';
-import { InputField } from 'V2/Components/Forms';
-import { t, Translate } from 'app/I18N';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { PropertyRow } from '../../types';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { PropertyRow } from '../../types.js';
 
 export const LabelField = ({
   register,

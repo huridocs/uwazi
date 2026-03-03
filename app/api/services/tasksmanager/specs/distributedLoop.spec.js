@@ -1,7 +1,7 @@
-import * as errorHelper from 'api/utils/handleError';
+import * as errorHelper from '#api/utils/handleError.js';
 import Redis from 'redis';
 import waitForExpect from 'wait-for-expect';
-import { DistributedLoop } from '../DistributedLoop';
+import { DistributedLoop } from '../DistributedLoop.js';
 
 /* eslint-disable max-statements */
 describe('DistributedLoopLock', () => {

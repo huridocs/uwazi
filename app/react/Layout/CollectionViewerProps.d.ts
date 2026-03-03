@@ -1,5 +1,5 @@
-import { IImmutable } from 'shared/types/Immutable';
-import { EntitySchema } from 'shared/types/entityType';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 export interface CollectionViewerProps {
   rowListZoomLevel: number;

@@ -1,6 +1,6 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 
-import uiReducer from '../uiReducer';
+import { uiReducer } from '../uiReducer.js';
 
 describe('Connections uiReducer', () => {
   describe('when state is undefined', () => {
@@ -12,56 +12,56 @@ describe('Connections uiReducer', () => {
 
   describe('OPEN_CONNECTION_PANEL', () => {
     it('should set open true', () => {
-      const newState = uiReducer(Immutable({}), { type: 'OPEN_CONNECTION_PANEL' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'OPEN_CONNECTION_PANEL' });
       expect(newState.toJS()).toEqual({ open: true });
     });
   });
 
   describe('CLOSE_CONNECTION_PANEL', () => {
     it('should reset connecting and set open to false', () => {
-      const newState = uiReducer(Immutable({}), { type: 'CLOSE_CONNECTION_PANEL' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'CLOSE_CONNECTION_PANEL' });
       expect(newState.toJS()).toEqual({ connecting: false, open: false });
     });
   });
 
   describe('SEARCHING_CONNECTIONS', () => {
     it('should set searching to true', () => {
-      const newState = uiReducer(Immutable({}), { type: 'SEARCHING_CONNECTIONS' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'SEARCHING_CONNECTIONS' });
       expect(newState.toJS()).toEqual({ searching: true });
     });
   });
 
   describe('upon setting results', () => {
     it('should set searching to false', () => {
-      const newState = uiReducer(Immutable({}), { type: 'connections/searchResults/SET' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'connections/searchResults/SET' });
       expect(newState.toJS()).toEqual({ searching: false });
     });
   });
 
   describe('CREATING_CONNECTION', () => {
     it('should set creating to true', () => {
-      const newState = uiReducer(Immutable({}), { type: 'CREATING_CONNECTION' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'CREATING_CONNECTION' });
       expect(newState.toJS()).toEqual({ creating: true });
     });
   });
 
   describe('CREATING_RANGED_CONNECTION', () => {
     it('should set connecting to true', () => {
-      const newState = uiReducer(Immutable({}), { type: 'CREATING_RANGED_CONNECTION' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'CREATING_RANGED_CONNECTION' });
       expect(newState.toJS()).toEqual({ connecting: true });
     });
   });
 
   describe('CANCEL_RANGED_CONNECTION', () => {
     it('should set connecting to false', () => {
-      const newState = uiReducer(Immutable({}), { type: 'CANCEL_RANGED_CONNECTION' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'CANCEL_RANGED_CONNECTION' });
       expect(newState.toJS()).toEqual({ connecting: false });
     });
   });
 
   describe('CONNECTION_CREATED', () => {
     it('should reset creating, connecting and close the panel', () => {
-      const newState = uiReducer(Immutable({}), { type: 'CONNECTION_CREATED' });
+      const newState = uiReducer(Immutable.fromJS({}), { type: 'CONNECTION_CREATED' });
       expect(newState.toJS()).toEqual({ creating: false, connecting: false, open: false });
     });
   });

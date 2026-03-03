@@ -1,9 +1,8 @@
 import url from 'url';
-
-import { RawEntity } from 'api/csv/entityRow';
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import { ensure } from 'shared/tsUtils';
-import { sanitizeMetadataValue, SanitizationWarning } from './sanitizationUtils';
+import { RawEntity } from '#api/csv/entityRow.js';
+import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { ensure } from '#shared/tsUtils.js';
+import { sanitizeMetadataValue, SanitizationWarning } from './sanitizationUtils.js';
 
 export interface ParserResult {
   data: MetadataObjectSchema[];
@@ -11,12 +10,12 @@ export interface ParserResult {
 }
 
 import moment from 'moment';
-import generatedid from './typeParsers/generatedid';
-import geolocation from './typeParsers/geolocation';
-import multiselect from './typeParsers/multiselect';
-import select from './typeParsers/select';
-import relationship from './typeParsers/relationship';
-import { csvConstants } from './csvDefinitions';
+import generatedid from './typeParsers/generatedid.js';
+import geolocation from './typeParsers/geolocation.js';
+import multiselect from './typeParsers/multiselect.js';
+import select from './typeParsers/select.js';
+import relationship from './typeParsers/relationship.js';
+import { csvConstants } from './csvDefinitions.js';
 
 const defaultParser = async (
   entityToImport: RawEntity,

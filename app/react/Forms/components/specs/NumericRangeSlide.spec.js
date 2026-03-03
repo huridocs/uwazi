@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import NumericRangeSlide from '../NumericRangeSlide';
+import { NumericRangeSlide } from '../NumericRangeSlide.js';
 
 describe('NumericRangeSlide', () => {
   let component;

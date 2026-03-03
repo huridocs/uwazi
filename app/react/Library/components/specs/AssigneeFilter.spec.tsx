@@ -1,6 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { AssigneeFilterSelectUncontrolled } from '../AssigneeFilter';
+import { AssigneeFilterSelectUncontrolled } from '../AssigneeFilter.js';
 
 describe('AssigneeFilter uncontrolled', () => {
   const aggregations = {

@@ -1,8 +1,8 @@
 import path from 'path';
-import { streamToString, deleteFiles } from 'api/files/filesystem';
+import { streamToString, deleteFiles } from '#api/files/filesystem.js';
 
-import importFile from '../importFile';
-import { createTestingZip } from './helpers';
+import importFile from '../importFile.js';
+import { createTestingZip } from './helpers.js';
 
 describe('importFile', () => {
   beforeAll(async () => {

@@ -1,5 +1,5 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories.js';
 
 export class ListCsvImportEntitiesImportsController extends AbstractController {
   protected async handle(): Promise<void> {

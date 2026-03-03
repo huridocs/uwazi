@@ -1,4 +1,4 @@
-import { TranslationDBO } from './TranslationDBO';
+import { TranslationDBO } from './TranslationDBO.js';
 
 type TranslationSyO = Omit<TranslationDBO, '_id'> & { _id: string };
 

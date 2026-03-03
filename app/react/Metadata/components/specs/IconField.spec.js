@@ -2,11 +2,11 @@
 
 import React from 'react';
 
-import { FormValue } from 'app/Forms';
+import { FormValue } from '#app/Forms/index.js';
 import { shallow } from 'enzyme';
-import ToggleDisplay from 'app/Layout/ToggleDisplay';
+import { ToggleDisplay } from '#app/Layout/ToggleDisplay.js';
 
-import { IconFieldBase } from '../IconField';
+import { IconFieldBase } from '../IconField.js';
 
 describe('IconField', () => {
   let props;

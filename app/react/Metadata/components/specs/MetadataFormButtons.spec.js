@@ -1,12 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as immutable } from 'immutable';
-import { I18NLink } from 'app/I18N';
+import Immutable from 'immutable';
+import { I18NLink } from '#app/I18N/index.js';
 
-import { Icon } from 'UI';
-
-import { ShareButton } from 'app/Permissions/components/ShareButton';
-import { MetadataFormButtons } from '../MetadataFormButtons';
+import { ShareButton } from '#app/Permissions/components/ShareButton.js';
+import { MetadataFormButtonsView as MetadataFormButtons } from '../MetadataFormButtons.js';
 
 describe('MetadataFormButtons', () => {
   let component;
@@ -20,8 +18,8 @@ describe('MetadataFormButtons', () => {
       resetForm: jasmine.createSpy('resetForm'),
       clearMetadataSelections: jasmine.createSpy('resetForm'),
       delete: jasmine.createSpy('delete'),
-      data: immutable({ test: 'test', sharedId: 'shId', file: {} }),
-      templates: immutable([{ test: 'test' }]),
+      data: Immutable.fromJS({ test: 'test', sharedId: 'shId', file: {} }),
+      templates: Immutable.fromJS([{ test: 'test' }]),
       formName: 'FormName',
       formStatePath: 'form',
       includeViewButton: true,
@@ -168,7 +166,13 @@ describe('MetadataFormButtons', () => {
       const link = component.find(I18NLink);
       expect(link.props().to).toBe('entity/shId');
       expect(component.find('.edit-metadata').length).toBe(1);
-      expect(component.find('.edit-metadata').at(0).find(Icon).props().icon).toBe('file');
+      expect(
+        component
+          .find('.edit-metadata')
+          .at(0)
+          .findWhere(n => n.prop('icon') === 'file')
+          .props().icon
+      ).toBe('file');
       expect(component.find('.btn-success').length).toBe(0);
       expect(component.find('.delete-metadata').length).toBe(0);
     });

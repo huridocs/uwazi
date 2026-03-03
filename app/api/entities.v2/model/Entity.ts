@@ -1,6 +1,6 @@
-import { CommonProperty } from 'api/core/domain/template/CommonProperty';
-import { Property } from 'api/core/domain/template/Property';
-import { EntityInputModel } from '../types/EntityInputDataType';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { EntityInputModel } from '../types/EntityInputDataType.js';
 
 type MetadataValue = unknown;
 

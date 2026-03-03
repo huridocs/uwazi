@@ -1,11 +1,11 @@
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { Template } from 'api/core/domain/template/Template';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Template } from '#api/core/domain/template/Template.js';
 import {
   Dispatchable,
   HeartbeatCallback,
-} from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob.js';
 
 export class UpdateTemplateRelationshipPropertiesJob implements Dispatchable {
   static BATCH_SIZE = 200;

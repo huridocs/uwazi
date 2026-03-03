@@ -1,4 +1,4 @@
-import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
+import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
 
 type TemplateRow = ClientTemplateSchema & {
   rowId: string;

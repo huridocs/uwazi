@@ -3,27 +3,27 @@
 import React, { useCallback, useState } from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { useAtom } from 'jotai';
-import { get } from 'lodash';
+import get from 'lodash/get.js';
 import { Link, useRevalidator } from 'react-router';
 import { CheckCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
-import { Button, Pill } from 'V2/Components/UI';
-import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { propertyIcons } from 'V2/Components/UI/Icons';
-import { ClientPropertySchema } from 'app/istore';
-import { Translate } from 'app/I18N';
+import { Button, Pill } from '#V2/Components/UI/index.js';
+import { EmbededButton } from '#V2/Components/UI/EmbededButton.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
+import { ClientPropertySchema } from '#app/istore.js';
+import { Translate } from '#app/I18N/index.js';
 import {
   TableExtractor,
   TableSuggestion,
   SingleValueSuggestion,
   MultiValueSuggestion,
   SuggestionValue,
-} from '../types';
-import { Dot } from './Dot';
-import { SuggestedValue } from './SuggestedValue';
-import { acceptedSuggestions } from './atoms';
-import { ContextCell } from './ContextCell';
-import { calculateOptimalProportions } from '../helpers/contextHelpers';
+} from '../types.js';
+import { Dot } from './Dot.js';
+import { SuggestedValue } from './SuggestedValue.js';
+import { acceptedSuggestions } from './atoms/index.js';
+import { ContextCell } from './ContextCell.js';
+import { calculateOptimalProportions } from '../helpers/contextHelpers.js';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();

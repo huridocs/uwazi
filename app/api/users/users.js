@@ -1,22 +1,21 @@
 /* eslint-disable max-statements */
-import SHA256 from 'crypto-js/sha256';
+import SHA256 from 'crypto-js/sha256.js';
 
-import { createError } from 'api/utils';
-import random from 'shared/uniqueID';
-import { encryptPassword, comparePasswords } from 'api/auth/encryptPassword';
-import * as usersUtils from 'api/auth2fa/usersUtils';
-
+import { createError } from '#api/utils/index.js';
+import random from '#shared/uniqueID.js';
+import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
+import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import {
   getByMemberIdList,
   updateUserMemberships,
   removeUsersFromAllGroups,
-} from 'api/usergroups/userGroupsMembers';
-import mailer from '../utils/mailer';
-import model from './usersModel';
-import passwordRecoveriesModel from './passwordRecoveriesModel';
-import settings from '../settings/settings';
-import { generateUnlockCode } from './generateUnlockCode';
-import { PUBLIC_USER_ID } from './publicUser';
+} from '#api/usergroups/userGroupsMembers.js';
+import mailer from '../utils/mailer.js';
+import model from './usersModel.js';
+import passwordRecoveriesModel from './passwordRecoveriesModel.js';
+import settings from '../settings/settings.js';
+import { generateUnlockCode } from './generateUnlockCode.js';
+import { PUBLIC_USER_ID } from './publicUser.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 

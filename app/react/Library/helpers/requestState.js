@@ -1,14 +1,14 @@
-import { actions } from 'app/BasicReducer';
-import libraryHelpers from 'app/Library/helpers/libraryFilters';
-import api from 'app/Search/SearchAPI';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { risonDecodeOrIgnore } from 'app/utils';
-import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
-import { setTableViewColumns } from 'app/Library/actions/libraryActions';
-import { tocGenerationUtils } from 'app/ToggledFeatures/tocGeneration';
-import { wrapDispatch } from 'app/Multireducer';
-import { UserRole } from 'shared/types/userSchema';
-import { getTableColumns } from './tableColumns';
+import { actions } from '#app/BasicReducer/index.js';
+import { libraryHelpers } from '#app/Library/helpers/libraryFilters.js';
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
+import { risonDecodeOrIgnore } from '#app/utils/index.js';
+import { getThesaurusPropertyNames } from '#shared/commonTopicClassification.js';
+import { setTableViewColumns } from '#app/Library/actions/libraryActions.js';
+import { tocGenerationUtils } from '#app/ToggledFeatures/tocGeneration/index.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { getTableColumns } from './tableColumns.js';
 import setReduxState from './setReduxState.js';
 
 const decodeQuery = params => {

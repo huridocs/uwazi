@@ -1,7 +1,7 @@
 import util from 'util';
 
-import Ajv, { JTDSchemaType } from 'ajv/dist/jtd';
-import { ValidationError } from './ValidationError';
+import Ajv, { JTDSchemaType } from 'ajv/dist/jtd.js';
+import { ValidationError } from './ValidationError.js';
 
 const ajv = new Ajv({ allErrors: true });
 

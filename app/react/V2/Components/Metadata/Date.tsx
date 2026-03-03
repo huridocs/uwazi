@@ -1,9 +1,9 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
-import { DateMetadataProperty, DateRangeMetadataProperty } from 'V2/domain/entities/types';
-import { MetadataFieldProps } from './types';
-import { PropertyLabel } from './PropertyLabel';
-import { MetadataCard } from './MetadataCard';
+import { Translate } from '#app/I18N/index.js';
+import { DateMetadataProperty, DateRangeMetadataProperty } from '#V2/domain/entities/types.js';
+import { MetadataFieldProps } from './types.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MetadataCard } from './MetadataCard.js';
 
 type DateProps = MetadataFieldProps & {
   values: DateMetadataProperty['values'] | DateRangeMetadataProperty['values'];

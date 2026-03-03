@@ -1,10 +1,10 @@
 /*global page*/
 
-import { host } from '../config';
-import { adminLogin, logout } from '../helpers/login';
-import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
+import { host } from '../config.js';
+import { adminLogin, logout } from '../helpers/login.js';
+import proxyMock from '../helpers/proxyMock.js';
+import insertFixtures from '../helpers/insertFixtures.js';
+import disableTransitions from '../helpers/disableTransitions.js';
 
 describe('Login', () => {
   beforeAll(async () => {

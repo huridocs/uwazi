@@ -1,9 +1,9 @@
 import React from 'react';
-import { FileType } from 'shared/types/fileType';
-import { PDF } from 'V2/Components/PDFViewer';
-import { TemplateLabel } from 'app/V2/Components/Metadata/TemplateLabel';
-import { Entity } from 'V2/domain';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { FileType } from '#shared/types/fileType.js';
+import { PDF } from '#V2/Components/PDFViewer/index.js';
+import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.js';
+import { Entity } from '#V2/domain/index.js';
 
 type SelectTextInTargetStepProps = {
   selectedEntity: Entity | undefined;

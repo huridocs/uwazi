@@ -2,22 +2,22 @@ import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
-import { withContext } from 'app/componentWrappers';
-import { t, Translate } from 'app/I18N';
-import { Icon } from 'UI';
-import { APIURL } from 'app/config.js';
-import { ClientBlobFile } from 'app/istore';
-import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
-import { wrapDispatch } from 'app/Multireducer';
-import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration';
-import { NeedAuthorization } from 'app/Auth';
-import { LocalForm } from 'app/Forms/Form';
-import { availableLanguages, LanguageUtils } from 'shared/language';
-import { isBlobFile } from 'shared/tsUtils';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import { withContext } from '#app/componentWrappers.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { Icon } from '#UI/index.js';
+import { APIURL } from '#app/config.js';
+import { ClientBlobFile } from '#app/istore.js';
+import { updateFile, deleteFile } from '#app/Attachments/actions/actions.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { TocGeneratedLabel } from '#app/ToggledFeatures/tocGeneration/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { LocalForm } from '#app/Forms/Form.js';
+import { availableLanguages, LanguageUtils } from '#shared/language/index.js';
+import { isBlobFile } from '#shared/tsUtils.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { ViewDocumentLink } from './ViewDocumentLink';
+import { ViewDocumentLink } from './ViewDocumentLink.js';
 
 type FileOwnProps = {
   file: FileType | ClientBlobFile;

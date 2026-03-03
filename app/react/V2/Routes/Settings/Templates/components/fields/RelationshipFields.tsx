@@ -2,10 +2,10 @@
 import React, { useMemo, useEffect } from 'react';
 import { Controller, useWatch, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { Select } from 'V2/Components/Forms';
-import { t, Translate } from 'app/I18N';
-import { relationshipTypesAtom, templatesAtom } from 'V2/atoms';
-import { orderBy } from 'lodash';
+import { Select } from '#V2/Components/Forms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
+import orderBy from 'lodash/orderBy.js';
 
 interface RelationshipFieldsProps {
   control: any;
@@ -128,7 +128,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
               label={<Translate>Inherit property</Translate>}
               options={propertyOptions}
               disabled={disabled}
-              onChange={e => {
+              onChange={(e: any) => {
                 const { value } = e.target;
                 const option = propertyOptions.find(opt => opt.value === value);
                 if (option && option.type) {

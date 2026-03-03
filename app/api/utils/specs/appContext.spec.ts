@@ -1,4 +1,4 @@
-import { appContext } from '../AppContext';
+import { appContext } from '../AppContext.js';
 
 describe('appContext', () => {
   describe('when running the callback inside a context', () => {

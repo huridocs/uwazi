@@ -1,12 +1,11 @@
 import { connect } from 'react-redux';
 
-import { RequestParams } from 'app/utils/RequestParams';
-import api from 'app/Search/SearchAPI';
-import { t } from 'app/I18N';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
+import { t } from '#app/I18N/index.js';
 
-import CejilChart from './CejilChart';
-import parsingUtils from '../utils/parsingUtils';
-
+import { CejilChart } from './CejilChart.js';
+import parsingUtils from '../utils/parsingUtils.js';
 const casesTemplate = '58b2f3a35d59f31e1345b48a';
 const provisionalMeasuresTemplate = '58b2f3a35d59f31e1345b4a4';
 const countryKey = 'pa_s';
@@ -65,4 +64,5 @@ export function mapStateToProps({ templates }) {
   return { templates, getData, prepareData };
 }
 
-export default connect(mapStateToProps)(CejilChart);
+const cejilChart001 = connect(mapStateToProps)(CejilChart);
+export { cejilChart001 };

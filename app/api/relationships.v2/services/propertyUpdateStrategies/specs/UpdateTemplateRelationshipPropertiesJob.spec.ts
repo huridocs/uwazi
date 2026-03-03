@@ -1,14 +1,14 @@
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { tenants } from 'api/tenants';
-import { QueueAdapter } from 'api/core/libs/queue/infrastructure/QueueAdapter';
-import testingDB from 'api/utils/testing_db';
-import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
-import { NamespacedDispatcher } from 'api/core/libs/queue/infrastructure/NamespacedDispatcher';
-import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
-import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { tenants } from '#api/tenants/index.js';
+import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import testingDB from '#api/utils/testing_db.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { NamespacedDispatcher } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
+import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob.js';
+import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob.js';
 
 const fixturesFactory = getFixturesFactory();
 

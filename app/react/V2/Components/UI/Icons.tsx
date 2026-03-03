@@ -13,7 +13,7 @@ import {
   MediaPropertyIcon,
   PreviewPropertyIcon,
   CustomPropertyIcon,
-} from 'V2/Components/CustomIcons';
+} from '#V2/Components/CustomIcons/index.js';
 
 const propertyIcons = {
   text: <TextPropertyIcon className="w-5 h-5" />,

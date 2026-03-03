@@ -1,9 +1,9 @@
-import uniqueID from 'shared/uniqueID';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
+import uniqueID from '#shared/uniqueID.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
 
-import { t } from 'app/I18N';
-import { PropertyRow } from './components/TemplateEditorTableComponents';
+import { t } from '#app/I18N/index.js';
+import { PropertyRow } from './components/TemplateEditorTableComponents.js';
 
 const commonPropertyTitle: ClientProperty = {
   label: 'Title',

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { instanceModel } from 'api/odm';
+import { instanceModel } from '#api/odm/index.js';
 
 export interface User {
   _id?: any;

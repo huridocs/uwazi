@@ -1,29 +1,29 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FilesService } from 'api/core/application/FilesService';
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import { CsvHeaderAnalyzer, AnalyzerOptions } from '../services/CsvHeaderAnalyzer';
-import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
-import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource';
-import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FilesService } from '#api/core/application/FilesService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { CsvHeaderAnalyzer, AnalyzerOptions } from '../services/CsvHeaderAnalyzer.js';
+import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
+import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
+import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
+import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource.js';
 import {
   CsvImportDomain,
   CsvImportStatus,
   CsvImportStats,
   CsvImport,
-} from '../../domain/CsvImport';
-import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper';
-import { persistRowErrorsReport } from '../services/CsvImportEntitiesErrorReporting';
-import { processImportRows } from './CsvImportEntitiesRowsProcessor';
-import { Callbacks, ImportContext } from './CsvImportEntitiesTypes';
+} from '../../domain/CsvImport.js';
+import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
+import { persistRowErrorsReport } from '../services/CsvImportEntitiesErrorReporting.js';
+import { processImportRows } from './CsvImportEntitiesRowsProcessor.js';
+import { Callbacks, ImportContext } from './CsvImportEntitiesTypes.js';
 
 type Input = {
   importId: string;

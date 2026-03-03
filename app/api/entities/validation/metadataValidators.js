@@ -1,4 +1,4 @@
-import { propertyTypes } from 'shared/propertyTypes';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
 const validateSingleWrappedValue = validationFn => value => {
   if (value.length !== 1) {

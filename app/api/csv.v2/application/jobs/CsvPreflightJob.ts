@@ -1,26 +1,30 @@
 /* eslint-disable max-lines */
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { Template } from 'api/core/domain/template/Template';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource';
-import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues';
-import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
-import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
-import { CsvHeaderAnalyzer, AnalyzerOptions, HeaderAnalysis } from '../services/CsvHeaderAnalyzer';
-import { CsvHeaderAnalyzerError } from '../services/CsvHeaderAnalyzerError';
-import { CsvThesauriPendingValuesBuilder } from '../services/CsvThesauriPendingValuesBuilder';
-import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
-import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
-import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
-import { CsvCreateThesauriValuesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
-import { CsvThesauriPendingEntry } from '../../domain/CsvThesauriPendingValues';
-import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues';
-import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper';
-import { collectRelationshipTitlesFromRows } from '../services/CsvPreflightRelationshipsService';
-import { CsvImportRow } from '../../domain/CsvImportRow';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
+import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues.js';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
+import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport.js';
+import {
+  CsvHeaderAnalyzer,
+  AnalyzerOptions,
+  HeaderAnalysis,
+} from '../services/CsvHeaderAnalyzer.js';
+import { CsvHeaderAnalyzerError } from '../services/CsvHeaderAnalyzerError.js';
+import { CsvThesauriPendingValuesBuilder } from '../services/CsvThesauriPendingValuesBuilder.js';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource.js';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { CsvCreateThesauriValuesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
+import { CsvThesauriPendingEntry } from '../../domain/CsvThesauriPendingValues.js';
+import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues.js';
+import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
+import { collectRelationshipTitlesFromRows } from '../services/CsvPreflightRelationshipsService.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
 
 type ThesauriWritePort = {
   appendRootLabelsIfMissing(thesaurusId: string, labels: string[]): Promise<void>;

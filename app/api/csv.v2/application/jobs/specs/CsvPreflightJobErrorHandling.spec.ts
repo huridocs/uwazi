@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { Result } from 'api/core/libs/Result';
-import { CsvPreflightJobFactory } from '../../../infrastructure/factories/CsvPreflightJobFactory';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { Result } from '#api/core/libs/Result.js';
+import { CsvPreflightJobFactory } from '../../../infrastructure/factories/CsvPreflightJobFactory.js';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 
 jest.mock('api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob', () => ({
   TemplatePostProcessEntitiesJob: class {},

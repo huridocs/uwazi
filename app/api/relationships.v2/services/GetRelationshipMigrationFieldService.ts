@@ -1,12 +1,12 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource.js';
 import {
   RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
-} from '../model/RelationshipMigrationField';
+} from '../model/RelationshipMigrationField.js';
 
 class GetRelationshipMigrationFieldService {
   private transactionManager: TransactionManager;

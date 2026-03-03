@@ -1,20 +1,20 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction } from 'react-router';
-import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
-import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
-import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
-import * as entitiesApi from 'V2/api/entities';
-import * as settingsApi from 'V2/api/settings';
-import * as templatesApi from 'V2/api/templates';
+import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
+import * as pxParagraphApi from '#V2/api/paragraphExtractor/paragraphs.js';
+import * as pxEntitiesApi from '#V2/api/paragraphExtractor/entities.js';
+import * as entitiesApi from '#V2/api/entities/index.js';
+import * as settingsApi from '#V2/api/settings/index.js';
+import * as templatesApi from '#V2/api/templates/index.js';
 import {
   PXEntityLoaderResponse,
   PXEntityQuery,
   PXParagraphQuery,
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from 'V2/shared/ParagraphExtractionTypes';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
-import { ClientEntitySchema } from 'app/istore';
+} from '#V2/shared/ParagraphExtractionTypes.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { ClientEntitySchema } from '#app/istore.js';
 
 const PAGE_SIZE = 30;
 

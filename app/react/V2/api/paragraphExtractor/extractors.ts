@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import {
   ParagraphExtractorApiPayload,
   PXTable,
-} from 'V2/Routes/Settings/ParagraphExtraction/types';
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import api from 'app/utils/api';
+} from '#V2/Routes/Settings/ParagraphExtraction/types.js';
+import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
+import { api } from '#app/utils/api.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<Extractor[]> => {
   const requestParams = new RequestParams({}, headers);
