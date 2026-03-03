@@ -42,6 +42,7 @@ module.exports = production => {
     entry: {
       main: path.join(rootPath, 'app/react/entry-client'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
+      'pdf.worker': 'pdfjs-dist/build/pdf.worker.mjs',
     },
     output: {
       path: outputPath,
@@ -215,7 +216,6 @@ module.exports = production => {
           { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
           { from: 'node_modules/flag-icons/flags/4x3/', to: 'flags/4x3/' },
           { from: 'node_modules/flag-icons/flags/1x1/', to: 'flags/1x1/' },
-          { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
           { from: 'node_modules/leaflet/dist/images/', to: 'CSS/images' },
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
