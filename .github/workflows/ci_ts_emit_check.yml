@@ -43,12 +43,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          corepack: true
       - name: Cache node modules
         uses: actions/cache@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
+      - name: Enable Corepack
+        run: corepack enable
       - name: install dependencies
         run: yarn install
       - run: yarn emit-types --check
