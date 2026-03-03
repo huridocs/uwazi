@@ -7,15 +7,15 @@ import sanitizeHtml from 'sanitize-html';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { t, Translate } from 'app/I18N';
-import { Panel } from 'V2/Components/Layouts/Panel';
-import { templatesAtom } from 'V2/atoms';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { SEARCH_PARAM } from '../urlParams';
-import { searchHintsModalAtom } from './atoms';
-import type { PdfControllerApi } from './PdfControllerContext';
-import { LoaderResponse } from '../types';
-import { NoSearch, NoResults } from './BlankState';
+import { t, Translate } from '#app/I18N/index.js';
+import { Panel } from '#V2/Components/Layouts/Panel.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { SEARCH_PARAM } from '../urlParams.js';
+import { searchHintsModalAtom } from './atoms.js';
+import { LoaderResponse } from '../types.js';
+import { NoSearch, NoResults } from './BlankState.js';
+import { PdfControllerApi } from './PdfControllerContext.js';
 
 type FormValues = {
   search: string;

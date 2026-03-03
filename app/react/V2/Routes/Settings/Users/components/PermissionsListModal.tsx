@@ -4,8 +4,8 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { UserPlusIcon } from '@heroicons/react/24/outline';
-import { Translate, t } from 'app/I18N';
-import { Button, Modal, Table } from 'app/V2/Components/UI';
+import { Translate, t } from '#app/I18N/index.js';
+import { Button, Modal, Table } from '#app/V2/Components/UI/index.js';
 
 type Level = 'none' | 'partial' | 'full';
 

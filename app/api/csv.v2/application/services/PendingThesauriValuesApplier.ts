@@ -1,14 +1,14 @@
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
+import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
-} from '../../domain/CsvImportThesauriValues';
-import { ThesauriRepository } from '../contracts/ThesauriRepository';
-import { TranslationsRepository } from '../contracts/TranslationsRepository';
-import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff';
-import { CsvThesauriPendingChild } from '../../domain/CsvThesauriPendingValues';
+} from '../../domain/CsvImportThesauriValues.js';
+import { CsvThesauriPendingChild } from '../../domain/CsvThesauriPendingValues.js';
+import { ThesauriRepository } from '../contracts/ThesauriRepository.js';
+import { TranslationsRepository } from '../contracts/TranslationsRepository.js';
+import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff.js';
 
 type Deps = {
   thesauriRepo: ThesauriRepository;

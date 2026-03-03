@@ -1,3 +1,3 @@
 /** @format */
 
-export * from './updatelogsModel';
+export * from './updatelogsModel.js';

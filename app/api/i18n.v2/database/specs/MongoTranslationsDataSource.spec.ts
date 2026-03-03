@@ -1,11 +1,11 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
-import { Translation } from 'api/i18n.v2/model/Translation';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { Translation } from '#api/i18n.v2/model/Translation.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource.js';
 
 const fixtures: DBFixture = {
   translationsV2: [],

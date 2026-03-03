@@ -1,5 +1,5 @@
-import { clickOnCreateEntity, clickOnEditEntity } from '../helpers/entities';
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clickOnCreateEntity, clickOnEditEntity } from '../helpers/index.js';
+import { clearCookiesAndLogin } from '../helpers/login.js';
 
 describe('Copy from entity', () => {
   before(() => {

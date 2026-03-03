@@ -49,4 +49,4 @@ const docState = createSelector(
   }
 );
 
-export default docState;
+export { docState };

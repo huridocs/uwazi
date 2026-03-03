@@ -12,12 +12,15 @@ import {
 } from 'react-router';
 import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
-import { getStore } from 'shared/atomStore';
-import { ErrorBoundary } from './V2/Components/ErrorHandling';
-import './App/sockets';
-import CustomProvider from './App/Provider';
-import { store } from './store';
-import { routes } from './appRoutes';
+import { getStore } from '#shared/atomStore/index.js';
+import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
+import './App/sockets.js';
+import { CustomProvider } from './App/Provider.js';
+import { store } from './store.js';
+import { getAppRoutes } from './appRoutes.js';
+import { loadIcons } from '#UI/Icon/library.js';
+
+loadIcons();
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({
@@ -39,7 +42,7 @@ if (window.SENTRY_APP_DSN) {
   });
 }
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(getAppRoutes());
 
 const App = () => {
   const atomStore = getStore();

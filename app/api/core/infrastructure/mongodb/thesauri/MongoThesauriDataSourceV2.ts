@@ -1,15 +1,15 @@
-import { ThesauriDataSource } from 'api/core/application/contracts/ThesauriDataSource';
-import { Result, ResultType } from 'api/core/libs/Result';
-import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { Db, ObjectId } from 'mongodb';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import {
   ThesaurusNameAlreadyExistsError,
   ThesaurusNotFoundError,
-} from 'api/core/domain/thesaurus/errors';
-import { MongoDataSource } from '../common/MongoDataSource';
-import { MongoThesaurusMapper } from './MongoThesaurusMapper';
-import { ThesaurusDBO } from './ThesaurusDBO';
-import { MongoTransactionManager } from '../common/MongoTransactionManager';
+} from '#api/core/domain/thesaurus/errors.js';
+import { MongoDataSource } from '../common/MongoDataSource.js';
+import { MongoThesaurusMapper } from './MongoThesaurusMapper.js';
+import { ThesaurusDBO } from './ThesaurusDBO.js';
+import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
 
 class MongoThesauriDataSourceV2
   extends MongoDataSource<ThesaurusDBO>

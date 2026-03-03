@@ -1,6 +1,6 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { cleanupRecordsOfFiles } from './ocrRecords';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { cleanupRecordsOfFiles } from './ocrRecords.js';
 
 const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(FilesDeletedEvent, async ({ files }) => {

@@ -1,9 +1,9 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { CsvImport } from '../../domain/CsvImport';
-import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer';
-import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper';
-import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
-import { BatchContext } from './CsvImportEntitiesBatchProcessor';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { CsvImport } from '../../domain/CsvImport.js';
+import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer.js';
+import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { BatchContext } from './CsvImportEntitiesBatchProcessor.js';
 
 type Callbacks = BaseCallbacks & {
   onProgress: (info: {

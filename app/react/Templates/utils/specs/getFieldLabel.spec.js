@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
-import { t } from 'app/I18N';
-import getFieldLabel from '../getFieldLabel';
+import { t } from '#app/I18N/index.js';
+import getFieldLabel from '../getFieldLabel.js';
 
 describe('getFieldLabel', () => {
   let template;

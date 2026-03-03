@@ -1,7 +1,7 @@
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
-import { config } from 'api/config';
+import { config } from '#api/config.js';
 
 let sentryWasInitialized = false;
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { AbstractUseCase } from '../libs/UseCase';
-import { EntitiesService } from './EntitiesService';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { EntitiesService } from './EntitiesService.js';
 
 const InputSchema = z.object({
   sharedIds: z

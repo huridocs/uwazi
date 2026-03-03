@@ -1,10 +1,10 @@
 import { Db } from 'mongodb';
 
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
-import { MongoPXExtractorsQueryService } from './MongoPXExtractorsQueryService';
+import { MongoPXExtractorsQueryService } from './MongoPXExtractorsQueryService.js';
 
 type Props = {
   connection?: Db;

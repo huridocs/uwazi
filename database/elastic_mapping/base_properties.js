@@ -1,5 +1,5 @@
-import documentProperties from './document_properties';
-import { textSortField } from './mappings';
+import documentProperties from './document_properties.js';
+import { textSortField } from './mappings.js';
 
 const PermissionProperties = {
   type: 'nested',

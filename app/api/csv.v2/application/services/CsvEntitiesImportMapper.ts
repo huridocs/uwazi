@@ -1,19 +1,19 @@
 /* eslint-disable max-lines */
-import { Template } from 'api/core/domain/template/Template';
-import { Property } from 'api/core/domain/template/Property';
-import { PropertyName } from 'api/core/domain/template/PropertyName';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { Template } from '#api/core/domain/template/Template.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import url from 'url';
 import moment from 'moment';
-import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer';
-import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
-import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
-import { ANY_TEMPLATE_RELATIONSHIP_KEY } from './CsvPreflightRelationshipsService';
+import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
+import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer.js';
+import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource.js';
+import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource.js';
+import { ANY_TEMPLATE_RELATIONSHIP_KEY } from './CsvPreflightRelationshipsService.js';
 
 type AppliedValueIndex = Map<
   string,

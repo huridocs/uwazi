@@ -1,18 +1,17 @@
 /* eslint-disable max-statements */
-import { Entity } from 'api/core/domain/entity/Entity';
-import { NumericProperty } from 'api/core/domain/template/NumericProperty';
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { Template } from 'api/core/domain/template/Template';
-import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource';
+import { Template } from '#api/core/domain/template/Template.js';
+import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource.js';
 
 const factory = getFixturesFactory();
-
 const fixtures = {
   settings: [
     {

@@ -4,27 +4,27 @@
 import urljoin from 'url-join';
 import { ObjectId } from 'mongodb';
 
-import { storage } from 'api/files';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { EnforcedWithId } from 'api/odm';
-import { tenants } from 'api/tenants/tenantContext';
-import { emitToTenant } from 'api/socketio/setupSockets';
-import { filesModel } from 'api/files/filesModel';
-import entities from 'api/entities/entities';
-import settings from 'api/settings/settings';
-import request from 'shared/JSONRequest';
-import { EntitySchema } from 'shared/types/entityType';
+import { storage } from '#api/files/index.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { emitToTenant } from '#api/socketio/setupSockets.js';
+import { filesModel } from '#api/files/filesModel.js';
+import entities from '#api/entities/entities.js';
+import settings from '#api/settings/settings.js';
+import request from '#shared/JSONRequest.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import {
   ExtractedMetadataSchema,
   LanguageISO6391,
   ObjectIdSchema,
   PropertySchema,
-} from 'shared/types/commonTypes';
-import { ModelStatus } from 'shared/types/IXModelSchema';
-import { FileType } from 'shared/types/fileType';
+} from '#shared/types/commonTypes.js';
+import { ModelStatus } from '#shared/types/IXModelSchema.js';
+import { FileType } from '#shared/types/fileType.js';
 import {
   BATCH_SIZE_FOR_PDF,
   BATCH_SIZE_FOR_PROPERTY,
@@ -32,32 +32,32 @@ import {
   getEntitiesForSuggestions,
   getFilesForSuggestions,
   propertyTypeIsWithoutExtractedMetadata,
-} from 'api/services/informationextraction/ixMaterials';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { LanguageUtils } from 'shared/language';
-import { IXModelType } from 'shared/types/IXModelType';
-import { ParagraphSchema } from 'shared/types/segmentationType';
+} from '#api/services/informationextraction/ixMaterials.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
+import { ParagraphSchema } from '#shared/types/segmentationType.js';
 import moment from 'moment';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
-import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
-import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import ixmodels from './ixmodels';
-import { IXModelsModel } from './IXModelsModel';
-import { Extractors } from './ixextractors';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';
+import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
+import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import ixmodels from './ixmodels.js';
+import { IXModelsModel } from './IXModelsModel.js';
+import { Extractors } from './ixextractors.js';
 import {
   CommonSuggestion,
   RawSuggestion,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
   formatSuggestionFacade,
-} from './suggestionFormatting';
-import { ExtractionKey } from './ExtractionKey';
-import { IXTrainModelJob } from './TrainModelJob';
-import { IXServices } from './IXServices';
+} from './suggestionFormatting.js';
+import { ExtractionKey } from './ExtractionKey.js';
+import { IXTrainModelJob } from './TrainModelJob.js';
+import { IXServices } from './IXServices.js';
 
 const defaultTrainingLanguage = 'en';
 

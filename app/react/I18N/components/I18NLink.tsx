@@ -1,18 +1,21 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
 import { useNavigate, NavLink, useLocation } from 'react-router';
-import { omit } from 'lodash';
+import omit from 'lodash/omit.js';
+import { connect } from 'react-redux';
 
 type I18NLinkProps = {
   to: string;
-  disabled: boolean;
-  onClick: (_e: any) => void;
-  confirmTitle: string;
-  confirmMessage: string;
-  mainContext: { confirm: Function };
-  activeclassname: string;
-  replaceNavigationHistory: boolean;
-  className: string;
+  href?: string;
+  disabled?: boolean;
+  onClick?: (_e: any) => void;
+  confirmTitle?: string;
+  confirmMessage?: string;
+  mainContext?: { confirm: Function };
+  activeclassname?: string;
+  replaceNavigationHistory?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  disable?: string;
 };
 
 const I18NLink = (props: I18NLinkProps) => {
@@ -50,7 +53,7 @@ const I18NLink = (props: I18NLinkProps) => {
     e.preventDefault();
     if (disabled) return;
 
-    if (onClick && confirmTitle) {
+    if (onClick && confirmTitle && props.mainContext) {
       props.mainContext.confirm({
         accept: async () => {
           onClick(e);
@@ -103,5 +106,5 @@ export function mapStateToProps({ locale }: { locale?: string }, ownProps: any) 
 }
 
 export type { I18NLinkProps };
-export { I18NLink };
-export default connect(mapStateToProps)(I18NLink);
+const I18NLinkConnected = connect(mapStateToProps)(I18NLink);
+export { I18NLink as I18NLinkView, I18NLinkConnected as I18NLink };

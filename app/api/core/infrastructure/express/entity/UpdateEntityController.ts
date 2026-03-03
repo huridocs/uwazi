@@ -1,11 +1,11 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { DependenciesContext } from 'api/core/libs/DependenciesContext';
-import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas';
-import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory';
-import { ExpressEntityMapper } from './ExpressEntityMapper';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
+import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory.js';
+import { ExpressEntityMapper } from './ExpressEntityMapper.js';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 
 type Request = UpdateEntityRequest | { entity: string };
 

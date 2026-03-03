@@ -1,5 +1,5 @@
-import { unique } from 'api/utils/filters';
-import { generateID } from 'shared/IDGenerator';
+import { unique } from '#api/utils/filters.js';
+import { generateID } from '#shared/IDGenerator.js';
 
 describe('IDGenerator', () => {
   describe('generateId', () => {

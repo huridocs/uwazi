@@ -1,1 +1,1 @@
-export { safeName } from '../api/core/domain/template/utils/propertyNameGeneration';
+export { safeName } from '../api/core/domain/template/utils/propertyNameGeneration.js';

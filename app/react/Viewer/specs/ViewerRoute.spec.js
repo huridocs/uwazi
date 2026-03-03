@@ -1,13 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
-import { RequestParams } from 'app/utils/RequestParams';
-import { FetchResponseError } from 'shared/JSONRequest';
-import EntitiesAPI from '../../Entities/EntitiesAPI';
-import EntityView from '../EntityView';
-import { PDFViewComponent } from '../PDFView';
-import { ViewerRouteComponent as ViewerRoute } from '../ViewerRoute';
-import { ViewerComponent } from '../components/ViewerComponent';
+import Immutable from 'immutable';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { EntitiesAPI } from '../../Entities/EntitiesAPI.js';
+import { Entity as EntityView } from '../EntityView.js';
+import { PDFViewComponent } from '../PDFView.js';
+import { ViewerRouteComponent as ViewerRoute } from '../ViewerRoute.js';
+import { ViewerComponent } from '../components/ViewerComponent.js';
 
 describe('ViewerRoute', () => {
   describe('Entity views', () => {
@@ -26,7 +26,9 @@ describe('ViewerRoute', () => {
           const state = await ViewerRoute.requestState(request, {
             templates: 'templates',
             settings: {
-              collection: fromJS({ languages: [{ key: 'en', label: 'English', default: true }] }),
+              collection: Immutable.fromJS({
+                languages: [{ key: 'en', label: 'English', default: true }],
+              }),
             },
           });
           expect(state).toBe('PDFView state');
@@ -79,7 +81,9 @@ describe('ViewerRoute', () => {
         await ViewerRoute.requestState(request, {
           templates: 'templates',
           settings: {
-            collection: fromJS({ languages: [{ key: 'en', label: 'English', default: true }] }),
+            collection: Immutable.fromJS({
+              languages: [{ key: 'en', label: 'English', default: true }],
+            }),
           },
         });
         fail('Should throw error');

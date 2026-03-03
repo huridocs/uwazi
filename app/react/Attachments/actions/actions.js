@@ -1,15 +1,15 @@
 import { actions as formActions } from 'react-redux-form';
 import superagent from 'superagent';
 
-import { APIURL } from 'app/config.js';
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryActions';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { actions as basicReducerActions } from 'app/BasicReducer';
-import { t } from 'app/I18N';
+import { APIURL } from '#app/config.js';
+import { notify } from '#app/Notifications/actions/notificationsActions.js';
+import { updateEntity, selectSingleDocument } from '#app/Library/actions/libraryActions.js';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { actions as basicReducerActions } from '#app/BasicReducer/index.js';
+import { t } from '#app/I18N/index.js';
 
-import * as types from './actionTypes';
+import * as types from './actionTypes.js';
 
 export function updateFile(file, entity) {
   return async dispatch => {

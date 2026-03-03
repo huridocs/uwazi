@@ -1,19 +1,19 @@
 import path from 'path';
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
-import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
-import { CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
-import { CsvImportRow } from '../../domain/CsvImportRow';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
 import {
   CsvImportFileNormalizer,
   NormalizeResult as FileNormalizeResult,
-} from '../services/CsvImportFileNormalizer';
-import { CsvImportRowsStager } from '../services/CsvImportRowsStager';
-import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler';
-import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
+} from '../services/CsvImportFileNormalizer.js';
+import { CsvImportRowsStager } from '../services/CsvImportRowsStager.js';
+import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler.js';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;

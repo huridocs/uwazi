@@ -1,9 +1,9 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
-import { EntityPermissions } from '../model/EntityPermissions';
-import { EntityPermissionsDBO } from './schemas/permissionTypes';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { PermissionsDataSource } from '../contracts/PermissionsDataSource.js';
+import { EntityPermissions } from '../model/EntityPermissions.js';
+import { EntityPermissionsDBO } from './schemas/permissionTypes.js';
 
 const mapPermissions = (entityPermissionInfo: EntityPermissionsDBO) => {
   const entries =

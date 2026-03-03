@@ -1,8 +1,8 @@
-import { tenants } from 'api/tenants';
-import users from 'api/users/users';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from '#api/tenants/index.js';
+import users from '#api/users/users.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable';
+import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable.js';
 
 export type UserAwareDispatchableParams = { tenantName: string; userId: string };
 

@@ -1,7 +1,8 @@
-import { Application, NextFunction, Request, Response } from 'express';
-import { needsAuthorization } from 'api/auth';
-import { parseQuery, validation } from 'api/utils';
-import userGroups from './userGroups';
+import type { Application, NextFunction, Request, Response } from 'express';
+
+import { needsAuthorization } from '#api/auth/index.js';
+import { parseQuery, validation } from '#api/utils/index.js';
+import userGroups from './userGroups.js';
 
 export default (app: Application) => {
   app.get(

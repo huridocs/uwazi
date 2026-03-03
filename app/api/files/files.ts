@@ -1,20 +1,20 @@
 /* eslint-disable max-statements */
-import entities from 'api/entities';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import connections from 'api/relationships';
-import { search } from 'api/search';
-import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
-import { validateFile } from 'shared/types/fileSchema';
-import { FileType } from 'shared/types/fileType';
+import entities from '#api/entities/index.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import connections from '#api/relationships/index.js';
+import { search } from '#api/search/index.js';
+import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
+import { validateFile } from '#shared/types/fileSchema.js';
+import { FileType } from '#shared/types/fileType.js';
 import { inspect } from 'util';
-import { FileCreatedEvent } from './events/FileCreatedEvent';
-import { FilesDeletedEvent } from './events/FilesDeletedEvent';
-import { FileUpdatedEvent } from './events/FileUpdatedEvent';
-import { filesModel } from './filesModel';
-import { storage } from './storage';
-import { V2 } from './v2_support';
+import { FileCreatedEvent } from './events/FileCreatedEvent.js';
+import { FilesDeletedEvent } from './events/FilesDeletedEvent.js';
+import { FileUpdatedEvent } from './events/FileUpdatedEvent.js';
+import { mimeTypeFromUrl } from './extensionHelper.js';
+import { filesModel } from './filesModel.js';
+import { storage } from './storage.js';
+import { V2 } from './v2_support.js';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };

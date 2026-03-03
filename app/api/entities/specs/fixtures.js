@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-len */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db from 'api/utils/testing_db';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db from '#api/utils/testing_db.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 const fixtureFactory = getFixturesFactory();
 

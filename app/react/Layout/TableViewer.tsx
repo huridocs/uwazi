@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { createSelector } from 'reselect';
 
 import { connect } from 'react-redux';
-import { EntityDisplayState, IStore, TableViewColumn } from 'app/istore';
-import { Translate } from 'app/I18N';
-import { TableRows } from 'app/Layout/TableRows';
-import { CollectionViewerProps } from './CollectionViewerProps';
+import { EntityDisplayState, IStore, TableViewColumn } from '#app/istore.js';
+import { Translate } from '#app/I18N/index.js';
+import { TableRows } from '#app/Layout/TableRows.js';
+import { CollectionViewerProps } from './CollectionViewerProps.js';
 
 interface TableViewerProps extends CollectionViewerProps {
   columns: TableViewColumn[];

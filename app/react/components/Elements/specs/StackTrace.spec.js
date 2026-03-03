@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
-import { Icon } from 'UI';
+import Immutable from 'immutable';
+import { Icon } from '#app/UI/index.js';
 
-import StackTrace from '../StackTrace.js';
+import { StackTrace } from '../StackTrace.js';
 
 describe('StackTrace', () => {
   let component;
@@ -17,7 +17,7 @@ describe('StackTrace', () => {
       '/Users/user/Sites/uwazi/node_modules/mongoose/lib/document.js:1647:17 ' +
       'at /Users/user/Sites/uwazi/node_modules/mongoose/lib/schematype.js:808:9 at _combinedTickCallback ' +
       '(internal/process/next_tick.js:131:7) at process._tickCallback (internal/process/next_tick.js:180:9)',
-    validations: fromJS([
+    validations: Immutable.fromJS([
       {
         message: 'should be number',
         instancePath: ".metadata['number']",

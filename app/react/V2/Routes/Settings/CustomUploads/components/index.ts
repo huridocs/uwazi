@@ -1,5 +1,5 @@
-export { createColumns } from './UploadsTable';
-export { FileList } from './FileList';
-export { UploadProgress } from './UploadProgress';
-export { DropzoneModal } from './DropzoneModal';
-export { EditFileSidepanel } from './EditFileSidepanel';
+export { createColumns } from './UploadsTable.js';
+export { FileList } from './FileList.js';
+export { UploadProgress } from './UploadProgress.js';
+export { DropzoneModal } from './DropzoneModal.js';
+export { EditFileSidepanel } from './EditFileSidepanel.js';

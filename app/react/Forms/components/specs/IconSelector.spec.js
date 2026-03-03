@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import countries from 'world-countries';
-import { iconNames } from 'UI/Icon/library';
-import DropdownList from 'react-widgets/lib/DropdownList';
-import IconSelector from '../IconSelector';
+import { iconNames } from '#UI/Icon/library.js';
+import DropdownList from 'react-widgets/lib/DropdownList.js';
+import { IconSelector } from '../IconSelector.js';
 
 describe('IconSelector', () => {
   let component;

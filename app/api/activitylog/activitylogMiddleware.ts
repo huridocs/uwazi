@@ -1,10 +1,10 @@
-import { storage } from 'api/files';
-import date from 'api/utils/date';
-import { tenants } from 'api/tenants';
+import { storage } from '#api/files/index.js';
+import date from '#api/utils/date.js';
+import { tenants } from '#api/tenants/index.js';
 import { Readable } from 'stream';
-import { NextFunction, Request, Response } from 'express';
-import { handleError } from 'api/utils';
-import activitylog from './activitylog';
+import type { NextFunction, Request, Response } from 'express';
+import { handleError } from '#api/utils/index.js';
+import activitylog from './activitylog.js';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
 const IGNORED_ENDPOINTS = [

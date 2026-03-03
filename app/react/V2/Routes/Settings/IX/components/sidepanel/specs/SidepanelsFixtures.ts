@@ -1,5 +1,5 @@
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../../types';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
+import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../../types.js';
 
 const suggestion1: TableSuggestion = {
   _id: 'suggestion1',

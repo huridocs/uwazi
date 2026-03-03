@@ -1,7 +1,7 @@
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { AbstractUseCase } from '../libs/UseCase';
-import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 
 type Input = {
   thesaurusId: string;

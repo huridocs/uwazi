@@ -1,4 +1,4 @@
-import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 
 interface PXEntityStatusesQueryService {
   fetchUnprocessedEntities(params: {

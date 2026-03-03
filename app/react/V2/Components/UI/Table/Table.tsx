@@ -22,15 +22,15 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Translate } from 'app/I18N';
-import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
-import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
-import { dndSortHandler, getRowIds } from './helpers';
-import { SortingChevrons } from './SortingChevrons';
-import { GroupCell, GroupHeader } from './GroupComponents';
-import { NoDataRow } from './NoDataRow';
-import { DefaultNoDataMessage } from './DefaultNoDataMessage';
-import { Button } from '../Button';
+import { Translate } from '#app/I18N/index.js';
+import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents.js';
+import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents.js';
+import { dndSortHandler, getRowIds } from './helpers.js';
+import { SortingChevrons } from './SortingChevrons.js';
+import { GroupCell, GroupHeader } from './GroupComponents.js';
+import { NoDataRow } from './NoDataRow.js';
+import { DefaultNoDataMessage } from './DefaultNoDataMessage.js';
+import { Button } from '../Button.js';
 
 type TableRow<T> = {
   rowId: string;

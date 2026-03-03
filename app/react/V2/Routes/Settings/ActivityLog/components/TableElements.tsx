@@ -3,11 +3,12 @@ import React from 'react';
 import { DateTime } from 'luxon';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
-import { Pill, Button } from 'app/V2/Components/UI';
-import type { PillColor } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
-import { ActivityLogSemanticType } from 'shared/types/activityLogEntryType';
-import { LogEntry } from '../ActivityLogLoader';
+
+import { Pill, Button } from '#V2/Components/UI/index.js';
+import type { PillColor } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { ActivityLogSemanticType } from '#shared/types/activityLogEntryType.js';
+import { LogEntry } from '../ActivityLogLoader.js';
 
 const ActionHeader = () => <Translate>Action</Translate>;
 const UserHeader = () => <Translate>User</Translate>;

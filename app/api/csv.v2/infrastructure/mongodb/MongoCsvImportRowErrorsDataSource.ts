@@ -1,7 +1,7 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { CsvImportRowErrorsDataSource } from '../../application/contracts/CsvImportRowErrorsDataSource';
-import { CsvImportRowError } from '../../domain/CsvImportRowError';
-import { CsvImportRowErrorDBO } from '../schemas/CsvImportRowErrorsTypes';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { CsvImportRowErrorsDataSource } from '../../application/contracts/CsvImportRowErrorsDataSource.js';
+import { CsvImportRowError } from '../../domain/CsvImportRowError.js';
+import { CsvImportRowErrorDBO } from '../schemas/CsvImportRowErrorsTypes.js';
 
 export class MongoCsvImportRowErrorsDataSource
   extends MongoDataSource<CsvImportRowErrorDBO>

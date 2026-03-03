@@ -1,3 +1,3 @@
-import relationships from './relationships';
+import relationships from './relationships.js';
 
 export default relationships;

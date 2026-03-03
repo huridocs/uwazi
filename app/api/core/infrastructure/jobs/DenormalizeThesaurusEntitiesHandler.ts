@@ -1,12 +1,15 @@
-import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { DenormalizeThesaurusEntitiesChunkHandler } from './DenormalizeThesaurusEntitiesChunkHandler';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { DenormalizeThesaurusEntitiesChunkHandler } from './DenormalizeThesaurusEntitiesChunkHandler.js';
 
 type Params = {
   thesaurusId: string;

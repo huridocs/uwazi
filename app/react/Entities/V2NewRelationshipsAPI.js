@@ -1,7 +1,7 @@
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-export default {
+const v2RelationshipsAPI = {
   get(requestParams = new RequestParams()) {
     return api.get('v2/relationships', requestParams).then(response => response.json);
   },
@@ -44,3 +44,5 @@ export default {
     return api.get('v2/migrationHubRecords', requestParams).then(response => response.json);
   },
 };
+export { v2RelationshipsAPI as api };
+export default v2RelationshipsAPI;

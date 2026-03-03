@@ -1,15 +1,15 @@
 /* eslint-disable max-statements */
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { ObjectId } from 'mongodb';
-import { Template } from 'api/core/domain/template/Template';
-import { RelationshipPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService';
+import { Template } from '#api/core/domain/template/Template.js';
+import { RelationshipPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
 
@@ -295,7 +295,7 @@ const fixtures: DBFixture = {
               { value: 'banana_id', label: 'Banana' },
             ],
             link: [{ value: 'http://example.com', label: 'Example EN' }],
-            image: [{ value: 'api/files/image.png' }],
+            image: [{ value: '#api/files/image.png' }],
             generatedid: [{ value: 'TIJ5481-7165' }],
             preview: [{ value: '/api/files/preview_EN.jpg' }],
             media: [{ value: '/api/files/video_EN.mp4' }],
@@ -329,7 +329,7 @@ const fixtures: DBFixture = {
               { value: 'banana_id', label: 'Banana in Portuguese' },
             ],
             link: [{ value: 'http://example.com', label: 'Example PT' }],
-            image: [{ value: 'api/files/image.png' }],
+            image: [{ value: '#api/files/image.png' }],
             generatedid: [{ value: 'TIJ5481-7165' }],
             preview: [{ value: '/api/files/preview_PT.jpg' }],
             media: [{ value: '/api/files/video_PT.mp4' }],
@@ -1103,7 +1103,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
           {
             value: 'B1',
             label: 'B1 EN',
-            inheritedValue: [{ value: 'api/files/image.png' }],
+            inheritedValue: [{ value: '#api/files/image.png' }],
             inheritedType: 'image',
             icon: {
               id: 'iconB1',
@@ -1123,7 +1123,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
           {
             value: 'B1',
             label: 'B1 PT',
-            inheritedValue: [{ value: 'api/files/image.png' }],
+            inheritedValue: [{ value: '#api/files/image.png' }],
             inheritedType: 'image',
             icon: {
               id: 'iconB1',

@@ -1,6 +1,6 @@
 import { Emitter } from '@socket.io/redis-emitter';
 import { createClient } from 'redis';
-import { config } from 'api/config';
+import { config } from '#api/config.js';
 
 const emitSocketEvent = async (
   event: string,

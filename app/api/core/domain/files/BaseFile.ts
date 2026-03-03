@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
-import { fileDBO, fileDTO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { FileTypes } from 'api/files/storage';
+import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { FileTypes } from '#api/files/storage.js';
 import { z } from 'zod';
 import stringify from 'fast-json-stable-stringify';
-import { FileContents } from './FileContents';
+import { FileContents } from './FileContents.js';
 
 type Props = {
   id: string;

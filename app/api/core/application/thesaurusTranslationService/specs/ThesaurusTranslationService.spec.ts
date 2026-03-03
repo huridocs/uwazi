@@ -1,19 +1,19 @@
 /* eslint-disable max-statements */
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
-import { Translation } from 'api/i18n.v2/model/Translation';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { Translation } from '#api/i18n.v2/model/Translation.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ObjectId } from 'mongodb';
-import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
-import { ThesaurusDBO } from 'api/core/infrastructure/mongodb/thesauri/ThesaurusDBO';
-import { ThesaurusDiff } from 'api/core/domain/thesaurus/ThesaurusDiff';
-import { ThesaurusTranslationService } from '../ThesaurusTranslationService';
-import { SettingsDataSource } from '../../contracts/SettingsDataSource';
-import { factory, fixtures } from './ThesaurusTranslationServiceFixtures';
+import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
+import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
+import { ThesaurusDiff } from '#api/core/domain/thesaurus/ThesaurusDiff.js';
+import { ThesaurusTranslationService } from '../ThesaurusTranslationService.js';
+import { SettingsDataSource } from '../../contracts/SettingsDataSource.js';
+import { factory, fixtures } from './ThesaurusTranslationServiceFixtures.js';
 
 type Props = {
   settingsDS?: SettingsDataSource;

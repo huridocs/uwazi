@@ -1,8 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { PXParagraphAPIResponse, PXParagraphQuery } from 'V2/shared/ParagraphExtractionTypes';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { PXParagraphAPIResponse, PXParagraphQuery } from '#V2/shared/ParagraphExtractionTypes.js';
 
 const getByParagraphExtractorId = async (
   parameters: PXParagraphQuery,

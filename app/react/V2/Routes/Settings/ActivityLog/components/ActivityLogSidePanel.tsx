@@ -1,8 +1,8 @@
 import React from 'react';
-import { Sidepanel } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
-import { ActionPill } from './TableElements';
+import { Sidepanel } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
+import { ActionPill } from './TableElements.js';
 
 interface ActivityLogSidePanelProps {
   selectedEntry?: ActivityLogEntryType;

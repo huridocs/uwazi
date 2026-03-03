@@ -4,14 +4,14 @@ import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { t, Translate } from 'app/I18N';
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import * as thesauriAPI from 'V2/api/thesauri';
-import { notificationAtom } from 'app/V2/atoms';
-import { Table } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import { addSelection, sanitizeThesaurusValues } from './helpers';
-import { columnsThesaurus, ThesaurusRow } from './components/TableComponents';
+import { t, Translate } from '#app/I18N/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import * as thesauriAPI from '#V2/api/thesauri/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
+import { Table } from '#V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { addSelection, sanitizeThesaurusValues } from './helpers.js';
+import { columnsThesaurus, ThesaurusRow } from './components/TableComponents.js';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;

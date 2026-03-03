@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { ClientSettings } from 'app/apiResponseTypes';
-import { Translate } from 'app/I18N';
-import * as settingsAPI from 'V2/api/settings';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Tabs } from 'app/V2/Components/UI';
-import { CodeEditor } from 'app/V2/Components/CodeEditor';
-import { ConfirmNavigationModal } from 'V2/Components/UI';
-import { notificationAtom } from 'app/V2/atoms';
-
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
+import { Translate } from '#app/I18N/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =
@@ -68,7 +66,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setCssContent(editor.getValue());
@@ -81,7 +79,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="javascript"
                   intialValue={customJS}
-                  onMount={editor => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setJsContent(editor.getValue());
@@ -97,7 +95,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setCssContent(editor.getValue());

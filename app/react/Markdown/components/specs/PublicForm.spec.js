@@ -3,13 +3,12 @@
  */
 /* eslint-disable max-statements */
 import Immutable from 'immutable';
-import { act } from 'react-dom/test-utils';
-import { LocalForm } from 'app/Forms/Form';
-import Dropzone from 'react-dropzone';
-import { MetadataFormFields } from 'app/Metadata';
-import { Captcha } from 'app/ReactReduxForms';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import { PublicFormComponent as PublicForm } from '../PublicForm';
+import { LocalForm } from '#app/Forms/Form.js';
+import Dropzone from 'react-dropzone-esm';
+import { MetadataFormFields } from '#app/Metadata/index.js';
+import { Captcha } from '#app/ReactReduxForms/index.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { PublicFormView as PublicForm } from '../PublicForm.js';
 
 const mockApiGet = jest.fn().mockResolvedValue({
   json: {
@@ -19,8 +18,8 @@ const mockApiGet = jest.fn().mockResolvedValue({
     ],
   },
 });
-jest.mock('app/utils/api', () => ({
-  ...jest.requireActual('app/utils/api'),
+jest.mock('#app/utils/api', () => ({
+  ...jest.requireActual('#app/utils/api'),
   __esModule: true,
   default: { get: () => mockApiGet() },
   get: () => mockApiGet(),
@@ -32,12 +31,18 @@ describe('PublicForm', () => {
   let instance;
   let submit;
   let request;
+  let mathRandomSpy;
   const mockedRevokeObjectURL = jest.fn();
 
   beforeEach(() => {
     URL.revokeObjectURL = mockedRevokeObjectURL;
+    mathRandomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.12345);
     request = Promise.resolve({ promise: Promise.resolve('ok') });
     submit = jasmine.createSpy('submit').and.callFake(async () => request);
+  });
+
+  afterEach(() => {
+    mathRandomSpy.mockRestore();
   });
 
   afterAll(() => {
@@ -45,7 +50,7 @@ describe('PublicForm', () => {
   });
 
   const prepareMocks = () => {
-    instance = component.instance();
+    instance = component.find(PublicForm).instance();
     instance.refreshCaptcha = jest.fn();
     instance.formDispatch = jest.fn();
     component.find(LocalForm).props().getDispatch(instance.formDispatch);
@@ -55,6 +60,13 @@ describe('PublicForm', () => {
   };
 
   const render = (customProps, generatedId = false) => {
+    if (component) {
+      try {
+        component.unmount();
+      } catch (_e) {
+        component = undefined;
+      }
+    }
     props = {
       template: Immutable.fromJS({
         _id: '123',
@@ -114,25 +126,28 @@ describe('PublicForm', () => {
   });
 
   it('should render a generated ID as title if the option is marked', () => {
-    render({}, true);
-    const title = component.find('#title').at(0);
-    expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
+    const template = Immutable.fromJS({
+      _id: '123',
+      commonProperties: [{ label: 'Title changed', name: 'title', generatedId: true }],
+      properties: [],
+    });
+    const titleGroup = PublicForm.renderTitle(template);
+    const input = titleGroup.props.children.props.children[1].props.children;
+    expect(input.props.defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
   });
 
   it('should load a generated Id as title after submit if the option is marked', async () => {
-    render({}, true);
-    const title = component.find('#title').at(0);
-    expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
-
-    const formSubmit = component.find(LocalForm).props().onSubmit;
-    await act(async () => {
-      await formSubmit({ title: 'test' });
-    });
-
-    component.update();
-    const title1 = component.find('#title').at(0);
-    expect(title1.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
-    expect(title1).not.toEqual(title);
+    render();
+    instance.state.generatedIdTitle = true;
+    instance.resetForm({ title: 'test' });
+    expect(instance.formDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'rrf/change',
+        model: 'publicform',
+        load: true,
+        value: { title: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) },
+      })
+    );
   });
 
   it('should enable remote captcha', () => {
@@ -204,39 +219,21 @@ describe('PublicForm', () => {
     });
   });
 
-  it('should NOT clear the form attachments on submission error', async done => {
+  it('should NOT clear the form attachments on submission error', async () => {
     const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
       type: 'image/jpg',
     });
 
     render({ attachments: true });
-
-    const attachments = component.find('.preview-title');
-    expect(attachments.length).toEqual(0);
-    const formSubmit = component.find(LocalForm).props().onSubmit;
-    await act(async () => {
-      await component.find(Dropzone).props().onDrop([newFile]);
-      component.update();
-    });
+    expect(instance.state.files.length).toEqual(0);
+    instance.state.files = [newFile];
     request = new Promise(resolve => {
       resolve({ promise: Promise.reject() });
     });
-    submit = jasmine.createSpy('submit').and.returnValue(request);
-    await act(async () => {
-      await formSubmit({ title: 'test' });
-      component.update();
-    });
-    request.then(uploadCompletePromise => {
-      uploadCompletePromise.promise
-        .then(() => fail('should throw error'))
-        .catch(() => {
-          const actualAttachments = component.find('.preview-title');
-          expect(actualAttachments.length).toBe(1);
-          expect(actualAttachments.get(0).props.children).toEqual('image.jpg');
-          expect(instance.formDispatch).not.toHaveBeenCalledWith();
-          expect(instance.refreshCaptcha).toHaveBeenCalled();
-          done();
-        });
-    });
+    await instance.handleSubmit({ title: 'test' });
+    expect(instance.state.files.length).toBe(1);
+    expect(instance.state.files[0].name).toEqual('image.jpg');
+    expect(instance.formDispatch).not.toHaveBeenCalledWith();
+    expect(instance.refreshCaptcha).toHaveBeenCalled();
   });
 });

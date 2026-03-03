@@ -2,9 +2,9 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Tooltip } from 'flowbite-react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { Modal, Button } from 'V2/Components/UI';
-import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
+import { Translate } from '#app/I18N/index.js';
+import { Modal, Button } from '#V2/Components/UI/index.js';
+import { Checkbox, InputField, RadioSelect } from '#V2/Components/Forms/index.js';
 
 type TrainModelModalProps = {
   close: () => void;

@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 const templateId = db.id();
 const templateId2 = db.id();
 const zull = db.id();

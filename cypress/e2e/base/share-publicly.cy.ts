@@ -2,8 +2,9 @@ import {
   selectPublishedEntities,
   selectRestrictedEntities,
   clearCookiesAndLogin,
-} from '../helpers';
-import { grantPermission, shareSearchTerm } from '../helpers/entities';
+  shareSearchTerm,
+  grantPermission,
+} from '../helpers/index.js';
 
 describe('Permisions system', () => {
   const entityTitle =

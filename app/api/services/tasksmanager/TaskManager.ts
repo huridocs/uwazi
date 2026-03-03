@@ -1,10 +1,10 @@
 /* eslint-disable no-await-in-loop */
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import { RedisClient } from 'redis';
-import { Repeater } from 'api/utils/Repeater';
-import { config } from 'api/config';
-import { handleError } from 'api/utils';
-import { Redis } from 'api/infrastructure/Redis';
+import { Repeater } from '#api/utils/Repeater.js';
+import { config } from '#api/config.js';
+import { handleError } from '#api/utils/index.js';
+import { Redis } from '#api/infrastructure/Redis.js';
 
 type DefaultTaskType = string;
 

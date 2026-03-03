@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
-import createReducer from 'app/BasicReducer';
+import { createReducer } from '#app/BasicReducer/index.js';
 
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 
-export default combineReducers({
+const connectionsListReducer = combineReducers({
   entityId: createReducer('connectionsList/entityId', ''),
   entity: createReducer('connectionsList/entity', {}),
   connectionsGroups: createReducer('connectionsList/connectionsGroups', []),
@@ -14,3 +14,4 @@ export default combineReducers({
   search: formReducer('connectionsList/search'),
   view: createReducer('connectionsList/view', 'graph'),
 });
+export { connectionsListReducer };

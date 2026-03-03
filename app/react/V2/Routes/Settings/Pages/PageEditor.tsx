@@ -13,19 +13,19 @@ import {
 } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import { debounce } from 'lodash';
+import _ from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
-import { Translate, t } from 'app/I18N';
-import * as pagesAPI from 'V2/api/pages';
-import { Page } from 'V2/shared/types';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from 'V2/Components/UI';
-import { CodeEditor } from 'V2/Components/CodeEditor';
-import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
-import { notificationAtom } from 'V2/atoms';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { getPageUrl } from './components/PageListTable';
-import { HTMLNotification, JSNotification } from './components/PageEditorComponents';
+import { Translate, t } from '#app/I18N/index.js';
+import * as pagesAPI from '#V2/api/pages/index.js';
+import { Page } from '#V2/shared/types.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
+import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { getPageUrl } from './components/PageListTable.js';
+import { HTMLNotification, JSNotification } from './components/PageEditorComponents.js';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -46,7 +46,10 @@ const PageEditor = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
 
-  const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
+  const debouncedChangeHandler = useMemo(
+    () => (handler: () => void) => _.debounce(handler, 500),
+    []
+  );
 
   const {
     register,
@@ -190,7 +193,7 @@ const PageEditor = () => {
                   <CodeEditor
                     language="html"
                     intialValue={page.metadata?.content}
-                    onMount={editor => {
+                    onMount={(editor: any) => {
                       editor.getModel()?.onDidChangeContent(
                         debouncedChangeHandler(() => {
                           setValue('metadata.content', editor.getValue(), { shouldDirty: true });
@@ -212,7 +215,7 @@ const PageEditor = () => {
                   <CodeEditor
                     language="javascript"
                     intialValue={page.metadata?.script}
-                    onMount={editor => {
+                    onMount={(editor: any) => {
                       editor.getModel()?.onDidChangeContent(
                         debouncedChangeHandler(() => {
                           setValue('metadata.script', editor.getValue(), { shouldDirty: true });

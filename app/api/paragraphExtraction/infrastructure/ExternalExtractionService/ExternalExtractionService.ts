@@ -1,15 +1,15 @@
-import { HttpClient } from 'api/common.v2/contracts/HttpClient';
-import { HttpField } from 'api/common.v2/contracts/HttpField';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { HttpClient } from '#api/common.v2/contracts/HttpClient.js';
+import { HttpField } from '#api/common.v2/contracts/HttpField.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
 
 import {
   ExtractParagraphInput,
   GetParagraphsResultOutput,
   PXExtractionService,
-} from '../../domain/PXExtractionService';
-import { GetParagraphsResultDTO } from './types';
-import { PXExtractionMapper } from './PXExtractionMapper';
+} from '../../domain/PXExtractionService.js';
+import { GetParagraphsResultDTO } from './types.js';
+import { PXExtractionMapper } from './PXExtractionMapper.js';
 
 type Dependencies = {
   url: string;

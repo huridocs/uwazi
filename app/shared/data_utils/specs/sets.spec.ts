@@ -1,4 +1,4 @@
-import { Sets } from '../sets';
+import { Sets } from '../sets.js';
 
 describe('Sets', () => {
   describe('constructor', () => {

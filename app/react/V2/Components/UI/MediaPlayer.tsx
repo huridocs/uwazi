@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';
 
@@ -17,7 +17,7 @@ interface MediaPlayerProps extends ReactPlayerProps {
 }
 
 const verifyUrl = (url: string): MediaType => {
-  if (!ReactPlayer.canPlay(url)) {
+  if (ReactPlayer.canPlay && !ReactPlayer.canPlay(url)) {
     return 'invalid';
   }
 

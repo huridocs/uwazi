@@ -1,18 +1,17 @@
 /* eslint-disable max-statements */
-import { legacyLogger } from 'api/log';
-import { createError } from 'api/utils';
-
-import { errors as elasticErrors } from '@elastic/elasticsearch';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { S3Error } from 'api/files/S3Storage';
-import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
-import { DomainError } from 'api/core/domain/error/DomainError';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { z } from 'zod';
-import { handleError, prettifyError } from '../handleError';
+import { errors as elasticErrors } from '@elastic/elasticsearch';
+import { legacyLogger } from '#api/log/index.js';
+import { createError } from '#api/utils/index.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { handleError, prettifyError } from '../handleError.js';
 
 const contextRequestId = '1234';
 

@@ -1,3 +1,3 @@
-import { setupQueueWorker } from './setupQueueWorker';
+import { setupQueueWorker } from './setupQueueWorker.js';
 
 setupQueueWorker({ standAloneProcess: true });

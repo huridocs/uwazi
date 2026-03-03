@@ -1,9 +1,9 @@
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { PendingThesauriValuesApplier } from '../PendingThesauriValuesApplier';
-import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues';
-import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues';
-import { ThesauriRepository, ThesaurusValueInput } from '../../contracts/ThesauriRepository';
-import { TranslationsRepository } from '../../contracts/TranslationsRepository';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { PendingThesauriValuesApplier } from '../PendingThesauriValuesApplier.js';
+import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
+import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues.js';
+import { ThesauriRepository, ThesaurusValueInput } from '../../contracts/ThesauriRepository.js';
+import { TranslationsRepository } from '../../contracts/TranslationsRepository.js';
 
 const createTranslationsRepo = (): TranslationsRepository => ({
   async updateEntries(): Promise<void> {

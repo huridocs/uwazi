@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
-import * as types from 'app/Metadata/actions/actionTypes';
+import * as types from '#app/Metadata/actions/actionTypes.js';
 
-import progressReducer from 'app/Metadata/reducers/progressReducer';
+import progressReducer from '#app/Metadata/reducers/progressReducer.js';
 
 describe('metadataReducer', () => {
   const initialState = Immutable.fromJS({});

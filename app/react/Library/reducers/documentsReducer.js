@@ -1,8 +1,8 @@
-import Immutable from 'immutable';
+import Immutable from '#shared/immutableWrapper.js';
 
-import * as types from 'app/Library/actions/actionTypes';
-import * as uploadTypes from 'app/Uploads/actions/actionTypes';
-import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
+import * as types from '#app/Library/actions/actionTypes.js';
+import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
+import * as attachmentTypes from '#app/Attachments/actions/actionTypes.js';
 
 const initialState = { rows: [], totalRows: 0 };
 
