@@ -41,14 +41,9 @@ class MarkdownProperty extends FilterableProperty {
     { value }: CreatePropertyAssignmentInput<MarkdownEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<MarkdownEntry> {
-    const isRequired = shouldValidateForRequired ? this.required : false;
-    // For required validation, filter out empty/whitespace-only values so the array-level
-    // .min(1) check correctly rejects them. For non-required, only strip null/undefined
-    // to preserve { value: '' } (V1-compatible behavior).
-    const filtered = isRequired
-      ? value.filter(v => v?.value?.trim()?.length)
-      : value.filter(v => v?.value != null);
-    const parsed = createSchema(isRequired).parse(filtered);
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.trim()?.length)
+    );
 
     return {
       name: this.name,

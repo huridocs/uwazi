@@ -59,34 +59,19 @@ describe('TextProperty', () => {
       });
     });
 
-    it('should preserve empty string value (V1-compatible behavior)', () => {
+    it('should filter out empty and whitespace-only values', () => {
       const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
-      const assignment = text.createPropertyAssignment({ value: [{ value: '' }] });
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: '' }, { value: '   ' }, { value: 'Hello' }],
+      });
 
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
         isTranslatable: true,
-        value: [{ value: '' }],
+        value: [{ value: 'Hello' }],
       });
-    });
-
-    it('should filter out empty and whitespace-only values when required', () => {
-      const text = new TextProperty({
-        id: 'any_id',
-        label: 'A Title',
-        template: 'any',
-        required: true,
-      });
-
-      expect(() => text.createPropertyAssignment({ value: [{ value: '' }] }, true)).toThrow(
-        'Text Property is required'
-      );
-
-      expect(() => text.createPropertyAssignment({ value: [{ value: '   ' }] }, true)).toThrow(
-        'Text Property is required'
-      );
     });
 
     it('should handle null and undefined values', () => {
@@ -104,18 +89,18 @@ describe('TextProperty', () => {
       });
     });
 
-    it('should trim whitespace-only values to empty string', () => {
+    it('should return empty array when all values are empty/whitespace', () => {
       const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
       const assignment = text.createPropertyAssignment({
-        value: [{ value: '   ' }],
+        value: [{ value: '' }, { value: '   ' }, { value: '\t\n' }],
       });
 
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
         isTranslatable: true,
-        value: [{ value: '' }],
+        value: [],
       });
     });
 

@@ -45,14 +45,9 @@ class TextProperty extends FilterableProperty {
     { value }: CreatePropertyAssignmentInput<TextPropertyValue>,
     shouldValidateForRequired = false
   ) {
-    const isRequired = shouldValidateForRequired ? this.required : false;
-    // For required validation, filter out empty/whitespace-only values so the array-level
-    // .min(1) check correctly rejects them. For non-required, only strip null/undefined
-    // to preserve { value: '' } (V1-compatible behavior).
-    const filtered = isRequired
-      ? value.filter(v => v?.value?.trim()?.length)
-      : value.filter(v => v?.value != null);
-    const parsedValue = createSchema(isRequired).parse(filtered);
+    const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.trim()?.length)
+    );
 
     return {
       name: this.name,

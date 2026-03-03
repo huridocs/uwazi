@@ -464,7 +464,7 @@ describe('UpdateEntityUseCase', () => {
 
       expect([entities[0].metadata, entities[1].metadata]).toMatchObject([
         {
-          text: [{ value: '' }],
+          text: [],
           numeric: [],
           date: [],
           multidate: [],
