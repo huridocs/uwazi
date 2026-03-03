@@ -2,8 +2,8 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/CreateReference.stories';
-import { CreateReference } from 'V2/Routes/Entity/Components/ReferencesPanel/CreateReference';
+import * as stories from '#app/stories/CreateReference.stories.tsx';
+import { CreateReference } from '../CreateReference';
 import { logA11yViolations } from '../../../../../../../../cypress/support/helpers/a11y.js';
 
 const { Default, EmptyRelationshipTypes, LongSelection, TextMode } = composeStories(stories);
@@ -54,7 +54,7 @@ describe('CreateReference', () => {
     const searchFunction = cy
       .stub()
       .as('searchFunction')
-      .callsFake(() => Promise.resolve(mockEntities));
+      .callsFake(async () => Promise.resolve(mockEntities));
 
     const selection = {
       text: 'Selected text',
@@ -84,12 +84,10 @@ describe('CreateReference', () => {
     cy.contains('button', 'Save').click();
 
     cy.get('@onSave').should('have.been.calledOnce');
-    cy.get('@onSave')
-      .its('firstCall.args.0')
-      .should('include', {
-        targetEntityId: 'shared-entity-1',
-        relationshipType: 'rel-1',
-      });
+    cy.get('@onSave').its('firstCall.args.0').should('include', {
+      targetEntityId: 'shared-entity-1',
+      relationshipType: 'rel-1',
+    });
   });
 
   it('should call onSave in text mode with target file and selection', () => {
@@ -116,7 +114,7 @@ describe('CreateReference', () => {
     const searchFunction = cy
       .stub()
       .as('searchFunctionText')
-      .callsFake(() => Promise.resolve(mockEntities));
+      .callsFake(async () => Promise.resolve(mockEntities));
 
     const selection = {
       text: 'Original selection',
@@ -151,9 +149,7 @@ describe('CreateReference', () => {
       selectionRectangles: [{ top: 10, left: 10, width: 50, height: 20, regionId: '1' }],
     };
 
-    cy.window()
-      .its('__createReferenceTestApi')
-      .invoke('handleTargetPdfSelect', targetSelection);
+    cy.window().its('__createReferenceTestApi').invoke('handleTargetPdfSelect', targetSelection);
 
     cy.contains('button', 'Save').click();
 
