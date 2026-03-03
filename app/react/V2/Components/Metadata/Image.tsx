@@ -13,6 +13,14 @@ type ImageProps = MetadataFieldProps & {
 const Image = ({ label, hideLabel, translationContext, values, imageStyle }: ImageProps) => {
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
 
+  if (!values?.length) {
+    return null;
+  }
+
+  if (values.length && !values[0].value) {
+    return null;
+  }
+
   return (
     <MetadataCard>
       <dt>
