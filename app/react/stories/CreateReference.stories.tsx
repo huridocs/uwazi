@@ -1,11 +1,11 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { CreateReference } from 'V2/Routes/Entity/Components/ReferencesPanel/CreateReference';
-import { ClientRelationshipType } from 'app/apiResponseTypes';
-import { Entity } from 'V2/domain';
-import { DateMetadataProperty } from 'V2/domain/entities/types';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { FileType } from 'shared/types/fileType';
+import { CreateReference } from '#V2/Routes/Entity/Components/ReferencesPanel/CreateReference.js';
+import { ClientRelationshipType } from '#app/apiResponseTypes.js';
+import { Entity } from '#V2/domain/index.js';
+import { DateMetadataProperty } from '#V2/domain/entities/types.js';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { FileType } from '#shared/types/fileType.js';
 
 // Mock PDF files
 const mockPDFFile1: FileType = {
@@ -175,6 +175,7 @@ const meta: Meta<typeof CreateReference> = {
   title: 'EntityViewer/CreateReference',
   component: CreateReference,
 };
+export default meta;
 
 type Story = StoryObj<typeof CreateReference>;
 
@@ -286,4 +287,3 @@ const TextMode: Story = {
 
 export { Default, EmptyRelationshipTypes, LongSelection, TextMode };
 // eslint-disable-next-line import/no-default-export
-export default meta;

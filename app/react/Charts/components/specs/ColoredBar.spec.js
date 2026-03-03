@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Rectangle } from 'recharts';
 
-import colorScheme, { light as colorSchemeLight } from '../../utils/colorScheme';
-import ColoredBar from '../ColoredBar';
+import { colorScheme, light as colorSchemeLight } from '../../utils/colorScheme.js';
+import { ColoredBar } from '../ColoredBar.js';
 
 describe('ColoredBar', () => {
   let component;

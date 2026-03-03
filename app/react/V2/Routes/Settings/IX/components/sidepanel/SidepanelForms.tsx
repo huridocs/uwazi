@@ -3,27 +3,29 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { get, isEmpty, uniqBy } from 'lodash';
-import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
+import get from 'lodash/get.js';
+import isEmpty from 'lodash/isEmpty.js';
+import uniqBy from 'lodash/uniqBy.js';
+import { Translate } from '#app/I18N/index.js';
+import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 import {
   defaultSearch,
   InputField,
   MultiselectList,
   MultiselectListOption,
   Textarea,
-} from 'V2/Components/Forms';
-import { Button } from 'V2/Components/UI';
-import { thesauriAtom } from 'V2/atoms';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
-import { secondsToISODate } from 'V2/shared/dateHelpers';
+} from '#V2/Components/Forms/index.js';
+import { Button } from '#V2/Components/UI/index.js';
+import { thesauriAtom } from '#V2/atoms/index.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { secondsToISODate } from '#V2/shared/dateHelpers.js';
 import { DateTime } from 'luxon';
-import { selectionErrorAtom, textSelectionAtom } from '../atoms';
-import { SuggestionValue, TableSuggestion } from '../../types';
-import { MultiselectItemLabel } from '../MultiselectItemLabel';
-import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
-import { escapeLucene, searchRelatedEntities } from '../../helpers';
+import { selectionErrorAtom, textSelectionAtom } from '../atoms/index.js';
+import { SuggestionValue, TableSuggestion } from '../../types.js';
+import { MultiselectItemLabel } from '../MultiselectItemLabel.js';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
+import { escapeLucene, searchRelatedEntities } from '../../helpers/index.js';
 
 const dateStringToSeconds = (dateString: string) =>
   DateTime.fromISO(dateString).setZone('UTC').toSeconds();
@@ -144,7 +146,7 @@ const Selects = ({
           return (
             <MultiselectList
               onChange={onChange}
-              onSearch={s => {
+              onSearch={(s: any) => {
                 setItems(() => defaultSearch(s, intialOptions));
               }}
               selectedValues={value}

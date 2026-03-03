@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 
-import { preloadOptionsSearch } from 'shared/config';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import commonProperties from 'shared/commonProperties';
+import { preloadOptionsSearch } from '#shared/config.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import commonProperties from '#shared/commonProperties.js';
 
 const aggregation = (key, should, filters, nestedAggregationName, nestedAggregation) => {
   const agg = {

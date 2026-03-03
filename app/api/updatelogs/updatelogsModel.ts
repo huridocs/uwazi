@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { MongooseModelWrapper } from 'api/odm/MongooseModelWrapper';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { MongooseModelWrapper } from '#api/odm/MongooseModelWrapper.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { ObjectId } from 'mongodb';
 
 const updateLogSchema = new mongoose.Schema({

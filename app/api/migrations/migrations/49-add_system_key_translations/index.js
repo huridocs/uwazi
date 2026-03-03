@@ -1,7 +1,7 @@
 //eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
-import csv from 'api/csv/csv';
+import csv from '#api/csv/csv.js';
 
 /*
 This migration is meant to be repeatable.

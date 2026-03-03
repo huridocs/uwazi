@@ -1,36 +1,36 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import * as filesystem from 'api/files';
-import { PDF, files } from 'api/files';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import relationships from 'api/relationships/relationships';
-import { search } from 'api/search';
-import templates from 'api/core/v1_layer/templates/templates';
-import date from 'api/utils/date';
-import { unique } from 'api/utils/filters';
-import { propertyTypes } from 'shared/propertyTypes';
-import { AccessLevels } from 'shared/types/permissionSchema';
-import ID from 'shared/uniqueID';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import * as filesystem from '#api/files/index.js';
+import { PDF, files } from '#api/files/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import relationships from '#api/relationships/relationships.js';
+import { search } from '#api/search/index.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
+import date from '#api/utils/date.js';
+import { unique } from '#api/utils/filters.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { AccessLevels } from '#shared/types/permissionSchema.js';
+import ID from '#shared/uniqueID.js';
 
-import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
-import settings from '../settings';
-import { denormalizeMetadata, denormalizeRelated } from './denormalize';
-import model from './entitiesModel';
-import { EntityCreatedEvent } from './events/EntityCreatedEvent';
-import { EntityDeletedEvent } from './events/EntityDeletedEvent';
-import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
-import { saveSelections } from './metadataExtraction/saveSelections';
+import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
+import settings from '../settings/index.js';
+import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';
+import model from './entitiesModel.js';
+import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';
+import { EntityDeletedEvent } from './events/EntityDeletedEvent.js';
+import { EntityUpdatedEvent } from './events/EntityUpdatedEvent.js';
+import { saveSelections } from './metadataExtraction/saveSelections.js';
 import {
   deleteRelatedNewRelationships,
   denormalizeAfterEntityCreation,
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   updateNewRelationships,
-} from './v2_support';
-import { validateEntity } from './validateEntity';
-import { MetadataUtils } from './MetadataUtils';
+} from './v2_support.js';
+import { validateEntity } from './validateEntity.js';
+import { MetadataUtils } from './MetadataUtils.js';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,

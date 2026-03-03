@@ -1,5 +1,5 @@
-import { User } from 'api/users.v2/model/User';
-import { EntityPermissions, Entry } from '../EntityPermissions';
+import { User } from '#api/users.v2/model/User.js';
+import { EntityPermissions, Entry } from '../EntityPermissions.js';
 
 const collaborator = new User('collaborator', 'collaborator', ['group1']);
 

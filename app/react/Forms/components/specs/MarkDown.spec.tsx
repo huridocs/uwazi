@@ -2,9 +2,9 @@ import { TabLink, TabContent } from 'react-tabs-redux';
 import React from 'react';
 
 import { shallow, ShallowWrapper } from 'enzyme';
-import MarkDownViewer from 'app/Markdown';
+import { MarkdownViewer } from '#app/Markdown/index.js';
 
-import { MarkDown, MarkDownType } from '../MarkDown';
+import { MarkDown, MarkDownType } from '../MarkDown.js';
 
 describe('MarkDown', () => {
   let component: ShallowWrapper<MarkDown>;
@@ -53,7 +53,7 @@ describe('MarkDown', () => {
     it('shows markdown as html', () => {
       props.value = '# <b>This is a title</b>';
       render();
-      const container = component.find(MarkDownViewer);
+      const container = component.find(MarkdownViewer);
       expect(container.props().markdown).toBe('# <b>This is a title</b>');
     });
     it('should not display if the pages is for an entity view', () => {

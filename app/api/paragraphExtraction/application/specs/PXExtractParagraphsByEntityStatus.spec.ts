@@ -1,17 +1,17 @@
 import { ObjectId } from 'mongodb';
 
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
-import { PXExtractParagraphsByEntityStatus } from '../PXExtractParagraphsByEntityStatus';
-import { PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
+import { PXExtractParagraphsByEntityStatus } from '../PXExtractParagraphsByEntityStatus.js';
+import { PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities.js';
 
 const extractor1 = new ObjectId();
 const extractor2 = new ObjectId();

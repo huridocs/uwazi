@@ -4,8 +4,8 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { Pagination } from '../Pagination';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { Pagination } from '../Pagination.js';
 
 describe('Pagination', () => {
   const props = {

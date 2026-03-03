@@ -1,6 +1,6 @@
 import { ElementHandle, Page } from 'puppeteer';
 
-import { scrollTo } from './formActions';
+import { scrollTo } from './formActions.js';
 
 const checkStringValuesInSelectors = async (
   values: {

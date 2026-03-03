@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { CsvImportDoesNotExistError } from '../../domain/csvImporErrors';
-import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { CsvImportDoesNotExistError } from '../../domain/csvImporErrors.js';
+import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories.js';
 
 const ParamsSchema = z.object({
   id: z.string(),

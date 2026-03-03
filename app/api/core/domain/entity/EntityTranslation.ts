@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
-import date from 'api/utils/date';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Id, IdProps } from 'api/core/libs/Id';
+import date from '#api/utils/date.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { Id, IdProps } from '#api/core/libs/Id.js';
 import stringify from 'fast-json-stable-stringify';
 import {
   DateEntry,
@@ -10,9 +10,9 @@ import {
   RelationshipPropertyAssignment,
   SelectPropertyAssignment,
   TextPropertyValue,
-} from '../template/PropertyValue';
-import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors';
-import { PropertyType } from '../template/PropertyType';
+} from '../template/PropertyValue.js';
+import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors.js';
+import { PropertyType } from '../template/PropertyType.js';
 
 type Props = {
   language: LanguageISO6391;

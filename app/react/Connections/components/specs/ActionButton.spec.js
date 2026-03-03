@@ -1,20 +1,20 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import { ActionButton, mapStateToProps } from '../ActionButton';
+import { ActionButton, mapStateToProps } from '#app/Connections/components/ActionButton.js';
+import Immutable from 'immutable';
 
 describe('ActionButton', () => {
   let component;
   let props;
   const connections = {
-    basic: Immutable({
+    basic: Immutable.fromJS({
       sourceDocument: 'sourceId',
       targetDocument: 'targetId',
       template: 'template',
       type: 'basic',
     }),
-    ranged: Immutable({
+    ranged: Immutable.fromJS({
       sourceDocument: 'sourceId',
       sourceRange: 'sourceRange',
       targetDocument: 'targetId',
@@ -128,7 +128,7 @@ describe('ActionButton', () => {
       state = {
         connections: {
           connection: props.connection,
-          uiState: Immutable({ creating: false, connecting: false }),
+          uiState: Immutable.fromJS({ creating: false, connecting: false }),
         },
       };
     });

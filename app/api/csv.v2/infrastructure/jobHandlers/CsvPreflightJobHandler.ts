@@ -1,11 +1,14 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
-import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;

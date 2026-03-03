@@ -1,10 +1,10 @@
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { randomUUID } from 'node:crypto';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas';
-import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory';
-import { LoggerFactory } from '../factories/LoggerFactory';
-import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas.js';
+import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory.js';
+import { LoggerFactory } from '../factories/LoggerFactory.js';
+import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper.js';
 
 export class EntityFacade {
   static async create(

@@ -1,9 +1,9 @@
-export { ReferencesPanel } from './ReferencesPanel';
-export { Reference } from './Reference';
-export { CreateReference } from './CreateReference';
+export { ReferencesPanel } from './ReferencesPanel.js';
+export { Reference } from './Reference.js';
+export { CreateReference } from './CreateReference.js';
 export {
   referencesStateAtom,
   referencesActions,
   useReferences,
   useReferencesActions,
-} from './referencesAtom';
+} from './referencesAtom.js';

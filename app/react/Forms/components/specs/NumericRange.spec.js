@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import NumericRange from '../NumericRange';
-import Numeric from '../Numeric';
+import { NumericRange } from '../NumericRange.js';
+import { Numeric } from '../Numeric.js';
 
 describe('NumericRange', () => {
   let component;

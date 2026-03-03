@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/VerticalDrawer.stories';
+import * as stories from '#app/stories/VerticalDrawer.stories.js';
 
 const { Basic } = composeStories(stories);
 

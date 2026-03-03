@@ -1,8 +1,8 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DenormalizeThesaurusEntitiesUseCaseFactory } from 'api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { factory, fixtures } from './DenormalizeThesaurusEntitiesFixtures';
+import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { factory, fixtures } from './DenormalizeThesaurusEntitiesFixtures.js';
 
 const createSut = () => {
   const sut = DenormalizeThesaurusEntitiesUseCaseFactory.default();

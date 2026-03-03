@@ -1,8 +1,8 @@
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { MissingRelationshipError } from '../errors/relationshipErrors';
-import { DenormalizationService } from './DenormalizationService';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
+import { MissingRelationshipError } from '../errors/relationshipErrors.js';
+import { DenormalizationService } from './DenormalizationService.js';
 
 export class DeleteRelationshipService {
   private relationshipsDS: RelationshipsDataSource;

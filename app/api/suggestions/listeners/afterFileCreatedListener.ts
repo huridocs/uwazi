@@ -1,11 +1,11 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FileType } from 'shared/types/fileType';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { FileType } from '#shared/types/fileType.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { inspect } from 'util';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
-import { IXValidationError } from '../ixValidationError';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument.js';
+import { IXValidationError } from '../ixValidationError.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

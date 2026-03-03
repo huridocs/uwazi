@@ -2,18 +2,18 @@
 /* eslint-disable max-lines */
 import path from 'path';
 import moment from 'moment';
-import { CSVLoader } from 'api/csv';
-import { simpleTemplateId, templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
-import entities from 'api/entities';
-import translations from 'api/i18n';
-import { search } from 'api/search';
-import settings from 'api/settings';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import thesauri from 'api/thesauri';
-import typeParsers from '../typeParsers';
-import fixtures, { template1Id } from './csvLoaderFixtures';
-import { mockCsvFileReadStream } from './helpers';
+import { CSVLoader } from '#api/csv/index.js';
+import { simpleTemplateId, templateWithGeneratedTitle } from '#api/csv/specs/csvLoaderFixtures.js';
+import entities from '#api/entities/index.js';
+import translations from '#api/i18n/index.js';
+import { search } from '#api/search/index.js';
+import settings from '#api/settings/index.js';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import thesauri from '#api/thesauri/index.js';
+import typeParsers from '../typeParsers.js';
+import fixtures, { template1Id } from './csvLoaderFixtures.js';
+import { mockCsvFileReadStream } from './helpers.js';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');

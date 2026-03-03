@@ -1,8 +1,8 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
-import { DefaultPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/DefaultPropertyAssignmentCreatorService';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { DefaultPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/DefaultPropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
 

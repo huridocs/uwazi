@@ -1,7 +1,7 @@
 import backend from 'fetch-mock';
 import qs from 'qs';
 
-import request from '../JSONRequest';
+import request from '../JSONRequest.js';
 
 describe('JSONRequest', () => {
   beforeEach(() => {

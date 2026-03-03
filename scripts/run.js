@@ -1,5 +1,13 @@
-/* eslint-disable global-require */
-require('dotenv').config();
+import { config } from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { createRequire } from 'module';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
+
+config();
 
 if (process.env.NODE_ENV !== 'production') {
   require('@babel/register')({
@@ -14,6 +22,5 @@ process.env.ROOT_PATH = process.env.ROOT_PATH || cwd || __dirname;
 
 const file = process.argv[2];
 if (file) {
-  // eslint-disable-next-line import/no-dynamic-require, global-require
-  require(file);
+  await import(file);
 }

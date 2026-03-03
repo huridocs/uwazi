@@ -1,4 +1,4 @@
-import { ATConfig, ATTemplateConfig } from '../model/ATConfig';
+import { ATConfig, ATTemplateConfig } from '../model/ATConfig.js';
 
 export interface ATConfigDataSource {
   get(): Promise<ATConfig>;

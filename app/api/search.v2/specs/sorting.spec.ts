@@ -1,15 +1,15 @@
-import { Application } from 'express';
+import type { Application } from 'express';
 import request from 'supertest';
 
-import entities from 'api/entities';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingDB } from 'api/utils/testing_db';
-import { SearchQuery } from 'shared/types/SearchQueryType';
+import entities from '#api/entities/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingDB } from '#api/utils/testing_db.js';
+import { SearchQuery } from '#shared/types/SearchQueryType.js';
 
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { searchRoutes } from '../routes';
-import { setupTestingEnviroment } from './setupTestingEnvironment';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { searchRoutes } from '../routes.js';
+import { setupTestingEnviroment } from './setupTestingEnvironment.js';
 
 describe('Sorting', () => {
   const factory = getFixturesFactory();

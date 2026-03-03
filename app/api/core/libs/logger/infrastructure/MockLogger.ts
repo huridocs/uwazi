@@ -1,4 +1,4 @@
-import { Logger } from '../contracts/Logger';
+import { Logger } from '../contracts/Logger.js';
 
 export const createMockLogger = (): Logger => ({
   debug: jest.fn(),

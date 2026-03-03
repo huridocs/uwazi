@@ -1,6 +1,6 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 
-import reducer from '../connectionReducer';
+import { connectionReducer as reducer } from '../connectionReducer.js';
 
 describe('Connections connection reducer', () => {
   describe('when state is undefined', () => {
@@ -24,7 +24,7 @@ describe('Connections connection reducer', () => {
         connectionType: 'connectionType',
         sourceDocument: 'sourceId',
       };
-      const newState = reducer(Immutable(previousState), action);
+      const newState = reducer(Immutable.fromJS(previousState), action);
       const expectedState = {
         template: '',
         targetDocument: '',
@@ -37,7 +37,7 @@ describe('Connections connection reducer', () => {
 
   describe('SET_RELATION_TYPE', () => {
     it('should set relation type', () => {
-      const newState = reducer(Immutable({}), {
+      const newState = reducer(Immutable.fromJS({}), {
         type: 'SET_RELATION_TYPE',
         template: 'template_id1',
       });
@@ -47,7 +47,10 @@ describe('Connections connection reducer', () => {
 
   describe('SET_TARGET_DOCUMENT', () => {
     it('should set the target document', () => {
-      const newState = reducer(Immutable({}), { type: 'SET_TARGET_DOCUMENT', id: 'targetId' });
+      const newState = reducer(Immutable.fromJS({}), {
+        type: 'SET_TARGET_DOCUMENT',
+        id: 'targetId',
+      });
       expect(newState.toJS()).toEqual({ targetDocument: 'targetId' });
     });
   });
@@ -55,7 +58,7 @@ describe('Connections connection reducer', () => {
   describe('When setting the search results', () => {
     it('should keep targetDocument if id within new results', () => {
       const results = [{ sharedId: '1' }, { sharedId: '3' }];
-      const newState = reducer(Immutable({ targetDocument: '3' }), {
+      const newState = reducer(Immutable.fromJS({ targetDocument: '3' }), {
         type: 'connections/searchResults/SET',
         value: results,
       });
@@ -64,7 +67,7 @@ describe('Connections connection reducer', () => {
 
     it('should delete targetDocument if id not within new results', () => {
       const results = [{ sharedId: '1' }, { sharedId: '3' }];
-      const newState = reducer(Immutable({ targetDocument: '2' }), {
+      const newState = reducer(Immutable.fromJS({ targetDocument: '2' }), {
         type: 'connections/searchResults/SET',
         value: results,
       });
@@ -74,7 +77,7 @@ describe('Connections connection reducer', () => {
 
   describe('Viewer SET_SELECTION', () => {
     it('should set the sourceRange', () => {
-      const newState = reducer(Immutable({}), {
+      const newState = reducer(Immutable.fromJS({}), {
         type: 'SET_SELECTION',
         sourceRange: 'sourceRange',
       });
@@ -84,7 +87,7 @@ describe('Connections connection reducer', () => {
 
   describe('Viewer UNSET_SELECTION', () => {
     it('should unset the sourceRange', () => {
-      const newState = reducer(Immutable({ sourceRange: 'sourceRange' }), {
+      const newState = reducer(Immutable.fromJS({ sourceRange: 'sourceRange' }), {
         type: 'UNSET_SELECTION',
       });
       expect(newState.toJS()).toEqual({});
@@ -93,7 +96,7 @@ describe('Connections connection reducer', () => {
 
   describe('Viewer CONNECTION_CREATED', () => {
     it('should unset the sourceRange', () => {
-      const newState = reducer(Immutable({ sourceRange: 'sourceRange' }), {
+      const newState = reducer(Immutable.fromJS({ sourceRange: 'sourceRange' }), {
         type: 'CONNECTION_CREATED',
       });
       expect(newState.toJS()).toEqual({});

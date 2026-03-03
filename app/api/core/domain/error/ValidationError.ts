@@ -1,4 +1,4 @@
-import { DomainError } from './DomainError';
+import { DomainError } from './DomainError.js';
 
 type AJVObject = {
   keyword: string;

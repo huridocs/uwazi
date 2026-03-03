@@ -1,5 +1,5 @@
-import db from 'api/utils/testing_db';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import db from '#api/utils/testing_db.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 const fixtureFactory = getFixturesFactory();
 const createContext = fixtureFactory.v2.database.nestedTranslationContextDBO;

@@ -1,6 +1,6 @@
 import { RequestParams } from '@elastic/elasticsearch';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
-import { Aggregations } from 'shared/types/aggregations';
+import { Aggregations } from '#shared/types/aggregations.js';
 
 interface ShardsResponse {
   total: number;

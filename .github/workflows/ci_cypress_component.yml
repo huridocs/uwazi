@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
       - name: install dependencies
         run: yarn install
       - name: Get Cypress version
@@ -73,6 +73,6 @@ jobs:
         with:
           browser: chrome
           component: true
-          config-file: cypress.config.ts
+          config-file: cypress.config.cjs
           headed: false
         timeout-minutes: 15

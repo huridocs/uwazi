@@ -1,32 +1,32 @@
 // eslint-disable-next-line node/no-restricted-import
 import { readFile } from 'fs/promises';
 
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { WebSockets } from 'api/core/application/contracts/WebSockets';
-import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { Result } from 'api/core/libs/Result';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
+import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { ProcessingFileNotFound } from '#api/core/domain/files/errors.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { Result } from '#api/core/libs/Result.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { createHash } from 'crypto';
-import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
-import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
-import { PDFPostProcessJobHandler } from '../PDFPostProcessJobHandler';
+import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
+import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { FileIsNotAPDF, PDFService } from '../../services/PDFService.js';
+import { PDFPostProcessJobHandler } from '../PDFPostProcessJobHandler.js';
 
 async function filesAreIdentical(file1: string, file2: string) {
   const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
-  const hash1 = createHash('sha256').update(buf1).digest('hex');
-  const hash2 = createHash('sha256').update(buf2).digest('hex');
+  const hash1 = createHash('sha256').update(new Uint8Array(buf1)).digest('hex');
+  const hash2 = createHash('sha256').update(new Uint8Array(buf2)).digest('hex');
   return hash1 === hash2;
 }
 

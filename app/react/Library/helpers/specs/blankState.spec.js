@@ -1,9 +1,9 @@
 /**
  * @jest-environment jsdom
  */
-import { store } from 'app/store';
+import { store } from '#app/store.js';
 import Immutable from 'immutable';
-import blankState from '../blankState';
+import blankState from '../blankState.js';
 
 describe('blankState()', () => {
   describe('when there is no thesauris', () => {

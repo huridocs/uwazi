@@ -4,8 +4,8 @@ import {
   generateFileName,
   fileFromReadStream,
   getMimetypeFromOriginalName,
-} from 'api/files/filesystem';
-import zipFile from 'api/utils/zipFile';
+} from '#api/files/filesystem.js';
+import zipFile from '#api/utils/zipFile.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import

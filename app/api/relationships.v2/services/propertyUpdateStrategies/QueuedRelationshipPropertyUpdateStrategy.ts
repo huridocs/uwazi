@@ -1,7 +1,7 @@
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
-import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
-import { UpdateTemplateRelationshipPropertiesJob } from './UpdateTemplateRelationshipPropertiesJob';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy.js';
+import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob.js';
+import { UpdateTemplateRelationshipPropertiesJob } from './UpdateTemplateRelationshipPropertiesJob.js';
 
 export class QueuedRelationshipPropertyUpdateStrategy implements Strategy {
   private dispatcher: JobsDispatcher;

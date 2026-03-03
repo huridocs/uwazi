@@ -1,9 +1,9 @@
-import { SupportingFilesProcessor } from '../SupportingFilesProcessor';
-import { ProcessingContext, AdapterEntity } from '../types';
-import { EntitySchema } from 'shared/types/entityType';
-import { processingContext } from './PropertyProcessorsFixtures';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { FileType } from 'shared/types/fileType';
+import { SupportingFilesProcessor } from '../SupportingFilesProcessor.js';
+import { ProcessingContext, AdapterEntity } from '../types.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { processingContext } from './PropertyProcessorsFixtures.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { FileType } from '#shared/types/fileType.js';
 
 describe('SupportingFilesProcessor', () => {
   const createContext = (

@@ -3,16 +3,21 @@ import request from 'supertest';
 import express, { Application } from 'express';
 import { Server } from 'http';
 import io from 'socket.io-client';
-import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
-import { tenants, Tenant } from 'api/tenants/tenantContext';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
-import { config } from 'api/config';
+import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
+import { tenants, Tenant } from '#api/tenants/tenantContext.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
+import { config } from '#api/config.js';
 import waitForExpect from 'wait-for-expect';
 import type { SessionData, Store as SessionStore } from 'express-session';
-import users from 'api/users/users';
+import users from '#api/users/users.js';
 
-import { endSocketServer, setupApiSockets, emitToTenantAdmins, __testUtils } from '../setupSockets';
-import { emitSocketEvent } from '../standaloneEmitSocketEvent';
+import {
+  endSocketServer,
+  setupApiSockets,
+  emitToTenantAdmins,
+  __testUtils,
+} from '../setupSockets.js';
+import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
   new Promise(resolve => {

@@ -1,22 +1,22 @@
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
-import { FileAttachment } from '../../../../domain/files/FileAttachment';
-import { CustomUpload } from '../../../../domain/files/CustomUpload';
-import { ProcessingPDF } from '../../../../domain/files/ProcessingPDF';
-import { URLAttachment } from '../../../../domain/files/URLAttachment';
-import { FileMappers } from '../FilesMappers';
+import { FileAttachment } from '../../../../domain/files/FileAttachment.js';
+import { CustomUpload } from '../../../../domain/files/CustomUpload.js';
+import { ProcessingPDF } from '../../../../domain/files/ProcessingPDF.js';
+import { URLAttachment } from '../../../../domain/files/URLAttachment.js';
+import { FileMappers } from '../FilesMappers.js';
 import {
   FileAttachmentDBO,
   ProcessingPDFDBO,
   fileDBO,
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from '../schemas/filesTypes';
+} from '../schemas/filesTypes.js';
 
 const f = getFixturesFactory();
 

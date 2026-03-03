@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { MatchQueryNode } from '../model/MatchQueryNode';
-import { TraversalQueryNode } from '../model/TraversalQueryNode';
+import { MatchQueryNode } from '../model/MatchQueryNode.js';
+import { TraversalQueryNode } from '../model/TraversalQueryNode.js';
 
 const parentDirectionToField = {
   in: 'from',

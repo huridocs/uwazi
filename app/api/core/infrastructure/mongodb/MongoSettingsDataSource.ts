@@ -1,9 +1,9 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { LanguageUtils } from 'shared/language';
-import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes';
-import { Settings as SettingsType } from 'shared/types/settingsType';
-import { SettingsDataSource } from '../../application/contracts/SettingsDataSource';
-import { DefaultLanguageMissingError } from './errors/settingsErrors';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { LanguageUtils } from '#shared/language/index.js';
+import { LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { SettingsDataSource } from '../../application/contracts/SettingsDataSource.js';
+import { DefaultLanguageMissingError } from './errors/settingsErrors.js';
 
 export class MongoSettingsDataSource
   extends MongoDataSource<SettingsType>

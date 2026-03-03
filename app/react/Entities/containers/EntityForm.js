@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { saveEntity, resetForm } from 'app/Entities/actions/actions';
-import { actions, MetadataForm } from 'app/Metadata';
+import { saveEntity, resetForm } from '#app/Entities/actions/actions.js';
+import { actions, MetadataForm } from '#app/Metadata/index.js';
 
 function mapStateToProps(state) {
   return {
@@ -24,4 +24,5 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+const EntityForm = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+export { EntityForm };

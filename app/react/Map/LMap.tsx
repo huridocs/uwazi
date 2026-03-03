@@ -3,11 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import Leaflet from 'leaflet';
 import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
-import { GeolocationSchema } from 'shared/types/commonTypes';
-import uniqueID from 'shared/uniqueID';
+import { GeolocationSchema } from '#shared/types/commonTypes.js';
+import uniqueID from '#shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
 import {
   DataMarker,
   getClusterMarker,
@@ -15,13 +15,13 @@ import {
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
-} from './MapHelper';
-import { getMapProvider } from './TilesProviderFactory';
+} from './MapHelper.js';
+import { getMapProvider } from './TilesProviderFactory.js';
 import {
   streetAttribution,
   satelliteAttribution,
   getImproveThisMapLegend,
-} from './MapBoxAttributions';
+} from './MapBoxAttributions.js';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 

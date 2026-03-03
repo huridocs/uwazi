@@ -3,10 +3,10 @@
  */
 import { act, renderHook } from '@testing-library/react';
 import { Provider } from 'jotai';
-import { RequestParams } from 'app/utils/RequestParams';
-import { Translate } from 'app/I18N';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { Translate } from '#app/I18N/index.js';
 import React from 'react';
-import { useApiCaller } from '../useApiCaller';
+import { useApiCaller } from '../useApiCaller.js';
 
 const mockSetNotification = jest.fn();
 

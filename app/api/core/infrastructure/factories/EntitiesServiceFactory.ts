@@ -1,16 +1,16 @@
-import { EntitiesService, EntitiesServiceDeps } from 'api/core/application/EntitiesService';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { search } from 'api/search';
-import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
-import { TransactionManagerFactory } from './TransactionManagerFactory';
-import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { SettingsDataSourceFactory } from './SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory';
+import { EntitiesService, EntitiesServiceDeps } from '#api/core/application/EntitiesService.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { tenants } from '#api/tenants/index.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { search } from '#api/search/index.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { TransactionManagerFactory } from './TransactionManagerFactory.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {

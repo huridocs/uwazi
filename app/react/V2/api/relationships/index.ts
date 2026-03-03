@@ -1,9 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { ConnectionSchema } from 'shared/types/connectionType';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
 
 type TextReferenceParams = {
   sourceEntitySharedId: string;

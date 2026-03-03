@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as types from 'app/Library/actions/actionTypes';
+import * as types from '#app/Library/actions/actionTypes.js';
 
 const initialState = { properties: [], documentTypes: [] };
 

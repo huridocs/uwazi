@@ -1,14 +1,14 @@
 import 'isomorphic-fetch';
 import backend from 'fetch-mock';
-import { attachmentsPath, setupTestUploadedPaths } from 'api/files';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { attachmentsPath, setupTestUploadedPaths } from '#api/files/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
-import { tenants } from 'api/tenants';
+import { tenants } from '#api/tenants/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, writeFile } from 'fs/promises';
-import JSONRequest from 'shared/JSONRequest';
+import JSONRequest from '#shared/JSONRequest.js';
 import { Readable } from 'stream';
-import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService';
+import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService.js';
 
 describe('ConvertToPDFService', () => {
   const serviceURL = 'http://service.uwazi.io/';

@@ -1,4 +1,4 @@
-import { Arrays } from '../arrays';
+import { Arrays } from '../arrays.js';
 
 describe('arrays', () => {
   describe('constructor', () => {

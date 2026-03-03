@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
-import { Loader } from 'app/components/Elements/Loader';
+import Immutable from 'immutable';
+import { Loader } from '#app/components/Elements/Loader.js';
 
-import { SearchResults } from '../SearchResults';
+import { SearchResults } from '../SearchResults.js';
 
 describe('SearchResults', () => {
   let component;
@@ -11,7 +11,7 @@ describe('SearchResults', () => {
 
   beforeEach(() => {
     props = {
-      results: Immutable([{ sharedId: 'r1' }, { sharedId: 'r2' }]),
+      results: Immutable.fromJS([{ sharedId: 'r1' }, { sharedId: 'r2' }]),
       onClick: jasmine.createSpy('onClick'),
       selected: 'r2',
       searching: false,

@@ -2,16 +2,17 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
+import Immutable from 'immutable';
 
-import api from 'app/Search/SearchAPI';
-import CejilChart, {
+import { SearchAPI as api } from '#app/Search/SearchAPI.js';
+import {
+  CejilChart002 as CejilChart,
   mapStateToProps,
   judgesCommisionersTemplate as template,
   male,
   female,
-} from '../CejilChart002';
-import { countryKey } from '../CejilChart';
+} from '../CejilChart002.js';
+import { countryKey } from '../CejilChart.js';
 
 describe('CejilChart002', () => {
   let props;
@@ -41,7 +42,7 @@ describe('CejilChart002', () => {
   beforeEach(() => {
     props = mapStateToProps(
       {
-        thesauris: fromJS([{ _id: 'otherThesauri' }]),
+        thesauris: Immutable.fromJS([{ _id: 'otherThesauri' }]),
       },
       {}
     );

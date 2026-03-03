@@ -1,14 +1,14 @@
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { actions } from 'app/BasicReducer';
-import { RequestParams } from 'app/utils/RequestParams';
-import { notificationActions } from 'app/Notifications';
-import api from 'app/Pages/PagesAPI';
-import { t } from 'app/I18N';
-import * as types from 'app/Pages/actions/actionTypes';
+import { actions } from '#app/BasicReducer/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { PagesAPI as api } from '#app/Pages/PagesAPI.js';
+import { t } from '#app/I18N/index.js';
+import * as types from '#app/Pages/actions/actionTypes.js';
 
-import { PageType } from 'shared/types/pageType';
+import { PageType } from '#shared/types/pageType.js';
 
 export function loadPages() {
   return async (dispatch: Dispatch<{}>) => {

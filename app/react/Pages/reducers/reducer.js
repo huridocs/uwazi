@@ -2,16 +2,18 @@
 
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
-import createReducer from 'app/BasicReducer';
+import { createReducer } from '#app/BasicReducer/index.js';
 
-import ui from './uiReducer.js';
+import { pagesUI as ui } from './uiReducer.js';
 
-export default combineReducers({
+const reducer = combineReducers({
   pageView: createReducer('page/pageView', {}),
   datasets: createReducer('page/datasets', {}),
   itemLists: createReducer('page/itemLists', []),
   error: createReducer('page/error', {}),
-  data: modelReducer('page.data', { title: '', metadata: /*non-metadata-object*/ { content: '' } }),
+  data: modelReducer('page.data', { title: '', metadata: { content: '' } }),
   formState: formReducer('page.data'),
   uiState: ui,
 });
+
+export { reducer };

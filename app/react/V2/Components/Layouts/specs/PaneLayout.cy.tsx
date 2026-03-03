@@ -2,8 +2,8 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/Layouts/PaneLayout.stories';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
+import * as stories from '#app/stories/Layouts/PaneLayout.stories.js';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 
 const { Basic } = composeStories(stories);
 

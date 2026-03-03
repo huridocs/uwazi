@@ -5,7 +5,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { GoogleAnalytics, trackPage } from '../GoogleAnalytics';
+import { GoogleAnalyticsView, trackPage } from '../GoogleAnalytics.js';
 
 describe('GoogleAnalytics', () => {
   let component;
@@ -18,7 +18,7 @@ describe('GoogleAnalytics', () => {
   });
 
   const render = () => {
-    component = shallow(<GoogleAnalytics {...props} />);
+    component = shallow(<GoogleAnalyticsView {...props} />);
   };
 
   it('should define a ga method', () => {
