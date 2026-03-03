@@ -87,7 +87,7 @@ jobs:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('patches/**') }}
       - name: install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
 
       - name: Clone dummy services
         if: matrix.needs_setup

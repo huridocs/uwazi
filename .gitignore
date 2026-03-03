@@ -61,6 +61,12 @@ tenants/*
 .cursor/*
 .browsers/*
 
+# Yarn Berry
+.yarn/install-state.gz
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+
 # Webpack cache
 .webpack-cache/
 .webpack/

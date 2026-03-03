@@ -152,11 +152,8 @@ jobs:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
 
-      - name: Ensure Yarn
-        run: npm i -g yarn@1.22.22 --force && yarn --version
-
       - name: install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
 
       - name: Start MongoDB replica set
         run: /usr/local/bin/setup-mongo-replica.sh
@@ -228,10 +225,8 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
-      - name: Ensure Yarn
-        run: npm i -g yarn@1.22.22 --force && yarn --version
       - name: install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
       - name: Run tests
         run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --forceExit --maxWorkers=3
 
