@@ -58,7 +58,20 @@ describe('MarkdownProperty', () => {
       });
     });
 
-    it('should filter out empty and whitespace-only values', () => {
+    it('should preserve empty string value (V1-compatible behavior)', () => {
+      const markdown = new MarkdownProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = markdown.createPropertyAssignment({ value: [{ value: '' }] });
+
+      expect(assignment).toEqual({
+        name: markdown.name,
+        type: markdown.type,
+        isTranslatable: true,
+        value: [{ value: '' }],
+      });
+    });
+
+    it('should trim whitespace-only values to empty string', () => {
       const markdown = new MarkdownProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
       const assignment = markdown.createPropertyAssignment({
@@ -87,7 +100,7 @@ describe('MarkdownProperty', () => {
       expect(assignment2.value).toEqual([]);
     });
 
-    it('should return empty array when all values are empty/whitespace', () => {
+    it('should trim whitespace-only value to empty string', () => {
       const markdown = new MarkdownProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
       const assignment = markdown.createPropertyAssignment({
@@ -98,7 +111,7 @@ describe('MarkdownProperty', () => {
         name: markdown.name,
         type: markdown.type,
         isTranslatable: true,
-        value: [],
+        value: [{ value: '' }],
       });
     });
 
