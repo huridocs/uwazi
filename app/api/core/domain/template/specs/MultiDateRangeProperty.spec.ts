@@ -1,7 +1,7 @@
-import { DateRangeProperty } from '../DateRangeProperty';
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { MultiDateRangeProperty } from '../MultiDateRangeProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { DateRangeProperty } from '../DateRangeProperty.js';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { MultiDateRangeProperty } from '../MultiDateRangeProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('MultiDateRangeProperty', () => {
   it('should set defaults values if not provided', () => {

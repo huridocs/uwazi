@@ -1,6 +1,6 @@
-import { propertyTypes } from 'shared/propertyTypes';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { ColumnItem, ValueItem, SelectableColumn } from '../HiddenColumnsDropdownItem';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { ColumnItem, ValueItem, SelectableColumn } from '../HiddenColumnsDropdownItem.js';
 
 describe('ColumnItem', () => {
   const item: SelectableColumn = {

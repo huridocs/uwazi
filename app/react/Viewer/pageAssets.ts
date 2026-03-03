@@ -1,25 +1,23 @@
-import { IStore } from 'app/istore';
-import { formater as formatter } from 'app/Metadata';
-import {
-  pick,
-  isArray,
-  isObject,
-  isEmpty,
-  toPairs,
-  take,
-  get,
-  groupBy,
-  has,
-  flatMap,
-} from 'lodash';
+import { IStore } from '#app/istore.js';
+import { formater as formatter } from '#app/Metadata/index.js';
+import pick from 'lodash/pick.js';
+import isArray from 'lodash/isArray.js';
+import isObject from 'lodash/isObject.js';
+import isEmpty from 'lodash/isEmpty.js';
+import get from 'lodash/get.js';
+import groupBy from 'lodash/groupBy.js';
+import flatMap from 'lodash/flatMap.js';
+import toPairs from 'lodash/toPairs.js';
+import take from 'lodash/take.js';
+import has from 'lodash/has.js';
 import {
   MetadataObjectSchema,
   MetadataSchema,
   PropertyValueSchema,
-} from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
-import { IImmutable } from 'shared/types/Immutable';
-import { TemplateSchema } from 'shared/types/templateType';
+} from '#shared/types/commonTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 type Relation = { template: string; entityData: EntitySchema };
 type FormattedEntity = EntitySchema & { metadata: any[]; relations: Relation[] };
@@ -148,7 +146,7 @@ const filterInheritedRelations = (
       : []
   )
     .filter(v => v)
-    .map(relatedEntity => relatedEntity.sharedId);
+    .map((relatedEntity: EntitySchema) => relatedEntity.sharedId);
   return entity.relations.filter(
     relation =>
       relation.entityData &&

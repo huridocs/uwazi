@@ -1,9 +1,9 @@
-import { APIURL } from 'app/config.js';
+import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
-import { RequestParams } from 'app/utils/RequestParams';
-import documentsAPI from '../DocumentsAPI';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { documentsAPI } from '../DocumentsAPI.js';
 
-describe('DocumentsAPI', () => {
+describe('documentsAPI', () => {
   const arrayResponse = [{ documents: 'array' }];
   const searchResponse = [{ documents: 'search' }];
   const filteredSearchResult = [{ documents: 'Alfred' }];

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { FixtureType } from '../types';
+import { FixtureType } from '../types.js';
 
 const ids = {
   relationType: new ObjectId(),

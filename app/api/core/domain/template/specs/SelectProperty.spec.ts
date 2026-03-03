@@ -3,9 +3,9 @@ import {
   PropertyThesaurusMismatchError,
   PropertyTypeInvalidTypeError,
   PropertyTypeMismatchError,
-} from '../errors';
-import { MultiSelectProperty } from '../select/MultiSelectProperty';
-import { SelectProperty } from '../select/SelectProperty';
+} from '../errors.js';
+import { MultiSelectProperty } from '../select/MultiSelectProperty.js';
+import { SelectProperty } from '../select/SelectProperty.js';
 
 describe('SelectProperty', () => {
   it('should set defaults values if not provided', () => {

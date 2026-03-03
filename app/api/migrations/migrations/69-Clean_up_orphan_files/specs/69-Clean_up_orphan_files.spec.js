@@ -1,9 +1,9 @@
-import testingDB from 'api/utils/testing_db';
-import { config } from 'api/config';
+import testingDB from '#api/utils/testing_db.js';
+import { config } from '#api/config.js';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
-import migration from '../index';
-import { fixtures } from './fixtures';
+import migration from '../index.js';
+import { fixtures } from './fixtures.js';
 
 describe('migration Clean up orphan files', () => {
   beforeEach(async () => {

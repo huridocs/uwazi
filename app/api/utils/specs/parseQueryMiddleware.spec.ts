@@ -1,5 +1,5 @@
-import { Response } from 'express';
-import { parseQuery } from '../parseQueryMiddleware';
+import type { Response } from 'express';
+import { parseQuery } from '../parseQueryMiddleware.js';
 
 describe('parseQueryMiddleware', () => {
   it('should parse all the properties in the query object but pure strings', () => {

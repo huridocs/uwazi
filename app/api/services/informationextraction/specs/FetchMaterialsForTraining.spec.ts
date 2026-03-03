@@ -1,14 +1,17 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXModelsModel } from 'api/services/informationextraction/IXModelsModel';
-import { Extractors } from 'api/services/informationextraction/ixextractors';
-import { EnforcedWithId } from 'api/odm';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { factory, fixtures } from './fixtures';
-import { getPropertyTrainingEntities, getPdfTrainingProcess } from '../FetchMaterialsForTraining';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { factory, fixtures } from './fixtures.js';
+import {
+  getPropertyTrainingEntities,
+  getPdfTrainingProcess,
+} from '../FetchMaterialsForTraining.js';
 
 describe('FetchMaterialsForTraining selection', () => {
   let extractorProp: EnforcedWithId<IXExtractorType>;

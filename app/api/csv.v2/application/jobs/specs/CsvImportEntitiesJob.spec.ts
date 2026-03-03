@@ -1,17 +1,17 @@
 /* eslint-disable max-statements */
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { tenants } from 'api/tenants/tenantContext';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Entity } from 'api/core/domain/entity/Entity';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
-import { CsvImportRow } from '../../../domain/CsvImportRow';
-import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob';
-import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
+import { CsvImportRow } from '../../../domain/CsvImportRow.js';
+import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
+import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
 
 const fixturesFactory = getFixturesFactory();
 

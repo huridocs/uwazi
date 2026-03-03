@@ -1,9 +1,9 @@
 /*global page*/
 
-import { host } from '../config';
-import { adminLogin, logout } from '../helpers/login';
-import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
+import { host } from '../config.js';
+import { adminLogin, logout } from '../helpers/login.js';
+import proxyMock from '../helpers/proxyMock.js';
+import insertFixtures from '../helpers/insertFixtures.js';
 
 describe('Library', () => {
   beforeAll(async () => {

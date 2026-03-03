@@ -1,5 +1,5 @@
-import { createValidator, ValidatorSchema } from 'api/common.v2/validation/routesValidation';
-import { GetMigrationHubRecordsRequest } from 'shared/types/api.v2/migrationHubRecords.get';
+import { createValidator, ValidatorSchema } from '#api/common.v2/validation/routesValidation.js';
+import { GetMigrationHubRecordsRequest } from '#shared/types/api.v2/migrationHubRecords.get.js';
 
 const schema: ValidatorSchema<GetMigrationHubRecordsRequest> = {
   properties: {

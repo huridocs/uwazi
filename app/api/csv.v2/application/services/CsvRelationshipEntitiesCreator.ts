@@ -1,7 +1,7 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { EntitiesService } from 'api/core/application/EntitiesService';
-import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { CsvImportRelationshipPendingValuesDataSource } from '../contracts/CsvImportRelationshipPendingValuesDataSource';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
+import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
+import { CsvImportRelationshipPendingValuesDataSource } from '../contracts/CsvImportRelationshipPendingValuesDataSource.js';
 
 const loadRelationshipCreationContext = async (params: {
   csvImportsDS: CsvImportsDataSource;

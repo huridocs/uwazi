@@ -1,21 +1,21 @@
-import translations from 'api/i18n/translations';
+import translations from '#api/i18n/translations.js';
 
 import {
   Settings,
   SettingsLinkSchema,
   SettingsFilterSchema,
   SettingsSublinkSchema,
-} from 'shared/types/settingsType';
-import { ensure } from 'shared/tsUtils';
-import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+} from '#shared/types/settingsType.js';
+import { ensure } from '#shared/tsUtils.js';
+import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { validateSettings } from 'shared/types/settingsSchema';
-import { ContextType } from 'shared/translationSchema';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
-import { settingsModel } from './settingsModel';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
+import { validateSettings } from '#shared/types/settingsSchema.js';
+import { ContextType } from '#shared/translationSchema.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { settingsModel } from './settingsModel.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 

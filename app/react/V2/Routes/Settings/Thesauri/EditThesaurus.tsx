@@ -4,13 +4,13 @@ import { Location, useBlocker, useLoaderData, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { isEmpty } from 'lodash';
-import { Translate } from 'app/I18N';
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, ConfirmNavigationModal } from 'V2/Components/UI';
-import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { PropertySchema } from 'shared/types/commonTypes';
+import isEmpty from 'lodash/isEmpty.js';
+import { Translate } from '#app/I18N/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   addGroupSubmit,
   addItemSubmit,
@@ -20,12 +20,17 @@ import {
   sanitizeThesaurusValues,
   sortValues,
   thesaurusAsRow,
-} from './helpers';
-import type { ConfirmationCallback } from './helpers';
-import { DeletionModal, GroupForm, ThesaurusValueForm, ThesaurusActions } from './components';
-import type { ThesaurusRow } from './components';
-import { ThesaurusForm } from './ThesaurusForm';
-import { ImportButton } from './components/ImportButton';
+} from './helpers.js';
+import type { ConfirmationCallback } from './helpers.js';
+import {
+  DeletionModal,
+  GroupForm,
+  ThesaurusValueForm,
+  ThesaurusActions,
+} from './components/index.js';
+import type { ThesaurusRow } from './components/index.js';
+import { ThesaurusForm } from './ThesaurusForm.js';
+import { ImportButton } from './components/ImportButton.js';
 
 const EditThesaurus = () => {
   const navigate = useNavigate();

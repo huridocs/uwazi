@@ -1,5 +1,5 @@
-import { SyncDBDataSource } from 'api/core/infrastructure/mongodb/common/SyncDBDataSource';
-import { legacyLogger } from 'api/log';
+import { SyncDBDataSource } from '#api/core/infrastructure/mongodb/common/SyncDBDataSource.js';
+import { legacyLogger } from '#api/log/index.js';
 import { ObjectId, UpdateOptions } from 'mongodb';
 import mongoose, {
   FilterQuery,
@@ -8,11 +8,11 @@ import mongoose, {
   Schema,
   UpdateQuery,
 } from 'mongoose';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { inspect } from 'util';
-import { MongooseModelWrapper } from './MongooseModelWrapper';
-import { UpdateLogger, createUpdateLogHelper } from './logHelper';
-import { ModelBulkWriteStream } from './modelBulkWriteStream';
+import { MongooseModelWrapper } from './MongooseModelWrapper.js';
+import { UpdateLogger, createUpdateLogHelper } from './logHelper.js';
+import { ModelBulkWriteStream } from './modelBulkWriteStream.js';
 
 /** Ideas!
  *  T is the actual model-specific document Schema!

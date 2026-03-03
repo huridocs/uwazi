@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const dictAId = db.id();
 const dictBId = db.id();

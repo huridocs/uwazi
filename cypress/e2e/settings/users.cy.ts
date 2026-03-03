@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers';
+import { clearCookiesAndLogin } from '../helpers/index.js';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {

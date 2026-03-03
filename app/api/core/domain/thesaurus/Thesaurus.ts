@@ -1,8 +1,8 @@
-import { Id } from 'api/core/libs/Id';
 import { z } from 'zod';
 import uuid from 'node-uuid';
-import { InvalidThesaurusValueIdsError } from './errors';
-import { ThesaurusDiff } from './ThesaurusDiff';
+import { Id } from '#api/core/libs/Id.js';
+import { InvalidThesaurusValueIdsError } from './errors.js';
+import { ThesaurusDiff } from './ThesaurusDiff.js';
 
 type ThesaurusValue = {
   id: string;

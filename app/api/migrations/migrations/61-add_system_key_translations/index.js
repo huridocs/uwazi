@@ -8,7 +8,7 @@ After copy pasting:
 
 // eslint-disable-next-line max-statements,node/no-restricted-import
 import fs from 'fs';
-import csv from 'api/csv/csv';
+import csv from '#api/csv/csv.js';
 
 async function readCsvToSystemKeys(db, filename) {
   const fstream = fs.createReadStream(filename);

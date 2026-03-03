@@ -1,14 +1,15 @@
 //////
 
 import React from 'react';
-import { Button } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
-import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
-import { notificationAtom } from 'V2/atoms';
+import { Button } from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/index.js';
+import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
+import { notificationAtom } from '#V2/atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
-import { useCreateExtractorContext } from '../../CreateExtractorContext';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { isClient } from '#app/utils/index.js';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Footer = () => {
   const revalidator = useRevalidator();
@@ -50,7 +51,9 @@ const Footer = () => {
         text: <Translate>Paragraph Extractor added</Translate>,
       });
     } catch (e) {
-      handleUnexpectedError(e, 'Error creating paragraph extractor');
+      if (isClient) {
+        handleUnexpectedError(e, 'Error creating paragraph extractor');
+      }
     }
   };
 

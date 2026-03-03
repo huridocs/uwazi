@@ -150,7 +150,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
 
       - name: Ensure Yarn
         run: npm i -g yarn@1.22.22 --force && yarn --version
@@ -227,7 +227,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
       - name: Ensure Yarn
         run: npm i -g yarn@1.22.22 --force && yarn --version
       - name: install dependencies

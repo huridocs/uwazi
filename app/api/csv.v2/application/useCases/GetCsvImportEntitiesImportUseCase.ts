@@ -1,5 +1,5 @@
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { CsvImportEntitiesImportsDataSource } from '../contracts/CsvImportEntitiesImportsDataSource';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { CsvImportEntitiesImportsDataSource } from '../contracts/CsvImportEntitiesImportsDataSource.js';
 
 type Deps = {
   csvImportEntitiesImportsDS: CsvImportEntitiesImportsDataSource;

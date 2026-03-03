@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 export const landingPageTip = (
   <Translate translationKey="Landing page description">

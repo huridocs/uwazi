@@ -1,4 +1,4 @@
-import * as uiActions from '../uiActions';
+import * as uiActions from '../uiActions.js';
 
 describe('Entities uiActions', () => {
   describe('showTab', () => {

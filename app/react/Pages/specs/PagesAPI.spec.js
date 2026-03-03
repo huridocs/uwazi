@@ -1,7 +1,7 @@
-import { APIURL } from 'app/config.js';
+import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
-import { RequestParams } from 'app/utils/RequestParams';
-import pagesAPI from '../PagesAPI';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { PagesAPI as pagesAPI } from '../PagesAPI.js';
 
 describe('pagesAPI', () => {
   const singleResponse = [{ pages: 'single' }];

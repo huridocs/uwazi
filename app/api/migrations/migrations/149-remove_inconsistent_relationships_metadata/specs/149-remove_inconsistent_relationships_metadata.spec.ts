@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
 
-import testingDB from 'api/utils/testing_db';
-import migration from '../index';
-import { fixtures, ids, noReindexFixtures } from './fixtures';
-import { EntitySchema } from '../types';
+import testingDB from '#api/utils/testing_db.js';
+import migration from '../index.js';
+import { fixtures, ids, noReindexFixtures } from './fixtures.js';
+import { EntitySchema } from '../types.js';
 
 beforeAll(async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

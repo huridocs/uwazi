@@ -1,10 +1,8 @@
-/** @format */
+import '#api/utils/jasmineHelpers.js';
+import instrumentRoutes from '#api/utils/instrumentRoutes.js';
+import * as usersUtils from '#api/auth2fa/usersUtils.js';
 
-import 'api/utils/jasmineHelpers';
-import instrumentRoutes from 'api/utils/instrumentRoutes';
-import * as usersUtils from 'api/auth2fa/usersUtils';
-
-import auth2faRoutes from '../routes';
+import auth2faRoutes from '../routes.js';
 
 describe('Auth2fa Routes', () => {
   let routes;

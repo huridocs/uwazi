@@ -1,8 +1,8 @@
 import React from 'react';
 import { Provider, useSetAtom } from 'jotai';
 import { mount } from '@cypress/react18';
-import { notificationAtom, notificationAtomType } from 'V2/atoms';
-import { NotificationsContainer } from '../NotificationsContainer';
+import { notificationAtom, notificationAtomType } from '#V2/atoms/index.js';
+import { NotificationsContainer } from '../NotificationsContainer.js';
 
 describe('Notifications container', { viewportWidth: 500, viewportHeight: 500 }, () => {
   const notification: notificationAtomType = {

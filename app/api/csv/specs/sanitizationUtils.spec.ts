@@ -1,4 +1,4 @@
-import { sanitizeText, sanitizeStringValue, sanitizeMetadataValue } from '../sanitizationUtils';
+import { sanitizeText, sanitizeStringValue, sanitizeMetadataValue } from '../sanitizationUtils.js';
 
 describe('sanitizationUtils', () => {
   describe('sanitizeText', () => {

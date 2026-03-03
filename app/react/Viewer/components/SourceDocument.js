@@ -1,17 +1,17 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { setSelection, unsetSelection } from 'app/Viewer/actions/selectionActions';
+import { setSelection, unsetSelection } from '#app/Viewer/actions/selectionActions.js';
 import {
   resetReferenceCreation,
   highlightReference,
   activateReference,
   scrollToActive,
   deactivateReference,
-} from 'app/Viewer/actions/uiActions';
-import Document from 'app/Viewer/components/Document';
+} from '#app/Viewer/actions/uiActions.js';
+import { Document } from '#app/Viewer/components/Document.js';
 import { createSelector } from 'reselect';
-import { selectDoc, selectReferences } from '../selectors';
+import { selectDoc, selectReferences } from '../selectors.js';
 
 const selectSourceRange = createSelector(
   s => s.uiState,
@@ -62,4 +62,5 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     unsetSelection: dispatchProps.unsetSelection,
   };
 }
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Document);
+const SourceDocument = connect(mapStateToProps, mapDispatchToProps, mergeProps)(Document);
+export { SourceDocument };

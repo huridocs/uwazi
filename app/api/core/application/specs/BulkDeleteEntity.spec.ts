@@ -1,19 +1,19 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { tenants } from 'api/tenants';
-import { elastic, search } from 'api/search';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { tenants } from '#api/tenants/index.js';
+import { elastic, search } from '#api/search/index.js';
 import { Collection, ObjectId } from 'mongodb';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { getSharedConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { UserSchema } from 'shared/types/userType';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
-import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity.js';
 
 const factory = getFixturesFactory();
 

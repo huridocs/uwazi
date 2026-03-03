@@ -6,8 +6,13 @@
 import csvtojson from 'csvtojson';
 import fs from 'fs';
 import { exit } from 'process';
-import { DB } from '../app/api/odm/DB';
-import { config } from '../app/api/config';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { DB } from '#api/odm/DB.js';
+import { config } from '#api/config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const TRANSLATIONS_DIR = `${__dirname}/../contents/ui-translations`;
 const logger = new console.Console(process.stdout, process.stderr);

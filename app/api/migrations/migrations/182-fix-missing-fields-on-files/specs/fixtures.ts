@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Fixture } from '../types';
+import { Fixture } from '../types.js';
 
 const fileMissingCreationDateId = ObjectId.createFromTime(1715000000);
 const fileMissingSizeLocalId = new ObjectId();

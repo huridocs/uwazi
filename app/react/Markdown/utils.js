@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { captureException } from '@sentry/react';
-import { isClient } from '../utils';
+import { isClient } from '../utils/index.js';
 
 const objectPath = (path, object) =>
   path.split('.').reduce((o, key) => {

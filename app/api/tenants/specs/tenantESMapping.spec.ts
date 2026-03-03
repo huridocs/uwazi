@@ -1,5 +1,5 @@
-import { tenants } from '../tenantContext';
-import { getTenantESMapping } from '../tenantESMapping';
+import { tenants } from '../tenantContext.js';
+import { getTenantESMapping } from '../tenantESMapping.js';
 
 describe('tenantESMapping', () => {
   describe('getTenantESMapping', () => {

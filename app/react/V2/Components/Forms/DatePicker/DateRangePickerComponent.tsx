@@ -5,11 +5,15 @@ import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-import uniqueID from 'shared/uniqueID';
-import { Label } from '../Label';
-import { InputError } from '../InputError';
-import { InputField } from '../InputField';
-import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
+import uniqueID from '#shared/uniqueID.js';
+import { Label } from '../Label.js';
+import { InputError } from '../InputError.js';
+import { InputField } from '../InputField.js';
+import {
+  DatePickerProps,
+  datePickerOptionsByLocale,
+  validateLocale,
+} from './DatePickerComponent.js';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   dateFormat?: string;

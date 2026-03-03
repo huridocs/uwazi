@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { mapStateToProps, MarkersComponent } from '../Markers.js';
-import * as helper from '../helper';
+import * as helper from '../helper.js';
 
 describe('Markers component', () => {
   const externalTemplates = Immutable.fromJS(['templates']);

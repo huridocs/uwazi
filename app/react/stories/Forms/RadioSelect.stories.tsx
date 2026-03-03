@@ -2,7 +2,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-import { RadioSelect } from 'app/V2/Components/Forms';
+import { RadioSelect } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof RadioSelect> = {
   title: 'Forms/RadioSelect',
@@ -11,6 +11,8 @@ const meta: Meta<typeof RadioSelect> = {
     onChange: fn(),
   },
 };
+
+export default meta;
 
 type Story = StoryObj<typeof RadioSelect>;
 
@@ -67,5 +69,3 @@ const Horizontal: Story = {
 };
 
 export { Basic, Horizontal };
-
-export default meta;

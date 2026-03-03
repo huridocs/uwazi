@@ -1,8 +1,8 @@
-import { Tenant } from 'api/tenants/tenantContext';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { SettingsLinkSchema } from 'shared/types/settingsType';
-import { Property, Template } from 'app/apiResponseTypes';
-import { ClientPropertySchema } from 'app/istore';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
+import { SettingsLinkSchema } from '#shared/types/settingsType.js';
+import { Property, Template } from '#app/apiResponseTypes.js';
+import { ClientPropertySchema } from '#app/istore.js';
 
 interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
   _id?: string;

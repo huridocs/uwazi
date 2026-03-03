@@ -1,5 +1,5 @@
-import request from 'shared/JSONRequest';
-import { attachmentsPath } from 'api/files/filesystem';
+import request from '#shared/JSONRequest.js';
+import { attachmentsPath } from '#api/files/filesystem.js';
 import mime from 'mime-types';
 
 export default {

@@ -1,11 +1,11 @@
 import configureMockStore from 'redux-mock-store';
 import qs from 'qs';
 import thunk from 'redux-thunk';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { mockID } from 'shared/uniqueID.js';
-import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-import * as actions from '../actions';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { mockID } from '#shared/uniqueID.js';
+import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
+import * as actions from '../actions.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -81,6 +81,7 @@ describe('Connections actions', () => {
     describe('search', () => {
       it('should update the state searchTerm and debounce server searching the term', () => {
         jasmine.clock().install();
+        api.get.calls.reset();
         actions.search('term', 'basic')(store.dispatch);
         expect(store.getActions()).toContainEqual({
           type: 'connections/searchTerm/SET',

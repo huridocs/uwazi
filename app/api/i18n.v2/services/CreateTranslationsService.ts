@@ -1,8 +1,8 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { Translation } from '../model/Translation';
-import { ValidateTranslationsService } from './ValidateTranslationsService';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
+import { Translation } from '../model/Translation.js';
+import { ValidateTranslationsService } from './ValidateTranslationsService.js';
 
 export interface CreateTranslationsData {
   language: LanguageISO6391;

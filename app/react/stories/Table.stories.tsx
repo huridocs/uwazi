@@ -3,8 +3,8 @@ import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Button, Table } from 'V2/Components/UI';
-import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
+import { Button, Table } from '#V2/Components/UI/index.js';
+import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures.js';
 
 type StoryProps = {
   columnType: string;
@@ -243,6 +243,8 @@ const meta: Meta<StoryProps> = {
   component: StoryComponent,
 };
 
+export default meta;
+
 type Story = StoryObj<StoryProps>;
 
 const Primary: Story = {
@@ -327,4 +329,3 @@ const Custom = {
 };
 
 export { Basic, BasicWithDisabledDnD, Nested, NestedWithDisabledDnD, Custom };
-export default meta;

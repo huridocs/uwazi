@@ -1,18 +1,20 @@
 import superagent, { MultipartValueSingle } from 'superagent';
 import { Dispatch } from 'redux';
-import { groupBy } from 'lodash';
-import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
-import { ensure } from 'shared/tsUtils';
-import { constructFile } from 'shared/fileUploadUtils';
-import loadingBar from 'app/App/LoadingProgressBar';
+import groupBy from 'lodash/groupBy.js';
+import { ClientBlobFile, ClientEntitySchema, ClientFile } from '#app/istore.js';
+import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
+import * as uploadsActionTypes from '#app/Uploads/actions/actionTypes.js';
+
+import { ensure } from '#shared/tsUtils.js';
+
+import { constructFile } from '#shared/fileUploadUtils.js';
+import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
     const reader = new FileReader();
 
-    reader.onload = base64 => {
+    reader.onload = (base64: any) => {
       const info = ensure<ArrayBuffer>(base64.target!.result);
       cb(info);
       resolve();

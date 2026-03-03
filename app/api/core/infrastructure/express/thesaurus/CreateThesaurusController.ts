@@ -1,11 +1,11 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { CreateThesaurusUseCaseInput } from 'api/core/application/CreateThesaurus';
-import { CSVLoader } from 'api/csv';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { CreateThesaurusUseCaseInput } from '#api/core/application/CreateThesaurus.js';
+import { CSVLoader } from '#api/csv/index.js';
 import { ObjectId } from 'mongodb';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { CreateThesaurusUseCaseFactory } from '../../factories/CreateThesaurusUseCaseFactory';
-import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO';
-import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { CreateThesaurusUseCaseFactory } from '../../factories/CreateThesaurusUseCaseFactory.js';
+import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO.js';
+import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper.js';
 
 type RequestDto = CreateThesaurusUseCaseInput;
 

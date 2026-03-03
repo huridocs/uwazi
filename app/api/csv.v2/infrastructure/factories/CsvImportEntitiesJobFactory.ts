@@ -1,19 +1,19 @@
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob';
-import { CsvEntitiesImportMapper } from '../../application/services/CsvEntitiesImportMapper';
-import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob.js';
+import { CsvEntitiesImportMapper } from '../../application/services/CsvEntitiesImportMapper.js';
+import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
 
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;

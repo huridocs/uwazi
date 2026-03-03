@@ -1,7 +1,7 @@
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { tenants } from 'api/tenants/tenantContext';
-import { handleError } from 'api/utils';
-import { CsvImportRowErrorsDataSource } from '../../application/contracts/CsvImportRowErrorsDataSource';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { handleError } from '#api/utils/index.js';
+import { CsvImportRowErrorsDataSource } from '../../application/contracts/CsvImportRowErrorsDataSource.js';
 
 type RowExceptionsPayload = Record<
   string,

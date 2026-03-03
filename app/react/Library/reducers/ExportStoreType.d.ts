@@ -1,4 +1,4 @@
-import { IImmutable } from 'shared/types/Immutable';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 export interface ExportStore {
   user: IImmutable<object>;

@@ -1,25 +1,25 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
-import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
-import { ThesauriRepository } from '../../application/contracts/ThesauriRepository';
-import { TranslationsRepository } from '../../application/contracts/TranslationsRepository';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
+import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
+import { ThesauriRepository } from '../../application/contracts/ThesauriRepository.js';
+import { TranslationsRepository } from '../../application/contracts/TranslationsRepository.js';
 import {
   CsvImport,
   CsvImportDomain,
   CsvImportStatus,
   CsvImportStats,
-} from '../../domain/CsvImport';
+} from '../../domain/CsvImport.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
   PendingValuesDiffSummary,
-} from '../../domain/CsvImportThesauriValues';
-import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier';
-import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
-import { CsvCreateRelationshipEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler';
+} from '../../domain/CsvImportThesauriValues.js';
+import { CsvCreateRelationshipEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
+import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier.js';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
 
 type ThesauriCreationProgress = {
   importId: string;

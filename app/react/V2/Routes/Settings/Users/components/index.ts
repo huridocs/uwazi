@@ -1,4 +1,4 @@
-export { GroupFormSidepanel } from './GroupFormSidepanel';
-export { UserFormSidepanel } from './UserFormSidepanel';
-export { getUsersColumns, getGroupsColumns } from './TableComponents';
-export { ListOfItems } from './ListOfItems';
+export { GroupFormSidepanel } from './GroupFormSidepanel.js';
+export { UserFormSidepanel } from './UserFormSidepanel.js';
+export { getUsersColumns, getGroupsColumns } from './TableComponents.js';
+export { ListOfItems } from './ListOfItems.js';

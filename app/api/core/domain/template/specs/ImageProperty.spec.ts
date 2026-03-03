@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { ImageProperty } from '../ImageProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
+import { ImageProperty } from '../ImageProperty.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
 
 describe('ImageProperty', () => {
   it('should set defaults values if not provided', () => {

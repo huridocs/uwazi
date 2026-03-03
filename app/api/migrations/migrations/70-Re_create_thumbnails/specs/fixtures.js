@@ -1,4 +1,4 @@
-import { getIdMapper } from 'api/utils/fixturesFactory';
+import { getIdMapper } from '#api/utils/fixturesFactory.js';
 
 const id = getIdMapper();
 

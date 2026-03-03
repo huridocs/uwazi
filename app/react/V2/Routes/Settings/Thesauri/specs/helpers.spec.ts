@@ -1,4 +1,4 @@
-import { ThesaurusRow } from '../components';
+import { ThesaurusRow } from '../components/index.js';
 import {
   addGroupSubmit,
   addItemSubmit,
@@ -10,7 +10,7 @@ import {
   sanitizeThesaurusValues,
   sortValues,
   thesaurusAsRow,
-} from '../helpers';
+} from '../helpers.js';
 
 const thesaurusValues: ThesaurusRow[] = [
   {

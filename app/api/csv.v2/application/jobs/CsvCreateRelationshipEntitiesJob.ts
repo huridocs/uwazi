@@ -1,29 +1,29 @@
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { EntitiesService } from 'api/core/application/EntitiesService';
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { CsvImportEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvImportEntitiesJobHandler';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { CsvImportEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvImportEntitiesJobHandler.js';
 import {
   CsvImport,
   CsvImportDomain,
   CsvImportStatus,
   CsvImportStats,
-} from '../../domain/CsvImport';
-import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
-import { CsvImportRelationshipPendingValuesDataSource } from '../contracts/CsvImportRelationshipPendingValuesDataSource';
-import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
-import { CsvImportRelationshipValues } from '../../domain/CsvImportRelationshipValues';
+} from '../../domain/CsvImport.js';
+import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
+import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource.js';
+import { CsvImportRelationshipPendingValuesDataSource } from '../contracts/CsvImportRelationshipPendingValuesDataSource.js';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { CsvImportRelationshipValues } from '../../domain/CsvImportRelationshipValues.js';
 import {
   buildRelationshipAppliedValues,
   createMissingEntitiesForTitles,
-} from '../services/CsvPreflightRelationshipsService';
+} from '../services/CsvPreflightRelationshipsService.js';
 import {
   createRelationshipEntitiesBatch,
   loadRelationshipCreationContext,
-} from '../services/CsvRelationshipEntitiesCreator';
+} from '../services/CsvRelationshipEntitiesCreator.js';
 
 type RelationshipsProgress = {
   importId: string;

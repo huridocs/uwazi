@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { ClientSettings, ClientThesaurus, Template } from 'app/apiResponseTypes';
-import { ProcessingContext } from 'app/V2/application';
-import { EntitySchema } from 'shared/types/entityType';
+import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
+import { ProcessingContext } from '#V2/application/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 const thesauri: ClientThesaurus[] = [
   {

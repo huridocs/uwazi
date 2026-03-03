@@ -1,23 +1,23 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { EntitySchema } from 'shared/types/entityType';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
-import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
-import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
-import { PXCreateParagraphsInput } from '../PXCreateParagraphs';
+import { PXCreateParagraphsInput } from '../PXCreateParagraphs.js';
 
 const factory = getFixturesFactory();
 

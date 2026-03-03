@@ -11,21 +11,21 @@ import {
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty.js';
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import * as extractorsAPI from 'V2/api/ix/extractors';
-import * as suggestionsAPI from 'V2/api/ix/suggestions';
-import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
-import { notificationAtom } from 'V2/atoms';
-import { t, Translate } from 'app/I18N';
-import { ClientPropertySchema } from 'app/istore';
-import { handleUnexpectedError } from 'V2/shared/errorUtils';
-import { SuggestionsTitle } from './components/SuggestionsTitle';
-import { FiltersSidepanel } from './components/FiltersSidepanel';
-import { suggestionsTableColumnsBuilder } from './components/TableElements';
-import { generateChildrenRows, formatAccepted } from './helpers';
+import * as extractorsAPI from '#V2/api/ix/extractors.js';
+import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Button, PaginationState, Paginator, Table } from '#V2/Components/UI/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { ClientPropertySchema } from '#app/istore.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { SuggestionsTitle } from './components/SuggestionsTitle.js';
+import { FiltersSidepanel } from './components/FiltersSidepanel.js';
+import { suggestionsTableColumnsBuilder } from './components/TableElements.js';
+import { generateChildrenRows, formatAccepted } from './helpers/index.js';
 import {
   TableSuggestion,
   MultiValueSuggestion,
@@ -33,18 +33,18 @@ import {
   ixStatus,
   IXSuggestionsLoaderResponse,
   EntitySuggestion,
-} from './types';
-import { useEventHandler } from './hooks/useEventHandler';
-import { acceptedSuggestions } from './components/atoms';
-import { PDFSidepanel } from './components/sidepanel/PDFSidepanel';
-import { PropertySidepanel } from './components/sidepanel/PropertySidepanel';
-import { TrainModelModal } from './components/TrainModelModal';
-import { ProcessExtractorModal } from './components/ProcessExtractorModal';
+} from './types.js';
+import { useEventHandler } from './hooks/useEventHandler.js';
+import { acceptedSuggestions } from './components/atoms/index.js';
+import { PDFSidepanel } from './components/sidepanel/PDFSidepanel.js';
+import { PropertySidepanel } from './components/sidepanel/PropertySidepanel.js';
+import { TrainModelModal } from './components/TrainModelModal.js';
+import { ProcessExtractorModal } from './components/ProcessExtractorModal.js';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
   updateSuggestionValues,
-} from './helpers/loaderHelper';
+} from './helpers/loaderHelper.js';
 
 const SUGGESTIONS_PER_PAGE = 100;
 

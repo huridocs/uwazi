@@ -2,27 +2,27 @@
 import {
   MongoDataSource,
   MongoDSOptions,
-} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
-} from 'api/core/domain/template/errors';
-import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { Result, ResultType } from 'api/core/libs/Result';
-import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
+} from '#api/core/domain/template/errors.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { Property } from '../../../domain/template/Property';
-import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
-import { Template } from '../../../domain/template/Template';
-import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource';
-import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
-import { TemplateDBO } from './DBOs/TemplateDBO';
-import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper';
-import { mapPropertyQuery } from './QueryMapper';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { Property } from '../../../domain/template/Property.js';
+import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
+import { Template } from '../../../domain/template/Template.js';
+import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource.js';
+import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty.js';
+import { TemplateDBO } from './DBOs/TemplateDBO.js';
+import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper.js';
+import { mapPropertyQuery } from './QueryMapper.js';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>

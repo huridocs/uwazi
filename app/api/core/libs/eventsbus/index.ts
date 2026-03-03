@@ -1,5 +1,5 @@
-import { AbstractEvent } from './AbstractEvent';
-import { EventsBus } from './EventsBus';
+import { AbstractEvent } from './AbstractEvent.js';
+import { EventsBus } from './EventsBus.js';
 
 const applicationEventsBus = new EventsBus();
 

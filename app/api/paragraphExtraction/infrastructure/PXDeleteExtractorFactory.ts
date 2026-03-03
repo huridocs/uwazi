@@ -1,7 +1,7 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { PXDeleteExtractor } from '../application/PXDeleteExtractor';
-import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PXDeleteExtractor } from '../application/PXDeleteExtractor.js';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
 
 export class PXDeleteExtractorFactory {
   static createDefault() {

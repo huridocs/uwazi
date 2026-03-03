@@ -1,8 +1,8 @@
 import React from 'react';
-import { SimpleMetadataProperty } from 'app/V2/domain/entities/types';
-import { PropertyLabel } from './PropertyLabel';
-import { MetadataFieldProps } from './types';
-import { MetadataCard } from './MetadataCard';
+import { SimpleMetadataProperty } from '#app/V2/domain/entities/types.js';
+import { PropertyLabel } from './PropertyLabel.js';
+import { MetadataFieldProps } from './types.js';
+import { MetadataCard } from './MetadataCard.js';
 
 type SimpleValueProps = MetadataFieldProps & {
   values: SimpleMetadataProperty['values'];

@@ -1,19 +1,18 @@
 /*eslint-disable max-lines*/
-import entities from 'api/entities';
-import { search } from 'api/search';
-import { settingsModel } from 'api/settings/settingsModel';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import express from 'express';
 import request from 'supertest';
-
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { PUBLIC_USER_ID } from 'api/users/publicUser';
-import { appContext } from 'api/utils/AppContext';
-import mailer from 'api/utils/mailer';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { legacyLogger } from '../../log';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { appContext } from '#api/utils/AppContext.js';
+import mailer from '#api/utils/mailer.js';
+import entities from '#api/entities/index.js';
+import { search } from '#api/search/index.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import uploadRoutes from '../jsRoutes.js';
-import { allowedPublicTemplate, fixtures, templateId } from './fixtures';
+import { allowedPublicTemplate, fixtures, templateId } from './fixtures.js';
+import { legacyLogger } from '../../log.js';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>

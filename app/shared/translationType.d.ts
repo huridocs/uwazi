@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { LanguageISO6391, ObjectIdSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 export interface TranslationContext {
   _id?: ObjectIdSchema;

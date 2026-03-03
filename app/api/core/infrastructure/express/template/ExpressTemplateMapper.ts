@@ -1,20 +1,20 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-import { AbstractImageProperty } from 'api/core/domain/template/AbstractImageProperty';
-import { CommonProperty } from 'api/core/domain/template/CommonProperty';
-import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
-import { FilterableProperty } from 'api/core/domain/template/FilterableProperty';
-import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';
-import { MultiSelectProperty } from 'api/core/domain/template/select/MultiSelectProperty';
-import { NestedProperty } from 'api/core/domain/template/NestedProperty';
-import { Property } from 'api/core/domain/template/Property';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { Template } from 'api/core/domain/template/Template';
-import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { TitleProperty } from 'api/core/domain/template/TitleProperty';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { AbstractImageProperty } from '#api/core/domain/template/AbstractImageProperty.js';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
+import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
+import { FilterableProperty } from '#api/core/domain/template/FilterableProperty.js';
+import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
+import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
+import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { ObjectId } from 'mongodb';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty) {

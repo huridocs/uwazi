@@ -1,11 +1,11 @@
-import entities from 'api/entities';
-import { unique, emptyString } from 'api/utils/filters';
-import { RawEntity } from 'api/csv/entityRow';
-import { ensure } from 'shared/tsUtils';
-import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
-import { csvConstants } from '../csvDefinitions';
-import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils';
+import entities from '#api/entities/index.js';
+import { unique, emptyString } from '#api/utils/filters.js';
+import { RawEntity } from '#api/csv/entityRow.js';
+import { ensure } from '#shared/tsUtils.js';
+import { PropertySchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import { csvConstants } from '../csvDefinitions.js';
+import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils.js';
 
 export interface ParserResult {
   data: MetadataObjectSchema[];
