@@ -86,8 +86,17 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('patches/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
       - name: install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
 
       - name: Clone dummy services
         if: matrix.needs_setup
@@ -300,8 +309,7 @@ jobs:
               "pageLoadTimeout": 30000,
               "video": true,
               "screenshotOnRunFailure": true,
-              "trashAssetsBeforeRuns": false,
-              "failFast": false
+              "trashAssetsBeforeRuns": false
             }
         timeout-minutes: 25
         env:
@@ -315,18 +323,22 @@ jobs:
         with:
           name: snapshots-${{ matrix.name }}
           path: cypress/snapshots/
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: video-${{ matrix.name }}
           path: cypress/videos/
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: debug-info-${{ matrix.name }}
           path: .github/debug/
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: logs-${{ matrix.name }}
           path: .github/logs/
+          if-no-files-found: ignore

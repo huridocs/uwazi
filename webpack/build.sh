@@ -64,7 +64,12 @@ echo "  ✅ FontAwesome imports fixed in ${FIX_TIME}s"
 
 echo "📦 Step 5: Installing production dependencies..."
 DEPS_START=$(date +%s)
-yarn install --production=true --modules-folder=./prod/node_modules
+cp package.json prod/
+cp -r node_modules prod/node_modules
+(cd prod && npm prune --omit=dev --legacy-peer-deps) || {
+	echo "❌ npm prune failed. Production dependencies may be incomplete."
+	exit 1
+}
 DEPS_TIME=$(($(date +%s) - DEPS_START))
 echo "  ✅ Production dependencies installed in ${DEPS_TIME}s"
 
