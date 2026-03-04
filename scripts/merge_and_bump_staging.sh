@@ -3,5 +3,5 @@
 git checkout staging
 git pull origin staging
 git merge origin/development -X theirs --no-commit --no-ff
-yarn version
+yarn version prerelease
 git push origin staging
