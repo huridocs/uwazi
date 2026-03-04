@@ -43,13 +43,14 @@ export class EntityFacade {
     } catch (error) {
       const duration = Date.now() - startTime;
 
-      logger.error(
+      logger.info(
         `Entity creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           requestId,
           namespace: 'Entity_Creation',
           durationMs: duration,
           success: false,
+          notify: true,
 
           templateId: dto.template,
           error: JSON.stringify(error),
