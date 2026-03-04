@@ -55,6 +55,9 @@ RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/sh
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
+# Enable Corepack for Yarn Berry (packageManager in package.json)
+RUN corepack enable
+
 # Verify installations
 RUN google-chrome --version \
     && mongosh --version \

@@ -53,12 +53,22 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('patches/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+      - name: Enable Corepack
+        run: corepack enable
       - name: install dependencies
         run: yarn install
       - name: Get Cypress version
         id: cypress-version
-        run: |
-          echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
+        run: echo "version=$(node -e "console.log(require('./node_modules/cypress/package.json').version)")" >> $GITHUB_OUTPUT
       - name: Get Cypress from cache
         id: cypress-cache
         uses: actions/cache@v4
