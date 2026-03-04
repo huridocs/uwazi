@@ -11,31 +11,41 @@ type RelationshipProps = MetadataFieldProps & {
   values: Extract<RelationshipMetadataProperty['values'], Array<any>>;
 };
 
-const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => (
-  <MetadataCard>
-    <dt>
-      <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-    </dt>
-    <dd className="flex flex-col gap-1">
-      {values.map((value, index) => {
-        const itemKey = value.value || value.url || value.label || `${label}-${index}`;
-        return (
-          <span key={itemKey} className="flex flex-row flex-nowrap gap-2 align-middle">
-            {value.icon && <CountryFlag id={value.icon} />}
-            <I18NLinkV2
-              className="underline"
-              to={value.url || `${DEFAULT_ENTITY_BASE_PATH}${value.value}`}
-              target="_blank"
-              rel="noreferrer"
-              localized={false}
-            >
-              {value.label}
-            </I18NLinkV2>
-          </span>
-        );
-      })}
-    </dd>
-  </MetadataCard>
-);
+const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => {
+  if (!values?.length) {
+    return null;
+  }
+
+  return (
+    <MetadataCard>
+      <dt>
+        <PropertyLabel
+          label={label}
+          translationContext={translationContext}
+          hideLabel={hideLabel}
+        />
+      </dt>
+      <dd className="flex flex-col gap-1">
+        {values.map((value, index) => {
+          const itemKey = value.value || value.url || value.label || `${label}-${index}`;
+          return (
+            <span key={itemKey} className="flex flex-row flex-nowrap gap-2 align-middle">
+              {value.icon && <CountryFlag id={value.icon} />}
+              <I18NLinkV2
+                className="underline"
+                to={value.url || `${DEFAULT_ENTITY_BASE_PATH}${value.value}`}
+                target="_blank"
+                rel="noreferrer"
+                localized={false}
+              >
+                {value.label}
+              </I18NLinkV2>
+            </span>
+          );
+        })}
+      </dd>
+    </MetadataCard>
+  );
+};
 
 export { Relationship };
