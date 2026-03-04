@@ -58,12 +58,13 @@ class UpdateEntityController extends AbstractController<Request> {
     } catch (error: unknown) {
       const duration = Date.now() - startTime;
 
-      DependenciesContext.logger.error(
+      DependenciesContext.logger.info(
         `Entity update failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           namespace: 'Entity_Update',
           durationMs: duration,
           success: false,
+          notify: true,
 
           error: JSON.stringify(error),
           dto: JSON.stringify(this.request.body),
