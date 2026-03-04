@@ -300,8 +300,7 @@ jobs:
               "pageLoadTimeout": 30000,
               "video": true,
               "screenshotOnRunFailure": true,
-              "trashAssetsBeforeRuns": false,
-              "failFast": false
+              "trashAssetsBeforeRuns": false
             }
         timeout-minutes: 25
         env:
