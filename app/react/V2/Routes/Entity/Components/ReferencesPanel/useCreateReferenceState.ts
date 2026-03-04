@@ -171,6 +171,12 @@ function useCreateReferenceState({
     targetSelection,
   ]);
 
+  if (typeof window !== 'undefined' && (window as any).Cypress) {
+    (window as any).__createReferenceTestApi = {
+      handleTargetPdfSelect,
+    };
+  }
+
   return {
     step,
     targetSelection,
