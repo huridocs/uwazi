@@ -65,6 +65,8 @@ echo "  ✅ FontAwesome imports fixed in ${FIX_TIME}s"
 echo "📦 Step 5: Installing production dependencies..."
 DEPS_START=$(date +%s)
 cp package.json prod/
+cp yarn.lock prod/
+cp .yarnrc.yml prod/
 cp -r node_modules prod/node_modules
 (cd prod && npm prune --omit=dev --legacy-peer-deps) || {
 	echo "❌ npm prune failed. Production dependencies may be incomplete."
