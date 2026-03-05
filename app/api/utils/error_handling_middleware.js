@@ -37,5 +37,8 @@ export default (error, req, res, next) => {
   if (!(error instanceof ClientAbortedRequestError)) {
     res.status(code);
     res.json({ error: message, ...rest });
+  } else {
+    // ClientAbortedRequestError: delegate to Express default handler
+    return next(error);
   }
 };

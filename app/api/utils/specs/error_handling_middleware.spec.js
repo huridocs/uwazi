@@ -135,7 +135,7 @@ describe('Error handling middleware', () => {
   });
 
   describe('when error is ClientAbortedRequestError', () => {
-    it('should not send response for ClientAbortedRequestError', () => {
+    it('should not send response for ClientAbortedRequestError and delegate to next', () => {
       const error = new ClientAbortedRequestError('Client aborted the request');
       req = {
         url: '/api/files/download/somefile.pdf',
@@ -147,7 +147,7 @@ describe('Error handling middleware', () => {
 
       expect(res.status).not.toHaveBeenCalled();
       expect(res.json).not.toHaveBeenCalled();
-      expect(next).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(error);
     });
 
     it('should NOT log when ClientAbortedRequestError occurs with headers already sent', () => {

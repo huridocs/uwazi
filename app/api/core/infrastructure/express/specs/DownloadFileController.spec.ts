@@ -129,7 +129,7 @@ describe('DownloadFileController', () => {
 
   describe('pipeline error handling', () => {
     describe('when stream fails with ERR_STREAM_PREMATURE_CLOSE', () => {
-      it('should throw OperationalError when request was aborted', async () => {
+      it('should throw ClientAbortedRequestError when request was aborted', async () => {
         const error: any = new Error('Premature close');
         error.code = 'ERR_STREAM_PREMATURE_CLOSE';
 
