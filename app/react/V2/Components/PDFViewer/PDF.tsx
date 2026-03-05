@@ -6,19 +6,19 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import loadable from '@loadable/component';
 import {
   SelectionRegion,
   HandleTextSelection,
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
-import { PDFDocumentProxy } from 'pdfjs-dist';
+import { getDocument, PDFDocumentProxy } from 'pdfjs-dist/webpack.mjs';
+import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { Translate } from '#app/I18N/index.js';
-import { PDFJS, CMAP_URL, EventBus } from './pdfjs.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { PDFPage } from './PDFPage.js';
 
 type Snippet = { text: string; page: number; filename?: string };
 
@@ -28,12 +28,6 @@ interface PDFHandle {
   activateSnippet: (snippet: Snippet) => void;
   deactivateSnippet: () => void;
 }
-
-const PDFPage = loadable(
-  async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage
-);
-
-const eventBus = new EventBus();
 
 interface PDFProps {
   fileUrl: string;
@@ -52,9 +46,9 @@ interface PDFProps {
 }
 
 const getPDFFile = async (fileUrl: string) =>
-  PDFJS.getDocument({
+  getDocument({
     url: fileUrl,
-    cMapUrl: CMAP_URL,
+    cMapUrl: 'legacy_character_maps/',
     cMapPacked: true,
     isEvalSupported: false,
   }).promise;
@@ -81,6 +75,7 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
     const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
     const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const animationFrameIdRef = useRef(0);
+    const [pdfEventBus] = useState(new EventBus());
 
     useImperativeHandle(
       ref,
@@ -219,7 +214,7 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
                     <PDFPage
                       pdf={pdf}
                       page={number}
-                      eventBus={eventBus}
+                      eventBus={pdfEventBus}
                       highlights={pageHighlights}
                       containerWidth={containerWidth}
                       onScaleChange={handleScaleChange}

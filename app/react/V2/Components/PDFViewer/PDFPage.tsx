@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
-import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import { PDFDocumentProxy, PDFPageProxy, PixelsPerInch } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { EventBus, PDFJSViewer, PDFJS } from './pdfjs.js';
+import { EventBus, PDFPageView, RenderingStates } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { TextHighlight } from './types.js';
 import { calculateScaling } from './functions/calculateScaling.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
@@ -13,9 +13,7 @@ interface PDFPageProps {
   eventBus: typeof EventBus.prototype;
   highlights?: TextHighlight[];
   containerWidth?: number;
-  /** Called when scale is computed/updated so parent can use it (e.g. to normalize selections) */
   onScaleChange?: (scale: number) => void;
-  /** Called when this page has been drawn (replaces pdfEventBus onPageChange) */
   onPageChange?: (pageNumber: number) => void;
 }
 
@@ -31,7 +29,7 @@ const PDFPage = ({
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useState(1);
   const pageContainerRef = useRef<HTMLDivElement>(null);
-  const pageViewerRef = useRef<typeof PDFJSViewer.PDFPageView.prototype | null>(null);
+  const pageViewerRef = useRef<typeof PDFPageView.prototype | null>(null);
   const pdfPageRef = useRef<PDFPageProxy | null>(null);
   const onPageChangeRef = useRef(onPageChange);
   onPageChangeRef.current = onPageChange;
@@ -48,7 +46,7 @@ const PDFPage = ({
 
           const originalViewport = pdfPage.getViewport({ scale: 1 });
           const scale = calculateScaling(
-            originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
+            originalViewport.width * PixelsPerInch.PDF_TO_CSS_UNITS,
             containerWidth
           );
           const defaultViewport = pdfPage.getViewport({ scale });
@@ -56,7 +54,7 @@ const PDFPage = ({
           setPdfScale(scale);
           onScaleChange?.(scale);
 
-          const pageViewer = new PDFJSViewer.PDFPageView({
+          const pageViewer = new PDFPageView({
             container: currentContainer,
             id: page,
             scale,
@@ -73,7 +71,7 @@ const PDFPage = ({
             if (entry.isIntersecting) {
               pageViewer.update({ scale: pageViewer.scale });
 
-              if (pageViewer.renderingState !== PDFJSViewer.RenderingStates.RUNNING) {
+              if (pageViewer.renderingState !== RenderingStates.RUNNING) {
                 pageViewer
                   .draw()
                   .then(() => {
@@ -83,7 +81,7 @@ const PDFPage = ({
                     setError(e.message);
                   });
               }
-            } else if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+            } else if (pageViewer.renderingState === RenderingStates.FINISHED) {
               pageViewer.destroy();
             }
           };
@@ -120,7 +118,7 @@ const PDFPage = ({
     if (pageViewer && pdfPage && containerWidth) {
       const originalViewport = pdfPage.getViewport({ scale: 1 });
       const newScale = calculateScaling(
-        originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
+        originalViewport.width * PixelsPerInch.PDF_TO_CSS_UNITS,
         containerWidth
       );
 
@@ -129,7 +127,7 @@ const PDFPage = ({
         onScaleChange?.(newScale);
         pageViewer.update({ scale: newScale });
 
-        if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+        if (pageViewer.renderingState === RenderingStates.FINISHED) {
           pageViewer.draw().catch((e: Error) => {
             setError(e.message);
           });
