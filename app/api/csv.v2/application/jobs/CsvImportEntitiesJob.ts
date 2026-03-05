@@ -166,7 +166,7 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
 
   private async runImport(importId: string, callbacks: Callbacks) {
     const context = await this.loadContext(importId);
-    const { entitiesCreated, csvImport, processedRows, shouldStop, stopReason } =
+    const { entitiesCreated, csvImport, processedRows, shouldStop, stopReason, cancelled } =
       await processImportRows({
         context,
         callbacks,
@@ -199,6 +199,9 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
       transactionManager: this.transactionManager,
       fileStorage: this.deps.fileStorage,
     });
+    if (cancelled || (await this.deps.csvImportsDS.isCancelled(importId))) {
+      return;
+    }
     if (shouldStop) {
       throw new NonRetryableJobError(new Error(stopReason || 'Stopped due to failure policy'));
     }
@@ -207,12 +210,18 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
 
   async execute(input: Input): Promise<void> {
     const { importId, callbacks } = input;
+    if (await this.deps.csvImportsDS.isCancelled(importId)) {
+      return;
+    }
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.ImportEntities);
 
     try {
       await this.runImport(importId, callbacks);
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return;
+      }
       callbacks.onSuccess({ importId });
     } catch (error) {
       await this.persistFailure(importId, error as Error);

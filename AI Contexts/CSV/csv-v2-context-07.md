@@ -693,6 +693,8 @@ Use this as a strict gate before, during, and after implementation.
 
 - Lint/type-check all touched CSV v2 files.
 - Run focused specs for cancel-related paths and impacted jobs.
+- Run Jest in this repo with:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest path-or-string-to-file`
 - Include at least one scenario where cancellation happens between batch completion and finalization write, and verify:
   - completed progress remains visible,
   - status remains `cancelled`,
@@ -704,3 +706,200 @@ Use this as a strict gate before, during, and after implementation.
   - stop implementation,
   - provide a short written proposal with alternatives and trade-offs,
   - wait for explicit approval before touching core.
+
+### 18) Latest iteration update (Mar 2026) — mandatory handoff record
+
+This section captures what was done in the latest development pass and must be updated on every iteration.
+
+#### 18.1 Test command convention (explicit)
+
+- Standard command to run focused Jest specs in this repo:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest path-or-string-to-file`
+- This is now the default command format for CSV v2 verification.
+
+#### 18.2 CSV v2 JobHandler typing alignment (core-safe)
+
+- Context: Type errors surfaced in CSV v2 job dispatch calls (e.g. dispatching `Csv*JobHandler` classes from jobs) due to strict `JobsDispatcher` generic constraints expecting `Dispatchable` signatures.
+- Decision: **Do not touch core queue/router/dispatcher contracts**.
+- Fix applied inside CSV v2 only:
+  - Updated all CSV v2 job handlers to explicitly implement a compatible `handleDispatch(...)` signature using core `Dispatchable` params.
+  - Added strict runtime param parsing per handler (`importId`, `tenantName`, `userId`) and delegated to `UserAwareDispatchable` via `super.handleDispatch(...)`.
+  - Kept handler `handle(...)` logic unchanged.
+- Handlers updated:
+  - `CsvExtractUploadedZipJobHandler`
+  - `CsvPreflightJobHandler`
+  - `CsvCreateThesauriValuesJobHandler`
+  - `CsvCreateRelationshipEntitiesJobHandler`
+  - `CsvImportEntitiesJobHandler`
+- Also normalized handler imports to explicit `.js` paths where needed.
+
+#### 18.3 Outcome achieved
+
+- CSV v2 dispatch typing errors in job dispatch sites were resolved without any core contract changes.
+- No force-cast shortcut was introduced as a final production solution in CSV v2.
+- Focused cancel use-case spec passes using the standardized command.
+
+#### 18.4 Cancel-flow implementation record (Mar 2026)
+
+This captures the concrete cancel-flow work completed in the same iteration so handoff is complete.
+
+- **Endpoint + use case (admin-only, idempotent/monotonic):**
+  - Added route: `POST /api/csvImportEntities/imports/:id/cancel`
+    - file: `app/api/csv.v2/infrastructure/http/routes.ts`
+  - Added controller:
+    - `app/api/csv.v2/infrastructure/http/CancelCsvImportEntitiesImportController.ts`
+  - Added use case:
+    - `app/api/csv.v2/application/useCases/CancelCsvImportEntitiesImportUseCase.ts`
+  - Added factory wiring:
+    - `app/api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.ts`
+  - Terminal no-op semantics are enforced (`import:entities:done`, `completed`, `failed`, `cancelled`).
+
+- **Data source contract + Mongo implementation:**
+  - Extended contracts:
+    - `CsvImportsDataSource`: added `cancel(importId)` and `isCancelled(importId)`
+    - `CsvImportEntitiesImportsDataSource`: added `cancel(importId)`
+  - Implemented in:
+    - `app/api/csv.v2/infrastructure/mongodb/MongoCsvImportsDataSource.ts`
+  - Monotonic status guard implemented in `update(...)`:
+    - if persisted status is already `cancelled`, subsequent updates keep `status=cancelled`
+    - other fields (stats/progress/errors/etc.) are still persisted
+    - this prevents stale snapshot writes from reverting cancellation.
+
+- **Cooperative stop checkpoints added (no rollback/cleanup):**
+  - Job-start cancel checks added in:
+    - `CsvExtractUploadedZipJob`
+    - `CsvPreflightJob`
+    - `CsvCreateThesauriValuesJob`
+    - `CsvCreateRelationshipEntitiesJob`
+    - `CsvImportEntitiesJob`
+  - Iterative checkpoint checks added at safe boundaries:
+    - preflight scan batch loop (`CsvPreflightJob`)
+    - thesauri pending-doc loop (`CsvCreateThesauriValuesJob`)
+    - relationship template/chunk loops (`CsvPreflightRelationshipsService` + `CsvCreateRelationshipEntitiesJob`)
+    - entities import batch loop (`CsvImportEntitiesRowsProcessor`)
+    - extract row staging batch insertion (`CsvExtractUploadedZipJob`)
+  - Downstream dispatch is skipped when cancellation is detected before dispatch/finalization.
+
+- **Completed-work visibility preserved:**
+  - Rejected blanket “drop writes if cancelled” behavior was not used.
+  - Progress/stats/errors/report metadata writes remain persisted.
+  - Only status regression away from `cancelled` is blocked.
+
+- **Additional support file added:**
+  - `app/api/csv.v2/application/services/CsvImportCancellation.ts`
+    - explicit cancelled error marker used for clean cooperative stop paths.
+
+- **Tests updated in this iteration:**
+  - Added:
+    - `app/api/csv.v2/application/useCases/specs/CancelCsvImportEntitiesImportUseCase.spec.ts`
+      - verifies idempotent cancel and terminal no-op semantics.
+  - Updated:
+    - `app/api/csv.v2/application/jobs/specs/CsvImportEntitiesJob.spec.ts`
+      - scenario: cancel between batch completion and finalization write
+      - verifies completed progress remains visible and status remains `cancelled`.
+
+- **Verification notes (current environment):**
+  - Focused cancel use-case spec passes using the mandated command format.
+  - CSV integration specs requiring Mongo may fail locally when Mongo is unavailable (`ECONNREFUSED 127.0.0.1:27017`); rerun in a test environment with DB available.
+
+#### 18.5 Follow-up test-fix update (Mar 2026)
+
+- New regressions detected during `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`:
+  - `CsvCreateThesauriValuesJob.spec.ts` and `CsvPreflightJobErrorHandling.spec.ts` failed with:
+    - `this.deps.csvImportsDS.isCancelled is not a function`
+- Root cause:
+  - unit-test local mocks for `csvImportsDS` were not updated after adding cooperative cancellation checks that call `isCancelled(...)`.
+- Fix applied:
+  - Updated both specs to provide `isCancelled: jest.fn().mockResolvedValue(false)` on mocked `csvImportsDS`.
+- Verification:
+  - command run:
+    - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts app/api/csv.v2/application/jobs/specs/CsvPreflightJobErrorHandling.spec.ts`
+  - result: both suites pass.
+
+- Remaining failures in the full `csv.v2` run are environment/infrastructure related:
+  - Elasticsearch connection errors (`socket hang up` to `127.0.0.1:9200`) in integration suites.
+  - These are not caused by the CSV cancel-flow typing/cancellation changes; rerun with Elasticsearch available.
+
+#### 18.6 Cancellation nuance correction (Mar 2026)
+
+Critical semantic clarification from review:
+
+- `cancel` means **"stop when safe"** (cooperative stop), not "discard integrity data".
+- If a real exception occurs after cancellation was requested, failure metadata should still be persisted for observability/integrity.
+- Only explicit cooperative-cancel exits should be treated as clean no-op stops.
+
+What was corrected in implementation:
+
+- Removed catch-path short-circuit logic that previously skipped failure persistence when `isCancelled(...) === true`.
+- Updated jobs:
+  - `CsvPreflightJob`
+  - `CsvCreateThesauriValuesJob`
+  - `CsvCreateRelationshipEntitiesJob`
+  - `CsvImportEntitiesJob`
+- Behavior now:
+  1. checkpoint cancellation exits still return cleanly (no downstream dispatch),
+  2. real exceptions still go through failure persistence + onError callbacks,
+  3. `status` monotonicity remains protected by the CSV import datasource guard (cancelled status is not reverted).
+
+Rationale:
+
+- preserves completed-work writes and error observability,
+- avoids silent data-loss of failure context,
+- keeps the agreed cooperative-stop model.
+
+#### 18.7 Extract-stage cooperative cancel refactor (Mar 2026)
+
+Additional refinement requested:
+
+- Remove throw-based cancellation control flow (`throwIfCancelled`) from extract stage.
+- Reason: cancellation is not an error; cooperative stop should use explicit early returns/checkpoints.
+
+What changed:
+
+- Refactored `CsvExtractUploadedZipJob` to remove:
+  - `throwIfCancelled(...)`,
+  - cancellation sentinel error usage.
+- Replaced with explicit checkpoint checks (`isCancelled(...)`) and clean returns at:
+  - start of extraction flow,
+  - after normalization,
+  - before/after row staging,
+  - before success callback emission.
+- Non-cancellation exceptions still persist failure metadata via `handleError(...)`.
+
+- Enhanced `CsvImportRowsStager` to support cooperative stop without throws:
+  - added optional `shouldContinue?: () => Promise<boolean>` to stage params,
+  - accumulator now stops staging and skips further batch writes once continuation returns `false`,
+  - no extra progress/writes after stop flag is reached.
+
+- Removed now-unused cancellation sentinel helper file:
+  - `app/api/csv.v2/application/services/CsvImportCancellation.ts`
+
+Outcome:
+
+- Cancellation in extract stage is now explicit “stop when safe” flow (no exception-driven cancellation path),
+- while preserving existing behavior for real errors and downstream-dispatch guards.
+
+#### 18.8 Checkpoint-density simplification policy (Mar 2026)
+
+Follow-up refinement applied to reduce cancellation-check noise and improve readability.
+
+Policy now used across CSV v2 jobs:
+
+1. Check at **job/stage start**.
+2. Check at **batch/chunk loop boundaries**.
+3. Check **before downstream dispatch**.
+4. Check **before success callback emission**.
+
+Avoid:
+
+- repeated micro-checks around short local blocks with no external side effects.
+
+Implementation simplifications performed:
+
+- Consolidated adjacent early-return guards in `CsvImportRowsStager` where semantics are equivalent.
+- Ensured `shouldContinue` is actually propagated from `stage(...)` into the accumulator.
+- Removed redundant pre-write cancellation guards that could hide completed-work persistence just before finalize writes in:
+  - `CsvPreflightJob` transaction finalize block,
+  - `CsvCreateThesauriValuesJob` finalize path,
+  - `CsvCreateRelationshipEntitiesJob` finalize path.
+- Kept mandatory guards at loop boundaries, pre-dispatch, and pre-success callback.

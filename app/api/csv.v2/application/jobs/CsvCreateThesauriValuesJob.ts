@@ -172,6 +172,9 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         thesauriTouched: totals.touched,
       };
       await this.deps.csvImportsDS.update(withStatus.withStats(updatedStats));
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return;
+      }
       await this.deps.jobsDispatcher.dispatch(CsvCreateRelationshipEntitiesJobHandler, {
         tenantName,
         userId,
@@ -206,6 +209,9 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<void> {
     const { importId, callbacks, tenantName, userId } = input;
+    if (await this.deps.csvImportsDS.isCancelled(importId)) {
+      return;
+    }
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightThesauriCreate);
@@ -218,6 +224,10 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
 
       let index = 0;
       for (const pendingDoc of pendingDocs) {
+        // eslint-disable-next-line no-await-in-loop
+        if (await this.deps.csvImportsDS.isCancelled(importId)) {
+          return;
+        }
         index += 1;
         // eslint-disable-next-line no-await-in-loop
         const { updatedDoc } = await this.applyPendingThesaurusValues({
@@ -236,6 +246,9 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         tenantName,
         userId,
       });
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return;
+      }
       callbacks.onSuccess({ importId });
     } catch (error) {
       await this.persistFailure(importId, error as Error);

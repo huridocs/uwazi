@@ -133,7 +133,13 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
     const { importId, totalRows, callbacks } = params;
     const rows: CsvImportRow[] = [];
     let processedRows = 0;
+    let cancelled = false;
     for (let offset = 0; offset < totalRows; offset += DEFAULT_SCAN_BATCH_SIZE) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        cancelled = true;
+        break;
+      }
       // eslint-disable-next-line no-await-in-loop
       const batch = await this.deps.rowsDS.getByImport(importId, offset, DEFAULT_SCAN_BATCH_SIZE);
       if (!batch.length) {
@@ -149,7 +155,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         offset,
       });
     }
-    return { rows, totalRows, processedRows };
+    return { rows, totalRows, processedRows, cancelled };
   }
 
   private static appendScanBatch(params: {
@@ -237,6 +243,9 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<Output> {
     const { importId, callbacks, tenantName, userId } = input;
+    if (await this.deps.csvImportsDS.isCancelled(importId)) {
+      return { importId, status: CsvImportStatus.Cancelled };
+    }
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightScan);
@@ -246,7 +255,10 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
 
     try {
       csvImport = await this.getImport(importId);
-      const { rows: stagedRows } = await this.getStagedRows(importId, callbacks);
+      const { rows: stagedRows, cancelled } = await this.getStagedRows(importId, callbacks);
+      if (cancelled || (await this.deps.csvImportsDS.isCancelled(importId))) {
+        return { importId, status: CsvImportStatus.Cancelled };
+      }
       const template = await this.getTemplate(csvImport.templateId);
       const [availableLanguages, defaultLanguage, settings] = await Promise.all([
         this.deps.settingsDS.getLanguageKeys(),
@@ -322,6 +334,10 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         relationshipPendingDocs
       );
 
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return { importId, status: CsvImportStatus.Cancelled };
+      }
+
       await this.transactionManager.run(async () => {
         const clearedFailure = CsvImportDomain.clearFailure(csvImport!);
         const updated = CsvImportDomain.withStatus(
@@ -329,6 +345,9 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
           CsvImportStatus.PreflightScanDone
         );
         await this.deps.csvImportsDS.update(updated);
+        if (await this.deps.csvImportsDS.isCancelled(importId)) {
+          return;
+        }
         await this.jobsDispatcher.dispatch(CsvCreateThesauriValuesJobHandler, {
           tenantName,
           userId,
@@ -336,6 +355,9 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         });
       });
 
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return { importId, status: CsvImportStatus.Cancelled };
+      }
       callbacks.onSuccess({ importId });
       return { importId, status: CsvImportStatus.PreflightScanDone };
     } catch (error) {

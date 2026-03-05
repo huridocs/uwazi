@@ -26,6 +26,7 @@ describe('CsvCreateThesauriValuesJob', () => {
     const csvImportsDS = {
       getById: jest.fn().mockResolvedValue(Result.ok(csvImport)),
       update: jest.fn().mockResolvedValue(undefined),
+      isCancelled: jest.fn().mockResolvedValue(false),
     };
     const entry = new CsvThesauriPendingEntry({
       propertyId: 'prop',

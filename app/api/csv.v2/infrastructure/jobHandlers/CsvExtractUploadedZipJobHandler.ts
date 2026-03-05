@@ -5,6 +5,7 @@ import {
 import {
   HeartbeatCallback,
   JobInfo,
+  Params as DispatchableParams,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import {
@@ -26,6 +27,32 @@ type Deps = {
 export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Params> {
   constructor(private deps: Deps) {
     super();
+  }
+
+  private static parseParams(params: DispatchableParams): Params {
+    const { importId, tenantName, userId } = params;
+    if (typeof importId !== 'string') {
+      throw new Error('CsvExtractUploadedZipJobHandler requires params.importId:string');
+    }
+    if (typeof tenantName !== 'string') {
+      throw new Error('CsvExtractUploadedZipJobHandler requires params.tenantName:string');
+    }
+    if (typeof userId !== 'string') {
+      throw new Error('CsvExtractUploadedZipJobHandler requires params.userId:string');
+    }
+    return { importId, tenantName, userId };
+  }
+
+  async handleDispatch(
+    heartbeat: HeartbeatCallback,
+    params: DispatchableParams,
+    jobInfo?: JobInfo
+  ): Promise<void> {
+    return super.handleDispatch(
+      heartbeat,
+      CsvExtractUploadedZipJobHandler.parseParams(params),
+      jobInfo
+    );
   }
 
   async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {

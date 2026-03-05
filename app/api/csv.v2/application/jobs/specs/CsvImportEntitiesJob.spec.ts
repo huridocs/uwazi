@@ -404,4 +404,41 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect.objectContaining({ value: relatedSharedIdB }),
     ]);
   });
+
+  it('preserves completed batch progress when cancelled before finalization', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-cancelled-before-finalize');
+    const userId = fixturesFactory.idString('import-entities-cancel-user');
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title,description\nMy Title,Some description',
+    });
+
+    const callbacks = createCallbacks();
+    callbacks.onProgress.mockImplementation(async () => {
+      await csvImportsDS.cancel(importId);
+    });
+
+    await useCase.execute({ importId, callbacks });
+
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+
+    expect(updatedImport.status).toBe(CsvImportStatus.Cancelled);
+    expect(updatedImport.stats).toEqual(
+      expect.objectContaining({
+        rowsProcessed: 1,
+        rowsFailed: 0,
+      })
+    );
+    expect(rowErrorsCount).toBe(0);
+    expect(callbacks.onSuccess).not.toHaveBeenCalled();
+    expect(callbacks.onError).not.toHaveBeenCalled();
+  });
 });
