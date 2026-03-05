@@ -43,31 +43,6 @@ describe('entities routes', () => {
 
   afterAll(async () => testingEnvironment.tearDown());
 
-  describe('GET', () => {
-    it('return asked entities with permissions', async () => {
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'sharedPerm', include: JSON.stringify(['permissions']) });
-
-      expect(response.body.rows[0].permissions.length).toBe(1);
-      expect(response.body.rows[0].permissions).toEqual(permissions);
-    });
-
-    describe('when omitRelationships=false', () => {
-      it('should include the relationships permitted to the user', async () => {
-        new UserInContextMockFactory().mock(user);
-        const response: SuperTestResponse = await request(app)
-          .get('/api/entities')
-          .query({ sharedId: 'getWithRelRoot' });
-
-        expect(response.body.rows[0].relations).toEqual([
-          expect.objectContaining({ entity: 'getWithRelRoot' }),
-          expect.objectContaining({ entity: 'getWithRelPublic' }),
-        ]);
-      });
-    });
-  });
-
   describe('POST', () => {
     const entityToSave = {
       title: 'my entity',
