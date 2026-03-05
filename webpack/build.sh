@@ -67,7 +67,6 @@ DEPS_START=$(date +%s)
 cp package.json prod/
 cp yarn.lock prod/
 cp .yarnrc.yml prod/
-cp -r node_modules prod/node_modules
 (cd prod && yarn install --immutable) || {
 	echo "❌ yarn install failed. Production dependencies may be incomplete."
 	exit 1
