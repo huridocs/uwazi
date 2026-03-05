@@ -163,43 +163,43 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   const translations = await translationsApi.get();
 
   const [
-    userApiResponse = { json: {} },
+    userApiResponse = {},
     settingsApiResponse = {
-      json: {
-        languages: settings.languages,
-        private: settings.private,
-        site_name: settings.site_name,
-      },
+      languages: settings.languages,
+      private: settings.private,
+      site_name: settings.site_name,
     },
-    templatesApiResponse = { json: { rows: [] } },
-    thesaurisApiResponse = { json: { rows: [] } },
-    relationTypesApiResponse = { json: { rows: [] } },
+    templatesApiResponse = [],
+    thesaurisApiResponse = [],
+    relationTypesApiResponse = [],
     translationsApiResponse = onlySystemTranslations(translations),
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          Promise.resolve({ json: req.user || {} }),
-          Promise.resolve({ json: settings }),
-          templatesApi.get().then(templates => ({ json: { rows: templates } })),
-          thesauriApi.dictionaries().then(dictionaries => ({ json: { rows: dictionaries } })),
-          relationtypes.get().then(relationTypes => ({ json: { rows: relationTypes } })),
-          Promise.resolve({ json: { rows: translations } }),
+          Promise.resolve(req.user || {}),
+          Promise.resolve(settings),
+          templatesApi.get(),
+          thesauriApi.dictionaries(),
+          relationtypes.get(),
+          Promise.resolve(translations),
         ])
       : [];
 
   const reduxData = {
-    user: userApiResponse.json,
-    templates: sortBy(templatesApiResponse.json.rows, 'name'),
-    thesauris: thesaurisApiResponse.json.rows,
-    relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
-    translations: translationsApiResponse.json.rows,
+    user: userApiResponse,
+    templates: sortBy(templatesApiResponse, 'name'),
+    thesauris: thesaurisApiResponse,
+    relationTypes: sortBy(relationTypesApiResponse, 'name'),
+    translations: translationsApiResponse,
     settings: {
-      collection: { ...settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
+      collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
     },
   };
 
+  const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
+
   const reduxStore = createReduxStore({
-    ...reduxData,
+    ...convertObjectIdsToStrings(reduxData),
     locale,
   } as unknown as IStore);
 
@@ -207,12 +207,12 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     reduxStore,
     atomStoreData: {
       locale,
-      settings: settingsApiResponse.json,
-      thesauri: thesaurisApiResponse.json.rows,
-      templates: templatesApiResponse.json.rows,
-      user: userApiResponse.json,
-      translations: translationsApiResponse.json.rows,
-      relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
+      settings: settingsApiResponse,
+      thesauri: thesaurisApiResponse,
+      templates: templatesApiResponse,
+      user: userApiResponse,
+      translations: translationsApiResponse,
+      relationTypes: sortBy(relationTypesApiResponse, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
   };
