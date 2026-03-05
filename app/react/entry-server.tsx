@@ -26,6 +26,9 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import templatesApi from '#api/core/v1_layer/templates/templates.js';
+import thesauriApi from '../api/thesauri/thesauri.js';
+import relationtypes from '../api/relationtypes/relationtypes.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
 import { tenants } from '../api/tenants/index.js';
@@ -85,10 +88,8 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
 };
 
 const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, routeName?: string) => {
-  let elapsedMs: number | undefined;
-
   const now = process.hrtime.bigint();
-  elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
+  const elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
 
   LoggerFactory.default().debug('SSR Aborted', {
     aborted: req.aborted,
@@ -157,15 +158,7 @@ const getAssets = async () => {
 const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language?: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
   api.locale(locale);
-  const headers = {
-    'Content-Language': locale,
-    Cookie: `connect.sid=${req.cookies['connect.sid']}`,
-    tenant: req.get('tenant'),
-  };
-
   const userAgent = req.get('user-agent') || '';
-
-  const requestParams = new RequestParams({}, headers);
 
   const translations = await translationsApi.get();
 
@@ -185,11 +178,11 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          api.get('user', requestParams),
-          api.get('settings', requestParams),
-          api.get('templates', requestParams),
-          api.get('dictionaries', requestParams),
-          api.get('relationTypes', requestParams),
+          Promise.resolve({ json: req.user || {} }),
+          Promise.resolve({ json: settings }),
+          templatesApi.get().then(templates => ({ json: { rows: templates } })),
+          thesauriApi.dictionaries().then(dictionaries => ({ json: { rows: dictionaries } })),
+          relationtypes.get().then(relationTypes => ({ json: { rows: relationTypes } })),
           Promise.resolve({ json: { rows: translations } }),
         ])
       : [];
@@ -295,7 +288,7 @@ const prepareStoreData = async (
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
 
   const atomStore = getStore();
-  hydrateAtomStore(atomStoreData, atomStore);
+  hydrateAtomStore(atomStoreData as any, atomStore);
   const reduxState = reduxStore.getState();
 
   return {
