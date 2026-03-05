@@ -17,7 +17,7 @@ import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory.js';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
-import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
@@ -83,7 +83,7 @@ class DownloadFileController extends AbstractController {
       await pipeline(fileContents.read(), this.response);
     } catch (e) {
       if (e.code === 'ERR_STREAM_PREMATURE_CLOSE' && this.request.aborted) {
-        throw new OperationalError('Client aborted the request', { cause: e });
+        throw new ClientAbortedRequestError('Client aborted file download', { cause: e });
       }
       throw e;
     }
