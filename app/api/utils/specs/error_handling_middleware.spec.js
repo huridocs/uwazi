@@ -2,6 +2,7 @@ import { appContext } from '#api/utils/AppContext.js';
 import middleware from '../error_handling_middleware.js';
 import { legacyLogger } from '../../log.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
 
 describe('Error handling middleware', () => {
   let next;
@@ -103,7 +104,6 @@ describe('Error handling middleware', () => {
         'Headers already sent when error middleware called',
         {
           namespace: 'Error_Middleware',
-          errorType: 'ERR_HTTP_HEADERS_SENT',
           url: '/en/library',
           method: 'GET',
           routePath: '/en/:locale',
@@ -114,7 +114,7 @@ describe('Error handling middleware', () => {
           errorName: 'Error',
           errorStack: 'Error: Cannot set headers...\n    at ...',
           query: JSON.stringify({ q: 'search' }),
-          notify: false,
+          notify: true,
         }
       );
       expect(next).toHaveBeenCalledWith(error);
@@ -128,6 +128,44 @@ describe('Error handling middleware', () => {
 
       middleware(error, req, res, next);
 
+      expect(next).toHaveBeenCalledWith(error);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when error is ClientAbortedRequestError', () => {
+    it('should not send response for ClientAbortedRequestError', () => {
+      const error = new ClientAbortedRequestError('Client aborted the request');
+      req = {
+        url: '/api/files/download/somefile.pdf',
+        method: 'GET',
+        route: { path: '/api/files/download/:filename' },
+      };
+
+      middleware(error, req, res, next);
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should NOT log when ClientAbortedRequestError occurs with headers already sent', () => {
+      const error = new ClientAbortedRequestError('Client aborted the request');
+      error.code = 'ERR_STREAM_PREMATURE_CLOSE';
+      req = {
+        url: '/api/files/download/somefile.pdf',
+        method: 'GET',
+        route: { path: '/api/files/download/:filename' },
+        aborted: true,
+        query: {},
+      };
+      res.headersSent = true;
+      res.statusCode = 200;
+
+      middleware(error, req, res, next);
+
+      expect(mockLogger.debug).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalledWith(error);
       expect(res.status).not.toHaveBeenCalled();
       expect(res.json).not.toHaveBeenCalled();
