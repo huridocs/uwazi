@@ -1,20 +1,20 @@
-import { DateProperty } from '../DateProperty';
-import { DateRangeProperty } from '../DateRangeProperty';
-import { GenerateIdProperty } from '../GenerateIdProperty';
-import { GeolocationProperty } from '../GeoLocationProperty';
-import { ImageProperty } from '../ImageProperty';
-import { LinkProperty } from '../LinkProperty';
-import { MarkdownProperty } from '../MarkdownProperty';
-import { MediaProperty } from '../MediaProperty';
-import { MultiDateProperty } from '../MultiDateProperty';
-import { MultiDateRangeProperty } from '../MultiDateRangeProperty';
-import { MultiSelectProperty } from '../select/MultiSelectProperty';
-import { NumericProperty } from '../NumericProperty';
-import { PreviewProperty } from '../PreviewProperty';
-import { PropertyFactory } from '../PropertyFactory';
-import { PropertyTypeEnum } from '../PropertyType';
-import { SelectProperty } from '../select/SelectProperty';
-import { TextProperty } from '../TextProperty';
+import { DateProperty } from '../DateProperty.js';
+import { DateRangeProperty } from '../DateRangeProperty.js';
+import { GenerateIdProperty } from '../GenerateIdProperty.js';
+import { GeolocationProperty } from '../GeoLocationProperty.js';
+import { ImageProperty } from '../ImageProperty.js';
+import { LinkProperty } from '../LinkProperty.js';
+import { MarkdownProperty } from '../MarkdownProperty.js';
+import { MediaProperty } from '../MediaProperty.js';
+import { MultiDateProperty } from '../MultiDateProperty.js';
+import { MultiDateRangeProperty } from '../MultiDateRangeProperty.js';
+import { MultiSelectProperty } from '../select/MultiSelectProperty.js';
+import { NumericProperty } from '../NumericProperty.js';
+import { PreviewProperty } from '../PreviewProperty.js';
+import { PropertyFactory } from '../PropertyFactory.js';
+import { PropertyTypeEnum } from '../PropertyType.js';
+import { SelectProperty } from '../select/SelectProperty.js';
+import { TextProperty } from '../TextProperty.js';
 
 describe('PropertyFactory', () => {
   it('should create an instance of TextProperty', () => {

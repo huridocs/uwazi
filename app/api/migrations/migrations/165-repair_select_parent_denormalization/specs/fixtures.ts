@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Fixture, Metadata, TestedLanguages, Translation } from '../types';
+import { Fixture, Metadata, TestedLanguages, Translation } from '../types.js';
 
 const ids: { [key: string]: ObjectId } = {
   dict: new ObjectId(),

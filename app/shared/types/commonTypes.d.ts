@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 import { ObjectId } from 'mongodb';
-import { TraverseInputType } from 'shared/types/relationshipsQueryTypes'
+import { TraverseInputType } from './relationshipsQueryTypes.js'
 
 export type LanguageISO6391 =
   | 'ab'

@@ -1,5 +1,5 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 export const saveEntityFixtures = (factory: ReturnType<typeof getFixturesFactory>) => ({
   templates: [

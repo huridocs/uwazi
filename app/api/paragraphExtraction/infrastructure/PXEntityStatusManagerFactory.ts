@@ -1,12 +1,12 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { PXEntityStatusManager } from '../application/PXEntityStatusManager';
-import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
+import { PXEntityStatusManager } from '../application/PXEntityStatusManager.js';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
 
 export class PXEntityStatusManagerFactory {
   static createDefault() {

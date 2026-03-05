@@ -1,9 +1,9 @@
-import { actions } from 'app/BasicReducer';
-import api from 'app/Thesauri/ThesauriAPI';
+import { actions } from '#app/BasicReducer/index.js';
+import { thesauriAPI } from '#app/Thesauri/ThesauriAPI.js';
 
 export function reloadThesauri() {
   return dispatch =>
-    api.get().then(response => {
+    thesauriAPI.get().then(response => {
       dispatch(actions.set('thesauris', response));
     });
 }

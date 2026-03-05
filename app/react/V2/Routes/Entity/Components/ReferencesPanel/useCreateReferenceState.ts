@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Entity } from 'V2/domain';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { FileType } from 'shared/types/fileType';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { Entity } from '#V2/domain/index.js';
+import { FileType } from '#shared/types/fileType.js';
 
-export type CreateReferenceStep = 'selectTarget' | 'selectTextInTarget';
+type CreateReferenceStep = 'selectTarget' | 'selectTextInTarget';
 
-export type ReferenceMode = 'entity' | 'text';
+type ReferenceMode = 'entity' | 'text';
 
 type SearchFunction = (searchString: string) => Promise<Entity[]>;
 
@@ -22,7 +22,7 @@ type UseCreateReferenceStateParams = {
   }) => void;
 };
 
-export function useCreateReferenceState({
+function useCreateReferenceState({
   selection,
   searchFunction,
   mode,
@@ -171,6 +171,12 @@ export function useCreateReferenceState({
     targetSelection,
   ]);
 
+  if (typeof window !== 'undefined' && (window as any).Cypress) {
+    (window as any).__createReferenceTestApi = {
+      handleTargetPdfSelect,
+    };
+  }
+
   return {
     step,
     targetSelection,
@@ -196,3 +202,6 @@ export function useCreateReferenceState({
     handleSave,
   };
 }
+
+export type { CreateReferenceStep, ReferenceMode };
+export { useCreateReferenceState };

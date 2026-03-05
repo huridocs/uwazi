@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 
-import { RowList } from 'app/Layout/Lists';
-import { I18NLink } from 'app/I18N';
-import { ItemList } from '../ItemList';
-import Slider from '../slider';
+import { RowList } from '#app/Layout/Lists.js';
+import { I18NLink } from '#app/I18N/index.js';
+import { ItemList } from '../ItemList.js';
+import { VictimSlider as Slider } from '../slider.js';
 
 describe('ItemList', () => {
   let component;
@@ -29,9 +29,9 @@ describe('ItemList', () => {
       render();
       const docs = component.find(RowList).children(Slider).at(0).children();
       expect(component.find(RowList).children(Slider).at(0).children().length).toBe(3);
-      expect(docs.at(0).props().doc).toEqual(Immutable(props.items[0]));
-      expect(docs.at(1).props().doc).toEqual(Immutable(props.items[1]));
-      expect(docs.at(2).props().doc).toEqual(Immutable(props.items[2]));
+      expect(docs.at(0).props().doc).toEqual(Immutable.fromJS(props.items[0]));
+      expect(docs.at(1).props().doc).toEqual(Immutable.fromJS(props.items[1]));
+      expect(docs.at(2).props().doc).toEqual(Immutable.fromJS(props.items[2]));
     });
   });
 
@@ -39,9 +39,9 @@ describe('ItemList', () => {
     render();
     expect(component.find(RowList).children().length).toBe(3);
     const docs = component.find(RowList).children();
-    expect(docs.at(0).props().doc).toEqual(Immutable(props.items[0]));
-    expect(docs.at(1).props().doc).toEqual(Immutable(props.items[1]));
-    expect(docs.at(2).props().doc).toEqual(Immutable(props.items[2]));
+    expect(docs.at(0).props().doc).toEqual(Immutable.fromJS(props.items[0]));
+    expect(docs.at(1).props().doc).toEqual(Immutable.fromJS(props.items[1]));
+    expect(docs.at(2).props().doc).toEqual(Immutable.fromJS(props.items[2]));
   });
 
   it('should pass the list search params as searchParams to the Doc', () => {

@@ -3,17 +3,22 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import configureStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 import { Form, Field } from 'react-redux-form';
 
-import { MetadataForm, mapStateToProps } from '../MetadataForm';
-import MetadataFormFields from '../MetadataFormFields';
-import { Select as SimpleSelect } from '../../../Forms';
-import { SupportingFiles } from '../SupportingFiles';
+import { MetadataForm, mapStateToProps } from '../MetadataForm.js';
+import { MetadataFormFields } from '../MetadataFormFields.js';
+import { Select as SimpleSelect } from '../../../Forms.js';
+import { SupportingFiles } from '../SupportingFiles.js';
+
+const mockStore = configureStore([]);
 
 describe('MetadataForm', () => {
   let component;
   let fieldsTemplate;
   let props;
+  let store;
   let templates;
 
   beforeEach(() => {
@@ -66,8 +71,39 @@ describe('MetadataForm', () => {
     };
   });
 
+  const getStoreData = () => {
+    const progress =
+      props.progress !== undefined
+        ? Immutable.fromJS(
+            props.metadata?.sharedId
+              ? { [props.metadata.sharedId]: props.progress }
+              : { NEW_ENTITY: props.progress }
+          )
+        : Immutable.fromJS({});
+    return {
+      metadata: { attachments: [], sharedId: props.metadata?.sharedId },
+      attachments: { progress },
+      templates: props.templates,
+      thesauris: props.thesauris,
+      translations: Immutable.fromJS([
+        {
+          locale: 'en',
+          contexts: props.templates.toJS().map(t => ({ id: t._id })),
+        },
+      ]),
+      locale: 'en',
+    };
+  };
+
   const render = () => {
-    component = shallow(<MetadataForm {...props} />);
+    store = mockStore(getStoreData());
+    component = shallow(
+      <Provider store={store}>
+        <MetadataForm {...props} />
+      </Provider>
+    )
+      .dive({ context: { store } })
+      .dive();
   };
 
   it('should render a form with metadata as model', () => {
@@ -93,20 +129,37 @@ describe('MetadataForm', () => {
     const formFields = component.find(MetadataFormFields);
 
     expect(formFields.props().thesauris).toBe(props.thesauris);
-    expect(formFields.props().state).toBe(props.state);
     expect(formFields.props().template).toBe(props.templates.get(0));
   });
 
   it('should render templates sorted', () => {
-    props.templateOptions = Immutable.fromJS([
+    props.templates = Immutable.fromJS([
       {
-        label: 'Zues',
-        value: 'zues',
+        name: 'Zues',
+        _id: 'zues',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
       },
-      { label: 'Yezzy', value: 'yezzy' },
-      { label: 'Template1', value: 'template1' },
-      { label: 'Aaron', value: 'Aaron' },
+      {
+        name: 'Yezzy',
+        _id: 'yezzy',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
+      },
+      {
+        name: 'Template1',
+        _id: 'template1',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
+      },
+      {
+        name: 'Aaron',
+        _id: 'Aaron',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [],
+      },
     ]);
+    props.template = props.templates.get(0);
     render();
     const templateDropdown = component.find(SimpleSelect);
     expect(templateDropdown.props().options[0].label).toEqual('Aaron');

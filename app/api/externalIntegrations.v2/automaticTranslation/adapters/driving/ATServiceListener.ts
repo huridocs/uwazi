@@ -1,10 +1,10 @@
-import { tenants } from 'api/tenants';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { InvalidATServerResponse } from '../../errors/generateATErrors';
-import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
-import { Validator } from '../../infrastructure/Validator';
-import { TranslationResult, translationResultSchema } from '../../types/TranslationResult';
+import { tenants } from '#api/tenants/index.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { InvalidATServerResponse } from '../../errors/generateATErrors.js';
+import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory.js';
+import { Validator } from '../../infrastructure/Validator.js';
+import { TranslationResult, translationResultSchema } from '../../types/TranslationResult.js';
 
 export class ATServiceListener {
   static SERVICE_NAME = 'translations';

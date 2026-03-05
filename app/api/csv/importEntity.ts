@@ -1,21 +1,21 @@
 /* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import entities from 'api/entities';
-import { search } from 'api/search';
-import { processDocument } from 'api/files/processDocument';
-import { RawEntity } from 'api/csv/entityRow';
-import { TemplateSchema } from 'shared/types/templateType';
-import { MetadataObjectSchema, MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
-import { propertyTypes } from 'shared/propertyTypes';
-import { ImportFile } from 'api/csv/importFile';
-import { EntitySchema } from 'shared/types/entityType';
-import { ensure } from 'shared/tsUtils';
-import { files, generateFileName, storage } from 'api/files';
-import { generateID } from 'shared/IDGenerator';
+import entities from '#api/entities/index.js';
+import { search } from '#api/search/index.js';
+import { processDocument } from '#api/files/processDocument.js';
+import { RawEntity } from '#api/csv/entityRow.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { MetadataObjectSchema, MetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { ImportFile } from '#api/csv/importFile.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { ensure } from '#shared/tsUtils.js';
+import { files, generateFileName, storage } from '#api/files/index.js';
+import { generateID } from '#shared/IDGenerator.js';
 
-import typeParsers from './typeParsers';
-import { csvConstants } from './csvDefinitions';
+import typeParsers from './typeParsers.js';
+import { csvConstants } from './csvDefinitions.js';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) => {
   const parser = typeParsers[prop.type] || typeParsers.text;

@@ -1,16 +1,16 @@
-import { files } from 'api/files';
-import * as setupSockets from 'api/socketio/setupSockets';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TemplateSchema } from 'shared/types/templateType';
-import templates from '../templates';
+import { files } from '#api/files/index.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import templates from '../templates.js';
 import fixtures, {
   propertyA,
   propertyB,
   propertyC,
   propertyD,
   templateWithExtractedMetadata,
-} from './fixtures/fixtures';
+} from './fixtures/fixtures.js';
 
 async function updateTemplate(template: TemplateSchema, language = 'en') {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();

@@ -1,4 +1,4 @@
-import { partialImplementation } from '../partialImplementation';
+import { partialImplementation } from '../partialImplementation.js';
 
 interface ToBeMocked {
   one: Function;

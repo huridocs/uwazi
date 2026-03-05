@@ -1,8 +1,8 @@
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import { api } from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { FileType } from 'shared/types/fileType';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { FileType } from '#shared/types/fileType.js';
 
 enum OcrStatus {
   NONE = 'noOCR',
@@ -93,5 +93,5 @@ const getOcrStatus = async (
 };
 
 export { OcrStatus };
-export { UploadService } from './UploadService';
+export { UploadService } from './UploadService.js';
 export { getById, getByType, update, remove, getPagePlaintext, postToOcr, getOcrStatus };

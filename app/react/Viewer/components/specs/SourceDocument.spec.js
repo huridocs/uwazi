@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import SourceDocument from 'app/Viewer/components/SourceDocument';
+import { SourceDocument } from '#app/Viewer/components/SourceDocument.js';
 
 describe('SourceDocument', () => {
   let component;

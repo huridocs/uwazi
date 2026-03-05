@@ -2,18 +2,18 @@ import React, { ChangeEvent, Dispatch } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
-import { Icon } from 'app/UI';
-import { EntitySchema } from 'shared/types/entityType';
-import { generateID } from 'shared/IDGenerator';
+import { Translate } from '#app/I18N/index.js';
+import { Icon } from '#app/UI/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { generateID } from '#shared/IDGenerator.js';
 import {
   uploadDocument as uploadDocumentAction,
   createDocument as createDocumentAction,
-} from 'app/Uploads/actions/uploadsActions';
-import { unselectAllDocuments as unselectAllDocumentsAction } from 'app/Library/actions/libraryActions';
-import { ClientEntitySchema } from 'app/istore';
-import { templatesAtom } from 'V2/atoms';
-import { ClientTemplateSchema } from 'V2/shared/types';
+} from '#app/Uploads/actions/uploadsActions.js';
+import { unselectAllDocuments as unselectAllDocumentsAction } from '#app/Library/actions/libraryActions.js';
+import { ClientEntitySchema } from '#app/istore.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 
 const extractTitle = (file: File) => {
   const title = file.name

@@ -1,8 +1,8 @@
-import { FileAttachment } from '../FileAttachment';
-import { CustomUpload } from '../CustomUpload';
-import { FileContents } from '../FileContents';
-import { Thumbnail } from '../Thumbnail';
-import { URLAttachment } from '../URLAttachment';
+import { FileAttachment } from '../FileAttachment.js';
+import { CustomUpload } from '../CustomUpload.js';
+import { FileContents } from '../FileContents.js';
+import { Thumbnail } from '../Thumbnail.js';
+import { URLAttachment } from '../URLAttachment.js';
 
 describe('BaseFile', () => {
   const validFileProps = {

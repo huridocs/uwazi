@@ -1,6 +1,6 @@
-import SettingsAPI from 'app/Settings/SettingsAPI';
+import { SettingsAPI } from '#app/Settings/SettingsAPI.js';
 
-import saveSettings from '../settingsActions';
+import { saveSettings } from '../settingsActions.js';
 
 describe('saveSettings', () => {
   let dispatch;

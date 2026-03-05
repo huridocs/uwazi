@@ -2,12 +2,12 @@ import { Db } from 'mongodb';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
-} from '../../../domain/template/errors';
-import { Template } from '../../../domain/template/Template';
-import { ResultType } from '../../../libs/Result';
-import { MongoDSOptions } from '../common/MongoDataSource';
-import { MongoTransactionManager } from '../common/MongoTransactionManager';
-import { MongoTemplatesDataSource } from './MongoTemplatesDataSource';
+} from '../../../domain/template/errors.js';
+import { Template } from '../../../domain/template/Template.js';
+import { ResultType } from '../../../libs/Result.js';
+import { MongoDSOptions } from '../common/MongoDataSource.js';
+import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
+import { MongoTemplatesDataSource } from './MongoTemplatesDataSource.js';
 
 export class CachedMongoTemplatesDataSource extends MongoTemplatesDataSource {
   private cache = new Map<

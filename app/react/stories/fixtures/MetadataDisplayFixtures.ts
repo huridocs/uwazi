@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { ClientSettings, ClientThesaurus, Template } from 'app/apiResponseTypes';
-import { ProcessingContext } from 'app/V2/application';
-import { EntitySchema } from 'shared/types/entityType';
+import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
+import { ProcessingContext } from '#V2/application/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 const thesauri: ClientThesaurus[] = [
   {
@@ -90,7 +90,7 @@ const templates: Template[] = [
       {
         _id: '1.3',
         type: 'date',
-        label: 'Date',
+        label: 'Single Date',
         noLabel: false,
         name: 'single_date',
       },

@@ -1,24 +1,24 @@
 /* eslint-disable max-statements */
 import { WithId } from 'mongodb';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,
-} from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { ConnectionSchema } from 'shared/types/connectionType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures';
+} from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { FileType } from '#shared/types/fileType.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures.js';
 
 const TEST_SPECIFIC_BATCH_SIZE = 2;
 

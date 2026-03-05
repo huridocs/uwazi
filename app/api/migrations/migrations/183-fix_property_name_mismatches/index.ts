@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop, import/no-default-export */
 import { Db, ObjectId } from 'mongodb';
-import { PropertyChange, Template, Property, Settings } from './types';
+import { PropertyChange, Template, Property, Settings } from './types.js';
 
 // Safe name generation function - matches the new generation algorithm
 // From: app/api/core/domain/template/utils/propertyNameGeneration.ts

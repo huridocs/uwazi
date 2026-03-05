@@ -1,18 +1,18 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import Immutable from 'immutable';
-import { t } from 'app/I18N';
+import { t } from '#app/I18N/index.js';
 import {
   aggregationWithNestedValues,
   expectNestedResult,
   expectNestedResultWithNoZeros,
-} from './fixtures/arrayUtilsFixtures';
-import colorScheme from '../colorScheme';
-import arrayUtils from '../arrayUtils';
+} from './fixtures/arrayUtilsFixtures.js';
+import { colorScheme } from '../colorScheme.js';
+import arrayUtils from '../arrayUtils.js';
 
 const { sortValues, formatPayload, formatDataForChart } = arrayUtils;
 
-jest.mock('app/I18N', () => ({
+jest.mock('#app/I18N/index.js', () => ({
   __esModule: true,
   t: jest.fn(),
   default: jest.fn(),

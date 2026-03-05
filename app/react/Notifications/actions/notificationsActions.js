@@ -1,5 +1,5 @@
-import * as actions from 'app/Notifications/actions/actionTypes';
-import ID from 'shared/uniqueID';
+import * as actions from '#app/Notifications/actions/actionTypes.js';
+import ID from '#shared/uniqueID.js';
 
 const NOTIFICATION_DELAY = process.env.NOTIFICATION_DELAY || 6000;
 

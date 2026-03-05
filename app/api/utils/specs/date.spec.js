@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import date from '../date';
+import date from '../date.js';
 
 describe('date helper', () => {
   describe('descriptionToTimestamp', () => {

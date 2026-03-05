@@ -1,7 +1,7 @@
-import { Result, ResultType } from 'api/core/libs/Result';
+import { Result, ResultType } from '#api/core/libs/Result.js';
 import { ObjectId } from 'mongodb';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { MongoDataSource } from '../common/MongoDataSource';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { MongoDataSource } from '../common/MongoDataSource.js';
 
 // Todo: This will eventually got removed from here to domain folder.
 interface ThesauriDataSource {

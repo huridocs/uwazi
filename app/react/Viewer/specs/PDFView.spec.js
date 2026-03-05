@@ -4,19 +4,19 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { fromJS } from 'immutable';
+import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import entitiesAPI from 'app/Entities/EntitiesAPI';
-import { actions } from 'app/BasicReducer';
-import { PDFView, PDFViewComponent } from 'app/Viewer/PDFView';
-import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
-import RouteHandler from 'app/App/RouteHandler';
-import * as utils from 'app/utils';
-import { RequestParams } from 'app/utils/RequestParams';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import * as documentActions from 'app/Viewer/actions/documentActions';
-import * as routeActions from '../actions/routeActions';
-import * as uiActions from '../actions/uiActions';
+import { EntitiesAPI as entitiesAPI } from '#app/Entities/EntitiesAPI.js';
+import { actions } from '#app/BasicReducer/index.js';
+import { PDFView, PDFViewComponent } from '#app/Viewer/PDFView.js';
+import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.js';
+import { RouteHandler } from '#app/App/RouteHandler.js';
+import * as utils from '#app/utils/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import * as documentActions from '#app/Viewer/actions/documentActions.js';
+import * as routeActions from '../actions/routeActions.js';
+import * as uiActions from '../actions/uiActions.js';
 
 let page = 0;
 let raw = 'abc';
@@ -55,10 +55,12 @@ jest.mock('react-router', () => ({
   useNavigate: () => path => mockNavigate(path),
   useMatches: () => {},
 }));
-jest.mock('app/ContextMenu', () => () => <div>ContextMenu</div>);
-jest.mock('app/App/Footer', () => () => <div>Footer</div>);
-jest.mock('app/Viewer/components/ViewMetadataPanel', () => () => <div>ViewMetadataPanel</div>);
-jest.mock('app/Connections', () => ({
+jest.mock('#app/ContextMenu', () => ({ ContextMenu: () => <div>ContextMenu</div> }));
+jest.mock('#app/App/Footer', () => ({ Footer: () => <div>Footer</div> }));
+jest.mock('#app/Viewer/components/ViewMetadataPanel', () => ({
+  ViewMetadataPanel: () => <div>ViewMetadataPanel</div>,
+}));
+jest.mock('#app/Connections', () => ({
   CreateConnectionPanel: () => <div>CreateConnectionPanel</div>,
 }));
 
@@ -69,16 +71,16 @@ describe('PDFView', () => {
 
   const state = {
     documentViewer: {
-      uiState: fromJS({ reference: { targetRange: [] } }),
-      targetDoc: fromJS({ _id: 'document1' }),
+      uiState: Immutable.fromJS({ reference: { targetRange: [] } }),
+      targetDoc: Immutable.fromJS({ _id: 'document1' }),
       sidepanel: { tab: '1', metadata: { _id: 'prop1' } },
       targetDocReferences: [],
     },
-    connections: { connection: fromJS({}) },
-    user: fromJS({ _id: 'user1' }),
-    settings: { collection: fromJS({}) },
-    modals: fromJS({ ConfirmCloseForm: fromJS({ _id: 'document1' }) }),
-    semanticSearch: { selectedDocument: fromJS({}) },
+    connections: { connection: Immutable.fromJS({}) },
+    user: Immutable.fromJS({ _id: 'user1' }),
+    settings: { collection: Immutable.fromJS({}) },
+    modals: Immutable.fromJS({ ConfirmCloseForm: Immutable.fromJS({ _id: 'document1' }) }),
+    semanticSearch: { selectedDocument: Immutable.fromJS({}) },
   };
 
   const render = () => {
@@ -94,28 +96,27 @@ describe('PDFView', () => {
     ref = '';
     anotherProp = '';
 
-    const dispatch = jasmine.createSpy('dispatch');
+    const dispatch = jest.fn(action => (typeof action === 'function' ? action(dispatch) : action));
     context = {
       store: {
         getState: () => ({}),
-        dispatch: dispatch.and.callFake(action =>
-          typeof action === 'function' ? action(dispatch) : action
-        ),
-        subscribe: jasmine.createSpy('subscribe'),
+        dispatch,
+        subscribe: jest.fn(),
       },
     };
 
     props = {
-      entity: fromJS({
+      entity: Immutable.fromJS({
         sharedId: 'a2b4c3',
         defaultDoc: { _id: 'documentId', sharedId: 'sharedId', filename: '1234.pdf' },
       }),
       routes: [],
     };
-    spyOn(routeActions, 'requestViewerState');
-
-    spyOn(routeActions, 'setViewerState').and.returnValue({ type: 'setViewerState' });
+    jest.spyOn(routeActions, 'requestViewerState').mockResolvedValue(undefined);
+    jest.spyOn(routeActions, 'setViewerState').mockReturnValue({ type: 'setViewerState' });
   });
+
+  afterEach(() => jest.restoreAllMocks());
 
   it('should pass down raw property', () => {
     raw = 'true';
@@ -205,7 +206,7 @@ describe('PDFView', () => {
 
   describe('onDocumentReady', () => {
     it('should scrollToPage on the query when not on raw mode', () => {
-      spyOn(uiActions, 'scrollToPage');
+      jest.spyOn(uiActions, 'scrollToPage');
       raw = 'false';
       page = 15;
       render();
@@ -214,18 +215,18 @@ describe('PDFView', () => {
 
       raw = 'true';
       render();
-      uiActions.scrollToPage.calls.reset();
+      uiActions.scrollToPage.mockClear();
       component.find({ page: 15 }).at(0).props().onDocumentReady();
       expect(uiActions.scrollToPage).not.toHaveBeenCalled();
     });
 
     it('should activate text reference if query parameters have reference id', () => {
-      spyOn(uiActions, 'activateReference').and.returnValue({ type: 'ABC' });
+      jest.spyOn(uiActions, 'activateReference').mockReturnValue({ type: 'ABC' });
       raw = 'false';
       ref = 'refId';
       pathname = 'pathname';
       const reference = { _id: 'refId', range: { start: 200, end: 300 }, text: 'test' };
-      const doc = fromJS({
+      const doc = Immutable.fromJS({
         relations: [{ _id: 'otherRef' }, reference],
       });
       render();
@@ -234,8 +235,8 @@ describe('PDFView', () => {
     });
 
     it('should emit documentLoaded event', () => {
-      spyOn(uiActions, 'scrollToPage');
-      spyOn(utils.events, 'emit');
+      jest.spyOn(uiActions, 'scrollToPage');
+      jest.spyOn(utils.events, 'emit');
       render();
 
       component.find({ page: 1 }).at(0).props().onDocumentReady();
@@ -250,7 +251,7 @@ describe('PDFView', () => {
         page = 15;
         anotherProp = 'test';
         pathname = 'pathname';
-        spyOn(uiActions, 'scrollToPage');
+        jest.spyOn(uiActions, 'scrollToPage');
         render();
 
         component.find({ page: 15 }).at(0).props().changePage(16);
@@ -265,7 +266,7 @@ describe('PDFView', () => {
         page = 15;
         anotherProp = 'test';
         pathname = 'pathname';
-        spyOn(uiActions, 'scrollToPage');
+        jest.spyOn(uiActions, 'scrollToPage');
         mockNavigate.mockClear();
 
         render();
@@ -281,31 +282,31 @@ describe('PDFView', () => {
       <PDFViewComponent
         searchParams={searchParams}
         location={{ pathname: 'pathname' }}
-        entity={fromJS({})}
+        entity={Immutable.fromJS({})}
         navigate={mockNavigate}
       />
     );
 
   describe('componentWillReceiveProps', () => {
     it('should load raw page when page/raw changes and raw is true', async () => {
-      spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
+      jest.spyOn(entitiesAPI, 'getRawPage').mockResolvedValue('raw text');
       const searchParams = mapProperties({ raw: 'true', page: 15 });
       const wrapper = shallowComponent(searchParams);
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
       wrapper.instance().context = context;
       mockNavigate.mockClear();
-      entitiesAPI.getRawPage.calls.reset();
+      entitiesAPI.getRawPage.mockClear();
       searchParams.set('page', 16);
       searchParams.set('raw', 'false');
       wrapper.setProps({ searchParams });
       wrapper.update();
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-      entitiesAPI.getRawPage.calls.reset();
+      entitiesAPI.getRawPage.mockClear();
       const newSearchParams = mapProperties({ raw: 'true', page: 17 });
 
       wrapper.setProps({
         searchParams: newSearchParams,
-        entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
+        entity: Immutable.fromJS({ defaultDoc: { _id: 'documentId' } }),
       });
       await wrapper.update();
       expect(context.store.dispatch).toHaveBeenCalledWith(
@@ -338,7 +339,7 @@ describe('PDFView', () => {
 
   describe('componentWillUnmount', () => {
     it('should leave edit mode', () => {
-      spyOn(documentActions, 'leaveEditMode').and.returnValue({ type: 'LEAVING_EDIT_MODE' });
+      jest.spyOn(documentActions, 'leaveEditMode').mockReturnValue({ type: 'LEAVING_EDIT_MODE' });
       render();
       component.unmount();
       expect(documentActions.leaveEditMode).toHaveBeenCalled();

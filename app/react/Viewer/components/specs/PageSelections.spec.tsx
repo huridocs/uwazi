@@ -4,10 +4,10 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientEntitySchema, ClientFile } from 'app/istore';
-import { PageSelections } from '../PageSelections';
+import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { ClientEntitySchema, ClientFile } from '#app/istore.js';
+import { PageSelections } from '../PageSelections.js';
 
 const defaultEntityDocument: ClientFile = {
   _id: '62f52bddc6897a159347cf6b',

@@ -6,15 +6,15 @@ import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
 
-import { mockID } from 'shared/uniqueID.js';
-import { APIURL } from 'app/config.js';
-import * as connectionsActions from 'app/Connections/actions/actions';
-import { actions as relationshipsActions } from 'app/Relationships';
-import * as actions from 'app/Viewer/actions/referencesActions';
-import * as types from 'app/Viewer/actions/actionTypes';
-import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-import referencesAPI from 'app/Viewer/referencesAPI';
-import scroller from 'app/Viewer/utils/Scroller';
+import { mockID } from '#shared/uniqueID.js';
+import { APIURL } from '#app/config.js';
+import * as connectionsActions from '#app/Connections/actions/actions.js';
+import { actions as relationshipsActions } from '#app/Relationships/index.js';
+import * as actions from '#app/Viewer/actions/referencesActions.js';
+import * as types from '#app/Viewer/actions/actionTypes.js';
+import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
+import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
+import scroller from '#app/Viewer/utils/Scroller.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

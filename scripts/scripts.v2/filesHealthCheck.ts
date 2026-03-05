@@ -1,14 +1,16 @@
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 import { S3Client } from '@aws-sdk/client-s3';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { config } from 'api/config';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FilesHealthCheck } from 'api/core/application/FilesHealthCheck';
-import { S3FileStorage } from 'api/core/infrastructure/files/S3FileStorage';
-import { DB } from 'api/odm';
-import { tenants } from 'api/tenants';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { config } from '#api/config.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesHealthCheck } from '#api/core/application/FilesHealthCheck.js';
+import { S3FileStorage } from '#api/core/infrastructure/files/S3FileStorage.js';
+import { DB } from '#api/odm/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 
-const { tenant, allTenants } = require('yargs')
+const { tenant, allTenants } = yargs(hideBin(process.argv))
   .option('tenant', {
     alias: 't',
     type: 'string',
@@ -18,9 +20,9 @@ const { tenant, allTenants } = require('yargs')
   .option('allTenants', {
     alias: 'a',
     type: 'boolean',
-    describe: 'Tenant to check',
     default: false,
-  }).argv;
+  })
+  .parseSync();
 
 const LINE_PREFIX = process.env.LINE_PREFIX || '%> ';
 
@@ -85,7 +87,7 @@ async function handleTenant(tenantName: string) {
   await tenants.setupTenants();
 
   if (!allTenants) {
-    await handleTenant(tenant);
+    await handleTenant(tenant || 'default');
   } else {
     await Object.keys(tenants.tenants).reduce(async (prev, tenantName) => {
       await prev;

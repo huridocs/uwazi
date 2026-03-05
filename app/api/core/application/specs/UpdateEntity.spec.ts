@@ -1,29 +1,29 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { EntitiesDataSourceFactory } from 'api/core/infrastructure/factories/EntitiesDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { EntityIcon } from 'api/core/domain/entity/Entity';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { EventsBus } from 'api/core/libs/eventsbus/EventsBus';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
-import { getSharedConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { DependenciesContext } from 'api/core/libs/DependenciesContext';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
-import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { UpdateEntityUseCase, UpdateEntityUseCaseDeps } from '../UpdateEntity';
-import { factory, fixtures, SampleListener } from './UpdateEntityFixtures';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/index.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { UpdateEntityUseCase, UpdateEntityUseCaseDeps } from '../UpdateEntity.js';
+import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
 const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -34,12 +34,13 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
   const idGenerator = IdGeneratorFactory.default();
 
-  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
-    entitiesDS,
-    settingsDS,
-    thesauriDS,
-    translationsDS,
-  });
+  const propertyAssignmentCreatorServiceStrategy =
+    PropertyAssignmentCreatorServiceStrategy.createWithRequired({
+      entitiesDS,
+      settingsDS,
+      thesauriDS,
+      translationsDS,
+    });
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
@@ -517,6 +518,17 @@ describe('UpdateEntityUseCase', () => {
           media: [{ value: 'https://example.com/video.mp4' }],
         },
       ]);
+    });
+    it('should throw when a required property has no value', async () => {
+      const { sut } = createSut();
+
+      await expect(
+        sut.execute({
+          sharedId: 'required_entity',
+          language: 'en',
+          propertyAssignments: [{ name: 'required_text', value: [{ value: '' }] }],
+        })
+      ).rejects.toThrow('Text Property is required');
     });
   });
 

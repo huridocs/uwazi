@@ -1,3 +1,3 @@
-export { EditThesaurus } from './EditThesaurus';
-export { ThesauriList, thesauriLoader } from './ThesauriList';
-export { editThesaurusLoader } from './helpers';
+export { EditThesaurus } from './EditThesaurus.js';
+export { ThesauriList, thesauriLoader } from './ThesauriList.js';
+export { editThesaurusLoader } from './helpers.js';

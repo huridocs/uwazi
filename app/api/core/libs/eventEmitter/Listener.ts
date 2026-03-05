@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { DispatchableClass } from '../queue/application/contracts/JobsDispatcher';
-import { UserAwareDispatchable } from '../queue/application/contracts/UserAwareDispatchable';
-import { Event } from './Event';
+import { DispatchableClass } from '../queue/application/contracts/JobsDispatcher.js';
+import { UserAwareDispatchable } from '../queue/application/contracts/UserAwareDispatchable.js';
+import { Event } from './Event.js';
 
 const JobSchema = z.object({
   listenerName: z.string().min(1),

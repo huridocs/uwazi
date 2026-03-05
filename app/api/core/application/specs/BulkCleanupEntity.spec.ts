@@ -1,28 +1,28 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { PDFService } from 'api/core/infrastructure/services/PDFService';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { elastic } from 'api/search';
-import { tenants } from 'api/tenants';
-import { appContext } from 'api/utils/AppContext';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { testingTenants } from 'api/utils/testingTenants';
-import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity';
-import { FileStorage } from '../contracts/FileStorage';
-import { FilesService } from '../FilesService';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { elastic } from '#api/search/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity.js';
+import { FileStorage } from '../contracts/FileStorage.js';
+import { FilesService } from '../FilesService.js';
 
 const factory = getFixturesFactory();
 

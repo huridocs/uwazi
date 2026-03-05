@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
-import { CsvImportRow } from '../../domain/CsvImportRow';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
 
 type CsvImportRowDBO = {
   _id?: ObjectId;

@@ -2,8 +2,8 @@
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
-import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
-import { isClient } from 'app/utils';
+import { globalMatomoAtom, settingsAtom } from '#V2/atoms/index.js';
+import { isClient } from '#app/utils/index.js';
 
 const buildScript = ({
   globalUrl,

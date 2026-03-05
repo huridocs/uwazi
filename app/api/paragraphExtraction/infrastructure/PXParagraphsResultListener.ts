@@ -1,9 +1,9 @@
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { QueueOptions } from 'api/core/libs/queue/infrastructure/NamespacedDispatcher';
-import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXCreateParagraphsJob } from './PXCreateParagraphsJob';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { QueueOptions } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
+import { PXExtractionKey } from '../domain/PXExtractionKey.js';
+import { PXCreateParagraphsJob } from './PXCreateParagraphsJob.js';
 
 type ResultMessage = {
   key: string;

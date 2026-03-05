@@ -1,23 +1,24 @@
 import { WithId } from 'mongodb';
 
-import { model as entityModel } from 'api/entities';
-import entities from 'api/entities/entities';
-import { search } from 'api/search';
-import users from 'api/users/users';
-import userGroups from 'api/usergroups/userGroups';
-import { unique } from 'api/utils/filters';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
+import { model as entityModel } from '#api/entities/index.js';
+import entities from '#api/entities/entities.js';
+
+import { search } from '#api/search/index.js';
+import users from '#api/users/users.js';
+import userGroups from '#api/usergroups/userGroups.js';
+import { unique } from '#api/utils/filters.js';
+import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 import {
   AccessLevels,
   PermissionType,
   MixedAccess,
   validateUniquePermissions,
-} from 'shared/types/permissionSchema';
-import { PermissionSchema, PermissionsDataSchema } from 'shared/types/permissionType';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { permissionsContext } from './permissionsContext';
-import { PUBLIC_PERMISSION } from './publicPermission';
+} from '#shared/types/permissionSchema.js';
+import { PermissionSchema, PermissionsDataSchema } from '#shared/types/permissionType.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { permissionsContext } from './permissionsContext.js';
+import { PUBLIC_PERMISSION } from './publicPermission.js';
 
 type PermissionUpdate = WithId<Pick<EntitySchema, '_id' | 'permissions' | 'published'>>;
 

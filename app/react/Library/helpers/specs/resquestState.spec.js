@@ -1,9 +1,9 @@
-import searchAPI from 'app/Search/SearchAPI';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { RequestParams } from 'app/utils/RequestParams';
+import { SearchAPI as searchAPI } from '#app/Search/SearchAPI.js';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import Immutable from 'immutable';
 import rison from '@huridocs/rison';
-import { requestState, processQuery } from '../requestState';
+import { requestState, processQuery } from '../requestState.js';
 
 describe('static requestState()', () => {
   let globalResources;

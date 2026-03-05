@@ -3,18 +3,21 @@ import ReactModal from 'react-modal';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import { get } from 'lodash';
-import { Translate } from 'app/I18N';
-import { Icon } from 'app/UI';
-import { ClientFile, IStore } from 'app/istore';
-import uniqueID from 'shared/uniqueID';
-import { AttachmentSchema } from 'shared/types/commonTypes';
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
-import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActions';
-import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { MediaModalFileList } from 'app/Metadata/components/MediaModalFileList';
-import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
-import { validImageFile, validMediaFile } from '../helpers/validator';
+import get from 'lodash/get.js';
+import { Translate } from '#app/I18N/index.js';
+
+import uniqueID from '#shared/uniqueID.js';
+
+import { AttachmentSchema } from '#shared/types/commonTypes.js';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
+import { uploadLocalAttachment } from '#app/Metadata/actions/supportingFilesActions.js';
+
+import { MediaModalFileList } from './MediaModalFileList.js';
+import { MediaModalUploadFileButton } from './MediaModalUploadFileButton.js';
+import { validImageFile, validMediaFile } from '../helpers/validator.js';
+import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
+import { ClientFile, IStore } from '#app/istore.js';
+import { Icon } from '#UI/Icon/Icon.js';
 
 enum MediaModalType {
   Image,

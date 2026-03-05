@@ -3,21 +3,21 @@
 import * as fs from 'fs/promises';
 import path from 'path';
 
-import { tenants } from 'api/tenants/tenantContext';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { createTestingZip } from 'api/csv/specs/helpers';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { CsvPreflightJobHandler } from '../CsvPreflightJobHandler';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
-import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
-import { CsvExtractUploadedZipJobFactory } from '../../factories/CsvExtractUploadedZipJobFactory';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { createTestingZip } from '#api/csv/specs/helpers.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { CsvPreflightJobHandler } from '../CsvPreflightJobHandler.js';
+import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
+import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler.js';
+import { CsvExtractUploadedZipJobFactory } from '../../factories/CsvExtractUploadedZipJobFactory.js';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];

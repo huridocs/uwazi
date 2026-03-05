@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
 import { Popover } from '@headlessui/react';
-import { InputField } from 'app/V2/Components/Forms';
+import { InputField } from '#app/V2/Components/Forms/index.js';
 import { usePopper } from 'react-popper';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 type ColorPickerProps = {
   name: string;
@@ -122,16 +122,11 @@ const ColorPicker = ({
                   </li>
                 ))}
               </ul>
-              <label className="flex flex-row gap-2 items-center">
+              <label className="flex flex-row gap-2 items-center cursor-pointer w-fit ">
                 <Translate>Pick a color</Translate>
-                <div
-                  data-testid="colorpicker-button"
-                  className="rounded-md w-7 h-7"
-                  style={{ backgroundColor: localValue }}
-                />
                 <input
-                  className="w-0 h-0"
                   type="color"
+                  className="rounded-md w-6 h-6 cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                   data-testid="custom-colorpicker"
                   value={localValue}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

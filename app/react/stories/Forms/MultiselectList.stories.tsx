@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { defaultSearch, MultiselectList } from 'V2/Components/Forms';
-import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures';
+import { defaultSearch, MultiselectList } from '#V2/Components/Forms/index.js';
+import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures.js';
 
 const meta: Meta<typeof MultiselectList> = {
   title: 'Forms/MultiselectList',
   component: MultiselectList,
 };
+
+export default meta;
 
 type Story = StoryObj<typeof MultiselectList>;
 
@@ -169,5 +171,3 @@ const RemoteSearch: Story = {
 };
 
 export { Basic, WithError, WithGroups, InitialState, BlankState, RemoteSearch };
-
-export default meta;

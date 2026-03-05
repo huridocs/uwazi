@@ -2,18 +2,18 @@ import 'isomorphic-fetch';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
-import * as csvApi from 'api/csv/csvLoader';
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import i18nRoutes from 'api/i18n/routes';
-import settings from 'api/settings';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TestEmitSources, iosocket, setUpApp } from 'api/utils/testingRoutes';
-import { availableLanguages } from 'shared/language';
-import { LanguageSchema } from 'shared/types/commonTypes';
-import { UserRole } from 'shared/types/userSchema';
-import { DefaultTranslations } from '../defaultTranslations';
-import { sortByLocale } from './sortByLocale';
+import * as csvApi from '#api/csv/csvLoader.js';
+import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import i18nRoutes from '#api/i18n/routes.js';
+import settings from '#api/settings/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { LanguageSchema } from '#shared/types/commonTypes.js';
+import { UserRole } from '#shared/types/userSchema.js';
+import { DefaultTranslations } from '../defaultTranslations.js';
+import { sortByLocale } from './sortByLocale.js';
 
 describe('i18n translations routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;

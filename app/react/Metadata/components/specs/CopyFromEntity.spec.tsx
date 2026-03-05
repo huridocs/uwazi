@@ -1,9 +1,9 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import Immutable from 'immutable';
-import { store } from 'app/store';
-import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../CopyFromEntity';
-import { SearchEntities } from '../SearchEntities';
+import { store } from '#app/store.js';
+import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../CopyFromEntity.js';
+import { SearchEntities } from '../SearchEntities.js';
 
 describe('CopyFromEntity', () => {
   let component: ShallowWrapper<CopyFromEntityProps, CopyFromEntityState, CopyFromEntity>;

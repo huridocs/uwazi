@@ -1,23 +1,23 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import relationshipTypeDS from 'api/relationtypes';
-import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
-import { DBFixture } from 'api/utils/testing_db';
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import relationshipTypeDS from '#api/relationtypes/index.js';
+import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob';
-import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource';
-import { Input, PXCreateExtractor } from '../PXCreateExtractor';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob.js';
+import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource.js';
+import { Input, PXCreateExtractor } from '../PXCreateExtractor.js';
 
 const f = getFixturesFactory();
 

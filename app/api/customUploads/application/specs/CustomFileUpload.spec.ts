@@ -1,13 +1,13 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { files } from 'api/files/files';
-import { customUploadsPath } from 'api/files/filesystem';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { files } from '#api/files/files.js';
+import { customUploadsPath } from '#api/files/filesystem.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import { access } from 'fs/promises';
 import path from 'path';
-import { CustomFileUploadFactory } from '../../infrastructure/factories/CustomFileUploadFactory';
-import { CustomFileUpload } from '../CustomFileUpload';
+import { CustomFileUploadFactory } from '../../infrastructure/factories/CustomFileUploadFactory.js';
+import { CustomFileUpload } from '../CustomFileUpload.js';
 
 const createInputFile = (filename: string) => {
   const testFilePath = path.join(__dirname, '../../../files/specs/test.txt');

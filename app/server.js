@@ -8,37 +8,42 @@ import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 import * as Sentry from '@sentry/node';
 
-import { registerEventListeners } from 'api/eventListeners';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
-import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
-import { Redis } from 'api/infrastructure/Redis';
-import { maskMongoPassword } from 'api/utils/maskMongoPassword';
-import { elasticClient } from 'api/search/elastic';
-import uwaziMessage from '../message';
-import apiRoutes from './api/api';
-import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
-import authRoutes from './api/auth/routes';
-import { config } from './api/config';
+import { registerEventListeners } from '#api/eventListeners.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
+import { requestIdMiddleware } from '#api/utils/requestIdMiddleware.js';
+import { Redis } from '#api/infrastructure/Redis.js';
+import { maskMongoPassword } from '#api/utils/maskMongoPassword.js';
+import { elasticClient } from '#api/search/elastic.js';
+import uwaziMessage from '../message.js';
+import apiRoutes from './api/api.js';
+import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware.js';
+import authRoutes from './api/auth/routes.js';
+import { config } from './api/config.js';
 
-import { versionRoutes } from './api/version/routes';
-import { migrator } from './api/migrations/migrator';
-import { DB } from './api/odm';
-import { permissionsContext } from './api/permissions/permissionsContext';
-import { closeSockets } from './api/socketio/setupSockets';
-import { tenants } from './api/tenants/tenantContext';
-import errorHandlingMiddleware from './api/utils/error_handling_middleware';
+import { versionRoutes } from './api/version/routes.js';
+import { migrator } from './api/migrations/migrator.js';
+import { DB } from './api/odm/index.js';
+import { permissionsContext } from './api/permissions/permissionsContext.js';
+import { closeSockets } from './api/socketio/setupSockets.js';
+import { tenants } from './api/tenants/tenantContext.js';
+import errorHandlingMiddleware from './api/utils/error_handling_middleware.js';
 import { handleError } from './api/utils/handleError.js';
-import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
-import { routesErrorHandler } from './api/utils/routesErrorHandler';
-import { serverSideRender } from './react/server';
-import { initSentry } from './initSentry';
-import { setupQueueWorker } from './setupQueueWorker';
+import { multitenantMiddleware } from './api/utils/multitenantMiddleware.js';
+import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
+import { serverSideRender } from './react/server.js';
+import { initSentry } from './initSentry.js';
+import { setupQueueWorker } from './setupQueueWorker.js';
 
-import 'api/core/infrastructure/listeners/Listeners';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+import '#api/core/infrastructure/listeners/Listeners.js';
 
 mongoose.Promise = Promise;
 
@@ -143,15 +148,14 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 
-  apiRoutes(app, http);
+  await apiRoutes(app, http);
   serverSideRender(app);
 
   app.use(errorHandlingMiddleware);
   registerEventListeners(applicationEventsBus);
 
   if (config.externalServices) {
-    // eslint-disable-next-line global-require
-    require('./worker');
+    await import('./worker.js');
   }
 
   if (!config.multiTenant && !config.clusterMode) {

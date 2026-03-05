@@ -2,12 +2,12 @@ import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import Dropzone from 'react-dropzone';
+import Dropzone from 'react-dropzone-esm';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import { Translate } from 'app/I18N';
-import { Icon } from 'app/UI';
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
+import { Translate } from '#app/I18N/index.js';
+import { Icon } from '#UI/index.js';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
 
 interface AttachmentsModalProps {
   isOpen: boolean;
@@ -100,7 +100,7 @@ const AttachmentsModalCmp = ({
           <div className="attachments-modal__tabs-content">
             <TabContent for="uploadComputer" className="tab-content centered">
               <Dropzone noClick onDrop={handleDropFiles} multiple={false}>
-                {({ getRootProps }) => (
+                {({ getRootProps }: { getRootProps: () => object }) => (
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   <div {...getRootProps()} className="attachments-modal__dropzone">
                     {getPercentage === undefined ? (

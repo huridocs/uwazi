@@ -1,12 +1,12 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { t } from 'app/I18N';
-import { I18NLink } from 'app/I18N/I18NLinkV2';
-import { SiteName } from 'app/App/SiteName';
-import { settingsAtom } from '../../../atoms';
-import { Dropdown, DropdownItem } from './Dropdown';
-import { MobileMenuDropdown } from './MobileMenuDropdown';
-import { useIsMobile } from '../../../CustomHooks/useIsMobile';
+import { t } from '#app/I18N/index.js';
+import { I18NLink } from '#app/I18N/I18NLinkV2.js';
+import { SiteName } from '#app/App/SiteName.js';
+import { settingsAtom } from '../../../atoms/index.js';
+import { Dropdown, DropdownItem } from './Dropdown.js';
+import { MobileMenuDropdown } from './MobileMenuDropdown.js';
+import { useIsMobile } from '../../../CustomHooks/useIsMobile.js';
 
 const createDropdownItems = (link: any): DropdownItem[] => {
   const sublinks = link.sublinks || [];

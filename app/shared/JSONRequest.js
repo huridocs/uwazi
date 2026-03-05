@@ -1,8 +1,8 @@
 import 'isomorphic-fetch';
 import superagent from 'superagent';
 import rison from '@huridocs/rison';
-import { assign } from 'lodash';
-import { getResponseType } from 'shared/apiClient/httpResponses';
+import assign from 'lodash/assign.js';
+import { getResponseType } from '#shared/apiClient/httpResponses.js';
 
 let cookie;
 

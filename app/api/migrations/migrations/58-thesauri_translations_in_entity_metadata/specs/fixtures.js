@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const template1Id = db.id();
 const template2Id = db.id();

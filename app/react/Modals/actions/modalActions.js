@@ -1,4 +1,4 @@
-import * as types from 'app/Modals/actions/actionTypes';
+import * as types from '#app/Modals/actions/actionTypes.js';
 
 export function showModal(modal, data) {
   return {

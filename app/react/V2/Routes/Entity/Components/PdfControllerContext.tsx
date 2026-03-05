@@ -1,5 +1,5 @@
 import type { RefObject } from 'react';
-import type { PDFHandle, Snippet } from 'V2/Components/PDFViewer';
+import type { PDFHandle, Snippet } from '#V2/Components/PDFViewer/index.js';
 
 export type PdfControllerApi = {
   goToPage: (pageNumber: number) => void;

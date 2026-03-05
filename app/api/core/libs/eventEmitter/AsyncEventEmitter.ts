@@ -1,7 +1,7 @@
-import { DependenciesContext } from '../DependenciesContext';
-import { Event } from './Event';
-import { EventEmitter } from './EventEmitter';
-import { Listener } from './Listener';
+import { DependenciesContext } from '../DependenciesContext.js';
+import { Event } from './Event.js';
+import { EventEmitter } from './EventEmitter.js';
+import { Listener } from './Listener.js';
 
 class AsyncEventEmitter implements EventEmitter {
   private events: Map<string, Set<typeof Listener>>;

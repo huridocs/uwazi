@@ -1,6 +1,6 @@
-import { ThesaurusNotFoundError } from 'api/core/domain/thesaurus/errors';
-import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
-import { ResultType } from 'api/core/libs/Result';
+import { ThesaurusNotFoundError } from '#api/core/domain/thesaurus/errors.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { ResultType } from '#api/core/libs/Result.js';
 
 export interface ThesauriDataSource {
   getById(id: string): Promise<ResultType<Thesaurus, ThesaurusNotFoundError>>;

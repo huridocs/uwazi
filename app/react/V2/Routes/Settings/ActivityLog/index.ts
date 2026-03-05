@@ -1,2 +1,2 @@
-export { ActivityLog } from './ActivityLog';
-export { activityLogLoader } from './ActivityLogLoader';
+export { ActivityLog } from './ActivityLog.js';
+export { activityLogLoader } from './ActivityLogLoader.js';

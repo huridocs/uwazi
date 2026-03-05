@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { IStore } from 'app/istore';
-import { ExtractedMetadataSchema, SelectionRectangleSchema } from 'shared/types/commonTypes';
-import { selectionHandlers } from 'app/V2/Components/PDFViewer';
+import { IStore } from '#app/istore.js';
+import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
+import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 
 interface Selection extends ExtractedMetadataSchema {
   isCurrent?: boolean;
@@ -25,8 +25,19 @@ const connector = connect(mapStateToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: mappedProps) => {
-  const pdfScaleFactor = 1;
+interface PageSelectionsOwnProps {
+  /** Scale at which the PDF page is rendered; highlights (stored in scale=1) are scaled by this for display */
+  renderScale?: number;
+}
+
+const PageSelectionsComponent = ({
+  userSelections,
+  entityDocument,
+  isEditing,
+  renderScale = 1,
+}: mappedProps & PageSelectionsOwnProps) => {
+  // Stored selections are in scale=1; multiply by renderScale to get display coordinates
+  const pdfScaleFactor = renderScale;
 
   if (!isEditing || !entityDocument?.get('_id')) {
     return null;

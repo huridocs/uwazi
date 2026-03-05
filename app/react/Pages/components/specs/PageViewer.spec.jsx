@@ -5,8 +5,8 @@ import '@testing-library/jest-dom';
 import Immutable from 'immutable';
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { PageViewer } from '../PageViewer';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { PageViewer } from '../PageViewer.js';
 
 const mockUseNavigate = jest.fn();
 

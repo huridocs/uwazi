@@ -1,8 +1,8 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable import/no-default-export */
 import { AnyBulkWriteOperation, Db } from 'mongodb';
-import { FileDocument } from './types';
-import { createFileSizeResolver, getTenantSnapshot } from './storage';
+import { FileDocument } from './types.js';
+import { createFileSizeResolver, getTenantSnapshot } from './storage.js';
 
 const BATCH_SIZE = 500;
 

@@ -1,21 +1,21 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import needsAuthorization from 'api/auth/authMiddleware';
-import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
-import { EntityFileUploadController } from 'api/core/infrastructure/express/files/EntityFileUploadController';
-import { FileDeleteController } from 'api/core/infrastructure/express/files/FileDeleteController';
-import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import entities from 'api/entities';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { Application } from 'express';
-import { EntitySchema } from 'shared/types/entityType';
-import { fileSchema } from 'shared/types/fileSchema';
-import { FileType } from 'shared/types/fileType';
-import { UserSchema } from 'shared/types/userType';
-import { createError, validation } from '../utils';
-import { files } from './files';
+import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
+import needsAuthorization from '#api/auth/authMiddleware.js';
+import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
+import { EntityFileUploadController } from '#api/core/infrastructure/express/files/EntityFileUploadController.js';
+import { FileDeleteController } from '#api/core/infrastructure/express/files/FileDeleteController.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import entities from '#api/entities/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import type { Application } from 'express';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { fileSchema } from '#shared/types/fileSchema.js';
+import { FileType } from '#shared/types/fileType.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { createError, validation } from '../utils/index.js';
+import { files } from './files.js';
 
 const checkEntityPermission = async (
   file: FileType,

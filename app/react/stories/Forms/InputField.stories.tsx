@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { InputField } from 'V2/Components/Forms';
+import { InputField } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof InputField> = {
   title: 'Forms/InputField',
   component: InputField,
 };
+export default meta;
 
 type Story = StoryObj<typeof InputField>;
 
@@ -176,5 +177,3 @@ export {
   WithIconAndClearButton,
   WithIconAndClearButtonWithValue,
 };
-
-export default meta;

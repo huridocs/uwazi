@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
-import { LanguageISO6391Schema, objectIdSchema } from 'shared/types/commonSchemas';
-import { wrapValidator } from 'shared/tsUtils';
-import { TranslationType } from './translationType';
+import { LanguageISO6391Schema, objectIdSchema } from '#shared/types/commonSchemas.js';
+import { wrapValidator } from '#shared/tsUtils.js';
+import { TranslationType } from './translationType.js';
 
 const emitSchemaTypes = true;
 

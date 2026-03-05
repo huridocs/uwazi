@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingDB, DBFixture } from 'api/utils/testing_db';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 
 const factory = getFixturesFactory();
 

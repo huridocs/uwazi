@@ -1,1 +1,1 @@
-export { legacyLogger } from './legacyLogger';
+export { legacyLogger } from './legacyLogger.js';

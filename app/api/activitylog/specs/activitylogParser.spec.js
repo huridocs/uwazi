@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 /* eslint-disable max-statements */
 
-import db from 'api/utils/testing_db';
-import { fileId, groupId, suggestionId, userId } from 'api/activitylog/specs/fixturesParser';
+import db from '#api/utils/testing_db.js';
+import { fileId, groupId, suggestionId, userId } from '#api/activitylog/specs/fixturesParser.js';
 import {
   fixtures,
   firstTemplate,
@@ -11,10 +11,10 @@ import {
   firstDocSharedId,
   nonExistentId,
   extractorId,
-} from './fixturesParser';
-import { getSemanticData } from '../activitylogParser';
-import * as activityLogBuilderExports from '../activityLogBuilder';
-import { typeParsers } from '../migrationsParser';
+} from './fixturesParser.js';
+import { getSemanticData } from '../activitylogParser.js';
+import * as activityLogBuilderExports from '../activityLogBuilder.js';
+import { typeParsers } from '../migrationsParser.js';
 
 jest.mock('../migrationsParser', () => ({
   typeParsers: {

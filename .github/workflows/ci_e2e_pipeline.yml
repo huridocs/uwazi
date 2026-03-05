@@ -46,16 +46,16 @@ jobs:
     uses: ./.github/workflows/ci_build.yml
 
   e2e_cypress:
-    needs: [precheck, build_cypress_image]
+    needs: [precheck, build_cypress_image, build]
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_e2e_cypress.yml
 
   e2e_puppeteer:
-    needs: precheck
+    needs: [precheck, build]
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_e2e_puppeteer.yml
 
   check_translations:
-    needs: precheck
+    needs: [precheck, build]
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_check_translations.yml

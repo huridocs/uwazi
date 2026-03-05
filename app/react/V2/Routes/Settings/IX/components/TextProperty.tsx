@@ -1,8 +1,7 @@
 import React from 'react';
-import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist';
-import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
+import { HandleTextSelection, TextSelection } from '@huridocs/react-text-selection-handler';
+import { Translate } from '#app/I18N/index.js';
+import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
 
 type TextPropertyProps = {
   onSelect: (selection: TextSelection) => any;

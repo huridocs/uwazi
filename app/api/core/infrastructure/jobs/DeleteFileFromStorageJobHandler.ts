@@ -1,7 +1,7 @@
-import { HeartbeatCallback } from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { V1CompatTenantDispatchable } from 'api/core/libs/queue/application/contracts/V1CompatTenantDispatchable';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
 
 type Params = { filePath: string };
 

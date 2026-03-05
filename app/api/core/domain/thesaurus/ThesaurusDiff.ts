@@ -1,4 +1,4 @@
-import { Thesaurus } from './Thesaurus';
+import { Thesaurus } from './Thesaurus.js';
 
 type Props = {
   before: Thesaurus;

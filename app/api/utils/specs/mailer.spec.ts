@@ -1,9 +1,9 @@
-import mailer from 'api/utils/mailer';
-import settings from 'api/settings/settings';
+import mailer from '#api/utils/mailer.js';
+import settings from '#api/settings/settings.js';
 import Mail from 'nodemailer/lib/mailer';
-import { testingTenants } from 'api/utils/testingTenants';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { SentMessageInfo } from 'nodemailer';
-import { FakeMailer } from 'api/utils/fakeMailer';
+import { FakeMailer } from '#api/utils/fakeMailer.js';
 
 describe('mailer', () => {
   const ORIGINAL_ENV = process.env;

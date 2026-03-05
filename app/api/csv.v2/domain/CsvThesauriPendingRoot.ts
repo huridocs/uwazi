@@ -1,4 +1,7 @@
-import { CsvThesauriPendingChild, CsvThesauriPendingChildProps } from './CsvThesauriPendingChild';
+import {
+  CsvThesauriPendingChild,
+  CsvThesauriPendingChildProps,
+} from './CsvThesauriPendingChild.js';
 
 class CsvThesauriPendingRoot {
   readonly label: string;
