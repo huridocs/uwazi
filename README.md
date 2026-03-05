@@ -175,6 +175,7 @@ To run these tests you also need to add the following environment variables when
 
 ```
 $ EXTERNAL_SERVICES=true FEATURE_FLAG_PARAGRAPH_EXTRACTION=true PARAGRAPH_EXTRACTION_URL=http://localhost:5051 DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
+
 ```
 
 ### Default login
