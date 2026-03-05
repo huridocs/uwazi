@@ -10,6 +10,12 @@ while reviewing CSV v2 context docs, the v2 code, and v1 behavior. It is intende
 guide the next iteration and ensure the pipeline is complete before adding new logic.
 It is also a handoff guide: a new agent should be able to continue by reading this alone.
 
+### 1.1) Critical working rule (highest priority)
+
+- **DO NOT CHANGE CORE BEHAVIOR (queue, router, dispatcher, base controller, base result/error contracts, etc.) unless explicitly discussed in depth with the team/user first and approved.**
+- If a CSV v2 change appears to require core edits, stop and escalate with a written proposal and alternatives that stay inside `csv.v2`.
+- CSV v2 Jobs/Handlers must adhere to core queue typings and structures as-is.
+
 ### 2) Current v2 pipeline snapshot (code)
 
 - Register import (`CsvImportEntities`) → extraction + row staging (`CsvExtractUploadedZipJob`)
@@ -487,6 +493,46 @@ Minimal guard pattern (recommended):
     response and must not rewrite terminal history.
   - Job handlers should treat cancellation exits as clean stop (not retryable error paths).
 
+### 12.1) Cancellation implementation caveat discovered (Mar 2026)
+
+This section records a rejected direction so it is not repeated.
+
+**Rejected approach (do not implement):**
+
+- Using a blanket `updateIfNotCancelled` / compare-and-set gate for all `csv_imports` writes.
+- Why rejected:
+  - It can suppress legitimate progress/stat updates from already completed work (for example, a finished batch) if cancellation happens between work completion and write.
+  - It violates expected UX semantics where completed work must remain reflected.
+
+**Desired flow (agreed):**
+
+1. Check cancellation at safe checkpoints:
+   - start of each job,
+   - start of each batch/chunk/loop unit.
+2. If cancelled at checkpoint:
+   - stop cleanly,
+   - do not dispatch downstream jobs.
+3. Persist completed work updates (progress/stats/errors/report metadata) normally.
+4. Ensure status monotonicity:
+   - once `status = cancelled`, subsequent writes must not revert status to `retrying`, `failed`, `*:done`, etc.
+   - this should be enforced in CSV v2 import-write logic, not by dropping all writes.
+5. No rollback/cleanup in cancel flow (as already agreed).
+
+### 12.2) Typing incident and TODO (Mar 2026)
+
+During cancel-flow implementation attempts, dispatch typing friction around CSV job handlers led to an incorrect attempt to modify core queue typing/contracts. That direction is explicitly rejected.
+
+**Do not do this again:**
+
+- Do not change core queue/router/dispatcher typing contracts to satisfy CSV v2 compile issues.
+- Do not use force casts (`as any`, `as unknown as`) as a final solution in CSV v2 production code.
+
+**TODO (typing discipline):**
+
+- Ensure CSV v2 Jobs and JobHandlers strictly conform to the existing core queue typing/contracts.
+- Fix CSV v2 compile issues by aligning CSV v2 code to core structures (not by introducing cast-based shortcuts).
+- Do not add local dispatch typing adapters/wrappers as an alternate contract layer.
+
 ### 13) TODO — ANY-template relationships with deterministic conflict handling
 
 Problem:
@@ -599,3 +645,62 @@ Required behavior:
 6. Update tests if you touch `CsvCreateThesauriValuesJob` input shape (it now requires
    `tenantName` and `userId`).
 7. Run ESLint/TS checks on touched files before handing off.
+
+### 17) Execution checklist to avoid regressions (mandatory)
+
+Use this as a strict gate before, during, and after implementation.
+
+#### 17.1 Before coding (alignment gate)
+
+- Re-state target behavior in 3 bullets and verify with user/team:
+  1. cancellation checks at safe checkpoints (job start + batch/chunk boundaries),
+  2. already-completed work remains reflected in persisted progress/stats/errors,
+  3. `status: cancelled` is monotonic and must never be reverted by stale writes.
+- Confirm file scope for the task:
+  - Allowed by default: `app/api/csv.v2/**` and CSV context docs.
+  - Forbidden without explicit approval: queue/router/dispatcher/controller/result/error **core contracts/behavior**.
+
+#### 17.2 Non-negotiable DO NOTs
+
+- Do **not** introduce `as any` / `as unknown as` in production CSV v2 code.
+- Do **not** change core queue typings/contracts to “fix” CSV v2 compile issues.
+- Do **not** ship cast-based or “temporary” typing hacks as final implementation.
+
+#### 17.3 Implementation order (discipline)
+
+1. Implement behavior in CSV v2.
+2. Run lint/type checks on touched files.
+3. Run focused tests for changed flows.
+4. If an error suggests a core change, stop and escalate with options; do not patch core by default.
+
+#### 17.4 Cancellation acceptance criteria (must all pass)
+
+- Start-of-job cancellation check exists for every stage.
+- Start-of-batch/chunk cancellation check exists for iterative stages.
+- Completed batch/chunk results persist (progress/stats/error counts/report metadata).
+- Downstream dispatch is skipped after cancellation detection.
+- `status` cannot be overwritten away from `cancelled` by stale snapshots.
+- Cancellation exits are clean stops (not retry/failure paths unless truly exceptional).
+
+#### 17.5 Known regression traps
+
+- Full-document stale `$set` can clobber `status: cancelled`.
+- “Block all writes when cancelled” hides already-completed work from users.
+- Emitting success after cancellation creates inconsistent UX state.
+- Fixing CSV typing by touching core contracts causes broad breakage/risk.
+
+#### 17.6 Verification baseline (required)
+
+- Lint/type-check all touched CSV v2 files.
+- Run focused specs for cancel-related paths and impacted jobs.
+- Include at least one scenario where cancellation happens between batch completion and finalization write, and verify:
+  - completed progress remains visible,
+  - status remains `cancelled`,
+  - no downstream stage is dispatched.
+
+#### 17.7 Escalation rule
+
+- If the only apparent fix is a core contract/behavior change:
+  - stop implementation,
+  - provide a short written proposal with alternatives and trade-offs,
+  - wait for explicit approval before touching core.
