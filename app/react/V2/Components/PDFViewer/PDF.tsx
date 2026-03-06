@@ -54,6 +54,7 @@ const getPDFFile = async (fileUrl: string) =>
   }).promise;
 
 const PDF = forwardRef<PDFHandle, PDFProps>(
+  // eslint-disable-next-line max-statements
   (
     {
       fileUrl,
@@ -69,12 +70,13 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
   ) => {
     const pageRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
     const pdfContainerRef = useRef<HTMLDivElement>(null);
+    const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const animationFrameIdRef = useRef(0);
+    const intersectionObserverRef = useRef<IntersectionObserver | null>();
     const [currentScale, setCurrentScale] = useState(1);
     const [pdf, setPDF] = useState<PDFDocumentProxy>();
     const [error, setError] = useState<string>();
     const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
-    const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const animationFrameIdRef = useRef(0);
     const [pdfEventBus] = useState(new EventBus());
 
     useImperativeHandle(
@@ -190,6 +192,17 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
       return () => undefined;
     }, [pdf, containerWidth, onPdfReady]);
 
+    useEffect(() => {
+      const observerHandler: IntersectionObserverCallback = entries => {
+        console.log(entries);
+      };
+
+      intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
+        rootMargin: '0px',
+        threshold: 1.0,
+      });
+    }, []);
+
     if (error) {
       return <div>{error}</div>;
     }
@@ -215,6 +228,7 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
                       pdf={pdf}
                       page={number}
                       eventBus={pdfEventBus}
+                      intersectionObserver={intersectionObserverRef.current}
                       highlights={pageHighlights}
                       containerWidth={containerWidth}
                       onScaleChange={handleScaleChange}

@@ -11,6 +11,7 @@ interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
   eventBus: typeof EventBus.prototype;
+  intersectionObserver: IntersectionObserver | null | undefined;
   highlights?: TextHighlight[];
   containerWidth?: number;
   onScaleChange?: (scale: number) => void;
@@ -21,6 +22,7 @@ const PDFPage = ({
   pdf,
   page,
   eventBus,
+  intersectionObserver,
   containerWidth,
   highlights,
   onScaleChange,
@@ -28,6 +30,7 @@ const PDFPage = ({
 }: PDFPageProps) => {
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useState(1);
+  const [ready, setReady] = useState(false);
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const pageViewerRef = useRef<typeof PDFPageView.prototype | null>(null);
   const pdfPageRef = useRef<PDFPageProxy | null>(null);
@@ -35,29 +38,19 @@ const PDFPage = ({
   onPageChangeRef.current = onPageChange;
 
   useEffect(() => {
-    const currentContainer = pageContainerRef.current;
-    let observer: IntersectionObserver;
-
     pdf
       .getPage(page)
       .then(pdfPage => {
+        const currentContainer = pageContainerRef.current;
         if (currentContainer && pdfPage) {
           pdfPageRef.current = pdfPage;
 
-          const originalViewport = pdfPage.getViewport({ scale: 1 });
-          const scale = calculateScaling(
-            originalViewport.width * PixelsPerInch.PDF_TO_CSS_UNITS,
-            containerWidth
-          );
-          const defaultViewport = pdfPage.getViewport({ scale });
-
-          setPdfScale(scale);
-          onScaleChange?.(scale);
+          const defaultViewport = pdfPage.getViewport({ scale: 1 });
 
           const pageViewer = new PDFPageView({
             container: currentContainer,
             id: page,
-            scale,
+            scale: 1,
             defaultViewport,
             annotationMode: 0,
             eventBus,
@@ -65,51 +58,12 @@ const PDFPage = ({
 
           pageViewer.setPdfPage(pdfPage);
           pageViewerRef.current = pageViewer;
-
-          const handleIntersection: IntersectionObserverCallback = entries => {
-            const [entry] = entries;
-            if (entry.isIntersecting) {
-              pageViewer.update({ scale: pageViewer.scale });
-
-              if (pageViewer.renderingState !== RenderingStates.RUNNING) {
-                pageViewer
-                  .draw()
-                  .then(() => {
-                    onPageChangeRef.current?.(pdfPage.pageNumber);
-                  })
-                  .catch(e => {
-                    setError(e.message);
-                  });
-              }
-            } else if (pageViewer.renderingState === RenderingStates.FINISHED) {
-              pageViewer.destroy();
-            }
-          };
-
-          observer = new IntersectionObserver(handleIntersection, {
-            root: null,
-            threshold: 0.1,
-          });
-
-          observer.observe(currentContainer);
         }
       })
       .catch((e: Error) => {
         setError(e.message);
       });
-
-    return () => {
-      if (currentContainer && observer) {
-        observer.unobserve(currentContainer);
-      }
-
-      if (pageViewerRef.current) {
-        pageViewerRef.current.destroy();
-      }
-    };
-    // pdf rendering is expensive and we want to make sure there's a single effect that runs only on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [eventBus, page, pdf]);
 
   useEffect(() => {
     const pageViewer = pageViewerRef.current;
@@ -126,15 +80,27 @@ const PDFPage = ({
         setPdfScale(newScale);
         onScaleChange?.(newScale);
         pageViewer.update({ scale: newScale });
+      }
 
-        if (pageViewer.renderingState === RenderingStates.FINISHED) {
-          pageViewer.draw().catch((e: Error) => {
-            setError(e.message);
-          });
+      setReady(true);
+    }
+  }, [containerWidth, onScaleChange]);
+
+  useEffect(() => {
+    if (ready && pageContainerRef.current && intersectionObserver && pageViewerRef.current) {
+      intersectionObserver.observe(pageContainerRef.current);
+
+      const shouldRender = page === 1;
+
+      if (shouldRender) {
+        if (pageViewerRef.current.renderingState === RenderingStates.INITIAL) {
+          // pageViewerRef.current.draw().catch(e => {
+          //   setError(e.message);
+          // });
         }
       }
     }
-  }, [containerWidth, onScaleChange]);
+  }, [intersectionObserver, page, ready]);
 
   if (error) {
     return <div>{error}</div>;
