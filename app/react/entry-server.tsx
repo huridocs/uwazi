@@ -63,12 +63,10 @@ class ServerRenderingFetchError extends Error {
 }
 
 const onlySystemTranslations = (translations: IndexedTranslations[]) => {
-  const rows = translations.map(translation => {
+  return translations.map(translation => {
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
-
-  return { json: { rows } };
 };
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
