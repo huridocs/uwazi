@@ -41,6 +41,27 @@ const reportErrorToSentry = (error: Error, key: string) => {
   }
 };
 
+const CHUNK_ERROR_KEY = 'chunk-error-refreshed';
+
+const isChunkLoadError = (error: Error | null | undefined): boolean =>
+  Boolean(
+    error && (error.name === 'ChunkLoadError' || /Loading chunk \d+ failed/.test(error.message))
+  );
+
+const tryChunkErrorReload = (): boolean => {
+  const refreshed = sessionStorage.getItem(CHUNK_ERROR_KEY);
+  if (!refreshed) {
+    sessionStorage.setItem(CHUNK_ERROR_KEY, 'true');
+    window.location.reload();
+    return true;
+  }
+  return false;
+};
+
+const resetChunkErrorFlag = (): void => {
+  sessionStorage.removeItem(CHUNK_ERROR_KEY);
+};
+
 const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   reportErrorToSentry(error, key);
   getStore().set(notificationAtom, () => ({
@@ -51,5 +72,13 @@ const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   }));
 };
 
-export { handledErrors, handleUnexpectedError, reportErrorToSentry };
+export {
+  handledErrors,
+  handleUnexpectedError,
+  reportErrorToSentry,
+  isChunkLoadError,
+  tryChunkErrorReload,
+  resetChunkErrorFlag,
+  CHUNK_ERROR_KEY,
+};
 export type { RequestError };
