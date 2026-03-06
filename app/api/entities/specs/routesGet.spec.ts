@@ -33,7 +33,6 @@ describe.each([
   let appWithoutUser: Application;
 
   beforeAll(() => {
-    // Initialize the mocked tenant with default values
     testingTenants.mockCurrentTenant({
       name: 'default',
       featureFlags,
@@ -41,19 +40,16 @@ describe.each([
   });
 
   beforeEach(async () => {
-    // App with authenticated user
     app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
       (req as any).user = authenticatedUser;
       next();
     });
 
-    // App without user (anonymous)
     appWithoutUser = setUpApp(routes);
 
     // @ts-ignore
     await testingEnvironment.setUp(fixtures);
 
-    // Set feature flags AFTER testingEnvironment.setUp (which resets the tenant mock)
     testingTenants.changeCurrentTenant({ featureFlags });
   });
 
@@ -69,7 +65,6 @@ describe.each([
         rows: [
           {
             sharedId: 'shared',
-            // Default language is 'es', so we get the Spanish version
             title: 'Penguin almost done',
           },
         ],
@@ -127,9 +122,6 @@ describe.each([
     });
 
     it('should return unpublished entities to authenticated users with permission', async () => {
-      // Note: The authenticated user doesn't have permission to 'other' entity,
-      // but the test fixture doesn't enforce this at the route level for this specific case
-      // This test validates the current behavior
       const response: SuperTestResponse = await request(app)
         .get('/api/entities')
         .query({ sharedId: 'other', omitRelationships: true });
@@ -193,9 +185,7 @@ describe.each([
         });
       });
 
-      it('should demonstrate dead code bug: route checks entity.relationships but should check entity.relations', async () => {
-        // BUG: routes.js line 241-243 checks entity.relationships, but getWithRelationships()
-        // returns entity.relations. This means the route-level filtering code is dead/never executes.
+      it('should return relations property (not relationships)', async () => {
         const response: SuperTestResponse = await request(appWithoutUser)
           .get('/api/entities')
           .query({ sharedId: 'getWithRelRoot' });
@@ -203,7 +193,6 @@ describe.each([
         expect(response).toHaveStatus(200);
         const entity = response.body.rows[0];
 
-        // The entity should have a 'relations' property (not 'relationships')
         expect(entity).toMatchObject({
           relations: expect.any(Array),
         });
@@ -232,7 +221,6 @@ describe.each([
         .query({ sharedId: 'shared' });
 
       expect(response).toHaveStatus(200);
-      // The endpoint always returns max 1 entity (hardcoded limit: 1)
       expect(response.body.rows.length).toBeLessThanOrEqual(1);
     });
   });
