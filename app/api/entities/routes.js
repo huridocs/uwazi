@@ -204,7 +204,6 @@ export default app => {
           properties: {
             sharedId: { type: 'string' },
             _id: { type: 'string' },
-            withPdf: { type: 'string' },
             omitRelationships: { type: 'boolean' },
             include: { type: 'array', items: { type: 'string', enum: ['permissions'] } },
           },
@@ -212,6 +211,15 @@ export default app => {
       },
     }),
     (req, res, next) => {
+      // V2 implementation placeholder - will be implemented in future phase
+      if (tenants.current()?.featureFlags?.v2GetEntity) {
+        // TODO: Call V2 use case here when implemented
+        // For now, return empty response to make tests fail
+        res.status(501); // Not Implemented
+        res.json({ rows: [], error: 'V2 GET endpoint not yet implemented' });
+        return;
+      }
+
       const { omitRelationships, include = [], ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
@@ -229,9 +237,9 @@ export default app => {
             res.json({ rows: [] });
             return;
           }
-          if (!req.user && _entities[0].relationships) {
+          if (!req.user && _entities[0].relations) {
             const entity = _entities[0];
-            entity.relationships = entity.relationships.filter(rel => rel.entityData.published);
+            entity.relations = entity.relations.filter(rel => rel.entityData.published);
           }
           res.json({ rows: _entities });
         })

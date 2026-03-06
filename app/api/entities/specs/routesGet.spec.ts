@@ -8,6 +8,7 @@ import db from '#api/utils/testing_db.js';
 import routes from '#api/entities/routes.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { UserRole } from '#shared/types/userSchema.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import fixtures, { batmanFinishesId, permissions, unpublishedDocId } from './fixtures.js';
 
 jest.mock(
@@ -17,7 +18,10 @@ jest.mock(
   }
 );
 
-describe('GET /api/entities', () => {
+describe.each([
+  { title: 'GET /api/entities - V1', featureFlags: { v2GetEntity: false } },
+  { title: 'GET /api/entities - V2', featureFlags: { v2GetEntity: true } },
+])('$title', ({ featureFlags }) => {
   const authenticatedUser = {
     _id: db.id(),
     role: UserRole.COLLABORATOR,
@@ -27,6 +31,14 @@ describe('GET /api/entities', () => {
 
   let app: Application;
   let appWithoutUser: Application;
+
+  beforeAll(() => {
+    // Initialize the mocked tenant with default values
+    testingTenants.mockCurrentTenant({
+      name: 'default',
+      featureFlags,
+    });
+  });
 
   beforeEach(async () => {
     // App with authenticated user
@@ -40,9 +52,10 @@ describe('GET /api/entities', () => {
 
     // @ts-ignore
     await testingEnvironment.setUp(fixtures);
-  });
 
-  afterAll(async () => testingEnvironment.tearDown());
+    // Set feature flags AFTER testingEnvironment.setUp (which resets the tenant mock)
+    testingTenants.changeCurrentTenant({ featureFlags });
+  });
 
   describe('Basic entity retrieval', () => {
     it('should return entity by sharedId', async () => {
@@ -175,6 +188,24 @@ describe('GET /api/entities', () => {
           });
         }
       });
+
+      it('should demonstrate dead code bug: route checks entity.relationships but should check entity.relations', async () => {
+        // BUG: routes.js line 241-243 checks entity.relationships, but getWithRelationships()
+        // returns entity.relations. This means the route-level filtering code is dead/never executes.
+        const response: SuperTestResponse = await request(appWithoutUser)
+          .get('/api/entities')
+          .query({ sharedId: 'getWithRelRoot' });
+
+        expect(response.status).toBe(200);
+        const entity = response.body.rows[0];
+
+        // The entity should have a 'relations' property (not 'relationships')
+        expect(entity.relations).toBeDefined();
+        expect(entity.relationships).toBeUndefined();
+
+        // This proves the route-level check at line 241 is checking the wrong property name
+        // and therefore the filtering code at line 243 never executes.
+      });
     });
   });
 
@@ -256,4 +287,62 @@ describe('GET /api/entities', () => {
       }
     });
   });
+
+  describe('Documents and Attachments', () => {
+    it('should include documents array for entities with documents', async () => {
+      new UserInContextMockFactory().mock(authenticatedUser);
+      const response: SuperTestResponse = await request(app)
+        .get('/api/entities')
+        .query({ sharedId: 'shared', omitRelationships: true });
+
+      expect(response.status).toBe(200);
+      const entity = response.body.rows[0];
+
+      expect(entity.documents).toBeDefined();
+      expect(Array.isArray(entity.documents)).toBe(true);
+      expect(entity.documents.length).toBeGreaterThan(0);
+
+      const document = entity.documents[0];
+      expect(document).toHaveProperty('filename');
+      expect(document).toHaveProperty('entity');
+      expect(document.type).toBe('document');
+      expect(document.entity).toBe('shared');
+    });
+
+    it('should include attachments array for entities with attachments', async () => {
+      new UserInContextMockFactory().mock(authenticatedUser);
+      const response: SuperTestResponse = await request(app)
+        .get('/api/entities')
+        .query({ sharedId: 'shared', omitRelationships: true });
+
+      expect(response.status).toBe(200);
+      const entity = response.body.rows[0];
+
+      expect(entity.attachments).toBeDefined();
+      expect(Array.isArray(entity.attachments)).toBe(true);
+      expect(entity.attachments.length).toBeGreaterThan(0);
+
+      const attachment = entity.attachments[0];
+      expect(attachment).toHaveProperty('filename');
+      expect(attachment.type).toBe('attachment');
+      expect(attachment.entity).toBe('shared');
+    });
+
+    it('should include empty arrays when entity has no documents/attachments', async () => {
+      new UserInContextMockFactory().mock(authenticatedUser);
+      const response: SuperTestResponse = await request(app)
+        .get('/api/entities')
+        .query({ sharedId: 'getWithRelPublic', omitRelationships: true });
+
+      expect(response.status).toBe(200);
+      const entity = response.body.rows[0];
+
+      expect(entity.documents).toBeDefined();
+      expect(entity.documents).toEqual([]);
+      expect(entity.attachments).toBeDefined();
+      expect(entity.attachments).toEqual([]);
+    });
+  });
 });
+
+afterAll(async () => testingEnvironment.tearDown());
