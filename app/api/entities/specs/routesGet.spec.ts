@@ -6,10 +6,10 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 import db from '#api/utils/testing_db.js';
 
 import routes from '#api/entities/routes.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import fixtures, { batmanFinishesId, permissions, unpublishedDocId } from './fixtures.js';
+import fixtures, { permissions, unpublishedDocId } from './fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -234,16 +234,59 @@ describe.each([
   });
 
   describe('Language handling', () => {
-    it('should return entity in requested language', async () => {
+    it('should return entity in default language (Spanish)', async () => {
+      new UserInContextMockFactory().mock(authenticatedUser);
+      const response: SuperTestResponse = await request(app)
+        .get('/api/entities')
+        .query({ sharedId: 'shared' });
+
+      expect(response.status).toBe(200);
+      const entity = response.body.rows[0];
+
+      // Default language is 'es' (Spanish), so we should get the Spanish version
+      expect(entity.language).toBe('es');
+      expect(entity.title).toBe('Penguin almost done');
+      expect(entity.sharedId).toBe('shared');
+    });
+
+    it('should return English version when explicitly requested', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/entities')
         .query({ sharedId: 'shared' })
-        .set('Accept-Language', 'es');
+        .set('Accept-Language', 'en');
 
       expect(response.status).toBe(200);
-      // Note: Language handling is typically done via middleware setting req.language
-      // This test validates the endpoint accepts language-specific requests
+      const entity = response.body.rows[0];
+
+      // Should return English version with EN-specific title
+      expect(entity.language).toBe('en');
+      expect(entity.title).toBe('Batman finishes');
+      expect(entity.sharedId).toBe('shared');
+
+      // English version has more metadata than ES version
+      expect(entity.metadata).toBeDefined();
+      expect(entity.metadata.text).toEqual([{ value: 'textvalue' }]);
+    });
+
+    it('should return Portuguese version when explicitly requested', async () => {
+      new UserInContextMockFactory().mock(authenticatedUser);
+      const response: SuperTestResponse = await request(app)
+        .get('/api/entities')
+        .query({ sharedId: 'shared' })
+        .set('Accept-Language', 'pt');
+
+      expect(response.status).toBe(200);
+      const entity = response.body.rows[0];
+
+      // Should return Portuguese version
+      expect(entity.language).toBe('pt');
+      expect(entity.title).toBe('Penguin almost done');
+      expect(entity.sharedId).toBe('shared');
+
+      // PT version has different metadata than ES version
+      expect(entity.metadata).toBeDefined();
+      expect(entity.metadata.text).toEqual([{ value: 'test' }]);
     });
   });
 
