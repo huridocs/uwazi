@@ -111,7 +111,7 @@ const PanelContainer = ({
           tasks={tasks}
           onClose={() => setIsOpen(false)}
           onDismissNotification={handleDismiss}
-          onClearNotifications={handleClear}
+          onClear={handleClear}
         />
       </div>
     </div>

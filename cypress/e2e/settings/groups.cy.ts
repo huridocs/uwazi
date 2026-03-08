@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clearNotifications } from '../helpers/notifications';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
@@ -55,7 +56,8 @@ describe('Groups', () => {
     const groups = ['Activistas', 'Asesores legales', 'Group One'];
     cy.wait('@fetchUserGroups');
     namesShouldMatch(groups);
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   it('should edit group', () => {
@@ -80,7 +82,8 @@ describe('Groups', () => {
 
     const groups = ['Asesores legales', 'Group One', 'Knights of the Zodiac'];
     namesShouldMatch(groups);
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   it('check for unique name', () => {
@@ -92,7 +95,8 @@ describe('Groups', () => {
     cy.clearAndType('input[id=name]', 'Group Two', { delay: 0 });
     cy.contains('button', 'Save').click();
     cy.contains('td', 'Group Two');
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   it('should delete two groups', () => {
@@ -114,7 +118,8 @@ describe('Groups', () => {
     cy.contains('li', 'Group One');
 
     cy.contains('button', 'Accept').click();
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   it('should check that the groups are deleted', () => {

@@ -3,6 +3,7 @@
 import { clearCookiesAndLogin, editPropertyForExtractor } from '../helpers/index.js';
 import 'cypress-axe';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
+import { clearNotifications } from '../helpers/notifications';
 
 const labelEntityTitle = (
   entityPos: number,
@@ -76,7 +77,8 @@ describe('Information Extraction', () => {
       });
 
       cy.contains('td', 'Extractor 1');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should create another extractor selecting all templates', () => {
@@ -102,7 +104,8 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Create').click();
       });
       cy.contains('td', 'Titles from all templates');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should disable the button to select all templates if no property is selected', () => {
@@ -134,7 +137,8 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Create').click();
       });
       cy.contains('td', 'Fechas from relevant templates');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should edit Extractor 1', () => {
@@ -154,7 +158,8 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Update').click();
       });
       cy.contains('td', 'Extractor 1 edited');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should be able to filter templates', () => {
@@ -198,7 +203,8 @@ describe('Information Extraction', () => {
       });
 
       cy.contains('td', 'Titles from all templates').should('not.exist');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should check table display and accessibility', () => {
@@ -217,7 +223,8 @@ describe('Information Extraction', () => {
       });
 
       cy.contains('button', 'Create Extractor').should('have.attr', 'disabled');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
   });
 
@@ -275,7 +282,8 @@ describe('Information Extraction', () => {
 
       cy.contains('Suggestions sent');
       cy.contains('Suggestions have been updated');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
 
       const titles = [
         '2023 (en)',
@@ -362,7 +370,8 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Accept').click();
       });
       cy.contains('Saved successfully');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
       cy.get('aside').should('not.exist');
       cy.contains('tr', 'A title (en)').contains('Remove from training set');
     });

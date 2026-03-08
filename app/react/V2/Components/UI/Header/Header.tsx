@@ -74,7 +74,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className="nprogress-container" />
     </header>
   );
 };

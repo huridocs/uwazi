@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('Filters', () => {
   const checkExistance = () => {
@@ -70,7 +71,8 @@ describe('Filters', () => {
   it('should save the filters', () => {
     cy.contains('button', 'Save').click();
     cy.contains('Filters saved');
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   describe('groups', () => {
@@ -158,7 +160,8 @@ describe('Filters', () => {
     it('should save and delete empty groups', () => {
       cy.contains('button', 'Save').click();
       cy.contains('Filters saved');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
       cy.contains('tr', 'Reportes y causas').should('not.exist');
     });
   });
@@ -194,7 +197,8 @@ describe('Filters', () => {
       cy.contains('button', 'Delete').click();
       cy.contains('button', 'Save').click();
       cy.contains('Filters saved');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should delete group items and an entire group', () => {
@@ -204,7 +208,8 @@ describe('Filters', () => {
       cy.contains('button', 'Delete').click();
       cy.contains('button', 'Save').click();
       cy.contains('Filters saved');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should check the results', () => {

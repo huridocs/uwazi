@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/index.js';
+import { clearNotifications } from '../helpers/notifications';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
@@ -11,10 +12,15 @@ const namesShouldMatch = (names: string[]) => {
 };
 
 const checkWorngPasswordState = () => {
-  cy.contains('An error occurred');
-  cy.contains('button', 'View more').click();
-  cy.contains('Request failed with status code 403: Forbidden');
-  cy.contains('button', 'Dismiss').click();
+  cy.get('[data-testid="status-dot"]').click();
+  cy.get('[data-testid="notifications-panel"]').within(() => {
+    cy.contains('An error occurred');
+    cy.contains('button', 'Show details').click();
+    cy.contains('Request failed with status code 403');
+    cy.contains('button', 'Clear').click();
+  });
+  cy.get('[data-testid="close-sidepanel"]').click();
+
   cy.get('aside').should('be.visible');
 };
 
@@ -62,7 +68,8 @@ describe('Users', () => {
       });
       cy.contains('span', 'User_1');
       cy.wait('@updateUsers');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('edit user', () => {
@@ -79,7 +86,8 @@ describe('Users', () => {
         cy.contains('button', 'Accept').click();
       });
       cy.contains('span', 'Carmen_edited');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('delete user', () => {
@@ -91,7 +99,8 @@ describe('Users', () => {
         cy.get('input').type('admin', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
       cy.wait('@updateUsers');
       cy.contains('span', 'User_1').should('not.exist');
     });
@@ -185,7 +194,8 @@ describe('Users', () => {
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.contains('div', 'Instructions to reset the password were sent to the user');
       cy.wait('@updateUsers');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('Reset 2fa', () => {
@@ -207,7 +217,8 @@ describe('Users', () => {
           cy.contains('span', 'Password + 2fa').should('not.exist');
         });
       cy.wait('@updateUsers');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
   });
 
@@ -270,7 +281,8 @@ describe('Users', () => {
         cy.get('input').type('admin', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should log in with the new admin user', () => {
@@ -298,7 +310,8 @@ describe('Users', () => {
 
       cy.contains('div', 'Instructions to reset the password were sent to the user');
 
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('bulk reset 2FA', () => {
@@ -319,7 +332,8 @@ describe('Users', () => {
 
       cy.wait('@getUsers');
 
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
 
       cy.get('table tbody tr')
         .eq(0)
@@ -358,7 +372,8 @@ describe('Users', () => {
       cy.wait('@getUsers');
 
       cy.wait('@getGroups');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
       cy.contains('span', 'Carmen_edited').should('not.exist');
       cy.contains('span', 'Mike').should('not.exist');
 

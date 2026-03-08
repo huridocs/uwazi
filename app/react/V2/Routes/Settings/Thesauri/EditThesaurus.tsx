@@ -2,14 +2,14 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Location, useBlocker, useLoaderData, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import isEmpty from 'lodash/isEmpty.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
-import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   addGroupSubmit,
@@ -31,6 +31,7 @@ import {
 import type { ThesaurusRow } from './components/index.js';
 import { ThesaurusForm } from './ThesaurusForm.js';
 import { ImportButton } from './components/ImportButton.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const EditThesaurus = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const EditThesaurus = () => {
   const [warnAboutUse, setWarnAboutUse] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [confirmCallback, setConfirmCallback] = useState<ConfirmationCallback>();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   useMemo(() => {
     const currentThesaurus = thesaurus || { values: [] };
@@ -169,19 +170,13 @@ const EditThesaurus = () => {
                   getThesaurus={getCurrentStatus}
                   onSuccess={async (savedThesaurus: ClientThesaurus) => {
                     setValue('_id', savedThesaurus._id);
-                    setNotifications({
-                      type: 'success',
-                      text: <Translate>Thesauri updated.</Translate>,
-                    });
+                    notify('success', t('System', 'Thesauri updated.', null, false));
                     await navigate(`../edit/${savedThesaurus._id}`, { replace: true });
                     setIsImporting(false);
                   }}
                   onFailure={() => {
                     setIsImporting(false);
-                    setNotifications({
-                      type: 'error',
-                      text: <Translate>Error adding thesauri.</Translate>,
-                    });
+                    notify('error', t('System', 'Error adding thesauri.', null, false));
                   }}
                 />
               </div>

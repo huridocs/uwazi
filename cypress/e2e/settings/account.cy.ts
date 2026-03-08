@@ -2,6 +2,7 @@ import { authenticator } from 'otplib';
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('Account', () => {
   before(() => {
@@ -55,7 +56,8 @@ describe('Account', () => {
       });
 
       cy.wait('@updateUser');
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
       cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io');
     });
 
@@ -78,10 +80,14 @@ describe('Account', () => {
     });
 
     it('should check the error and dismiss the notification', () => {
-      cy.contains('An error occurred');
-      cy.contains('button', 'View more').click();
-      cy.contains('Request failed with status code 403: Forbidden');
-      cy.contains('button', 'Dismiss').click();
+      cy.get('[data-testid="status-dot"]').click();
+      cy.get('[data-testid="notifications-panel"]').within(() => {
+        cy.contains('An error occurred');
+        cy.contains('button', 'Show details').click();
+        cy.contains('Request failed with status code 403');
+        cy.contains('button', 'Clear').click();
+      });
+      cy.get('[data-testid="close-sidepanel"]').click();
     });
 
     it('should login with the new password', () => {
@@ -116,7 +122,8 @@ describe('Account', () => {
           cy.get('input[name=token]').type(token);
           cy.contains('aside button', 'Enable').click();
           cy.contains('Activated');
-          cy.contains('Dismiss').click();
+          clearNotifications();
+
         });
     });
 

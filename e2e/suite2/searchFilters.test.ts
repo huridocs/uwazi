@@ -243,7 +243,7 @@ describe('search filters path', () => {
       await expect(page).toClick('aside button', { text: 'Save' });
 
       await expect(page).toClick('button', { text: 'Save' });
-      await expect(page).toClick('button', { text: 'Dismiss' });
+      // Notification dismissed via new status dot panel - no Dismiss button in new system
     });
 
     it('should check that the filter show on the library', async () => {

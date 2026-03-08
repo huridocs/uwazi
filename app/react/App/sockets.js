@@ -4,36 +4,45 @@ import { t } from '#app/I18N/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
 import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
+import { setConnected, endTask, notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
 import { store } from '../store.js';
 import { socket, reconnectSocket } from '../socket.js';
 
-let disconnectNotifyId;
-let disconnectTimeoutMessage;
+let disconnectTimer;
+let wasDisconnectedByOutage = false;
+
 socket.on('disconnect', reason => {
-  if (reason === 'transport close') {
-    if (disconnectNotifyId) {
-      store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
+  // 'io client disconnect' is a deliberate client-side call — not a real outage.
+  if (reason === 'io client disconnect') return;
+
+  // Always attempt to reconnect — socket.io only auto-reconnects for transport-level
+  // disconnects; for any server-initiated disconnect it stops. Polling here covers all cases.
+  const attemptReconnect = () => {
+    if (!socket.connected) {
+      socket.connect();
+      setTimeout(attemptReconnect, 3000);
     }
-    disconnectTimeoutMessage = setTimeout(() => {
-      disconnectNotifyId = store.dispatch(
-        notificationActions.notify(
-          t('System', 'Lost connection to the server. Your changes may be lost', null, false),
-          'danger',
-          false
-        )
-      );
-    }, 8000);
-  }
+  };
+  setTimeout(attemptReconnect, 2000);
+
+  disconnectTimer = setTimeout(() => {
+    wasDisconnectedByOutage = true;
+    setConnected(false);
+    bridgeNotify(
+      t('System', 'Lost connection to the server. Your changes may be lost', null, false),
+      'warning'
+    );
+  }, 8000);
 });
 
-socket.io.on('reconnect', () => {
-  clearTimeout(disconnectTimeoutMessage);
-  if (disconnectNotifyId) {
-    store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
-    disconnectNotifyId = store.dispatch(
-      notificationActions.notify(t('System', 'Connected to server', null, false), 'success')
-    );
-    disconnectNotifyId = null;
+// socket.on('connect') fires on every namespace-level connection:
+// both automatic transport reconnects AND manual socket.connect() calls.
+socket.on('connect', () => {
+  clearTimeout(disconnectTimer);
+  setConnected(true);
+  if (wasDisconnectedByOutage) {
+    wasDisconnectedByOutage = false;
+    bridgeNotify(t('System', 'Connection to the server has been restored', null, false), 'success');
   }
 });
 
@@ -114,25 +123,15 @@ socket.on('translationKeysChange', translationsEntries => {
 });
 
 socket.on('translationsInstallDone', () => {
-  store.dispatch(
-    notificationActions.notify(
-      t('System', 'Languages installed successfully', null, false),
-      'success'
-    )
-  );
+  endTask('language-install', 'completed');
 });
 
 socket.on('translationsInstallError', errorMessage => {
-  store.dispatch(
-    notificationActions.notify(
-      `${t(
-        'System',
-        'An error has occured while installing languages:',
-        null,
-        false
-      )}\n${errorMessage}`,
-      'danger'
-    )
+  endTask('language-install', 'failed');
+  bridgeNotify(
+    t('System', 'An error has occurred while installing languages:', null, false),
+    'error',
+    errorMessage
   );
 });
 
@@ -144,25 +143,15 @@ socket.on('translationsDelete', locale => {
 });
 
 socket.on('translationsDeleteDone', () => {
-  store.dispatch(
-    notificationActions.notify(
-      t('System', 'Language uninstalled successfully', null, false),
-      'success'
-    )
-  );
+  endTask('language-uninstall', 'completed');
 });
 
 socket.on('translationsDeleteError', errorMessage => {
-  store.dispatch(
-    notificationActions.notify(
-      `${t(
-        'System',
-        'An error has occured while deleting a language:',
-        null,
-        false
-      )}\n${errorMessage}`,
-      'danger'
-    )
+  endTask('language-uninstall', 'failed');
+  bridgeNotify(
+    t('System', 'An error has occurred while uninstalling a language:', null, false),
+    'error',
+    errorMessage
   );
 });
 

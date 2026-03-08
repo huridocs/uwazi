@@ -1,6 +1,7 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('customization', () => {
   before(() => {
@@ -39,7 +40,8 @@ describe('customization', () => {
       cy.contains('sample.pdf');
       cy.contains('short-video.mp4');
     });
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   it('should show progress and number of files left', () => {
@@ -53,7 +55,8 @@ describe('customization', () => {
     );
     cy.contains('button', 'Add').click();
     cy.contains(/Uploading\.\.\. valid.pdf \d+% \d remaining files/gm);
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   it('should rename a file', () => {
@@ -72,7 +75,8 @@ describe('customization', () => {
     cy.contains('td', 'short-video.mp4').parent().contains('button', 'Delete').click();
     cy.contains('li', 'short-video.mp4');
     cy.contains('button', 'Accept').click();
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
     cy.contains('short-video.mp4').should('not.exist');
   });
 
@@ -90,7 +94,8 @@ describe('customization', () => {
     cy.contains('li', 'valid.pdf');
     cy.contains('li', 'short-video-thumbnail.jpg');
     cy.contains('button', 'Accept').click();
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
     cy.get('tbody').children().contains('NO DATA AVAILABLE');
   });
 });

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useRevalidator, useLoaderData } from 'react-router';
-import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import * as entitiesAPI from '#V2/api/paragraphExtractor/entities.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { PXEntityLoaderResponse, TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
 import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const ExtractEntitiesDialog = ({
   setIsProcessing,
@@ -21,7 +20,7 @@ const ExtractEntitiesDialog = ({
 }) => {
   const { extractor } = useLoaderData() as PXEntityLoaderResponse;
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const [isOpen, setIsOpen] = useState(false);
 
   // eslint-disable-next-line max-statements
@@ -30,24 +29,12 @@ const ExtractEntitiesDialog = ({
 
     try {
       if (!extractor) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: <Translate>Cannot find extractor</Translate>,
-        });
+        notify('error', t('System', 'An error occurred', null, false), undefined, t('System', 'Cannot find extractor', null, false));
       } else {
         await entitiesAPI.extractSelected(extractor?._id, selected);
         await revalidator.revalidate();
         setIsOpen(false);
-        setNotifications({
-          type: 'success',
-          text: (
-            <Translate>
-              The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.
-            </Translate>
-          ),
-        });
+        notify('success', t('System', 'The process of extracting the paragraphs has successfully started. Check the Status column for updates on the process.', null, false));
         onSuccess();
       }
     } catch (error) {

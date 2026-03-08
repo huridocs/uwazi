@@ -3,10 +3,8 @@ import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router';
 import { useAtom } from 'jotai';
-import { Notifications } from '#app/Notifications/index.js';
 import { Cookiepopup } from '#app/App/Cookiepopup.js';
 import { socket } from '#app/socket.js';
-import { NotificationsContainer } from '#V2/Components/UI/index.js';
 import { Matomo, CleanInsights } from '#app/V2/Components/Analitycs/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { TranslateModal } from '#app/I18N/index.js';
@@ -18,7 +16,6 @@ import { GoogleAnalytics } from './GoogleAnalytics.js';
 import { LegacyHeader } from './LegacyHeader.js';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import 'nprogress/nprogress.css';
 import 'flag-icons/sass/flag-icons.scss';
 import 'flowbite/dist/flowbite.min.css';
 import 'flowbite';
@@ -64,7 +61,6 @@ const App = ({ customParams }) => {
 
   return (
     <div id="app" className={appClassName}>
-      <Notifications />
       <Cookiepopup />
       <div className="content">
         {shouldShowNewHeader ? (
@@ -85,7 +81,6 @@ const App = ({ customParams }) => {
           </AppMainContext.Provider>
         </main>
       </div>
-      <NotificationsContainer />
       {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
     </div>
   );

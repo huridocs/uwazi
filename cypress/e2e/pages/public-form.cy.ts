@@ -1,6 +1,7 @@
 import { selectRestrictedEntities } from '../helpers/index.js';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('Public Form', () => {
   before(() => {
@@ -32,7 +33,8 @@ describe('Public Form', () => {
         });
 
       cy.contains('button', 'Save').click();
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
     });
   });
 
@@ -59,7 +61,8 @@ describe('Public Form', () => {
       cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
       cy.get('[data-testid=modal]').should('not.exist');
       cy.contains('Basic').click();
 
@@ -75,7 +78,8 @@ describe('Public Form', () => {
         cy.getByTestId('menu-form-submit').click();
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
-        cy.contains('Dismiss').click();
+        clearNotifications();
+
         cy.get('[data-testid=modal]').should('not.exist');
         cy.wait('@fetchLinks');
       });
@@ -133,7 +137,8 @@ describe('Public Form', () => {
       cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
       cy.get('[data-testid=modal]').should('not.exist');
       cy.wait('@fetchPage');
     });

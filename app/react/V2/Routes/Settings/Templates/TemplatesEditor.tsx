@@ -22,8 +22,8 @@ import * as pagesAPI from '#V2/api/pages/index.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
 import isEqual from 'lodash/isEqual.js';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
+import { useAtomValue } from 'jotai';
+import { templatesAtom } from '#V2/atoms/index.js';
 import uniqueID from '#shared/uniqueID.js';
 import { socket } from '#app/socket.js';
 import {
@@ -40,6 +40,8 @@ import { AddThesaurusModal } from './components/AddThesaurusModal.js';
 import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
 import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
 import { getRandomColor } from './components/defaultTemplateColors.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { t } from '#app/I18N/index.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -81,7 +83,7 @@ const TemplatesEditor = () => {
   const [properties, setProperties] = useState<PropertyRow[]>([]);
   const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const templates = useAtomValue(templatesAtom);
   const [nameError, setNameError] = useState(false);
   const [colorError, setColorError] = useState(false);
@@ -96,20 +98,16 @@ const TemplatesEditor = () => {
   const ENTITY_COUNT_THRESHOLD = 3000;
 
   const notifyTemplateProcessing = useCallback(() => {
-    setNotifications({
-      type: 'warning',
-      text: <Translate>Template changes are being applied to all related entities.</Translate>,
-      ...(entityCount && {
-        details: (
-          <>
-            <Translate>Processing</Translate>
-            <span> {entityCount} </span>
-            <Translate>entities</Translate>
-          </>
-        ),
-      }),
-    });
-  }, [entityCount]);
+    const details = entityCount
+      ? `${t('System', 'Processing', null, false)} ${entityCount} ${t('System', 'entities', null, false)}`
+      : undefined;
+    notify(
+      'warning',
+      t('System', 'Template changes are being applied to all related entities.', null, false),
+      undefined,
+      details
+    );
+  }, [entityCount, notify]);
 
   useEffect(() => {
     const handleTemplateProcessed = async (data: { templateId: string }) => {
@@ -119,10 +117,7 @@ const TemplatesEditor = () => {
 
       await revalidator.revalidate();
 
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template processing completed.</Translate>,
-      });
+      notify('success', t('System', 'Template processing completed.', null, false));
     };
 
     const handleTemplateProcessing = async (data: {
@@ -225,10 +220,7 @@ const TemplatesEditor = () => {
     if (savedTemplate.processing?.active) {
       notifyTemplateProcessing();
     } else {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template saved successfully.</Translate>,
-      });
+      notify('success', t('System', 'Template saved successfully.', null, false));
     }
 
     if (templateToSave._id) {
@@ -279,7 +271,7 @@ const TemplatesEditor = () => {
       if (e.status === 409) {
         setShowReindexModal(true);
       } else {
-        setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
+        notify('error', t('System', 'Error saving template.', null, false));
       }
     } finally {
       setIsSaving(false);
@@ -426,10 +418,7 @@ const TemplatesEditor = () => {
                 setShowReindexModal(true);
                 return;
               }
-              setNotifications({
-                type: 'error',
-                text: <Translate>Error saving template.</Translate>,
-              });
+              notify('error', t('System', 'Error saving template.', null, false));
             } finally {
               setIsSaving(false);
             }

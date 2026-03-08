@@ -2,8 +2,6 @@
 import { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
 import { socket } from '#app/socket.js';
-import { useSetAtom } from 'jotai';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { t } from '#app/I18N/index.js';
 import { ModelEvents, SuggestionEvents } from '../events.js';
 import type {
@@ -14,6 +12,8 @@ import type {
 } from '../events.js';
 import { ixStatus } from '../types.js';
 import { acceptedSuggestions } from '../components/atoms/acceptedSuggestions.js';
+import { useSetAtom } from 'jotai';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 type useEventHandlerProps = {
   extractorId: string;
@@ -21,7 +21,7 @@ type useEventHandlerProps = {
 };
 
 const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) => {
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setAcceptedSuggestionsAtom = useSetAtom(acceptedSuggestions);
   const { revalidate } = useRevalidator();
 
@@ -66,28 +66,17 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
 
     const handleModelError: IXErrorTrainingModelCallback = ({ message }) => {
       updateStatus(ixStatus.error);
-      setNotifications({
-        type: 'error',
-        text: t('System', 'An error occurred', null, false),
-        details: message,
-      });
+      notify('error', t('System', 'An error occurred', null, false), undefined, message);
     };
 
     const handleSuggestionSuccess: AcceptSuggestionSuccessCallback = async () => {
       await revalidate();
-      setNotifications({
-        type: 'success',
-        text: t('System', 'Suggestions have been updated', null, false),
-      });
+      notify('success', t('System', 'Suggestions have been updated', null, false));
     };
 
     const handleSuggestionError: AcceptSuggestionErrorCallback = async message => {
       await revalidate();
-      setNotifications({
-        type: 'error',
-        text: t('System', 'An error occurred', null, false),
-        details: message,
-      });
+      notify('error', t('System', 'An error occurred', null, false), undefined, message);
     };
 
     socket.on(ModelEvents.MODEL_STATUS, handleModelStatus);
@@ -101,7 +90,7 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       socket.off(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS);
       socket.off(SuggestionEvents.ACCEPT_SUGGESTION_ERROR);
     };
-  }, [extractorId, revalidate, setAcceptedSuggestionsAtom, setNotifications, updateStatus]);
+  }, [extractorId, revalidate, setAcceptedSuggestionsAtom, notify, updateStatus]);
 };
 
 export { useEventHandler };

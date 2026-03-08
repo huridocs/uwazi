@@ -15,6 +15,7 @@ import { Icon } from '#app/UI/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { DropdownMenu } from './DropdownMenu.js';
 
 interface MenuProps {
@@ -128,6 +129,11 @@ const MenuComponent = ({
     <ul className={className}>
       <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
+      </li>
+      <li className="menuNav-item only-desktop" style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+        <div className="tw-content">
+          <RequestStatus />
+        </div>
       </li>
       <I18NMenu />
       <li className="menuActions mobile-menuActions">

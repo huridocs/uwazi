@@ -1,24 +1,14 @@
-import * as actions from '#app/Notifications/actions/actionTypes.js';
-import ID from '#shared/uniqueID.js';
+import { notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
 
-const NOTIFICATION_DELAY = process.env.NOTIFICATION_DELAY || 6000;
-
-export function removeNotification(id) {
-  return {
-    type: actions.REMOVE_NOTIFICATION,
-    id,
+// Kept as a Redux thunk so all existing call sites (store.dispatch, this.props.notify)
+// continue to work without any changes.
+export function notify(message, type) {
+  return () => {
+    bridgeNotify(message, type);
   };
 }
 
-export function notify(message, type, delay = NOTIFICATION_DELAY) {
-  return dispatch => {
-    const id = ID();
-    dispatch({ type: actions.NOTIFY, notification: { message, type, id } });
-    if (delay) {
-      setTimeout(() => {
-        dispatch(removeNotification(id));
-      }, delay);
-    }
-    return id;
-  };
+// No-op kept for backward compatibility with any imports of removeNotification
+export function removeNotification() {
+  return () => {};
 }

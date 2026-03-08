@@ -3,6 +3,7 @@ import 'cypress-axe';
 import { SinonSpy } from 'cypress/types/sinon';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
+import { clearNotifications } from '../helpers/notifications';
 
 let spy: Cypress.Agent<SinonSpy<any[], any>>;
 Cypress.on('window:before:load', win => {
@@ -36,7 +37,8 @@ describe('customization', () => {
   it('should save the custom CSS', () => {
     cy.contains('button', 'Save').click();
     cy.contains('Saved successfully.');
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
     cy.contains('button', 'Save').should('be.disabled');
   });
 
@@ -51,7 +53,8 @@ describe('customization', () => {
     });
     cy.contains('button', 'Save').click();
     cy.contains('Settings updated.');
-    cy.contains('button', 'Dismiss').click();
+    clearNotifications();
+
   });
 
   it('should add custom javascript', () => {

@@ -3,6 +3,7 @@ import { clearCookiesAndLogin } from '../helpers/login.js';
 import { contents, script } from '../helpers/entityViewPageFixtures.js';
 import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('Pages', () => {
   before(() => {
@@ -184,7 +185,8 @@ describe('Pages', () => {
       cy.contains('Select page');
       cy.get('#select-page').select('My entity view page');
       cy.contains('[data-testid="settings-content-footer"] button', 'Save').click();
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
     });
 
     it('display the entity in custom page', () => {
@@ -240,7 +242,8 @@ describe('Pages', () => {
       cy.contains('Deleted successfully');
       cy.contains('Country page');
       cy.contains('Page with error').should('not.exist');
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should not delete a page used as entity view', () => {

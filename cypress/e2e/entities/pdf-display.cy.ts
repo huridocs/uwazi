@@ -5,7 +5,7 @@ import {
   clickOnCreateEntity,
   editPropertyForExtractor,
   saveEntity,
-  waitForLegacyNotifications,
+  clearNotifications,
 } from '../helpers';
 
 describe('PDF display', () => {
@@ -27,7 +27,8 @@ describe('PDF display', () => {
 
       cy.contains('aside button', 'Add property').click();
       cy.contains('button', 'Save').click();
-      cy.contains('button', 'Dismiss').click();
+      clearNotifications();
+
     });
 
     it('should create and entity with a pdf file', () => {
@@ -39,7 +40,7 @@ describe('PDF display', () => {
         force: true,
       });
       saveEntity();
-      waitForLegacyNotifications();
+      clearNotifications();
     });
 
     it('should select the english as the file language', () => {
@@ -49,7 +50,7 @@ describe('PDF display', () => {
         cy.contains('button', 'Save').click();
       });
       cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
-      waitForLegacyNotifications();
+      clearNotifications();
     });
   });
 
@@ -180,7 +181,8 @@ describe('PDF display', () => {
           cy.contains('button', 'Create').click();
         });
         cy.contains('td', 'Extractor 1');
-        cy.contains('button', 'Dismiss').click();
+        clearNotifications();
+
       });
     });
 

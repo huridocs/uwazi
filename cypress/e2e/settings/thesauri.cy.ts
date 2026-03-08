@@ -4,6 +4,7 @@ import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { changeLanguage } from '../helpers/index.js';
 import { clickOnCreateEntity } from '../helpers/entities.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('Thesauri configuration', () => {
   before(() => {
@@ -27,7 +28,8 @@ describe('Thesauri configuration', () => {
 
   const saveThesaurus = () => {
     cy.contains('button', 'Save').click();
-    cy.contains('Dismiss').click();
+    clearNotifications();
+
     cy.wait('@editThesauri');
   };
 
@@ -163,7 +165,8 @@ describe('Thesauri configuration', () => {
 
     cy.contains('aside button', 'Add property').click();
     cy.contains('Save').click();
-    cy.contains('Dismiss').click();
+    clearNotifications();
+
   });
 
   it('should list the thesauri', () => {
@@ -203,7 +206,8 @@ describe('Thesauri configuration', () => {
       force: true,
     });
     cy.contains('Thesauri updated.');
-    cy.contains('Dismiss').click();
+    clearNotifications();
+
     // Verify imported items are present
     cy.get('tbody').should('contain.text', 'Imported Colors');
     //click on the group

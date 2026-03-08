@@ -46,7 +46,6 @@ const LegacyHeader = () => {
           </div>
         </h1>
         <Menu toggleMobileMenu={toggleMobileMenu} className={navClass} />
-        <div className="nprogress-container" />
       </header>
     </>
   );

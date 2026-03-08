@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, LinkSlashIcon } from '@heroicons/react/24/outline';
 import { OverallStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface StatusDotProps {
@@ -67,20 +67,20 @@ const DisconnectWarning = () => (
     aria-label="Server disconnected"
     aria-describedby={TOOLTIP_ID}
   >
-    <ExclamationTriangleIcon className="w-4 h-4 text-pink-500 cursor-help" aria-hidden="true" />
+    <LinkSlashIcon className="w-4 h-4 text-error-500 cursor-help" aria-hidden="true" />
     <span
       id={TOOLTIP_ID}
       role="tooltip"
       className={[
-        'pointer-events-none absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2',
-        'whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1.5 text-xs text-white shadow-lg',
+        'pointer-events-none absolute z-50 top-full left-1/2 -translate-x-1/2 mt-2',
+        'whitespace-nowrap rounded-md bg-white border border-gray-200 px-2.5 py-1.5 text-xs text-gray-700 shadow-md',
         'opacity-0 transition-opacity duration-150',
         'group-hover:opacity-100 group-focus:opacity-100',
       ].join(' ')}
     >
       Cannot connect to server
       <span
-        className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"
+        className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-200"
         aria-hidden="true"
       />
     </span>
@@ -106,7 +106,8 @@ const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick }: Sta
       type="button"
       onClick={onClick}
       aria-label={buildAriaLabel(overallStatus, isConnected, hasRunningTasks)}
-      className="flex items-center gap-1.5 p-1 rounded-full cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300"
+      data-testid="status-dot"
+      className="flex items-center gap-1.5 p-1 rounded-full cursor-pointer  transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300"
     >
       {overallStatus === 'loading' ? (
         <LoadingDots />
@@ -118,7 +119,7 @@ const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick }: Sta
       )}
 
       {hasRunningTasks && (
-        <ArrowPathIcon className="w-4 h-4 text-indigo-500 animate-spin" aria-hidden="true" />
+        <ArrowPathIcon className="w-4 h-4 text-gray-900 animate-spin" aria-hidden="true" />
       )}
     </button>
   </div>

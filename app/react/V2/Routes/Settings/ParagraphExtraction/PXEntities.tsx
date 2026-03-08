@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
 import type {
   PXEntityLoaderResponse,
   TablePXEntityRow,
@@ -16,6 +16,7 @@ import { generateDisplayPill } from './utils/generateDisplayPill.js';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog/index.js';
 import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel.js';
 import { filterSidepanelStatusAtom } from './components/FilterSidePanel/filterSidepanelAtom.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',
@@ -29,7 +30,7 @@ const PXEntityDashboard = () => {
   const { rows, totalRows, extractor, page } = useLoaderData() as PXEntityLoaderResponse;
   const setFilterSidepanelStatus = useSetAtom(filterSidepanelStatusAtom);
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const [data, setData] = useState<TablePXEntityRow[]>(rows);
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
@@ -41,30 +42,15 @@ const PXEntityDashboard = () => {
 
     try {
       if (!extractor) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: <Translate>Cannot find extractor</Translate>,
-        });
+        notify('error', t('System', 'An error occurred', null, false), undefined, t('System', 'Cannot find extractor', null, false));
       } else {
         await entitiesAPI.extractParagraphs(extractor?._id);
         await revalidator.revalidate();
-        setNotifications({
-          type: 'success',
-          text: (
-            <Translate>
-              The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.
-            </Translate>
-          ),
-        });
+        notify('success', t('System', 'The process of extracting the paragraphs has successfully started. Check the Status column for updates on the process.', null, false));
         await revalidator.revalidate();
       }
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-      });
+      notify('error', t('System', 'An error occurred', null, false));
     }
 
     setIsSaving(false);

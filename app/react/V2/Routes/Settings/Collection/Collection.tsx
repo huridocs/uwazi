@@ -4,15 +4,14 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
 import isUndefined from 'lodash/isUndefined.js';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
 import { Button, Card } from '#V2/Components/UI/index.js';
+import { useSetAtom } from 'jotai';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
@@ -20,6 +19,7 @@ import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -74,7 +74,7 @@ const Collection = () => {
   };
   const { links, custom, ...formData } = settings;
 
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
   formData.private = !formData.private;
@@ -98,17 +98,10 @@ const Collection = () => {
     data.private = !data.private;
     const response = await SettingsAPI.save(data);
     if (response instanceof FetchResponseError) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: response.message || undefined,
-      });
+      notify('error', t('System', 'An error occurred', null, false), undefined, response.message || undefined);
     } else {
       setSettings(response);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Settings updated</Translate>,
-      });
+      notify('success', t('System', 'Settings updated', null, false));
     }
     await revalidator.revalidate();
   };

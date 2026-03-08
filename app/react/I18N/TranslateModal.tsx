@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Modal } from '#V2/Components/UI/index.js';
@@ -8,8 +8,8 @@ import {
   settingsAtom,
   translationsAtom,
   inlineEditAtom,
-  notificationAtom,
 } from '#V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 import { InputField } from '#V2/Components/Forms/index.js';
 import { Button } from '#V2/Components/UI/Button.js';
@@ -20,7 +20,7 @@ import { t } from './translateFunction.js';
 const TranslateModal = () => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
   const [translations] = useAtom(translationsAtom);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const context = translations[0].contexts.find(ctx => ctx.id === inlineEditState.context)!;
   const { languages = [] } = useAtomValue(settingsAtom);
 
@@ -59,20 +59,13 @@ const TranslateModal = () => {
     if (isDirty) {
       const response = await postV2(data, context);
       if (response === 200) {
-        setNotifications({
-          type: 'success',
-          text: t('System', 'Translations saved', null, false),
-        });
+        notify('success', t('System', 'Translations saved', null, false));
       }
       if (response instanceof FetchResponseError) {
         const message = response.json?.prettyMessage
           ? response.json.prettyMessage
           : response.message;
-        setNotifications({
-          type: 'error',
-          text: t('System', 'An error occurred', null, false),
-          details: message,
-        });
+        notify('error', t('System', 'An error occurred', null, false), undefined, message);
       }
     }
     closeModal();

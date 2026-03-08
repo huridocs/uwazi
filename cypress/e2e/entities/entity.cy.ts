@@ -2,6 +2,7 @@
 /* eslint-disable max-statements */
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { changeLanguage, clickOnEditEntity, saveEntity } from '../helpers/index.js';
+import { clearNotifications } from '../helpers/notifications';
 
 const entityTitle = 'Entity with all props';
 const textWithHtml = `<h1>The title</h1>
@@ -181,7 +182,8 @@ describe('Entities', () => {
       cy.contains('button', 'Save').click();
       cy.wait('@postTemplate');
       cy.contains('success').should('exist');
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
     });
   });
 
@@ -247,7 +249,7 @@ describe('Entities', () => {
       ).type('12/09/1964', { delay: 0 });
       cy.get('.form-group.markdown textarea').type(textWithHtml, { delay: 0 });
       saveEntity();
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
     });
 
     it('should have all the values correctly saved.', () => {
@@ -316,7 +318,7 @@ describe('Entities', () => {
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1000);
       cy.addTimeLink(1000, 'Control point', 1, 12, 0);
       saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
       checkMediaSnapshots('#tabpanel-metadata .video-container > div:nth-child(2)');
     });
 
@@ -395,7 +397,7 @@ describe('Entities', () => {
       clickMediaAction('Image', 'Unlink');
       clickMediaAction('Media', 'Unlink');
       saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
     });
   });
 
@@ -418,7 +420,7 @@ describe('Entities', () => {
       });
       cy.contains('.confirm-button', 'Save').click();
       cy.contains('Thesaurus saved');
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
     });
 
     it('should add a thesauri value on a multiselect field and select it', () => {
@@ -433,7 +435,7 @@ describe('Entities', () => {
       });
       cy.contains('.confirm-button', 'Save').click();
       cy.contains('Thesaurus saved');
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
       saveEntity('Entity updated');
       cy.get('.metadata-type-select').should('contain.text', 'New Single Value');
       cy.get('.metadata-type-multiselect').should('contain.text', 'MultiselectActivoNew Value');
@@ -479,7 +481,7 @@ describe('Entities', () => {
         { delay: 0 }
       );
       saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
       cy.contains('.item-document', 'Entity with all props').click();
       cy.contains('h1.item-name', 'Entity with all props').should('exist');
       cy.get('.metadata-type-text').should('contain.text', 'Demo text in english');
@@ -538,7 +540,7 @@ describe('Entities', () => {
       cy.get('select:first-of-type').select('Causa');
       cy.contains('Changing the type will erase all relationships to this entity');
       saveEntity('Entity updated');
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
     });
 
     it('should show only the filtered entities', () => {

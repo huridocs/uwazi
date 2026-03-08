@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('Relationship Types configuration', () => {
   before(() => {
@@ -28,7 +29,8 @@ describe('Relationship Types configuration', () => {
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
+    clearNotifications();
+
 
     cy.getByTestId('relationship-types-add').click();
     cy.get('#relationship-type-name').click();
@@ -36,7 +38,8 @@ describe('Relationship Types configuration', () => {
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
+    clearNotifications();
+
   });
 
   it('tests Edit', () => {
@@ -46,7 +49,8 @@ describe('Relationship Types configuration', () => {
     cy.getByTestId('relationship-type-form-submit').click();
 
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
+    clearNotifications();
+
   });
 
   it('tests delete', () => {
@@ -59,7 +63,8 @@ describe('Relationship Types configuration', () => {
     cy.getByTestId('relationship-types-delete').click();
     cy.getByTestId('accept-button').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
+    clearNotifications();
+
   });
 
   it('test cant delete when in use', () => {

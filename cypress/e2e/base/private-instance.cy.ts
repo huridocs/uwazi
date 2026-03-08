@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clearNotifications } from '../helpers/notifications';
 
 describe('Private instance', () => {
   before(() => {
@@ -28,7 +29,7 @@ describe('Private instance', () => {
     });
     cy.contains('button', 'Save').realClick();
     cy.contains('div', 'Settings updated.');
-    cy.contains('button', 'Dismiss').realClick();
+    clearNotifications();
   });
 
   it('should logout and still be able to see the library', () => {

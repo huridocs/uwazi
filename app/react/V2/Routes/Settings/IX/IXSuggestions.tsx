@@ -10,7 +10,6 @@ import {
   useSearchParams,
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
-import { useSetAtom } from 'jotai';
 import isEmpty from 'lodash/isEmpty.js';
 import { FunnelIcon } from '@heroicons/react/24/solid';
 import * as extractorsAPI from '#V2/api/ix/extractors.js';
@@ -18,7 +17,6 @@ import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, PaginationState, Paginator, Table } from '#V2/Components/UI/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { ClientPropertySchema } from '#app/istore.js';
 import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
@@ -35,11 +33,13 @@ import {
   EntitySuggestion,
 } from './types.js';
 import { useEventHandler } from './hooks/useEventHandler.js';
+import { useSetAtom } from 'jotai';
 import { acceptedSuggestions } from './components/atoms/index.js';
 import { PDFSidepanel } from './components/sidepanel/PDFSidepanel.js';
 import { PropertySidepanel } from './components/sidepanel/PropertySidepanel.js';
 import { TrainModelModal } from './components/TrainModelModal.js';
 import { ProcessExtractorModal } from './components/ProcessExtractorModal.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
@@ -94,7 +94,7 @@ const IXSuggestions = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setAcceptedSuggestionsAtom = useSetAtom(acceptedSuggestions);
 
   const filteredTemplates = () =>
@@ -128,10 +128,7 @@ const IXSuggestions = () => {
         return newSet;
       });
       setSelected([]);
-      setNotifications({
-        type: 'info',
-        text: <Translate>Suggestions sent</Translate>,
-      });
+      notify('info', t('System', 'Suggestions sent', null, false));
     } catch (error) {
       handleUnexpectedError(error, 'Error accepting suggestions');
     }

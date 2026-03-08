@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { clearCookiesAndLogin } from '../helpers/index.js';
+import { clearNotifications } from '../helpers/notifications';
 
 const removeEntity = (title: string) => {
   cy.contains('div.rightRelationship', title).scrollIntoView();
@@ -133,7 +134,7 @@ describe('Relationship view', () => {
         .within(() => {
           cy.contains('div', 'Anzualdo Castro');
         });
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
     });
 
     // eslint-disable-next-line max-statements
@@ -159,7 +160,7 @@ describe('Relationship view', () => {
         .within(() => {
           cy.contains('div', 'My test Mecanismo');
         });
-      cy.waitForLegacyNotifications();
+      cy.clearNotifications();
     });
 
     it('should be able to move entities from the second hub to the first one', () => {

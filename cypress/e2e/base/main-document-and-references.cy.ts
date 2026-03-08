@@ -5,7 +5,7 @@ import {
   clickOnEditEntity,
   saveEntity,
   selectRestrictedEntities,
-} from '../helpers';
+, clearNotifications} from '../helpers';
 
 describe('text references', () => {
   before(() => {
@@ -144,7 +144,7 @@ describe('text references', () => {
       cy.contains('Accept').click();
     });
 
-    cy.waitForLegacyNotifications();
+    cy.clearNotifications();
 
     cy.get('.metadata-sidepanel.is-active').within(() => {
       cy.contains('Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016');
@@ -174,7 +174,7 @@ describe('Entity with main documents', () => {
     cy.get('#pdf-upload-button').first().selectFile('./cypress/test_files/valid.pdf', {
       force: true,
     });
-    cy.waitForLegacyNotifications();
+    cy.clearNotifications();
     cy.contains('.item-info', 'Mecanismo');
   });
 
@@ -205,7 +205,7 @@ describe('Entity with main documents', () => {
       force: true,
     });
     saveEntity();
-    cy.waitForLegacyNotifications();
+    cy.clearNotifications();
   });
 
   // eslint-disable-next-line max-statements
@@ -244,7 +244,7 @@ describe('Entity with main documents', () => {
       force: true,
     });
     saveEntity('Entity updated');
-    cy.waitForLegacyNotifications();
+    cy.clearNotifications();
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('Conversion failed');
@@ -256,7 +256,7 @@ describe('Entity with main documents', () => {
     cy.get('.attachments-list > .attachment:nth-child(2) > button').click();
     cy.contains('button', 'Save').click();
     cy.contains('Entity updated');
-    cy.waitForLegacyNotifications();
+    cy.clearNotifications();
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');

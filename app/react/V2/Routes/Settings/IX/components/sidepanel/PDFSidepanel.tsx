@@ -6,7 +6,7 @@ import { useLoaderData } from 'react-router';
 import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
@@ -15,8 +15,7 @@ import {
   Truncate,
   VerticalDrawer,
 } from '#V2/Components/UI/index.js';
-import { PDF, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { PDF, PDFHandle, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
 import {
   coerceValue,
@@ -34,6 +33,7 @@ import {
 } from '../atoms/index.js';
 import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
 import { SidepanelProps } from './types.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 enum HighlightColors {
   CURRENT = '#B1F7A3',
@@ -57,7 +57,7 @@ const PDFSidepanel = ({
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
   const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
   const selections = useAtomValue(selectionsAtom);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setSelections = useSetAtom(selectionsAtom);
 
   const templateId = suggestion?.entityTemplateId;
@@ -132,13 +132,13 @@ const PDFSidepanel = ({
       if (savedEntity instanceof FetchResponseError) {
         const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
 
-        setNotifications({ type: 'error', text: 'An error occurred', details });
+        notify('error', t('System', 'An error occurred', null, false), undefined, details);
       } else if (savedEntity) {
         if (savedEntity) {
           setEntity(savedEntity);
         }
 
-        setNotifications({ type: 'success', text: 'Saved successfully.' });
+        notify('success', t('System', 'Saved successfully.', null, false));
       }
     }
 

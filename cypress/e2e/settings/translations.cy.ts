@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import { changeLanguage, clearCookiesAndLogin } from '../helpers/index.js';
 import 'cypress-axe';
+import { clearNotifications, expectNotification } from '../helpers/notifications';
 
 describe('Translations', () => {
   before(() => {
@@ -79,7 +80,7 @@ describe('Translations', () => {
       cy.contains('button', 'Save').should('be.disabled');
       cy.contains('button', 'Cancel').should('be.disabled');
       cy.get('input[type=text]').should('be.disabled');
-      cy.contains('[data-testid="notifications-container"]', 'Translations saved');
+      expectNotification('Translations saved');
     });
 
     it('Should filter translations that have no untranslated terms', () => {
@@ -97,9 +98,9 @@ describe('Translations', () => {
       }).as('api/translations');
       cy.contains('button', 'Save').click();
       cy.wait('@api/translations').then(() => {
-        cy.contains('[data-testid="notifications-container"]', 'An error occurred');
-        cy.contains('button', 'Dismiss').trigger('mouseover');
-        cy.contains('button', 'Dismiss').click();
+        expectNotification('An error occurred');
+        clearNotifications();
+
       });
     });
 

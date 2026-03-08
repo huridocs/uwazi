@@ -1,5 +1,6 @@
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import 'cypress-axe';
+import { clearNotifications } from '../helpers/notifications';
 
 const stringToTranslate = "*please keep this key secret and don't share it.";
 
@@ -50,7 +51,8 @@ describe('Languages', () => {
       addLanguages();
 
       cy.wait('@addLanguage');
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
       cy.contains('tr', 'Spanish', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('tr', 'French', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('Languages installed successfully').click();
@@ -83,7 +85,8 @@ describe('Languages', () => {
       cy.contains('[data-testid=modal] button', 'Uninstall').click();
 
       cy.wait('@deleteLanguage');
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
       cy.contains('Language uninstalled successfully').click();
       cy.contains('French').should('not.exist');
     });
@@ -95,7 +98,8 @@ describe('Languages', () => {
       cy.contains('tr', 'Spanish').contains('button', 'Default').click();
       cy.wait('@setDefault');
       cy.contains('tr', 'Spanish').contains('Uninstall').should('not.exist');
-      cy.contains('Dismiss').click();
+      clearNotifications();
+
     });
     it('should use the default language if there is not specified locale', () => {
       cy.clearAllCookies();

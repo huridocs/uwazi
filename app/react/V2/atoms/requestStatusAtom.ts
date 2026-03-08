@@ -1,4 +1,5 @@
 import { atom, useAtom } from 'jotai';
+import { getStore } from '#shared/atomStore/index.js';
 
 type NotificationType = 'success' | 'warning' | 'error' | 'info';
 
@@ -41,6 +42,37 @@ const initialState: RequestStatusState = {
 };
 
 const requestStatusAtom = atom<RequestStatusState>(initialState);
+
+/** Minimum time the loading animation stays visible, even if the request finishes sooner. */
+const MIN_LOADING_MS = 1000;
+
+let _loadingStartedAt: number | null = null;
+let _loadingEndTimer: ReturnType<typeof setTimeout> | null = null;
+
+const startLoading = () => {
+  _loadingStartedAt = Date.now();
+  if (_loadingEndTimer !== null) {
+    clearTimeout(_loadingEndTimer);
+    _loadingEndTimer = null;
+  }
+  getStore().set(requestStatusAtom, prev => ({ ...prev, isLoading: true }));
+};
+
+const endLoading = () => {
+  const elapsed = _loadingStartedAt !== null ? Date.now() - _loadingStartedAt : MIN_LOADING_MS;
+  const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+  if (remaining > 0) {
+    if (_loadingEndTimer !== null) clearTimeout(_loadingEndTimer);
+    _loadingEndTimer = setTimeout(() => {
+      getStore().set(requestStatusAtom, prev => ({ ...prev, isLoading: false }));
+      _loadingStartedAt = null;
+      _loadingEndTimer = null;
+    }, remaining);
+  } else {
+    getStore().set(requestStatusAtom, prev => ({ ...prev, isLoading: false }));
+    _loadingStartedAt = null;
+  }
+};
 
 const useRequestStatus = () => {
   const [state, setState] = useAtom(requestStatusAtom);
@@ -138,12 +170,32 @@ const useRequestStatus = () => {
     }));
   };
 
-  const startLoading = () => {
+  // Hook-local versions of startLoading/endLoading that use setState (works in any Jotai store
+  // context, including Storybook's default store). The module-level versions use getStore() for
+  // imperative callers outside React (notifyBridge, LoadingProgressBar).
+  const startLoadingHook = () => {
+    _loadingStartedAt = Date.now();
+    if (_loadingEndTimer !== null) {
+      clearTimeout(_loadingEndTimer);
+      _loadingEndTimer = null;
+    }
     setState(prev => ({ ...prev, isLoading: true }));
   };
 
-  const endLoading = () => {
-    setState(prev => ({ ...prev, isLoading: false }));
+  const endLoadingHook = () => {
+    const elapsed = _loadingStartedAt !== null ? Date.now() - _loadingStartedAt : MIN_LOADING_MS;
+    const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+    if (remaining > 0) {
+      if (_loadingEndTimer !== null) clearTimeout(_loadingEndTimer);
+      _loadingEndTimer = setTimeout(() => {
+        setState(prev => ({ ...prev, isLoading: false }));
+        _loadingStartedAt = null;
+        _loadingEndTimer = null;
+      }, remaining);
+    } else {
+      setState(prev => ({ ...prev, isLoading: false }));
+      _loadingStartedAt = null;
+    }
   };
 
   return {
@@ -160,10 +212,10 @@ const useRequestStatus = () => {
     removeNotification,
     setConnected,
     togglePanel,
-    startLoading,
-    endLoading,
+    startLoading: startLoadingHook,
+    endLoading: endLoadingHook,
   };
 };
 
 export type { NotificationType, TaskStatus, OverallStatus, StatusNotification, StatusTask, RequestStatusState };
-export { requestStatusAtom, useRequestStatus };
+export { requestStatusAtom, useRequestStatus, startLoading, endLoading, MIN_LOADING_MS };

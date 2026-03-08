@@ -31,15 +31,14 @@ const NotificationsPanel = ({
   onClear,
 }: NotificationsPanelProps) => {
   const isEmpty = notifications.length === 0 && tasks.length === 0;
-  const hasClearable =
-    notifications.length > 0 || tasks.some(t => t.status !== 'running');
+  const hasClearable = notifications.length > 0 || tasks.some(t => t.status !== 'running');
 
   const clearButton = hasClearable ? (
     <button
       type="button"
       onClick={onClear}
       aria-label="Clear notifications and completed tasks"
-      className="flex w-full items-center justify-center gap-1 px-2 py-1 text-xs text-gray-500 rounded cursor-pointer hover:bg-gray-100 hover:text-gray-700 transition-colors"
+      className="flex items-center gap-1 px-2 py-1 text-xs text-gray-500 rounded cursor-pointer hover:bg-gray-100 hover:text-gray-700 transition-colors"
     >
       <TrashIcon className="w-3.5 h-3.5" aria-hidden="true" />
       Clear
@@ -47,51 +46,52 @@ const NotificationsPanel = ({
   ) : undefined;
 
   return (
-    <Sidepanel
-      isOpen={isOpen}
-      closeSidepanelFunction={onClose}
-      title={clearButton}
-      size="small"
-      withOverlay
-    >
-      <Sidepanel.Body className="flex flex-col gap-4">
+    <div data-testid="notifications-panel" className="whitespace-normal">
+      <Sidepanel
+        isOpen={isOpen}
+        closeSidepanelFunction={onClose}
+        title={clearButton}
+        size="medium"
+        withOverlay
+      >
+        <Sidepanel.Body className="flex flex-col gap-4">
+          {isEmpty && <EmptyState />}
 
-        {isEmpty && <EmptyState />}
+          {tasks.length > 0 && (
+            <section>
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                Tasks
+              </h2>
+              <ul className="flex flex-col gap-2" role="list">
+                {tasks.map(task => (
+                  <li key={task.id}>
+                    <TaskItem task={task} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-        {tasks.length > 0 && (
-          <section>
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-              Tasks
-            </h2>
-            <ul className="flex flex-col gap-2" role="list">
-              {tasks.map(task => (
-                <li key={task.id}>
-                  <TaskItem task={task} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {notifications.length > 0 && (
-          <section>
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
-              Notifications
-            </h2>
-            <ul className="flex flex-col gap-2" role="list">
-              {notifications.map(notification => (
-                <li key={notification.id}>
-                  <NotificationItem
-                    notification={notification}
-                    onDismiss={onDismissNotification}
-                  />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-      </Sidepanel.Body>
-    </Sidepanel>
+          {notifications.length > 0 && (
+            <section>
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                Notifications
+              </h2>
+              <ul className="flex flex-col gap-2" role="list">
+                {notifications.map(notification => (
+                  <li key={notification.id}>
+                    <NotificationItem
+                      notification={notification}
+                      onDismiss={onDismissNotification}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </Sidepanel.Body>
+      </Sidepanel>
+    </div>
   );
 };
 

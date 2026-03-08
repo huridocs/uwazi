@@ -1,17 +1,18 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
 import { IncomingHttpHeaders } from 'http';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { Translate } from '#app/I18N/index.js';
-import { notificationAtom, settingsAtom } from '#V2/atoms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { useSetAtom } from 'jotai';
+import { settingsAtom } from '#V2/atoms/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Table, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import {
   createColumns,
   AddTemplatesModal,
@@ -48,7 +49,7 @@ const FiltersTable = () => {
   const [selectedFilters, setSelectedFilters] = useState<RowSelectionState>({});
   const blocker = useBlocker(hasChanges);
   const setAtom = useSetAtom(sidepanelAtom);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
 
@@ -104,17 +105,14 @@ const FiltersTable = () => {
     const filtersToSave = sanitizeFilters(currentFilters.current);
     const response = await settingsAPI.save({ filters: filtersToSave });
     if (response instanceof FetchResponseError) {
-      return setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        ...(response.message && { details: response.message }),
-      });
+      notify('error', t('System', 'An error occurred', null, false), undefined, response.message || undefined);
+      return;
     }
     setSettings(response);
     setDisabled(false);
     setHasChanges(false);
     await revalidator.revalidate();
-    return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
+    return notify('success', t('System', 'Filters saved', null, false));
   };
 
   const handleSelect = ({
