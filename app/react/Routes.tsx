@@ -202,7 +202,20 @@ const getRoutesLayout = (
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-    <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+    <Route
+      path="entityv2/:sharedId"
+      element={<Entity />}
+      loader={entityLoader(headers)}
+      shouldRevalidate={({ currentUrl, nextUrl }) => {
+        //Url is exactly the same, so it is a Revalidate request
+        if (currentUrl.toString() === nextUrl.toString()) {
+          return true;
+        }
+
+        //Revalidate ONLY when pathname changes, and ignore query params changes
+        return currentUrl.pathname !== nextUrl.pathname;
+      }}
+    />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />
@@ -388,8 +401,8 @@ const getRoutes = (
 ) => {
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents);
-  const parameters = descriptor.parameters;
-  const defaultToLibrary = descriptor.defaultToLibrary;
+  const { parameters } = descriptor;
+  const { defaultToLibrary } = descriptor;
   const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
