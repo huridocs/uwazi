@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
@@ -64,6 +64,8 @@ const Playground = () => {
     tasks,
   } = useRequestStatus();
 
+  const [isRTL, setIsRTL] = useState(false);
+
   const ago = (ms: number) => new Date(Date.now() - ms);
   const SEC = 1000;
   const MIN = 60 * SEC;
@@ -80,16 +82,37 @@ const Playground = () => {
     notify('error', 'Scheduled export failed.', 'Disk quota exceeded.', 'ENOSPC: no space left on device, write\n  at WriteStream.write (fs.js:812:3)', ago(10 * DAY));
   };
 
+  const loadArabicNotifications = () => {
+    notify('success', 'تم حفظ الكيان بنجاح.', 'جميع الحقول كانت صالحة.');
+    notify('warning', 'تعذّر التحقق من بعض الحقول.', 'يرجى مراجعة الحقول المُعلَّمة والمحاولة مجدداً.');
+    notify('error', 'فشل حفظ الكيان.', 'انتهت مهلة الشبكة. يرجى المحاولة مرة أخرى.', 'خطأ: ETIMEDOUT\n  في Socket.connect (net.js:1141:14)');
+    notify('info', 'يتوفر إصدار جديد من أوازي.');
+  };
+
   const TASK_ID = 'story-task';
 
   return (
-    <div className="tw-content h-[700px] overflow-hidden bg-gray-50 p-6">
+    <div className="tw-content h-[700px] overflow-hidden bg-gray-50 p-6" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-3xl mx-auto h-full overflow-y-auto flex flex-col gap-6">
 
         {/* Header: dot lives here */}
         <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-3 shadow-sm">
           <span className="text-sm font-semibold text-gray-600">RequestStatus Playground</span>
-          <RequestStatus />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsRTL(r => !r)}
+              className={`px-3 py-1 text-xs font-medium rounded-md border cursor-pointer transition-colors ${
+                isRTL
+                  ? 'bg-indigo-100 text-indigo-700 border-indigo-300'
+                  : 'bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200'
+              }`}
+              title="Toggle right-to-left layout"
+            >
+              {isRTL ? 'RTL ✓' : 'RTL'}
+            </button>
+            <RequestStatus />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -124,6 +147,11 @@ const Playground = () => {
                 label="Load Demo Notifications"
                 variant="info"
                 onClick={loadDemoNotifications}
+              />
+              <ActionButton
+                label="Load Arabic Notifications"
+                variant="info"
+                onClick={loadArabicNotifications}
               />
               <ActionButton
                 label="Clear All"

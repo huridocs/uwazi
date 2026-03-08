@@ -7,6 +7,7 @@ interface StatusDotProps {
   isConnected: boolean;
   hasRunningTasks: boolean;
   onClick: () => void;
+  popKey?: number;
 }
 
 const dotColorMap: Record<Exclude<OverallStatus, 'loading'>, string> = {
@@ -29,15 +30,18 @@ const DOT_KEYFRAMES = `
     from { transform: translateX(-6px); opacity: 0; }
     to   { transform: translateX(0);    opacity: 1; }
   }
+  @keyframes dotPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.65); }
+    70%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
 `;
 
 const DOT_SIZE = 'w-2 h-2';
 
 const LoadingDots = () => (
-  <>
-    {/* eslint-disable-next-line react/no-danger */}
-    <style dangerouslySetInnerHTML={{ __html: DOT_KEYFRAMES }} />
-    <span className="flex items-center gap-1" aria-hidden="true">
+  <span className="flex items-center gap-1" aria-hidden="true">
       <span style={{ animation: 'dotSpreadLeft 0.25s ease-out forwards' }}>
         <span
           className={`block ${DOT_SIZE} rounded-full bg-gray-700`}
@@ -55,7 +59,6 @@ const LoadingDots = () => (
         />
       </span>
     </span>
-  </>
 );
 
 const TOOLTIP_ID = 'disconnect-tooltip';
@@ -98,31 +101,37 @@ const buildAriaLabel = (
   return `Notifications — ${parts.join(', ')}`;
 };
 
-const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick }: StatusDotProps) => (
-  <div className="flex items-center gap-1.5">
-    {!isConnected && <DisconnectWarning />}
+const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick, popKey }: StatusDotProps) => (
+  <>
+    {/* eslint-disable-next-line react/no-danger */}
+    <style dangerouslySetInnerHTML={{ __html: DOT_KEYFRAMES }} />
+    <div className="flex items-center gap-1.5">
+      {!isConnected && <DisconnectWarning />}
 
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={buildAriaLabel(overallStatus, isConnected, hasRunningTasks)}
-      data-testid="status-dot"
-      className="flex items-center gap-1.5 p-1 rounded-full cursor-pointer  transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300"
-    >
-      {overallStatus === 'loading' ? (
-        <LoadingDots />
-      ) : (
-        <span
-          className={`block w-3 h-3 rounded-full ${dotColorMap[overallStatus]}`}
-          aria-hidden="true"
-        />
-      )}
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={buildAriaLabel(overallStatus, isConnected, hasRunningTasks)}
+        data-testid="status-dot"
+        className="flex items-center gap-1.5 p-1 rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300"
+      >
+        {overallStatus === 'loading' ? (
+          <LoadingDots />
+        ) : (
+          <span
+            key={popKey}
+            className={`block w-3 h-3 rounded-full ${dotColorMap[overallStatus]}`}
+            style={popKey ? { animation: 'dotPop 0.45s ease-out forwards' } : undefined}
+            aria-hidden="true"
+          />
+        )}
 
-      {hasRunningTasks && (
-        <ArrowPathIcon className="w-4 h-4 text-gray-900 animate-spin" aria-hidden="true" />
-      )}
-    </button>
-  </div>
+        {hasRunningTasks && (
+          <ArrowPathIcon className="w-4 h-4 text-gray-900 animate-spin" aria-hidden="true" />
+        )}
+      </button>
+    </div>
+  </>
 );
 
 export type { StatusDotProps };
