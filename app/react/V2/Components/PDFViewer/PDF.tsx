@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, {
   forwardRef,
   useCallback,
@@ -194,14 +195,62 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
 
     useEffect(() => {
       const observerHandler: IntersectionObserverCallback = entries => {
-        console.log(entries);
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            pdfEventBus.dispatch('renderpage', {
+              pageNumber: entry.target.getAttribute('data-pagenumber'),
+            });
+          } else {
+            pdfEventBus.dispatch('unmountpage', {
+              pageNumber: entry.target.getAttribute('data-pagenumber'),
+            });
+          }
+        });
       };
 
       intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
-        rootMargin: '0px',
-        threshold: 1.0,
+        rootMargin: '500px 0px 500px 0px',
+        threshold: 0.1,
       });
-    }, []);
+    }, [pdfEventBus]);
+
+    useEffect(() => {
+      pdfEventBus.on('pageready', ({ pageNumber }: { pageNumber: number }) => {
+        if (pageNumber === 1) {
+          pdfEventBus.dispatch('renderpage', { pageNumber });
+        }
+      });
+    }, [pdfEventBus]);
+
+    useEffect(() => {
+      pdfEventBus.on('pagesinit', params => {
+        console.log('pagesinit', params);
+      });
+
+      pdfEventBus.on('pagerendered', params => {
+        console.log('pagerendered', params);
+      });
+
+      pdfEventBus.on('pagechanging', params => {
+        console.log('pagechanging', params);
+      });
+
+      pdfEventBus.on('textlayerrendered', params => {
+        console.log('textlayerrendered', params);
+      });
+
+      pdfEventBus.on('scalechanging', params => {
+        console.log('scalechanging', params);
+      });
+
+      pdfEventBus.on('annotationlayerrendered', params => {
+        console.log('annotationlayerrendered', params);
+      });
+
+      pdfEventBus.on('updateviewarea', params => {
+        console.log('updateviewarea', params);
+      });
+    }, [pdfEventBus]);
 
     if (error) {
       return <div>{error}</div>;

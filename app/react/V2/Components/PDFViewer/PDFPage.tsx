@@ -30,10 +30,12 @@ const PDFPage = ({
 }: PDFPageProps) => {
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useState(1);
+  const [pageHeight, setPageHeight] = useState<number>();
   const [ready, setReady] = useState(false);
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const pageViewerRef = useRef<typeof PDFPageView.prototype | null>(null);
   const pdfPageRef = useRef<PDFPageProxy | null>(null);
+  const baseViewportSizeRef = useRef<{ width: number; height: number } | null>(null);
   const onPageChangeRef = useRef(onPageChange);
   onPageChangeRef.current = onPageChange;
 
@@ -46,6 +48,12 @@ const PDFPage = ({
           pdfPageRef.current = pdfPage;
 
           const defaultViewport = pdfPage.getViewport({ scale: 1 });
+          const baseViewportWidth = defaultViewport.width * PixelsPerInch.PDF_TO_CSS_UNITS;
+          const baseViewportHeight = defaultViewport.height * PixelsPerInch.PDF_TO_CSS_UNITS;
+          baseViewportSizeRef.current = {
+            width: baseViewportWidth,
+            height: baseViewportHeight,
+          };
 
           const pageViewer = new PDFPageView({
             container: currentContainer,
@@ -58,6 +66,7 @@ const PDFPage = ({
 
           pageViewer.setPdfPage(pdfPage);
           pageViewerRef.current = pageViewer;
+          setReady(true);
         }
       })
       .catch((e: Error) => {
@@ -67,40 +76,77 @@ const PDFPage = ({
 
   useEffect(() => {
     const pageViewer = pageViewerRef.current;
-    const pdfPage = pdfPageRef.current;
+    const baseViewportSize = baseViewportSizeRef.current;
 
-    if (pageViewer && pdfPage && containerWidth) {
-      const originalViewport = pdfPage.getViewport({ scale: 1 });
-      const newScale = calculateScaling(
-        originalViewport.width * PixelsPerInch.PDF_TO_CSS_UNITS,
-        containerWidth
-      );
+    if (ready && pageViewer && baseViewportSize) {
+      const newScale = calculateScaling(baseViewportSize.width, containerWidth);
+      const nextPageHeight = baseViewportSize.height * newScale;
+
+      setPageHeight(previousHeight => {
+        if (previousHeight && Math.abs(previousHeight - nextPageHeight) <= 0.5) {
+          return previousHeight;
+        }
+
+        return nextPageHeight;
+      });
 
       if (Math.abs(pageViewer.scale - newScale) > 0.01) {
         setPdfScale(newScale);
         onScaleChange?.(newScale);
         pageViewer.update({ scale: newScale });
       }
-
-      setReady(true);
     }
-  }, [containerWidth, onScaleChange]);
+  }, [containerWidth, onScaleChange, ready]);
 
   useEffect(() => {
-    if (ready && pageContainerRef.current && intersectionObserver && pageViewerRef.current) {
-      intersectionObserver.observe(pageContainerRef.current);
+    const containerRef = pageContainerRef.current;
 
-      const shouldRender = page === 1;
-
-      if (shouldRender) {
-        if (pageViewerRef.current.renderingState === RenderingStates.INITIAL) {
-          // pageViewerRef.current.draw().catch(e => {
-          //   setError(e.message);
-          // });
-        }
-      }
+    if (containerRef && ready) {
+      intersectionObserver?.observe(containerRef);
     }
-  }, [intersectionObserver, page, ready]);
+
+    return () => {
+      if (containerRef) {
+        intersectionObserver?.unobserve(containerRef);
+      }
+    };
+  }, [intersectionObserver, ready]);
+
+  useEffect(() => {
+    if (ready) {
+      eventBus.dispatch('pageready', { pageNumber: page });
+    }
+  }, [eventBus, page, ready]);
+
+  useEffect(() => {
+    const renderPage = () => {
+      const pageViewer = pageViewerRef.current;
+      if (pageViewer?.renderingState === RenderingStates.INITIAL) {
+        pageViewer?.draw().catch(e => {
+          setError(e.message);
+        });
+      }
+    };
+
+    const unmountPage = () => {
+      const pageViewer = pageViewerRef.current;
+      if (pageViewer?.renderingState !== RenderingStates.INITIAL) {
+        pageViewer?.destroy();
+      }
+    };
+
+    eventBus.on('renderpage', ({ pageNumber }: { pageNumber: number | string }) => {
+      if (pageNumber === page.toString()) {
+        renderPage();
+      }
+    });
+
+    eventBus.on('unmountpage', ({ pageNumber }: { pageNumber: string }) => {
+      if (pageNumber === page.toString()) {
+        unmountPage();
+      }
+    });
+  }, [eventBus, page]);
 
   if (error) {
     return <div>{error}</div>;
@@ -111,6 +157,8 @@ const PDFPage = ({
       ref={pageContainerRef}
       className="relative border mb-4 border-gray-200"
       data-testid="pdf-page"
+      data-pagenumber={page}
+      style={pageHeight ? { minHeight: `${pageHeight}px` } : undefined}
     >
       {highlights?.map(highlight => {
         const scaledHightlight = {
