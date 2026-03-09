@@ -1,6 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
 import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
 import * as stories from '#app/stories/Metadata.stories.jsx';
