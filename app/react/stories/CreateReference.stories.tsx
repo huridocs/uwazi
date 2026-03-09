@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { CreateReference } from '#V2/Routes/Entity/Components/ReferencesPanel/CreateReference.js';
 import { ClientRelationshipType } from '#app/apiResponseTypes.js';
 import { Entity } from '#V2/domain/index.js';

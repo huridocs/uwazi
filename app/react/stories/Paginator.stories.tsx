@@ -1,6 +1,6 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Paginator } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof Paginator> = {
