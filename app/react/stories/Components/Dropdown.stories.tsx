@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Dropdown } from '#V2/Components/UI/Header/Dropdown.js';
 import type { DropdownItem } from '#V2/Components/UI/Header/Dropdown.js';
 
