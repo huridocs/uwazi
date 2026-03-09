@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { createStore, Provider } from 'jotai';
 import { Entity } from '#V2/domain/index.js';
 import { FileType } from '#shared/types/fileType.js';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { defaultSearch, MultiselectList } from '#V2/Components/Forms/index.js';
 import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures.js';
 
