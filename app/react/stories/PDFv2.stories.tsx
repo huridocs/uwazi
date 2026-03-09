@@ -7,6 +7,7 @@ const meta: Meta<typeof PDF> = {
   component: PDF,
   args: {
     fileUrl: '/sample.pdf',
+    className: 'tw-h-[80vh] tw-w-full',
   },
 };
 
@@ -16,11 +17,22 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => (
   <div className="tw-content">
     <PDF
       {...args}
-      className="w-96 h-96"
       onDeselect={() => {
         console.log('cleared');
       }}
       onSelect={selection => console.log(selection)}
+      onDocumentLoaded={() => {
+        console.log('document loaded');
+      }}
+      onEventBusReady={() => {
+        console.log('event bus ready');
+      }}
+      onPageChanged={page => {
+        console.log('changed to page: ', page);
+      }}
+      onPageRendered={page => {
+        console.log('rendered page: ', page);
+      }}
     />
   </div>
 );

@@ -209,6 +209,7 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
       };
 
       intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
+        root: null,
         rootMargin: '500px 0px 500px 0px',
         threshold: 0.1,
       });
