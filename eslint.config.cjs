@@ -14,10 +14,12 @@ const { FlatCompat } = require("@eslint/eslintrc");
 const rules = require("./uwazi-eslint-rules.cjs");
 
 const compat = new FlatCompat({ baseDirectory: __dirname });
+const storybook = require("eslint-plugin-storybook");
 
 module.exports = defineConfig([
   { ignores: ["**/__snapshots__/**", "**/*.snap"] },
   ...compat.extends("airbnb", "plugin:cypress/recommended"),
+  ...storybook.configs["flat/recommended"],
   {
     files: ["**/*.js", "**/*.ts", "**/*.tsx"],
     languageOptions: {
