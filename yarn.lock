@@ -14017,10 +14017,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immutable@npm:^3.7.6":
-  version: 3.8.2
-  resolution: "immutable@npm:3.8.2"
-  checksum: 10c0/fb6a2999ad3bda9e51741721e42547076dd492635ee4df9241224055fe953ec843583a700088cc4915f23dc326e5084f4e17f1bbd7388c3e872ef5a242e0ac5e
+"immutable@npm:^3.8.3":
+  version: 3.8.3
+  resolution: "immutable@npm:3.8.3"
+  checksum: 10c0/bafa7b8371b7622bc3d128cd9e6bba3a654b968f09a237929629f43ac26f7e974a5879cd38baad0c26f6f0628753968611bf832add7bf0c44d647bf4306a2988
   languageName: node
   linkType: hard
 
@@ -23586,7 +23586,7 @@ __metadata:
     html-to-react: "npm:^1.7.0"
     htmlparser2: "npm:^10.0.0"
     identity-obj-proxy: "npm:^3.0.0"
-    immutable: "npm:^3.7.6"
+    immutable: "npm:^3.8.3"
     is-reachable: "npm:^5.2.1"
     isomorphic-fetch: "npm:3.0.0"
     jest: "npm:29.7.0"
