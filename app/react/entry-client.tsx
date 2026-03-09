@@ -18,6 +18,7 @@ import './App/sockets.js';
 import { CustomProvider } from './App/Provider.js';
 import { store } from './store.js';
 import { getAppRoutes } from './appRoutes.js';
+import { resetChunkErrorFlag } from '#V2/shared/errorUtils.js';
 import { loadIcons } from '#UI/Icon/library.js';
 
 loadIcons();
@@ -46,6 +47,7 @@ const router = createBrowserRouter(getAppRoutes());
 
 const App = () => {
   const atomStore = getStore();
+  React.useEffect(() => resetChunkErrorFlag(), []);
 
   return (
     <ReduxProvider store={store as any}>

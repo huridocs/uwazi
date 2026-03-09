@@ -1,5 +1,5 @@
 import React, { ComponentClass } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import type { ErrorBoundaryProps } from '#V2/Components/ErrorHandling/index.js';
 
