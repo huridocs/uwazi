@@ -210,16 +210,88 @@ export default app => {
         },
       },
     }),
-    (req, res, next) => {
-      // V2 implementation placeholder - will be implemented in future phase
+    async (req, res, next) => {
+      // V2 implementation
       if (tenants.current()?.featureFlags?.v2GetEntity) {
-        // TODO: Call V2 use case here when implemented
-        // For now, return empty response to make tests fail
-        res.status(501); // Not Implemented
-        res.json({ rows: [], error: 'V2 GET endpoint not yet implemented' });
-        return;
+        try {
+          const { GetEntityUseCaseFactory } = await import(
+            '../core/infrastructure/factories/GetEntityUseCaseFactory.js'
+          );
+
+          // Support both sharedId and _id parameters (V1 compatibility)
+          const { sharedId, _id, include = [], omitRelationships } = req.query;
+          const entityId = sharedId || _id;
+
+          if (!entityId) {
+            res.status(400);
+            res.json({ error: 'sharedId or _id is required' });
+            return;
+          }
+
+          const language = req.language;
+          const isAuthenticated = !!req.user;
+
+          // Only filter by published for unauthenticated users
+          const published = isAuthenticated ? undefined : true;
+
+          // Parse include parameter to check if permissions should be included
+          const includePermissions = include.includes('permissions');
+
+          // Convert omitRelationships to includeRelationships (inverse logic)
+          const includeRelationships = !omitRelationships;
+
+          const useCase = GetEntityUseCaseFactory.default(language);
+          const result = await useCase.execute({
+            sharedId: entityId,
+            language,
+            published,
+            includeRelationships,
+            isAuthenticated,
+          });
+
+          if (result.isError()) {
+            res.status(404);
+            res.json({ rows: [] });
+            return;
+          }
+
+          const entityDBO = result.getDataOrThrow();
+
+          // Convert EntityDBO to V1 format inline
+          const v1Entity = {
+            _id: entityDBO._id,
+            sharedId: entityDBO.sharedId,
+            language: entityDBO.language,
+            title: entityDBO.title,
+            published: entityDBO.published,
+            template: entityDBO.template,
+            creationDate: entityDBO.creationDate,
+            editDate: entityDBO.editDate,
+            metadata: entityDBO.metadata,
+            icon: entityDBO.icon,
+            documents: entityDBO.documents || [],
+            attachments: entityDBO.attachments || [],
+          };
+
+          // Conditionally include permissions if requested
+          if (includePermissions && entityDBO.permissions) {
+            v1Entity.permissions = entityDBO.permissions;
+          }
+
+          // Include relations if they were fetched
+          if (entityDBO.relations) {
+            v1Entity.relations = entityDBO.relations;
+          }
+
+          // Return in V1 format: { rows: [entity] }
+          res.json({ rows: [v1Entity] });
+          return;
+        } catch (error) {
+          return next(error);
+        }
       }
 
+      // V1 implementation
       const { omitRelationships, include = [], ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };

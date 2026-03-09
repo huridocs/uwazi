@@ -362,4 +362,231 @@ describe.each([
   });
 });
 
+// V2-only tests for metadata relationship permission filtering
+describe('GET /api/entities - V2 - Metadata relationship permission filtering', () => {
+  const collaboratorUser = {
+    _id: db.id(),
+    role: UserRole.COLLABORATOR,
+    username: 'collaborator',
+    email: 'collaborator@test.com',
+  };
+
+  const user1Id = db.id();
+
+  let app: Application;
+  let appWithoutUser: Application;
+  let appWithCollaborator: Application;
+  let appWithUser1: Application;
+
+  beforeAll(() => {
+    testingTenants.mockCurrentTenant({
+      name: 'default',
+      featureFlags: { v2GetEntity: true },
+    });
+  });
+
+  beforeEach(async () => {
+    // App with authenticated user
+    app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = {
+        _id: db.id(),
+        role: UserRole.COLLABORATOR,
+        username: 'user 1',
+        email: 'user@test.com',
+      };
+      next();
+    });
+
+    // App without user (unauthenticated)
+    appWithoutUser = setUpApp(routes);
+
+    // App with collaborator user
+    appWithCollaborator = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = collaboratorUser;
+      next();
+    });
+
+    // App with user1 who has permissions to specific entities
+    appWithUser1 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = {
+        _id: user1Id,
+        role: UserRole.COLLABORATOR,
+        username: 'user1',
+        email: 'user1@test.com',
+      };
+      next();
+    });
+
+    // @ts-ignore
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  it('should filter out unpublished entities from metadata relationship properties for unauthenticated users', async () => {
+    const response: SuperTestResponse = await request(appWithoutUser)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'testEntityWithMixedRefs', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // Should include published entity 'shared1' in friends
+    expect(entity.metadata.friends).toEqual([
+      expect.objectContaining({ value: 'shared1', label: expect.any(String) }),
+    ]);
+
+    // Should NOT include unpublished entity in relationships
+    expect(entity.metadata.friends).not.toContainEqual(
+      expect.objectContaining({ value: 'unpublishedForTest' })
+    );
+  });
+
+  it('should include entities user has explicit permissions to, even if unpublished', async () => {
+    const response: SuperTestResponse = await request(appWithUser1)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'entityPointingToOther', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // User has permission to 'other', should see it in metadata
+    expect(entity.metadata.friends).toContainEqual(
+      expect.objectContaining({
+        value: 'other',
+        label: expect.any(String),
+      })
+    );
+  });
+
+  it('should filter out entities user does not have permissions to access', async () => {
+    const response: SuperTestResponse = await request(appWithCollaborator)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'entityWithRestrictedRef', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // Should include accessible entity
+    expect(entity.metadata.friends).toContainEqual(expect.objectContaining({ value: 'shared2' }));
+
+    // Should NOT include restricted entity
+    expect(entity.metadata.friends).not.toContainEqual(
+      expect.objectContaining({ value: 'restrictedEntity' })
+    );
+  });
+
+  it('should filter multiple relationship properties independently', async () => {
+    const response: SuperTestResponse = await request(appWithoutUser)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'shared', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // Both properties should be filtered based on published status
+    expect(entity.metadata.friends).toEqual(
+      expect.arrayContaining([expect.objectContaining({ value: 'shared2' })])
+    );
+
+    expect(entity.metadata.enemies).toEqual(
+      expect.arrayContaining([expect.objectContaining({ value: 'shared2' })])
+    );
+  });
+
+  it('should return empty array when all referenced entities are inaccessible', async () => {
+    const response: SuperTestResponse = await request(appWithoutUser)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'entityWithOnlyRestrictedRefs', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // Should have empty array, not undefined
+    expect(entity.metadata.friends).toEqual([]);
+  });
+
+  it('should handle mixed accessible and inaccessible entities in same relationship array', async () => {
+    const response: SuperTestResponse = await request(appWithoutUser)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'entityWithMixedAccess', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // Should only include accessible entities (published for unauthenticated)
+    expect(entity.metadata.enemies.length).toBe(2); // Only 2 published entities
+    expect(entity.metadata.enemies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ value: 'shared1', label: expect.any(String) }),
+        expect.objectContaining({ value: 'shared2', label: expect.any(String) }),
+      ])
+    );
+
+    // Should NOT include unpublished
+    expect(entity.metadata.enemies).not.toContainEqual(
+      expect.objectContaining({ value: 'unpublishedForTest' })
+    );
+  });
+
+  it('should preserve inherited property data only for accessible entities', async () => {
+    const response: SuperTestResponse = await request(appWithoutUser)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'shared', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // Accessible entity should have inherited property
+    const accessibleEnemy = entity.metadata.enemies.find((e: any) => e.value === 'shared2');
+    expect(accessibleEnemy).toBeDefined();
+    // Enemy property has inherit config, should have inheritedValue
+    if (accessibleEnemy.inheritedValue) {
+      expect(accessibleEnemy.inheritedValue).toEqual(expect.any(Array));
+    }
+  });
+
+  it('should not leak entity information through metadata for completely restricted entities', async () => {
+    const response: SuperTestResponse = await request(appWithoutUser)
+      .get('/api/entities')
+      .set('Accept-Language', 'en')
+      .query({ sharedId: 'entityReferencingUnpublished', omitRelationships: true });
+
+    expect(response).toHaveStatus(200);
+
+    const entity = response.body.rows[0];
+
+    // Check that unpublished entity is not in the array at all
+    const unpublishedRef = entity.metadata.friends.find(
+      (f: any) => f.value === 'unpublishedForTest'
+    );
+    expect(unpublishedRef).toBeUndefined();
+
+    // Should only have accessible entity
+    expect(entity.metadata.friends).toEqual([
+      expect.objectContaining({ value: 'shared2', label: 'shared2title' }),
+    ]);
+
+    // Verify no partial data leaked
+    entity.metadata.friends.forEach((friend: any) => {
+      // All visible friends should have complete data (not partial)
+      if (friend.label) {
+        expect(friend.label).not.toBe('Unpublished Test Entity');
+      }
+    });
+  });
+});
+
 afterAll(async () => testingEnvironment.tearDown());
