@@ -393,7 +393,7 @@
     "rtlcss-webpack-plugin": "4.0.7",
     "sass": "1.84.0",
     "sass-loader": "16.0.4",
-    "storybook": "^8.1.11",
+    "storybook": "^8.6.17",
     "stream-mock": "^2.0.5",
     "supertest": "7.1.4",
     "svg-inline-loader": "^0.8.2",
