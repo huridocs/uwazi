@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { PDFDocumentProxy, PDFPageProxy, PixelsPerInch } from 'pdfjs-dist';
+import { PDFDocumentProxy, PixelsPerInch } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { EventBus, PDFPageView, RenderingStates } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { TextHighlight } from './types.js';
@@ -33,7 +33,6 @@ const PDFPage = ({
   const [ready, setReady] = useState(false);
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const pageViewerRef = useRef<typeof PDFPageView.prototype | null>(null);
-  const pdfPageRef = useRef<PDFPageProxy | null>(null);
   const baseViewportSizeRef = useRef<{ width: number; height: number } | null>(null);
   const onPageChangeRef = useRef(onPageChange);
   onPageChangeRef.current = onPageChange;
@@ -42,20 +41,19 @@ const PDFPage = ({
     pdf
       .getPage(page)
       .then(pdfPage => {
-        const currentContainer = pageContainerRef.current;
-        if (currentContainer && pdfPage) {
-          pdfPageRef.current = pdfPage;
-
+        const container = pageContainerRef.current;
+        if (container && pdfPage) {
           const defaultViewport = pdfPage.getViewport({ scale: 1 });
           const baseViewportWidth = defaultViewport.width * PixelsPerInch.PDF_TO_CSS_UNITS;
           const baseViewportHeight = defaultViewport.height * PixelsPerInch.PDF_TO_CSS_UNITS;
+
           baseViewportSizeRef.current = {
             width: baseViewportWidth,
             height: baseViewportHeight,
           };
 
           const pageViewer = new PDFPageView({
-            container: currentContainer,
+            container,
             id: page,
             scale: defaultViewport.scale,
             defaultViewport,
@@ -79,6 +77,7 @@ const PDFPage = ({
 
     if (ready && pageViewer && baseViewportSize) {
       const newScale = calculateScaling(baseViewportSize.width, containerWidth);
+
       const nextPageHeight = baseViewportSize.height * newScale;
 
       setPageHeight(previousHeight => {
@@ -157,9 +156,9 @@ const PDFPage = ({
     <div
       ref={pageContainerRef}
       className="border mb-4 border-gray-200 relative"
+      style={pageHeight ? { minHeight: `${pageHeight}px` } : undefined}
       data-testid="pdf-page"
       data-pagenumber={page}
-      style={pageHeight ? { minHeight: `${pageHeight}px` } : undefined}
     >
       {highlights?.map(highlight => {
         const scaledHightlight = {

@@ -15,6 +15,7 @@ import {
 } from '@huridocs/react-text-selection-handler';
 import { getDocument, PDFDocumentProxy } from 'pdfjs-dist/webpack.mjs';
 import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
+import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
@@ -113,15 +114,6 @@ const PDF = ({
     [onSelect, currentScale]
   );
 
-  const padding = 0;
-  const containerStyles: CSSProperties = {
-    height: size?.height || '100%',
-    width: size?.width || '100%',
-    overflow: size?.overflow || 'auto',
-    paddingLeft: `${padding}px`,
-    paddingRight: `${padding}px`,
-  };
-
   useEffect(() => {
     getPDFFile(fileUrl)
       .then(pdfFile => {
@@ -139,10 +131,7 @@ const PDF = ({
       return undefined;
     }
 
-    const initialWidth = Math.max(
-      0,
-      (container.clientWidth || container.offsetWidth) - padding * 2 - 2
-    );
+    const initialWidth = Math.max(0, container.clientWidth || container.offsetWidth);
 
     setContainerWidth(initialWidth);
 
@@ -154,7 +143,7 @@ const PDF = ({
         }
 
         resizeTimeoutRef.current = setTimeout(() => {
-          const newWidth = Math.max(0, entry.contentRect.width - padding * 2 - 2);
+          const newWidth = Math.max(0, entry.contentRect.width);
           setContainerWidth(newWidth);
         }, 150);
       }
@@ -249,7 +238,16 @@ const PDF = ({
 
   return (
     <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div id="pdf-container" ref={pdfContainerRef} style={containerStyles}>
+      <div
+        id="pdf-container"
+        className="pdfViewer"
+        ref={pdfContainerRef}
+        style={{
+          height: size?.height || '100%',
+          width: size?.width || '100%',
+          overflow: size?.overflow || 'auto',
+        }}
+      >
         {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const regionId = number.toString();
