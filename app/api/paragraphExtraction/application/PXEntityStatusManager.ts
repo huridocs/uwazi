@@ -86,7 +86,8 @@ export class PXEntityStatusManager {
 
     if (!extractor) {
       throw new PXValidationError(
-        PXValidationError.codes.CANNOT_MANAGE_ENTITY_STATUS_FOR_SOURCE_TEMPLATE_NOT_MATCHING_CRITERIA,
+        PXValidationError.codes
+          .CANNOT_MANAGE_ENTITY_STATUS_FOR_SOURCE_TEMPLATE_NOT_MATCHING_CRITERIA,
         'Cannot manage EntityStatus for a source Entity that does not match Extractor'
       );
     }
