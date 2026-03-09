@@ -14,9 +14,8 @@ ajv.addKeyword({
   type: 'object',
   async validate(_fields: any, page: PageType) {
     if (page.sharedId) {
-      const { default: templatesModel } = await import(
-        '#api/core/v1_layer/templates/templatesModel.js'
-      );
+      const { default: templatesModel } =
+        await import('#api/core/v1_layer/templates/templatesModel.js');
       const templates = await templatesModel.get({
         entityViewPage: page.sharedId,
       });

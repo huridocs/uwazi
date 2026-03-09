@@ -41,7 +41,7 @@ function asessCriteriaValid(validTemplates, options) {
         (property.get('type') === 'text' || property.get('type') === 'date');
       currentIsValid = Boolean(
         currentIsValid ||
-          (sortable && `metadata.${property.get('name')}` === options.currentCriteria.sort)
+        (sortable && `metadata.${property.get('name')}` === options.currentCriteria.sort)
       );
     });
 
