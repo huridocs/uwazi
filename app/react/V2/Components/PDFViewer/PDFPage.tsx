@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy, PDFPageProxy, PixelsPerInch } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
@@ -58,7 +57,7 @@ const PDFPage = ({
           const pageViewer = new PDFPageView({
             container: currentContainer,
             id: page,
-            scale: 1,
+            scale: defaultViewport.scale,
             defaultViewport,
             annotationMode: 0,
             eventBus,
@@ -130,8 +129,10 @@ const PDFPage = ({
 
     const unmountPage = () => {
       const pageViewer = pageViewerRef.current;
-      if (pageViewer?.renderingState !== RenderingStates.INITIAL) {
+      if (pageViewer?.renderingState === RenderingStates.FINISHED) {
         pageViewer?.destroy();
+      } else {
+        pageViewer?.cancelRendering();
       }
     };
 
@@ -155,7 +156,7 @@ const PDFPage = ({
   return (
     <div
       ref={pageContainerRef}
-      className="relative border mb-4 border-gray-200"
+      className="border mb-4 border-gray-200 relative"
       data-testid="pdf-page"
       data-pagenumber={page}
       style={pageHeight ? { minHeight: `${pageHeight}px` } : undefined}
@@ -165,6 +166,7 @@ const PDFPage = ({
           ...highlight,
           textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),
         };
+
         return (
           <div key={scaledHightlight.key} data-highlight-key={scaledHightlight.key}>
             <Highlight

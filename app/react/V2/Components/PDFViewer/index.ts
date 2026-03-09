@@ -9,6 +9,6 @@ const PDF = loadable(
   }
 );
 
-export type { Snippet, PDFHandle } from './PDF.js';
+export type { Snippet } from './PDF.js';
 export { PDF, selectionHandlers };
 export { calculateScaling } from './functions/calculateScaling.js';

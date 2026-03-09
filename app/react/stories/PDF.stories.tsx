@@ -77,14 +77,14 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
       <div className="flex flex-wrap items-end gap-4 text-sm">
         <button
           type="button"
-          className="bg-gray-50 px-4 py-2 rounded-md border-1 border-gray-300 cursor-pointer hover:bg-gray-100"
+          className="bg-gray-50 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-100 text-gray-900"
           onClick={goToPage2}
         >
           Go to page 2
         </button>
         <button
           type="button"
-          className="bg-gray-50 px-4 py-2 rounded-md border-1 border-gray-300  cursor-pointer hover:bg-gray-100"
+          className="bg-gray-50 px-4 py-2 rounded-md border border-gray-300  cursor-pointer hover:bg-gray-100 text-gray-900"
           onClick={scrollToFirstHighlight}
         >
           Scroll to first highlight
@@ -105,7 +105,6 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
           <p className="font-semibold">PDF Container:</p>
           <div className="p-4 h-[80vh] rounded-md border overflow-scroll">
             <PDF
-              ref={pdfRef}
               fileUrl="/sample.pdf"
               onSelect={handleSelect}
               onDeselect={handleDeselect}
@@ -118,7 +117,7 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
           <p>End of container</p>
         </div>
 
-        <div className="flex flex-col gap-2 basis-1/3 min-w-[260px] text-sm">
+        <div className="flex flex-col gap-2 basis-1/3 min-w-[260px] text-sm text-gray-900">
           <p className="font-semibold">Debug info</p>
           <div className="mt-2 space-y-1">
             <div>
@@ -130,7 +129,7 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
             </div>
             <div>
               <span className="font-semibold">Last selection:</span>
-              <pre className="mt-1 max-h-40 w-[360px] overflow-y-auto overflow-x-hidden bg-gray-100 p-2 rounded text-xs whitespace-pre-wrap break-words">
+              <pre className="mt-1 max-h-40 w-[360px] overflow-y-auto overflow-x-hidden bg-gray-100 p-2 rounded text-xs whitespace-pre-wrap">
                 {lastSelection ? JSON.stringify(lastSelection, null, 2) : '—'}
               </pre>
             </div>
