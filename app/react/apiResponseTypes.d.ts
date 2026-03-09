@@ -60,8 +60,10 @@ export type Template = TemplateSchema & {
   properties?: Property[];
 };
 
-export interface ClientSettings
-  extends Omit<Settings, '_id | filters | links | features | languages'> {
+export interface ClientSettings extends Omit<
+  Settings,
+  '_id | filters | links | features | languages'
+> {
   _id?: string;
   filters?: ClientSettingsFilterSchema[];
   languages?: ClientLanguageSchema[];

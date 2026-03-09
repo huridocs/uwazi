@@ -10,9 +10,7 @@ type Context = {
 
 const defaultContext: Context = { validateRequired: false };
 
-abstract class AbstractPropertyAssignmentCreatorService
-  implements PropertyAssignmentCreatorService
-{
+abstract class AbstractPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
   protected context: Context;
 
   constructor(context: Context = defaultContext) {
