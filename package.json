@@ -94,6 +94,7 @@
     ]
   },
   "resolutions": {
+    "tar": "7.5.10",
     "trim": "1.0.1",
     "node-fetch": "2.6.7",
     "ws": "8.18.0",
@@ -138,7 +139,7 @@
     "@types/redis": "^2.8.31",
     "@types/redlock": "^4.0.2",
     "@types/url-join": "^4.0.1",
-    "ajv": "^8.17.1",
+    "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
     "any-date-parser": "^1.5.4",
