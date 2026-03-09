@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { EntitySchema } from '#shared/types/entityType.js';

@@ -1,19 +1,18 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+const __filename = fileURLToPath(import.meta.url);
+const require = createRequire(import.meta.url);
 export default {
-  stories: [
-    '../app/react/stories/**/*.stories.mdx',
-    '../app/react/stories/**/*.stories.@(js|jsx|ts|tsx)',
-  ],
+  stories: ['../app/react/stories/**/*.stories.@(js|jsx|ts|tsx)'],
 
   staticDirs: ['../cypress/test_files'],
 
   addons: [
     '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-viewport',
-    '@storybook/addon-actions',
     '@storybook/addon-webpack5-compiler-babel',
     '@chromatic-com/storybook',
+    '@storybook/addon-docs'
   ],
 
   framework: {
@@ -398,6 +397,7 @@ export default {
         },
         fallback: {
           ...config.resolve?.fallback,
+          path: require.resolve('path-browserify'),
         },
         extensions: allExtensions,
         modules: [path.join(rootPath, 'node_modules'), ...(config.resolve?.modules || [])],
@@ -490,10 +490,6 @@ export default {
     };
   },
 
-  docs: {
-    autodocs: true,
-  },
-
   typescript: {
     reactDocgen: 'react-docgen-typescript',
   },
@@ -529,5 +525,5 @@ export default {
       ],
       sourceType: 'unambiguous',
     };
-  },
+  }
 };
