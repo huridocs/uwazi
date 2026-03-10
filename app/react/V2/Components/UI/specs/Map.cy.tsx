@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from '../../../testing/reduxStore.js';
 import { LMap } from '../../../../Map/LMap.js';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider, useSetAtom } from 'jotai';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { notificationAtom, notificationAtomType } from '#V2/atoms/index.js';
 import { NotificationsContainer } from '../NotificationsContainer.js';
 
