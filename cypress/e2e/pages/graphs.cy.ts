@@ -111,6 +111,7 @@ describe('Graphs in Page ', () => {
       cy.get('body').then($body => {
         if ($body.find('#panel-Advanced .monaco-editor textarea').length) {
           cy.get('#panel-Advanced .monaco-editor textarea')
+            .first()
             .realPress('Backspace')
             .realPress('Backspace');
         }

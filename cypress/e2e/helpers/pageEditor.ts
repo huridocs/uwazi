@@ -9,11 +9,11 @@ const getMonacoSelector = (mode: 'html' | 'javascript') =>
 const escapeRealType = (s: string) => s.replace(/\{/g, '{{}');
 
 const clearMonaco = (selector: string) => {
-  cy.get(selector).realClick().realPress(['Control', 'a']).realPress('Backspace');
+  cy.get(selector).first().realClick().realPress(['Control', 'a']).realPress('Backspace');
 };
 
 const typeMonaco = (selector: string, value: string) => {
-  cy.get(selector).realClick().realType(escapeRealType(value));
+  cy.get(selector).first().realClick().realType(escapeRealType(value));
 };
 
 const clearTarget = (selector: string) => {

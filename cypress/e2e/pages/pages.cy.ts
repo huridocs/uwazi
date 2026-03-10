@@ -170,6 +170,7 @@ describe('Pages', () => {
     });
 
     it('should set the entity as entity view', () => {
+      dismissModalIfVisible();
       cy.contains('a', 'Templates').click();
       cy.contains('a', 'Medida Provisional').click();
       cy.contains('Display entity view from page').click();
@@ -180,6 +181,7 @@ describe('Pages', () => {
     });
 
     it('display the entity in custom page', () => {
+      dismissModalIfVisible();
       cy.contains('a', 'Library').click();
       cy.contains('.multiselectItem-name > span', 'Medida Provisional', { timeout: 12000 }).click();
       cy.contains('Acevedo Jaramillo', { timeout: 12000 });
@@ -197,8 +199,8 @@ describe('Pages', () => {
   });
 
   describe('Pages list', () => {
-    const deletePage = (selector: string) => {
-      cy.get(selector).check();
+    const deletePage = (pageName: string) => {
+      cy.contains('tr', pageName).find('input[type="checkbox"]').check();
       cy.contains('Delete').click();
       cy.contains('Accept').click();
     };
@@ -215,7 +217,7 @@ describe('Pages', () => {
 
     it('should allow to cancel deletion', () => {
       cy.contains('a', 'Pages').click();
-      cy.get('table > tbody > tr:nth-child(4) > td label > input').check();
+      cy.contains('tr', 'Page with error').find('input[type="checkbox"]').check();
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
       cy.contains('div[role="dialog"] button', 'Cancel').click();
@@ -224,7 +226,7 @@ describe('Pages', () => {
     });
 
     it('should delete a page with confirmation', () => {
-      deletePage('table > tbody > tr:nth-child(4) > td label > input');
+      deletePage('Page with error');
       cy.contains('Deleted successfully');
       cy.contains('Country page');
       cy.contains('Page with error').should('not.exist');
@@ -232,7 +234,7 @@ describe('Pages', () => {
     });
 
     it('should not delete a page used as entity view', () => {
-      deletePage('table > tbody > tr:nth-child(1) > td label > input');
+      deletePage('Country page');
       cy.contains('An error occurred');
       cy.contains('Country page');
     });

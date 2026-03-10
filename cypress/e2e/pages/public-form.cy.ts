@@ -106,14 +106,11 @@ describe('Public Form', () => {
           cy.contains('button', 'Edit').click();
         });
       cy.contains('Markdown').click();
-      cy.get('#panel-Code .monaco-editor textarea')
-        .realClick()
-        .realPress(['Control', 'a'])
-        .realPress('Backspace')
-        .realClick()
-        .realType(
-          '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />'
-        );
+      typeInEditor(
+        'html',
+        '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
+        true
+      );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');
