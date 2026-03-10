@@ -368,6 +368,7 @@ Flag,علم
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,هل نسيت كلمة المرور؟
 Forms and email configuration,تكوين النماذج والبريد الإلكتروني
 From,From
@@ -399,6 +400,9 @@ Hybrid,هجين
 Icon,أيقونة
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
 Import,استيراد
