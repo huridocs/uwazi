@@ -32,8 +32,7 @@ function generateIds(properties: ThesaurusSchema[] = []) {
   }));
 }
 interface PropertyOrThesaurusSchema
-  extends Partial<PropertySchema>,
-    Partial<ThesaurusValueSchema> {}
+  extends Partial<PropertySchema>, Partial<ThesaurusValueSchema> {}
 
 const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
   properties.reduce<PropertyOrThesaurusSchema[]>((flatProps, p) => {
