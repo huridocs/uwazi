@@ -28,9 +28,12 @@ type Context = {
   targetLanguage?: LanguageISO6391;
 };
 
-abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends any[] = []>
-  implements UseCase<Input, Output, Args>
-{
+abstract class AbstractUseCase<
+  Input,
+  Output,
+  ExtendedDeps = {},
+  Args extends any[] = [],
+> implements UseCase<Input, Output, Args> {
   constructor(
     protected deps: Deps<ExtendedDeps>,
     private context?: Context
