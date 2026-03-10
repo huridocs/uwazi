@@ -23,6 +23,15 @@ interface StatusTask {
   status: TaskStatus;
 }
 
+type TaskListenerSetup = (
+  update: (updates: Partial<Pick<StatusTask, 'label' | 'progress'>>) => void,
+  complete: () => void,
+  fail: (details?: string) => void
+) => () => void;
+
+/** Stores cleanup functions (socket unsubscribes) keyed by task ID, outside the atom. */
+const taskCleanups = new Map<string, () => void>();
+
 interface RequestStatusState {
   notifications: StatusNotification[];
   unreadNotificationIds: string[];
@@ -108,11 +117,43 @@ const useRequestStatus = () => {
     }));
   };
 
-  const registerTask = (id: string, label: string, initialProgress?: number) => {
+  const registerTask = (
+    id: string,
+    label: string,
+    setupListeners?: TaskListenerSetup,
+    initialProgress?: number
+  ) => {
+    // filter out any existing task with the same id (re-registration / re-run)
     setState(prev => ({
       ...prev,
-      tasks: [...prev.tasks, { id, label, progress: initialProgress, status: 'running' }],
+      tasks: [
+        ...prev.tasks.filter(t => t.id !== id),
+        { id, label, progress: initialProgress, status: 'running' },
+      ],
     }));
+
+    if (setupListeners) {
+      const existingCleanup = taskCleanups.get(id);
+      if (existingCleanup) {
+        existingCleanup();
+        taskCleanups.delete(id);
+      }
+      const cleanup = setupListeners(
+        updates => updateTask(id, updates),
+        () => endTask(id, 'completed'),
+        () => endTask(id, 'failed')
+      );
+      taskCleanups.set(id, cleanup);
+    }
+  };
+
+  const removeTask = (id: string) => {
+    const cleanup = taskCleanups.get(id);
+    if (cleanup) {
+      cleanup();
+      taskCleanups.delete(id);
+    }
+    setState(prev => ({ ...prev, tasks: prev.tasks.filter(t => t.id !== id) }));
   };
 
   const updateTask = (
@@ -207,6 +248,7 @@ const useRequestStatus = () => {
     registerTask,
     updateTask,
     endTask,
+    removeTask,
     clearNotifications,
     clearAll,
     removeNotification,
@@ -217,5 +259,5 @@ const useRequestStatus = () => {
   };
 };
 
-export type { NotificationType, TaskStatus, OverallStatus, StatusNotification, StatusTask, RequestStatusState };
+export type { NotificationType, TaskStatus, OverallStatus, StatusNotification, StatusTask, RequestStatusState, TaskListenerSetup };
 export { requestStatusAtom, useRequestStatus, startLoading, endLoading, MIN_LOADING_MS };

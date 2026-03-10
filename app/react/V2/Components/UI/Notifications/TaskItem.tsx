@@ -3,12 +3,14 @@ import {
   ArrowPathIcon,
   CheckCircleIcon,
   XCircleIcon,
+  XMarkIcon,
 } from '@heroicons/react/20/solid';
 import { ProgressBar } from '#V2/Components/UI/ProgressBar.js';
 import { StatusTask, TaskStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface TaskItemProps {
   task: StatusTask;
+  onRemove: (id: string) => void;
 }
 
 const statusIcon: Record<TaskStatus, React.ReactNode> = {
@@ -35,7 +37,7 @@ const progressColor: Record<TaskStatus, 'primary' | 'success' | 'error'> = {
   failed: 'error',
 };
 
-const TaskItem = ({ task }: TaskItemProps) => (
+const TaskItem = ({ task, onRemove }: TaskItemProps) => (
   <div className="flex flex-col gap-1.5 p-3 rounded-lg border border-gray-200 bg-gray-50">
     <div className="flex items-center gap-2">
       {statusIcon[task.status]}
@@ -43,6 +45,14 @@ const TaskItem = ({ task }: TaskItemProps) => (
       <span className={`text-xs font-medium ${statusLabelColor[task.status]}`}>
         {statusLabel[task.status]}
       </span>
+      <button
+        type="button"
+        onClick={() => onRemove(task.id)}
+        aria-label="Hide task"
+        className="ml-1 rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors shrink-0"
+      >
+        <XMarkIcon className="w-3.5 h-3.5" aria-hidden="true" />
+      </button>
     </div>
 
     {task.progress !== undefined && (

@@ -21,6 +21,7 @@ const RequestStatus = () => {
     tasks,
     togglePanel,
     removeNotification,
+    removeTask,
     clearAll,
   } = useRequestStatus();
 
@@ -109,6 +110,7 @@ const RequestStatus = () => {
         tasks={tasks}
         onClose={togglePanel}
         onDismissNotification={removeNotification}
+        onRemoveTask={removeTask}
         onClear={clearAll}
       />
     </>

@@ -40,6 +40,9 @@ import { PropertySidepanel } from './components/sidepanel/PropertySidepanel.js';
 import { TrainModelModal } from './components/TrainModelModal.js';
 import { ProcessExtractorModal } from './components/ProcessExtractorModal.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { socket } from '#app/socket.js';
+import { ModelEvents } from './events.js';
+import type { IXModelStatusCallback, IXErrorTrainingModelCallback } from './events.js';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
@@ -94,7 +97,7 @@ const IXSuggestions = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
-  const { notify } = useRequestStatus();
+  const { notify, registerTask } = useRequestStatus();
   const setAcceptedSuggestionsAtom = useSetAtom(acceptedSuggestions);
 
   const filteredTemplates = () =>
@@ -140,9 +143,44 @@ const IXSuggestions = () => {
   ) => {
     if (status.status === ixStatus.ready) {
       if (extractor._id) {
+        const extractorId = extractor._id;
+        registerTask(
+          extractorId,
+          `${t('System', 'Training model', null, false)}: ${extractor.name}`,
+          (update, complete, fail) => {
+            const handleStatus: IXModelStatusCallback = (evtId, modelStatus, _message, data) => {
+              if (evtId !== extractorId) return;
+              if (modelStatus === ixStatus.processing_model) {
+                update({ label: `${t('System', 'Training model', null, false)}: ${extractor.name}` });
+              } else if (modelStatus === ixStatus.processing_suggestions) {
+                const pct = data?.total ? Math.round((data.processed / data.total) * 100) : 0;
+                update({
+                  label: `${t('System', 'Finding suggestions', null, false)}: ${extractor.name}`,
+                  progress: pct,
+                });
+              } else if (modelStatus === ixStatus.processing_auto_accept) {
+                const pct =
+                  data?.total ? Math.round((data.processed / data.total) * 100) : undefined;
+                update({
+                  label: `${t('System', 'Accepting suggestions', null, false)}: ${extractor.name}`,
+                  ...(pct !== undefined && { progress: pct }),
+                });
+              } else if (modelStatus === ixStatus.ready) {
+                complete();
+              }
+            };
+            const handleError: IXErrorTrainingModelCallback = ({ message }) => fail(message);
+            socket.on(ModelEvents.MODEL_STATUS, handleStatus);
+            socket.on(ModelEvents.MODEL_ERROR, handleError);
+            return () => {
+              socket.off(ModelEvents.MODEL_STATUS, handleStatus);
+              socket.off(ModelEvents.MODEL_ERROR, handleError);
+            };
+          }
+        );
         try {
           await suggestionsAPI.findSuggestions({
-            extractorId: extractor._id,
+            extractorId,
             suggestionsToFind: findAmount,
             samplePolicy,
           });
@@ -173,8 +211,43 @@ const IXSuggestions = () => {
 
   const processExtractor = async (data: Omit<suggestionsAPI.ProcessParameters, 'extractorId'>) => {
     if (extractor._id) {
+      const extractorId = extractor._id;
+      registerTask(
+        extractorId,
+        `${t('System', 'Finding suggestions', null, false)}: ${extractor.name}`,
+        (update, complete, fail) => {
+          const handleStatus: IXModelStatusCallback = (evtId, modelStatus, _message, evtData) => {
+            if (evtId !== extractorId) return;
+            if (modelStatus === ixStatus.processing_suggestions) {
+              const pct = evtData?.total
+                ? Math.round((evtData.processed / evtData.total) * 100)
+                : 0;
+              update({
+                label: `${t('System', 'Finding suggestions', null, false)}: ${extractor.name}`,
+                progress: pct,
+              });
+            } else if (modelStatus === ixStatus.processing_auto_accept) {
+              const pct =
+                evtData?.total ? Math.round((evtData.processed / evtData.total) * 100) : undefined;
+              update({
+                label: `${t('System', 'Accepting suggestions', null, false)}: ${extractor.name}`,
+                ...(pct !== undefined && { progress: pct }),
+              });
+            } else if (modelStatus === ixStatus.ready) {
+              complete();
+            }
+          };
+          const handleError: IXErrorTrainingModelCallback = ({ message }) => fail(message);
+          socket.on(ModelEvents.MODEL_STATUS, handleStatus);
+          socket.on(ModelEvents.MODEL_ERROR, handleError);
+          return () => {
+            socket.off(ModelEvents.MODEL_STATUS, handleStatus);
+            socket.off(ModelEvents.MODEL_ERROR, handleError);
+          };
+        }
+      );
       try {
-        const params = { ...data, extractorId: extractor._id };
+        const params = { ...data, extractorId };
 
         const response = await suggestionsAPI.process(params);
 

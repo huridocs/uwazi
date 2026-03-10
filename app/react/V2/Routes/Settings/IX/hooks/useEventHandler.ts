@@ -85,10 +85,10 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
     socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, handleSuggestionError);
 
     return () => {
-      socket.off(ModelEvents.MODEL_STATUS);
-      socket.off(ModelEvents.MODEL_ERROR);
-      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS);
-      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_ERROR);
+      socket.off(ModelEvents.MODEL_STATUS, handleModelStatus);
+      socket.off(ModelEvents.MODEL_ERROR, handleModelError);
+      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS, handleSuggestionSuccess);
+      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, handleSuggestionError);
     };
   }, [extractorId, revalidate, setAcceptedSuggestionsAtom, notify, updateStatus]);
 };

@@ -1,9 +1,11 @@
 import React from 'react';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
+import { Button } from '#V2/Components/UI/Button.js';
 import { StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
 import { NotificationItem } from './NotificationItem.js';
 import { TaskItem } from './TaskItem.js';
+import { Translate } from '#app/I18N/index.js';
 
 interface NotificationsPanelProps {
   isOpen: boolean;
@@ -11,6 +13,7 @@ interface NotificationsPanelProps {
   tasks: StatusTask[];
   onClose: () => void;
   onDismissNotification: (id: string) => void;
+  onRemoveTask: (id: string) => void;
   onClear: () => void;
 }
 
@@ -28,33 +31,22 @@ const NotificationsPanel = ({
   tasks,
   onClose,
   onDismissNotification,
+  onRemoveTask,
   onClear,
 }: NotificationsPanelProps) => {
   const isEmpty = notifications.length === 0 && tasks.length === 0;
   const hasClearable = notifications.length > 0 || tasks.some(t => t.status !== 'running');
-
-  const clearButton = hasClearable ? (
-    <button
-      type="button"
-      onClick={onClear}
-      aria-label="Clear notifications and completed tasks"
-      className="flex items-center gap-1 px-2 py-1 text-xs text-gray-500 rounded cursor-pointer hover:bg-gray-100 hover:text-gray-700 transition-colors"
-    >
-      <TrashIcon className="w-3.5 h-3.5" aria-hidden="true" />
-      Clear
-    </button>
-  ) : undefined;
 
   return (
     <div data-testid="notifications-panel" className="whitespace-normal">
       <Sidepanel
         isOpen={isOpen}
         closeSidepanelFunction={onClose}
-        title={clearButton}
+        title={<Translate className="capitalize">Notifications</Translate>}
         size="medium"
         withOverlay
       >
-        <Sidepanel.Body className="flex flex-col gap-4">
+        <Sidepanel.Body className="flex flex-col gap-4 overflow-y-auto">
           {isEmpty && <EmptyState />}
 
           {tasks.length > 0 && (
@@ -65,7 +57,7 @@ const NotificationsPanel = ({
               <ul className="flex flex-col gap-2" role="list">
                 {tasks.map(task => (
                   <li key={task.id}>
-                    <TaskItem task={task} />
+                    <TaskItem task={task} onRemove={onRemoveTask} />
                   </li>
                 ))}
               </ul>
@@ -78,7 +70,7 @@ const NotificationsPanel = ({
                 Notifications
               </h2>
               <ul className="flex flex-col gap-2" role="list">
-                {notifications.map(notification => (
+                {[...notifications].reverse().map(notification => (
                   <li key={notification.id}>
                     <NotificationItem
                       notification={notification}
@@ -90,6 +82,16 @@ const NotificationsPanel = ({
             </section>
           )}
         </Sidepanel.Body>
+        {hasClearable && (
+          <Sidepanel.Footer className="p-4 border-t border-gray-100">
+            <Button styling="light" color="primary" onClick={onClear} className="w-full">
+              <span className="flex items-center justify-center gap-1.5">
+                <TrashIcon className="w-3.5 h-3.5" aria-hidden="true" />
+                <Translate>Empty</Translate>
+              </span>
+            </Button>
+          </Sidepanel.Footer>
+        )}
       </Sidepanel>
     </div>
   );

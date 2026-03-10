@@ -20,7 +20,7 @@ const sidepanelHeader = (
   title?: React.ReactNode,
   titleId?: string
 ) => (
-  <div className="flex p-4 mb-2 text-gray-500">
+  <div className="flex p-4 mb-2 text-gray-500 justify-between">
     <h1 className="text-base font-bold grow" id={titleId}>
       {title}
     </h1>
