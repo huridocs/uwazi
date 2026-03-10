@@ -123,8 +123,11 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
+          updateStrategy:
+            | 'OnlineRelationshipPropertyUpdateStrategy'
+            | 'QueuedRelationshipPropertyUpdateStrategy';
         };
+    filterUnauthorizedRelated?: boolean;
     automaticTranslation?: AutomaticTranslationConfig;
     [k: string]: unknown | undefined;
   };

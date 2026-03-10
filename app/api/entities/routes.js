@@ -217,6 +217,7 @@ export default app => {
           const { GetEntityUseCaseFactory } = await import(
             '../core/infrastructure/factories/GetEntityUseCaseFactory.js'
           );
+          const { User } = await import('../users.v2/model/User.js');
 
           // Support both sharedId and _id parameters (V1 compatibility)
           const { sharedId, _id, include = [], omitRelationships } = req.query;
@@ -240,6 +241,15 @@ export default app => {
           // Convert omitRelationships to includeRelationships (inverse logic)
           const includeRelationships = !omitRelationships;
 
+          // Convert req.user to User domain object if authenticated
+          const user = req.user
+            ? User.createFrom({
+                id: req.user._id.toString(),
+                role: req.user.role,
+                groups: req.user.groups || [],
+              })
+            : undefined;
+
           const useCase = GetEntityUseCaseFactory.default(language);
           const result = await useCase.execute({
             sharedId: entityId,
@@ -247,6 +257,7 @@ export default app => {
             published,
             includeRelationships,
             isAuthenticated,
+            user,
           });
 
           if (result.isError()) {

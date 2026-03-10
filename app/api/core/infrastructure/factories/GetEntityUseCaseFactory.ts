@@ -8,6 +8,9 @@ import { GetEntityUseCase } from '../../application/GetEntity.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
+import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 export class GetEntityUseCaseFactory {
   static default(targetLanguage?: LanguageISO6391) {
@@ -27,10 +30,30 @@ export class GetEntityUseCaseFactory {
       transactionManager as MongoTransactionManager
     );
 
+    const permissionChecker = new MongoEntityPermissionChecker(
+      getConnection(),
+      transactionManager as MongoTransactionManager
+    );
+
+    const templatesDataSource = TemplatesDataSourceFactory.cached(
+      transactionManager as MongoTransactionManager
+    );
+
+    const settingsDataSource = SettingsDataSourceFactory.cached(
+      transactionManager as MongoTransactionManager
+    );
+
     const actor = permissionsContext.getUserInContext();
 
     const useCase = new GetEntityUseCase(
-      { entityDAO, relationshipsDataSource, filesDataSource },
+      {
+        entityDAO,
+        relationshipsDataSource,
+        filesDataSource,
+        permissionChecker,
+        templatesDataSource,
+        settingsDataSource,
+      },
       actor ? { actor, tenant, targetLanguage } : undefined
     );
 

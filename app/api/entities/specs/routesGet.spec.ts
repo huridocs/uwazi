@@ -1,15 +1,15 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import db from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment';
+import { setUpApp } from '#api/utils/testingRoutes';
+import db from '#api/utils/testing_db';
 
-import routes from '#api/entities/routes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import routes from '#api/entities/routes';
+import { testingTenants } from '#api/utils/testingTenants';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { UserRole } from '#shared/types/userSchema.js';
-import fixtures, { permissions, unpublishedDocId } from './fixtures.js';
+import fixtures, { permissions, unpublishedDocId, user1Id } from './routesGetFixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -18,27 +18,60 @@ jest.mock(
   }
 );
 
+const authenticatedUser = {
+  _id: db.id(),
+  role: UserRole.COLLABORATOR,
+  username: 'user 1',
+  email: 'user@test.com',
+};
+
+const getEntity = async (
+  appInstance: Application,
+  sharedId: string,
+  options: {
+    omitRelationships?: boolean;
+    include?: string[];
+    language?: string;
+    _id?: string;
+    expectStatus?: number;
+  } = {}
+) => {
+  const query: any = {};
+  if (options._id) {
+    query._id = options._id;
+  } else {
+    query.sharedId = sharedId;
+  }
+  if (options.omitRelationships !== undefined) query.omitRelationships = options.omitRelationships;
+  if (options.include) query.include = JSON.stringify(options.include);
+
+  const req = request(appInstance).get('/api/entities').query(query);
+  if (options.language) req.set('Accept-Language', options.language);
+
+  const response: SuperTestResponse = await req;
+
+  if (options.expectStatus !== undefined) {
+    expect(response).toHaveStatus(options.expectStatus);
+    return response;
+  }
+
+  expect(response).toHaveStatus(200);
+  return response.body.rows[0];
+};
+
+let app: Application;
+let appWithoutUser: Application;
+
+beforeAll(() => {
+  testingTenants.mockCurrentTenant({
+    name: 'default',
+  });
+});
+
 describe.each([
   { title: 'GET /api/entities - V1', featureFlags: { v2GetEntity: false } },
   { title: 'GET /api/entities - V2', featureFlags: { v2GetEntity: true } },
 ])('$title', ({ featureFlags }) => {
-  const authenticatedUser = {
-    _id: db.id(),
-    role: UserRole.COLLABORATOR,
-    username: 'user 1',
-    email: 'user@test.com',
-  };
-
-  let app: Application;
-  let appWithoutUser: Application;
-
-  beforeAll(() => {
-    testingTenants.mockCurrentTenant({
-      name: 'default',
-      featureFlags,
-    });
-  });
-
   beforeEach(async () => {
     app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
       (req as any).user = authenticatedUser;
@@ -47,7 +80,6 @@ describe.each([
 
     appWithoutUser = setUpApp(routes);
 
-    // @ts-ignore
     await testingEnvironment.setUp(fixtures);
 
     testingTenants.changeCurrentTenant({ featureFlags });
@@ -56,77 +88,52 @@ describe.each([
   describe('Basic entity retrieval', () => {
     it('should return entity by sharedId', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared' });
+      const entity = await getEntity(app, 'shared');
 
-      expect(response).toHaveStatus(200);
-      expect(response.body).toMatchObject({
-        rows: [
-          {
-            sharedId: 'shared',
-            title: 'Penguin almost done',
-          },
-        ],
+      expect(entity).toMatchObject({
+        sharedId: 'shared',
+        title: 'Penguin almost done',
       });
     });
 
     it('should return entity by MongoDB _id', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared1', omitRelationships: true });
+      const entity = await getEntity(app, 'shared1', { omitRelationships: true });
 
-      expect(response).toHaveStatus(200);
-      expect(response.body).toMatchObject({
-        rows: [
-          {
-            sharedId: 'shared1',
-            title: expect.any(String),
-          },
-        ],
+      expect(entity).toMatchObject({
+        sharedId: 'shared1',
+        title: expect.any(String),
       });
     });
 
     it('should return 404 when entity does not exist', async () => {
-      const response: SuperTestResponse = await request(appWithoutUser)
-        .get('/api/entities')
-        .query({ sharedId: 'nonexistent' });
+      const response = await getEntity(appWithoutUser, 'nonexistent', { expectStatus: 404 });
 
-      expect(response).toHaveStatus(404);
       expect(response.body).toMatchObject({ rows: [] });
     });
   });
 
   describe('Permissions inclusion', () => {
     it('should return entity with permissions when requested via include parameter', async () => {
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'sharedPerm', include: JSON.stringify(['permissions']) });
+      const entity = await getEntity(app, 'sharedPerm', { include: ['permissions'] });
 
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows[0]).toMatchObject({
-        permissions,
-      });
+      expect(entity).toMatchObject({ permissions });
     });
   });
 
   describe('Published status filtering', () => {
     it('should not return unpublished entities to unauthenticated users', async () => {
-      const response: SuperTestResponse = await request(appWithoutUser)
-        .get('/api/entities')
-        .query({ _id: unpublishedDocId.toString(), omitRelationships: true });
+      const response = await getEntity(appWithoutUser, '', {
+        _id: unpublishedDocId.toString(),
+        omitRelationships: true,
+        expectStatus: 404,
+      });
 
-      expect(response).toHaveStatus(404);
       expect(response.body).toMatchObject({ rows: [] });
     });
 
     it('should return unpublished entities to authenticated users with permission', async () => {
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'other', omitRelationships: true });
-
-      expect(response).toHaveStatus(200);
+      await getEntity(app, 'other', { omitRelationships: true });
     });
   });
 
@@ -134,12 +141,9 @@ describe.each([
     describe('when omitRelationships=false (default)', () => {
       it('should include relationships for authenticated users', async () => {
         new UserInContextMockFactory().mock(authenticatedUser);
-        const response: SuperTestResponse = await request(app)
-          .get('/api/entities')
-          .query({ sharedId: 'getWithRelRoot' });
+        const entity = await getEntity(app, 'getWithRelRoot');
 
-        expect(response).toHaveStatus(200);
-        expect(response.body.rows[0]).toMatchObject({
+        expect(entity).toMatchObject({
           relations: [
             expect.objectContaining({ entity: 'getWithRelRoot' }),
             expect.objectContaining({ entity: 'getWithRelPublic' }),
@@ -148,12 +152,9 @@ describe.each([
       });
 
       it('should include relationships for unauthenticated users viewing published entities', async () => {
-        const response: SuperTestResponse = await request(appWithoutUser)
-          .get('/api/entities')
-          .query({ sharedId: 'getWithRelRoot' });
+        const entity = await getEntity(appWithoutUser, 'getWithRelRoot');
 
-        expect(response).toHaveStatus(200);
-        expect(response.body.rows[0]).toMatchObject({
+        expect(entity).toMatchObject({
           relations: expect.any(Array),
         });
       });
@@ -162,12 +163,8 @@ describe.each([
     describe('when omitRelationships=true', () => {
       it('should not include relationships field', async () => {
         new UserInContextMockFactory().mock(authenticatedUser);
-        const response: SuperTestResponse = await request(app)
-          .get('/api/entities')
-          .query({ sharedId: 'shared', omitRelationships: true });
+        const entity = await getEntity(app, 'shared', { omitRelationships: true });
 
-        expect(response).toHaveStatus(200);
-        const entity = response.body.rows[0];
         expect(entity.relations).toBeUndefined();
         expect(entity.relationships).toBeUndefined();
       });
@@ -175,23 +172,15 @@ describe.each([
 
     describe('filtering unpublished relationships for unauthenticated users', () => {
       it('should filter out unpublished entities from relations array', async () => {
-        const response: SuperTestResponse = await request(appWithoutUser)
-          .get('/api/entities')
-          .query({ sharedId: 'getWithRelRoot' });
+        const entity = await getEntity(appWithoutUser, 'getWithRelRoot');
 
-        expect(response).toHaveStatus(200);
-        expect(response.body.rows[0]).toMatchObject({
+        expect(entity).toMatchObject({
           relations: expect.any(Array),
         });
       });
 
       it('should return relations property (not relationships)', async () => {
-        const response: SuperTestResponse = await request(appWithoutUser)
-          .get('/api/entities')
-          .query({ sharedId: 'getWithRelRoot' });
-
-        expect(response).toHaveStatus(200);
-        const entity = response.body.rows[0];
+        const entity = await getEntity(appWithoutUser, 'getWithRelRoot');
 
         expect(entity).toMatchObject({
           relations: expect.any(Array),
@@ -204,11 +193,8 @@ describe.each([
   describe('Response format', () => {
     it('should return response with rows array', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared' });
+      const response = await getEntity(app, 'shared', { expectStatus: 200 });
 
-      expect(response).toHaveStatus(200);
       expect(response.body).toMatchObject({
         rows: expect.any(Array),
       });
@@ -216,11 +202,8 @@ describe.each([
 
     it('should limit results to 1 entity', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared' });
+      const response = await getEntity(app, 'shared', { expectStatus: 200 });
 
-      expect(response).toHaveStatus(200);
       expect(response.body.rows.length).toBeLessThanOrEqual(1);
     });
   });
@@ -228,12 +211,9 @@ describe.each([
   describe('Language handling', () => {
     it('should return entity in default language (Spanish)', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared' });
+      const entity = await getEntity(app, 'shared');
 
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows[0]).toMatchObject({
+      expect(entity).toMatchObject({
         language: 'es',
         title: 'Penguin almost done',
         sharedId: 'shared',
@@ -242,13 +222,9 @@ describe.each([
 
     it('should return English version when explicitly requested', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared' })
-        .set('Accept-Language', 'en');
+      const entity = await getEntity(app, 'shared', { language: 'en' });
 
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows[0]).toMatchObject({
+      expect(entity).toMatchObject({
         language: 'en',
         title: 'Batman finishes',
         sharedId: 'shared',
@@ -260,13 +236,9 @@ describe.each([
 
     it('should return Portuguese version when explicitly requested', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared' })
-        .set('Accept-Language', 'pt');
+      const entity = await getEntity(app, 'shared', { language: 'pt' });
 
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows[0]).toMatchObject({
+      expect(entity).toMatchObject({
         language: 'pt',
         title: 'Penguin almost done',
         sharedId: 'shared',
@@ -280,13 +252,12 @@ describe.each([
   describe('Metadata with relationship properties', () => {
     it('should return entity with relationship metadata properties', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared', omitRelationships: true })
-        .set('Accept-Language', 'en');
+      const entity = await getEntity(app, 'shared', {
+        omitRelationships: true,
+        language: 'en',
+      });
 
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows[0]).toMatchObject({
+      expect(entity).toMatchObject({
         metadata: {
           friends: [
             expect.objectContaining({
@@ -300,13 +271,12 @@ describe.each([
 
     it('should include denormalized data in relationship properties', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared', omitRelationships: true })
-        .set('Accept-Language', 'en');
+      const entity = await getEntity(app, 'shared', {
+        omitRelationships: true,
+        language: 'en',
+      });
 
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows[0].metadata.friends[0]).toMatchObject({
+      expect(entity.metadata.friends[0]).toMatchObject({
         value: expect.any(String),
         label: expect.any(String),
       });
@@ -316,13 +286,8 @@ describe.each([
   describe('Documents and Attachments', () => {
     it('should include documents array for entities with documents', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared', omitRelationships: true });
+      const entity = await getEntity(app, 'shared', { omitRelationships: true });
 
-      expect(response).toHaveStatus(200);
-
-      const entity = response.body.rows[0];
       expect(entity).toMatchObject({
         documents: [
           { filename: expect.any(String), type: 'document', entity: 'shared' },
@@ -333,13 +298,8 @@ describe.each([
 
     it('should include attachments array for entities with attachments', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared', omitRelationships: true });
+      const entity = await getEntity(app, 'shared', { omitRelationships: true });
 
-      expect(response).toHaveStatus(200);
-
-      const entity = response.body.rows[0];
       expect(entity).toMatchObject({
         attachments: [{ filename: expect.any(String), type: 'attachment', entity: 'shared' }],
       });
@@ -347,13 +307,8 @@ describe.each([
 
     it('should include empty arrays when entity has no documents/attachments', async () => {
       new UserInContextMockFactory().mock(authenticatedUser);
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'getWithRelPublic', omitRelationships: true });
+      const entity = await getEntity(app, 'getWithRelPublic', { omitRelationships: true });
 
-      expect(response).toHaveStatus(200);
-
-      const entity = response.body.rows[0];
       expect(entity).toMatchObject({
         documents: [],
         attachments: [],
@@ -362,22 +317,17 @@ describe.each([
   });
 });
 
-// V2-only tests for metadata relationship permission filtering
+const collaboratorUser = {
+  _id: db.id(),
+  role: UserRole.COLLABORATOR,
+  username: 'collaborator',
+  email: 'collaborator@test.com',
+};
+
+let appWithCollaborator: Application;
+let appWithUser1: Application;
+
 describe('GET /api/entities - V2 - Metadata relationship permission filtering', () => {
-  const collaboratorUser = {
-    _id: db.id(),
-    role: UserRole.COLLABORATOR,
-    username: 'collaborator',
-    email: 'collaborator@test.com',
-  };
-
-  const user1Id = db.id();
-
-  let app: Application;
-  let appWithoutUser: Application;
-  let appWithCollaborator: Application;
-  let appWithUser1: Application;
-
   beforeAll(() => {
     testingTenants.mockCurrentTenant({
       name: 'default',
@@ -417,174 +367,178 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
       next();
     });
 
-    // @ts-ignore
     await testingEnvironment.setUp(fixtures);
+
+    testingTenants.changeCurrentTenant({ featureFlags: { v2GetEntity: true } });
   });
 
-  it('should filter out unpublished entities from metadata relationship properties for unauthenticated users', async () => {
-    const response: SuperTestResponse = await request(appWithoutUser)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'testEntityWithMixedRefs', omitRelationships: true });
+  it('should mark unpublished entities with authorized:false for unauthenticated users', async () => {
+    const entity = await getEntity(appWithoutUser, 'testEntityWithMixedRefs', {
+      omitRelationships: true,
+      language: 'en',
+    });
 
-    expect(response).toHaveStatus(200);
-
-    const entity = response.body.rows[0];
-
-    // Should include published entity 'shared1' in friends
-    expect(entity.metadata.friends).toEqual([
-      expect.objectContaining({ value: 'shared1', label: expect.any(String) }),
+    expect(entity.metadata.friends).toMatchObject([
+      { value: 'shared1', label: expect.any(String) },
+      { value: 'unpublishedForTest', authorized: false },
     ]);
-
-    // Should NOT include unpublished entity in relationships
-    expect(entity.metadata.friends).not.toContainEqual(
-      expect.objectContaining({ value: 'unpublishedForTest' })
-    );
   });
 
   it('should include entities user has explicit permissions to, even if unpublished', async () => {
-    const response: SuperTestResponse = await request(appWithUser1)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'entityPointingToOther', omitRelationships: true });
+    const entity = await getEntity(appWithUser1, 'entityPointingToOther', {
+      omitRelationships: true,
+      language: 'en',
+    });
 
-    expect(response).toHaveStatus(200);
-
-    const entity = response.body.rows[0];
-
-    // User has permission to 'other', should see it in metadata
     expect(entity.metadata.friends).toContainEqual(
-      expect.objectContaining({
-        value: 'other',
-        label: expect.any(String),
-      })
+      expect.objectContaining({ value: 'other', label: expect.any(String) })
     );
   });
 
-  it('should filter out entities user does not have permissions to access', async () => {
-    const response: SuperTestResponse = await request(appWithCollaborator)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'entityWithRestrictedRef', omitRelationships: true });
+  it('should mark entities user lacks permissions to with authorized:false', async () => {
+    const entity = await getEntity(appWithCollaborator, 'entityWithRestrictedRef', {
+      omitRelationships: true,
+      language: 'en',
+    });
 
-    expect(response).toHaveStatus(200);
-
-    const entity = response.body.rows[0];
-
-    // Should include accessible entity
-    expect(entity.metadata.friends).toContainEqual(expect.objectContaining({ value: 'shared2' }));
-
-    // Should NOT include restricted entity
-    expect(entity.metadata.friends).not.toContainEqual(
-      expect.objectContaining({ value: 'restrictedEntity' })
-    );
+    expect(entity.metadata.friends).toMatchObject([
+      { value: 'shared2', label: expect.any(String) },
+      { value: 'restrictedEntity', authorized: false },
+    ]);
   });
 
   it('should filter multiple relationship properties independently', async () => {
-    const response: SuperTestResponse = await request(appWithoutUser)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'shared', omitRelationships: true });
+    const entity = await getEntity(appWithoutUser, 'shared', {
+      omitRelationships: true,
+      language: 'en',
+    });
 
-    expect(response).toHaveStatus(200);
+    expect(entity.metadata.friends).toMatchObject([
+      { value: 'shared2', label: expect.any(String) },
+    ]);
+    expect(entity.metadata.friends[0]).not.toHaveProperty('authorized');
 
-    const entity = response.body.rows[0];
-
-    // Both properties should be filtered based on published status
-    expect(entity.metadata.friends).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: 'shared2' })])
-    );
-
-    expect(entity.metadata.enemies).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: 'shared2' })])
-    );
+    expect(entity.metadata.enemies).toMatchObject([
+      { value: 'shared2', label: expect.any(String) },
+    ]);
+    expect(entity.metadata.enemies[0]).not.toHaveProperty('authorized');
   });
 
-  it('should return empty array when all referenced entities are inaccessible', async () => {
-    const response: SuperTestResponse = await request(appWithoutUser)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'entityWithOnlyRestrictedRefs', omitRelationships: true });
+  it('should mark all inaccessible referenced entities with authorized:false', async () => {
+    const entity = await getEntity(appWithoutUser, 'entityWithOnlyRestrictedRefs', {
+      omitRelationships: true,
+      language: 'en',
+    });
 
-    expect(response).toHaveStatus(200);
-
-    const entity = response.body.rows[0];
-
-    // Should have empty array, not undefined
-    expect(entity.metadata.friends).toEqual([]);
+    expect(entity.metadata.friends.length).toBeGreaterThan(0);
+    entity.metadata.friends.forEach((friend: any) => {
+      expect(friend.authorized).toBe(false);
+    });
   });
 
-  it('should handle mixed accessible and inaccessible entities in same relationship array', async () => {
-    const response: SuperTestResponse = await request(appWithoutUser)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'entityWithMixedAccess', omitRelationships: true });
+  it('should mark inaccessible entities with authorized:false while keeping accessible ones unmarked', async () => {
+    const entity = await getEntity(appWithoutUser, 'entityWithMixedAccess', {
+      omitRelationships: true,
+      language: 'en',
+    });
 
-    expect(response).toHaveStatus(200);
-
-    const entity = response.body.rows[0];
-
-    // Should only include accessible entities (published for unauthenticated)
-    expect(entity.metadata.enemies.length).toBe(2); // Only 2 published entities
+    expect(entity.metadata.enemies).toHaveLength(3);
     expect(entity.metadata.enemies).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ value: 'shared1', label: expect.any(String) }),
         expect.objectContaining({ value: 'shared2', label: expect.any(String) }),
+        expect.objectContaining({ value: 'restrictedEntity', authorized: false }),
       ])
     );
-
-    // Should NOT include unpublished
-    expect(entity.metadata.enemies).not.toContainEqual(
-      expect.objectContaining({ value: 'unpublishedForTest' })
-    );
   });
 
-  it('should preserve inherited property data only for accessible entities', async () => {
-    const response: SuperTestResponse = await request(appWithoutUser)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'shared', omitRelationships: true });
+  it('should keep restricted entities with authorized:false flag while preserving denormalized data', async () => {
+    const entity = await getEntity(appWithoutUser, 'entityReferencingUnpublished', {
+      omitRelationships: true,
+      language: 'en',
+    });
 
-    expect(response).toHaveStatus(200);
-
-    const entity = response.body.rows[0];
-
-    // Accessible entity should have inherited property
-    const accessibleEnemy = entity.metadata.enemies.find((e: any) => e.value === 'shared2');
-    expect(accessibleEnemy).toBeDefined();
-    // Enemy property has inherit config, should have inheritedValue
-    if (accessibleEnemy.inheritedValue) {
-      expect(accessibleEnemy.inheritedValue).toEqual(expect.any(Array));
-    }
-  });
-
-  it('should not leak entity information through metadata for completely restricted entities', async () => {
-    const response: SuperTestResponse = await request(appWithoutUser)
-      .get('/api/entities')
-      .set('Accept-Language', 'en')
-      .query({ sharedId: 'entityReferencingUnpublished', omitRelationships: true });
-
-    expect(response).toHaveStatus(200);
-
-    const entity = response.body.rows[0];
-
-    // Check that unpublished entity is not in the array at all
-    const unpublishedRef = entity.metadata.friends.find(
-      (f: any) => f.value === 'unpublishedForTest'
-    );
-    expect(unpublishedRef).toBeUndefined();
-
-    // Should only have accessible entity
-    expect(entity.metadata.friends).toEqual([
-      expect.objectContaining({ value: 'shared2', label: 'shared2title' }),
+    expect(entity.metadata.friends).toMatchObject([
+      { value: 'shared2', label: 'shared2title' },
+      { value: 'unpublishedForTest', authorized: false },
     ]);
 
-    // Verify no partial data leaked
     entity.metadata.friends.forEach((friend: any) => {
-      // All visible friends should have complete data (not partial)
-      if (friend.label) {
-        expect(friend.label).not.toBe('Unpublished Test Entity');
+      if (friend.authorized === false) {
+        expect(friend.value).toBeDefined();
       }
+    });
+  });
+
+  describe('with filterUnauthorizedRelated setting enabled', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        settings: [
+          {
+            ...fixtures.settings![0],
+            features: {
+              filterUnauthorizedRelated: true,
+            },
+          } as any,
+        ],
+      });
+
+      testingTenants.changeCurrentTenant({
+        featureFlags: { v2GetEntity: true },
+      });
+    });
+
+    it('should filter out unpublished entities completely (with filterOut)', async () => {
+      const entity = await getEntity(appWithoutUser, 'testEntityWithMixedRefs', {
+        omitRelationships: true,
+        language: 'en',
+      });
+
+      expect(entity.metadata.friends).toMatchObject([
+        { value: 'shared1', label: expect.any(String) },
+      ]);
+    });
+
+    it('should filter out entities user does not have permissions to access (with filterOut)', async () => {
+      const entity = await getEntity(appWithCollaborator, 'entityWithRestrictedRef', {
+        omitRelationships: true,
+        language: 'en',
+      });
+
+      expect(entity.metadata.friends).toMatchObject([
+        { value: 'shared2', label: expect.any(String) },
+      ]);
+    });
+
+    it('should return empty array when all referenced entities are inaccessible (with filterOut)', async () => {
+      const entity = await getEntity(appWithoutUser, 'entityWithOnlyRestrictedRefs', {
+        omitRelationships: true,
+        language: 'en',
+      });
+
+      expect(entity.metadata.friends).toEqual([]);
+    });
+
+    it('should handle mixed accessible and inaccessible entities in same relationship array (with filterOut)', async () => {
+      const entity = await getEntity(appWithoutUser, 'entityWithMixedAccess', {
+        omitRelationships: true,
+        language: 'en',
+      });
+
+      expect(entity.metadata.enemies).toMatchObject([
+        { value: 'shared1', label: expect.any(String) },
+        { value: 'shared2', label: expect.any(String) },
+      ]);
+    });
+
+    it('should not leak entity information through metadata for completely restricted entities (with filterOut)', async () => {
+      const entity = await getEntity(appWithoutUser, 'entityReferencingUnpublished', {
+        omitRelationships: true,
+        language: 'en',
+      });
+
+      expect(entity.metadata.friends).toMatchObject([{ value: 'shared2', label: 'shared2title' }]);
     });
   });
 });
