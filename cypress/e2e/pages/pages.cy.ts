@@ -113,11 +113,11 @@ describe('Pages', () => {
           cy.contains('button', 'Edit').click();
         });
       cy.contains('Markdown').click();
-      cy.get('div[data-mode-id="html"]').should('exist');
+      cy.get('#panel-Code .monaco-editor').should('exist');
       cy.contains('<EntityData');
       cy.contains('Javascript').click();
       cy.contains('toISOString');
-      cy.get('div[data-mode-id="javascript"]').should('exist');
+      cy.get('#panel-Advanced .monaco-editor').should('exist');
     });
 
     it('should allow to edit and get a preview of the page', () => {

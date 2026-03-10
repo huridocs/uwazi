@@ -109,8 +109,10 @@ describe('Graphs in Page ', () => {
       // delete extra closing keys added by the code editor when writing this text
       typeInEditor('javascript', updateDatasetScript, true);
       cy.get('body').then($body => {
-        if ($body.find('div[data-mode-id="javascript"]').length) {
-          cy.get('div[data-mode-id="javascript"]').type('{backspace}{backspace}');
+        if ($body.find('#panel-Advanced .monaco-editor textarea').length) {
+          cy.get('#panel-Advanced .monaco-editor textarea')
+            .realPress('Backspace')
+            .realPress('Backspace');
         }
       });
       // wait for editor to update

@@ -106,11 +106,14 @@ describe('Public Form', () => {
           cy.contains('button', 'Edit').click();
         });
       cy.contains('Markdown').click();
-      cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
-      cy.get('div[data-mode-id="html"]').type(
-        '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
-        { parseSpecialCharSequences: false, delay: 0 }
-      );
+      cy.get('#panel-Code .monaco-editor textarea')
+        .realClick()
+        .realPress(['Control', 'a'])
+        .realPress('Backspace')
+        .realClick()
+        .realType(
+          '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />'
+        );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');

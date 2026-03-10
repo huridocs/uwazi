@@ -3,6 +3,19 @@ const getTextareaSelector = (mode: 'html' | 'javascript') =>
     ? 'textarea[name="metadata.script"]'
     : 'textarea[name="metadata.markdown"], textarea[name="metadata.content"]';
 
+const getMonacoSelector = (mode: 'html' | 'javascript') =>
+  `#panel-${mode === 'html' ? 'Code' : 'Advanced'} .monaco-editor textarea`;
+
+const escapeRealType = (s: string) => s.replace(/\{/g, '{{}');
+
+const clearMonaco = (selector: string) => {
+  cy.get(selector).realClick().realPress(['Control', 'a']).realPress('Backspace');
+};
+
+const typeMonaco = (selector: string, value: string) => {
+  cy.get(selector).realClick().realType(escapeRealType(value));
+};
+
 const clearTarget = (selector: string) => {
   cy.get(selector).type('{selectAll}{backspace}', { delay: 0 });
 };
@@ -25,7 +38,7 @@ export const dismissModalIfVisible = () => {
 };
 
 export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear = false) => {
-  const monacoSelector = `div[data-mode-id="${mode}"]`;
+  const monacoSelector = getMonacoSelector(mode);
   const textareaSelector = getTextareaSelector(mode);
   cy.get('body', { timeout: 20000 }).should($body => {
     expect($body.find(`${monacoSelector}, ${textareaSelector}`).length).to.be.greaterThan(0);
@@ -33,9 +46,9 @@ export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear =
   cy.get('body').then($body => {
     if ($body.find(monacoSelector).length) {
       if (clear) {
-        clearTarget(monacoSelector);
+        clearMonaco(monacoSelector);
       }
-      typeTarget(monacoSelector, value);
+      typeMonaco(monacoSelector, value);
       return;
     }
     let selector = 'textarea[name="metadata.content"]';
