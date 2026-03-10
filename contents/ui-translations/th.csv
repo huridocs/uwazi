@@ -369,6 +369,7 @@ Flag,แฟล็ก
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,ลืมรหัสผ่าน?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
 From,From
@@ -400,6 +401,9 @@ Hybrid,Hybrid
 Icon,ไอคอน
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",หากเป็น URL จากภายนอก กรุณาใช้ URL แบบเต็มเช่น http://www.uwazi.io
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
 Import,นำเข้า
