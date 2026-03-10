@@ -2,11 +2,11 @@ import {
   PropertyTypeMismatchError,
   PropertyComparisonError,
   PropertyTypeChangeError,
-} from 'api/core/domain/template/errors';
-import { PropertyName } from 'api/core/domain/template/PropertyName';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { PropertyType } from './PropertyType';
-import { PropertyValue, PropertyAssignment } from './PropertyValue';
+} from '#api/core/domain/template/errors.js';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PropertyType } from './PropertyType.js';
+import { PropertyValue, PropertyAssignment } from './PropertyValue.js';
 
 type PropertyUpdateInfo = {
   id: string;

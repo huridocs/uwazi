@@ -1,6 +1,6 @@
 /** @format */
 
-import helpers from 'app/Documents/helpers.js';
+import helpers from '#app/Documents/helpers.js';
 
 describe('document helpers', () => {
   const templates = [

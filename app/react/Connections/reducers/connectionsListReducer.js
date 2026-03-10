@@ -1,10 +1,9 @@
 import { combineReducers } from 'redux';
-import createReducer from 'app/BasicReducer';
+import { createReducer } from '#app/BasicReducer/index.js';
 import { modelReducer, formReducer } from 'react-redux-form';
+import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-
-export default combineReducers({
+const connectionsListReducer = combineReducers({
   entityId: createReducer('connectionsList/entityId', ''),
   connectionsGroups: createReducer('connectionsList/connectionsGroups', []),
   searchResults: createReducer('connectionsList/searchResults', { totalRows: 0, rows: [] }),
@@ -12,3 +11,4 @@ export default combineReducers({
   filters: createReducer('connectionsList/filters', {}),
   search: formReducer('connectionsList/search'),
 });
+export { connectionsListReducer };

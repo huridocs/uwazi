@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
-import { CsvImportRow } from '../../domain/CsvImportRow';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportRow } from '../../domain/CsvImportRow.js';
 
 type CsvImportRowDBO = {
   _id?: ObjectId;
@@ -30,6 +30,18 @@ export class MongoCsvImportRowsDataSource
     const cursor = this.getCollection().find({ importId }).sort({ index: 1 }).skip(offset);
     if (limit > 0) cursor.limit(limit);
     const results = await cursor.toArray();
+    return results.map(doc => {
+      const { _id, ...rest } = doc;
+      return CsvImportRow.fromObject(rest);
+    });
+  }
+
+  async getByImportAndIndexes(importId: string, indexes: number[]): Promise<CsvImportRow[]> {
+    if (!indexes.length) return [];
+    const results = await this.getCollection()
+      .find({ importId, index: { $in: indexes } })
+      .sort({ index: 1 })
+      .toArray();
     return results.map(doc => {
       const { _id, ...rest } = doc;
       return CsvImportRow.fromObject(rest);

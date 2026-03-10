@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Filter } from './helpers';
+import { Filter } from './helpers.js';
 
 const sidepanelAtom = atom({} as Filter | undefined);
 

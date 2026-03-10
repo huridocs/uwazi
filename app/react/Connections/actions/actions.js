@@ -1,13 +1,13 @@
 import qs from 'qs';
-import { actions } from 'app/BasicReducer';
-import { notificationActions } from 'app/Notifications';
-import api from 'app/utils/api';
-import { debounce } from 'app/utils';
-import { RequestParams } from 'app/utils/RequestParams';
-import { t } from 'app/I18N';
+import { actions } from '#app/BasicReducer/index.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { api } from '#app/utils/api.js';
+import { debounce } from '#app/utils/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { t } from '#app/I18N/index.js';
 
-import * as types from './actionTypes';
-import * as uiActions from './uiActions';
+import * as types from './actionTypes.js';
+import * as uiActions from './uiActions.js';
 
 export function immediateSearch(dispatch, searchString, connectionType) {
   dispatch(uiActions.searching());

@@ -1,13 +1,13 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { UserSchema } from 'shared/types/userType';
-import { Tenant } from 'api/tenants/tenantContext';
-import { User } from 'api/users.v2/model/User';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { TransactionManager } from '../application/contracts/TransactionManager';
-import { IdGenerator } from '../application/contracts/IdGenerator';
-import { Logger } from './logger/contracts/Logger';
-import { EventEmitter } from './eventEmitter/EventEmitter';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { User } from '#api/users.v2/model/User.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { TransactionManager } from '../application/contracts/TransactionManager.js';
+import { IdGenerator } from '../application/contracts/IdGenerator.js';
+import { Logger } from './logger/contracts/Logger.js';
+import { EventEmitter } from './eventEmitter/EventEmitter.js';
 
 interface UseCase<Input, Output, Args extends any[] = []> {
   execute(input: Input, ...args: Args): Promise<Output>;
@@ -28,9 +28,12 @@ type Context = {
   targetLanguage?: LanguageISO6391;
 };
 
-abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends any[] = []>
-  implements UseCase<Input, Output, Args>
-{
+abstract class AbstractUseCase<
+  Input,
+  Output,
+  ExtendedDeps = {},
+  Args extends any[] = [],
+> implements UseCase<Input, Output, Args> {
   constructor(
     protected deps: Deps<ExtendedDeps>,
     private context?: Context

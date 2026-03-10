@@ -2,21 +2,21 @@
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
 import { ZodError } from 'zod';
-import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { config } from 'api/config';
-import { DomainError } from 'api/core/domain/error/DomainError';
-import { FileNotFound } from 'api/files/FileNotFound';
-import { S3Error } from 'api/files/S3Storage';
-import { legacyLogger } from 'api/log';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
-import { appContext } from 'api/utils/AppContext';
-import { createError } from 'api/utils/index';
 import util from 'node:util';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors';
+import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { config } from '#api/config.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { FileNotFound } from '#api/files/FileNotFound.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { legacyLogger } from '#api/log/index.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { appContext } from '#api/utils/AppContext.js';
+import { createError } from '#api/utils/index.js';
+import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];

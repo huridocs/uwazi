@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import { ClientTemplateSchema, ClientTranslationSchema } from 'app/istore';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import { ClientTemplateSchema, ClientTranslationSchema } from '#app/istore.js';
 
 const currentTranslations: ClientTranslationSchema[] = [
   {

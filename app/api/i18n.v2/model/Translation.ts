@@ -1,4 +1,4 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type ContextType = 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
 

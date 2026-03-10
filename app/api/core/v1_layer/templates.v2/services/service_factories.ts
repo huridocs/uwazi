@@ -1,9 +1,9 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { DenormalizationService } from 'api/relationships.v2/services/service_factories';
-import { TemplatesDataSourceFactory } from '../../../infrastructure/factories/TemplatesDataSourceFactory';
-import { CreateTemplateService as GenericCreateTemplateService } from './CreateTemplateService';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
+import { DenormalizationService } from '#api/relationships.v2/services/service_factories.js';
+import { TemplatesDataSourceFactory } from '../../../infrastructure/factories/TemplatesDataSourceFactory.js';
+import { CreateTemplateService as GenericCreateTemplateService } from './CreateTemplateService.js';
 
 const CreateTemplateService = async () => {
   const transactionManager = TransactionManagerFactory.default();

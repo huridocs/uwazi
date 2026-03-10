@@ -1,6 +1,6 @@
 /** @format */
 
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const template1 = db.id();
 const [thesauri1, thesauri2] = [db.id(), db.id()];

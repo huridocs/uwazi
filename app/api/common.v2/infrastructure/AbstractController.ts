@@ -1,17 +1,17 @@
 import { ValidationError as AJVValidationError } from 'ajv';
 import { ZodError } from 'zod';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { tenants } from 'api/tenants';
-import { User } from 'api/users/usersModel';
-import { ValidationError } from 'api/core/domain/error/ValidationError';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DependenciesContext } from 'api/core/libs/DependenciesContext';
-import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { tenants } from '#api/tenants/index.js';
+import { User } from '#api/users/usersModel.js';
+import { ValidationError } from '#api/core/domain/error/ValidationError.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;

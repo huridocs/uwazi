@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';
 

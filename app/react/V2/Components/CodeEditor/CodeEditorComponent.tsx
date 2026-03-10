@@ -2,8 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import * as monaco from 'monaco-editor';
-import { isClient } from 'app/utils';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
+import { isClient } from '#app/utils/index.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
@@ -12,6 +12,50 @@ type CodeEditorProps = {
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
   fallbackElement?: React.ReactElement;
+};
+
+type MonacoEnvironmentConfig = {
+  getWorker?: (_workerId: string, label: string) => Worker;
+};
+
+const isMonacoEnvironmentConfig = (value: unknown): value is MonacoEnvironmentConfig =>
+  typeof value === 'object' && value !== null;
+
+const getWorkerFile = (label: string) => {
+  if (label === 'json') return 'json.worker.js';
+  if (label === 'css' || label === 'scss' || label === 'less') return 'css.worker.js';
+  if (label === 'html' || label === 'handlebars' || label === 'razor') return 'html.worker.js';
+  if (label === 'typescript' || label === 'javascript') return 'ts.worker.js';
+  return 'editor.worker.js';
+};
+
+const getWorkerBaseOrigin = () => {
+  const scriptSources = Array.from(document.querySelectorAll('script[src]'))
+    .map(script => script.getAttribute('src'))
+    .filter((src): src is string => Boolean(src));
+  const scriptUrls = scriptSources.map(src => new URL(src, window.location.origin));
+  const crossOriginScript = scriptUrls.find(url => url.origin !== window.location.origin);
+  return crossOriginScript ? crossOriginScript.origin : window.location.origin;
+};
+
+const createMonacoWorker = (fileName: string) => {
+  const baseOrigin = getWorkerBaseOrigin();
+  const workerUrl = new URL(`/${fileName}`, `${baseOrigin}/`).toString();
+  if (baseOrigin === window.location.origin) {
+    return new Worker(workerUrl, { type: 'classic' });
+  }
+  const bootstrap = `importScripts(${JSON.stringify(workerUrl)});`;
+  const blob = new Blob([bootstrap], { type: 'text/javascript' });
+  return new Worker(URL.createObjectURL(blob), { type: 'classic' });
+};
+
+const configureMonacoEnvironment = () => {
+  const currentEnvironment = Reflect.get(globalThis, 'MonacoEnvironment');
+  const existing = isMonacoEnvironmentConfig(currentEnvironment) ? currentEnvironment : {};
+  Reflect.set(globalThis, 'MonacoEnvironment', {
+    ...existing,
+    getWorker: (_workerId: string, label: string) => createMonacoWorker(getWorkerFile(label)),
+  });
 };
 
 const createMonacoEditor = (
@@ -54,6 +98,7 @@ const CodeEditorComponent = ({
 
   useEffect(() => {
     if (isClient) {
+      configureMonacoEnvironment();
       document.fonts.ready
         .then(() => {
           monaco.editor.remeasureFonts();

@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
-import { PageService } from 'api/core/domain/template/PageService';
-import pages from 'api/pages';
-import { Template } from 'api/core/domain/template/Template';
+import { PageService } from '#api/core/domain/template/PageService.js';
+import pages from '#api/pages/index.js';
+import { Template } from '#api/core/domain/template/Template.js';
 
 class LegacyPageService implements PageService {
   // eslint-disable-next-line class-methods-use-this

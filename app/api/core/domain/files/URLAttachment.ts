@@ -1,8 +1,8 @@
 import {
   URLAttachmentDBO,
   URLAttachmentDTO,
-} from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { BaseFile, BaseFileProps } from './BaseFile';
+} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { BaseFile, BaseFileProps } from './BaseFile.js';
 
 type Props = Omit<BaseFileProps, 'content'> & { entity: string; url: string };
 

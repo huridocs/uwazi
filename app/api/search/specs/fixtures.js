@@ -1,7 +1,7 @@
 /** @format */
 
 /* eslint-disable max-len */
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const batmanFinishesId = db.id();
 const unpublishedId = db.id();

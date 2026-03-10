@@ -5,4 +5,5 @@ export const FormValue = ({ value, children }) => children(value);
 
 export const mapStateToProps = (state, { model }) => ({ value: getModel(state, model) });
 
-export default connect(mapStateToProps)(FormValue);
+const FormValueConnected = connect(mapStateToProps)(FormValue);
+export { FormValueConnected };

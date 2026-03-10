@@ -1,5 +1,5 @@
-import { TemplateSchema } from 'shared/types/templateType';
-import { getTableColumns } from '../tableColumns';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { getTableColumns } from '../tableColumns.js';
 
 describe('getTableColumns', () => {
   const documents = {

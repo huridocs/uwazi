@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { instanceModel } from 'api/odm';
-import { SegmentationType } from 'shared/types/segmentationType';
+import { instanceModel } from '#api/odm/index.js';
+import { SegmentationType } from '#shared/types/segmentationType.js';
 
 const props = {
   autoexpire: { type: Date, expires: 86400, default: Date.now }, // 24 hours

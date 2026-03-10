@@ -1,8 +1,8 @@
 import Ajv from 'ajv';
-import { objectIdSchema } from 'shared/types/commonSchemas';
-import { unique } from 'api/utils/filters';
-import { wrapValidator } from 'shared/tsUtils';
-import { PermissionsDataSchema } from 'shared/types/permissionType';
+import { objectIdSchema } from '#shared/types/commonSchemas.js';
+import { unique } from '#api/utils/filters.js';
+import { wrapValidator } from '#shared/tsUtils.js';
+import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);

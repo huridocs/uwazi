@@ -1,5 +1,5 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Translation } from './Translation';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { Translation } from './Translation.js';
 
 export class TranslationCollection {
   private readonly translations: Translation[];

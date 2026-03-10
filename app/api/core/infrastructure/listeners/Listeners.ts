@@ -1,3 +1,3 @@
-import './LogEntityCreatedListener';
-import './DenormalizeEntityUpdatedListener';
-import './ProcessRelationshipAfterEntityUpdatedListener';
+import './LogEntityCreatedListener.js';
+import './DenormalizeEntityUpdatedListener.js';
+import './ProcessRelationshipAfterEntityUpdatedListener.js';

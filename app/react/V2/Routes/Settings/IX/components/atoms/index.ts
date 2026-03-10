@@ -1,5 +1,5 @@
-export { highlightsAtom } from './highlightsAtom';
-export { selectionErrorAtom } from './selectionErrorAtom';
-export { selectionsAtom } from './selectionsAtom';
-export { textSelectionAtom } from './textSelectionAtom';
-export { acceptedSuggestions } from './acceptedSuggestions';
+export { highlightsAtom } from './highlightsAtom.js';
+export { selectionErrorAtom } from './selectionErrorAtom.js';
+export { selectionsAtom } from './selectionsAtom.js';
+export { textSelectionAtom } from './textSelectionAtom.js';
+export { acceptedSuggestions } from './acceptedSuggestions.js';

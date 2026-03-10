@@ -369,6 +369,7 @@ Flag,İşaretle
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,Parolanızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
 From,From
@@ -400,6 +401,9 @@ Hybrid,Hybrid
 Icon,Simge
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Harici bir URL ise, tam olarak oluşturulmuş bir URL kullanın: http://www.uwazi.io."
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
 Import,İçe aktar
@@ -648,6 +652,7 @@ per page,per page
 Permission,İzin
 Permission on entities explicitly shared with the user,Kullanıcıyla açıkça paylaşılan varlıklara ilişkin izin
 Permissions,İzinler
+Pick a color,Pick a color
 Plain text,Düz metin
 Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
 Please type in,Please type in
@@ -873,6 +878,7 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Şablon
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
+Template color,Template color
 Template conflict,Template conflict
 Template name,Template name
 Template name already exists,Template name already exists

@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db from '#api/utils/testing_db.js';
 
 const hub1RelatedToProp1 = db.id();
 const hub2RelatedToProp1 = db.id();

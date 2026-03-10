@@ -1,4 +1,5 @@
-import { configureActions } from '@storybook/addon-actions';
+import React from 'react';
+import { configureActions } from 'storybook/actions';
 import '../app/react/App/styles/tailwind.css';
 
 configureActions({
@@ -13,4 +14,13 @@ export const parameters = {
       date: /Date$/,
     },
   },
-}
+};
+
+export const decorators = [
+  (Story) => (
+    <div className="tw-content">
+      <Story />
+    </div>
+  ),
+];
+export const tags = ['autodocs'];

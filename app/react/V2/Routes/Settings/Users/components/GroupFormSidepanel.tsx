@@ -2,11 +2,11 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
-import { t, Translate } from 'app/I18N';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField, MultiSelect } from 'V2/Components/Forms';
-import { UserGroupSchema } from 'shared/types/userGroupType';
-import { User, Group } from '../types';
+import { t, Translate } from '#app/I18N/index.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import { User, Group } from '../types.js';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;

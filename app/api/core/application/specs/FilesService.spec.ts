@@ -4,33 +4,33 @@ import { createWriteStream } from 'fs';
 import { readFile } from 'fs/promises';
 
 /* eslint-disable max-statements */
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { FileWithContents } from 'api/core/domain/files/FileWithContents';
-import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
-import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
-import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
+import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { createHash } from 'crypto';
 import { ObjectId } from 'mongodb';
 import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { testingTenants } from 'api/utils/testingTenants';
-import { EventsBus } from 'api/core/libs/eventsbus/EventsBus';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FilesServiceDeps } from '../FilesService';
-import { FilesDataSource } from '../contracts/FilesDataSource';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { FilesServiceDeps } from '../FilesService.js';
+import { FilesDataSource } from '../contracts/FilesDataSource.js';
 
 const f = getFixturesFactory();
 
@@ -122,8 +122,8 @@ describe('FilesService', () => {
   describe('createThumbnail', () => {
     async function filesAreIdentical(file1: string, file2: string) {
       const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
-      const hash1 = createHash('sha256').update(buf1).digest('hex');
-      const hash2 = createHash('sha256').update(buf2).digest('hex');
+      const hash1 = createHash('sha256').update(new Uint8Array(buf1)).digest('hex');
+      const hash2 = createHash('sha256').update(new Uint8Array(buf2)).digest('hex');
       return hash1 === hash2;
     }
     it('should create thumbnail from a ProcessedDocument', async () => {

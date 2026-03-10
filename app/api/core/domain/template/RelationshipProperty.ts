@@ -1,9 +1,9 @@
-import { Entity } from 'api/entities.v2/model/Entity';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { Property, PropertyUpdateInfo } from './Property';
-import { PropertyTypeEnum } from './PropertyType';
-import { FilterablePropertyProps } from './FilterableProperty';
+import { Entity } from '#api/entities.v2/model/Entity.js';
+import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
+import { Relationship } from '#api/relationships.v2/model/Relationship.js';
+import { Property, PropertyUpdateInfo } from './Property.js';
+import { PropertyTypeEnum } from './PropertyType.js';
+import { FilterablePropertyProps } from './FilterableProperty.js';
 
 type Props = {
   type?: PropertyTypeEnum.NewRelationship;

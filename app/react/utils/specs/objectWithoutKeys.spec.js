@@ -1,4 +1,4 @@
-import objectWithoutKeys from '../objectWithoutKeys';
+import objectWithoutKeys from '../objectWithoutKeys.js';
 
 describe('objectWithoutKeys', () => {
   let source;

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 
 import { connect, ConnectedProps } from 'react-redux';
 
-import { TableRow } from 'app/Library/components/TableRow';
-import { IStore, TableViewColumn } from 'app/istore';
-import { EntitySchema } from 'shared/types/entityType';
+import { TableRow } from '#app/Library/components/TableRow.js';
+import { IStore, TableViewColumn } from '#app/istore.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 interface TableRowsProps {
   columns: TableViewColumn[];

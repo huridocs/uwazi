@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop */
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
-import { Dispatchable } from '../application/contracts/Dispatchable';
-import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { NonRetryableJobError, UnregisteredJobError } from './errors';
-import { Job, QueueAdapter } from './QueueAdapter';
+import { Dispatchable } from '../application/contracts/Dispatchable.js';
+import { DispatchableClass } from '../application/contracts/JobsDispatcher.js';
+import { NonRetryableJobError, UnregisteredJobError } from './errors.js';
+import { Job, QueueAdapter } from './QueueAdapter.js';
 
 interface WorkerOptions {
   waitTime?: number;
@@ -128,14 +128,18 @@ export class QueueWorker {
     const dispatchable = await this.createDispatchable(job);
 
     try {
-      this.logger.info('Processing job', { job });
+      const { params, ...loggableJob } = job;
+      this.logger.info('Processing job', { job: loggableJob });
       const startTime = performance.now();
       await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
         namespace: job.namespace,
         retryCount: job.retryCount,
         maxRetries: job.options.maxRetries,
       });
-      this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
+      this.logger.info('Job processed', {
+        job: loggableJob,
+        processingTime: performance.now() - startTime,
+      });
       await this.completeJob(job);
     } catch (e) {
       await this.catchFailedJob(job, e);

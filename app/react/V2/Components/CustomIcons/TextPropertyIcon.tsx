@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomIconProps } from './types';
+import { CustomIconProps } from './types.js';
 
 const TextPropertyIcon = ({ className }: CustomIconProps) => (
   <svg

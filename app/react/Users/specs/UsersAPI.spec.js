@@ -1,6 +1,6 @@
-import users from 'app/Users/UsersAPI';
-import api from 'app/utils/api';
-import { APIURL } from 'app/config.js';
+import { UsersAPI as users } from '#app/Users/UsersAPI.js';
+import { api } from '#app/utils/api.js';
+import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
 
 describe('UsersAPI', () => {

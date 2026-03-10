@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { MongoTranslationsDataSource } from './MongoTranslationsDataSource';
-import { TranslationDBO } from '../schemas/TranslationDBO';
-import { Translation } from '../model/Translation';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoTranslationsDataSource } from './MongoTranslationsDataSource.js';
+import { TranslationDBO } from '../schemas/TranslationDBO.js';
+import { Translation } from '../model/Translation.js';
 
 export class CachedMongoTranslationsDataSource extends MongoTranslationsDataSource {
   private cache = new Map<string, any>();

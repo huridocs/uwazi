@@ -1,6 +1,6 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { CollectionWrapper } from '../CollectionWrapper';
-import { getConnection } from '../getConnectionForCurrentTenant';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { CollectionWrapper } from '../CollectionWrapper.js';
+import { getConnection } from '../getConnectionForCurrentTenant.js';
 
 class TestingWrapper extends CollectionWrapper {}
 

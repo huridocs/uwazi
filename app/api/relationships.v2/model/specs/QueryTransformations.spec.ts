@@ -1,7 +1,7 @@
-import { EntityPointer, Relationship } from 'api/relationships.v2/model/Relationship';
-import { MatchQueryNode } from '../MatchQueryNode';
-import { NonChainQueryError } from '../NonChainQueryErrror';
-import { TraversalQueryNode } from '../TraversalQueryNode';
+import { EntityPointer, Relationship } from '#api/relationships.v2/model/Relationship.js';
+import { MatchQueryNode } from '../MatchQueryNode.js';
+import { NonChainQueryError } from '../NonChainQueryErrror.js';
+import { TraversalQueryNode } from '../TraversalQueryNode.js';
 
 describe('when calling chainsDecomposition()', () => {
   // eslint-disable-next-line max-statements

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
-import { Button, Modal } from '.';
+
+import { Translate } from '#app/I18N/index.js';
+import { Button, Modal } from './index.js';
 
 type confirmationModalType = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;

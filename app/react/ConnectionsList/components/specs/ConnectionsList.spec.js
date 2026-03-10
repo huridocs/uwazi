@@ -1,6 +1,6 @@
-import { fromJS as Immutable } from 'immutable';
-import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
-import { mapStateToProps } from '../ConnectionsList';
+import Immutable from 'immutable';
+import { RelationshipsGraphEdit as RelationshipsGraph } from '#app/Relationships/components/RelationshipsGraphEdit.js';
+import { mapStateToProps } from '../ConnectionsList.js';
 
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
@@ -12,7 +12,7 @@ describe('ConnectionsList', () => {
         relationships: {
           list: {
             sharedId: 'id1',
-            searchResults: Immutable({
+            searchResults: Immutable.fromJS({
               rows: [
                 { sharedId: 'id2', connections: ['a', 'b'] },
                 { sharedId: 'id1', connections: ['c'] },

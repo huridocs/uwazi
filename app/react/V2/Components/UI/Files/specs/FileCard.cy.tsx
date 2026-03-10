@@ -2,11 +2,11 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { Provider, useSetAtom } from 'jotai';
-import { FileCard, EntityFile } from '../FileCard';
-import { settingsAtom } from '../../../../../../../app/react/V2/atoms';
-import { FileType } from '../../../../../../shared/types/fileType';
+import { FileCard, EntityFile } from '../FileCard.js';
+import { settingsAtom } from '../../../../../../../app/react/V2/atoms/index.js';
+import { FileType } from '../../../../../../shared/types/fileType.js';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
-import { mockPdfFile, mockAudioFile } from './testHelpers';
+import { mockPdfFile, mockAudioFile } from './testHelpers.js';
 
 describe('FileCard', () => {
   const createOnFileSelectStub = () => cy.stub();

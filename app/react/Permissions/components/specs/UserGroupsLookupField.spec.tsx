@@ -3,9 +3,9 @@
  */
 import { mount, shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { UserGroupsLookupField } from '../UserGroupsLookupField';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+import { UserGroupsLookupField } from '../UserGroupsLookupField.js';
 
 describe('UserGroupsLookupField', () => {
   let onChangeMock: (search: string) => void;

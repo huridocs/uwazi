@@ -1,9 +1,17 @@
-import uniqueID from 'shared/uniqueID';
+import uniqueID from '#shared/uniqueID.js';
 import dotenv from 'dotenv';
-import { Tenant } from './tenants/tenantContext';
-import { version } from '../../package.json';
+import { Tenant } from './tenants/tenantContext.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+// eslint-disable-next-line node/no-restricted-import
+import { readFileSync } from 'fs';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(`${__dirname}/../../package.json`, 'utf-8'));
+const version = packageJson.version;
 
 const {
   ACTIVITY_LOGS_FOLDER,
@@ -87,8 +95,7 @@ export const config = {
     },
   },
 
-  // db for tenants list and sessions
-  SHARED_DB: 'uwazi_shared_db',
+  SHARED_DB: process.env.NODE_ENV === 'test' ? 'uwazi_shared_db_testing' : 'uwazi_shared_db',
 
   multiTenant: process.env.MULTI_TENANT || false,
   clusterMode: CLUSTER_MODE,
@@ -114,6 +121,7 @@ export const config = {
       v2UpdateEntity: false,
       v2CSVImport: false,
       v2UpdateThesaurus: false,
+      v1CSVImportCompat: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

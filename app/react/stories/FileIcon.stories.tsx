@@ -1,11 +1,12 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { FileIcon } from 'V2/Components/UI';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { FileIcon } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof FileIcon> = {
   title: 'Components/FileIcon',
   component: FileIcon,
 };
+export default meta;
 
 type Story = StoryObj<typeof FileIcon>;
 
@@ -41,5 +42,3 @@ const Basic: Story = {
 };
 
 export { Basic };
-
-export default meta;

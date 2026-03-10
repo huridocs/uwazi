@@ -1,18 +1,18 @@
 /* eslint-disable max-statements */
-import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection'; // Todo
-import { cloneDeep } from 'lodash';
-import { search } from 'api/search';
-import { EntitySchema } from 'shared/types/entityType';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { applicationEventsBus } from '../libs/eventsbus';
-import { TransactionManager } from './contracts/TransactionManager';
-import { UseCase } from '../libs/UseCase';
-import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js'; // Todo
+import cloneDeep from 'lodash/cloneDeep.js';
+import { search } from '#api/search/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
+import { applicationEventsBus } from '../libs/eventsbus/index.js';
+import { TransactionManager } from './contracts/TransactionManager.js';
+import { UseCase } from '../libs/UseCase.js';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 
 type Input = {
   entitiesIds: string[];

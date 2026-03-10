@@ -1,21 +1,19 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-
-import { createError } from 'api/utils';
-import mailer from 'api/utils/mailer';
-import db from 'api/utils/testing_db';
-import * as random from 'shared/uniqueID';
-
-import { comparePasswords, encryptPassword } from 'api/auth/encryptPassword';
-import * as usersUtils from 'api/auth2fa/usersUtils';
-import { settingsModel } from 'api/settings/settingsModel';
-import userGroups from 'api/usergroups/userGroups';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import * as unlockCode from '../generateUnlockCode';
-import passwordRecoveriesModel from '../passwordRecoveriesModel';
+import { createError } from '#api/utils/index.js';
+import mailer from '#api/utils/mailer.js';
+import db from '#api/utils/testing_db.js';
+import * as random from '#shared/uniqueID.js';
+import { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
+import * as usersUtils from '#api/auth2fa/usersUtils.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import userGroups from '#api/usergroups/userGroups.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import * as unlockCode from '../generateUnlockCode.js';
+import passwordRecoveriesModel from '../passwordRecoveriesModel.js';
 import users from '../users.js';
-import usersModel from '../usersModel';
-import { PUBLIC_USER_ID } from '../publicUser';
+import usersModel from '../usersModel.js';
+import { PUBLIC_USER_ID } from '../publicUser.js';
 import fixtures, {
   blockedUserId,
   expectedKey,
@@ -572,8 +570,12 @@ describe('Users', () => {
       const expectedMailOptions = {
         from: emailSender,
         to: 'test@email.com',
-        subject: 'Password set',
-        text: `To set your password click on the following link:\ndomain/setpassword/${key}\nThis link will be valid for 24 hours.`,
+        subject: 'Password recovery',
+        text:
+          'Your username is: username\n' +
+          'To set your password click on the following link:\n' +
+          `domain/setpassword/${key}\n` +
+          'This link will be valid for 24 hours.',
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
     });

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
+import { ClientTemplateSchema, IStore, RelationshipTypesType } from '#app/istore.js';
 import {
   getCurrentPlan,
   getHubrecordPage,
@@ -12,16 +12,16 @@ import {
   createRelationshipMigrationField,
   updateRelationshipMigrationField,
   deleteRelationshipMigrationField,
-} from 'app/Entities/actions/V2NewRelationshipsActions';
-import { Icon } from 'app/UI';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+} from '#app/Entities/actions/V2NewRelationshipsActions.js';
+import { Icon } from '#app/UI/index.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   GetRelationshipMigrationFieldsResponse,
   ResponseElement,
-} from 'shared/types/api.v2/relationshipMigrationField.get';
-import { PlanElement } from 'shared/types/api.v2/relationships.migrate';
-import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
-import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
+} from '#shared/types/api.v2/relationshipMigrationField.get.js';
+import { PlanElement } from '#shared/types/api.v2/relationships.migrate.js';
+import { CreateRelationshipMigRationFieldResponse } from '#shared/types/api.v2/relationshipMigrationField.create.js';
+import { GetMigrationHubRecordsResponse } from '#shared/types/api.v2/migrationHubRecords.get.js';
 
 const UNUSED_RECORDS_PAGE_SIZE = 10;
 

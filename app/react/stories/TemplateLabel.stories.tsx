@@ -1,11 +1,12 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { TemplateLabel } from 'V2/Components/Metadata/TemplateLabel';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.js';
 
 const meta: Meta<typeof TemplateLabel> = {
   title: 'Components/Metadata/TemplateLabel',
   component: TemplateLabel,
 };
+export default meta;
 
 type Story = StoryObj<typeof TemplateLabel>;
 
@@ -66,4 +67,3 @@ const Green: Story = {
 };
 
 export { Basic, LightBlue, Red, Purple, Dark, Green };
-export default meta;

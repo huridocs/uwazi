@@ -1,4 +1,4 @@
-import { Event } from 'api/core/libs/eventEmitter/Event';
+import { Event } from '#api/core/libs/eventEmitter/Event.js';
 
 type Payload = {
   sharedId: string;

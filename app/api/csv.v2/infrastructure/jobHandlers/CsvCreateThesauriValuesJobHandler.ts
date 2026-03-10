@@ -1,13 +1,17 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import {
   CsvCreateThesauriValuesJob,
   ThesauriCreationProgress,
-} from '../../application/jobs/CsvCreateThesauriValuesJob';
+} from '../../application/jobs/CsvCreateThesauriValuesJob.js';
+import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -16,6 +20,7 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvCreateThesauriValuesJob;
   sockets: V1WebSocketsWrapper;
+  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Params> {
@@ -29,6 +34,8 @@ export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Par
     try {
       await this.deps.useCase.execute({
         importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
             this.deps.sockets.emitToTenantAdmins(
@@ -60,6 +67,7 @@ export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Par
             );
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
+            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
               'csvImport:preflight:thesauri:create:error',

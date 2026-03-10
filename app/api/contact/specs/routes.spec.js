@@ -1,8 +1,8 @@
 import request from 'supertest';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import contactRoutes from '../routes.js';
-import contact from '../contact';
+import contact from '../contact.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();

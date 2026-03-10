@@ -1,4 +1,4 @@
-import { ClientEntitySchema } from 'app/istore';
+import { ClientEntitySchema } from '#app/istore.js';
 
 enum EntityStatus {
   New = 'new',

@@ -371,6 +371,7 @@ Flag,Прапорець
 for,за
 For all entities,Для всіх суб'єктів господарювання
 For entities with blank values,Для сутностей з порожніми значеннями
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,Забули пароль?
 Forms and email configuration,Налаштування форм та електронної пошти
 From,Від
@@ -402,6 +403,9 @@ Hybrid,Гібридний
 Icon,Символ
 ID,ІДЕНТИФІКАТОР
 ID:,ПОСВІДЧЕННЯ ОСОБИ:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Якщо це зовнішній URL, використовуйте повністю сформований URL. Тобто http://www.uwazi.io."
 "If you want to continue, please type","Якщо ви хочете продовжити, будь ласка, введіть"
 Import,Імпортувати
@@ -650,6 +654,7 @@ per page,на сторінку
 Permission,Дозвіл
 Permission on entities explicitly shared with the user,"Дозвіл на об'єкти, якими поділилися з користувачем"
 Permissions,Дозволи
+Pick a color,Pick a color
 Plain text,Звичайний текст
 Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
 Please type in,"Будь ласка, введіть"
@@ -875,6 +880,7 @@ Target template,Шаблон цілі
 Target's role in the relationship Source-Target.,Роль мішені у відносинах Джерело-Ціль.
 Template,Шаблон
 Template changes are being applied to all related entities.,Зміни шаблону застосовуються до всіх пов'язаних сутностей.
+Template color,Template color
 Template conflict,Конфлікт шаблонів
 Template name,Назва шаблону
 Template name already exists,Ім'я шаблону вже існує

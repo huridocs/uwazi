@@ -1,11 +1,11 @@
 import React from 'react';
-import { Table } from 'V2/Components/UI';
-import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
-import { Template } from 'app/apiResponseTypes';
-import { TableTitle } from '../TableTitle';
-import { PXTableFooter } from '../PXTableFooter';
-import { columns } from './TableElements';
-import { FilterSidepanelButton } from '../FilterSidePanel/FilterSidepanelButton';
+import { Table } from '#V2/Components/UI/index.js';
+import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
+import { Template } from '#app/apiResponseTypes.js';
+import { TableTitle } from '../TableTitle.js';
+import { PXTableFooter } from '../PXTableFooter.js';
+import { columns } from './TableElements/index.js';
+import { FilterSidepanelButton } from '../FilterSidePanel/FilterSidepanelButton.js';
 
 interface EntitiesTableProps {
   pxEntitiesData: TablePXEntityRow[];

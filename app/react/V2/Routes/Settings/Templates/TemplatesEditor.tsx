@@ -1,9 +1,14 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Table, ConfirmNavigationModal, ConfirmationModal, ProgressBar } from 'V2/Components/UI';
-import { Translate } from 'app/I18N/Translate';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import {
+  Table,
+  ConfirmNavigationModal,
+  ConfirmationModal,
+  ProgressBar,
+} from '#V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -12,28 +17,29 @@ import {
   useBlocker,
   useRevalidator,
 } from 'react-router';
-import * as templatesAPI from 'V2/api/templates';
-import * as pagesAPI from 'V2/api/pages';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { Page, ClientTemplateSchema } from 'V2/shared/types';
-import { isEqual } from 'lodash';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import * as pagesAPI from '#V2/api/pages/index.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
+import isEqual from 'lodash/isEqual.js';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from 'V2/atoms';
-import uniqueID from 'shared/uniqueID';
-import { socket } from 'app/socket';
+import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
+import uniqueID from '#shared/uniqueID.js';
+import { socket } from '#app/socket.js';
 import {
   cleanProperty,
   emptyTemplate,
   processDefaultProperties,
   processProperties,
   confirmationMessages,
-} from './helpers';
-import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents';
-import { TemplateMetadata } from './components/TemplateMetadata';
-import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal';
-import { AddThesaurusModal } from './components/AddThesaurusModal';
-import { TemplatesEditorFooter } from './components/TemplatesEditorFooter';
-import { ConfigPropertyPanel } from './components/ConfigPropertyPanel';
+} from './helpers.js';
+import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents.js';
+import { TemplateMetadata } from './components/TemplateMetadata.js';
+import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal.js';
+import { AddThesaurusModal } from './components/AddThesaurusModal.js';
+import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
+import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
+import { getRandomColor } from './components/defaultTemplateColors.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -44,7 +50,7 @@ const templatesEditorLoader =
       value: page.sharedId,
       label: page.title,
     }));
-    let loadedTemplate = emptyTemplate;
+    let loadedTemplate: ClientTemplateSchema = { ...emptyTemplate, color: getRandomColor() };
     const templates = await templatesAPI.get(headers);
 
     let entityCount = 0;
@@ -337,7 +343,7 @@ const TemplatesEditor = () => {
               <TemplateMetadata
                 value={{
                   name: template.name,
-                  color: template.color || '#C03B22',
+                  color: template.color!,
                   entityViewPage: template.entityViewPage || '',
                 }}
                 onChange={values => {

@@ -1,5 +1,5 @@
-import { actions } from 'app/BasicReducer';
-import { store } from 'app/store';
+import { actions } from '#app/BasicReducer/index.js';
+import { store } from '#app/store.js';
 
 const updatePageDatasets = (name: string, data: any) => {
   if (!store) {

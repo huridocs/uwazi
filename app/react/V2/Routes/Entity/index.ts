@@ -1,2 +1,2 @@
-export { entityLoader } from './loader';
-export { Entity } from './Entity';
+export { entityLoader } from './loader.js';
+export { Entity } from './Entity.js';

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import { Checkbox } from 'app/V2/Components/Forms';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { action } from 'storybook/actions';
+import { Checkbox } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Forms/Checkbox',
   component: Checkbox,
 };
+export default meta;
 
 type Story = StoryObj<typeof Checkbox>;
 
@@ -84,5 +85,3 @@ const DisabledChecked: Story = {
 };
 
 export { Basic, Checked, Disabled, DisabledChecked };
-
-export default meta;

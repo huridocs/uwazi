@@ -369,6 +369,7 @@ Flag,အလံ
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,စကားဝှက် မေ့နေပါသလား။
 Forms and email configuration,ပုံစံများနှင့် အီးမေးလ် ဖွဲ့စည်းတည်ဆောက်ပုံ
 From,From
@@ -400,6 +401,9 @@ Hybrid,Hybrid
 Icon,အိုင်ကွန်
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",ပြင်ပ URL ဖြစ်ပါက URL ပုံစံအပြည့်အစုံကို သုံးပါ။ ဥပမာ- http://www.uwazi.io။
 "If you want to continue, please type",ဆက်လက်ဆောင်ရွက်လိုပါက ကျေးဇူးပြု၍ စာရိုက်ပါ
 Import,ထည့်သွင်းရန်
@@ -648,6 +652,7 @@ per page,per page
 Permission,ခွင့်ပြုချက်
 Permission on entities explicitly shared with the user,အသုံးပြုသူနှင့် အတိအလင်း မျှဝေထားသော ဖြည့်သွင်းချက်များအတွက် ခွင့်ပြုချက်
 Permissions,ခွင့်ပြုချက်များ
+Pick a color,Pick a color
 Plain text,ရိုးရိုးစာသား
 Please contact an admin for details.,ကျေးဇူးပြု၍ အသေးစိတ်များ သိရန် အက်မင်ကို ဆက်သွယ်ပါ။
 Please type in,Please type in
@@ -873,6 +878,7 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,ပုံစံပြား
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
+Template color,Template color
 Template conflict,Template conflict
 Template name,Template name
 Template name already exists,Template name already exists

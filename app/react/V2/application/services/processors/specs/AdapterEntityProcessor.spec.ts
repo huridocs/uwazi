@@ -1,15 +1,15 @@
-import { Entity, MetadataProperty } from 'app/V2/domain';
+import { Entity, MetadataProperty } from '#app/V2/domain/index.js';
 import {
   DateMetadataProperty,
   MultiDateMetadataProperty,
   SelectMetadataProperty,
   MultiSelectMetadataProperty,
   LinkMetadataProperty,
-} from 'app/V2/domain/entities/types';
-import { DEFAULT_ENTITY_BASE_PATH } from 'V2/application/optionsPresets';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
-import { AdapterEntityProcessor } from '../AdapterEntityProcessor';
+} from '#app/V2/domain/entities/types.js';
+import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { processingContext, rawEntity } from './PropertyProcessorsFixtures.js';
+import { AdapterEntityProcessor } from '../AdapterEntityProcessor.js';
 
 describe('Adapter Entity Processor Tests', () => {
   const adapterEntityProcessor = new AdapterEntityProcessor(processingContext);

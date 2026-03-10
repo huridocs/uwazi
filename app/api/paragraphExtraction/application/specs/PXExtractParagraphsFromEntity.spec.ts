@@ -1,29 +1,29 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
-import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
-import { tenants } from 'api/tenants';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { tenants } from '#api/tenants/index.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { search } from 'api/search';
-import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { search } from '#api/search/index.js';
+import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity.js';
 import {
   defaultTemplate,
   entity1,
@@ -57,7 +57,7 @@ import {
   sourceTemplate,
   targetTemplate,
   userId,
-} from './fixtures';
+} from './fixtures.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],

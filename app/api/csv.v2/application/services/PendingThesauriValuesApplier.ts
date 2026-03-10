@@ -1,11 +1,14 @@
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
+import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
-} from '../../domain/CsvImportThesauriValues';
-import { ThesauriRepository } from '../contracts/ThesauriRepository';
-import { TranslationsRepository } from '../contracts/TranslationsRepository';
-import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff';
+} from '../../domain/CsvImportThesauriValues.js';
+import { CsvThesauriPendingChild } from '../../domain/CsvThesauriPendingValues.js';
+import { ThesauriRepository } from '../contracts/ThesauriRepository.js';
+import { TranslationsRepository } from '../contracts/TranslationsRepository.js';
+import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff.js';
 
 type Deps = {
   thesauriRepo: ThesauriRepository;
@@ -17,45 +20,80 @@ type ApplyResult = {
   appliedValues: CsvImportThesauriAppliedValue[];
 };
 
+type IndexedRoot = {
+  label: string;
+  id?: string;
+  children: Map<string, { label: string; id?: string }>;
+};
+
+const normalizeLabel = (label: string) =>
+  normalizeThesaurusLabel(sanitizeThesaurusLabel(label) || '');
+
+const buildThesaurusIndex = (thesaurus: ThesaurusSchema) => {
+  const roots = new Map<string, IndexedRoot>();
+
+  (thesaurus.values || []).forEach(root => {
+    if (!root?.label) {
+      return;
+    }
+    const normalizedRoot = normalizeLabel(root.label);
+    if (!normalizedRoot) {
+      return;
+    }
+    const children = new Map<string, { label: string; id?: string }>();
+    (root.values || []).forEach(child => {
+      if (!child?.label) {
+        return;
+      }
+      const normalizedChild = normalizeLabel(child.label);
+      if (!normalizedChild) {
+        return;
+      }
+      children.set(normalizedChild, { label: child.label, id: child.id });
+    });
+    roots.set(normalizedRoot, { label: root.label, id: root.id, children });
+  });
+
+  return roots;
+};
+
+const collectAppliedValuesFromPending = (
+  pendingDoc: CsvImportThesauriValues,
+  thesaurus: ThesaurusSchema
+): CsvImportThesauriAppliedValue[] => {
+  const index = buildThesaurusIndex(thesaurus);
+  const appliedValues: CsvImportThesauriAppliedValue[] = [];
+
+  const getNormalized = (child: CsvThesauriPendingChild) =>
+    normalizeLabel(child.normalized || child.label || '');
+
+  pendingDoc.entries.forEach(entry => {
+    entry.roots.forEach(root => {
+      const normalizedRoot = getNormalized(root);
+      const indexedRoot = normalizedRoot ? index.get(normalizedRoot) : undefined;
+      if (indexedRoot?.id) {
+        appliedValues.push({ label: indexedRoot.label, valueId: indexedRoot.id });
+      }
+      root.children.forEach(child => {
+        const normalizedChild = getNormalized(child);
+        const indexedChild =
+          normalizedChild && indexedRoot ? indexedRoot.children.get(normalizedChild) : undefined;
+        if (indexedChild?.id) {
+          appliedValues.push({
+            label: indexedChild.label,
+            parentLabel: indexedRoot?.label,
+            valueId: indexedChild.id,
+          });
+        }
+      });
+    });
+  });
+
+  return appliedValues;
+};
+
 class PendingThesauriValuesApplier {
   constructor(private deps: Deps) {}
-
-  private static extractAppliedValues(
-    thesaurus: ThesaurusSchema,
-    descriptors: ThesauriDiffResult['createdDescriptors']
-  ): CsvImportThesauriAppliedValue[] {
-    const roots = new Map<string, any>();
-    (thesaurus.values || []).forEach(root => {
-      if (root?.label) {
-        roots.set(root.label, root);
-      }
-    });
-
-    return descriptors
-      .map(descriptor => {
-        if (!descriptor.parentLabel) {
-          const root = roots.get(descriptor.label);
-          if (root?.id) {
-            return {
-              label: descriptor.label,
-              valueId: root.id,
-            };
-          }
-          return undefined;
-        }
-        const parent = roots.get(descriptor.parentLabel);
-        const child = parent?.values?.find((value: any) => value.label === descriptor.label);
-        if (child?.id) {
-          return {
-            label: descriptor.label,
-            parentLabel: descriptor.parentLabel,
-            valueId: child.id,
-          };
-        }
-        return undefined;
-      })
-      .filter(Boolean) as CsvImportThesauriAppliedValue[];
-  }
 
   async apply(pendingDoc: CsvImportThesauriValues): Promise<ApplyResult> {
     const existingThesaurus = await this.deps.thesauriRepo.getById(pendingDoc.thesaurusId);
@@ -72,11 +110,9 @@ class PendingThesauriValuesApplier {
       if (Object.keys(diff.translations).length) {
         await this.deps.translationsRepo.updateEntries(pendingDoc.thesaurusId, diff.translations);
       }
-      appliedValues = PendingThesauriValuesApplier.extractAppliedValues(
-        updatedThesaurus,
-        diff.createdDescriptors
-      );
     }
+
+    appliedValues = collectAppliedValuesFromPending(pendingDoc, updatedThesaurus);
 
     return { diff, appliedValues };
   }

@@ -1,7 +1,7 @@
-import relationtypes from 'api/relationtypes/relationtypes';
-import { ObjectIdAsString } from 'api/utils/ajvSchemas';
-import { validation } from '../utils';
-import needsAuthorization from '../auth/authMiddleware';
+import relationtypes from '#api/relationtypes/relationtypes.js';
+import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
+import { validation } from '../utils/index.js';
+import needsAuthorization from '../auth/authMiddleware.js';
 
 export default app => {
   app.post(

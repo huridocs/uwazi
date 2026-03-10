@@ -1,7 +1,7 @@
-import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
-import { Listener } from 'api/core/libs/eventEmitter/Listener';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
+import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();
@@ -107,6 +107,10 @@ const fixtures: DBFixture = {
 
     factory.template('Related Template', [factory.property('related_text', 'text')]),
 
+    factory.template('Template With Required', [
+      factory.property('required_text', 'text', { required: true }),
+    ]),
+
     factory.template('Full Template', [
       factory.property('text', 'text'),
       factory.property('numeric', 'numeric'),
@@ -140,6 +144,28 @@ const fixtures: DBFixture = {
   ],
 
   entities: [
+    ...factory.entityInMultipleLanguages(
+      ['en', 'pt'],
+      'required_entity',
+      'Template With Required',
+      {},
+      { title: 'Required Entity' },
+      {
+        en: {
+          title: 'Required Entity EN',
+          metadata: {
+            required_text: [factory.metadataValue('Some required text')],
+          },
+        },
+        pt: {
+          title: 'Required Entity PT',
+          metadata: {
+            required_text: [factory.metadataValue('Some required text')],
+          },
+        },
+      }
+    ),
+
     ...factory.entityInMultipleLanguages(
       ['en', 'pt'],
       'entity1',

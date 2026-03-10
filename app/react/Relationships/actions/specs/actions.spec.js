@@ -1,13 +1,13 @@
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { fromJS as Immutable } from 'immutable';
-import { mockID } from 'shared/uniqueID.js';
-import { RequestParams } from 'app/utils/RequestParams';
-import SearchApi from 'app/Search/SearchAPI';
-import api from 'app/utils/api';
-import * as types from '../actionTypes';
-import * as actions from '../actions';
-import * as routeUtils from '../../utils/routeUtils';
+import Immutable from 'immutable';
+import { mockID } from '#shared/uniqueID.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { SearchAPI } from '#app/Search/SearchAPI.js';
+import { api } from '#app/utils/api.js';
+import * as types from '../actionTypes.js';
+import * as actions from '../actions.js';
+import * as routeUtils from '../../utils/routeUtils.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -107,7 +107,7 @@ describe('Relationships actions', () => {
       const store = mockStore({});
       const getState = () => ({
         relationships: {
-          hubs: Immutable([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
+          hubs: Immutable.fromJS([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
         },
       });
 
@@ -128,7 +128,7 @@ describe('Relationships actions', () => {
       const store = mockStore({});
       const getState = () => ({
         relationships: {
-          hubs: Immutable([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
+          hubs: Immutable.fromJS([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
         },
       });
 
@@ -252,14 +252,17 @@ describe('Relationships actions', () => {
           hubs,
         },
         documentViewer: {
-          doc: Immutable({ ...entity, ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }) }),
+          doc: Immutable.fromJS({
+            ...entity,
+            ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }),
+          }),
         },
       };
     }
 
     beforeEach(() => {
       store = mockStore({});
-      hubs = Immutable([
+      hubs = Immutable.fromJS([
         {
           hub: 'hub1',
           leftRelationship: { _id: 'originalLeftRelationship1', template: '1' },
@@ -381,7 +384,7 @@ describe('Relationships actions', () => {
               { type: 'relationships/list/searchResults/SET', value: 'reloadedSearchResults' },
               {
                 type: 'viewer/doc/SET',
-                value: { ...entity, defaultDoc: Immutable(defaultDoc) },
+                value: { ...entity, defaultDoc: Immutable.fromJS(defaultDoc) },
               },
               { type: 'CLOSE_RELATIONSHIPS_PANEL' },
               {
@@ -429,7 +432,7 @@ describe('Relationships actions', () => {
           [0, 'rightRelationships', 1, 'relationships'],
           hubs
             .getIn([0, 'rightRelationships', 1, 'relationships'])
-            .push(Immutable({ entity: 'n7', template: '1' }))
+            .push(Immutable.fromJS({ entity: 'n7', template: '1' }))
         );
 
         hubs = hubs.setIn([1, 'modified'], true);
@@ -439,7 +442,7 @@ describe('Relationships actions', () => {
           [1, 'rightRelationships', 0, 'relationships'],
           hubs
             .getIn([1, 'rightRelationships', 0, 'relationships'])
-            .push(Immutable({ entity: 'n8', template: '1' }))
+            .push(Immutable.fromJS({ entity: 'n8', template: '1' }))
         );
 
         hubs = hubs.setIn([2, 'deleted'], true);
@@ -447,13 +450,13 @@ describe('Relationships actions', () => {
           [2, 'rightRelationships', 0, 'relationships'],
           hubs
             .getIn([2, 'rightRelationships', 0, 'relationships'])
-            .push(Immutable({ entity: 'n9', template: '1', deleted: true }))
+            .push(Immutable.fromJS({ entity: 'n9', template: '1', deleted: true }))
         );
         hubs = hubs.setIn(
           [2, 'rightRelationships', 0, 'relationships'],
           hubs
             .getIn([2, 'rightRelationships', 0, 'relationships'])
-            .push(Immutable({ entity: 'n10', template: '1' }))
+            .push(Immutable.fromJS({ entity: 'n10', template: '1' }))
         );
 
         hubs = hubs.push({
@@ -650,7 +653,7 @@ describe('Relationships actions', () => {
 
     beforeEach(() => {
       store = mockStore({});
-      spyOn(SearchApi, 'search').and.returnValue(
+      spyOn(SearchAPI, 'search').and.returnValue(
         Promise.resolve({ rows: [{ type: 'entity' }, { type: 'doc' }] })
       );
     });
@@ -658,7 +661,7 @@ describe('Relationships actions', () => {
     describe('immidiateSearch', () => {
       it('should search for connectable entities', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        expect(SearchApi.search).toHaveBeenCalledWith(
+        expect(SearchAPI.search).toHaveBeenCalledWith(
           new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true })
         );
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_RELATIONSHIPS' });
@@ -679,17 +682,17 @@ describe('Relationships actions', () => {
     describe('search', () => {
       it('should update the state searchTerm and debounce server searching the term', () => {
         jasmine.clock().install();
-
+        SearchAPI.search.calls.reset();
         actions.search('term', 'basic')(store.dispatch);
         expect(store.getActions()).toContainEqual({
           type: 'relationships/searchTerm/SET',
           value: 'term',
         });
-        expect(SearchApi.search).not.toHaveBeenCalled();
+        expect(SearchAPI.search).not.toHaveBeenCalled();
 
         jasmine.clock().tick(400);
 
-        expect(SearchApi.search).toHaveBeenCalledWith(
+        expect(SearchAPI.search).toHaveBeenCalledWith(
           new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true })
         );
         jasmine.clock().uninstall();

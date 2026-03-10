@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
-import { Relationship } from 'api/relationships.v2/model/Relationship';
+import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import _ from 'lodash';
-import { QueryNode } from './QueryNode';
-import { TraversalQueryNode } from './TraversalQueryNode';
+import { QueryNode } from './QueryNode.js';
+import { TraversalQueryNode } from './TraversalQueryNode.js';
 
 interface MatchFilters {
   sharedId?: string;

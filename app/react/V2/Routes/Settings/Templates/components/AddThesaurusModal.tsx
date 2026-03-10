@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent } from 'react';
-import { t, Translate } from 'app/I18N';
-import { Modal, Button } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import { save as saveThesauri } from 'V2/api/thesauri';
+import { t, Translate } from '#app/I18N/index.js';
+import { Modal, Button } from '#V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { save as saveThesauri } from '#V2/api/thesauri/index.js';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, thesauriAtom } from 'V2/atoms';
-import { sanitizeThesaurusName } from 'shared/sanitizationUtils';
-import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
+import { notificationAtom, thesauriAtom } from '#V2/atoms/index.js';
+import { sanitizeThesaurusName } from '#shared/sanitizationUtils.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 
 interface AddThesaurusModalProps {
   onClose: () => void;

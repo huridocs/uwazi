@@ -1,8 +1,8 @@
-import { Application, Request } from 'express';
+import type { Application, Request } from 'express';
 
-import { validation } from 'api/utils';
-import needsAuthorization from '../auth/authMiddleware';
-import pages from './pages';
+import { validation } from '#api/utils/index.js';
+import needsAuthorization from '../auth/authMiddleware.js';
+import pages from './pages.js';
 
 export default (app: Application) => {
   app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {

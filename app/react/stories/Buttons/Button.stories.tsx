@@ -1,11 +1,12 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from 'V2/Components/UI/Button';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Button } from '#V2/Components/UI/Button.js';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Buttons/Button',
   component: Button,
 };
+export default meta;
 
 type Story = StoryObj<typeof Button>;
 
@@ -30,4 +31,3 @@ const Basic: Story = {
   },
 };
 export { Basic };
-export default meta;

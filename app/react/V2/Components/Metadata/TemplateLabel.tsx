@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '#app/I18N/index.js';
 
 const getTextColor = (backgroundHex: string): string => {
   if (!backgroundHex) {

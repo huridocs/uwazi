@@ -2,21 +2,21 @@
 import {
   MongoDataSource,
   MongoDSOptions,
-} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { search } from 'api/search';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { search } from '#api/search/index.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { Db, Filter, ObjectId } from 'mongodb';
-import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
-import { Property } from 'api/core/domain/template/Property';
-import { Result, ResultType } from 'api/core/libs/Result';
-import { Settings as SettingsType } from 'shared/types/settingsType';
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
-import { EntityDoesNotExistError } from 'api/core/domain/entity/errors';
-import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
-import { Entity } from '../../core/domain/entity/Entity';
-import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
+import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { EntityDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
+import { Entity } from '../../core/domain/entity/Entity.js';
+import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes.js';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>
@@ -157,6 +157,40 @@ export class MongoMultiLanguageEntityDataSource
       .toArray();
 
     return entities.map(e => e.sharedId);
+  }
+
+  async getSharedIdsByTemplateAndTitles(templateId: string, titles: string[]) {
+    if (!titles.length) {
+      return [];
+    }
+
+    const entities = await this.getCollection()
+      .find(
+        { template: new ObjectId(templateId), title: { $in: titles } },
+        { projection: { title: 1, sharedId: 1 } }
+      )
+      .toArray();
+
+    return entities.map(entity => ({
+      title: entity.title,
+      sharedId: entity.sharedId,
+    }));
+  }
+
+  async getSharedIdsByTitles(titles: string[]) {
+    if (!titles.length) {
+      return [];
+    }
+
+    const entities = await this.getCollection()
+      .find({ title: { $in: titles } }, { projection: { title: 1, sharedId: 1, template: 1 } })
+      .toArray();
+
+    return entities.map(entity => ({
+      title: entity.title,
+      sharedId: entity.sharedId,
+      templateId: entity.template.toString(),
+    }));
   }
 
   private async findAffectedSharedIds(
