@@ -572,10 +572,10 @@ describe('Users', () => {
         to: 'test@email.com',
         subject: 'Password recovery',
         text:
-          `Your username is: username\n` +
-          `To set your password click on the following link:\n` +
+          'Your username is: username\n' +
+          'To set your password click on the following link:\n' +
           `domain/setpassword/${key}\n` +
-          `This link will be valid for 24 hours.`,
+          'This link will be valid for 24 hours.',
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
     });
