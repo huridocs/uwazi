@@ -1,4 +1,4 @@
-import Ajv, { ErrorObject } from 'ajv';
+import Ajv, { ErrorObject, ValidationError } from 'ajv';
 import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 import { wrapValidator } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
@@ -18,7 +18,7 @@ const validateField =
       return err;
     } catch (e) {
       const currentErrors = await err;
-      if (e instanceof Ajv.ValidationError) {
+      if (e instanceof ValidationError) {
         return currentErrors.concat(e.errors);
       }
       throw e;
@@ -68,7 +68,7 @@ ajv.addKeyword({
     ];
 
     if (errors.length) {
-      throw new Ajv.ValidationError(errors);
+      throw new ValidationError(errors);
     }
 
     return true;
@@ -87,7 +87,7 @@ ajv.addKeyword({
 
     const [template] = await templatesModel.get({ _id: entity.template });
     if (!template) {
-      throw new Ajv.ValidationError([
+      throw new ValidationError([
         {
           keyword: 'metadataMatchesTemplateProperties',
           schemaPath: '',
