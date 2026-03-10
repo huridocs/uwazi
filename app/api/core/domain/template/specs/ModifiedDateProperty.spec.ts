@@ -1,8 +1,8 @@
 import {
   ModifiedDatePropertyInvalidNameError,
   ModifiedDatePropertyInvalidTypeError,
-} from '../errors.js';
-import { ModifiedDateProperty } from '../ModifiedDateProperty.js';
+} from '../errors';
+import { ModifiedDateProperty } from '../ModifiedDateProperty';
 
 describe('ModifiedDateProperty', () => {
   it('should set defaults values if not provided', () => {

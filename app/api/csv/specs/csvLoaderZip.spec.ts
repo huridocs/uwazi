@@ -1,16 +1,16 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { files } from '#api/files/files.js';
-import { search } from '#api/search/index.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { files } from 'api/files/files';
+import { search } from 'api/search';
 import path from 'path';
-import * as filesystem from '#api/files/filesystem.js';
-import { FileType } from '#shared/types/fileType.js';
-import entities from '#api/entities/index.js';
-import { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import * as filesystem from 'api/files/filesystem';
+import { FileType } from 'shared/types/fileType';
+import entities from 'api/entities';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 
-import { CSVLoader } from '../csvLoader.js';
-import { fixtures, template1Id } from './fixtures.js';
+import { CSVLoader } from '../csvLoader';
+import { fixtures, template1Id } from './fixtures';
 
-import { createTestingZip } from './helpers.js';
+import { createTestingZip } from './helpers';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/test.zip'));

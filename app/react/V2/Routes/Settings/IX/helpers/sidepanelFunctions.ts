@@ -1,10 +1,10 @@
-import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
-import { MetadataObjectSchema, PropertyValueSchema } from '#shared/types/commonTypes.js';
-import { EntitySuggestionType } from '#shared/types/suggestionType.js';
-import { parseLocalizedDate } from '#V2/shared/dateHelpers.js';
-import * as entitiesAPI from '#V2/api/entities/index.js';
-import * as filesAPI from '#V2/api/files/index.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
+import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
+import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { parseLocalizedDate } from 'V2/shared/dateHelpers';
+import * as entitiesAPI from 'V2/api/entities';
+import * as filesAPI from 'V2/api/files';
+import { TemplateSchema } from 'shared/types/templateType';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
 

@@ -1,10 +1,10 @@
-import { actions } from '#app/BasicReducer/index.js';
+import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
-import { notificationActions } from '#app/Notifications/index.js';
-import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
-import Immutable from 'immutable';
-import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import { notificationActions } from 'app/Notifications';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import { fromJS as Immutable } from 'immutable';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { RequestParams } from 'app/utils/RequestParams';
 
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;
@@ -91,7 +91,7 @@ export function loadMoreReferences(limit) {
 export function setFilter(groupFilterValues) {
   return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
-    const currentFilter = relationshipsList.filters.get('filter') || Immutable.fromJS({});
+    const currentFilter = relationshipsList.filters.get('filter') || Immutable({});
     const newFilter = currentFilter.merge(groupFilterValues);
     dispatch(
       actions.set('relationships/list/filters', relationshipsList.filters.set('filter', newFilter))
@@ -103,7 +103,7 @@ export function setFilter(groupFilterValues) {
 export function resetSearch() {
   return function (dispatch, getState) {
     dispatch(formActions.change('relationships/list/search.searchTerm', ''));
-    dispatch(actions.set('relationships/list/filters', Immutable.fromJS({})));
+    dispatch(actions.set('relationships/list/filters', Immutable({})));
     return searchReferences()(dispatch, getState);
   };
 }

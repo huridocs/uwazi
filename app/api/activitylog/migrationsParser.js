@@ -1,4 +1,4 @@
-import { Methods } from './activityLogBuilder.js';
+import { Methods } from 'api/activitylog/activityLogBuilder';
 
 export const typeParsers = {
   fieldParseError: logData => {

@@ -1,5 +1,5 @@
-import { ClientTranslationSchema } from '#app/istore.js';
-import { LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { ClientTranslationSchema } from 'app/istore';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
 
 const languages: LanguagesListSchema = [
   {

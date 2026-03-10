@@ -1,4 +1,4 @@
-import { PropertySchema } from './types/commonTypes.js';
+import { PropertySchema } from './types/commonTypes';
 
 const propertyTypes = {
   date: 'date' as 'date',

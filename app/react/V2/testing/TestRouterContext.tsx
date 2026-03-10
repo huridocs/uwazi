@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { ReactNode } from 'react';
 import { createRoutesStub } from 'react-router';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 
 type TestRouterProps = {
   children: ReactNode;

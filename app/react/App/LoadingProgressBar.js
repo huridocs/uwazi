@@ -1,4 +1,4 @@
-import { isClient } from '#app/utils/index.js';
+import { isClient } from 'app/utils';
 import NProgress from 'nprogress';
 
 const loadingProgressBar = {
@@ -39,4 +39,4 @@ const loadingProgressBar = {
   },
 };
 
-export { loadingProgressBar };
+export default loadingProgressBar;

@@ -1,6 +1,6 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 
-const thesauriAPI = {
+export default {
   get(requestParams) {
     return api.get('dictionaries', requestParams).then(response => response.json.rows);
   },
@@ -25,5 +25,3 @@ const thesauriAPI = {
     return api.delete('thesauris', requestParams).then(response => response.json);
   },
 };
-
-export { thesauriAPI };

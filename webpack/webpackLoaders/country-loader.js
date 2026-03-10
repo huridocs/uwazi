@@ -1,13 +1,6 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { fileURLToPath } from 'url';
+const countries = require('../../node_modules/world-countries/countries.json');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = join(__filename, '..');
-
-const countries = JSON.parse(readFileSync(join(__dirname, '../../node_modules/world-countries/countries.json'), 'utf8'));
-
-export default function countryLoader() {
+module.exports = () => {
   const processed = countries.map(country => ({
     cca3: country.cca3,
     name: { common: country.name.common },
@@ -15,4 +8,4 @@ export default function countryLoader() {
   }));
 
   return `export default ${JSON.stringify(processed)}`;
-}
+};

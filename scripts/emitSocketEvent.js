@@ -1,8 +1,6 @@
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
-import { emitSocketEvent } from '#api/socketio/standaloneEmitSocketEvent.js';
+import { emitSocketEvent } from '../app/api/socketio/standaloneEmitSocketEvent';
 
-const { tenant, event } = await yargs(hideBin(process.argv))
+const { tenant, event } = require('yargs')
   .option('tenant', {
     alias: 't',
     type: 'string',

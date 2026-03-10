@@ -1,5 +1,5 @@
-import model from '#api/activitylog/activitylogModel.js';
-import logger from '../logger.js';
+import model from 'api/activitylog/activitylogModel';
+import logger from '../logger';
 
 describe('Migrations ActivityLog logger', () => {
   it('should create a new fieldParseError log', () => {

@@ -1,21 +1,22 @@
 /* eslint-disable max-lines */
-import { WithId } from '#api/odm/index.js';
-import translationsModel, { IndexedTranslations } from '#api/i18n/translations.js';
-import { search } from '#api/search/index.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import translate, { getContext } from '#shared/translate.js';
+import { WithId } from 'api/odm';
+import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
+import { search } from 'api/search';
+import templates from 'api/core/v1_layer/templates';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
+import { EntitySchema } from 'shared/types/entityType';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import translate, { getContext } from 'shared/translate';
 import {
   MetadataSchema,
   MetadataObjectSchema,
   PropertySchema,
   LanguageISO6391,
-} from '#shared/types/commonTypes.js';
+} from 'shared/types/commonTypes';
 import { isString } from 'util';
-import model from './entitiesModel.js';
+
+import model from './entitiesModel';
 
 interface DenormalizationUpdate {
   propertyName: string;

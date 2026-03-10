@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Entity, Fixture, Settings, TranslationDBO } from '../types.js';
+import { Entity, Fixture, Settings, TranslationDBO } from '../types';
 
 const template1 = new ObjectId();
 const template2 = new ObjectId();

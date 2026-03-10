@@ -1,9 +1,11 @@
-import { notify, removeNotification } from './actions/notificationsActions.js';
-import { Notifications } from './components/Notifications.js';
+import { notify, removeNotification } from './actions/notificationsActions';
+import Notifications from './components/Notifications';
 
 const notificationActions = {
   notify,
   removeNotification,
 };
 
-export { notificationActions, Notifications };
+export { notificationActions };
+
+export default Notifications;

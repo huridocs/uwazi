@@ -2,19 +2,19 @@
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
-import { Translate } from '#app/I18N/index.js';
-import { Button, ConfirmationModal, Table, Tabs } from '#V2/Components/UI/index.js';
-import * as usersAPI from '#V2/api/users/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { Translate } from 'app/I18N';
+import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
+import * as usersAPI from 'V2/api/users';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
   getUsersColumns,
   getGroupsColumns,
   ListOfItems,
-} from './components/index.js';
-import { useHandleNotifications } from './useHandleNotifications.js';
-import { FormIntent, User, Group } from './types.js';
+} from './components';
+import { useHandleNotifications } from './useHandleNotifications';
+import { FormIntent, User, Group } from './types';
 
 type ActiveTab = 'Groups' | 'Users';
 

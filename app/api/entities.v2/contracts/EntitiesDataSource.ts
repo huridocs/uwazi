@@ -1,5 +1,5 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 
 type MarkAsChangedCriteria = { template: string } | { sharedId: string };
 type MarkAsChangedData = { property: string } | { properties: string[] };

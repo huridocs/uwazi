@@ -1,7 +1,7 @@
-import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import settings from '#api/settings/index.js';
-import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
-import { DeleteTemplateRequestDto, DeleteTemplateResponseDto } from './DTO.js';
+import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import settings from 'api/settings';
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
+import { DeleteTemplateRequestDto, DeleteTemplateResponseDto } from './DTO';
 
 class DeleteTemplateController extends AbstractController<DeleteTemplateRequestDto> {
   protected async handle(): Promise<void> {

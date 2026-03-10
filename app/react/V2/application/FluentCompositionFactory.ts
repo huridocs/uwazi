@@ -1,6 +1,6 @@
-import { ProcessingContext } from './services/processors/types.js';
-import { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase.js';
-import { FluentCompositionBuilder } from './FluentCompositionBuilder.js';
+import { ProcessingContext } from './services/processors/types';
+import { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase';
+import { FluentCompositionBuilder } from './FluentCompositionBuilder';
 
 export class FluentCompositionFactory {
   constructor(

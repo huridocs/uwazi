@@ -1,5 +1,5 @@
 import * as Cookie from 'tiny-cookie';
-import { isClient } from '#app/utils/index.js';
+import { isClient } from 'app/utils';
 
 const languageInLanguages = (languages, locale) => Boolean(languages.find(l => l.key === locale));
 const getURLLocale = (locale, languages = []) =>
@@ -24,4 +24,4 @@ const I18NUtils = {
   },
 };
 
-export { I18NUtils };
+export default I18NUtils;

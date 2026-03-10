@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useResetAtom } from 'jotai/utils';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { Notification } from '#V2/Components/UI/Notification.js';
+import { notificationAtom } from 'V2/atoms';
+import { Notification } from 'V2/Components/UI/Notification';
 
 const NotificationsContainer = () => {
   const timeout: number = Number.parseFloat(process.env.NOTIFICATION_DELAY || '6000');

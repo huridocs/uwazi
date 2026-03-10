@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { Fixture } from '../types.js';
+import { Fixture } from '../types';
 
 const settingsOnlyDuplication: Fixture = {
   settings: [

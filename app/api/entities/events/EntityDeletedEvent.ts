@@ -1,5 +1,5 @@
-import { AbstractEvent } from '#api/core/libs/eventsbus/index.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { AbstractEvent } from 'api/core/libs/eventsbus';
+import { EntitySchema } from 'shared/types/entityType';
 
 interface EntityDeletedData {
   entity: EntitySchema[];

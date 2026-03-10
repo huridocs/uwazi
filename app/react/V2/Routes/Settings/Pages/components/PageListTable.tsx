@@ -1,10 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import kebabCase from 'lodash/kebabCase.js';
+import { kebabCase } from 'lodash';
 import { CellContext } from '@tanstack/react-table';
-import { Button, Pill } from '#app/V2/Components/UI/index.js';
-import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
-import { TablePage } from '../PagesList.js';
+import { Button, Pill } from 'app/V2/Components/UI';
+import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N';
+import { TablePage } from '../PagesList';
 
 const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
 

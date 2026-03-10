@@ -1,7 +1,7 @@
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import db, { DBFixture } from '#api/utils/testing_db.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { UserSchema } from '#shared/types/userType.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import db, { DBFixture } from 'api/utils/testing_db';
+import { propertyTypes } from 'shared/propertyTypes';
+import { UserSchema } from 'shared/types/userType';
 
 const f = getFixturesFactory();
 

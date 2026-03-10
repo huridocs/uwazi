@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 /*eslint max-nested-callbacks: ["error", 10]*/
-import proxyMock from '../helpers/proxyMock.js';
-import insertFixtures from '../helpers/insertFixtures.js';
-import { adminLogin, logout } from '../helpers/login.js';
-import disableTransitions from '../helpers/disableTransitions.js';
-import { host } from '../config.js';
+import proxyMock from '../helpers/proxyMock';
+import insertFixtures from '../helpers/insertFixtures';
+import { adminLogin, logout } from '../helpers/login';
+import disableTransitions from '../helpers/disableTransitions';
+import { host } from '../config';
 
 const getAllEntitiesTitles = async (number: number) => {
   await page.waitForSelector(

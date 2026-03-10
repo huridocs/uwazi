@@ -1,10 +1,10 @@
-import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
-import { Context } from '#api/core/domain/template/Property.js';
+import { CommonProperty, CommonPropertyProps } from 'api/core/domain/template/CommonProperty';
+import { Context } from 'api/core/domain/template/Property';
 import {
   ModifiedDatePropertyInvalidNameError,
   ModifiedDatePropertyInvalidTypeError,
-} from './errors.js';
-import { PropertyType } from './PropertyType.js';
+} from './errors';
+import { PropertyType } from './PropertyType';
 
 type Props = { prioritySorting?: boolean; type?: PropertyType } & Omit<CommonPropertyProps, 'type'>;
 

@@ -1,6 +1,6 @@
-import testingDB from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { files, UpdateFileError } from '../files.js';
+import testingDB from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { files, UpdateFileError } from '../files';
 
 describe('Files', () => {
   beforeEach(async () => {

@@ -1,9 +1,9 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 import { Link } from 'react-router';
-import { Button } from '#V2/Components/UI/index.js';
-import { PXTable } from '../../../types.js';
+import { Button } from 'app/V2/Components/UI';
+import { PXTable } from '../../../types';
 
 const ActionCell = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
   <div className="flex gap-2 justify-end">

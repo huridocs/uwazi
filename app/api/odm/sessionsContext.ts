@@ -1,9 +1,9 @@
 import { ClientSession } from 'mongoose';
 import { Readable } from 'stream';
 
-import { appContext } from '#api/utils/AppContext.js';
-import { FileTypes } from '#api/files/storage.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { appContext } from 'api/utils/AppContext';
+import { FileTypes } from 'api/files/storage';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 
 export const dbSessionContext = {
   getSession() {

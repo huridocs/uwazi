@@ -1,5 +1,5 @@
-import { TranslationType } from '#shared/translationType.js';
-import { IndexedTranslations } from '../translations.js';
+import { TranslationType } from 'shared/translationType';
+import { IndexedTranslations } from '../translations';
 
 export function sortByLocale(
   a: TranslationType | IndexedTranslations,

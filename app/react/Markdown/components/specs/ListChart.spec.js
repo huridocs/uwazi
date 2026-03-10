@@ -4,9 +4,9 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { mapStateToProps, ListChartComponent } from '../ListChart.js';
-import markdownDatasets from '../../markdownDatasets.js';
-import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures.js';
-import { nestedThesauri } from './fixture/nestedThesauri.js';
+import markdownDatasets from '../../markdownDatasets';
+import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('ListChart Markdown component', () => {
   const state = {

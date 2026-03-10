@@ -1,11 +1,11 @@
 import Ajv from 'ajv';
 
-import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
-import { LanguageISO6391Schema } from '#shared/types/commonSchemas.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { ObjectIdAsString } from 'api/utils/ajvSchemas';
+import { LanguageISO6391Schema } from 'shared/types/commonSchemas';
+import { DomainError } from 'api/core/domain/error/DomainError';
 import relationships from './relationships.js';
-import { validation } from '../utils/index.js';
-import needsAuthorization from '../auth/authMiddleware.js';
+import { validation } from '../utils';
+import needsAuthorization from '../auth/authMiddleware';
 
 class SelectionRectanglesIsEmptyError extends DomainError {
   constructor() {

@@ -1,11 +1,11 @@
-import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
-import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory.js';
-import { ExpressEntityMapper } from './ExpressEntityMapper.js';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
+import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import { DependenciesContext } from 'api/core/libs/DependenciesContext';
+import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas';
+import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory';
+import { ExpressEntityMapper } from './ExpressEntityMapper';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
+import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO';
+import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager';
 
 type Request = UpdateEntityRequest | { entity: string };
 
@@ -58,13 +58,12 @@ class UpdateEntityController extends AbstractController<Request> {
     } catch (error: unknown) {
       const duration = Date.now() - startTime;
 
-      DependenciesContext.logger.info(
+      DependenciesContext.logger.error(
         `Entity update failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           namespace: 'Entity_Update',
           durationMs: duration,
           success: false,
-          notify: true,
 
           error: JSON.stringify(error),
           dto: JSON.stringify(this.request.body),

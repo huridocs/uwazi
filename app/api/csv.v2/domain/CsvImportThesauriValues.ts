@@ -1,4 +1,4 @@
-import { CsvThesauriPendingEntry } from './CsvThesauriPendingValues.js';
+import { CsvThesauriPendingEntry } from './CsvThesauriPendingValues';
 
 type CsvImportThesauriAppliedValue = {
   label: string;
@@ -73,14 +73,8 @@ class CsvImportThesauriValues {
     });
   }
 
-  shouldPersist(
-    summary: Pick<PendingValuesDiffSummary, 'hasPendingAppends' | 'observedValues'>,
-    incomingAppliedValues: CsvImportThesauriAppliedValue[] = []
-  ) {
+  shouldPersist(summary: Pick<PendingValuesDiffSummary, 'hasPendingAppends' | 'observedValues'>) {
     if (summary.hasPendingAppends) {
-      return true;
-    }
-    if (this.hasNewAppliedValues(incomingAppliedValues)) {
       return true;
     }
     if (!this.appliedAt || !this.stats) {
@@ -137,16 +131,6 @@ class CsvImportThesauriValues {
     });
 
     return [...baseList, ...additions];
-  }
-
-  private hasNewAppliedValues(incoming: CsvImportThesauriAppliedValue[]) {
-    if (!incoming.length) {
-      return false;
-    }
-    const serialize = (value: CsvImportThesauriAppliedValue) =>
-      `${value.parentLabel || ''}::${value.label}::${value.valueId}`;
-    const existing = new Set((this.appliedValues || []).map(serialize));
-    return incoming.some(value => !existing.has(serialize(value)));
   }
 
   private combineStats(summary: Pick<PendingValuesDiffSummary, 'observedValues' | 'createdCount'>) {

@@ -1,13 +1,13 @@
 import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ShowMetadata, MetadataForm } from '#app/Metadata/index.js';
-import { api as entitiesAPI } from '#app/Entities/index.js';
-import * as saveEntityWithFiles from '../../../Library/actions/saveEntityWithFiles.js';
-import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata.js';
-import * as routeUtils from '../../utils/routeUtils.js';
+import { ShowMetadata, MetadataForm } from 'app/Metadata';
+import { api as entitiesAPI } from 'app/Entities';
+import * as saveEntityWithFiles from '../../../Library/actions/saveEntityWithFiles';
+import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata';
+import * as routeUtils from '../../utils/routeUtils';
 
-import * as actions from '../../actions/actions.js';
+import * as actions from '../../actions/actions';
 
 describe('RelationshipMetadata', () => {
   let component;
@@ -139,7 +139,7 @@ describe('RelationshipMetadata', () => {
       renderComponent();
       spyOn(routeUtils, 'requestState').and.callFake(async () => Promise.resolve([{}, {}]));
       instance.deleteDocument();
-      await props.mainContext.confirm.calls.mostRecent().args[0].accept();
+      await props.mainContext.confirm.calls.allArgs()[0][0].accept();
       expect(entitiesAPI.delete).toHaveBeenCalledWith({
         data: { sharedId: 'ab146' },
         headers: {},

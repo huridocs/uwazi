@@ -1,8 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { EntityRepository } from './EntityRepository.js';
-import * as entitiesApi from '../../api/entities/index.js';
-import * as searchEntitiesApi from '../../api/search/index.js';
+import { EntitySchema } from 'shared/types/entityType';
+import { EntityRepository } from './EntityRepository';
+import * as entitiesApi from '../../api/entities/index';
+import * as searchEntitiesApi from '../../api/search/index';
 
 export class EntityRepositoryImpl implements EntityRepository {
   constructor() {}

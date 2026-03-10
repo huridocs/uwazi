@@ -1,5 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
-import { PropertySchema, TemplateSchema } from './types.js';
+import { PropertySchema, TemplateSchema } from './types';
 
 const required: Omit<PropertySchema, '_id'>[] = [
   { label: 'Title', name: 'title', type: 'text', isCommonProperty: true },

@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoPXEntityStatusesQueryService } from './MongoPXEntityStatusesQueryService.js';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { MongoPXEntityStatusesQueryService } from './MongoPXEntityStatusesQueryService';
 
 type Props = {
   connection?: Db;

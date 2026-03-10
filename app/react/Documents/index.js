@@ -1,6 +1,6 @@
-import { documentsAPI } from './DocumentsAPI.js';
-import { TocForm } from './components/TocForm.js';
-import { ShowToc } from './components/ShowToc.js';
-import { DocumentSidePanel } from './components/DocumentSidePanel.js';
+import documentsApi from './DocumentsAPI';
+import TocForm from './components/TocForm';
+import ShowToc from './components/ShowToc';
+import DocumentSidePanel from './components/DocumentSidePanel';
 
-export { documentsAPI, TocForm, ShowToc, DocumentSidePanel };
+export { documentsApi, TocForm, ShowToc, DocumentSidePanel };

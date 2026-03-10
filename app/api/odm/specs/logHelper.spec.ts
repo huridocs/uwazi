@@ -1,4 +1,4 @@
-import { createUpdateLogHelper, NoLogger, UpdateLogHelper } from '../logHelper.js';
+import { createUpdateLogHelper, NoLogger, UpdateLogHelper } from '../logHelper';
 
 describe('createUpdateLogHelper', () => {
   describe('when collection name is either than activitylog', () => {

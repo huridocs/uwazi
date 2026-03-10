@@ -1,5 +1,4 @@
-import { clearCookiesAndLogin } from '../helpers/login.js';
-import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
+import { clearCookiesAndLogin } from '../helpers/login';
 
 const updateDatasetScript = `window.updatePageDatasets("default",{rows:[],totalRows:292,relation:"eq",aggregations:
 {all:{tipo:{meta:{},doc_count:915,buckets:[{key:"57d8a9c4-f0cd-4290-b15e-ddf2b3c6ef91",doc_count:6,filtered:
@@ -16,11 +15,11 @@ const graphs = {
 };
 
 const insertChart = (chart: string, chartName: string) => {
-  cy.get('input[name="title"]').should('be.visible').click();
-  cy.get('input[name="title"]').type('{selectAll}{backspace}', { delay: 0 });
-  cy.get('input[name="title"]').type(chartName, { delay: 0 });
+  cy.clearAndType('input[name="title"]', chartName, { delay: 0 });
   cy.contains('Markdown').click();
-  typeInEditor('html', `<Dataset />\n${chart}`);
+  cy.get('div[data-mode-id="html"]').type(`<Dataset />\n${chart}`, {
+    parseSpecialCharSequences: false,
+  });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(501);
 };
@@ -34,26 +33,17 @@ const visitPage = () => {
   cy.contains('a', 'View page').then(a => {
     const href = a.attr('href') || '';
     cy.visit(href);
-    cy.get('body', { timeout: 20000 }).should('be.visible');
   });
 };
 
 const newPage = () => {
-  dismissModalIfVisible();
   cy.contains('a', 'Settings').click();
-  dismissModalIfVisible();
   cy.contains('a', 'Pages').click();
-  dismissModalIfVisible();
   cy.contains('a', 'Add page').click();
 };
 
 const takeSnapshot = () => {
-  cy.get('body', { timeout: 30000 }).then($body => {
-    if (!$body.find('.markdown-viewer').length) {
-      cy.reload();
-    }
-  });
-  cy.get('.markdown-viewer', { timeout: 30000 }).should('be.visible');
+  cy.get('.markdown-viewer').should('be.visible');
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.get('.markdown-viewer').wait(2000).matchImageSnapshot();
 };
@@ -99,20 +89,18 @@ describe('Graphs in Page ', () => {
 
   describe('dataset updates', () => {
     it('should update a graph via the page script using the updated function', () => {
-      dismissModalIfVisible();
       cy.contains('a', 'Settings').click();
-      dismissModalIfVisible();
       cy.contains('a', 'Pages').click();
-      dismissModalIfVisible();
       cy.contains('tr', 'Bar chart graph').contains('button', 'Edit').click();
-      cy.contains('[role="tab"]', 'Javascript').click();
+      cy.contains('Javascript').click();
       // delete extra closing keys added by the code editor when writing this text
-      typeInEditor('javascript', updateDatasetScript, true);
-      cy.get('body').then($body => {
-        if ($body.find('div[data-mode-id="javascript"]').length) {
-          cy.get('div[data-mode-id="javascript"]').type('{backspace}{backspace}');
-        }
-      });
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
+      cy.get('div[data-mode-id="javascript"]')
+        .type(updateDatasetScript, {
+          parseSpecialCharSequences: false,
+          delay: 0,
+        })
+        .type('{backspace}{backspace}');
       // wait for editor to update
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);

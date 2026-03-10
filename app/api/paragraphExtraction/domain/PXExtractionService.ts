@@ -1,8 +1,8 @@
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
-import { Segmentation } from '#api/core/domain/files/Segmentation.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { PXExtractionKey } from './PXExtractionKey.js';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
+import { Segmentation } from 'api/core/domain/files/Segmentation';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { PXExtractionKey } from './PXExtractionKey';
 
 type ExtractParagraphInput = {
   segmentations: Segmentation[];

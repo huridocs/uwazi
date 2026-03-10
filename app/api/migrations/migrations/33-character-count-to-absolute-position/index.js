@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
-import { PdfCharacterCountToAbsolute } from '#api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute.js';
+import { PdfCharacterCountToAbsolute } from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
 import path from 'path';
-import { config } from '#api/config.js';
+import { config } from 'api/config';
 
 async function getCharacterCountToAbsolutePositionConvertor(file) {
   const filename = path.join(config.defaultTenant.uploadedDocuments, file.filename);

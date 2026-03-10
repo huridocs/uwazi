@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import ReactPlayer from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { t } from '#app/I18N/index.js';
-import { MediaMetadataProperty } from '#V2/domain/entities/types.js';
-import { MetadataFieldProps } from './types.js';
-import { PropertyLabel } from './PropertyLabel.js';
-import { MediaPlayer } from '../UI/index.js';
-import { MetadataCard } from './MetadataCard.js';
+import { t } from 'app/I18N';
+import { MediaMetadataProperty } from 'V2/domain/entities/types';
+import { MetadataFieldProps } from './types';
+import { PropertyLabel } from './PropertyLabel';
+import { MediaPlayer } from '../UI';
+import { MetadataCard } from './MetadataCard';
 
 type MediaProps = MetadataFieldProps & {
   values: MediaMetadataProperty['values'];
@@ -28,10 +28,6 @@ const Media = ({
   const handleTimelinkClick = (time: number) => {
     playerRef.current?.seekTo(time, 'seconds');
   };
-
-  if (!value) {
-    return null;
-  }
 
   return (
     <MetadataCard>

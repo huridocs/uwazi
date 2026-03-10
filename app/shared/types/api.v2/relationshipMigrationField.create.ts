@@ -1,4 +1,4 @@
-import { ResponseElement } from './relationshipMigrationField.get.js';
+import { ResponseElement } from './relationshipMigrationField.get';
 
 type CreateRelationshipMigRationFieldResponse = ResponseElement;
 

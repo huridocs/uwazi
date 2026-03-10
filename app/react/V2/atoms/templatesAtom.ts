@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Template } from '#app/apiResponseTypes.js';
+import { Template } from 'app/apiResponseTypes';
 
 const templatesAtom = atom([] as Template[]);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 
 const TabLabel = ({ text, icon }: { text: string; icon: React.ReactElement }) => (
   <div className="px-2 flex items-center gap-2">

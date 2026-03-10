@@ -1,4 +1,4 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 
 const requestToken = async (): Promise<string> => {
   const { json } = await api.post('preserve');

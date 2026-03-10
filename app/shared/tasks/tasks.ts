@@ -1,4 +1,4 @@
-import { sleep } from '#shared/tsUtils.js';
+import { sleep } from 'shared/tsUtils';
 
 export interface TaskStatus {
   state: 'undefined' | 'created' | 'running' | 'done' | 'failed';

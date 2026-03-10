@@ -1,8 +1,8 @@
-import { Thesaurus, UpdateThesaurusProps } from '../domain/thesaurus/Thesaurus.js';
-import { AbstractUseCase } from '../libs/UseCase.js';
-import { ThesauriDataSource } from './contracts/ThesauriDataSource.js';
-import { ThesauriService } from './ThesauriService.js';
-import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService.js';
+import { Thesaurus, UpdateThesaurusProps } from '../domain/thesaurus/Thesaurus';
+import { AbstractUseCase } from '../libs/UseCase';
+import { ThesauriDataSource } from './contracts/ThesauriDataSource';
+import { ThesauriService } from './ThesauriService';
+import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService';
 
 type Input = {
   id: string;

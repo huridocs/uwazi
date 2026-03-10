@@ -1,4 +1,4 @@
-import { DoubleIndexedObject, Values } from '../DoubleIndexedObject.js';
+import { DoubleIndexedObject, Values } from '../DoubleIndexedObject';
 
 describe('DoubleIndexedObject', () => {
   describe('constructor', () => {

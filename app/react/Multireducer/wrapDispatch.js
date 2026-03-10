@@ -3,7 +3,7 @@ const wrapAction = (action, reducerKey) => {
   return action;
 };
 
-function wrapDispatch(dispatch, reducerKey) {
+export default function wrapDispatch(dispatch, reducerKey) {
   const wrappedDispatch = action => {
     let wrappedAction = wrapAction(action, reducerKey);
     if (typeof action === 'function') {
@@ -15,5 +15,3 @@ function wrapDispatch(dispatch, reducerKey) {
 
   return wrappedDispatch;
 }
-
-export { wrapDispatch };

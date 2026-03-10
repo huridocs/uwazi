@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Aggregations } from '#shared/types/aggregations.js';
-import Immutable from 'immutable';
-import { MultiSelect } from '#app/Forms/index.js';
-import { renderConnected } from '#app/utils/test/renderConnected.js';
-import { PermissionsFilter, PermissionsFilterUncontrolled } from '../PermissionsFilter.js';
+import { Aggregations } from 'shared/types/aggregations';
+import { fromJS } from 'immutable';
+import { MultiSelect } from 'app/Forms';
+import { renderConnected } from 'app/utils/test/renderConnected';
+import { PermissionsFilter, PermissionsFilterUncontrolled } from '../PermissionsFilter';
 
 describe('Permissions Filter', () => {
   let component: any;
@@ -33,7 +33,7 @@ describe('Permissions Filter', () => {
     };
 
     const state = {
-      user: Immutable.fromJS({
+      user: fromJS({
         _id: 'userId',
         groups: [{ _id: 'groupId' }],
       }),

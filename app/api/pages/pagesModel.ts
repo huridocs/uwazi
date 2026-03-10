@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { instanceModel } from '#api/odm/index.js';
-import { PageType } from '#shared/types/pageType.js';
+import { instanceModel } from 'api/odm';
+import { PageType } from 'shared/types/pageType';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, select: false },

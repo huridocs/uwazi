@@ -1,6 +1,6 @@
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource.js';
-import { RelationshipMigrationFieldUniqueId } from '../model/RelationshipMigrationField.js';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
+import { RelationshipMigrationFieldUniqueId } from '../model/RelationshipMigrationField';
 
 class DeleteRelationshipMigrationFieldService {
   private transactionManager: TransactionManager;

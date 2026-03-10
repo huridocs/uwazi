@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { isSameDate } from '#shared/isSameDate.js';
+import { isSameDate } from 'shared/isSameDate';
 
 it('should only consider year, month and day', () => {
   const baseUtc = moment.utc('2020-01-01T12:00:00Z');

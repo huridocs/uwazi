@@ -1,12 +1,12 @@
 /* eslint-disable no-template-curly-in-string */
-import { SearchAPI as api } from '#app/Search/SearchAPI.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { markdownDatasets } from '#app/Markdown/index.js';
+import api from 'app/Search/SearchAPI';
+import { RequestParams } from 'app/utils/RequestParams';
+import { markdownDatasets } from 'app/Markdown';
 
-import { PagesAPI } from '../../PagesAPI.js';
-import pageItemLists from '../pageItemLists.js';
+import PagesAPI from '../../PagesAPI';
+import pageItemLists from '../pageItemLists';
 
-import { getPageAssets } from '../getPageAssets.js';
+import { getPageAssets } from '../getPageAssets';
 
 describe('getPageAssets', () => {
   let page: { _id: string; title: string; metadata: { content: string } };
@@ -97,29 +97,21 @@ describe('getPageAssets', () => {
   });
 
   describe('Datasets', () => {
-    let markdownDatasetsResponse: Record<string, unknown>;
+    let markdownDatasetsResponse: {};
 
     beforeEach(() => {
       markdownDatasetsResponse = { request1: 'url1', request2: 'url2' };
-      jest
-        .spyOn(markdownDatasets, 'fetch')
-        .mockImplementation(async (_content, requestParams, options) => {
-          expect(requestParams).toEqual(request.onlyHeaders());
-          return Promise.resolve({ ...markdownDatasetsResponse, ...options?.additionalDatasets });
-        });
+      spyOn(markdownDatasets, 'fetch').and.callFake(async (content, requestParams, options) => {
+        expect(content).toBe('originalContent');
+        expect(requestParams).toEqual(request.onlyHeaders());
+        return Promise.resolve({ ...markdownDatasetsResponse, ...options.additionalDatasets });
+      });
     });
 
     it('should request each dataset inside the content', async () => {
       const stateActions = await getPageAssets(request);
-      expect(markdownDatasets.fetch).toHaveBeenCalledWith(
-        'originalContent',
-        request.onlyHeaders(),
-        expect.any(Object)
-      );
       expect(stateActions.datasets).toEqual(markdownDatasetsResponse);
     });
-
-    afterEach(() => jest.restoreAllMocks());
 
     describe('Extended datasets and data', () => {
       it('should request additional dataset queries and passed data', async () => {

@@ -1,4 +1,4 @@
-import { filterOptions } from '../optionsUtils.js';
+import { filterOptions } from '../optionsUtils';
 
 describe('Options utils', () => {
   describe('filterOptions', () => {

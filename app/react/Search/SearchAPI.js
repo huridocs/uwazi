@@ -1,7 +1,7 @@
-import { api } from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 
-const SearchAPI = {
+export default {
   countByTemplate(requestParams) {
     const url = 'search/count_by_template';
     return api.get(url, requestParams).then(response => response.json);
@@ -36,4 +36,3 @@ const SearchAPI = {
     return api.get(url, requestParams).then(response => response.json);
   },
 };
-export { SearchAPI };

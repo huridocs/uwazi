@@ -1,5 +1,5 @@
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { PropertyInheritedTypeMismatchError, PropertyTypeMismatchError } from '../errors.js';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { PropertyInheritedTypeMismatchError, PropertyTypeMismatchError } from '../errors';
 
 describe('V1RelationshipProperty', () => {
   it('should set defaults values if not provided', () => {

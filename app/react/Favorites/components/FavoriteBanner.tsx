@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 export type FavoriteBannerProps = {
   sharedId: string;
 };

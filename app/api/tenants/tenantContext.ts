@@ -1,7 +1,7 @@
-import { config } from '#api/config.js';
-import { handleError } from '#api/utils/index.js';
-import { appContext } from '#api/utils/AppContext.js';
-import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
+import { config } from 'api/config';
+import { handleError } from 'api/utils';
+import { appContext } from 'api/utils/AppContext';
+import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel';
 
 type TenantFeatureFlags = keyof NonNullable<Required<Tenant>['featureFlags']>;
 
@@ -23,7 +23,6 @@ type Tenant = {
     fileCacheHeaders?: boolean;
     v2CSVImport?: boolean;
     v2UpdateThesaurus?: boolean;
-    v1CSVImportCompat?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

@@ -1,4 +1,4 @@
-import * as types from '#app/Entities/actions/actionTypes.js';
+import * as types from 'app/Entities/actions/actionTypes';
 
 export function showTab(tab) {
   return {

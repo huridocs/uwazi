@@ -1,4 +1,4 @@
-import { LogEntry } from './LogEntry.js';
+import { LogEntry } from './LogEntry';
 
 export interface LogWriter {
   (log: LogEntry): void;

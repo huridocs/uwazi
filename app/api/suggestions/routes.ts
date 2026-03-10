@@ -1,23 +1,23 @@
 import { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from '#api/suggestions/suggestions.js';
-import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
-import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';
-import { needsAuthorization } from '#api/auth/index.js';
-import { parseQuery } from '#api/utils/parseQueryMiddleware.js';
-import { SuggestionsQueryFilterSchema } from '#shared/types/suggestionSchema.js';
-import { objectIdSchema } from '#shared/types/commonSchemas.js';
+import { Suggestions } from 'api/suggestions/suggestions';
+import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { needsAuthorization } from 'api/auth';
+import { parseQuery } from 'api/utils/parseQueryMiddleware';
+import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
+import { objectIdSchema } from 'shared/types/commonSchemas';
 import {
   IXAggregationQuery,
   IXSuggestionAggregation,
   IXSuggestionsQuery,
-} from '#shared/types/suggestionType.js';
-import { handleError } from '#api/utils/index.js';
-import { serviceMiddleware } from './serviceMiddleware.js';
-import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
-import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController.js';
-import { TrainingSetController } from './adapters/TrainingSetController.js';
+} from 'shared/types/suggestionType';
+import { handleError } from 'api/utils';
+import { serviceMiddleware } from './serviceMiddleware';
+import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
+import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';
+import { TrainingSetController } from './adapters/TrainingSetController';
 
 const IX = new InformationExtraction();
 

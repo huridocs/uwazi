@@ -1,8 +1,8 @@
 /* eslint-disable max-nested-callbacks */
-import settings from '#api/settings/index.js';
-import mailer from '#api/utils/mailer.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import contact from '../contact.js';
+import settings from 'api/settings';
+import mailer from 'api/utils/mailer';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import contact from '../contact';
 import fixtures from './fixtures.js';
 
 describe('contact', () => {

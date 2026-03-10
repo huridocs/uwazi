@@ -1,5 +1,5 @@
-import { ClientSettingsLinkSchema, ClientSublink } from '#app/apiResponseTypes.js';
-import uniqueID from '#shared/uniqueID.js';
+import { ClientSettingsLinkSchema, ClientSublink } from 'app/apiResponseTypes';
+import uniqueID from 'shared/uniqueID';
 
 type Link = Omit<ClientSettingsLinkSchema, 'sublinks'> & {
   rowId?: string;

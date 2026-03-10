@@ -35,8 +35,9 @@ RUN npm i -g dotenv@16.4.7 \
     && echo "Global node_modules: $(npm root -g)"
 ENV NODE_PATH=/usr/local/lib/node_modules
 
-# Enable Corepack for Yarn 4 (version from packageManager in package.json)
-RUN corepack enable
+# Install Yarn classic for running installs inside the container
+RUN npm i -g yarn@1.22.22 --force \
+    && yarn --version
 
 # Create startup script for MongoDB with replica set (available for manual use)
 RUN echo '#!/bin/bash\n\

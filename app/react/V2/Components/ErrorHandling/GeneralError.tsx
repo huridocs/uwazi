@@ -1,13 +1,12 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams } from 'react-router';
-import has from 'lodash/has.js';
-
-import { Footer } from '#app/App/Footer.js';
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
-import { t } from '#app/I18N/index.js';
-import { handledErrors } from '#V2/shared/errorUtils.js';
-import { ErrorFallback } from './ErrorFallback.js';
+import { has } from 'lodash';
+import Footer from 'app/App/Footer';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import { t } from 'app/I18N';
+import { handledErrors } from 'V2/shared/errorUtils';
+import { ErrorFallback } from './ErrorFallback';
 
 const GeneralError = () => {
   const { errorCode } = useParams();

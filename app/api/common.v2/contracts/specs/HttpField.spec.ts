@@ -1,4 +1,4 @@
-import { HttpField } from '../HttpField.js';
+import { HttpField } from '../HttpField';
 
 describe('HttpField', () => {
   it('should parse a string value correctly', () => {

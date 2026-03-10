@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { instanceModel } from '#api/odm/index.js';
+import { instanceModel } from 'api/odm';
 
 const ONE_DAY = 60 * 60 * 24;
 

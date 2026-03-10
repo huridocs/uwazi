@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { EntityInfoView, mapDispatchToProps } from '../EntityInfo.js';
+import EntityInfo, { mapDispatchToProps } from '../EntityInfo.js';
 
 describe('EntityInfo', () => {
   let props;
@@ -18,7 +18,7 @@ describe('EntityInfo', () => {
     actions = mapDispatchToProps(dispatch);
     spyOn(actions, 'getAndSelectDocument');
     const mappedProps = { ...props, ...customProps, ...actions };
-    component = shallow(<EntityInfoView {...mappedProps} />);
+    component = shallow(<EntityInfo.WrappedComponent {...mappedProps} />);
   };
 
   it('should wrap children in a div, passing classname', () => {

@@ -2,15 +2,15 @@ import superagent from 'superagent';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
-import Immutable from 'immutable';
-import { APIURL } from '#app/config.js';
-import { actions as basicActions } from '#app/BasicReducer/index.js';
-import { actions as metadataActions } from '#app/Metadata/index.js';
-import * as actions from '#app/Uploads/actions/uploadsActions.js';
-import * as libraryTypes from '#app/Library/actions/actionTypes.js';
-import * as types from '#app/Uploads/actions/actionTypes.js';
-import { EntitiesAPI as entitiesApi } from '#app/Entities/EntitiesAPI.js';
-import { mockID } from '#shared/uniqueID.js';
+import { fromJS } from 'immutable';
+import { APIURL } from 'app/config.js';
+import { actions as basicActions } from 'app/BasicReducer';
+import { actions as metadataActions } from 'app/Metadata';
+import * as actions from 'app/Uploads/actions/uploadsActions';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
+import * as types from 'app/Uploads/actions/actionTypes';
+import entitiesApi from 'app/Entities/EntitiesAPI';
+import { mockID } from 'shared/uniqueID.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -34,7 +34,6 @@ const mockSuperAgent = (url = `${APIURL}import`) => {
   const mockUpload = superagent.post(url);
   spyOn(mockUpload, 'field').and.returnValue(mockUpload);
   spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
-  spyOn(mockUpload, 'end').and.returnValue(mockUpload);
   spyOn(superagent, 'post').and.returnValue(mockUpload);
   return mockUpload;
 };
@@ -277,7 +276,7 @@ describe('uploadsActions', () => {
   });
 
   describe('newEntity', () => {
-    const store = mockStore({ templates: Immutable.fromJS({}) });
+    const store = mockStore({ templates: fromJS({}) });
     jest
       .spyOn(metadataActions, 'loadInReduxForm')
       .mockImplementation(() => store.dispatch({ type: 'action' }));

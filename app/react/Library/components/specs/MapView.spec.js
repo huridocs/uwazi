@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Markers } from '#app/Map/index.js';
+import { Markers } from 'app/Map';
 import Immutable from 'immutable';
-import { MapViewComponent } from '#app/Library/components/MapView.js';
+import { MapViewComponent } from 'app/Library/components/MapView';
 
 describe('MapView', () => {
   let component;

@@ -1,8 +1,8 @@
 import {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
-} from '../errors.js';
-import { CreationDateProperty } from '../CreationDateProperty.js';
+} from '../errors';
+import { CreationDateProperty } from '../CreationDateProperty';
 
 describe('CreationDateProperty', () => {
   it('should set defaults values if not provided', () => {

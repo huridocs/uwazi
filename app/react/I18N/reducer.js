@@ -1,4 +1,3 @@
-import { createReducer } from '#app/BasicReducer/index.js';
+import createReducer from 'app/BasicReducer';
 
-const reducer = createReducer('locale', '');
-export { reducer };
+export default createReducer('locale', '');

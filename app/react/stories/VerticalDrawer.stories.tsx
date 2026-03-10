@@ -1,13 +1,11 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { VerticalDrawer } from '#V2/Components/UI/VerticalDrawer.js';
+import type { Meta, StoryObj } from '@storybook/react';
+import { VerticalDrawer } from 'V2/Components/UI/VerticalDrawer';
 
 const meta: Meta<typeof VerticalDrawer> = {
   title: 'Components/VerticalDrawer',
   component: VerticalDrawer,
 };
-
-export default meta;
 
 type Story = StoryObj<typeof VerticalDrawer>;
 
@@ -68,3 +66,5 @@ const Basic: Story = {
 };
 
 export { Basic };
+
+export default meta;

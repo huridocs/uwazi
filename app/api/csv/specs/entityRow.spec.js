@@ -1,4 +1,4 @@
-import { extractEntity } from '../entityRow.js';
+import { extractEntity } from '../entityRow';
 
 describe('entityRow', () => {
   const languages = ['es', 'en', 'pt'];

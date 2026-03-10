@@ -1,5 +1,5 @@
-import { Event } from './Event.js';
-import { Listener } from './Listener.js';
+import { Event } from './Event';
+import { Listener } from './Listener';
 
 interface EventEmitter {
   emit(event: Event<any>): Promise<void>;

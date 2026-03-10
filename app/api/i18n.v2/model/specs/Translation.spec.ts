@@ -1,4 +1,4 @@
-import { Translation } from '../Translation.js';
+import { Translation } from '../Translation';
 
 describe('Translation', () => {
   it('should throw an error if context.id is not a string', async () => {

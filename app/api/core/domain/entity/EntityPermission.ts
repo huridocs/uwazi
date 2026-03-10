@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { AccessLevel } from './AccessLevel.js';
-import { PermissionType } from './PermissionType.js';
-import { DuplicatePermissionsError } from './errors.js';
+import { AccessLevel } from './AccessLevel';
+import { PermissionType } from './PermissionType';
+import { DuplicatePermissionsError } from './errors';
 
 const AccessGrantSchema = z.object({
   refId: z.string().min(1, 'refId cannot be empty'),

@@ -1,6 +1,6 @@
-import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
-import { APIURL } from '#app/config.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import { APIURL } from 'app/config.js';
+import { RequestParams } from 'app/utils/RequestParams';
 import backend from 'fetch-mock';
 
 describe('referencesAPI', () => {

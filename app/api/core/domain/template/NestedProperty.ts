@@ -1,10 +1,10 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { z } from 'zod';
-import { PropertyName } from './PropertyName.js';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
-import { PropertyTypeInvalidTypeError } from './errors.js';
-import { PropertyTypeEnum } from './PropertyType.js';
-import { NestedEntry, PropertyAssignment } from './PropertyValue.js';
+import { PropertyName } from './PropertyName';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { PropertyTypeInvalidTypeError } from './errors';
+import { PropertyTypeEnum } from './PropertyType';
+import { NestedEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Nested;

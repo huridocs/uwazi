@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures, { hub1, hub3, shared1, shared2, shared3, shared4, shared5 } from './fixtures.js';
 

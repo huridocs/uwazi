@@ -1,6 +1,6 @@
-import { ClientPropertySchema } from '#app/istore.js';
-import { ClientIXExtractorType } from '#V2/shared/types.js';
-import { TableSuggestion } from '../../types.js';
+import { ClientPropertySchema } from 'app/istore';
+import { ClientIXExtractorType } from 'V2/shared/types';
+import { TableSuggestion } from '../../types';
 
 interface SidepanelProps {
   showSidepanel: boolean;

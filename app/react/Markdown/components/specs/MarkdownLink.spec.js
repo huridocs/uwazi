@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { MarkdownLink } from '../MarkdownLink.js';
+import MarkdownLink from '../MarkdownLink.js';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),

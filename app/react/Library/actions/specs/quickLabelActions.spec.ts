@@ -1,13 +1,13 @@
-import { actions } from '#app/BasicReducer/index.js';
-import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
-import { QuickLabelState } from '#app/istore.js';
-import { wrapDispatch } from '#app/Multireducer/index.js';
-import { store } from '#app/store.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import { actions } from 'app/BasicReducer';
+import EntitiesAPI from 'app/Entities/EntitiesAPI';
+import { QuickLabelState } from 'app/istore';
+import { wrapDispatch } from 'app/Multireducer';
+import { store } from 'app/store';
+import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
-import * as libraryActions from '../libraryActions.js';
-import * as quickLabelActions from '../quickLabelActions.js';
-import { documents, templates, thesauri } from './fixtures.js';
+import * as libraryActions from '../libraryActions';
+import * as quickLabelActions from '../quickLabelActions';
+import { documents, templates, thesauri } from './fixtures';
 
 const libraryDispatch = wrapDispatch(store!.dispatch, 'library');
 
@@ -73,7 +73,6 @@ describe('quickLabelActions', () => {
     });
 
     it('maybeSaveQuickLabels manual save', async () => {
-      jest.spyOn(EntitiesAPI, 'multipleUpdate').mockClear();
       await libraryDispatch(libraryActions.selectDocuments(documents));
       expect(EntitiesAPI.multipleUpdate).not.toHaveBeenCalled();
       store!.dispatch(

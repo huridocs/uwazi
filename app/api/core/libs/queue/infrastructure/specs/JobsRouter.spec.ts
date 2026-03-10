@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
-import { config } from '#api/config.js';
-import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
-import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
-import { JobsRouter } from '../JobsRouter.js';
+import { config } from 'api/config';
+import { Dispatchable } from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
+import { NamespacedDispatcher } from '../NamespacedDispatcher';
+import { JobsRouter } from '../JobsRouter';
 
 class ExampleJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this

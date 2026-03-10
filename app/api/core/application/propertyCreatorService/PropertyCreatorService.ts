@@ -1,6 +1,6 @@
-import { Context, Property } from '../../domain/template/Property.js';
-import { PropertyFactory } from '../../domain/template/PropertyFactory.js';
-import { AbstractPropertyCreatorService, CreateInput } from './AbstractPropertyCreatorService.js';
+import { Context, Property } from '../../domain/template/Property';
+import { PropertyFactory } from '../../domain/template/PropertyFactory';
+import { AbstractPropertyCreatorService, CreateInput } from './AbstractPropertyCreatorService';
 
 class PropertyCreatorService extends AbstractPropertyCreatorService {
   // eslint-disable-next-line class-methods-use-this

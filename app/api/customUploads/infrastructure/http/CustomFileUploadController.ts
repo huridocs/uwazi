@@ -1,9 +1,9 @@
-import type { Request, Response } from 'express';
-import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { CustomFileUpload } from '#api/customUploads/application/CustomFileUpload.js';
-import { CustomFileUploadFactory } from '../factories/CustomFileUploadFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { Request, Response } from 'express';
+import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import { CustomFileUpload } from 'api/customUploads/application/CustomFileUpload';
+import { CustomFileUploadFactory } from '../factories/CustomFileUploadFactory';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 
 class CustomFileUploadController extends AbstractController {
   static createHandler() {

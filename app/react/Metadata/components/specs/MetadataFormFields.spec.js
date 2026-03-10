@@ -1,17 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import * as redux from 'redux';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import { FormGroup } from '#app/Forms/index.js';
-import { MultipleEditionFieldWarning } from '../MultipleEditionFieldWarning.js';
-import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms.js';
-import {
-  MetadataFormFieldsView as MetadataFormFields,
-  mapDispatchToProps,
-} from '../MetadataFormFields.js';
-import { AddThesauriValueButton } from '../AddThesauriValueButton.js';
+import { FormGroup } from 'app/Forms';
+import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
+import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms';
+import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields';
+import { AddThesauriValueButton } from '../AddThesauriValueButton';
 
 describe('MetadataFormFields with one entity to edit ', () => {
   let component;
@@ -48,13 +45,13 @@ describe('MetadataFormFields with one entity to edit ', () => {
         title: [{ value: 'testTitle' }],
         metadata,
       },
-      template: Immutable.fromJS({
+      template: fromJS({
         name: 'template1',
         _id: 'templateId',
         properties: fieldsTemplate,
       }),
-      fields: Immutable.fromJS(fieldsTemplate),
-      thesauris: Immutable.fromJS([
+      fields: fromJS(fieldsTemplate),
+      thesauris: fromJS([
         {
           _id: 2,
           name: 'thesauri',
@@ -66,7 +63,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
           ],
         },
       ]),
-      entityThesauris: Immutable.fromJS({
+      entityThesauris: fromJS({
         field2: [{ value: '1', label: 'option1' }],
       }),
       dateFormat: '',

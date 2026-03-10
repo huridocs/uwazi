@@ -1,19 +1,19 @@
-import { storage, uploadsPath } from '#api/files/index.js';
-import { FileNotFound } from '#api/files/FileNotFound.js';
-import { filesModel } from '#api/files/filesModel.js';
-import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import settings from '#api/settings/settings.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { handleError } from '#api/utils/index.js';
+import { storage, uploadsPath } from 'api/files';
+import { FileNotFound } from 'api/files/FileNotFound';
+import { filesModel } from 'api/files/filesModel';
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
+import settings from 'api/settings/settings';
+import { tenants } from 'api/tenants/tenantContext';
+import { handleError } from 'api/utils';
 import path from 'path';
-import request from '#shared/JSONRequest.js';
-import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { FileType } from '#shared/types/fileType.js';
-import { SegmentationType } from '#shared/types/segmentationType.js';
-import { Settings } from '#shared/types/settingsType.js';
+import request from 'shared/JSONRequest';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { FileType } from 'shared/types/fileType';
+import { SegmentationType } from 'shared/types/segmentationType';
+import { Settings } from 'shared/types/settingsType';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { SegmentationModel } from './segmentationModel.js';
+import { SegmentationModel } from './segmentationModel';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';

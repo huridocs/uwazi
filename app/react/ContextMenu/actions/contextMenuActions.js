@@ -1,4 +1,4 @@
-import * as types from '#app/ContextMenu/actions/actionTypes.js';
+import * as types from 'app/ContextMenu/actions/actionTypes';
 
 export function openMenu() {
   return {

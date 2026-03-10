@@ -1,21 +1,21 @@
 /**
  * @jest-environment jsdom
  */
-import { ClientPropertySchema } from '#app/istore.js';
-import { PropertySchema } from '#shared/types/commonTypes.js';
+import { ClientPropertySchema } from 'app/istore';
+import { PropertySchema } from 'shared/types/commonTypes';
 import {
   searchRelatedEntities,
   getPropertyValuesMap,
   getRelationshipInfo,
   updateSuggestionValues,
-} from '../loaderHelper.js';
+} from '../loaderHelper';
 
-jest.mock('#V2/api/search', () => ({
+jest.mock('V2/api/search', () => ({
   search: jest.fn(),
 }));
 
 describe('loaderHelper', () => {
-  const mockSearch = jest.requireMock('#V2/api/search').search;
+  const mockSearch = jest.requireMock('V2/api/search').search;
 
   const createMockEntity = (id: string, title: string, sharedId: string, metadata = {}) => ({
     _id: id,

@@ -1,15 +1,15 @@
-import Immutable from '#shared/immutableWrapper.js';
-import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
-import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
+import { fromJS as Immutable } from 'immutable';
+import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
+import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 
 const getId = (state, setInArray) => state.getIn(setInArray.concat(['_id']));
 const getSharedId = (state, setInArray) => state.getIn(setInArray.concat(['sharedId']));
 
 const getAttachments = (state, setInArray) =>
-  state.getIn(setInArray.concat(['attachments'])) || Immutable.fromJS([]);
+  state.getIn(setInArray.concat(['attachments'])) || Immutable([]);
 
 const getDocuments = (state, setInArray) =>
-  state.getIn(setInArray.concat(['documents'])) || Immutable.fromJS([]);
+  state.getIn(setInArray.concat(['documents'])) || Immutable([]);
 
 export const manageAttachmentsReducer =
   (originalReducer, { useDefaults = true, setInArray = [] } = {}) =>
@@ -26,10 +26,7 @@ export const manageAttachmentsReducer =
       getSharedId(state, setInArray) === action.doc
     ) {
       const documents = getDocuments(state, setInArray);
-      return state.setIn(
-        setInArray.concat(['documents']),
-        documents.push(Immutable.fromJS(action.file))
-      );
+      return state.setIn(setInArray.concat(['documents']), documents.push(Immutable(action.file)));
     }
 
     if (
@@ -40,7 +37,7 @@ export const manageAttachmentsReducer =
       const index = documents.findIndex(item => item.get('_id') === action.file._id);
       return state.setIn(
         setInArray.concat(['documents']),
-        documents.set(index, Immutable.fromJS(action.file))
+        documents.set(index, Immutable(action.file))
       );
     }
 
@@ -51,7 +48,7 @@ export const manageAttachmentsReducer =
       const attachments = getAttachments(state, setInArray);
       return state.setIn(
         setInArray.concat(['attachments']),
-        attachments.push(Immutable.fromJS(action.file))
+        attachments.push(Immutable(action.file))
       );
     }
 
@@ -71,7 +68,7 @@ export const manageAttachmentsReducer =
       getSharedId(state, setInArray) === action.entity
     ) {
       if (getId(state, setInArray) === action.file._id) {
-        return state.setIn(setInArray.concat(['file']), Immutable.fromJS(action.file));
+        return state.setIn(setInArray.concat(['file']), Immutable(action.file));
       }
 
       const attachments = getAttachments(state, setInArray);

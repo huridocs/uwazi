@@ -1,21 +1,21 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import db from '#api/utils/testing_db.js';
+import { setUpApp } from 'api/utils/testingRoutes';
+import db from 'api/utils/testing_db';
 
-import * as entitySavingManager from '#api/entities/entitySavingManager.js';
-import routes from '#api/entities/routes.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import thesauri from '#api/thesauri/index.js';
-import { appContext } from '#api/utils/AppContext.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import * as entitySavingManager from 'api/entities/entitySavingManager';
+import routes from 'api/entities/routes';
+import templates from 'api/core/v1_layer/templates';
+import thesauri from 'api/thesauri';
+import { appContext } from 'api/utils/AppContext';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import path from 'path';
-import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
-import { UserRole } from '#shared/types/userSchema.js';
-import entities from '../entities.js';
-import fixtures, { permissions, templateId } from './fixtures.js';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { UserRole } from 'shared/types/userSchema';
+import entities from '../entities';
+import fixtures, { permissions, templateId } from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

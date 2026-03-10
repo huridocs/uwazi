@@ -1,17 +1,17 @@
 /* eslint-disable max-lines */
-import { createError, validation } from '#api/utils/index.js';
-import settings from '#api/settings/index.js';
-import entities from '#api/entities/index.js';
-import pages from '#api/pages/index.js';
-import { CSVLoader } from '#api/csv/index.js';
-import { uploadMiddleware } from '#api/files/index.js';
-import { sequentialPromises } from '#shared/asyncUtils.js';
-import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
-import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
-import type { Application, Request } from 'express';
-import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
-import needsAuthorization from '../auth/authMiddleware.js';
-import translations from './translations.js';
+import { createError, validation } from 'api/utils';
+import settings from 'api/settings';
+import entities from 'api/entities';
+import pages from 'api/pages';
+import { CSVLoader } from 'api/csv';
+import { uploadMiddleware } from 'api/files';
+import { sequentialPromises } from 'shared/asyncUtils';
+import { LanguageISO6391Schema, languageSchema } from 'shared/types/commonSchemas';
+import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes';
+import { Application, Request } from 'express';
+import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
+import needsAuthorization from '../auth/authMiddleware';
+import translations from './translations';
 
 const addLanguage = async (language: LanguageSchema) => {
   const newSettings = await settings.addLanguage(language);

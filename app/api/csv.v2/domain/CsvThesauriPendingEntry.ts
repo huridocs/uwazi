@@ -1,5 +1,5 @@
-import { CsvThesauriPendingRoot } from './CsvThesauriPendingRoot.js';
-import { CsvThesauriPendingChildProps } from './CsvThesauriPendingChild.js';
+import { CsvThesauriPendingRoot } from './CsvThesauriPendingRoot';
+import { CsvThesauriPendingChildProps } from './CsvThesauriPendingChild';
 
 type CsvThesauriPendingEntryProps = {
   propertyId: string;

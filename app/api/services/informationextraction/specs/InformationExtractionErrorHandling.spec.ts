@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import * as setupSockets from '#api/socketio/setupSockets.js';
-import { ModelStatus } from '#shared/types/IXModelSchema.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import * as setupSockets from 'api/socketio/setupSockets';
+import { ModelStatus } from 'shared/types/IXModelSchema';
 
-import { factory, fixtures, patchFixturesWithPort } from './fixtures.js';
-import { InformationExtraction } from '../InformationExtraction.js';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
-import { IXModelsModel } from '../IXModelsModel.js';
+import { factory, fixtures, patchFixturesWithPort } from './fixtures';
+import { InformationExtraction } from '../InformationExtraction';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { IXModelsModel } from '../IXModelsModel';
 
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;

@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { LibraryFiltersView, mapStateToProps } from '#app/Library/components/LibraryFilters.js';
-import { SidePanel } from '#app/Layout/SidePanel.js';
+import { LibraryFilters, mapStateToProps } from 'app/Library/components/LibraryFilters';
+import SidePanel from 'app/Layout/SidePanel';
 
 describe('LibraryFilters', () => {
   let component;
@@ -19,7 +19,7 @@ describe('LibraryFilters', () => {
   });
 
   const render = () => {
-    component = shallow(<LibraryFiltersView {...props} />);
+    component = shallow(<LibraryFilters {...props} />);
   };
 
   it('shoud have library-filters class', () => {

@@ -1,9 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
-import { IStore } from '#app/istore.js';
-import { logError } from '../utils.js';
-import { Section } from './Section.js';
+import { IStore } from 'app/istore';
+import { logError } from '../utils';
+import { Section } from './Section';
 
 interface EntitySectionProps {
   'show-if'?: string;

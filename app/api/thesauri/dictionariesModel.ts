@@ -1,6 +1,6 @@
-import { instanceModel } from '#api/odm/index.js';
+import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 const mongoSchema = new mongoose.Schema({
   name: mongoose.Schema.Types.Mixed,

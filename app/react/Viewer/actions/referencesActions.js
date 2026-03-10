@@ -1,12 +1,12 @@
-import * as types from '#app/Viewer/actions/actionTypes.js';
-import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { actions } from '#app/BasicReducer/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import * as types from 'app/Viewer/actions/actionTypes';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import { notificationActions } from 'app/Notifications';
+import { actions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
 
-import { actions as connectionsActions } from '#app/Connections/index.js';
-import { reloadRelationships } from '#app/Relationships/actions/actions.js';
-import * as uiActions from './uiActions.js';
+import { actions as connectionsActions } from 'app/Connections';
+import { reloadRelationships } from 'app/Relationships/actions/actions';
+import * as uiActions from './uiActions';
 
 export function setReferences(references) {
   return {

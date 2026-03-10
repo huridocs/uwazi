@@ -1,3 +1,5 @@
+/** @format */
+
 const caseTemplate = '58b2f3a35d59f31e1345b48a';
 const matterTemplate = '58b2f3a35d59f31e1345b4a4';
 

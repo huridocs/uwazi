@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import db, { DBFixture } from '#api/utils/testing_db.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import db, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { LanguagesListSchema, MetadataSchema } from '#shared/types/commonTypes.js';
+import { propertyTypes } from 'shared/propertyTypes';
+import { LanguagesListSchema, MetadataSchema } from 'shared/types/commonTypes';
 
 const factory = getFixturesFactory();
 

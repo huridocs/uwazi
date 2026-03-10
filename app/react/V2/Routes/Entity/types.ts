@@ -1,5 +1,5 @@
-import { SnippetsSearchResponse } from '#V2/api/types.js';
-import { Entity } from '#V2/domain/entities/Entity.js';
+import { SnippetsSearchResponse } from 'V2/api/types';
+import { Entity } from 'V2/domain/entities/Entity';
 
 type LoaderResponse =
   | { entity: Entity; pagePlaintext?: string; searchResults?: SnippetsSearchResponse }

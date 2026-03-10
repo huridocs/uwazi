@@ -1,12 +1,12 @@
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import {
   RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
-} from '../model/RelationshipMigrationField.js';
+} from '../model/RelationshipMigrationField';
 import {
   RelationshipMigrationFieldDBO,
   RelationshipMigrationFieldUniqueIdDBO,
-} from './schemas/relationshipMigrationFieldTypes.js';
+} from './schemas/relationshipMigrationFieldTypes';
 
 const mapFieldIdToDBO = (
   fieldId: RelationshipMigrationFieldUniqueId

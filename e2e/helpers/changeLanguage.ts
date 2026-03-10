@@ -1,4 +1,4 @@
-import disableTransitions from './disableTransitions.js';
+import disableTransitions from './disableTransitions';
 
 const changeLanguage = async (language: string) => {
   await expect(page).toClick('.menuNav-language > .dropdown');

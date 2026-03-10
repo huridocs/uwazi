@@ -1,9 +1,9 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { AudioPlayer } from '../AudioPlayer.js';
-import { setupMediaIntercepts, setupMediaElement } from './testHelpers.js';
-import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
+import AudioPlayer from '../AudioPlayer';
+import { setupMediaIntercepts, setupMediaElement } from './testHelpers';
+import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y';
 
 describe('AudioPlayer', () => {
   const audioUrl = '/api/files/short-video.mp4';

@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from '#app/Multireducer/index.js';
+import { wrapDispatch } from 'app/Multireducer';
 
-import { saveEntity } from '#app/Library/actions/libraryActions.js';
-import { actions, MetadataForm } from '#app/Metadata/index.js';
+import { saveEntity } from 'app/Library/actions/libraryActions';
+import { actions, MetadataForm } from 'app/Metadata';
 
 function mapStateToProps(state, props) {
   const { templates } = state;
@@ -23,5 +23,4 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-const EntityForm = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
-export { EntityForm };
+export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

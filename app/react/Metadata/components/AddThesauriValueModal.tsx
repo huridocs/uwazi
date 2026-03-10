@@ -1,8 +1,8 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 import { useForm } from 'react-hook-form';
-import { Modal } from '../../Layout/Modal.js';
-import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
+import Modal from '../../Layout/Modal';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 
 interface AddThesauriValueModalProps {
   isOpen: boolean;
@@ -133,5 +133,5 @@ const AddThesauriValueModal = ({
   );
 };
 
-export { AddThesauriValueModal };
+export default AddThesauriValueModal;
 export type { AddThesauriValueModalProps };

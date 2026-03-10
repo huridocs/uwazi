@@ -1,4 +1,4 @@
-import determineDirection from '../determineDirection.js';
+import determineDirection from '../determineDirection';
 
 describe('determineDirection (LTR or RTL)', () => {
   it('should return LTR for most cases', () => {

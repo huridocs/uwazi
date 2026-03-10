@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { fireEvent, screen, RenderResult } from '@testing-library/react';
 import { actions as formActions } from 'react-redux-form';
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import { UserRole } from '#shared/types/userSchema.js';
-import { PDFUpload } from '../PDFUpload.js';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { UserRole } from 'shared/types/userSchema';
+import { PDFUpload } from '../PDFUpload';
 
 describe('PDF upload', () => {
   const reduxStore = {
@@ -28,7 +28,7 @@ describe('PDF upload', () => {
         },
       },
     },
-    user: Immutable.fromJS({
+    user: fromJS({
       email: 'editor1@relation.test',
       username: 'editor 1',
       _id: 'editor1',

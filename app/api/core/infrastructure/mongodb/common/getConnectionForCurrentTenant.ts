@@ -1,8 +1,8 @@
 import { Db, MongoClient } from 'mongodb';
-import { DB } from '#api/odm/index.js';
-import { tenants } from '#api/tenants/index.js';
-import { Tenant } from '#api/tenants/tenantContext.js';
-import { config } from '#api/config.js';
+import { DB } from 'api/odm';
+import { tenants } from 'api/tenants';
+import { Tenant } from 'api/tenants/tenantContext';
+import { config } from 'api/config';
 
 function getTenant(): Tenant {
   return tenants.current();

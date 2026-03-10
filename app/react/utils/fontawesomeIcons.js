@@ -638,3 +638,5 @@ export const fontawesomeIcons = [
   'youtube-play',
   'youtube-square',
 ];
+
+export default fontawesomeIcons;

@@ -9,7 +9,7 @@ import {
   Tooltip,
   Cell,
 } from 'recharts';
-import { Bar } from './Bar.js';
+import { Bar } from './Bar';
 
 type layoutType = 'horizontal' | 'vertical' | undefined;
 
@@ -164,4 +164,4 @@ FreeBarChart.defaultProps = {
   children: null,
 };
 
-export { FreeBarChart };
+export default FreeBarChart;

@@ -1,4 +1,4 @@
-import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { ClientTemplateSchema } from 'V2/shared/types';
 
 const template1: ClientTemplateSchema = {
   properties: [],

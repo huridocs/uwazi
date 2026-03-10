@@ -6,25 +6,25 @@ import fs from 'fs/promises';
 
 import { ObjectId } from 'mongodb';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import * as setupSockets from '#api/socketio/setupSockets.js';
-import { sortByStrings } from '#shared/data_utils/objectSorting.js';
-import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import * as setupSockets from 'api/socketio/setupSockets';
+import { sortByStrings } from 'shared/data_utils/objectSorting';
+import { PropertyTypeSchema } from 'shared/types/commonTypes';
 
-import testingDB from '#api/utils/testing_db.js';
-import entities from '#api/entities/index.js';
-import { EnforcedWithId } from '#api/odm/index.js';
-import settings from '#api/settings/index.js';
-import { Suggestions } from '#api/suggestions/suggestions.js';
-import { LanguageUtils } from '#shared/language/index.js';
-import { IXExtractorType } from '#shared/types/extractorType.js';
-import { FileType } from '#shared/types/fileType.js';
-import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
-import { filesModel } from '#api/files/filesModel.js';
-import { factory, fixtures } from './fixtures.js';
+import testingDB from 'api/utils/testing_db';
+import entities from 'api/entities';
+import { EnforcedWithId } from 'api/odm';
+import settings from 'api/settings';
+import { Suggestions } from 'api/suggestions/suggestions';
+import { LanguageUtils } from 'shared/language';
+import { IXExtractorType } from 'shared/types/extractorType';
+import { FileType } from 'shared/types/fileType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
+import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
+import { filesModel } from 'api/files/filesModel';
+import { factory, fixtures } from './fixtures';
 import {
   CommonSuggestion,
   IXResultsMessage,
@@ -32,12 +32,12 @@ import {
   RawSuggestion,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
-} from '../InformationExtraction.js';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
-import { IXModelsModel } from '../IXModelsModel.js';
-import { Extractors } from '../ixextractors.js';
-import { IXWebSocketEvents } from '../WebSocketEvents.js';
-import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials.js';
+} from '../InformationExtraction';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { IXModelsModel } from '../IXModelsModel';
+import { Extractors } from '../ixextractors';
+import { IXWebSocketEvents } from '../WebSocketEvents';
+import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');

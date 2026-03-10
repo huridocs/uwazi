@@ -1,5 +1,5 @@
-import { AbstractImageProperty, ImageStyle } from '../AbstractImageProperty.js';
-import { InvalidStyleTypeError } from '../errors.js';
+import { AbstractImageProperty, ImageStyle } from '../AbstractImageProperty';
+import { InvalidStyleTypeError } from '../errors';
 
 class Testing extends AbstractImageProperty {}
 

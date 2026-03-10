@@ -367,7 +367,6 @@ Flag,Bandera
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
-Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
@@ -399,9 +398,6 @@ Hybrid,Híbrido
 Icon,Icono
 ID,ID
 ID:,ID:
-"If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Import,Importar
@@ -650,7 +646,6 @@ per page,por página
 Permission,Permiso
 Permission on entities explicitly shared with the user,Permiso sobre las entidades compartidas explícitamente con el usuario
 Permissions,Permisos
-Pick a color,Pick a color
 Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
 Please type in,Por favor digite
@@ -876,7 +871,6 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Plantilla
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
-Template color,Template color
 Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla
 Template name already exists,Template name already exists

@@ -1,12 +1,12 @@
-import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
-import { FilesServiceFactory } from './FilesServiceFactory.js';
-import { IdGeneratorFactory } from './IdGeneratorFactory.js';
+import { FileUploadForEntity } from 'api/core/application/FileUploadForEntity';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
+import { FilesServiceFactory } from './FilesServiceFactory';
+import { IdGeneratorFactory } from './IdGeneratorFactory';
 
 export class FileUploadForEntityFactory {
   static default(

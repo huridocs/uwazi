@@ -1,4 +1,4 @@
-import { PXExtractor } from './PXExtractor.js';
+import { PXExtractor } from './PXExtractor';
 
 type ExistsInput = {
   sourceTemplateId: string;

@@ -1,19 +1,19 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import entities from '#api/entities/index.js';
-import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
-import pages from '#api/pages/index.js';
-import settings from '#api/settings/index.js';
-import thesauri from '#api/thesauri/thesauri.js';
-import { ContextType } from '#shared/translationSchema.js';
+import entities from 'api/entities';
+import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
+import pages from 'api/pages';
+import settings from 'api/settings';
+import thesauri from 'api/thesauri/thesauri.js';
+import { ContextType } from 'shared/translationSchema';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
-import { UITranslationNotAvailable } from '../defaultTranslations.js';
-import { addLanguage } from '../routes.js';
-import translations from '../translations.js';
-import { getTranslationsV2ByContext } from '../v2_support.js';
-import fixtures, { dictionaryId } from './fixtures.js';
-import { sortByLocale } from './sortByLocale.js';
+import { UITranslationNotAvailable } from '../defaultTranslations';
+import { addLanguage } from '../routes';
+import translations from '../translations';
+import { getTranslationsV2ByContext } from '../v2_support';
+import fixtures, { dictionaryId } from './fixtures';
+import { sortByLocale } from './sortByLocale';
 
 describe('translations', () => {
   beforeEach(async () => {

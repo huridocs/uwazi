@@ -1,17 +1,17 @@
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { DBFixture } from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { tenants } from '#api/tenants/index.js';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { DenormalizeThesaurusEntitiesHandler } from '../DenormalizeThesaurusEntitiesHandler.js';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { DenormalizeThesaurusEntitiesHandler } from '../DenormalizeThesaurusEntitiesHandler';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import {
   getConnection,
   getSharedConnection,
-} from '../../mongodb/common/getConnectionForCurrentTenant.js';
+} from '../../mongodb/common/getConnectionForCurrentTenant';
 
 const factory = getFixturesFactory();
 

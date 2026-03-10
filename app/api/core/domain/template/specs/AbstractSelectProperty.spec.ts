@@ -1,6 +1,6 @@
-import { TemplateBuilder } from './TemplateBuilder.js';
-import { SelectProperty } from '../select/SelectProperty.js';
-import { MultiSelectProperty } from '../select/MultiSelectProperty.js';
+import { TemplateBuilder } from './TemplateBuilder';
+import { SelectProperty } from '../select/SelectProperty';
+import { MultiSelectProperty } from '../select/MultiSelectProperty';
 
 describe('Select/MultiSelect duplicate removal', () => {
   const buildTemplate = () =>

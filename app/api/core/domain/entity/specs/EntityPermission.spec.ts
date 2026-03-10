@@ -1,7 +1,7 @@
 /* eslint-disable no-new */
-import { EntityPermission } from '../EntityPermission.js';
-import { AccessLevel } from '../AccessLevel.js';
-import { PermissionType } from '../PermissionType.js';
+import { EntityPermission } from '../EntityPermission';
+import { AccessLevel } from '../AccessLevel';
+import { PermissionType } from '../PermissionType';
 
 describe('EntityPermission', () => {
   it('should create an instance with no access grants by default', () => {

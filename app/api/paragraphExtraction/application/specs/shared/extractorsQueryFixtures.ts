@@ -1,14 +1,14 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
-import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
-import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO.js';
+import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource';
+import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO';
 
 const f = getFixturesFactory();
 

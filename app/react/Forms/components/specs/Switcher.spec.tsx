@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { Translate } from '#app/I18N/index.js';
-import { Switcher, SwitcherProps } from '../Switcher.js';
+import { Translate } from 'app/I18N';
+import { Switcher, SwitcherProps } from '../Switcher';
 
 describe('Switcher', () => {
   let component: ShallowWrapper<typeof Switcher>;

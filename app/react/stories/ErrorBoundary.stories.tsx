@@ -1,14 +1,12 @@
 import React, { ComponentClass } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
-import type { ErrorBoundaryProps } from '#V2/Components/ErrorHandling/index.js';
+import type { Meta, StoryObj } from '@storybook/react';
+import { ErrorBoundary } from 'app/V2/Components/ErrorHandling';
+import type { ErrorBoundaryProps } from 'app/V2/Components/ErrorHandling';
 
 const meta: Meta<ComponentClass<ErrorBoundaryProps, any>> = {
   title: 'Components/ErrorBoundary',
   component: ErrorBoundary,
 };
-
-export default meta;
 
 type Story = StoryObj<typeof ErrorBoundary>;
 
@@ -33,3 +31,5 @@ const BasicErrorBoundary: Story = {
 };
 
 export { BasicErrorBoundary };
+
+export default meta;

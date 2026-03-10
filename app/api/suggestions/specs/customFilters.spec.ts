@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
-import { testingDB } from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { factory as f, stateFilterFixtures, comprehensiveTestFixtures } from './fixtures.js';
-import { Suggestions } from '../suggestions.js';
+import { testingDB } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { factory as f, stateFilterFixtures, comprehensiveTestFixtures } from './fixtures';
+import { Suggestions } from '../suggestions';
 
 beforeAll(async () => {
   await testingEnvironment.setUp(stateFilterFixtures);

@@ -1,6 +1,6 @@
+import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { ObjectId } from 'mongodb';
-import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
-import { ThesaurusDBO } from './ThesaurusDBO.js';
+import { ThesaurusDBO } from './ThesaurusDBO';
 
 export class MongoThesaurusMapper {
   static toDBO(domain: Thesaurus): ThesaurusDBO {

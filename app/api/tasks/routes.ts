@@ -1,10 +1,10 @@
 /**
  * Uwazi routes that start and inspect tasks.
  */
-import { needsAuthorization } from '#api/auth/index.js';
-import { validation } from '#api/utils/index.js';
-import type { Application, Request, Response } from 'express';
-import { TaskProvider } from '#shared/tasks/tasks.js';
+import { needsAuthorization } from 'api/auth';
+import { validation } from 'api/utils';
+import { Application, Request, Response } from 'express';
+import { TaskProvider } from 'shared/tasks/tasks';
 
 export const TASKS_ENDPOINT = 'tasks';
 const tasksPrefix = `/api/${TASKS_ENDPOINT}`;

@@ -1,23 +1,23 @@
-import { CSVLoader } from '#api/csv/index.js';
-import { generateFileName } from '#api/files/index.js';
-import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
-import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
-import { legacyLogger } from '#api/log/index.js';
-import { EnforcedWithId, WithId } from '#api/odm/index.js';
-import settings from '#api/settings/settings.js';
-import thesauri from '#api/thesauri/thesauri.js';
-import { prettifyError } from '#api/utils/handleError.js';
+import { CSVLoader } from 'api/csv';
+import { generateFileName } from 'api/files';
+import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
+import { DefaultTranslations } from 'api/i18n/defaultTranslations';
+import { legacyLogger } from 'api/log';
+import { EnforcedWithId, WithId } from 'api/odm';
+import settings from 'api/settings/settings';
+import thesauri from 'api/thesauri/thesauri';
+import { prettifyError } from 'api/utils/handleError';
 import * as os from 'os';
 import path from 'path';
-import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
+import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { ObjectId } from 'mongodb';
-import { availableLanguages } from '#shared/language/index.js';
-import { ContextType } from '#shared/translationSchema.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { availableLanguages } from 'shared/language';
+import { ContextType } from 'shared/translationSchema';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { pipeline } from 'stream/promises';
-import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
+import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,
@@ -28,7 +28,7 @@ import {
   updateContextV2,
   upsertTranslationEntries,
   upsertTranslationsV2,
-} from './v2_support.js';
+} from './v2_support';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },

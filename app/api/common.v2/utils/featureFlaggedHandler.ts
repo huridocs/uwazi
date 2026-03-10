@@ -1,5 +1,5 @@
-import { tenants } from '#api/tenants/index.js';
-import { TenantFeatureFlags } from '#api/tenants/tenantContext.js';
+import { tenants } from 'api/tenants';
+import { TenantFeatureFlags } from 'api/tenants/tenantContext';
 
 async function withFeatureFlag<T>(
   flagKey: TenantFeatureFlags,

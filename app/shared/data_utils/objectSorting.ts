@@ -1,4 +1,4 @@
-import { compareStringLists } from './stringUtils.js';
+import { compareStringLists } from './stringUtils';
 
 const sortByStrings = <T>(arr: T[], stringIndices: ((obj: T) => string)[]) => {
   const compare = (a: any, b: any) => {

@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { Db, ObjectId } from 'mongodb';
 
-import { Entity, Page, Settings } from './types.js';
+import { Entity, Page, Settings } from './types';
 
 export default {
   delta: 151,

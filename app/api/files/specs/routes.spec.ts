@@ -1,29 +1,29 @@
 /* eslint-disable max-statements */
-import type { Application, NextFunction, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { spyOnEmit, toEmitEvent, toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
-import entities from '#api/entities/index.js';
-import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
-import connections from '#api/relationships/index.js';
-import { search } from '#api/search/index.js';
-import * as ocrRecords from '#api/services/ocr/ocrRecords.js';
-import { registerEventListeners as registerOcrListeners } from '#api/services/ocr/eventListeners.js';
-import { appContext } from '#api/utils/AppContext.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import db from '#api/utils/testing_db.js';
-import { FileType } from '#shared/types/fileType.js';
-import { UserSchema } from '#shared/types/userType.js';
-import { FileCreatedEvent } from '../events/FileCreatedEvent.js';
-import { FileUpdatedEvent } from '../events/FileUpdatedEvent.js';
-import { FilesDeletedEvent } from '../events/FilesDeletedEvent.js';
-import { files } from '../files.js';
-import jsRoutes from '../jsRoutes.js';
-import uploadRoutes from '../routes.js';
-import { storage } from '../storage.js';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
+import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
+import entities from 'api/entities';
+import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
+import connections from 'api/relationships';
+import { search } from 'api/search';
+import * as ocrRecords from 'api/services/ocr/ocrRecords';
+import { registerEventListeners as registerOcrListeners } from 'api/services/ocr/eventListeners';
+import { appContext } from 'api/utils/AppContext';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from 'api/utils/testingRoutes';
+import db from 'api/utils/testing_db';
+import { FileType } from 'shared/types/fileType';
+import { UserSchema } from 'shared/types/userType';
+import { FileCreatedEvent } from '../events/FileCreatedEvent';
+import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
+import { files } from '../files';
+import jsRoutes from '../jsRoutes';
+import uploadRoutes from '../routes';
+import { storage } from '../storage';
 import {
   adminUser,
   allowedPublicTemplate,
@@ -37,7 +37,7 @@ import {
   uploadId,
   uploadId2,
   writerUser,
-} from './fixtures.js';
+} from './fixtures';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
 

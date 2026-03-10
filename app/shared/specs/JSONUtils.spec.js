@@ -1,4 +1,4 @@
-import JSONUtils from '../JSONUtils.js';
+import JSONUtils from '../JSONUtils';
 
 describe('JSONUtils', () => {
   describe('parseNested', () => {

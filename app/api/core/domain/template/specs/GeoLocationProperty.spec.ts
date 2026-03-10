@@ -1,5 +1,5 @@
-import { GeolocationProperty } from '../GeoLocationProperty.js';
-import { PropertyTypeEnum } from '../PropertyType.js';
+import { GeolocationProperty } from '../GeoLocationProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('GeoLocationProperty', () => {
   it('should include geolocation type at the end of the PropertyName', () => {

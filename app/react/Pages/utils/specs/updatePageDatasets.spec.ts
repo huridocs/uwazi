@@ -1,11 +1,11 @@
 /**
  * @jest-environment jsdom
  */
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { Store } from 'redux';
-import { create } from '#app/store.js';
-import { IStore } from '#app/istore.js';
-import { updatePageDatasets } from '../updatePageDatasets.js';
+import create from 'app/store';
+import { IStore } from 'app/istore';
+import { updatePageDatasets } from '../updatePageDatasets';
 
 describe('Update page datasets', () => {
   let ReduxStore: Store<IStore>;
@@ -13,12 +13,12 @@ describe('Update page datasets', () => {
   beforeEach(() => {
     ReduxStore = create({
       page: {
-        datasets: Immutable.fromJS({
+        datasets: fromJS({
           default: { rows: [], totalRows: 10, aggregations: {} },
           dataset1: { rows: [], totalRows: 10, aggregations: {} },
         }),
       },
-    } as IStore);
+    });
 
     spyOn(ReduxStore, 'dispatch');
   });

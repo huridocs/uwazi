@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { ParagraphSchema, SegmentationType } from '#shared/types/segmentationType.js';
+import { ParagraphSchema, SegmentationType } from 'shared/types/segmentationType';
 
 type Props = SegmentationType;
 

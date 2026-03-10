@@ -1,16 +1,16 @@
 /* eslint-disable max-classes-per-file */
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
+import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
 import { ObjectId } from 'mongodb';
-import { Template } from '#api/core/domain/template/Template.js';
-import { EntityTranslationProps } from '#api/core/domain/entity/EntityTranslation.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
-import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
-import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
-import { TemplateDBO } from '../template/DBOs/TemplateDBO.js';
-import { LoggerFactory } from '../../factories/LoggerFactory.js';
-import { MongoTemplateMapper } from '../template/MongoTemplateMapper.js';
+import { Template } from 'api/core/domain/template/Template';
+import { EntityTranslationProps } from 'api/core/domain/entity/EntityTranslation';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
+import { PermissionType } from 'api/core/domain/entity/PermissionType';
+import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
+import { TemplateDBO } from '../template/DBOs/TemplateDBO';
+import { LoggerFactory } from '../../factories/LoggerFactory';
+import { MongoTemplateMapper } from '../template/MongoTemplateMapper';
 
 class MongoEntityLanguageMapper {
   static toDomain(dbo: EntityDBO, template: Template): EntityTranslationProps {

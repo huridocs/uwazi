@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { config } from '#api/config.js';
+import { config } from 'api/config';
 
 const rename = async (current, newPath) =>
   new Promise((resolve, reject) => {

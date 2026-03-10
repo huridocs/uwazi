@@ -1,24 +1,24 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
-import { DropdownList } from '#app/Forms/index.js';
-import { TableViewColumn, IStore } from '#app/istore.js';
-import { wrapDispatch } from '#app/Multireducer/index.js';
+import { List } from 'immutable';
+import { DropdownList } from 'app/Forms';
+import { TableViewColumn, IStore } from 'app/istore';
+import { wrapDispatch } from 'app/Multireducer';
 import {
   ColumnItem,
   ValueItem,
   SelectableColumn,
-} from '#app/Library/components/HiddenColumnsDropdownItem.js';
+} from 'app/Library/components/HiddenColumnsDropdownItem';
 import {
   setTableViewColumnHidden,
   setTableViewAllColumnsHidden,
-} from '#app/Library/actions/libraryActions.js';
-import { IImmutable } from '#shared/types/Immutable.js';
-import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
+} from 'app/Library/actions/libraryActions';
+import { IImmutable } from 'shared/types/Immutable';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
 interface HideColumnsComponentProps {
-  columns: Immutable.List<IImmutable<TableViewColumn>>;
+  columns: List<IImmutable<TableViewColumn>>;
   setTableViewColumnHidden: (name: string, hidden: boolean) => void;
   setTableViewAllColumnsHidden: (hidden: boolean) => void;
 }
@@ -33,10 +33,10 @@ const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 const processColumns = (
-  columnsMap: Immutable.List<{
+  columnsMap: List<{
     toJS(): TableViewColumn;
     get<Field extends keyof TableViewColumn>(_field: Field): IImmutable<TableViewColumn[Field]>;
-    filter(fn: (listElement: any) => boolean | undefined): Immutable.List<any>;
+    filter(fn: (listElement: any) => boolean | undefined): List<any>;
   }>
 ) => {
   const columns = columnsMap.toJS().slice(1);

@@ -4,21 +4,21 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
-import { api } from '#app/utils/api.js';
-import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
-import { thesauriAtom } from '#V2/atoms/index.js';
-import { IXSuggestions } from '../IXSuggestions.js';
-import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from './fixtures.js';
-import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
+import * as suggestionsAPI from 'V2/api/ix/suggestions';
+import api from 'app/utils/api';
+import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
+import { thesauriAtom } from 'V2/atoms';
+import { IXSuggestions } from '../IXSuggestions';
+import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from './fixtures';
+import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
 
-jest.mock('#V2/api/entities', () => ({
-  ...jest.requireActual('#V2/api/entities'),
+jest.mock('V2/api/entities', () => ({
+  ...jest.requireActual('V2/api/entities'),
   getById: jest.fn(),
   save: jest.fn(),
 }));
 
-jest.mock('#V2/api/files', () => ({
+jest.mock('V2/api/files', () => ({
   getById: jest.fn().mockResolvedValue([
     {
       _id: 'file1',
@@ -36,8 +36,8 @@ jest.mock('#V2/api/files', () => ({
   ]),
 }));
 
-jest.mock('#V2/Components/PDFViewer', () => ({
-  ...jest.requireActual('#V2/Components/PDFViewer'),
+jest.mock('V2/Components/PDFViewer', () => ({
+  ...jest.requireActual('V2/Components/PDFViewer'),
   PDF: jest.fn(),
 }));
 
@@ -96,7 +96,7 @@ describe('IX suggestions', () => {
   });
 
   it('should open the suggestions in the sidepanel with the correct values', async () => {
-    const { getById } = jest.requireMock('#V2/api/entities');
+    const { getById } = jest.requireMock('V2/api/entities');
     getById.mockImplementation(async ({ _id }: { _id: string }) => {
       switch (_id) {
         case entity1._id:

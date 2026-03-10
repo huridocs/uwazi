@@ -1,7 +1,7 @@
-import { DatePicker } from '#app/Forms/components/DatePicker.js';
+import DatePicker from 'app/Forms/components/DatePicker';
 import React, { Component } from 'react';
-import { Icon } from '#app/UI/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 
 export interface MultiDateProps {
   value?: (number | null)[];
@@ -14,7 +14,7 @@ interface MultiDateState {
   values: (number | null)[];
 }
 
-export class MultiDate extends Component<MultiDateProps, MultiDateState> {
+export default class MultiDate extends Component<MultiDateProps, MultiDateState> {
   constructor(props: MultiDateProps) {
     super(props);
     const values = this.props.value && this.props.value.length ? this.props.value : [null];

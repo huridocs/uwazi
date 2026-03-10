@@ -1,5 +1,5 @@
-import { LogEntry } from '../LogEntry.js';
-import { LogWriter } from '../LogWriter.js';
+import { LogEntry } from '../LogEntry';
+import { LogWriter } from '../LogWriter';
 
 export const StandardWriter: LogWriter = (log: LogEntry) => {
   process.stdout.write(

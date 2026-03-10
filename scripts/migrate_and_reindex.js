@@ -1,5 +1,5 @@
-import { DB } from '#api/odm/index.js';
-import { runMigration } from '#api/migrations/migrate.js';
+import { DB } from '../app/api/odm';
+import { runMigration } from '../app/api/migrations/migrate';
 
 process.on('unhandledRejection', error => {
   throw error;
@@ -7,9 +7,10 @@ process.on('unhandledRejection', error => {
 
 process.stdout.write('Starting migrations...\r\n');
 runMigration()
-  .then(async result => {
+  .then(result => {
     if (result.reindex) {
-      await import('../database/reindex_elastic.js');
+      // eslint-disable-next-line import/no-dynamic-require,global-require
+      require(`${__dirname}/../database/reindex_elastic.js`);
     }
   })
   .catch(async e => {

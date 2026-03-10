@@ -1,5 +1,5 @@
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Filters', () => {
   const checkExistance = () => {

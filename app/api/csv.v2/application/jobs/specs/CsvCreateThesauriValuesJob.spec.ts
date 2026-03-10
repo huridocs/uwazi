@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
-import { Result } from '#api/core/libs/Result.js';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
-import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues.js';
-import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
-import { CsvCreateThesauriValuesJobFactory } from '../../../infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
+import { Result } from 'api/core/libs/Result';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues';
+import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues';
+import { CsvCreateThesauriValuesJob } from '../CsvCreateThesauriValuesJob';
 
 const createTransactionManager = () =>
   ({
@@ -72,16 +72,12 @@ describe('CsvCreateThesauriValuesJob', () => {
     const translationsRepo = {
       updateEntries: jest.fn().mockResolvedValue(undefined),
     };
-    const jobsDispatcher = {
-      dispatch: jest.fn().mockResolvedValue(undefined),
-    };
-    const { useCase } = CsvCreateThesauriValuesJobFactory.build({
-      transactionManager: transactionManager as any,
+    const useCase = new CsvCreateThesauriValuesJob({
       csvImportsDS: csvImportsDS as any,
       thesauriValuesDS: thesauriValuesDS as any,
       thesauriRepo: thesauriRepo as any,
       translationsRepo: translationsRepo as any,
-      jobsDispatcher: jobsDispatcher as any,
+      transactionManager,
     });
 
     const callbacks = {
@@ -91,12 +87,7 @@ describe('CsvCreateThesauriValuesJob', () => {
       onError: jest.fn(),
     };
 
-    await useCase.execute({
-      importId: 'import-id',
-      tenantName: 'tenant',
-      userId: 'user-id',
-      callbacks,
-    });
+    await useCase.execute({ importId: 'import-id', callbacks });
 
     expect(thesauriRepo.appendValues).toHaveBeenCalled();
     expect(translationsRepo.updateEntries).toHaveBeenCalledWith('thes', {

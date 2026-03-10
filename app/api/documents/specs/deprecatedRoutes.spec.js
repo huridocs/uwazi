@@ -1,11 +1,11 @@
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import request from 'supertest';
-import { UserRole } from '#shared/types/userSchema.js';
-import { legacyLogger } from '#api/log/index.js';
+import { UserRole } from 'shared/types/userSchema';
+import { legacyLogger } from 'api/log';
 import documentRoutes from '../deprecatedRoutes.js';
-import documents from '../documents.js';
-import { fixtures } from './fixtures.js';
+import documents from '../documents';
+import { fixtures } from './fixtures';
 import templates from '../../core/v1_layer/templates/index.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {

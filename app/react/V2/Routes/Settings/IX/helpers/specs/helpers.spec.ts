@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 
-import * as translate from '#app/I18N/translateFunction.js';
-import { formatOptions } from '../../components/ExtractorModal.js';
-import { formatExtractors } from '../../IXDashboard.js';
-import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers.js';
-import { extractors, templates, templatesWithCommonProperties } from './fixtures.js';
-import { MultiValueSuggestion } from '../../types.js';
+import * as translate from 'app/I18N/translateFunction';
+import { formatOptions } from '../../components/ExtractorModal';
+import { formatExtractors } from '../../IXDashboard';
+import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers';
+import { extractors, templates, templatesWithCommonProperties } from './fixtures';
+import { MultiValueSuggestion } from '../../types';
 
 describe('helpers', () => {
   describe('formatOptions', () => {

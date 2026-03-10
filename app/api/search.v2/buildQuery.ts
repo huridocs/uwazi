@@ -1,7 +1,7 @@
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
-import { CompoundFilter, RangeFilter, SearchQuery } from '#shared/types/SearchQueryType.js';
-import { permissionsFilters } from './permissionsFilters.js';
-import { extractSearchParams, snippetsHighlight } from './queryHelpers.js';
+import { CompoundFilter, RangeFilter, SearchQuery } from 'shared/types/SearchQueryType';
+import { permissionsFilters } from './permissionsFilters';
+import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 
 type Filter = (RangeFilter | CompoundFilter | string | number | boolean) | undefined;
 

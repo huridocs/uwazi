@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Highlights } from '../../types.js';
+import { Highlights } from '../../types';
 
 const highlightsAtom = atom<Highlights | undefined>();
 

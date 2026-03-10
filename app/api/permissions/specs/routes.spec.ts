@@ -1,13 +1,13 @@
 import request from 'supertest';
-import type { Application, NextFunction, Request, Response } from 'express';
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import { permissionRoutes } from '#api/permissions/routes.js';
-import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
-import { collaborators } from '#api/permissions/collaborators.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { PUBLIC_PERMISSION } from '../publicPermission.js';
-import { MemberWithPermission } from '#shared/types/entityPermisions.js';
+import { Application, NextFunction, Request, Response } from 'express';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { permissionRoutes } from 'api/permissions/routes';
+import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
+import { collaborators } from 'api/permissions/collaborators';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { DomainError } from 'api/core/domain/error/DomainError';
+import { PUBLIC_PERMISSION } from '../publicPermission';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',

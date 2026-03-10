@@ -1,4 +1,4 @@
-import { TaskProvider, Task } from '../tasks.js';
+import { TaskProvider, Task } from '../tasks';
 
 class TestTask extends Task {
   protected async run(args: any) {

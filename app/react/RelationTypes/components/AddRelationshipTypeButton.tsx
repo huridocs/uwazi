@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Translate } from '#app/I18N/index.js';
-import { IStore } from '#app/istore.js';
-import { Modal } from '#app/Layout/Modal.js';
-import { Icon } from '#UI/Icon/Icon.js';
-import { saveRelationType } from '../actions/relationTypeActions.js';
+import { Translate } from 'app/I18N';
+import { IStore } from 'app/istore';
+import Modal from 'app/Layout/Modal';
+import { Icon } from 'UI';
+import { saveRelationType } from '../actions/relationTypeActions';
 
 type FormInputs = {
   relationshipType: string;

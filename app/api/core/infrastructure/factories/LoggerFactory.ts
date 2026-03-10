@@ -1,8 +1,8 @@
-import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
-import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
-import { config } from '#api/config.js';
-import { DevelopmentWritter } from '#api/core/libs/logger/infrastructure/writers/DevelopmentWriter.js';
-import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { StandardLogger } from 'api/core/libs/logger/infrastructure/StandardLogger';
+import { StandardJSONWriter } from 'api/core/libs/logger/infrastructure/writers/StandardJSONWriter';
+import { config } from 'api/config';
+import { DevelopmentWritter } from 'api/core/libs/logger/infrastructure/writers/DevelopmentWriter';
+import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant';
 
 export class LoggerFactory {
   static default(_writer = StandardJSONWriter) {

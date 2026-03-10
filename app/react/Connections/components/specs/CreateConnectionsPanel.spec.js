@@ -1,15 +1,15 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
+import { fromJS as Immutable } from 'immutable';
 
-import { SidePanel } from '#app/Layout/SidePanel.js';
+import SidePanel from 'app/Layout/SidePanel';
 
-import { Icon } from '#UI/index.js';
+import { Icon } from 'UI';
 
-import { CreateConnectionPanelView } from '../CreateConnectionPanel.js';
-import { SearchForm } from '../SearchForm.js';
-import { ActionButtonConnected } from '../ActionButton.js';
-import { SearchResults } from '../SearchResults.js';
+import { CreateConnectionPanel } from '../CreateConnectionPanel';
+import SearchForm from '../SearchForm';
+import ActionButton from '../ActionButton';
+import SearchResults from '../SearchResults';
 
 describe('CreateConnectionPanel', () => {
   let component;
@@ -17,18 +17,18 @@ describe('CreateConnectionPanel', () => {
 
   beforeEach(() => {
     props = {
-      connection: Immutable.fromJS({
+      connection: Immutable({
         template: 'rt3',
         type: 'basic',
         sourceDocument: 'sourceId',
         targetDocument: 'targetId',
       }),
-      relationTypes: Immutable.fromJS([
+      relationTypes: Immutable([
         { _id: 'rt1', name: 'relationType1' },
         { _id: 'rt2', name: 'relationType2' },
       ]),
-      searchResults: Immutable.fromJS([{ _id: 'sr1' }, { _id: 'sr2' }]),
-      uiState: Immutable.fromJS({ searching: true }),
+      searchResults: Immutable([{ _id: 'sr1' }, { _id: 'sr2' }]),
+      uiState: Immutable({ searching: true }),
       setRelationType: jasmine.createSpy('setRelationType'),
       setTargetDocument: () => {},
       onCreate: jasmine.createSpy('onCreate'),
@@ -37,7 +37,7 @@ describe('CreateConnectionPanel', () => {
   });
 
   function render() {
-    component = shallow(<CreateConnectionPanelView {...props} />);
+    component = shallow(<CreateConnectionPanel {...props} />);
   }
 
   it('should allow to select the connection types and set its value', () => {
@@ -55,7 +55,7 @@ describe('CreateConnectionPanel', () => {
   });
 
   it('should mark the connnection type passed', () => {
-    props.connection = Immutable.fromJS({
+    props.connection = Immutable({
       template: 'rt1',
       type: 'basic',
       sourceDocument: 'sourceId',
@@ -67,7 +67,7 @@ describe('CreateConnectionPanel', () => {
     expect(options.at(0).find(Icon).props().icon).toBe('check');
     expect(options.at(1).find(Icon).props().icon).not.toBe('check');
 
-    props.connection = Immutable.fromJS({
+    props.connection = Immutable({
       template: 'rt2',
       type: 'basic',
       sourceDocument: 'sourceId',
@@ -87,17 +87,17 @@ describe('CreateConnectionPanel', () => {
 
   it('should have save button with an onCreate callback for most connection types', () => {
     render();
-    const saveButton = component.find(ActionButtonConnected).at(0);
+    const saveButton = component.find(ActionButton).at(0);
     expect(saveButton.props().action).toBe('save');
     saveButton.props().onCreate();
     expect(props.onCreate).toHaveBeenCalled();
-    expect(component.find(ActionButtonConnected).at(1).length).toBe(0);
+    expect(component.find(ActionButton).at(1).length).toBe(0);
   });
 
   it('should have connect button with an onRangedConnect callback for targetRanged connections', () => {
     props.connection = props.connection.set('type', 'targetRanged');
     render();
-    const connectButton = component.find(ActionButtonConnected).at(0);
+    const connectButton = component.find(ActionButton).at(0);
     expect(connectButton.props().action).toBe('connect');
     expect(connectButton.props().onRangedConnect).toBe(props.onRangedConnect);
   });

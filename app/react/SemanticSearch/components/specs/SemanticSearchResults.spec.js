@@ -4,14 +4,14 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 
-import { Doc } from '#app/Library/components/Doc.js';
-import * as actions from '#app/SemanticSearch/actions/actions.js';
+import Doc from 'app/Library/components/Doc';
+import * as actions from 'app/SemanticSearch/actions/actions';
 
 import {
-  SemanticSearchResultsView,
+  SemanticSearchResults,
   mapStateToProps,
   mapDispatchToProps,
-} from '../SemanticSearchResults.js';
+} from '../SemanticSearchResults';
 
 describe('SemanticSearchResults', () => {
   let state;
@@ -60,7 +60,7 @@ describe('SemanticSearchResults', () => {
     ...mapDispatchToProps(dispatch),
   });
 
-  const render = () => shallow(<SemanticSearchResultsView {...getProps()} />);
+  const render = () => shallow(<SemanticSearchResults {...getProps()} />);
 
   it('should render results in ItemList', () => {
     const component = render();

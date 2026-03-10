@@ -1,13 +1,11 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Notification } from '#V2/Components/UI/Notification.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { Notification } from 'V2/Components/UI/Notification';
 
 const meta: Meta<typeof Notification> = {
   title: 'Components/Notification',
   component: Notification,
 };
-
-export default meta;
 
 type Story = StoryObj<typeof Notification>;
 
@@ -55,3 +53,5 @@ const WithHeading: Story = {
 };
 
 export { Basic, WithHeading, WithDetails };
+
+export default meta;

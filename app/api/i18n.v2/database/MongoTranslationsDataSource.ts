@@ -1,17 +1,17 @@
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { AnyBulkWriteOperation, MongoBulkWriteError, OptionalId } from 'mongodb';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import {
   BulkDeleteKeysByContext,
   TranslationsDataSource,
   UpdateKeysByContextProps,
-} from '../contracts/TranslationsDataSource.js';
-import { TranslationMappers } from '../database/TranslationMappers.js';
-import { Translation, TranslationContext } from '../model/Translation.js';
-import { TranslationDBO } from '../schemas/TranslationDBO.js';
-import { TranslationContextModel } from '../model/TranslationContextModel.js';
+} from '../contracts/TranslationsDataSource';
+import { TranslationMappers } from '../database/TranslationMappers';
+import { Translation, TranslationContext } from '../model/Translation';
+import { TranslationDBO } from '../schemas/TranslationDBO';
+import { TranslationContextModel } from '../model/TranslationContextModel';
 
 export class MongoTranslationsDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>

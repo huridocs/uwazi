@@ -1,4 +1,4 @@
-import TOCProperties from './toc_properties.js';
+import TOCProperties from './toc_properties';
 
 const properties = {
   properties: {

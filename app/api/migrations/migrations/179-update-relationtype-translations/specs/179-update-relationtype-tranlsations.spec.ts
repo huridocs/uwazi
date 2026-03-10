@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
-import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import { fixtures } from './fixtures.js';
-import { Fixture } from '../types.js';
+import testingDB from 'api/utils/testing_db';
+import migration from '../index';
+import { fixtures } from './fixtures';
+import { Fixture } from '../types';
 
 let db: Db | null;
 

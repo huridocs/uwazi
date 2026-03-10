@@ -1,8 +1,8 @@
 //eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import path from 'path';
-import { config } from '#api/config.js';
-import testingDB from '#api/utils/testing_db.js';
+import { config } from 'api/config';
+import testingDB from 'api/utils/testing_db';
 import migration, { fileExists } from '../index.js';
 import fixtures from './fixtures.js';
 

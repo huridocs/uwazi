@@ -1,3 +1,3 @@
-import { EntitiesAPI } from './EntitiesAPI.js';
+import EntitiesAPI from './EntitiesAPI';
 
 export { EntitiesAPI as api };

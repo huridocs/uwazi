@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import migration from '../index.js';
 

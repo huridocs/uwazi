@@ -1,7 +1,7 @@
-import { actions } from '#app/BasicReducer/index.js';
-import { getAndSelectDocument } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '#app/Multireducer/index.js';
-import { store } from '#app/store.js';
+import { actions } from 'app/BasicReducer';
+import { getAndSelectDocument } from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
+import { store } from 'app/store';
 
 type SidePanelTab =
   | 'metadata'

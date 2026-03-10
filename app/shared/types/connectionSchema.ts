@@ -1,5 +1,5 @@
-import { objectIdSchema } from '#shared/types/commonSchemas.js';
-import { entitySchema } from '#shared/types/entitySchema.js';
+import { objectIdSchema } from 'shared/types/commonSchemas';
+import { entitySchema } from 'shared/types/entitySchema';
 
 export const emitSchemaTypes = true;
 

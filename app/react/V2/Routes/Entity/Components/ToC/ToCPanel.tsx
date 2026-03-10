@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
-import { TocSchema } from '#shared/types/commonTypes.js';
-import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { update as updateFile } from '#V2/api/files/index.js';
-import { FileType } from '#shared/types/fileType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { Button } from '#V2/Components/UI/Button.js';
-import { NeedAuthorization } from '#V2/Components/UI/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { BlankState } from '../BlankState.js';
-import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
-import { entityLoaderCache } from '../../EntityLoaderCache.js';
-import { useToc, useTocActions } from './tocAtom.js';
-import { getPageNumber } from './utils.js';
-import { PdfControllerApi } from '../PdfControllerContext.js';
+import { Translate } from 'app/I18N';
+import { TocSchema } from 'shared/types/commonTypes';
+import { Tooltip } from 'flowbite-react';
+import { Panel } from 'V2/Components/Layouts/Panel';
+import { update as updateFile } from 'V2/api/files';
+import { FileType } from 'shared/types/fileType';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { Button } from 'V2/Components/UI/Button';
+import { NeedAuthorization } from 'V2/Components/UI';
+import { notificationAtom } from 'V2/atoms';
+import { BlankState } from '../BlankState';
+import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC';
+import type { PdfControllerApi } from '../PdfControllerContext';
+import { entityLoaderCache } from '../../EntityLoaderCache';
+import { useToc, useTocActions } from './tocAtom';
+import { getPageNumber } from './utils';
 
 const ToCPanel = ({
   mainPdfController,

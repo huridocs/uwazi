@@ -1,10 +1,10 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { FieldIsRequiredError, PropertyThesaurusMismatchError } from '../errors.js';
-import { FilterableProperty, FilterablePropertyProps } from '../FilterableProperty.js';
-import { SelectionEntry, SelectPropertyAssignment } from '../PropertyValue.js';
-import { createSchema } from './Schema.js';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { FieldIsRequiredError, PropertyThesaurusMismatchError } from '../errors';
+import { FilterableProperty, FilterablePropertyProps } from '../FilterableProperty';
+import { SelectionEntry, SelectPropertyAssignment } from '../PropertyValue';
+import { createSchema } from './Schema';
 
 type Props = {
   content: string;

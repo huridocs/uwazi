@@ -1,5 +1,5 @@
-import { createValidator, ValidatorSchema } from '#api/common.v2/validation/routesValidation.js';
-import { DeleteRelationshipMigrationFieldRequest } from '#shared/types/api.v2/relationshipMigrationField.delete.js';
+import { createValidator, ValidatorSchema } from 'api/common.v2/validation/routesValidation';
+import { DeleteRelationshipMigrationFieldRequest } from 'shared/types/api.v2/relationshipMigrationField.delete';
 
 const schema: ValidatorSchema<DeleteRelationshipMigrationFieldRequest> = {
   properties: {

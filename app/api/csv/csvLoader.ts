@@ -1,27 +1,27 @@
 import { ObjectId } from 'mongodb';
-import groupBy from 'lodash/groupBy.js';
+import { groupBy } from 'lodash';
 
-import translations from '#api/i18n/index.js';
-import { EnforcedWithId } from '#api/odm/index.js';
-import settings from '#api/settings/index.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import thesauri from '#api/thesauri/index.js';
+import translations from 'api/i18n';
+import { EnforcedWithId } from 'api/odm';
+import settings from 'api/settings';
+import templates from 'api/core/v1_layer/templates';
+import thesauri from 'api/thesauri';
 import { EventEmitter } from 'events';
 
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { TranslationType } from '#shared/translationType.js';
-import { ensure } from '#shared/tsUtils.js';
-import { LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { TranslationType } from 'shared/translationType';
+import { ensure } from 'shared/tsUtils';
+import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-import { arrangeThesauri } from './arrangeThesauri.js';
-import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv.js';
-import { extractEntity, toSafeName } from './entityRow.js';
-import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity.js';
-import importFile from './importFile.js';
-import { thesauriFromStream } from './importThesauri.js';
-import { validateColumns } from './validateColumns.js';
+import { arrangeThesauri } from './arrangeThesauri';
+import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv';
+import { extractEntity, toSafeName } from './entityRow';
+import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity';
+import importFile from './importFile';
+import { thesauriFromStream } from './importThesauri';
+import { validateColumns } from './validateColumns';
 
 const readResources = async (
   templateId: ObjectId | string

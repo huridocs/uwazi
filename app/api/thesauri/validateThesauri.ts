@@ -1,9 +1,9 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
-import { wrapValidator } from '#shared/tsUtils.js';
-import { thesaurusSchema } from '#shared/types/thesaurusSchema.js';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import model from './dictionariesModel.js';
+import { wrapValidator } from 'shared/tsUtils';
+import { thesaurusSchema } from 'shared/types/thesaurusSchema';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import model from './dictionariesModel';
 
 const ajv = ajvKeywords(new Ajv({ allErrors: true }), ['uniqueItemProperties']);
 ajv.addVocabulary(['tsType']);

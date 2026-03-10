@@ -1,10 +1,10 @@
 import Immutable from 'immutable';
 
-import * as types from '#app/Modals/actions/actionTypes.js';
+import * as types from 'app/Modals/actions/actionTypes';
 
 const initialState = {};
 
-const modalsReducer = (state = initialState, action = {}) => {
+export default function modals(state = initialState, action = {}) {
   if (action.type === types.SHOW_MODAL) {
     return state.set(action.modal, action.data);
   }
@@ -14,6 +14,4 @@ const modalsReducer = (state = initialState, action = {}) => {
   }
 
   return Immutable.fromJS(state);
-};
-
-export { modalsReducer };
+}

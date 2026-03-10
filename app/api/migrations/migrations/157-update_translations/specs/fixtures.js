@@ -1,4 +1,4 @@
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
 const fixturesDB = {
   settings: [{ _id: db.id(), languages: [{ key: 'en' }, { key: 'es' }] }],

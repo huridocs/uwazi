@@ -1,13 +1,11 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { MultiSelect } from '#V2/Components/Forms/index.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { MultiSelect } from 'V2/Components/Forms';
 
 const meta: Meta<typeof MultiSelect> = {
   title: 'Forms/MultiSelect',
   component: MultiSelect,
 };
-
-export default meta;
 
 type Story = StoryObj<typeof MultiSelect>;
 
@@ -72,3 +70,5 @@ const WithError: Story = {
 };
 
 export { Basic, WithError };
+
+export default meta;

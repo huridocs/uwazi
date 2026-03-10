@@ -1,16 +1,16 @@
 import { actions as formActions, getModel } from 'react-redux-form';
 
-import { advancedSort } from '#app/utils/advancedSort.js';
-import { api } from '#app/Entities/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { t } from '#app/I18N/index.js';
-import { removeDocuments, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
-import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { SearchAPI as searchAPI } from '#app/Search/SearchAPI.js';
-import { actions } from '#app/BasicReducer/index.js';
-import { generateID } from '#shared/IDGenerator.js';
-import emptyTemplate from '../helpers/defaultTemplate.js';
+import { advancedSort } from 'app/utils/advancedSort';
+import { api } from 'app/Entities';
+import { notificationActions } from 'app/Notifications';
+import { t } from 'app/I18N';
+import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
+import { RequestParams } from 'app/utils/RequestParams';
+import searchAPI from 'app/Search/SearchAPI';
+import { actions } from 'app/BasicReducer';
+import { generateID } from 'shared/IDGenerator';
+import emptyTemplate from '../helpers/defaultTemplate';
 
 function resetReduxForm(form) {
   return formActions.reset(form);

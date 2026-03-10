@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import Immutable from 'immutable';
+import { Set as ImmutableSet, List as ImmutableList } from 'immutable';
 
 const documentViewer = s => s.documentViewer;
 
@@ -11,7 +11,7 @@ function isRelationshipAReference(doc, reference) {
 }
 
 const parseReferences = (doc, refs) => {
-  const textReferences = Immutable.Set(refs.filter(r => isRelationshipAReference(doc, r)));
+  const textReferences = ImmutableSet(refs.filter(r => isRelationshipAReference(doc, r)));
   //select basereferences
   const hubIdToBaseReference = new Map();
   textReferences.forEach(tr => {
@@ -33,7 +33,7 @@ const parseReferences = (doc, refs) => {
     }
   });
   // flatten to immutable list
-  const result = Immutable.List(Array.from(hubIdToRelationships.values())).flatMap(v => v);
+  const result = ImmutableList(Array.from(hubIdToRelationships.values())).flatMap(v => v);
   return result;
 };
 

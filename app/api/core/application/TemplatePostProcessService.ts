@@ -1,16 +1,16 @@
-import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent.js';
-import { TemplateDiff } from '../domain/template/TemplateDiff.js';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
-import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable.js';
+import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent';
+import { TemplateDiff } from '../domain/template/TemplateDiff';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
+import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable';
 import {
   JobsDispatcher,
   DispatchableClass,
-} from '../libs/queue/application/contracts/JobsDispatcher.js';
-import { Template } from '../domain/template/Template.js';
+} from '../libs/queue/application/contracts/JobsDispatcher';
+import { Template } from '../domain/template/Template';
 
 type Deps = {
   jobsDispatcher: JobsDispatcher;

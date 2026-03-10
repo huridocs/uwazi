@@ -1,11 +1,11 @@
 // TEST!!!
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import { actions } from '#app/BasicReducer/index.js';
-import { actions as connectionsListActions } from '#app/ConnectionsList/index.js';
-import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
-import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
+import { actions } from 'app/BasicReducer';
+import { actions as connectionsListActions } from 'app/ConnectionsList';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import referencesAPI from 'app/Viewer/referencesAPI';
 
 function requestState(requestParams, state) {
   return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {
@@ -21,7 +21,7 @@ function requestState(requestParams, state) {
     });
     const params = state.relationships ? state.relationships.list : {};
     params.sort = params.sort || sortOptions;
-    params.filters = Immutable.fromJS({ limit: 10 });
+    params.filters = fromJS({ limit: 10 });
     params.sharedId = requestParams.data.sharedId;
     const newParams = requestParams.add(params);
     return Promise.all([

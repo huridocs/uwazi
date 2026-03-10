@@ -1,4 +1,4 @@
-import { NonChainQueryError } from './NonChainQueryErrror.js';
+import { NonChainQueryError } from './NonChainQueryErrror';
 
 export abstract class QueryNode {
   protected abstract getChildrenNodes(): QueryNode[];

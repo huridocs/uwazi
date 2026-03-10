@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
-import { uploadMiddleware } from '#api/files/index.js';
+import { uploadMiddleware } from 'api/files';
 
-import { CreateThesaurusController } from '#api/core/infrastructure/express/thesaurus/CreateThesaurusController.js';
-import { UpdateThesaurusController } from '#api/core/infrastructure/express/thesaurus/UpdateThesaurusController.js';
-import { tenants } from '#api/tenants/index.js';
-import { CSVLoader } from '#api/csv/index.js';
-import { validation } from '../utils/index.js';
-import needsAuthorization from '../auth/authMiddleware.js';
-import thesauri from './thesauri.js';
+import { CreateThesaurusController } from 'api/core/infrastructure/express/thesaurus/CreateThesaurusController';
+import { UpdateThesaurusController } from 'api/core/infrastructure/express/thesaurus/UpdateThesaurusController';
+import { tenants } from 'api/tenants';
+import { CSVLoader } from 'api/csv';
+import { validation } from '../utils';
+import needsAuthorization from '../auth/authMiddleware';
+import thesauri from './thesauri';
 
 const routes = app => {
   app.post(

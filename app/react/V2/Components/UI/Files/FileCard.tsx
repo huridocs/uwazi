@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
-import { t, Translate } from '#app/I18N/index.js';
-import { FilePreview } from '#app/V2/Components/UI/Files/FilePreview.js';
-import { settingsAtom } from '#app/V2/atoms/index.js';
-import { formatBytes, formatDuration, getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
-import { FileType } from '#shared/types/fileType.js';
+import { t, Translate } from 'app/I18N';
+import { FilePreview } from 'app/V2/Components/UI/Files/FilePreview';
+import { settingsAtom } from 'app/V2/atoms';
+import { formatBytes, formatDuration, getMimetypeFromUrl } from 'V2/shared/formatHelpers';
+import { FileType } from 'shared/types/fileType';
 
 type EntityFile = Partial<FileType> & {
   fileType: 'mainDocument' | 'document' | 'attachment' | 'externalURL' | 'image' | 'media';

@@ -1,4 +1,4 @@
-import { deriveTrainingPropertyValue } from '../../informationextraction/propertyValue.js';
+import { deriveTrainingPropertyValue } from '../../informationextraction/propertyValue';
 
 describe('deriveTrainingPropertyValue', () => {
   it('should return entity values for select-like types', () => {

@@ -2,32 +2,28 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { files } from '#api/files/files.js';
-import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
-import {
-  ExtractedMetadataSchema,
-  ObjectIdSchema,
-  PropertySchema,
-} from '#shared/types/commonTypes.js';
-import { FileType } from '#shared/types/fileType.js';
-import { IXSuggestionAggregation, IXSuggestionType } from '#shared/types/suggestionType.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { files } from 'api/files/files';
+import { EnforcedWithId } from 'api/odm';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import templates from 'api/core/v1_layer/templates';
+import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
+import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { FileType } from 'shared/types/fileType';
+import { IXSuggestionAggregation, IXSuggestionType } from 'shared/types/suggestionType';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,
-} from '#api/services/informationextraction/ixMaterials.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { IXModelType } from '#shared/types/IXModelType.js';
-import { registerEventListeners } from './eventListeners.js';
-import { updateStates } from './updateState.js';
+} from 'api/services/informationextraction/ixMaterials';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { IXModelType } from 'shared/types/IXModelType';
+import { registerEventListeners } from './eventListeners';
+import { updateStates } from './updateState';
 import {
   AcceptedSuggestion,
   SuggestionAcceptanceError,
   updateEntitiesWithSuggestion,
-} from './updateEntities.js';
+} from './updateEntities';
 
 const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],
@@ -375,7 +371,7 @@ const Suggestions = {
       $set: { 'state.obsolete': true, 'state.match': null },
     }),
 
-  markSuggestionsWithoutSegmentation: async (query: UwaziFilterQuery<IXSuggestionType>) => {
+  markSuggestionsWithoutSegmentation: async (query: any) => {
     const segmentedFilesIds = await getSegmentedFilesIds();
     await IXSuggestionsModel.updateMany(
       {

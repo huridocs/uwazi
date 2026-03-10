@@ -4,9 +4,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
-import { Icon } from '#app/UI/index.js';
-import { t, Translate } from '#app/I18N/index.js';
-import { validMediaFile } from '#app/Metadata/helpers/validator.js';
+import { Icon } from 'UI';
+import { t, Translate } from 'app/I18N';
+import { validMediaFile } from 'app/Metadata/helpers/validator';
 
 interface MarkdownMediaProps {
   compact?: boolean;
@@ -298,8 +298,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
         .then(async res => {
-          const isValidMediaResponse = validMediaFile(res);
-          if (isValidMediaResponse) {
+          if (validMediaFile(res)) {
             return res.blob();
           }
           setErrorFlag(true);
@@ -442,4 +441,4 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 };
 
 export type { TimeLink, MarkdownMediaProps };
-export { MarkdownMedia };
+export default MarkdownMedia;

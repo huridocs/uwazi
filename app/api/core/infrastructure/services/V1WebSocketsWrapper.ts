@@ -1,5 +1,5 @@
-import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
-import { emitToTenant, emitToSession, emitToTenantAdmins } from '#api/socketio/setupSockets.js';
+import { WebSockets } from 'api/core/application/contracts/WebSockets';
+import { emitToTenant, emitToSession, emitToTenantAdmins } from 'api/socketio/setupSockets';
 
 export class V1WebSocketsWrapper implements WebSockets {
   // eslint-disable-next-line class-methods-use-this

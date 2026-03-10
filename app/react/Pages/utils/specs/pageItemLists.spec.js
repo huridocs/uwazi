@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import pageLists from '../pageItemLists.js';
+import pageLists from '../pageItemLists';
 
 describe('Pages: pageItemLists util', () => {
   let content;

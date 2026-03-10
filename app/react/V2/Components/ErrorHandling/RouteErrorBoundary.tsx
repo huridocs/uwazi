@@ -1,8 +1,7 @@
 import React from 'react';
 import { useRouteError } from 'react-router';
 import { captureException } from '@sentry/react';
-import { ErrorFallback } from './ErrorFallback.js';
-import { isChunkLoadError, tryChunkErrorReload, CHUNK_ERROR_KEY } from '#V2/shared/errorUtils.js';
+import { ErrorFallback } from './ErrorFallback';
 
 interface ErrorBoundaryProps {
   error?: Error;
@@ -12,14 +11,8 @@ interface ErrorBoundaryProps {
 const RouteErrorBoundary = ({ error: elementError, children = <> </> }: ErrorBoundaryProps) => {
   const routeError = useRouteError() as Error;
   const error = elementError || routeError;
-
-  React.useEffect(() => {
-    if (isChunkLoadError(error) && tryChunkErrorReload()) return;
-    if (error?.message) captureException(error);
-  }, [error]);
-
+  captureException(error);
   if (error?.message) {
-    if (isChunkLoadError(error) && !sessionStorage.getItem(CHUNK_ERROR_KEY)) return null;
     return <ErrorFallback error={error} />;
   }
   return children;

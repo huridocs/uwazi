@@ -1,23 +1,18 @@
-import Immutable from 'immutable';
-import { renderConnected } from '#app/utils/test/renderConnected.js';
-import { ResultsFiltersPanel } from '../ResultsFiltersPanel.jsx';
+import React from 'react';
+import { shallow } from 'enzyme';
+
+import { ResultsFiltersPanel } from '../ResultsFiltersPanel';
 
 describe('ResultsFiltersPanel', () => {
   let props;
   let component;
-  const storeData = {
-    semanticSearch: {
-      selectedDocument: Immutable.fromJS({}),
-      resultsFilters: { threshold: 0.8 },
-    },
-  };
   beforeEach(() => {
     props = {
       open: true,
       filtersValues: { threshold: 0.8 },
     };
 
-    component = renderConnected(ResultsFiltersPanel, props, storeData);
+    component = shallow(<ResultsFiltersPanel {...props} />);
   });
 
   describe('render', () => {

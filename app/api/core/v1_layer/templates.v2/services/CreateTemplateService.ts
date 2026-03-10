@@ -1,19 +1,16 @@
-import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import {
-  MatchQueryNode,
-  TemplateRecordElement,
-} from '#api/relationships.v2/model/MatchQueryNode.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { RelationshipPropertyData } from '#shared/types/api.v2/templates.createTemplateRequest.js';
-import { createError } from '#api/utils/index.js';
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource.js';
-import { QueryMapper } from '../../../infrastructure/mongodb/template/QueryMapper.js';
-import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers.js';
-import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { propertyTypes } from 'shared/propertyTypes';
+import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
+import { createError } from 'api/utils';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource';
+import { QueryMapper } from '../../../infrastructure/mongodb/template/QueryMapper';
+import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
+import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
 
 interface MatchQuery {
   templates: string[];

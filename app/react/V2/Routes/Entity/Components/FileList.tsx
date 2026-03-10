@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { Translate } from '#app/I18N/index.js';
-import { Entity } from '#app/V2/domain/index.js';
-import { getMimetypeFromUrl } from '#app/V2/shared/formatHelpers.js';
-import { EntityFile, FileCard } from '#app/V2/Components/UI/Files/FileCard.js';
+import { Translate } from 'app/I18N';
+import { Entity } from 'app/V2/domain';
+import { getMimetypeFromUrl } from 'app/V2/shared/formatHelpers';
+import { EntityFile, FileCard } from 'app/V2/Components/UI/Files/FileCard';
 
 type FileListProps = {
   entity: Entity;

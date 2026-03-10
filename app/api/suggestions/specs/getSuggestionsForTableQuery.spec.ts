@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DBFixture } from '#api/utils/testing_db.js';
-import { factory } from './fixtures.js';
-import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DBFixture } from 'api/utils/testing_db';
+import { factory } from './fixtures';
+import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 
 const createSut = () => {
   const sut = new GetSuggestionsForTableQuery();

@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Icon } from '#UI/index.js';
+import { Icon } from 'UI';
 
-import { NotificationView as Notification } from '#app/Notifications/components/Notification.js';
+import { Notification } from 'app/Notifications/components/Notification';
 
 describe('Notification', () => {
   let component;

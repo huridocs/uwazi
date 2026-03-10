@@ -3,19 +3,20 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
-import { Icon } from '#UI/index.js';
+
+import { Icon } from 'UI';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
-} from '#app/Library/actions/libraryActions.js';
-import { t, Translate } from '#app/I18N/index.js';
-import { wrapDispatch } from '#app/Multireducer/index.js';
-import { ModalTips } from '#app/App/ModalTips.js';
-import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
-import { submitNewSearch } from '#app/SemanticSearch/actions/actions.js';
-import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import { IStore } from '#app/istore.js';
-import { Form } from '#app/Forms/Form.js';
+} from 'app/Library/actions/libraryActions';
+import { t, Translate } from 'app/I18N';
+import { wrapDispatch } from 'app/Multireducer';
+import ModalTips from 'app/App/ModalTips';
+import { SearchTipsContent } from 'app/App/SearchTipsContent';
+import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
+import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
+import { IStore } from 'app/istore';
+import { Form } from 'app/Forms/Form';
 
 interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {

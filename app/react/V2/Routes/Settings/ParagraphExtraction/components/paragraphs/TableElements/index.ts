@@ -1,1 +1,1 @@
-export { tableBuilder } from './tableBuilder.js';
+export { tableBuilder } from './tableBuilder';

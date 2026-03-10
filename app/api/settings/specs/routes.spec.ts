@@ -1,20 +1,20 @@
-import entities from '#api/entities/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { search } from '#api/search/index.js';
-import settings from '#api/settings/index.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import users from '#api/users/users.js';
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import type { NextFunction, Request, Response } from 'express';
+import entities from 'api/entities';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { search } from 'api/search';
+import settings from 'api/settings';
+import templates from 'api/core/v1_layer/templates';
+import users from 'api/users/users';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
-import translations from '#api/i18n/index.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import translations from 'api/i18n';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import waitForExpect from 'wait-for-expect';
-import * as setupSockets from '#api/socketio/setupSockets.js';
-import settingsRoutes from '../routes.js';
-import { settingsModel } from '../settingsModel.js';
-import fixtures from './fixtures.js';
+import * as setupSockets from 'api/socketio/setupSockets';
+import settingsRoutes from '../routes';
+import { settingsModel } from '../settingsModel';
+import fixtures from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

@@ -1,4 +1,4 @@
-import { LabelCountSchema } from '../types/labelCountType.js';
+import { LabelCountSchema } from '../types/labelCountType';
 
 /* An Un-sanitized Elastic Search Result
 .

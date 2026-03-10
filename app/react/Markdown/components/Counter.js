@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import markdownDatasets from '../markdownDatasets.js';
+import markdownDatasets from '../markdownDatasets';
 
 const CounterComponent = ({ count }) => count;
 
@@ -17,5 +17,4 @@ export const mapStateToProps = (state, props) => ({
   count: markdownDatasets.getAggregation(state, props),
 });
 
-const Counter = connect(mapStateToProps)(CounterComponent);
-export { CounterComponent as CounterView, Counter };
+export default connect(mapStateToProps)(CounterComponent);

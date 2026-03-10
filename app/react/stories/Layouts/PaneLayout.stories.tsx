@@ -1,13 +1,11 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import type { Meta, StoryObj } from '@storybook/react';
+import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 
 const meta: Meta<typeof PaneLayout> = {
   title: 'Layouts/PaneLayout',
   component: PaneLayout,
 };
-
-export default meta;
 
 type Story = StoryObj<typeof PaneLayout>;
 
@@ -126,3 +124,5 @@ const Basic: Story = {
 };
 
 export { Basic };
+
+export default meta;

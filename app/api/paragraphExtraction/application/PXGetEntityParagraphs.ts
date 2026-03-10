@@ -1,10 +1,10 @@
-import { UseCase } from '#api/core/libs/UseCase.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { UseCase } from 'api/core/libs/UseCase';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import {
   GetExtractedParagraphsOutput,
   PXExtractorsQueryService,
-} from '../domain/PXExtractorsQueryService.js';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
+} from '../domain/PXExtractorsQueryService';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 
 type PXGetEntityParagraphsInput = {
   id: string;
@@ -18,10 +18,9 @@ type Dependencies = {
   extractorsDS: PXExtractorsDataSource;
 };
 
-class PXGetEntityParagraphs implements UseCase<
-  PXGetEntityParagraphsInput,
-  GetExtractedParagraphsOutput
-> {
+class PXGetEntityParagraphs
+  implements UseCase<PXGetEntityParagraphsInput, GetExtractedParagraphsOutput>
+{
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: PXGetEntityParagraphsInput): Promise<GetExtractedParagraphsOutput> {

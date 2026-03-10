@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, ReactNode } from 'react';
-import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
 export interface BaseDropdownProps {
   trigger: ReactNode;

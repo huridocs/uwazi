@@ -5,25 +5,20 @@ import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { FileType } from '#shared/types/fileType.js';
-import { getByType, remove, UploadService } from '#V2/api/files/index.js';
-import {
-  Button,
-  ConfirmationModal,
-  Table,
-  ConfirmNavigationModal,
-} from '#V2/Components/UI/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { Translate } from 'app/I18N';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { FileType } from 'shared/types/fileType';
+import { getByType, remove, UploadService } from 'V2/api/files';
+import { Button, ConfirmationModal, Table, ConfirmNavigationModal } from 'V2/Components/UI';
+import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import { notificationAtom } from 'V2/atoms';
 import {
   createColumns,
   FileList,
   UploadProgress,
   DropzoneModal,
   EditFileSidepanel,
-} from './components/index.js';
+} from './components';
 
 type CustomUpload = FileType & { rowId: string };
 
@@ -119,7 +114,7 @@ const CustomUploads = () => {
         <SettingsContent.Body>
           <Table
             data={files}
-            columns={createColumns(handleDelete, (file: any) => {
+            columns={createColumns(handleDelete, file => {
               setShowSidepanel(true);
               setFileToEdit(file);
             })}

@@ -1,4 +1,4 @@
-import { FilterableProperty } from '../FilterableProperty.js';
+import { FilterableProperty } from '../FilterableProperty';
 
 class Testing extends FilterableProperty {}
 

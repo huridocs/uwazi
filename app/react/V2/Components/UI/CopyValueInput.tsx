@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
-import { Label } from '../Forms/index.js';
+import { Translate } from 'app/I18N';
+import { Label } from '../Forms';
 
 interface CopyValueInputProps {
   value: string;

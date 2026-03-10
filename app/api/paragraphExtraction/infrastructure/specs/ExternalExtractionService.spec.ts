@@ -3,13 +3,13 @@ import express from 'express';
 import { Server } from 'http';
 import multer from 'multer';
 
-import { HttpClientFactory } from '#api/common.v2/infrastructure/HttpClientFactory.js';
-import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
-import { GetParagraphsResultOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
+import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService.js';
-import { document, mockGetParagraphsResult, segmentation } from './fixtures.js';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
+import { document, mockGetParagraphsResult, segmentation } from './fixtures';
 
 const upload = multer();
 const app = express();
@@ -64,7 +64,7 @@ describe('ExternalExtractionService', () => {
       });
 
       async function* streamCallback() {
-        yield new Uint8Array(Buffer.from('default content'));
+        yield Buffer.from('default content');
       }
 
       await externalExtractionService.extractParagraphs({

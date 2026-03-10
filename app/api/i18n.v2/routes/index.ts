@@ -1,8 +1,8 @@
-import type { Application, Request } from 'express';
-import { needsAuthorization } from '#api/auth/index.js';
-import { validation } from '#api/utils/index.js';
-import translations from '#api/i18n/index.js';
-import { getTranslationsEntriesV2 } from '#api/i18n/v2_support.js';
+import { Application, Request } from 'express';
+import { needsAuthorization } from 'api/auth';
+import { validation } from 'api/utils';
+import translations from 'api/i18n';
+import { getTranslationsEntriesV2 } from 'api/i18n/v2_support';
 
 const translationsRoutes = (app: Application) => {
   app.get('/api/v2/translations', async (_req: Request, res) => {

@@ -1,5 +1,5 @@
-import Immutable from '#shared/immutableWrapper.js';
-import * as types from '../actions/actionTypes.js';
+import { fromJS } from 'immutable';
+import * as types from '../actions/actionTypes';
 
 const initialState = [];
 
@@ -7,7 +7,7 @@ const emptyRigthRelationship = () => ({ relationships: [] });
 
 const conformRelationships = action => {
   let order = -1;
-  const hubsObject = (action.results.get('rows') || Immutable.fromJS([])).reduce((hubs, row) => {
+  const hubsObject = (action.results.get('rows') || fromJS([])).reduce((hubs, row) => {
     let hubsImmutable = hubs;
     row.get('connections').forEach(connection => {
       const hubId = connection.get('hub').toString();
@@ -15,7 +15,7 @@ const conformRelationships = action => {
         order += 1;
         hubsImmutable = hubsImmutable.set(
           hubId,
-          Immutable.fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} })
+          fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} })
         );
       }
 
@@ -26,7 +26,7 @@ const conformRelationships = action => {
         if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
           hubsImmutable = hubsImmutable.setIn(
             [hubId, 'rightRelationships', templateId],
-            Immutable.fromJS([])
+            fromJS([])
           );
         }
         hubsImmutable = hubsImmutable.setIn(
@@ -37,7 +37,7 @@ const conformRelationships = action => {
     });
 
     return hubsImmutable;
-  }, Immutable.fromJS({}));
+  }, fromJS({}));
 
   return hubsObject.reduce((hubs, hub) => {
     let index = 0;
@@ -45,19 +45,19 @@ const conformRelationships = action => {
       .get('rightRelationships')
       .reduce((memo, relationshipsArray, template) => {
         let newMemo = memo.push(
-          Immutable.fromJS({}).set('template', template).set('relationships', relationshipsArray)
+          fromJS({}).set('template', template).set('relationships', relationshipsArray)
         );
         index += 1;
         if (action.editing && index === hub.get('rightRelationships').size) {
-          newMemo = newMemo.push(Immutable.fromJS(emptyRigthRelationship()));
+          newMemo = newMemo.push(fromJS(emptyRigthRelationship()));
         }
         return newMemo;
-      }, Immutable.fromJS([]));
+      }, fromJS([]));
     return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
-  }, Immutable.fromJS([]));
+  }, fromJS([]));
 };
 
-const hubsReducer = (state = initialState, action = {}) => {
+export default function (state = initialState, action = {}) {
   let relationships;
   let value;
   let updatedHubs;
@@ -78,7 +78,7 @@ const hubsReducer = (state = initialState, action = {}) => {
 
     case types.ADD_RELATIONSHIPS_HUB:
       return state.push(
-        Immutable.fromJS({
+        fromJS({
           leftRelationship: { template: null },
           rightRelationships: [emptyRigthRelationship()],
         })
@@ -110,7 +110,7 @@ const hubsReducer = (state = initialState, action = {}) => {
       if (action.newRightRelationshipType) {
         const updatedRightRelationships = updatedHubs
           .getIn([action.index, 'rightRelationships'])
-          .push(Immutable.fromJS(emptyRigthRelationship()));
+          .push(fromJS(emptyRigthRelationship()));
         updatedHubs = updatedHubs.setIn(
           [action.index, 'rightRelationships'],
           updatedRightRelationships
@@ -129,7 +129,7 @@ const hubsReducer = (state = initialState, action = {}) => {
     case types.ADD_RELATIONSHIPS_ENTITY:
       relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
       relationships = relationship.get('relationships').push(
-        Immutable.fromJS({
+        fromJS({
           template: relationship.get('template'),
           entity: action.entity.sharedId,
           entityData: action.entity,
@@ -259,13 +259,11 @@ const hubsReducer = (state = initialState, action = {}) => {
       });
 
       return toUpdate.reduce(
-        (updatedState, path) => updatedState.setIn(path, Immutable.fromJS(action.entity)),
+        (updatedState, path) => updatedState.setIn(path, fromJS(action.entity)),
         state
       );
 
     default:
-      return Immutable.fromJS(state);
+      return fromJS(state);
   }
-};
-
-export { hubsReducer };
+}

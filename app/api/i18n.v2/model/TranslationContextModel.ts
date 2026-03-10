@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { Translation, TranslationContext } from './Translation.js';
-import { TranslationContextDiff } from './TranslationContextDiff.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { Translation, TranslationContext } from './Translation';
+import { TranslationContextDiff } from './TranslationContextDiff';
 
 export class TranslationContextModel {
   private contextInfo: TranslationContext;

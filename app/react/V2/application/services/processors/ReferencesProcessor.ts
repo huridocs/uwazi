@@ -1,9 +1,8 @@
-import has from 'lodash/has.js';
-import uniq from 'lodash/uniq.js';
-import { EntityReference } from '#app/V2/domain/entities/types.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { ConnectionSchema } from '#shared/types/connectionType.js';
-import { AdapterReferences, ReferencesResult } from './types.js';
+import { has, uniq } from 'lodash';
+import { EntityReference } from 'app/V2/domain/entities/types';
+import { EntitySchema } from 'shared/types/entityType';
+import { ConnectionSchema } from 'shared/types/connectionType';
+import { AdapterReferences, ReferencesResult } from './types';
 
 export class ReferencesProcessor {
   extractReferences(entities: EntitySchema[]): ReferencesResult {

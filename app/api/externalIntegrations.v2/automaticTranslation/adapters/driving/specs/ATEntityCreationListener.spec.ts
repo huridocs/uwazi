@@ -1,13 +1,13 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-import { RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
-import { tenants } from '#api/tenants/index.js';
-import { appContext } from '#api/utils/AppContext.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { ATEntityCreationListener } from '../ATEntityCreationListener.js';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
+import { RequestEntityTranslation } from 'api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation';
+import { tenants } from 'api/tenants';
+import { appContext } from 'api/utils/AppContext';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ATEntityCreationListener } from '../ATEntityCreationListener';
 
 const factory = getFixturesFactory();
 

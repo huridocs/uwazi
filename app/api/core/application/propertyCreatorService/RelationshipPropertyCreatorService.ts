@@ -1,15 +1,15 @@
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { Context, Property } from '../../domain/template/Property.js';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { Context, Property } from '../../domain/template/Property';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
-} from '../../domain/template/V1RelationshipProperty.js';
+} from '../../domain/template/V1RelationshipProperty';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
-} from '../../domain/template/errors.js';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService.js';
+} from '../../domain/template/errors';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 
 type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;

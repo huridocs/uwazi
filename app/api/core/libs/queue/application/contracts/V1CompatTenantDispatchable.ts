@@ -1,6 +1,6 @@
-import { tenants } from '#api/tenants/index.js';
+import { tenants } from 'api/tenants';
 
-import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable.js';
+import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable';
 
 export abstract class V1CompatTenantDispatchable<CustomParams extends {}> implements Dispatchable {
   protected abstract handle(

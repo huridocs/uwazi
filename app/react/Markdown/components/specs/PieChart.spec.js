@@ -8,10 +8,10 @@ import Immutable from 'immutable';
 
 import { Pie, Tooltip } from 'recharts';
 
-import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures.js';
-import { mapStateToProps, PieChartView as PieChartComponent } from '../PieChart.js';
-import markdownDatasets from '../../markdownDatasets.js';
-import { nestedThesauri } from './fixture/nestedThesauri.js';
+import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import { mapStateToProps, PieChartComponent } from '../PieChart.js';
+import markdownDatasets from '../../markdownDatasets';
+import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('PieChart Markdown component', () => {
   const state = {

@@ -1,29 +1,29 @@
 /* eslint-disable max-lines */
-import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { IndexTypes } from '#shared/data_utils/objectIndex.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { SharedId } from '#api/core/domain/entity/SharedId.js';
+import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
+import { Template } from 'api/core/domain/template/Template';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { IndexTypes } from 'shared/data_utils/objectIndex';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { SharedId } from 'api/core/domain/entity/SharedId';
 import {
   PropertyAssignment,
   PropertyValue,
   RelationshipEntry,
   SelectionEntry,
   TextPropertyValue,
-} from '#api/core/domain/template/PropertyValue.js';
+} from 'api/core/domain/template/PropertyValue';
 import {
   EntityTranslation,
   EntityTranslationProps,
-} from '#api/core/domain/entity/EntityTranslation.js';
-import date from '#api/utils/date.js';
+} from 'api/core/domain/entity/EntityTranslation';
+import date from 'api/utils/date';
 import stringify from 'fast-json-stable-stringify';
-import { AccessGrant, EntityPermission } from './EntityPermission.js';
-import { PermissionType } from './PermissionType.js';
-import { AccessLevel } from './AccessLevel.js';
-import { EntityTranslationDoesNotExistError } from './errors.js';
-import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
-import { EntityDTO } from './EntityDTO.js';
+import { AccessGrant, EntityPermission } from './EntityPermission';
+import { PermissionType } from './PermissionType';
+import { AccessLevel } from './AccessLevel';
+import { EntityTranslationDoesNotExistError } from './errors';
+import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty';
+import { EntityDTO } from './EntityDTO';
 
 type CreateInput = {
   languages: LanguageISO6391[];

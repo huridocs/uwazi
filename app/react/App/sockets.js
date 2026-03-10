@@ -1,11 +1,11 @@
-import { actions } from '#app/BasicReducer/index.js';
-import { getStore } from '#shared/atomStore/index.js';
-import { t } from '#app/I18N/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
-import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
-import { store } from '../store.js';
-import { socket, reconnectSocket } from '../socket.js';
+import { actions } from 'app/BasicReducer';
+import { getStore } from 'shared/atomStore';
+import { t } from 'app/I18N';
+import { notificationActions } from 'app/Notifications';
+import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
+import { store } from '../store';
+import { socket, reconnectSocket } from '../socket';
 
 let disconnectNotifyId;
 let disconnectTimeoutMessage;

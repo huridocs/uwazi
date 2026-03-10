@@ -1,7 +1,5 @@
-import CSVExporter from './csvExporter.js';
-import csv from './csv.js';
+import CSVExporter from './csvExporter';
 
-export { CSVLoader } from './csvLoader.js';
+export { CSVLoader } from './csvLoader';
 
 export { CSVExporter };
-export default csv;

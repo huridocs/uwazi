@@ -1,6 +1,6 @@
-import { selectPublishedEntities, selectRestrictedEntities } from '../helpers/index.js';
-import { clickOnEditEntity, grantPermission, shareSearchTerm } from '../helpers/entities.js';
-import { clearCookiesAndLogin } from '../helpers/login.js';
+import { selectPublishedEntities, selectRestrictedEntities } from '../helpers';
+import { clickOnEditEntity, grantPermission, shareSearchTerm } from '../helpers/entities';
+import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Share Entities', () => {
   const titleEntity1 =

@@ -1,4 +1,4 @@
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 import React, { useState } from 'react';
 
 interface ImageViewerProps {

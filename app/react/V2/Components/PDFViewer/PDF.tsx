@@ -7,22 +7,19 @@ import React, {
   useState,
 } from 'react';
 import loadable from '@loadable/component';
-import {
-  SelectionRegion,
-  HandleTextSelection,
-  TextSelection,
-} from '@huridocs/react-text-selection-handler';
+import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
+import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
-import { Translate } from '#app/I18N/index.js';
-import { PDFJS, CMAP_URL, EventBus } from './pdfjs.js';
-import { TextHighlight } from './types.js';
-import { triggerScroll } from './functions/helpers.js';
-import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight.js';
-import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { Translate } from 'app/I18N';
+import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
+import { TextHighlight } from './types';
+import { triggerScroll } from './functions/helpers';
+import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight';
+import { adjustSelectionsToScale } from './functions/handleTextSelection';
 
-type Snippet = { text: string; page: number; filename?: string };
+export type Snippet = { text: string; page: number; filename?: string };
 
-interface PDFHandle {
+export interface PDFHandle {
   goToPage: (pageNumber: number) => void;
   scrollToHighlight: (highlightKey: string) => void;
   activateSnippet: (snippet: Snippet) => void;
@@ -238,5 +235,5 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
   }
 );
 
-export type { PDFProps, Snippet, PDFHandle };
+export type { PDFProps };
 export { PDF };

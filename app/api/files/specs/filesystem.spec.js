@@ -1,8 +1,8 @@
-import { testingTenants } from '#api/utils/testingTenants.js';
+import { testingTenants } from 'api/utils/testingTenants';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { mockID } from '#shared/uniqueID.js';
-import { deleteFiles, fileExistsOnPath, activityLogPath, generateFileName } from '../filesystem.js';
+import { mockID } from 'shared/uniqueID';
+import { deleteFiles, fileExistsOnPath, activityLogPath, generateFileName } from '../filesystem';
 
 const mockDate = 1634567890123;
 

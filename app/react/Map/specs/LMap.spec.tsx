@@ -11,18 +11,17 @@ import {
   waitFor,
   render as renderComponent,
 } from '@testing-library/react';
-
-import { Map } from '#app/Map/index.jsx';
-import * as MapHelper from '#app/Map/MapHelper.jsx';
+import { Map } from 'app/Map';
+import * as MapHelper from 'app/Map/MapHelper';
 import {
   deletedEntityAtom,
   localeAtom,
   settingsAtom,
   templatesAtom,
   translationsAtom,
-} from '#V2/atoms/index.js';
+} from 'V2/atoms';
 
-jest.mock('#app/Map/GoogleMapLayer', () => ({
+jest.mock('app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),
 }));
 

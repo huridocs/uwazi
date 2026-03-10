@@ -20,11 +20,7 @@ exports[`RelationshipsGraphEdit when relationships have text references with ran
         >
           <div
             className="rw-input rw-dropdown-list-input no-edit"
-          >
-            <Icon
-              icon="link"
-            />
-          </div>
+          />
         </div>
       </div>
     </div>

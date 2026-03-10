@@ -1,4 +1,4 @@
-import { maskMongoPassword } from '../maskMongoPassword.js';
+import { maskMongoPassword } from '../maskMongoPassword';
 
 describe('maskMongoPassword', () => {
   it('masks a normal mongodb URI with user and password', () => {

@@ -1,15 +1,13 @@
 import { combineReducers } from 'redux';
-import { createReducer } from '#app/BasicReducer/index.js';
+import createReducer from 'app/BasicReducer';
 import { modelReducer, formReducer } from 'react-redux-form';
 
-import { manageAttachmentsReducer } from '#app/Attachments/index.js';
-import uiState from './uiReducer.js';
+import { manageAttachmentsReducer } from 'app/Attachments';
+import uiState from './uiReducer';
 
-const reducer = combineReducers({
+export default combineReducers({
   entity: manageAttachmentsReducer(createReducer('entityView/entity', {})),
   entityForm: modelReducer('entityView.entityForm'),
   entityFormState: formReducer('entityView.entityForm'),
   uiState,
 });
-
-export { reducer };

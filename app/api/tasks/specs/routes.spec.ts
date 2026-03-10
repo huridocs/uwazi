@@ -1,8 +1,8 @@
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import type { NextFunction } from 'express';
-import { Task, TaskProvider } from '#shared/tasks/tasks.js';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { NextFunction } from 'express';
+import { Task, TaskProvider } from 'shared/tasks/tasks';
 import request from 'supertest';
-import testRoute from '../routes.js';
+import testRoute from '../routes';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

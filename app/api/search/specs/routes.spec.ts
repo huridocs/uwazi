@@ -1,13 +1,13 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import type { Application } from 'express';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Application } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import searchRoutes from '#api/search/routes.js';
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import searchRoutes from 'api/search/routes';
+import { setUpApp } from 'api/utils/testingRoutes';
 
-import { UserRole } from '#shared/types/userSchema.js';
-import { UserInContextMockFactory } from '../../utils/testingUserInContext.js';
-import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic.js';
+import { UserRole } from 'shared/types/userSchema';
+import { UserInContextMockFactory } from '../../utils/testingUserInContext';
+import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic';
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);

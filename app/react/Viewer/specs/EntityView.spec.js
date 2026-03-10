@@ -2,14 +2,14 @@ import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 
-import RelationTypesAPI from '#app/RelationTypes/RelationTypesAPI.js';
-import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
-import * as relationships from '#app/Relationships/utils/routeUtils.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import * as pageAssetsUtils from '#app/Pages/utils/getPageAssets.js';
+import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import * as relationships from 'app/Relationships/utils/routeUtils';
+import { RequestParams } from 'app/utils/RequestParams';
+import * as pageAssetsUtils from 'app/Pages/utils/getPageAssets';
 
-import { EntitiesAPI } from '../../Entities/EntitiesAPI.js';
-import { Entity as EntityView } from '../EntityView.js';
+import EntitiesAPI from '../../Entities/EntitiesAPI';
+import EntityView from '../EntityView';
 
 describe('EntityView', () => {
   describe('requestState', () => {

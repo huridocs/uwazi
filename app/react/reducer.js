@@ -1,32 +1,34 @@
+/** @format */
+
 import { combineReducers } from 'redux';
-import { createReducer } from '#app/BasicReducer/index.js';
+import createReducer from 'app/BasicReducer';
 
-import { reducer as page } from '#app/Pages/reducers/reducer.js';
-import { notificationsReducer as notifications } from '#app/Notifications/reducers/notificationsReducer.js';
+import page from 'app/Pages/reducers/reducer';
+import notifications from 'app/Notifications/reducers/notificationsReducer';
 
-import { reducer as documentViewer } from '#app/Viewer/reducers/reducer.js';
-import { reducer as entityView } from '#app/Entities/reducers/reducer.js';
-import { contextMenuReducer as contextMenu } from '#app/ContextMenu/reducers/contextMenuReducer.js';
-import { reducer as connections } from '#app/Connections/reducers/reducer.js';
-import { reducer as relationships } from '#app/Relationships/reducers/reducer.js';
-import { connectionsListReducer as ConnectionsList } from '#app/ConnectionsList/reducers/reducer.js';
-import { reducer as attachments } from '#app/Attachments/index.js';
-import { reducer as semanticSearch } from '#app/SemanticSearch/reducers/reducer.js';
+import documentViewer from 'app/Viewer/reducers/reducer';
+import entityView from 'app/Entities/reducers/reducer';
+import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
+import connections from 'app/Connections/reducers/reducer';
+import relationships from 'app/Relationships/reducers/reducer';
+import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
+import { reducer as attachments } from 'app/Attachments';
+import semanticSearch from 'app/SemanticSearch/reducers/reducer';
 
-import { reducer as library } from '#app/Library/reducers/reducer.js';
-import { modalsReducer as modals } from '#app/Modals/reducers/modalsReducer.js';
-import { progressReducer as progress } from '#app/Uploads/reducers/progressReducer.js';
-import { importReducer as importEntities } from '#app/Uploads/reducers/importReducer.js';
-import { reducer as user } from '#app/Auth/reducer.js';
-import { reducer as settings } from '#app/Settings/reducers/reducer.js';
-import { reducer as metadata } from '#app/Metadata/reducer.js';
-import { reducer as locale } from '#app/I18N/reducer.js';
-import inlineEdit from '#app/I18N/inlineEditReducer.js';
-import { exportReducer as exportSearchResults } from '#app/Library/reducers/exportReducer.js';
+import library from 'app/Library/reducers/reducer';
+import modals from 'app/Modals/reducers/modalsReducer';
+import progress from 'app/Uploads/reducers/progressReducer';
+import importEntities from 'app/Uploads/reducers/importReducer';
+import user from 'app/Auth/reducer';
+import settings from 'app/Settings/reducers/reducer';
+import metadata from 'app/Metadata/reducer';
+import locale from 'app/I18N/reducer';
+import inlineEdit from 'app/I18N/inlineEditReducer';
+import exportSearchResults from 'app/Library/reducers/exportReducer';
 
 import { modelReducer, formReducer } from 'react-redux-form';
 
-const rootReducer = combineReducers({
+export default combineReducers({
   notifications,
   library: library('library'),
   uploads: library('uploads'),
@@ -66,5 +68,3 @@ const rootReducer = combineReducers({
   userGroups: createReducer('userGroups', []),
   ixExtractors: createReducer('ixExtractors', []),
 });
-
-export { rootReducer, combineReducers };

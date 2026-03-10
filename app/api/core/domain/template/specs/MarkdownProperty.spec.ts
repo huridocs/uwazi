@@ -1,7 +1,7 @@
-import { PropertyTypeInvalidTypeError } from '../errors.js';
-import { MarkdownProperty } from '../MarkdownProperty.js';
-import { PropertyTypeEnum } from '../PropertyType.js';
-import { TextProperty } from '../TextProperty.js';
+import { PropertyTypeInvalidTypeError } from '../errors';
+import { MarkdownProperty } from '../MarkdownProperty';
+import { PropertyTypeEnum } from '../PropertyType';
+import { TextProperty } from '../TextProperty';
 
 describe('MarkdownProperty', () => {
   it('should set defaults values if not provided', () => {

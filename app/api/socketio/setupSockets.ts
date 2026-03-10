@@ -1,17 +1,17 @@
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter } from '@socket.io/redis-emitter';
-import { config } from '#api/config.js';
-import { tenants } from '#api/tenants/index.js';
-import { handleError } from '#api/utils/index.js';
+import { config } from 'api/config';
+import { tenants } from 'api/tenants/tenantContext';
+import { handleError } from 'api/utils';
 import MongoStore from 'connect-mongo';
 import * as cookie from 'cookie';
 import type { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import session, { type SessionData, type Store as SessionStore } from 'express-session';
-import { DB } from '#api/odm/index.js';
+import { DB } from 'api/odm';
 import { RedisClient } from 'redis';
 import { Server as SocketIoServer } from 'socket.io';
-import users from '#api/users/users.js';
+import users from 'api/users/users';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
@@ -181,7 +181,7 @@ const setupApiSockets = (server: Server, app: Application) => {
     }
 
     io.adapter(createAdapter(pubClient, subClient));
-    io.of('/').adapter.on('error', (e: any) => {
+    io.of('/').adapter.on('error', e => {
       handleError(e, { useContext: false });
     });
   }
@@ -213,7 +213,7 @@ const setupWorkerSockets = (redisClient: RedisClient) => {
   }
 
   // Keep listening for errors across the client lifetime
-  redisClient.on('error', (error: any) => {
+  redisClient.on('error', error => {
     throw error;
   });
 

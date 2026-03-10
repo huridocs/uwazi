@@ -1,19 +1,19 @@
 /* eslint-disable max-statements */
 import { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
-import { socket } from '#app/socket.js';
+import { socket } from 'app/socket';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { t } from '#app/I18N/index.js';
-import { ModelEvents, SuggestionEvents } from '../events.js';
+import { notificationAtom } from 'V2/atoms';
+import { t } from 'app/I18N';
+import { ModelEvents, SuggestionEvents } from '../events';
 import type {
   IXModelStatusCallback,
   IXErrorTrainingModelCallback,
   AcceptSuggestionSuccessCallback,
   AcceptSuggestionErrorCallback,
-} from '../events.js';
-import { ixStatus } from '../types.js';
-import { acceptedSuggestions } from '../components/atoms/acceptedSuggestions.js';
+} from '../events';
+import { ixStatus } from '../types';
+import { acceptedSuggestions } from '../components/atoms/acceptedSuggestions';
 
 type useEventHandlerProps = {
   extractorId: string;

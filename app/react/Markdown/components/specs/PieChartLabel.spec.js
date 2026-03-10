@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { PieChartLabel } from '../PieChartLabel.js';
+import PieChartLabel from '../PieChartLabel';
 
 describe('PieChart Label', () => {
   it('should render label', () => {

@@ -2,14 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { getIndexElement } from '#app/Routes.js';
-import { ClientSettings } from '#app/apiResponseTypes.js';
-import { Login } from '#app/Users/Login.js';
-import { LibraryTable } from '#app/Library/LibraryTable.js';
-import { PageView } from '#app/Pages/PageView.js';
-import { ViewerRoute } from '#app/Viewer/ViewerRoute.js';
-import { LibraryMap } from '#app/Library/LibraryMap.js';
-import { LibraryRoot } from '#app/Library/Library.js';
+import { getIndexElement } from 'app/getIndexElement';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { Login } from 'app/Users/Login';
+import { LibraryTable } from 'app/Library/LibraryTable';
+import { PageView } from 'app/Pages/PageView';
+import { ViewerRoute } from 'app/Viewer/ViewerRoute';
+import { LibraryMap } from 'app/Library/LibraryMap';
+import LibraryRoot from 'app/Library/Library';
 
 let settings: ClientSettings;
 let userId: string;
@@ -71,14 +71,7 @@ describe('Routes', () => {
             <LibraryMap />
           </LibraryRoot>
         );
-        const el = element as React.ReactElement | null | undefined;
-        const child = el?.props?.children;
-        expect(
-          child &&
-            typeof child === 'object' &&
-            'props' in child &&
-            (child as { props: { params?: unknown } }).props.params
-        ).toMatchObject({
+        expect(element.props.children.props.params).toMatchObject({
           q: "(searchTerm:'mySearch',types:!('63f64f8bd793c9aae9925032'))",
         });
       });

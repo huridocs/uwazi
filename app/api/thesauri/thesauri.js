@@ -1,24 +1,22 @@
 /* eslint-disable max-lines */
-import cloneDeep from 'lodash/cloneDeep.js';
-import partition from 'lodash/partition.js';
-import flatMapDeep from 'lodash/flatMapDeep.js';
+import _ from 'lodash';
 import {
   generateIds,
   getUpdatedIds,
   getUpdatedNames,
   getDeletedProperties,
-} from '#api/utils/templateUtils.js';
-import entities from '#api/entities/entities.js';
-import { preloadOptionsLimit } from '#shared/config.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
-import settings from '#api/settings/settings.js';
-import translations from '#api/i18n/translations.js';
-import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
-import { search } from '#api/search/index.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import model from './dictionariesModel.js';
-import { validateThesauri } from './validateThesauri.js';
+} from 'api/utils/templateUtils';
+import entities from 'api/entities/entities';
+import { preloadOptionsLimit } from 'shared/config';
+import templates from 'api/core/v1_layer/templates/templates';
+import settings from 'api/settings/settings';
+import translations from 'api/i18n/translations';
+import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
+import { search } from 'api/search';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
+import model from './dictionariesModel';
+import { validateThesauri } from './validateThesauri';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);
@@ -174,10 +172,10 @@ function calcNewLabels(originals, news) {
 }
 
 function calcNewValues(originalValues, newValues) {
-  const values = cloneDeep(originalValues);
+  const values = _.cloneDeep(originalValues);
   const roots = values.filter(v => !v.values);
   const groups = values.filter(v => v.values);
-  const [newRoots, newGroups] = partition(newValues, v => !v.values);
+  const [newRoots, newGroups] = _.partition(newValues, v => !v.values);
 
   const finalNewRoots = calcNewLabels(roots, newRoots);
   values.push(...finalNewRoots);
@@ -309,13 +307,13 @@ const thesauri = {
 
 const flatThesaurusValues = (thesaurus, includeRoots = false) =>
   includeRoots
-    ? flatMapDeep(thesaurus?.values, tv => {
+    ? _.flatMapDeep(thesaurus?.values, tv => {
         const { values = [], ...root } = tv;
         const valuesCopy = Array.from(values);
         valuesCopy.push(root);
         return valuesCopy;
       })
-    : flatMapDeep(thesaurus?.values, tv => tv.values || tv);
+    : _.flatMapDeep(thesaurus?.values, tv => tv.values || tv);
 
 export default thesauri;
 export { thesauri, flatThesaurusValues, normalizeThesaurusLabel };

@@ -1,12 +1,11 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Truncate } from '#V2/Components/UI/index.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { Truncate } from 'V2/Components/UI';
 
 const meta: Meta<typeof Truncate> = {
   title: 'Components/Truncate',
   component: Truncate,
 };
-export default meta;
 
 type Story = StoryObj<typeof Truncate>;
 
@@ -77,3 +76,5 @@ const Basic = {
 };
 
 export { Basic };
+
+export default meta;

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import model from './model.js';
+import model from './model';
 
 function groupByHubs(references) {
   const hubs = references.reduce((_hubs, reference) => {

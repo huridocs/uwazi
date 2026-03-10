@@ -1,13 +1,13 @@
 import { Params } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { api } from '#app/utils/api.js';
-import { I18NApi } from '#app/I18N/index.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { ClientTranslationSchema, ClientTranslationContextSchema } from '#app/istore.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { TranslationValue } from '#V2/shared/types.js';
-import { httpRequest } from '#shared/superagent.js';
-import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
+import api from 'app/utils/api';
+import { I18NApi } from 'app/I18N';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { ClientTranslationSchema, ClientTranslationContextSchema } from 'app/istore';
+import { RequestParams } from 'app/utils/RequestParams';
+import { TranslationValue } from 'V2/shared/types';
+import { httpRequest } from 'shared/superagent';
+import loadingBar from 'app/App/LoadingProgressBar';
 
 const filterTranslationsByContext = (
   translations: ClientTranslationSchema[],

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { action } from 'storybook/actions';
-import { fn } from 'storybook/test';
-import { DateRangePicker } from '#V2/Components/Forms/index.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
+import { fn } from '@storybook/test';
+import { DateRangePicker } from 'app/V2/Components/Forms';
 
 const meta: Meta<typeof DateRangePicker> = {
   title: 'Forms/DateRangePicker',
@@ -17,7 +17,6 @@ const meta: Meta<typeof DateRangePicker> = {
     },
   },
 };
-export default meta;
 
 type Story = StoryObj<typeof DateRangePicker>;
 
@@ -58,3 +57,5 @@ const Basic: Story = {
 };
 
 export { Basic };
+
+export default meta;

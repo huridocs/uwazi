@@ -1,5 +1,5 @@
-import { CsvImport, CsvImportDomain } from '../../domain/CsvImport.js';
-import { CsvImportDBO } from '../schemas/CsvImportTypes.js';
+import { CsvImport, CsvImportDomain } from '../../domain/CsvImport';
+import { CsvImportDBO } from '../schemas/CsvImportTypes';
 
 const CsvImportMapper = {
   toDBO(domain: CsvImport): CsvImportDBO {

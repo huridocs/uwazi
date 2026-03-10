@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
 export default {
   settings: [

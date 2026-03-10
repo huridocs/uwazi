@@ -4,10 +4,10 @@
  */
 import Immutable from 'immutable';
 
-import { Marker } from '#app/Viewer/utils/Marker.js';
-import * as actions from '#app/Viewer/actions/uiActions.js';
-import scroller from '#app/Viewer/utils/Scroller.js';
-import * as types from '#app/Viewer/actions/actionTypes.js';
+import Marker from 'app/Viewer/utils/Marker.js';
+import * as actions from 'app/Viewer/actions/uiActions';
+import scroller from 'app/Viewer/utils/Scroller';
+import * as types from 'app/Viewer/actions/actionTypes';
 
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {
@@ -52,8 +52,8 @@ describe('Viewer uiActions', () => {
   describe('scrollToActive', () => {
     let dispatch;
     beforeEach(() => {
-      dispatch = jest.fn();
-      jest.spyOn(actions, 'activateReference').mockReturnValue({ type: 'activateReference' });
+      dispatch = jasmine.createSpy('dispatch');
+      spyOn(actions, 'activateReference').and.returnValue({ type: 'activateReference' });
     });
 
     it('should scroll to active if goToActive is true', () => {
@@ -72,10 +72,9 @@ describe('Viewer uiActions', () => {
   describe('activateReference()', () => {
     let dispatch;
     beforeEach(() => {
-      jest.restoreAllMocks();
-      jest.spyOn(scroller, 'to').mockImplementation(() => Promise.resolve());
-      jest.spyOn(window.document, 'querySelector').mockReturnValue(true);
-      dispatch = jest.fn();
+      spyOn(scroller, 'to');
+      spyOn(window.document, 'querySelector').and.returnValue(true);
+      dispatch = jasmine.createSpy('dispatch');
     });
 
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
@@ -209,10 +208,10 @@ describe('Viewer uiActions', () => {
     let references;
 
     beforeEach(() => {
-      dispatch = jest.fn();
+      dispatch = jasmine.createSpy('dispatch');
       references = [{ _id: 'id1' }, { _id: 'id2', reference: 'range' }];
       actions.selectReference(references[1])(dispatch);
-      dispatch.mock.calls[0][0](dispatch);
+      dispatch.calls.argsFor(0)[0](dispatch);
     });
 
     it('should dispatch a call to activateReference', () => {
@@ -230,7 +229,7 @@ describe('Viewer uiActions', () => {
 
   describe('resetReferenceCreation()', () => {
     it('should RESET_REFERENCE_CREATION and unset targetDocument', () => {
-      const dispatch = jest.fn();
+      const dispatch = jasmine.createSpy('dispatch');
       actions.resetReferenceCreation()(dispatch);
 
       expect(dispatch).toHaveBeenCalledWith({ type: types.RESET_REFERENCE_CREATION });
@@ -241,7 +240,7 @@ describe('Viewer uiActions', () => {
 
   describe('scrollToToc', () => {
     it('should scroll do the pageof the toc, with an offset to the toc position', async () => {
-      jest.spyOn(scroller, 'to').mockResolvedValue(undefined);
+      spyOn(scroller, 'to').and.callFake(async () => Promise.resolve());
       await actions.scrollToToc({
         text: 'The hammer to fall',
         selectionRectangles: [
@@ -265,7 +264,7 @@ describe('Viewer uiActions', () => {
 
   describe('scrollToPage', () => {
     it('should scroll to the page passed forcing the load', async () => {
-      jest.spyOn(scroller, 'to').mockResolvedValue(undefined);
+      spyOn(scroller, 'to').and.callFake(async () => Promise.resolve());
       actions.scrollToPage(3, 1, true);
       expect(scroller.to).toHaveBeenCalledWith('.document-viewer div#page-3', '.document-viewer', {
         dividerOffset: 1,

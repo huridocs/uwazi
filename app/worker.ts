@@ -1,26 +1,26 @@
 /* eslint-disable max-statements */
-import { config } from '#api/config.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { ATServiceListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
-import { Redis } from '#api/infrastructure/Redis.js';
-import { DB } from '#api/odm/index.js';
-import { PXParagraphsResultListener } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { ConvertToPdfWorker } from '#api/services/convertToPDF/ConvertToPdfWorker.js';
-import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
-import { ocrManager } from '#api/services/ocr/OcrManager.js';
-import { PDFSegmentation } from '#api/services/pdfsegmentation/PDFSegmentation.js';
-import { preserveSync } from '#api/services/preserve/preserveSync.js';
-import { DistributedLoop } from '#api/services/tasksmanager/DistributedLoop.js';
-import { TwitterIntegration } from '#api/services/twitterintegration/TwitterIntegration.js';
-import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
-import { syncWorker } from '#api/sync/syncWorker.js';
-import { tenants } from '#api/tenants/index.js';
-import { tocService } from '#api/toc_generation/tocService.js';
-import { sleep } from '#shared/tsUtils.js';
-import { handleError } from '#api/utils/handleError.js';
+import { config } from 'api/config';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
+import { Redis } from 'api/infrastructure/Redis';
+import { DB } from 'api/odm';
+import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
+import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { ocrManager } from 'api/services/ocr/OcrManager';
+import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
+import { preserveSync } from 'api/services/preserve/preserveSync';
+import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
+import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
+import { setupWorkerSockets } from 'api/socketio/setupSockets';
+import { syncWorker } from 'api/sync/syncWorker';
+import { tenants } from 'api/tenants';
+import { tocService } from 'api/toc_generation/tocService';
+import { sleep } from 'shared/tsUtils';
+import { handleError } from './api/utils/handleError';
 
 const systemLogger = LoggerFactory.systemLogger();
 

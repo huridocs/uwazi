@@ -1,10 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-import { PermissionType } from '#shared/types/permissionSchema.js';
-import { NeedAuthorization } from '#app/Auth/index.js';
-import { MemberListItemInfo } from './MemberListItemInfo.js';
-import { MemberListItemPermission } from './MemberListItemPermission.js';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { PermissionType } from 'shared/types/permissionSchema';
+import { NeedAuthorization } from 'app/Auth';
+import { MemberListItemInfo } from './MemberListItemInfo';
+import { MemberListItemPermission } from './MemberListItemPermission';
 
 interface MemberListProps {
   members: MemberWithPermission[];

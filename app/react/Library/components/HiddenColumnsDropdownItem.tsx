@@ -1,8 +1,8 @@
 import React from 'react';
-import { Icon } from '#app/UI/index.js';
-import { PropertySchema } from '#shared/types/commonTypes.js';
-import { TableViewColumn } from '#app/istore.js';
-import { Translate } from '#app/I18N/index.js';
+import { Icon } from 'UI';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { TableViewColumn } from 'app/istore';
+import { Translate } from 'app/I18N';
 
 interface SelectableColumn extends TableViewColumn {
   indeterminate?: boolean;

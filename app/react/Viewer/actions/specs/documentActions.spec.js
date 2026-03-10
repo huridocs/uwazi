@@ -6,19 +6,20 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
-import { api } from '#app/utils/api.js';
-import { mockID } from '#shared/uniqueID.js';
-import { getStore } from '#shared/atomStore/index.js';
-import { documentsAPI } from '#app/Documents/index.js';
-import { APIURL } from '#app/config.js';
-import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
+import api from 'app/utils/api';
+
+import { mockID } from 'shared/uniqueID.js';
+import { getStore } from 'shared/atomStore';
+import { documentsApi } from 'app/Documents';
+import { APIURL } from 'app/config.js';
+import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import { actions as formActions } from 'react-redux-form';
-import { actions as relationshipActions } from '#app/Relationships/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { deletedEntityAtom } from '#V2/atoms/index.js';
-import * as libraryActions from '../../../Library/actions/saveEntityWithFiles.js';
-import * as actions from '../documentActions.js';
-import * as types from '../actionTypes.js';
+import { actions as relationshipActions } from 'app/Relationships';
+import { RequestParams } from 'app/utils/RequestParams';
+import { deletedEntityAtom } from 'V2/atoms';
+import * as libraryActions from '../../../Library/actions/saveEntityWithFiles';
+import * as actions from '../documentActions';
+import * as types from '../actionTypes';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -134,31 +135,6 @@ describe('documentActions', () => {
         ]);
       });
     });
-
-    it('should add to empty toc when currentToc is undefined (new document)', () => {
-      spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
-      const reference = {
-        sourceDocument: '123',
-        sourceRange: {
-          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
-          text: 'Chapter 1',
-        },
-      };
-      const chapter1 = {
-        selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
-        label: 'Chapter 1',
-        indentation: 0,
-      };
-      const store = mockStore({
-        documentViewer: {
-          tocForm: [],
-        },
-      });
-
-      store.dispatch(actions.addToToc(reference, undefined));
-
-      expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [chapter1]);
-    });
   });
 
   describe('removeFromToc', () => {
@@ -197,7 +173,6 @@ describe('documentActions', () => {
 
   describe('indentTocElement', () => {
     it('should change the toc entry indentation', () => {
-      spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
       const chapter1 = {
         range: { start: 12, end: 23 },
         label: 'Chapter 1',
@@ -222,14 +197,9 @@ describe('documentActions', () => {
       });
 
       store.dispatch(actions.indentTocElement(chapter2, 1));
-      expect(store.getActions()[0].type).toBe('loadAction');
-      expect(formActions.load).toHaveBeenCalledWith(
-        'documentViewer.tocForm',
-        expect.arrayContaining([
-          expect.objectContaining({ _id: 1, indentation: 0 }),
-          expect.objectContaining({ _id: 2, indentation: 1 }),
-        ])
-      );
+      expect(store.getActions()[0].type).toBe('rrf/change');
+      expect(store.getActions()[0].model).toBe('documentViewer.tocForm');
+      expect(store.getActions()[0].value[1].indentation).toBe(1);
     });
   });
 
@@ -466,8 +436,7 @@ describe('documentActions', () => {
           },
         });
 
-        const originalPost = api.post;
-        jest.spyOn(api, 'post').mockImplementation((...args) => originalPost.apply(api, args));
+        spyOn(api, 'post').and.callThrough();
         store
           .dispatch(actions.saveToc(toc, fileId))
           .then(() => {
@@ -488,7 +457,7 @@ describe('documentActions', () => {
     describe('deleteDocument', () => {
       const atomStore = getStore();
       it('should delete the document and dispatch a notification on success', done => {
-        spyOn(documentsAPI, 'delete').and.callFake(async () => Promise.resolve('response'));
+        spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
         spyOn(atomStore, 'set');
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
@@ -507,7 +476,7 @@ describe('documentActions', () => {
           .dispatch(actions.deleteDocument(doc))
           .then(() => {
             expect(atomStore.set).toHaveBeenCalledWith(deletedEntityAtom, 'sharedId');
-            expect(documentsAPI.delete).toHaveBeenCalledWith(
+            expect(documentsApi.delete).toHaveBeenCalledWith(
               new RequestParams({ sharedId: 'sharedId' })
             );
             expect(store.getActions()).toEqual(expectedActions);

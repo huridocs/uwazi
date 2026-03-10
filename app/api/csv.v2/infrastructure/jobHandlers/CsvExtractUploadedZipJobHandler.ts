@@ -1,17 +1,13 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import {
-  HeartbeatCallback,
-  JobInfo,
-} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import {
   CsvExtractUploadedZipJob,
   ExtractionProgress,
-} from '../../application/jobs/CsvExtractUploadedZipJob.js';
-import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
+} from '../../application/jobs/CsvExtractUploadedZipJob';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -20,7 +16,6 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvExtractUploadedZipJob;
   sockets: V1WebSocketsWrapper;
-  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Params> {
@@ -38,7 +33,6 @@ export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Param
         userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
-            this.deps.v1Compat?.start(tenantName);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:start', {
               importId,
             });
@@ -67,7 +61,6 @@ export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Param
             });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
-            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:error', {
               importId,
               message: error.message,

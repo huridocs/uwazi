@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import * as actions from '#app/Pages/actions/actionTypes.js';
+import * as actions from 'app/Pages/actions/actionTypes';
 
 export default function pagesUI(state = {}, action = {}) {
   if (action.type === actions.SAVING_PAGE) {
@@ -12,5 +12,3 @@ export default function pagesUI(state = {}, action = {}) {
 
   return Immutable.fromJS(state);
 }
-
-export { pagesUI };

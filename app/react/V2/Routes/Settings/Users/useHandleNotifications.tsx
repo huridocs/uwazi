@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { useFetchers } from 'react-router';
 import { useSetAtom } from 'jotai';
-import last from 'lodash/last.js';
-
-import { Translate } from '#app/I18N/index.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
-import { FormIntent } from './types.js';
+import { last } from 'lodash';
+import { Translate } from 'app/I18N';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { notificationAtom } from 'app/V2/atoms';
+import { FormIntent } from './types';
 
 const useHandleNotifications = () => {
   const fetchers = useFetchers();

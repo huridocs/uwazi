@@ -1,5 +1,5 @@
 import path from 'path';
-import { config } from '#api/config.js';
+import { config } from 'api/config';
 import { spawn } from 'child-process-promise';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';

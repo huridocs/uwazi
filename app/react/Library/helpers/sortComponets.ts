@@ -1,8 +1,8 @@
-import { t } from '#app/I18N/index.js';
-import { ClientTemplateSchema } from '#app/istore.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
-import { IImmutable } from '#shared/types/Immutable.js';
+import { t } from 'app/I18N';
+import { ClientTemplateSchema } from 'app/istore';
+import { propertyTypes } from 'shared/propertyTypes';
+import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { IImmutable } from 'shared/types/Immutable';
 
 type SortType = {
   label: string;
@@ -82,14 +82,6 @@ const getCommonSorts = (search: SearchOptions) => [
       ]
     : []),
 ];
-
-export const selectedTemplatesCount = (
-  selected: IImmutable<string[]> | string[] | null | undefined
-): number => {
-  if (selected == null) return 0;
-  if ('count' in selected && typeof selected.count === 'function') return selected.count();
-  return Array.isArray(selected) ? selected.length : 0;
-};
 
 const filterTemplates = (
   templates: IImmutable<ClientTemplateSchema[]>,

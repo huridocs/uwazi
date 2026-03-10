@@ -34,8 +34,8 @@ import {
   WithoutId,
 } from 'mongodb';
 
-import { CollectionWrapper } from './CollectionWrapper.js';
-import { MongoTransactionManager } from './MongoTransactionManager.js';
+import { CollectionWrapper } from './CollectionWrapper';
+import { MongoTransactionManager } from './MongoTransactionManager';
 
 export class SessionScopedCollection<TSchema extends Document = Document>
   extends CollectionWrapper<TSchema>

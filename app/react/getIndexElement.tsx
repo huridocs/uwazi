@@ -1,93 +1,122 @@
-import { validateHomePageRoute } from './utils/routeHelpers.js';
-import { ClientSettings } from '#app/apiResponseTypes.js';
+import { ClientSettings } from 'app/apiResponseTypes';
+import React from 'react';
+import { Navigate } from 'react-router';
+import LibraryRoot from './Library/Library';
+import { LibraryCards } from './Library/LibraryCards';
+import { LibraryMap } from './Library/LibraryMap';
+import { LibraryTable } from './Library/LibraryTable';
+import { PageView } from './Pages/PageView';
+import { Login } from './Users/Login';
+import { validateHomePageRoute } from './utils/routeHelpers';
+import { ViewerRoute } from './Viewer/ViewerRoute';
 
-const ssrLog = (msg: string, data?: Record<string, unknown>) => {
-  if (process.env.DEBUG_SSR) {
-    const payload = data ? ` ${JSON.stringify(data)}` : '';
-    // eslint-disable-next-line no-console
-    console.log(`[SSR getIndexElement] ${msg}${payload}`);
+const deconstructSearchQuery = (query?: string) => {
+  if (!query) return '';
+  if (query.startsWith('?q=')) {
+    return decodeURI(query.substring(1).split('=')[1]);
+  }
+  return `(${query.substring(1)})`;
+};
+
+const getCustomLibraryPage = (customHomePage: string[]) => {
+  const [query] = customHomePage.filter(path => path.startsWith('?'));
+  const searchQuery = deconstructSearchQuery(query);
+  const queryString = query ? searchQuery : '';
+  if (customHomePage.includes('map')) {
+    return (
+      <LibraryRoot>
+        <LibraryMap params={{ q: queryString }} />
+      </LibraryRoot>
+    );
+  }
+
+  if (customHomePage.includes('table')) {
+    return (
+      <LibraryRoot>
+        <LibraryTable params={{ q: queryString }} />
+      </LibraryRoot>
+    );
+  }
+
+  return (
+    <LibraryRoot>
+      <LibraryCards params={{ q: queryString }} />
+    </LibraryRoot>
+  );
+};
+
+const getLibraryDefault = (
+  userId: string | undefined,
+  defaultLibraryView: string | undefined,
+  privateInstance: boolean | undefined
+) => {
+  if (privateInstance && !userId) {
+    return <Login />;
+  }
+
+  switch (defaultLibraryView) {
+    case 'table':
+      return (
+        <LibraryRoot>
+          <LibraryTable params={{ q: '(includeUnpublished:!t)' }} />
+        </LibraryRoot>
+      );
+
+    case 'map':
+      return (
+        <LibraryRoot>
+          <LibraryMap params={{ q: '(includeUnpublished:!t)' }} />
+        </LibraryRoot>
+      );
+
+    case 'cards':
+    default:
+      return (
+        <LibraryRoot>
+          <LibraryCards params={{ q: '(includeUnpublished:!t)' }} />
+        </LibraryRoot>
+      );
   }
 };
 
-export type IndexDescriptor =
-  | {
-      branch: 'libraryDefault';
-      defaultToLibrary: true;
-      libraryDefault: {
-        userId: string | undefined;
-        defaultLibraryView: string | undefined;
-        private: boolean | undefined;
-      };
-    }
-  | { branch: 'libraryCustom'; defaultToLibrary: true; libraryCustom: { customHomePage: string[] } }
-  | { branch: 'page'; defaultToLibrary: false; parameters: { sharedId: string }; pageId: string }
-  | { branch: 'entity'; defaultToLibrary: false; entityId: string }
-  | { branch: 'navigate'; defaultToLibrary: true; navigateTo: string };
-
-const getIndexDescriptor = (
-  settings: ClientSettings | undefined,
-  userId: string | undefined
-): IndexDescriptor & { parameters?: { sharedId?: string } } => {
-  ssrLog('getIndexElement called', {
-    home_page: settings?.home_page,
-    defaultLibraryView: settings?.defaultLibraryView,
-    private: settings?.private,
-  });
+// eslint-disable-next-line max-statements
+const getIndexElement = (settings: ClientSettings | undefined, userId: string | undefined) => {
   const customHomePage = settings?.home_page ? settings?.home_page.split('/').filter(v => v) : [];
   const isValidHomePage = validateHomePageRoute(settings?.home_page || '');
-  const defaultToLibrary = true;
+  let element = <Navigate to={customHomePage.join('/')} />;
+  let parameters;
+  let defaultToLibrary = true;
+  switch (true) {
+    case !isValidHomePage || customHomePage.length === 0:
+      element = getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
+      break;
 
-  if (!isValidHomePage || customHomePage.length === 0) {
-    ssrLog('branch: getLibraryDefault');
-    return {
-      branch: 'libraryDefault',
-      defaultToLibrary,
-      parameters: undefined,
-      libraryDefault: {
-        userId,
-        defaultLibraryView: settings?.defaultLibraryView,
-        private: settings?.private,
-      },
-    };
+    case isValidHomePage && customHomePage.includes('page'):
+      {
+        const pageId = customHomePage[customHomePage.indexOf('page') + 1];
+        element = <PageView params={{ sharedId: pageId }} />;
+        parameters = { sharedId: pageId };
+        defaultToLibrary = false;
+      }
+      break;
+
+    case isValidHomePage && customHomePage.includes('entity'):
+      {
+        const pageId = customHomePage[customHomePage.indexOf('entity') + 1];
+        element = <ViewerRoute params={{ sharedId: pageId }} />;
+        defaultToLibrary = false;
+      }
+      break;
+
+    case isValidHomePage && customHomePage.includes('library'):
+      element = getCustomLibraryPage(customHomePage);
+      break;
+
+    default:
+      break;
   }
 
-  if (customHomePage.includes('page')) {
-    const pageId = customHomePage[customHomePage.indexOf('page') + 1];
-    ssrLog('branch: page');
-    return {
-      branch: 'page',
-      defaultToLibrary: false,
-      parameters: { sharedId: pageId },
-      pageId,
-    };
-  }
-
-  if (customHomePage.includes('entity')) {
-    const entityId = customHomePage[customHomePage.indexOf('entity') + 1];
-    ssrLog('branch: entity');
-    return {
-      branch: 'entity',
-      defaultToLibrary: false,
-      entityId,
-    };
-  }
-
-  if (customHomePage.includes('library')) {
-    ssrLog('branch: getCustomLibraryPage');
-    return {
-      branch: 'libraryCustom',
-      defaultToLibrary,
-      parameters: undefined,
-      libraryCustom: { customHomePage },
-    };
-  }
-
-  return {
-    branch: 'navigate',
-    defaultToLibrary,
-    parameters: undefined,
-    navigateTo: customHomePage.join('/'),
-  };
+  return { element, parameters, defaultToLibrary };
 };
 
-export { getIndexDescriptor };
+export { getIndexElement };

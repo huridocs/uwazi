@@ -1,4 +1,4 @@
-import { actions } from '#app/BasicReducer/index.js';
+import { actions } from 'app/BasicReducer';
 
 import { Component } from 'react';
 import { connect } from 'react-redux';
@@ -71,5 +71,6 @@ Script.propTypes = {
   onError: PropTypes.func,
 };
 
-const ScriptConnected = connect()(Script);
-export { Script, ScriptConnected };
+const container = connect()(Script);
+
+export default container;

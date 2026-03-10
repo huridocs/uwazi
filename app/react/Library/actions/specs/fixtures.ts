@@ -1,6 +1,6 @@
-import { EntitySchema } from '#shared/types/entityType.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { EntitySchema } from 'shared/types/entityType';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 export const thesauri: ThesaurusSchema[] = [
   {

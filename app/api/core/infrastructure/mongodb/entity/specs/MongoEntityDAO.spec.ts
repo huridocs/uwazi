@@ -1,9 +1,9 @@
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DBFixture } from '#api/utils/testing_db.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoEntityDAO } from '../MongoEntityDAO.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DBFixture } from 'api/utils/testing_db';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoEntityDAO } from '../MongoEntityDAO';
 
 const factory = getFixturesFactory();
 

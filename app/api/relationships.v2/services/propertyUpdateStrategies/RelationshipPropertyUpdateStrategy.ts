@@ -1,4 +1,4 @@
-import { Template } from '#api/core/domain/template/Template.js';
+import { Template } from 'api/core/domain/template/Template';
 
 export interface RelationshipPropertyUpdateStrategy {
   update(candidateIds: string[]): Promise<void>;

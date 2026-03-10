@@ -1,4 +1,4 @@
-import { mimeTypeFromUrl } from '../extensionHelper.js';
+import { mimeTypeFromUrl } from '../extensionHelper';
 
 describe('mimeTypeFromUrl', () => {
   it('should return the correct mime type', () => {

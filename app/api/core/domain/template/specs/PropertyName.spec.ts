@@ -1,4 +1,4 @@
-import { PropertyName } from '../PropertyName.js';
+import { PropertyName } from '../PropertyName';
 
 describe('PropertyName', () => {
   describe('old name generation', () => {

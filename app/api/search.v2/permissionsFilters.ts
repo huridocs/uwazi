@@ -1,7 +1,7 @@
-import { SearchQuery } from '#shared/types/SearchQueryType.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { SearchQuery } from 'shared/types/SearchQueryType';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
-import { cleanUp } from './queryHelpers.js';
+import { cleanUp } from './queryHelpers';
 
 export const permissionsFilters = (query: SearchQuery) => {
   const user = permissionsContext.getUserInContext();

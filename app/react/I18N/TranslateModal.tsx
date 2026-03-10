@@ -2,20 +2,14 @@
 import React from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { Modal } from '#V2/Components/UI/index.js';
-import {
-  settingsAtom,
-  translationsAtom,
-  inlineEditAtom,
-  notificationAtom,
-} from '#V2/atoms/index.js';
-
-import { InputField } from '#V2/Components/Forms/index.js';
-import { Button } from '#V2/Components/UI/Button.js';
-import { postV2 } from '#V2/api/translations/index.js';
-import { TranslationValue } from '#V2/shared/types.js';
-import { t } from './translateFunction.js';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { Modal } from 'V2/Components/UI';
+import { settingsAtom, translationsAtom, inlineEditAtom, notificationAtom } from 'V2/atoms';
+import { InputField } from 'app/V2/Components/Forms';
+import { Button } from 'V2/Components/UI/Button';
+import { TranslationValue } from 'V2/shared/types';
+import { postV2 } from 'V2/api/translations';
+import { t } from './translateFunction';
 
 const TranslateModal = () => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);

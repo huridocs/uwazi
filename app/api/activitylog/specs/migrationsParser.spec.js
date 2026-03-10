@@ -1,4 +1,4 @@
-import { typeParsers } from '../migrationsParser.js';
+import { typeParsers } from '../migrationsParser';
 
 describe('migrationsParser', () => {
   it('should beautify an fieldParseError log', () => {

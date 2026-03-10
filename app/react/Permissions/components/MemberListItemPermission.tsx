@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-import { t } from '#app/I18N/index.js';
-import { MixedAccess } from '#shared/types/permissionSchema.js';
-import { PermissionType, AccessLevels } from '../../../shared/types/permissionSchema.js';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { t } from 'app/I18N';
+import { MixedAccess } from 'shared/types/permissionSchema';
+import { PermissionType, AccessLevels } from '../../../shared/types/permissionSchema';
 
 interface MemberListItemPermissionProps {
   value: MemberWithPermission;

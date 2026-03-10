@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { BaseDropdown } from './BaseDropdown.js';
+import { BaseDropdown } from './BaseDropdown';
 
 export interface DropdownItem {
   title: string;

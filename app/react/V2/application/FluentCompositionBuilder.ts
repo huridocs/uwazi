@@ -1,13 +1,13 @@
 import { IncomingHttpHeaders } from 'http';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { EntitySchema } from 'shared/types/entityType';
 import {
   BatchCompositionResult,
   CompositionOptions,
   CompositionResult,
   ProcessingContext,
-} from './services/processors/types.js';
-import { AdapterEntityProcessor } from './services/processors/AdapterEntityProcessor.js';
-import { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase.js';
+} from './services/processors/types';
+import { AdapterEntityProcessor } from './services/processors/AdapterEntityProcessor';
+import { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase';
 
 export class FluentCompositionBuilder {
   private options: CompositionOptions = {};

@@ -1,8 +1,8 @@
-import { EntityIcon } from './Entity.js';
-import { AccessGrant } from './EntityPermission.js';
-import { EntityTranslationProps } from './EntityTranslation.js';
+import { EntityIcon } from './Entity';
+import { AccessGrant } from './EntityPermission';
+import { EntityTranslationProps } from './EntityTranslation';
 
-/**s
+/**
  * Data Transfer Object representing an Entity.
  * This was created to represent an Entity as a simple key/value object.
  *

@@ -3,13 +3,13 @@ import { createReadStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { stat } from 'fs/promises';
 import * as os from 'os';
-import { legacyLogger } from '#api/log/index.js';
+import { legacyLogger } from 'api/log';
 import { spawn } from 'child-process-promise';
 import EventEmitter from 'events';
 import path from 'path';
-import { detectLanguage } from '#shared/detectLanguage.js';
-import { FileType } from '#shared/types/fileType.js';
-import { storage } from './storage.js';
+import { detectLanguage } from 'shared/detectLanguage';
+import { FileType } from 'shared/types/fileType';
+import { storage } from './storage';
 
 class PDF extends EventEmitter {
   private file: FileType & { destination?: string };

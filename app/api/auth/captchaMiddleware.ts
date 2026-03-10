@@ -1,6 +1,6 @@
-import type { Request, Response, NextFunction } from 'express';
-import { CaptchaModel } from './CaptchaModel.js';
-import { CaptchaValue } from '#shared/types/Captcha.js';
+import { Request, Response, NextFunction } from 'express';
+import { CaptchaModel } from './CaptchaModel';
+import { CaptchaValue } from '../../shared/types/Captcha';
 
 function getCaptchaValue(req: Request): CaptchaValue | null {
   if (req.body && req.body.captcha) {

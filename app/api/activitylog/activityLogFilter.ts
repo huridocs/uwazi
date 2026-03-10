@@ -1,11 +1,11 @@
-import isEmpty from 'lodash/isEmpty.js';
+import { isEmpty } from 'lodash';
 import { FilterQuery } from 'mongoose';
 import moment from 'moment';
-import { ActivityLogGetRequest } from '#shared/types/activityLogApiTypes.js';
-import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
-import { escapeEspecialChars } from '#shared/data_utils/stringUtils.js';
-import { ParsedActions } from './activitylogParser.js';
-import { EntryValue } from './activityLogBuilder.js';
+import { ActivityLogGetRequest } from 'shared/types/activityLogApiTypes';
+import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
+import { escapeEspecialChars } from 'shared/data_utils/stringUtils';
+import { ParsedActions } from './activitylogParser';
+import { EntryValue } from './activityLogBuilder';
 
 type ActivityLogQuery = Required<ActivityLogGetRequest>['query'];
 type ActivityLogQueryTime = Required<ActivityLogQuery>['time'];

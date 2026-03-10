@@ -1,11 +1,11 @@
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { LanguagesListSchema } from '#shared/types/commonTypes.js';
-import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { UseCase } from '#api/core/libs/UseCase.js';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
-import { EntityStatus } from '../domain/PXEntityStatusModel.js';
-import { PXEntityStatusesQueryService } from '../domain/PXEntityStatusesQueryService.js';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { UseCase } from 'api/core/libs/UseCase';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
+import { PXEntityStatusesQueryService } from '../domain/PXEntityStatusesQueryService';
 
 type Input = {
   extractorId: string;

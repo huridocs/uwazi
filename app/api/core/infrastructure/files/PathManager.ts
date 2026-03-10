@@ -1,7 +1,7 @@
-import { Tenant } from '#api/tenants/tenantContext.js';
+import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
-import { BaseFile } from '../../domain/files/BaseFile.js';
-import { FileType } from '../../domain/files/FileType.js';
+import { BaseFile } from '../../domain/files/BaseFile';
+import { FileType } from '../../domain/files/FileType';
 
 type PathManagerProps = {
   tenant: Tenant;

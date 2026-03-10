@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { ToggleButton, ToggleButtonProps } from '#V2/Components/UI/ToggleButton.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { ToggleButton, ToggleButtonProps } from 'V2/Components/UI/ToggleButton';
 
 const meta: Meta<typeof ToggleButton> = {
   title: 'Components/Buttons/ToggleButton',
   component: ToggleButton,
 };
-export default meta;
 
 type Story = StoryObj<typeof ToggleButton>;
 
@@ -35,3 +34,5 @@ const Basic: Story = {
 };
 
 export { Basic };
+
+export default meta;

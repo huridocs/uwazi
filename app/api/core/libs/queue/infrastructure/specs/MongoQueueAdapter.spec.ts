@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { createTestJob } from './fixtures.js';
-import { JobDBO } from '../MongoQueueAdapter.js';
+import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { createTestJob } from './fixtures';
+import { JobDBO } from '../MongoQueueAdapter';
 
 const OTHER_QUEUE_JOB = {
   _id: new ObjectId(),

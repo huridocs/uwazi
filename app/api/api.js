@@ -1,57 +1,50 @@
-export default async (app, server) => {
-  // Load TypeScript modules dynamically
-  const [
-    { default: activitylogMiddleware },
-    { default: CSRFMiddleware },
-    { default: languageMiddleware },
-  ] = await Promise.all([
-    import('./activitylog/activitylogMiddleware.js'),
-    import('./auth/CSRFMiddleware.js'),
-    import('./utils/languageMiddleware.js'),
-  ]);
+/* eslint-disable global-require */
+import activitylogMiddleware from './activitylog/activitylogMiddleware';
+import CSRFMiddleware from './auth/CSRFMiddleware';
+import languageMiddleware from './utils/languageMiddleware';
 
+export default (app, server) => {
   //common middlewares
   app.use(CSRFMiddleware);
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 
-  const { setupApiSockets } = await import('./socketio/setupSockets.js');
-  setupApiSockets(server, app);
+  require('./socketio/setupSockets').setupApiSockets(server, app);
 
-  (await import('./auth2fa/routes.js')).default(app);
-  (await import('./relationships/routes.js')).default(app);
-  (await import('./activitylog/routes.js')).default(app);
-  (await import('./users/routes.js')).default(app);
-  (await import('./core/infrastructure/express/template/routes.js')).default(app);
-  (await import('./search/deprecatedRoutes.js')).default(app);
-  (await import('./search/routes.js')).default(app);
-  (await import('./search.v2/routes.js')).searchRoutes(app);
-  (await import('./thesauri/routes.js')).default(app);
-  (await import('./relationtypes/routes.js')).default(app);
-  (await import('./documents/deprecatedRoutes.js')).default(app);
-  (await import('./documents/routes.js')).documentRoutes(app);
-  (await import('./contact/routes.js')).default(app);
-  (await import('./entities/routes.js')).default(app);
-  (await import('./entities.v2/routes/index.js')).entitiesRoutes(app);
-  (await import('./pages/routes.js')).default(app);
-  (await import('./files/jsRoutes.js')).default(app);
-  (await import('./files/routes.js')).default(app);
-  (await import('./files/exportRoutes.js')).default(app);
-  (await import('./files/ocrRoutes.js')).ocrRoutes(app);
-  (await import('./settings/routes.js')).default(app);
-  (await import('./i18n/routes.js')).default(app);
-  (await import('./i18n.v2/routes/index.js')).translationsRoutes(app);
-  (await import('./sync/routes.js')).default(app);
-  (await import('./tasks/routes.js')).default(app);
-  (await import('./usergroups/routes.js')).default(app);
-  (await import('./permissions/routes.js')).permissionRoutes(app);
-  (await import('./suggestions/routes.js')).suggestionsRoutes(app);
-  (await import('./suggestions/extractorsRoutes.js')).extractorsRoutes(app);
-  (await import('./preserve/routes.js')).PreserveRoutes(app);
-  (await import('./relationships.v2/routes/routes.js')).default(app);
-  (await import('./stats/routes.js')).default(app);
-  (await import('./testing_errors/routes.js')).default(app);
-  (await import('./paragraphExtraction/adapters/PXRoutes.js')).paragraphExtractionRoutes(app);
-  (await import('./csv.v2/infrastructure/http/routes.js')).csvImportRoutes(app);
-  (await import('./customUploads/infrastructure/http/routes.js')).customUploadsRoutes(app);
+  require('./auth2fa/routes').default(app);
+  require('./relationships/routes').default(app);
+  require('./activitylog/routes').default(app);
+  require('./users/routes').default(app);
+  require('./core/infrastructure/express/template/routes').default(app);
+  require('./search/deprecatedRoutes').default(app);
+  require('./search/routes').default(app);
+  require('./search.v2/routes').searchRoutes(app);
+  require('./thesauri/routes').default(app);
+  require('./relationtypes/routes').default(app);
+  require('./documents/deprecatedRoutes').default(app);
+  require('./documents/routes').documentRoutes(app);
+  require('./contact/routes').default(app);
+  require('./entities/routes').default(app);
+  require('./entities.v2/routes').entitiesRoutes(app);
+  require('./pages/routes').default(app);
+  require('./files/jsRoutes.js').default(app);
+  require('./files/routes').default(app);
+  require('./files/exportRoutes').default(app);
+  require('./files/ocrRoutes').ocrRoutes(app);
+  require('./settings/routes').default(app);
+  require('./i18n/routes').default(app);
+  require('./i18n.v2/routes').translationsRoutes(app);
+  require('./sync/routes').default(app);
+  require('./tasks/routes').default(app);
+  require('./usergroups/routes').default(app);
+  require('./permissions/routes').permissionRoutes(app);
+  require('./suggestions/routes').suggestionsRoutes(app);
+  require('./suggestions/extractorsRoutes').extractorsRoutes(app);
+  require('./preserve/routes').PreserveRoutes(app);
+  require('./relationships.v2/routes/routes').default(app);
+  require('./stats/routes').default(app);
+  require('./testing_errors/routes').default(app);
+  require('./paragraphExtraction/adapters/PXRoutes').paragraphExtractionRoutes(app);
+  require('./csv.v2/infrastructure/http/routes').csvImportRoutes(app);
+  require('./customUploads/infrastructure/http/routes').customUploadsRoutes(app);
 };

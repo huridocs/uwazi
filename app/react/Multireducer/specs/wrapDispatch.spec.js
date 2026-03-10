@@ -1,4 +1,4 @@
-import { wrapDispatch } from '../wrapDispatch.js';
+import wrapDispatch from '../wrapDispatch';
 
 describe('warpDispatch', () => {
   const reducerKey = 'customKey';

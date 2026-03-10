@@ -1,4 +1,4 @@
-import util from '../filterBaseProperties.js';
+import util from '../filterBaseProperties';
 
 describe('filterBaseProperties', () => {
   it('should only retrun entity base data (omitting attachments, toc, etc.)', () => {

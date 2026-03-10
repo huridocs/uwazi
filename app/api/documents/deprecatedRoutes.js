@@ -1,9 +1,9 @@
-import { objectIdSchema } from '#shared/types/commonSchemas.js';
-import { legacyLogger } from '#api/log/index.js';
-import { validation } from '../utils/index.js';
-import documents from './documents.js';
-import needsAuthorization from '../auth/authMiddleware.js';
-import templates from '../core/v1_layer/templates/index.js';
+import { objectIdSchema } from 'shared/types/commonSchemas';
+import { legacyLogger } from 'api/log';
+import { validation } from '../utils';
+import documents from './documents';
+import needsAuthorization from '../auth/authMiddleware';
+import templates from '../core/v1_layer/templates';
 
 export default app => {
   app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res, next) =>

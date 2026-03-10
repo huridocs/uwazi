@@ -1,4 +1,4 @@
-import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface ActivityLogEntryType {
   _id: ObjectIdSchema;

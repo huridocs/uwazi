@@ -1,16 +1,16 @@
-import { isSameDate } from '#shared/isSameDate.js';
-import { PropertySchema } from '#shared/types/commonTypes.js';
+import { isSameDate } from 'shared/isSameDate';
+import { PropertySchema } from 'shared/types/commonTypes';
 import {
   IXSuggestionStateType,
   IXSuggestionType,
   SuggestionOptionValue,
-} from './types/suggestionType.js';
-import { setsEqual } from './data_utils/setUtils.js';
+} from './types/suggestionType';
+import { setsEqual } from './data_utils/setUtils';
 import {
   propertyIsMultiselect,
   propertyIsRelationship,
   propertyIsSelectOrMultiSelect,
-} from './propertyTypes.js';
+} from './propertyTypes';
 
 const propertyIsMultiValued = (propertyType: PropertySchema['type']) =>
   propertyIsMultiselect(propertyType) || propertyIsRelationship(propertyType);

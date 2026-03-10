@@ -1,19 +1,19 @@
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 
-import { tenants } from '#api/tenants/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity.js';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
-import { PXExtractionServiceFactory } from './PXExtractionServiceFactory.js';
-import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
+import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
+import { EntitiesDataSourceFactory } from 'api/core/infrastructure/factories/EntitiesDataSourceFactory';
+import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {

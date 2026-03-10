@@ -1,12 +1,12 @@
-import type { Application } from 'express';
+import { Application } from 'express';
 import request from 'supertest';
-import { testingDB } from '#api/utils/testing_db.js';
+import { testingDB } from 'api/utils/testing_db';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { setUpApp } from 'api/utils/testingRoutes';
 
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { searchRoutes } from '../routes.js';
-import { setupTestingEnviroment } from './setupTestingEnvironment.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { searchRoutes } from '../routes';
+import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Metadata filters', () => {
   const factory = getFixturesFactory();

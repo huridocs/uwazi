@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 
-import testingDB, { fixturer } from '#api/utils/testing_db.js';
+import testingDB, { fixturer } from 'api/utils/testing_db';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -11,22 +11,22 @@ import {
   fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
-} from '#api/services/pdfsegmentation/specs/fixtures.js';
+} from 'api/services/pdfsegmentation/specs/fixtures';
 
-import { storage } from '#api/files/index.js';
+import { storage } from 'api/files';
 import path from 'path';
 
-import { tenants } from '#api/tenants/tenantContext.js';
-import { DB } from '#api/odm/index.js';
+import { tenants } from 'api/tenants/tenantContext';
+import { DB } from 'api/odm';
 import { Db } from 'mongodb';
-import request from '#shared/JSONRequest.js';
+import request from 'shared/JSONRequest';
 
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { config } from '#api/config.js';
-import { PDFSegmentation } from '../PDFSegmentation.js';
-import { SegmentationModel } from '../segmentationModel.js';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
+import { config } from 'api/config';
+import { PDFSegmentation } from '../PDFSegmentation';
+import { SegmentationModel } from '../segmentationModel';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 

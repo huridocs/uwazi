@@ -11,7 +11,7 @@ import {
   Thesaurus,
   ThesaurusValueBase,
   Translation,
-} from './types.js';
+} from './types';
 
 let writesOccured = false;
 

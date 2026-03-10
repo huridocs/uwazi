@@ -7,27 +7,27 @@ import {
   LanguageISO6391,
   ObjectIdSchema,
   PropertyTypeSchema,
-} from '#shared/types/commonTypes.js';
-import { filesModel } from '#api/files/filesModel.js';
-import { SegmentationType } from '#shared/types/segmentationType.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import ixmodels from '#api/services/informationextraction/ixmodels.js';
-import { FileType } from '#shared/types/fileType.js';
-import templatesModel from '#api/core/v1_layer/templates/templates.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
-import { IXModelType } from '#shared/types/IXModelType.js';
-import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
-import { IXExtractorType } from '#shared/types/extractorType.js';
+} from 'shared/types/commonTypes';
+import { filesModel } from 'api/files/filesModel';
+import { SegmentationType } from 'shared/types/segmentationType';
+import entitiesModel from 'api/entities/entitiesModel';
+import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import ixmodels from 'api/services/informationextraction/ixmodels';
+import { FileType } from 'shared/types/fileType';
+import templatesModel from 'api/core/v1_layer/templates/templates';
+import { propertyTypes } from 'shared/propertyTypes';
+import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { IXModelType } from 'shared/types/IXModelType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
+import { PipelineBuilder } from 'api/suggestions/queryBuilder';
+import { IXExtractorType } from 'shared/types/extractorType';
 import { ObjectId } from 'mongodb';
-import { Suggestions } from '#api/suggestions/suggestions.js';
-import { Extractors } from './ixextractors.js';
-import { IXServices } from './IXServices.js';
-import { deriveTrainingPropertyValue } from './propertyValue.js';
+import { Suggestions } from 'api/suggestions/suggestions';
+import { Extractors } from './ixextractors';
+import { IXServices } from './IXServices';
+import { deriveTrainingPropertyValue } from './propertyValue';
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;

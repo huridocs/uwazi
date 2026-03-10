@@ -1,27 +1,14 @@
 import yauzl from 'yauzl';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
-import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 
 type NormalizeParams = {
   importId: string;
   destination: string;
   filename: string;
   onFileProgress: (info: { importId: string; processedFiles: number }) => void;
-};
-
-type NormalizedSourceFile = {
-  filename: string;
-  sizeBytes: number;
-  compressedSizeBytes?: number;
-};
-
-type NormalizeResult = {
-  sourceType: 'zip' | 'csv';
-  extractedFilesCount: number;
-  totalFilesInZip?: number;
-  files: NormalizedSourceFile[];
 };
 
 export class CsvImportFileNormalizer {
@@ -35,17 +22,13 @@ export class CsvImportFileNormalizer {
     callback(info);
   }
 
-  async normalize(params: NormalizeParams): Promise<NormalizeResult> {
+  async normalize(params: NormalizeParams) {
     const lower = params.filename.toLowerCase();
     if (lower.endsWith('.zip')) {
-      return this.extractZip(params);
+      await this.extractZip(params);
+      return;
     }
     await this.copyCsv(params.destination, params.filename);
-    return {
-      sourceType: 'csv',
-      extractedFilesCount: 1,
-      files: [{ filename: params.filename, sizeBytes: 0 }],
-    };
   }
 
   private async copyCsv(destination: string, filename: string) {
@@ -57,7 +40,7 @@ export class CsvImportFileNormalizer {
     await this.deps.fileStorage.storeContent(source, `${destination}/extracted/import.csv`);
   }
 
-  private async extractZip(params: NormalizeParams): Promise<NormalizeResult> {
+  private async extractZip(params: NormalizeParams) {
     const { importId, destination, filename, onFileProgress } = params;
     const zipFileContents = this.deps.fileStorage.getFile({
       type: 'customPath',
@@ -69,7 +52,6 @@ export class CsvImportFileNormalizer {
 
     let processedFiles = 0;
     let hasImportCsv = false;
-    const files: NormalizedSourceFile[] = [];
 
     await new Promise<void>((resolve, reject) => {
       yauzl.open(disk.path, { lazyEntries: true }, (err, zip) => {
@@ -86,11 +68,6 @@ export class CsvImportFileNormalizer {
           if (entry.fileName === 'import.csv') {
             hasImportCsv = true;
           }
-          files.push({
-            filename: entry.fileName,
-            sizeBytes: entry.uncompressedSize,
-            compressedSizeBytes: entry.compressedSize,
-          });
           zip.openReadStream(entry, async (streamErr, readStream) => {
             if (streamErr || !readStream) {
               reject(streamErr || new Error('Failed to read zip entry'));
@@ -124,14 +101,5 @@ export class CsvImportFileNormalizer {
     if (!hasImportCsv) {
       throw new NonRetryableJobError(new Error('import.csv not found at zip root'));
     }
-
-    return {
-      sourceType: 'zip',
-      extractedFilesCount: processedFiles,
-      totalFilesInZip: files.length,
-      files,
-    };
   }
 }
-
-export type { NormalizeResult, NormalizedSourceFile };

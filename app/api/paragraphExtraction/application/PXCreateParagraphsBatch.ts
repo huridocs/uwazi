@@ -1,20 +1,20 @@
 import { ObjectId } from 'mongodb';
 
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { EntitiesService } from '#api/core/application/EntitiesService.js';
-import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { UseCase } from '#api/core/libs/UseCase.js';
-import relationshipsDS from '#api/relationships/index.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { EntitiesService } from 'api/core/application/EntitiesService';
+import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
+import { UseCase } from 'api/core/libs/UseCase';
+import relationshipsDS from 'api/relationships';
+import { tenants } from 'api/tenants/tenantContext';
+import { EntitySchema } from 'shared/types/entityType';
 
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { Entity } from '#api/core/domain/entity/Entity.js';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
-import { ParagraphOutput } from '../domain/PXExtractionService.js';
-import { PXExtractor } from '../domain/PXExtractor.js';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { Entity } from 'api/core/domain/entity/Entity';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { ParagraphOutput } from '../domain/PXExtractionService';
+import { PXExtractor } from '../domain/PXExtractor';
 
 type PXCreateParagraphsBatchInput = {
   sourceEntity: Entity;

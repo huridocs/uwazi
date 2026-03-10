@@ -1,7 +1,7 @@
-import { api } from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 
-const EntitiesAPI = {
+export default {
   coerceValue(requestParams) {
     const url = 'entities/coerce_value';
     return api.post(url, requestParams).then(response => response.json);
@@ -61,4 +61,3 @@ const EntitiesAPI = {
     return api.post('entities/bulkdelete', requestParams).then(response => response.json);
   },
 };
-export { EntitiesAPI };

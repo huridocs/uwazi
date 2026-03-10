@@ -4,11 +4,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { act } from 'react-dom/test-utils';
-import { LocalForm } from '#app/Forms/Form.js';
-import { Captcha } from '#app/ReactReduxForms/index.js';
-import { api } from '#app/utils/api.js';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
-import { ContactFormView as ContactForm } from '../ContactForm.js';
+import { LocalForm } from 'app/Forms/Form';
+import { Captcha } from 'app/ReactReduxForms';
+import api from 'app/utils/api';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
+import { ContactForm } from '../ContactForm.js';
 
 describe('ContactForm', () => {
   let props;

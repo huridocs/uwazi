@@ -1,4 +1,4 @@
-import { ClientTemplateSchema } from '#app/istore.js';
+import { ClientTemplateSchema } from 'app/istore';
 
 const templates: ClientTemplateSchema[] = [
   {

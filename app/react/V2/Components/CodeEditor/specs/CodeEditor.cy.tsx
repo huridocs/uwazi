@@ -2,36 +2,11 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/CodeEditor.stories.js';
+import * as stories from 'app/stories/CodeEditor.stories';
 
 const { HTMLEditor, JSEditor } = composeStories(stories);
 
-class NoopWorker extends EventTarget implements Worker {
-  onerror: AbstractWorker['onerror'] = null;
-
-  onmessage: Worker['onmessage'] = null;
-
-  onmessageerror: Worker['onmessageerror'] = null;
-
-  constructor(_scriptURL: string | URL, _options?: WorkerOptions) {
-    super();
-  }
-
-  postMessage(
-    _message: unknown,
-    _transferOrOptions?: Transferable[] | StructuredSerializeOptions
-  ) {}
-
-  terminate() {}
-}
-
 describe('Code editor', () => {
-  beforeEach(() => {
-    cy.window().then(win => {
-      win.Worker = NoopWorker;
-    });
-  });
-
   it('should render the editor with existing HTML and the correct layout properties', () => {
     mount(<HTMLEditor />);
     cy.contains('<h1>Main Heading</h1>').should('exist');

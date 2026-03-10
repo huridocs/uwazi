@@ -1,19 +1,19 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import entities from '#api/entities/entities.js';
-import v1EntitiesModel from '#api/entities/entitiesModel.js';
-import { search } from '#api/search/index.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import entities from 'api/entities/entities';
+import v1EntitiesModel from 'api/entities/entitiesModel';
+import { search } from 'api/search';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { Db, ObjectId } from 'mongodb';
-import { MetadataSchema } from '#shared/types/commonTypes.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { EntitiesDataSource } from '../contracts/EntitiesDataSource.js';
-import { Entity, EntityMetadata, MetadataValue } from '../model/Entity.js';
-import { EntityMappers } from './EntityMapper.js';
-import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes.js';
+import { MetadataSchema } from 'shared/types/commonTypes';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
+import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
+import { EntityMappers } from './EntityMapper';
+import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>

@@ -1,5 +1,5 @@
-import * as actions from '#app/ContextMenu/actions/contextMenuActions.js';
-import * as types from '#app/ContextMenu/actions/actionTypes.js';
+import * as actions from 'app/ContextMenu/actions/contextMenuActions';
+import * as types from 'app/ContextMenu/actions/actionTypes';
 
 describe('contextMenuActions', () => {
   describe('openMenu()', () => {

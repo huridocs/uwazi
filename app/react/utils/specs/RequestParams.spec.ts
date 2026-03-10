@@ -1,6 +1,6 @@
 /** @format */
 
-import { RequestParams } from '../RequestParams.js';
+import { RequestParams } from '../RequestParams';
 
 describe('RequestParams', () => {
   it('should have data and headers accessible', () => {

@@ -5,10 +5,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { AttachmentForm } from '#app/Attachments/components/AttachmentForm.js';
-import { Icon } from '#app/UI/index.js';
+import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
-import { Attachment, mapStateToProps } from '../Attachment.js';
+import { Icon } from 'UI';
+
+import { Attachment, mapStateToProps } from '../Attachment';
 
 describe('Attachment', () => {
   let component;
@@ -24,14 +25,14 @@ describe('Attachment', () => {
       storeKey: 'storeKey',
       model: 'model',
       parentSharedId: 'parentSharedId',
-      deleteAttachment: jest.fn(),
-      renameAttachment: jest.fn(),
-      loadForm: jest.fn(),
-      submitForm: jest.fn(),
-      resetForm: jest.fn(),
+      deleteAttachment: jasmine.createSpy('deleteAttachment'),
+      renameAttachment: jasmine.createSpy('renameAttachment'),
+      loadForm: jasmine.createSpy('loadForm'),
+      submitForm: jasmine.createSpy('submitForm'),
+      resetForm: jasmine.createSpy('resetForm'),
       isSourceDocument: false,
       entity: { sharedID: 'parentSharedId' },
-      mainContext: { confirm: jest.fn() },
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
   });
 
@@ -132,8 +133,8 @@ describe('Attachment', () => {
 
       deleteButton.simulate('click');
       expect(props.mainContext.confirm).toHaveBeenCalled();
-      const confirmArg = props.mainContext.confirm.mock.calls[0][0];
-      confirmArg.accept();
+
+      props.mainContext.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteAttachment).toHaveBeenCalledWith('parentSharedId', file, 'storeKey');
     });
 

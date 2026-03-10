@@ -1,7 +1,7 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Checkbox } from '#V2/Components/Forms/index.js';
-import { t, Translate } from '#app/I18N/index.js';
+import { Checkbox } from 'V2/Components/Forms';
+import { t, Translate } from 'app/I18N';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 

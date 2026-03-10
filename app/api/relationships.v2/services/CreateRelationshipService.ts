@@ -1,19 +1,19 @@
-import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
-import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
-import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import {
   EntityPointer,
   Relationship,
   TextReferencePointer,
   Selection,
-} from '../model/Relationship.js';
-import { DenormalizationService } from './DenormalizationService.js';
+} from '../model/Relationship';
+import { DenormalizationService } from './DenormalizationService';
 
 interface ReferencePointerData {
   type: 'text';

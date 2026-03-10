@@ -1,22 +1,22 @@
 /* eslint-disable max-statements */
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { elasticClient } from '#api/search/elastic.js';
-import db from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { elasticClient } from 'api/search/elastic';
+import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { TemplateSchema } from 'shared/types/templateType';
 import {
   TemplateUpdatedData,
   TemplateUpdatedEvent,
-} from '../../../domain/template/events/TemplateUpdatedEvent.js';
-import templates from '../templates.js';
+} from '../../../domain/template/events/TemplateUpdatedEvent';
+import templates from '../templates';
 import fixtures, {
   factory,
   swapTemplate,
   templateToBeEditedId,
   thesauriId1,
-} from './fixtures/fixtures.js';
+} from './fixtures/fixtures';
 
 async function updateTemplate(template: TemplateSchema, language = 'en') {
   return templates.save(template, language, true, false);

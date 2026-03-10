@@ -1,26 +1,17 @@
-import { APIURL } from '#app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { api } from '#app/utils/api.js';
-import { SearchAPI } from '../SearchAPI.js';
+import { RequestParams } from 'app/utils/RequestParams';
+import api from 'app/utils/api';
+import SearchApi from '../SearchAPI';
 
 describe('SearchAPI', () => {
   const searchResponse = [{ documents: 'search' }];
   const filteredSearchResult = [{ documents: 'Alfred' }];
   const listResponse = [{ documents: 'list' }];
 
-  const filteredSearchMatcher = url =>
-    url.includes('search') &&
-    !url.includes('search/list') &&
-    !url.includes('count_by_template') &&
-    !url.includes('unpublished') &&
-    url.includes('searchTerm=Batman') &&
-    url.includes('joker=true');
-
   beforeEach(() => {
     backend.restore();
     backend
-      .get(filteredSearchMatcher, { body: JSON.stringify(filteredSearchResult) })
       .get(`${APIURL}search?include=%5B%22permissions%22%5D`, {
         body: JSON.stringify(searchResponse),
       })
@@ -31,7 +22,10 @@ describe('SearchAPI', () => {
         body: JSON.stringify({ rows: listResponse }),
       })
       .get(`${APIURL}search/unpublished`, { body: JSON.stringify({ rows: 'uploads' }) })
-      .get(`${APIURL}search/count_by_template?templateId=templateId`, { body: JSON.stringify(1) });
+      .get(`${APIURL}search/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
+      .get(`${APIURL}search?searchTerm=Batman&joker=true&include=%5B%22permissions%22%5D`, {
+        body: JSON.stringify(filteredSearchResult),
+      });
   });
 
   afterEach(() => backend.restore());
@@ -39,7 +33,7 @@ describe('SearchAPI', () => {
   describe('list()', () => {
     it('should request documents list', done => {
       const requestParams = new RequestParams({ keys: ['1', '2'] });
-      SearchAPI.list(requestParams)
+      SearchApi.list(requestParams)
         .then(response => {
           expect(response).toEqual(listResponse);
           done();
@@ -51,7 +45,7 @@ describe('SearchAPI', () => {
   describe('countByTemplate()', () => {
     it('should count_by_template', done => {
       const requestParams = new RequestParams({ templateId: 'templateId' });
-      SearchAPI.countByTemplate(requestParams)
+      SearchApi.countByTemplate(requestParams)
         .then(response => {
           expect(response).toEqual(1);
           done();
@@ -63,7 +57,7 @@ describe('SearchAPI', () => {
   describe('searchSnippets()', () => {
     it('should search snippets for a certain document', done => {
       const requestParams = new RequestParams({ searchTerm: 'term', id: 'id' });
-      SearchAPI.searchSnippets(requestParams)
+      SearchApi.searchSnippets(requestParams)
         .then(response => {
           expect(response).toEqual(searchResponse);
           done();
@@ -74,7 +68,7 @@ describe('SearchAPI', () => {
 
   describe('search()', () => {
     it('should search documents', done => {
-      SearchAPI.search()
+      SearchApi.search()
         .then(response => {
           expect(response).toEqual(searchResponse);
           done();
@@ -83,26 +77,24 @@ describe('SearchAPI', () => {
     });
 
     it('should add permissions to the includes', async () => {
-      const originalGet = api.get;
       spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: {} }));
-      SearchAPI.search();
+      SearchApi.search();
       expect(api.get).toHaveBeenCalledWith(
         'search',
         new RequestParams({ include: ['permissions'] })
       );
 
-      SearchAPI.search(new RequestParams({ include: ['include'] }));
+      SearchApi.search(new RequestParams({ include: ['include'] }));
       expect(api.get).toHaveBeenCalledWith(
         'search',
         new RequestParams({ include: ['include', 'permissions'] })
       );
-      api.get = originalGet;
     });
 
     describe('when passing filters', () => {
       it('should search for it', done => {
         const requestParams = new RequestParams({ searchTerm: 'Batman', joker: true });
-        SearchAPI.search(requestParams)
+        SearchApi.search(requestParams)
           .then(response => {
             expect(response).toEqual(filteredSearchResult);
             done();

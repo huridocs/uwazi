@@ -4,13 +4,13 @@
 import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import Immutable from 'immutable';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { fromJS, fromJS as immutable } from 'immutable';
 
-import { IStore } from '#app/istore.js';
+import { IStore } from 'app/istore';
 import { actions } from 'react-redux-form';
-import { IImmutable } from '#shared/types/Immutable.js';
-import { SortButtons, SortButtonsOwnProps, mapStateToProps } from '../SortButtons.js';
+import { IImmutable } from 'shared/types/Immutable';
+import { SortButtons, SortButtonsOwnProps, mapStateToProps } from '../SortButtons';
 
 describe('SortButtons', () => {
   let props: SortButtonsOwnProps;
@@ -37,7 +37,7 @@ describe('SortButtons', () => {
   beforeEach(() => {
     state = {
       ...defaultState,
-      templates: Immutable.fromJS([
+      templates: immutable([
         {
           _id: 'id',
           properties: [
@@ -76,7 +76,7 @@ describe('SortButtons', () => {
     props = {
       sortCallback: jasmine.createSpy('sortCallback'),
       stateProperty: 'library.search',
-      selectedTemplates: Immutable.fromJS([]),
+      selectedTemplates: fromJS([]),
     };
   });
 
@@ -87,7 +87,7 @@ describe('SortButtons', () => {
     });
     describe('when multiple options have the same name', () => {
       it('should not duplicate the entry', () => {
-        state.templates = Immutable.fromJS([
+        state.templates = immutable([
           {
             _id: 'id',
             properties: [
@@ -257,22 +257,22 @@ describe('SortButtons', () => {
     let templates: IImmutable<any>[];
 
     it('should send all templates from state', () => {
-      const stateToMap = { templates: Immutable.fromJS(['item']), library: { search: {} } };
+      const stateToMap = { templates: immutable(['item']), library: { search: {} } };
       const _props = { storeKey: 'library' };
       // @ts-ignore
       expect(mapStateToProps(stateToMap, _props).templates.get(0)).toBe('item');
     });
     it('should only send selectedTemplates if array passed in ownProps', () => {
-      templates = Immutable.fromJS([{ _id: 'a' }, { _id: 'b' }]);
+      templates = immutable([{ _id: 'a' }, { _id: 'b' }]);
       const stateToMap = { templates, library: { search: {} } };
-      const _props = { selectedTemplates: Immutable.fromJS(['b']), storeKey: 'library' };
+      const _props = { selectedTemplates: immutable(['b']), storeKey: 'library' };
       // @ts-ignore
       expect(mapStateToProps(stateToMap, _props).templates.getIn([0, '_id'])).toBe('b');
     });
 
     describe('search', () => {
       beforeEach(() => {
-        templates = Immutable.fromJS([{ _id: 'a' }, { _id: 'b' }]);
+        templates = immutable([{ _id: 'a' }, { _id: 'b' }]);
       });
 
       it('should be selected from the state according to the store key', () => {

@@ -1,12 +1,12 @@
-import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
-import { Entity } from '#api/core/domain/entity/Entity.js';
-import relationships from '#api/relationships/index.js';
-import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper.js';
-import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
-import { TemplatesDataSourceFactory } from '../factories/TemplatesDataSourceFactory.js';
-import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
+import { Listener } from 'api/core/libs/eventEmitter/Listener';
+import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
+import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
+import { Entity } from 'api/core/domain/entity/Entity';
+import relationships from 'api/relationships';
+import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper';
+import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper';
+import { TemplatesDataSourceFactory } from '../factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
 
 class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdatedEvent> {
   static eventName = EntityUpdatedEvent.name;

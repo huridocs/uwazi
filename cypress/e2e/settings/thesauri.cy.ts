@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers/login.js';
-import { changeLanguage } from '../helpers/index.js';
-import { clickOnCreateEntity } from '../helpers/entities.js';
+import { clearCookiesAndLogin } from '../helpers/login';
+import { changeLanguage } from '../helpers';
+import { clickOnCreateEntity } from '../helpers/entities';
 
 describe('Thesauri configuration', () => {
   before(() => {

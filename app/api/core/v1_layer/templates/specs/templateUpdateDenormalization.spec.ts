@@ -1,19 +1,19 @@
 /* eslint-disable max-statements */
-import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import entities from '#api/entities/entities.js';
-import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
-import * as setupSockets from '#api/socketio/setupSockets.js';
-import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import * as idGenerator from '#shared/IDGenerator.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import templates from '../templates.js';
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
+import entities from 'api/entities/entities.js';
+import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
+import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
+import * as setupSockets from 'api/socketio/setupSockets';
+import { elasticTesting } from 'api/utils/elastic_testing';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
+import * as idGenerator from 'shared/IDGenerator';
+import { propertyTypes } from 'shared/propertyTypes';
+import { EntitySchema } from 'shared/types/entityType';
+import templates from '../templates';
 
 const f = getFixturesFactory();
 

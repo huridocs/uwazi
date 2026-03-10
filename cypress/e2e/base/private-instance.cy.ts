@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Private instance', () => {
   before(() => {

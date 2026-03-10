@@ -1,7 +1,7 @@
 /* eslint-disable import/no-mutable-exports, global-require, prefer-destructuring */
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
-import { isClient } from '#app/utils/index.js';
+import { isClient } from 'app/utils';
 
 let PDFJS = {};
 let pdfjsLib = {};
@@ -25,5 +25,5 @@ const pdfjsLoader = async () => {
 
 await pdfjsLoader();
 
-const PDFJSExport = { ...PDFJS, ...pdfjsLib };
-export { PDFJSExport as PDFJS, EventBus };
+export default { ...PDFJS, ...pdfjsLib };
+export { EventBus };

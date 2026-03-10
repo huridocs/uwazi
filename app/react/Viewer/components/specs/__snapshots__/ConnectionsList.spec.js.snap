@@ -1,5 +1,116 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ConnectionsList should merge and render references in order with the proper document titles 1`] = `
+<div
+  className="item-group"
+>
+  <Connect(Component)
+    key="ref4"
+    reference={
+      Object {
+        "_id": "ref4",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "1",
+              "top": 0,
+              "width": 42,
+            },
+          ],
+          "text": "",
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+  <Connect(Component)
+    key="ref2"
+    reference={
+      Object {
+        "_id": "ref2",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "1",
+              "top": 5,
+              "width": 42,
+            },
+          ],
+          "text": "",
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+  <Connect(Component)
+    key="ref3"
+    reference={
+      Object {
+        "_id": "ref3",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "2",
+              "top": 23,
+              "width": 42,
+            },
+          ],
+          "text": "",
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+  <Connect(Component)
+    key="ref1"
+    reference={
+      Object {
+        "_id": "ref1",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "2",
+              "top": 30,
+              "width": 42,
+            },
+          ],
+          "text": "",
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+</div>
+`;
+
 exports[`ConnectionsList when there are no references should render a blank state message 1`] = `
 <div
   className="blank-state"

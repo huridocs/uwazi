@@ -3,14 +3,14 @@
  */
 import React from 'react';
 import { act, fireEvent, screen } from '@testing-library/react';
-import * as IDGenerator from '#shared/IDGenerator.js';
-import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
-import * as uploadActions from '#app/Uploads/actions/uploadsActions.js';
-import * as libraryActions from '#app/Library/actions/libraryActions.js';
-import { TestAtomStoreProvider } from '#V2/testing/index.js';
-import { templatesAtom } from '#V2/atoms/index.js';
-import { PDFUploadButton } from '../PDFUploadButton.js';
-import { template1, template2, template3 } from './fixtures/templates.js';
+import * as IDGenerator from 'shared/IDGenerator';
+import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
+import * as uploadActions from 'app/Uploads/actions/uploadsActions';
+import * as libraryActions from 'app/Library/actions/libraryActions';
+import { TestAtomStoreProvider } from 'V2/testing';
+import { templatesAtom } from 'V2/atoms';
+import { PDFUploadButton } from '../PDFUploadButton';
+import { template1, template2, template3 } from './fixtures/templates';
 
 describe('PDFUploadButton', () => {
   const files = [new File([], 'file1 with some name.pdf'), new File([], 'file2-pdf.pdf')];
@@ -52,7 +52,6 @@ describe('PDFUploadButton', () => {
   });
 
   it('should use generated id when applicable', async () => {
-    (uploadActions.createDocument as jasmine.Spy).calls.reset();
     render([template2, template3]);
     const fileInput = screen.getByLabelText('Upload PDF(s) to create');
 

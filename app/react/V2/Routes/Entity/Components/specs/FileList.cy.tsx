@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '../../../../../../../app/react/stories/FileList.stories.js';
+import * as stories from '../../../../../../../app/react/stories/FileList.stories';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
 
 const { Empty, WithFiles } = composeStories(stories);

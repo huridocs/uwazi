@@ -1,23 +1,23 @@
 /* eslint-disable max-statements */
-import { UseCase } from '#api/core/libs/UseCase.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { storage } from '#api/files/index.js';
+import { UseCase } from 'api/core/libs/UseCase';
+import { emitToTenant } from 'api/socketio/setupSockets';
+import { storage } from 'api/files';
 import urljoin from 'url-join';
-import request from '#shared/JSONRequest.js';
-import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
-import { EnforcedWithId } from '#api/odm/index.js';
-import { IXExtractorType } from '#shared/types/extractorType.js';
-import { Suggestions } from '#api/suggestions/suggestions.js';
+import request from 'shared/JSONRequest';
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
+import { EnforcedWithId } from 'api/odm';
+import { IXExtractorType } from 'shared/types/extractorType';
+import { Suggestions } from 'api/suggestions/suggestions';
 import {
   FileWithAggregation,
   NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
-} from './ixMaterials.js';
-import { getPdfTrainingProcess } from './FetchMaterialsForTraining.js';
-import { IXWebSocketEvents } from './WebSocketEvents.js';
-import { CommonMaterialsData, MaterialsData } from './InformationExtraction.js';
-import { IXTaskService } from './TaskService.js';
-import ixmodels from './ixmodels.js';
+} from './ixMaterials';
+import { getPdfTrainingProcess } from './FetchMaterialsForTraining';
+import { IXWebSocketEvents } from './WebSocketEvents';
+import { CommonMaterialsData, MaterialsData } from './InformationExtraction';
+import { IXTaskService } from './TaskService';
+import ixmodels from './ixmodels';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;

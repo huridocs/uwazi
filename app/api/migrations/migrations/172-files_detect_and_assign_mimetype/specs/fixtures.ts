@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
-import { FileType, Fixture } from '../types.js';
-import { generateFileName } from '../fileUtils.js';
+import { FileType, Fixture } from '../types';
+import { generateFileName } from '../fileUtils';
 
 const primaryDocument: FileType = {
   _id: new ObjectId(),

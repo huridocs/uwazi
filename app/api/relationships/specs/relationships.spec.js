@@ -1,14 +1,14 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 /* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 
-import entities from '#api/entities/entities.js';
-import db from '#api/utils/testing_db.js';
+import entities from 'api/entities/entities';
+import db from 'api/utils/testing_db';
 
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { search } from '../../search.js';
-import relationships from '../relationships.js';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { search } from '../../search';
+import relationships from '../relationships';
 import fixtures, {
   connectionID1,
   connectionID2,
@@ -32,7 +32,7 @@ import fixtures, {
   relation1,
   relation2,
   template,
-} from './fixtures.js';
+} from './fixtures';
 
 describe('relationships', () => {
   beforeEach(async () => {

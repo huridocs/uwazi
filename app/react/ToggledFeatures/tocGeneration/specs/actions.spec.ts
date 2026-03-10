@@ -1,14 +1,14 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 import backend from 'fetch-mock';
-import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
-import { actions as relationshipActions } from '#app/Relationships/index.js';
-import { APIURL } from '#app/config.js';
+import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import { actions as relationshipActions } from 'app/Relationships';
+import { APIURL } from 'app/config';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
-import { mockID } from '#shared/uniqueID.js';
-import { ClientEntitySchema } from '#app/istore.js';
-import { tocGenerationActions } from '../actions.js';
+import { mockID } from 'shared/uniqueID.js';
+import { ClientEntitySchema } from 'app/istore';
+import { tocGenerationActions } from '../actions';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -30,9 +30,9 @@ describe('reviewToc', () => {
       body: JSON.stringify({ _id: fileId, generatedToc: false }),
     });
 
-    jest
-      .spyOn(relationshipActions, 'reloadRelationships')
-      .mockReturnValue(async () => Promise.resolve());
+    spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
+      type: 'reloadRelationships',
+    });
 
     const doc = createDoc(true, fileId);
     const updatedEntity = createDoc(false, fileId);
@@ -57,7 +57,7 @@ describe('reviewToc', () => {
       },
     });
 
-    jest.spyOn(api, 'post');
+    spyOn(api, 'post').and.callThrough();
     store
       //fot this to be properly typed, redux, redux-thunk need to be updated (and probably others),
       //producing hundreds of type errors

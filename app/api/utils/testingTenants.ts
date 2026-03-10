@@ -1,5 +1,5 @@
-import { config } from '#api/config.js';
-import { Tenant, tenants } from '#api/tenants/tenantContext.js';
+import { config } from 'api/config';
+import { Tenant, tenants } from 'api/tenants/tenantContext';
 
 const originalCurrentFN = tenants.current.bind(tenants);
 

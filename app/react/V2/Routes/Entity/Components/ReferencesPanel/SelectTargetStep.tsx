@@ -1,14 +1,15 @@
 import React from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { t, Translate } from '#app/I18N/index.js';
-import { ClientRelationshipType } from '#app/apiResponseTypes.js';
-import { Entity } from '#V2/domain/index.js';
-import { FileType } from '#shared/types/fileType.js';
-import { Card } from '#V2/Components/UI/index.js';
-import { InputField, Checkbox } from '#V2/Components/Forms/index.js';
-import { BlankState } from '../BlankState.js';
-import { EntitySearchResult } from './EntitySearchResult.js';
-import { ReferenceMode } from './useCreateReferenceState.js';
+import { t, Translate } from 'app/I18N';
+import { ClientRelationshipType } from 'app/apiResponseTypes';
+import { Entity } from 'V2/domain';
+import { FileType } from 'shared/types/fileType';
+import { Card } from 'V2/Components/UI';
+import { Checkbox } from 'V2/Components/Forms/Checkbox';
+import { InputField } from 'V2/Components/Forms';
+import { BlankState } from '../BlankState';
+import { EntitySearchResult } from './EntitySearchResult';
+import type { ReferenceMode } from './useCreateReferenceState';
 
 type SelectTargetStepProps = {
   relationshipTypes: ClientRelationshipType[];

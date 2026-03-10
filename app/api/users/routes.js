@@ -1,8 +1,8 @@
-import { parseQuery, validation } from '#api/utils/index.js';
-import { userSchema } from '#shared/types/userSchema.js';
-import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
-import users from './users.js';
-import { PUBLIC_USER_ID } from './publicUser.js';
+import { parseQuery, validation } from 'api/utils';
+import { userSchema } from 'shared/types/userSchema';
+import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
+import users from './users';
+import { PUBLIC_USER_ID } from './publicUser';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
 export default app => {

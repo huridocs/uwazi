@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import Immutable from 'immutable';
+import { Map } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Icon } from '#app/UI/index.js';
-import { Item } from '#app/Layout/index.js';
-import { Collapsible } from '#app/App/Collapsible.js';
-import { StickyHeader } from '#app/App/StickyHeader.js';
-import { RelationshipMetadataConnected as RelationshipMetadata } from '#app/Relationships/components/RelationshipMetadata.js';
-import { LoadMoreRelationshipsButton } from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
-import { IStore } from '#app/istore.js';
-import * as actions from '../../Relationships/actions/actions.js';
+import { Icon } from 'app/UI';
+import { Item } from 'app/Layout';
+import { Collapsible } from 'app/App/Collapsible';
+import { StickyHeader } from 'app/App/StickyHeader';
+import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
+import LoadMoreRelationshipsButton from 'app/Relationships/components/LoadMoreRelationshipsButton';
+import { IStore } from 'app/istore';
+import * as actions from '../../Relationships/actions/actions';
 
 interface LibraryViewRelationshipsProps {
   expanded: boolean;
@@ -47,7 +47,7 @@ const createRightRelationshipGroups = (
   const { relationTypes, selectConnection, parentEntity } = props;
   return (
     <div className="sidepanel-relationship-right">
-      {rightRelationships.map((relationship: Immutable.Map<any, any>, index: number) => {
+      {rightRelationships.map((relationship: Map<any, any>, index: number) => {
         let header;
         const relationshipTemplateId = relationship.get('template');
         const relationType = relationTypes.find(r => r._id === relationshipTemplateId);

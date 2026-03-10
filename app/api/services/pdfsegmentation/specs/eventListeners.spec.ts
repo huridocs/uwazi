@@ -1,9 +1,9 @@
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
-import db from '#api/utils/testing_db.js';
-import { registerEventListeners } from '../eventListeners.js';
-import { SegmentationModel } from '../segmentationModel.js';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
+import db from 'api/utils/testing_db';
+import { registerEventListeners } from '../eventListeners';
+import { SegmentationModel } from '../segmentationModel';
 
 beforeAll(async () => {
   registerEventListeners(applicationEventsBus);

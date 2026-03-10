@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { ResetPasswordComponent as ResetPassword } from '../ResetPassword.js';
+import { ResetPasswordComponent as ResetPassword } from '../ResetPassword';
 
 describe('ResetPassword', () => {
   let component;

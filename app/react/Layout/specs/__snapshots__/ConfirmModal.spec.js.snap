@@ -22,7 +22,7 @@ exports[`ConfirmModal should render a confirm modal 1`] = `
   <Footer>
     <button
       className="btn btn-default cancel-button"
-      onClick={[MockFunction]}
+      onClick={[Function]}
       type="button"
     >
       <Translate>
@@ -31,7 +31,7 @@ exports[`ConfirmModal should render a confirm modal 1`] = `
     </button>
     <button
       className="btn confirm-button btn-danger"
-      onClick={[MockFunction]}
+      onClick={[Function]}
       type="button"
     >
       <Translate>

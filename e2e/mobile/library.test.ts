@@ -1,11 +1,11 @@
 /*global page*/
-import { adminLogin, logout } from '../helpers/login.js';
-import proxyMock from '../helpers/proxyMock.js';
-import disableTransitions from '../helpers/disableTransitions.js';
-import { scrollTo } from '../helpers/formActions.js';
-import insertFixtures from '../helpers/insertFixtures.js';
+import { adminLogin, logout } from '../helpers/login';
+import proxyMock from '../helpers/proxyMock';
+import disableTransitions from '../helpers/disableTransitions';
+import { scrollTo } from '../helpers/formActions';
+import insertFixtures from '../helpers/insertFixtures';
 
-import { prepareToMatchImageSnapshot, testSelectorShot } from '../helpers/regression.js';
+import { prepareToMatchImageSnapshot, testSelectorShot } from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
 

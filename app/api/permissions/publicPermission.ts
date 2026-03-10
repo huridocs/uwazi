@@ -1,5 +1,5 @@
-import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
-import { PermissionType } from '../../shared/types/permissionSchema.js';
+import { MemberWithPermission } from '../../shared/types/entityPermisions';
+import { PermissionType } from '../../shared/types/permissionSchema';
 
 export const PUBLIC_PERMISSION: MemberWithPermission = {
   refId: 'public',

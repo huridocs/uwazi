@@ -1,5 +1,5 @@
-export { ErrorBoundary } from './ErrorBoundary.js';
-export { ErrorFallback } from './ErrorFallback.js';
-export { GeneralError } from './GeneralError.js';
-export { RouteErrorBoundary } from './RouteErrorBoundary.js';
-export type { ErrorBoundaryProps } from './ErrorBoundary.js';
+export { ErrorBoundary } from './ErrorBoundary';
+export { ErrorFallback } from './ErrorFallback';
+export { GeneralError } from './GeneralError';
+export { RouteErrorBoundary } from './RouteErrorBoundary';
+export type { ErrorBoundaryProps } from './ErrorBoundary';

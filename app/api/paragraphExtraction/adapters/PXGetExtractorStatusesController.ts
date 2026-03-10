@@ -2,10 +2,10 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from '#api/common.v2/infrastructure/AbstractController.js';
+} from 'api/common.v2/infrastructure/AbstractController';
 
-import { EntityStatus } from '../domain/PXEntityStatusModel.js';
-import { PXExtractorsStatusesFactory } from '../infrastructure/PXExtractorsStatusesFactory.js';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
+import { PXExtractorsStatusesFactory } from '../infrastructure/PXExtractorsStatusesFactory';
 
 const RequestSchema = z.object({
   id: z.string({ message: 'You should provide the id of the extractor' }),

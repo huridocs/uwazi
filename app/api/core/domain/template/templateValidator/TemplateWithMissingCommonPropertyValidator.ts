@@ -1,6 +1,6 @@
-import { Template } from '#api/core/domain/template/Template.js';
-import { ValidationStep } from '../../Validator.js';
-import { TemplateWithMissingCommonProperty } from '../errors.js';
+import { Template } from 'api/core/domain/template/Template';
+import { ValidationStep } from '../../Validator';
+import { TemplateWithMissingCommonProperty } from '../errors';
 
 class TemplateWithMissingCommonPropertyValidator implements ValidationStep<Template> {
   private readonly commonPropertiesDiscriminators = ['title', 'creationDate', 'editDate'];

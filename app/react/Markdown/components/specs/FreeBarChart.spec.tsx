@@ -1,16 +1,16 @@
 /**
+ * @format
  * @jest-environment jsdom
  */
 
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import {
-  FreeBarChart,
+import FreeBarChart, {
   FreeBarChartProps,
   CustomTooltip,
   CustomTooltipProps,
-} from '#app/Markdown/components/FreeBarChart.js';
+} from '../FreeBarChart';
 
 describe('FreeBarChart', () => {
   let component: any;

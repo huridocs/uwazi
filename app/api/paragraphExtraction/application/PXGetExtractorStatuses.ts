@@ -1,14 +1,14 @@
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
-import { UseCase } from '#api/core/libs/UseCase.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { UseCase } from 'api/core/libs/UseCase';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 
 import {
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
   PXExtractorsQueryService,
-} from '../domain/PXExtractorsQueryService.js';
+} from '../domain/PXExtractorsQueryService';
 
 type PXGetExtractorStatusesOutput = Omit<GetExtractorStatusesOutput, 'rows'> & {
   rows: (GetExtractorStatusesOutput['rows'][0] & {
@@ -23,10 +23,9 @@ type Dependencies = {
   filesDS: FilesDataSource;
 };
 
-class PXGetExtractorStatuses implements UseCase<
-  GetExtractorStatusesInput,
-  PXGetExtractorStatusesOutput
-> {
+class PXGetExtractorStatuses
+  implements UseCase<GetExtractorStatusesInput, PXGetExtractorStatusesOutput>
+{
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: GetExtractorStatusesInput): Promise<PXGetExtractorStatusesOutput> {

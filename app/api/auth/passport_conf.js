@@ -1,8 +1,8 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-import users from '#api/users/users.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { appContext } from '#api/utils/AppContext.js';
+import users from 'api/users/users';
+import { tenants } from 'api/tenants/tenantContext';
+import { appContext } from 'api/utils/AppContext';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
 

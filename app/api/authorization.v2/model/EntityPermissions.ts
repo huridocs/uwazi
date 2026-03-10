@@ -1,4 +1,4 @@
-import { User } from '#api/users.v2/model/User.js';
+import { User } from 'api/users.v2/model/User';
 
 interface Entry {
   refId: string;

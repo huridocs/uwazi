@@ -1,4 +1,4 @@
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 type CreateInput = {
   entitySharedId: string;

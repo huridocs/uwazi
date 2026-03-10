@@ -1,17 +1,17 @@
 import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { getStore } from '#shared/atomStore/index.js';
-import { isClient } from '#app/utils/index.js';
-import { localeAtom } from '#app/V2/atoms/index.js';
-import { getPagePlaintext } from '#V2/api/files/index.js';
-import { snippets } from '#V2/api/search/index.js';
-import { SnippetsSearchResponse } from '#V2/api/types.js';
-import { getEntityCompositionUseCase } from '#V2/application/container/singletons.js';
-import { fullDetailOptions } from '#V2/application/optionsPresets.js';
-import { entityLoaderCache } from './EntityLoaderCache.js';
-import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
-import { LoaderResponse } from './types.js';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { getStore } from 'shared/atomStore';
+import { isClient } from 'app/utils';
+import { localeAtom } from 'V2/atoms';
+import { getPagePlaintext } from 'V2/api/files';
+import { snippets } from 'V2/api/search';
+import { SnippetsSearchResponse } from 'V2/api/types';
+import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
+import { fullDetailOptions } from 'V2/application/optionsPresets';
+import { entityLoaderCache } from './EntityLoaderCache';
+import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components';
+import { LoaderResponse } from './types';
 
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

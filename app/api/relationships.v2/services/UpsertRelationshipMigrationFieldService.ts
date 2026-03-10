@@ -1,9 +1,9 @@
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource.js';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
   RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
-} from '../model/RelationshipMigrationField.js';
+} from '../model/RelationshipMigrationField';
 
 class UpsertRelationshipMigrationFieldService {
   private transactionManager: TransactionManager;

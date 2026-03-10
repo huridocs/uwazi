@@ -1,20 +1,20 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
-import { files, storage } from '#api/files/index.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import settings from '#api/settings/settings.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { files, storage } from 'api/files';
+import { tenants } from 'api/tenants/tenantContext';
+import settings from 'api/settings/settings';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Readable } from 'stream';
-import request from '#shared/JSONRequest.js';
-import * as sockets from '#api/socketio/setupSockets.js';
-import * as handleError from '#api/utils/handleError.js';
-import { getOcrStatus, OcrManager } from '../OcrManager.js';
-import { OcrModel, OcrStatus } from '../ocrModel.js';
-import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager.js';
-import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker.js';
-import { fixtures, fixturesFactory } from './fixtures/fixtures.js';
-import { cleanupRecordsOfFiles } from '../ocrRecords.js';
+import request from 'shared/JSONRequest';
+import * as sockets from 'api/socketio/setupSockets';
+import * as handleError from 'api/utils/handleError';
+import { getOcrStatus, OcrManager } from '../OcrManager';
+import { OcrModel, OcrStatus } from '../ocrModel';
+import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
+import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
+import { fixtures, fixturesFactory } from './fixtures/fixtures';
+import { cleanupRecordsOfFiles } from '../ocrRecords';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 

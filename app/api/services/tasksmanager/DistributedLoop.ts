@@ -1,6 +1,6 @@
 import Redis from 'redis';
 import Redlock from 'redlock';
-import { handleError } from '#api/utils/handleError.js';
+import { handleError } from 'api/utils/handleError';
 
 export class DistributedLoop {
   private lockName: string;

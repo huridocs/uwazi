@@ -1,19 +1,19 @@
 /* eslint-disable max-lines */
-import entitiesModel from '#api/entities/entitiesModel.js';
-import { filesModel } from '#api/files/filesModel.js';
-import { DataType, models, WithId } from '#api/odm/index.js';
-import { settingsModel } from '#api/settings/settingsModel.js';
-import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
-import { UpdateLog } from '#api/updatelogs/index.js';
-import { ensure } from '#shared/tsUtils.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { FileType } from '#shared/types/fileType.js';
+import entitiesModel from 'api/entities/entitiesModel';
+import { filesModel } from 'api/files/filesModel';
+import { DataType, models, WithId } from 'api/odm';
+import { settingsModel } from 'api/settings/settingsModel';
+import templatesModel from 'api/core/v1_layer/templates/templatesModel';
+import { UpdateLog } from 'api/updatelogs';
+import { ensure } from 'shared/tsUtils';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
 import {
   Settings,
   SettingsSyncRelationtypesSchema,
   SettingsSyncTemplateSchema,
-} from '#shared/types/settingsType.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
+} from 'shared/types/settingsType';
+import { TemplateSchema } from 'shared/types/templateType';
 import sift from 'sift';
 
 const noDataFound = 'NO_DATA_FOUND';

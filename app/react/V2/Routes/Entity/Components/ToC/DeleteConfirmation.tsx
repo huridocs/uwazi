@@ -1,6 +1,6 @@
 import React from 'react';
 import { Popover } from '@headlessui/react';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 
 type DeleteConfirmationProps = {
   onConfirm: () => void;

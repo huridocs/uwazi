@@ -1,17 +1,17 @@
 /**
  * @jest-environment jsdom
  */
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { CreateConnectionPanel } from '#app/Connections/index.js';
-import { ContextMenu } from '#app/ContextMenu/index.js';
-import { ShowIf } from '#app/App/ShowIf.js';
-import { ConnectedViewer } from '../Viewer.js';
-import { SourceDocument } from '../SourceDocument.js';
-import { TargetDocument } from '../TargetDocument.js';
-import * as routeActions from '../../actions/routeActions.js';
+import { CreateConnectionPanel } from 'app/Connections';
+import ContextMenu from 'app/ContextMenu';
+import ShowIf from 'app/App/ShowIf';
+import { ConnectedViewer } from '../Viewer';
+import SourceDocument from '../SourceDocument';
+import TargetDocument from '../TargetDocument';
+import * as routeActions from '../../actions/routeActions';
 
 describe('Viewer', () => {
   let component;
@@ -20,7 +20,7 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({
+      doc: fromJS({
         _id: 'id',
         sharedId: 'sharedId',
         documents: [{ language: 'eng' }],
@@ -30,7 +30,7 @@ describe('Viewer', () => {
       addReference: () => {},
       loadTargetDocument: () => {},
       location: { query: {} },
-      templates: Immutable.fromJS([]),
+      templates: fromJS([]),
       locale: 'es',
       sidepanelTab: 'metadata',
     };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { SidePanel } from '#app/Layout/SidePanel.js';
+import SidePanel from 'app/Layout/SidePanel';
 
 describe('SidePanel', () => {
   let component;

@@ -1,9 +1,8 @@
-import * as actions from './actions.js';
-import { NeedAuthorization } from './components/NeedAuthorization.js';
+import * as actions from './actions';
+import NeedAuthorization from './components/NeedAuthorization';
 
-const Auth = {
+export default {
   actions,
 };
 
-export default Auth;
 export { NeedAuthorization };

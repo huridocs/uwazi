@@ -1,9 +1,9 @@
-import { Property } from '#api/core/domain/template/Property.js';
-import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { CreationDateProperty } from '../CreationDateProperty.js';
-import { ModifiedDateProperty } from '../ModifiedDateProperty.js';
-import { TitleProperty } from '../TitleProperty.js';
+import { Property } from 'api/core/domain/template/Property';
+import { CommonProperty } from 'api/core/domain/template/CommonProperty';
+import { Template } from 'api/core/domain/template/Template';
+import { CreationDateProperty } from '../CreationDateProperty';
+import { ModifiedDateProperty } from '../ModifiedDateProperty';
+import { TitleProperty } from '../TitleProperty';
 
 class TemplateBuilder {
   private _id: string = 'template-id-builder';

@@ -8,7 +8,7 @@ import {
   FormatterFunction,
   formatDocuments,
   formatAttachments,
-} from '../typeFormatters.js';
+} from '../typeFormatters';
 
 let formatFn: any;
 let unixFn: any;

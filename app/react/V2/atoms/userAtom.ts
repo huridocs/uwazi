@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { ClientUserSchema } from '#app/apiResponseTypes.js';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 
 const userAtom = atom({} as ClientUserSchema | undefined);
 

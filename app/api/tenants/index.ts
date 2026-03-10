@@ -1,1 +1,1 @@
-export { tenants } from './tenantContext.js';
+export { tenants } from './tenantContext';

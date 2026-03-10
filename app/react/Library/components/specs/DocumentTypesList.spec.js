@@ -2,9 +2,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { DocumentTypesList } from '../DocumentTypesList.js';
+import { DocumentTypesList } from '../DocumentTypesList';
 
-jest.mock('#app/I18N', () => ({
+jest.mock('app/I18N', () => ({
   t: (_context, key) => key,
   Translate: ({ children }) => children,
 }));

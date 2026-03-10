@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { SearchResults } from '../csvExporter.js';
+import { SearchResults } from '../csvExporter';
 
 export const templates: any = {
   '58ad7d240d44252fee4e61fd': {

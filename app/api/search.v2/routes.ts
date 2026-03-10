@@ -1,14 +1,14 @@
-import type { Application, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 
-import { elastic } from '#api/search/elastic.js';
-import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';
-import { SearchQuerySchema } from '#shared/types/SearchQuerySchema.js';
-import { SearchQuery, Page } from '#shared/types/SearchQueryType.js';
+import { elastic } from 'api/search/elastic';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
+import { SearchQuery, Page } from 'shared/types/SearchQueryType';
 
-import { mapResults } from '#api/search.v2/searchResponse.js';
+import { mapResults } from 'api/search.v2/searchResponse';
 import qs from 'qs';
-import { buildQuery } from './buildQuery.js';
-import { tenants } from '#api/tenants/index.js';
+import { buildQuery } from './buildQuery';
+import { tenants } from 'api/tenants';
 
 interface UwaziResponse {
   data: any;

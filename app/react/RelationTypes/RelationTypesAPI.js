@@ -1,6 +1,6 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 
-const relationTypesApi = {
+export default {
   get(request) {
     return api.get('relationtypes', request).then(response => response.json.rows);
   },
@@ -13,6 +13,3 @@ const relationTypesApi = {
     return api.delete('relationtypes', request).then(response => response.json);
   },
 };
-
-export default relationTypesApi;
-export { relationTypesApi as api };

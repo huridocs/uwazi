@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryTableComponent } from '#app/Library/LibraryTable.js';
-import { RouteHandler } from '#app/App/RouteHandler.js';
-import { LibraryDocumentsList as DocumentsList } from '#app/Library/components/DocumentsList.js';
+import { LibraryTableComponent } from 'app/Library/LibraryTable';
+import RouteHandler from 'app/App/RouteHandler';
+import DocumentsList from 'app/Library/components/DocumentsList';
 
-jest.mock('#app/appRoutes');
+jest.mock('app/appRoutes');
 
 describe('LibraryTable', () => {
   let component;

@@ -1,6 +1,6 @@
-import { ExtractParagraphInput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
+import { ExtractParagraphInput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
-import { ExtractionDTO } from './types.js';
+import { ExtractionDTO } from './types';
 
 class PXExtractionMapper {
   static toDto(input: ExtractParagraphInput): ExtractionDTO {

@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import cloneDeep from 'lodash/cloneDeep.js';
+import _ from 'lodash';
 
 class ArraysError extends Error {}
 
@@ -7,7 +7,7 @@ class Arrays<T> {
   arr: { [key: string]: T[] };
 
   constructor(values?: { [key: string]: T[] }) {
-    this.arr = values ? cloneDeep(values) : {};
+    this.arr = values ? _.cloneDeep(values) : {};
   }
 
   push(key: string, value: T): void {

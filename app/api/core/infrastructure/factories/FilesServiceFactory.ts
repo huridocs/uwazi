@@ -1,16 +1,16 @@
-import { FilesService, FilesServiceDeps } from '#api/core/application/FilesService.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultDispatcher, NoOpDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { tenants } from '#api/tenants/index.js';
-import { FileContentsIO } from '../files/FileContentIO.js';
-import { PathManager } from '../files/PathManager.js';
-import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { PDFService } from '../services/PDFService.js';
-import { IdGeneratorFactory } from './IdGeneratorFactory.js';
+import { FilesService, FilesServiceDeps } from 'api/core/application/FilesService';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
+import { DefaultDispatcher, NoOpDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { tenants } from 'api/tenants';
+import { FileContentsIO } from '../files/FileContentIO';
+import { PathManager } from '../files/PathManager';
+import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { PDFService } from '../services/PDFService';
+import { IdGeneratorFactory } from './IdGeneratorFactory';
 
 class FilesServiceFactory {
   static default(

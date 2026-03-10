@@ -7,8 +7,8 @@ import Immutable from 'immutable';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
-import { IStore } from '#app/istore.js';
-import { PageReferences, groupByRectangle } from '../PageReferences.js';
+import { IStore } from 'app/istore';
+import { PageReferences, groupByRectangle } from '../PageReferences';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 

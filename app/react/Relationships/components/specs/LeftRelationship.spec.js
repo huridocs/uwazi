@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
-import { Doc } from '#app/Library/components/Doc.js';
-import DropdownList from 'react-widgets/lib/DropdownList.js';
+import { fromJS } from 'immutable';
+import Doc from 'app/Library/components/Doc';
+import DropdownList from 'react-widgets/lib/DropdownList';
 
-import { LeftRelationship } from '../LeftRelationship.js';
-import { HubRelationshipMetadata } from '../HubRelationshipMetadata.js';
+import { LeftRelationship } from '../LeftRelationship';
+import HubRelationshipMetadata from '../HubRelationshipMetadata';
 
 describe('RelationshipsGraphEdit', () => {
   let component;
@@ -43,8 +43,8 @@ describe('RelationshipsGraphEdit', () => {
       index: 0,
       search: { sort: 'creationDate', order: 'desc', treatAs: 'number' },
       relationTypes: [{ _id: '123', name: 'Friend' }],
-      parentEntity: Immutable.fromJS({ sharedId: 'sharedId1' }),
-      hub: Immutable.fromJS(hub),
+      parentEntity: fromJS({ sharedId: 'sharedId1' }),
+      hub: fromJS(hub),
       editing: false,
       updateLeftRelationshipType: jasmine.createSpy('updateLeftRelationshipType'),
       toggelRemoveLeftRelationship: jasmine.createSpy('toggelRemoveLeftRelationship'),
@@ -60,9 +60,9 @@ describe('RelationshipsGraphEdit', () => {
     beforeEach(render);
 
     it('should render the relationship', () => {
-      expect(component.find(Doc).props().doc).toEqual(Immutable.fromJS(props.parentEntity));
+      expect(component.find(Doc).props().doc).toEqual(fromJS(props.parentEntity));
       expect(component.find(HubRelationshipMetadata).props().relationship).toEqual(
-        Immutable.fromJS(hub.leftRelationship)
+        fromJS(hub.leftRelationship)
       );
     });
   });
@@ -92,7 +92,7 @@ describe('RelationshipsGraphEdit', () => {
   describe('when relationship is text range reference', () => {
     it('should render the Doc with the target reference', () => {
       hub.leftRelationship.range = { start: 100, end: 200 };
-      props.hub = Immutable.fromJS(hub);
+      props.hub = fromJS(hub);
       render();
       expect(component).toMatchSnapshot();
     });

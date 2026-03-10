@@ -1,7 +1,7 @@
 // eslint-disable-next-line node/no-restricted-import
 import { unlink } from 'fs/promises';
 import path from 'path';
-import { config } from '#api/config.js';
+import { config } from 'api/config';
 
 /* eslint-disable no-await-in-loop */
 export default {

@@ -2,21 +2,21 @@
 import qs from 'qs';
 import rison from '@huridocs/rison';
 import { actions as formActions } from 'react-redux-form';
-import { t } from '#app/I18N/index.js';
-import { store } from '#app/store.js';
-import * as types from '#app/Library/actions/actionTypes.js';
-import { actions } from '#app/BasicReducer/index.js';
-import { documentsAPI } from '#app/Documents/index.js';
-import { api as entitiesAPI } from '#app/Entities/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { SearchAPI as searchAPI } from '#app/Search/SearchAPI.js';
-import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
-import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
-import { toUrlParams } from '#shared/JSONRequest.js';
-import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions.js';
-import { filterToQuery } from '../helpers/publishedStatusFilter.js';
-import { saveEntityWithFiles } from './saveEntityWithFiles.js';
+import { t } from 'app/I18N';
+import { store } from 'app/store';
+import * as types from 'app/Library/actions/actionTypes';
+import { actions } from 'app/BasicReducer';
+import { documentsApi } from 'app/Documents';
+import { api as entitiesAPI } from 'app/Entities';
+import { notificationActions } from 'app/Notifications';
+import { RequestParams } from 'app/utils/RequestParams';
+import searchAPI from 'app/Search/SearchAPI';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import { toUrlParams } from 'shared/JSONRequest';
+import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
+import { filterToQuery } from '../helpers/publishedStatusFilter';
+import { saveEntityWithFiles } from './saveEntityWithFiles';
 
 function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -308,7 +308,7 @@ function searchSnippets(searchString, sharedId, storeKey) {
 
 function saveDocument(doc, formKey) {
   return async dispatch => {
-    const updatedDoc = await documentsAPI.save(new RequestParams(doc));
+    const updatedDoc = await documentsApi.save(new RequestParams(doc));
     dispatch(notificationActions.notify(t('System', 'Entity updated', null, false), 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
@@ -380,7 +380,7 @@ function removeDocuments(docs) {
 
 function deleteDocument(doc) {
   return async dispatch => {
-    await documentsAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     await dispatch(unselectAllDocuments());
     dispatch(removeDocument(doc));

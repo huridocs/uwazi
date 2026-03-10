@@ -2,25 +2,22 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { DocumentSidePanel, TocForm as tocFormComponent } from '#app/Documents/index.js';
-import { actions as actionCreators } from '#app/BasicReducer/index.js';
-import { actions } from '#app/Metadata/index.js';
-import {
-  actions as connectionsActions,
-  uiActions as connectionsUiActions,
-} from '#app/Connections/index.js';
-import { deleteDocument } from '#app/Viewer/actions/documentActions.js';
-import modals from '#app/Modals/index.js';
+import { DocumentSidePanel, TocForm as tocFormComponent } from 'app/Documents';
+import { actions as actionCreators } from 'app/BasicReducer';
+import { actions } from 'app/Metadata';
+import { actions as connectionsActions, uiActions as connectionsUiActions } from 'app/Connections';
+import { deleteDocument } from 'app/Viewer/actions/documentActions';
+import modals from 'app/Modals';
 
-import { closePanel } from '../actions/uiActions.js';
+import { closePanel } from '../actions/uiActions';
 import {
   saveToc,
   editToc,
   leaveEditMode,
   removeFromToc,
   indentTocElement,
-} from '../actions/documentActions.js';
-import { DocumentForm } from '../containers/DocumentForm.js';
+} from '../actions/documentActions';
+import { DocumentForm } from '../containers/DocumentForm';
 
 export const mapStateToProps = state => {
   const { documentViewer } = state;
@@ -77,5 +74,4 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const ViewMetadataPanel = connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
-export { ViewMetadataPanel };
+export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);

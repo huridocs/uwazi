@@ -3,30 +3,24 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { PropertyValueSchema } from '#shared/types/commonTypes.js';
-import { Translate } from '#app/I18N/index.js';
-import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
-import {
-  Button,
-  Sidepanel,
-  ToggleButton,
-  VerticalDrawer,
-  Truncate,
-} from '#V2/Components/UI/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { Checkbox } from '#V2/Components/Forms/index.js';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { PropertyValueSchema } from 'shared/types/commonTypes';
+import { Translate } from 'app/I18N';
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
+import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
+import { notificationAtom } from 'V2/atoms';
+import { Checkbox } from 'V2/Components/Forms';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '../../helpers/index.js';
-import { SidepanelForms } from './SidepanelForms.js';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms/index.js';
-import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
-import { SidepanelProps } from './types.js';
+} from '../../helpers';
+import { SidepanelForms } from './SidepanelForms';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
+import { SidepanelProps } from './types';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('../TextProperty')).TextProperty);

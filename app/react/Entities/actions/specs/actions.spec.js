@@ -1,12 +1,12 @@
-import { getStore } from '#shared/atomStore/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { EntitiesAPI as api } from '#app/Entities/EntitiesAPI.js';
-import { actions as relationshipActions } from '#app/Relationships/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { deletedEntityAtom } from '#V2/atoms.js';
+import { getStore } from 'shared/atomStore';
+import { notificationActions } from 'app/Notifications';
+import api from 'app/Entities/EntitiesAPI';
+import { actions as relationshipActions } from 'app/Relationships';
+import { RequestParams } from 'app/utils/RequestParams';
+import { deletedEntityAtom } from 'V2/atoms';
 
-import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles.js';
-import * as actions from '../actions.js';
+import * as saveEntityWithFiles from 'app/Library/actions/saveEntityWithFiles';
+import * as actions from '../actions';
 
 describe('Entities actions', () => {
   const atomStore = getStore();

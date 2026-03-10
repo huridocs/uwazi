@@ -1,5 +1,5 @@
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { FileBuilder } from './FileBuilder.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { FileBuilder } from './FileBuilder';
 
 const f = getFixturesFactory();
 

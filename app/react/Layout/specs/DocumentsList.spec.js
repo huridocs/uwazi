@@ -1,22 +1,22 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 
-import { Doc } from '#app/Library/components/Doc.js';
-import { Footer } from '#app/App/Footer.js';
+import Doc from 'app/Library/components/Doc';
+import Footer from 'app/App/Footer';
 
-import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
-import { TilesViewer } from '#app/Layout/TilesViewer.js';
-import { TableViewer } from '#app/Layout/TableViewer.js';
-import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
-import { SearchBar } from '#app/Library/components/SearchBar.js';
-import { DocumentsList } from '../DocumentsList.js';
+import { DocumentCounter } from 'app/Layout/DocumentCounter';
+import { TilesViewer } from 'app/Layout/TilesViewer';
+import { TableViewer } from 'app/Layout/TableViewer';
+import { LibraryHeader } from 'app/Library/components/LibraryHeader';
+import { SearchBar } from 'app/Library/components/SearchBar';
+import { DocumentsList } from '../DocumentsList';
 
 describe('DocumentsList', () => {
   let component;
   let instance;
   let props;
-  const documents = Immutable.fromJS({
+  const documents = fromJS({
     rows: [
       { title: 'Document one', _id: '1' },
       { title: 'Document two', _id: '2' },
@@ -30,7 +30,7 @@ describe('DocumentsList', () => {
     props = {
       documents,
       search: { sort: 'sort' },
-      filters: Immutable.fromJS({ documentTypes: [] }),
+      filters: fromJS({ documentTypes: [] }),
       clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       loadMoreDocuments: jasmine.createSpy('loadMoreDocuments'),
@@ -56,7 +56,7 @@ describe('DocumentsList', () => {
     beforeEach(() => {
       props.view = 'graph';
       props.connections = { totalRows: 2 };
-      props.connectionsGroups = Immutable.fromJS([
+      props.connectionsGroups = fromJS([
         {
           templates: [
             {
@@ -92,7 +92,7 @@ describe('DocumentsList', () => {
         selectAllDocuments: expect.any(Function),
         searchCentered: false,
         storeKey: 'library',
-        filters: Immutable.fromJS({ documentTypes: [] }),
+        filters: fromJS({ documentTypes: [] }),
         tableViewMode: false,
         scrollCount: 1,
       });

@@ -1,10 +1,10 @@
-import Immutable from 'immutable';
-import { SettingsFilterSchema } from '#shared/types/settingsType.js';
-import { ConnectedComponent as TemplatesFilterComponent } from '#app/Library/components/TemplatesFilter.js';
-import { renderConnected } from '#app/utils/test/renderConnected.js';
-import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
+import { fromJS } from 'immutable';
+import { SettingsFilterSchema } from 'shared/types/settingsType';
+import { ConnectedComponent as TemplatesFilterComponent } from 'app/Library/components/TemplatesFilter';
+import { renderConnected } from 'app/utils/test/renderConnected';
+import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 import * as redux from 'redux';
-import { DocumentTypesListConnected } from '../DocumentTypesList.js';
+import DocumentTypesList from '../DocumentTypesList';
 
 jest.mock('app/Library/actions/filterActions');
 
@@ -15,14 +15,14 @@ describe('TemplatesFilter', () => {
     selectedFilters?: String[]
   ) => {
     const store = {
-      templates: Immutable.fromJS([]),
+      templates: fromJS([]),
       settings: {
-        collection: Immutable.fromJS({
+        collection: fromJS({
           filters: templateFilters,
         }),
       },
       library: {
-        filters: Immutable.fromJS({ documentTypes: selectedFilters }),
+        filters: fromJS({ documentTypes: selectedFilters }),
       },
     };
     component = renderConnected(
@@ -43,14 +43,14 @@ describe('TemplatesFilter', () => {
       });
 
       it('should mark FEATURED as the default option', () => {
-        const documentTypesList = component.find(DocumentTypesListConnected);
+        const documentTypesList = component.find(DocumentTypesList);
         expect(documentTypesList.props().fromFilters).toBe(true);
       });
 
       it('should allows logged users to switch templates filter between ALL/FEATURED', () => {
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(false);
-        const documentTypesList = component.find(DocumentTypesListConnected);
+        const documentTypesList = component.find(DocumentTypesList);
         expect(documentTypesList.props().fromFilters).toBe(false);
       });
     });
@@ -60,7 +60,7 @@ describe('TemplatesFilter', () => {
         render();
         const documentTypesSwitcher = component.find('Switcher');
         expect(documentTypesSwitcher.length).toBe(0);
-        const documentTypesList = component.find(DocumentTypesListConnected);
+        const documentTypesList = component.find(DocumentTypesList);
         expect(documentTypesList.props().fromFilters).toBe(false);
       });
     });
@@ -69,7 +69,7 @@ describe('TemplatesFilter', () => {
       it('should list all templates if the library filters are not present in configured filters', () => {
         spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
         render([{ id: '1', name: 'Judge' }], ['2']);
-        const documentTypesList = component.find(DocumentTypesListConnected);
+        const documentTypesList = component.find(DocumentTypesList);
         expect(documentTypesList.props().fromFilters).toBe(false);
         expect(documentTypesList.props().selectedTemplates).toEqual(['2']);
       });
@@ -80,7 +80,7 @@ describe('TemplatesFilter', () => {
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(true);
         expect(filterDocumentTypes).toHaveBeenCalledWith([], { query: 'some query' }, undefined);
-        const documentTypesList = component.find(DocumentTypesListConnected);
+        const documentTypesList = component.find(DocumentTypesList);
         expect(documentTypesList.props().selectedTemplates.length).toBe(0);
       });
 
@@ -89,7 +89,7 @@ describe('TemplatesFilter', () => {
         render([{ id: '1', name: 'Judge', items: [{ id: '2' }] }], ['2']);
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(true);
-        const documentTypesList = component.find(DocumentTypesListConnected);
+        const documentTypesList = component.find(DocumentTypesList);
         expect(documentTypesList.props().selectedTemplates).toEqual(['2']);
       });
     });

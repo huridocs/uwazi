@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
-import { ErrorFallback } from '../ErrorFallback.js';
-import { RouteErrorBoundary } from '../RouteErrorBoundary.js';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
+import { ErrorFallback } from '../ErrorFallback';
+import { RouteErrorBoundary } from '../RouteErrorBoundary';
 
 let error: any = null;
 

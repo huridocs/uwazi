@@ -4,11 +4,11 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
-import { Translate } from '#app/I18N/index.js';
-import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
-import { Checkbox } from '#V2/Components/Forms/index.js';
-import { StatsTooltip } from './Tooltip.js';
-import { IXFilters } from '../types.js';
+import { Translate } from 'app/I18N';
+import { Button, Card, Sidepanel } from 'V2/Components/UI';
+import { Checkbox } from 'V2/Components/Forms';
+import { StatsTooltip } from './Tooltip';
+import { IXFilters } from '../types';
 
 type Aggregations = {
   total: number;

@@ -1,4 +1,4 @@
-import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 export interface SanitizationWarning {
   property: string;
@@ -11,7 +11,7 @@ export interface SanitizationResult {
   warnings: SanitizationWarning[];
 }
 
-import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 
 export const sanitizeText = sanitizeThesaurusLabel;
 

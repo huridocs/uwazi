@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { shallow } from 'enzyme';
+import { connect } from 'react-redux';
 
-import { ContextMenuView } from '#app/ContextMenu/components/ContextMenu.js';
+import { ContextMenu } from 'app/ContextMenu/components/ContextMenu';
 
 const SubMenu = () => <div />;
 
@@ -11,15 +12,17 @@ class SubMenu2 extends Component {
   }
 }
 
+const SubMenu2Container = connect()(SubMenu2);
+
 describe('ContextMenu', () => {
   let component;
 
   const render = (withProps = {}) => {
     component = shallow(
-      <ContextMenuView {...withProps}>
+      <ContextMenu {...withProps}>
         <SubMenu />
-        <SubMenu2 />
-      </ContextMenuView>
+        <SubMenu2Container />
+      </ContextMenu>
     );
   };
 
@@ -74,12 +77,12 @@ describe('ContextMenu', () => {
     });
 
     describe('when type is SubMenu2', () => {
-      it('should render SubMenu2', () => {
+      it('should render SubMenu2Container', () => {
         const props = { type: 'SubMenu2', open: false };
         render(props);
 
-        expect(component.find(SubMenu2).length).toBe(1);
-        expect(component.find(SubMenu2).props().active).toBe(false);
+        expect(component.find(SubMenu2Container).length).toBe(1);
+        expect(component.find(SubMenu2Container).props().active).toBe(false);
       });
     });
   });

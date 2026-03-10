@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
-import { getMimeTypeFromOriginalName } from './fileUtils.js';
-import { ArrayUtils } from './arrayUtils.js';
+import { getMimeTypeFromOriginalName } from './fileUtils';
+import { ArrayUtils } from './arrayUtils';
 
 export default {
   delta: 172,

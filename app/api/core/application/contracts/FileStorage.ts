@@ -1,8 +1,8 @@
-import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
-import { FileContents } from '../../domain/files/FileContents.js';
-import { FileType } from '../../domain/files/FileType.js';
-import { StoredFile } from '../../domain/files/StoredFile.js';
+import { BaseFile } from 'api/core/domain/files/BaseFile';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
+import { FileContents } from '../../domain/files/FileContents';
+import { FileType } from '../../domain/files/FileType';
+import { StoredFile } from '../../domain/files/StoredFile';
 
 export type GetFileInput = {
   type: FileType | 'customPath';

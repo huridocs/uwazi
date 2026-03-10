@@ -1,4 +1,4 @@
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 type Primitive = string | number | boolean | LanguageISO6391 | undefined;
 type RecordValue = Primitive | RecordValue[] | { [key: string]: RecordValue };

@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 
-import { HubRelationshipMetadataView, mapStateToProps } from '../HubRelationshipMetadata.js';
+import HubRelationshipMetadata, { mapStateToProps } from '../HubRelationshipMetadata';
 
 describe('HubRelationshipMetadata', () => {
   let props;
@@ -15,7 +15,7 @@ describe('HubRelationshipMetadata', () => {
   beforeEach(() => {
     template = 't1';
 
-    const relationTypes = Immutable.fromJS([
+    const relationTypes = fromJS([
       {
         _id: 't1',
         properties: [
@@ -26,10 +26,10 @@ describe('HubRelationshipMetadata', () => {
       },
     ]);
 
-    const thesauris = Immutable.fromJS([{ _id: 'Value C1' }, { _id: 'Value C2' }]);
+    const thesauris = fromJS([{ _id: 'Value C1' }, { _id: 'Value C2' }]);
 
     props = Object.assign(mapStateToProps({ relationTypes, thesauris }), {
-      relationship: Immutable.fromJS({ template }),
+      relationship: fromJS({ template }),
     });
 
     reference = { text: 'Some quoted text' };
@@ -41,7 +41,7 @@ describe('HubRelationshipMetadata', () => {
   });
 
   function testSnapshot() {
-    const component = shallow(<HubRelationshipMetadataView {...props} />);
+    const component = shallow(<HubRelationshipMetadata.WrappedComponent {...props} />);
     expect(component).toMatchSnapshot();
   }
 
@@ -50,17 +50,17 @@ describe('HubRelationshipMetadata', () => {
   });
 
   it('should render the text quote correctly', () => {
-    props.relationship = Immutable.fromJS({ reference });
+    props.relationship = fromJS({ reference });
     testSnapshot();
   });
 
   it('should render the metadata correctly', () => {
-    props.relationship = Immutable.fromJS({ template, metadata });
+    props.relationship = fromJS({ template, metadata });
     testSnapshot();
   });
 
   it('should render the metadata correctly when text is also present', () => {
-    props.relationship = Immutable.fromJS({ template, reference, metadata });
+    props.relationship = fromJS({ template, reference, metadata });
     testSnapshot();
   });
 });

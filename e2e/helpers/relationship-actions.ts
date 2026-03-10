@@ -1,6 +1,6 @@
-import disableTransitions from './disableTransitions.js';
-import { clearAndType } from './formActions.js';
-import { getPropertyOfSelector } from './selectorUtils.js';
+import disableTransitions from './disableTransitions';
+import { clearAndType } from './formActions';
+import { getPropertyOfSelector } from './selectorUtils';
 
 const reloadPage = async () => {
   await page.reload();

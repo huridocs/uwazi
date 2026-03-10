@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import { createReducer } from '#app/BasicReducer/index.js';
+import createReducer from 'app/BasicReducer';
 import { modelReducer, formReducer } from 'react-redux-form';
 
-const reducer = combineReducers({
+export default combineReducers({
   collection: createReducer('settings/collection', {}),
   stats: createReducer('settings/stats', {}),
   navlinksData: modelReducer('settings.navlinksData', { links: [] }),
@@ -12,5 +12,3 @@ const reducer = combineReducers({
   settingForm: formReducer('settings.settings'),
   settings: modelReducer('settings.settings', {}),
 });
-
-export { reducer };

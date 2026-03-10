@@ -1,9 +1,9 @@
-import testingDB from '#api/utils/testing_db.js';
-import { migrator } from '#api/migrations/migrator.js';
+import testingDB from 'api/utils/testing_db';
+import { migrator } from 'api/migrations/migrator';
 import path from 'path';
-import { runMigration } from '#api/migrations/migrate.js';
+import { runMigration } from 'api/migrations/migrate';
 import { Connection } from 'mongoose';
-import { DB } from '#api/odm/index.js';
+import { DB } from 'api/odm';
 
 describe('migrate', () => {
   let connection: Connection;
@@ -23,13 +23,6 @@ describe('migrate', () => {
     beforeEach(async () => {
       await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
-      migrator.loader = async (p: string) =>
-        Promise.resolve(
-          (function (r: NodeRequire) {
-            const m = r(p);
-            return m.default ?? m;
-          })(require)
-        );
     });
 
     it('should call migrator migrate', async () => {

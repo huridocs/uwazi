@@ -1,14 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { FormGroup } from '#app/DocumentForm/components/FormGroup.js';
-
-import { Aggregations } from '#shared/types/aggregations.js';
-
-import { NeedAuthorization } from '#app/Auth/index.js';
-import { Translate } from '#app/I18N/index.js';
-import { MultiSelect } from '#app/Forms/index.js';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
+import { Aggregations } from 'shared/types/aggregations';
+import { NeedAuthorization } from 'app/Auth';
+import { Translate } from 'app/I18N';
+import { MultiSelect } from 'app/Forms';
 import { Control } from 'react-redux-form';
-import { Switcher } from '#app/ReactReduxForms/index.js';
-import { FiltrableLevel } from './FiltrablePermissionsLevels.js';
+import { Switcher } from 'app/ReactReduxForms';
+import { FiltrableLevel } from './FiltrablePermissionsLevels';
 
 interface PermissionsValue {
   level: FiltrableLevel;

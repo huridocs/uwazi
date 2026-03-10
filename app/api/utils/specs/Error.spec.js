@@ -1,5 +1,5 @@
 import { ValidationError } from 'ajv';
-import createError from '#api/utils/Error.js';
+import createError from 'api/utils/Error';
 
 describe('Error', () => {
   it('should return an UwaziError with message and code', () => {

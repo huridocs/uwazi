@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
-import { CreateEntityUseCaseInput } from '#api/core/application/CreateEntity.js';
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { UpdateEntityUseCaseInput } from '#api/core/application/UpdateEntity.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { CreateEntityDTO, UpdateEntityRequest } from './Schemas.js';
+import { CreateEntityUseCaseInput } from 'api/core/application/CreateEntity';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
+import { UpdateEntityUseCaseInput } from 'api/core/application/UpdateEntity';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { CreateEntityDTO, UpdateEntityRequest } from './Schemas';
 
 type ToEntityCreateInputProps = {
   dto: CreateEntityDTO;

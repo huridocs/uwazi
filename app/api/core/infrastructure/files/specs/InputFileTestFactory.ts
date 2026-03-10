@@ -1,7 +1,7 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 import path from 'path';
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 
 type CreateInputFileOptions = {
   dir: string;

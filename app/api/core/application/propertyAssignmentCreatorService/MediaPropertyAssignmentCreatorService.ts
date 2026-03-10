@@ -1,12 +1,14 @@
-import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
-import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
-import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
-import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
-import { AbstractPropertyAssignmentCreatorService } from './AbstractPropertyAssignmentCreatorService.js';
+import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
+import { MediaProperty } from 'api/core/domain/template/MediaProperty';
+import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
+import {
+  CreatePropertyAssignmentInput,
+  PropertyAssignmentCreatorService,
+} from './PropertyAssignmentCreatorService';
 
 type MediaValueInput = { value: string } | { attachment: number; timeLinks?: string };
 
-export class MediaPropertyAssignmentCreatorService extends AbstractPropertyAssignmentCreatorService {
+export class MediaPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
   // eslint-disable-next-line max-statements
   async create({
     propertyAssignment,
@@ -36,9 +38,7 @@ export class MediaPropertyAssignmentCreatorService extends AbstractPropertyAssig
       };
     });
 
-    createdAssignments.push(
-      property.createPropertyAssignment({ value: mapped }, this.context.validateRequired)
-    );
+    createdAssignments.push(property.createPropertyAssignment({ value: mapped }, true));
 
     return createdAssignments;
   }

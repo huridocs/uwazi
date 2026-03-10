@@ -2,27 +2,27 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import { ImportFile } from '#api/csv/importFile.js';
-import translations from '#api/i18n/translations.js';
-import { WithId } from '#api/odm/index.js';
-import thesauri from '#api/thesauri/index.js';
-import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { Sets } from '#shared/data_utils/sets.js';
-import { ensure } from '#shared/tsUtils.js';
-import { PropertySchema } from '#shared/types/commonTypes.js';
-import { Arrays } from '#shared/data_utils/arrays.js';
-import { DoubleIndexedObject } from '#shared/data_utils/DoubleIndexedObject.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { ImportFile } from 'api/csv/importFile';
+import translations from 'api/i18n/translations';
+import { WithId } from 'api/odm';
+import thesauri from 'api/thesauri';
+import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { Sets } from 'shared/data_utils/sets';
+import { ensure } from 'shared/tsUtils';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { Arrays } from 'shared/data_utils/arrays';
+import { DoubleIndexedObject } from 'shared/data_utils/DoubleIndexedObject';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-import csv, { CSVRow } from './csv.js';
-import { toSafeName } from './entityRow.js';
-import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect.js';
-import { determineParentChildRelationship } from './typeParsers/select.js';
-import { headerWithLanguage } from './csvDefinitions.js';
-import { sanitizeStringValue } from './sanitizationUtils.js';
-import { LabelInfoBase } from './typeParsers/shared.js';
+import csv, { CSVRow } from './csv';
+import { toSafeName } from './entityRow';
+import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect';
+import { determineParentChildRelationship } from './typeParsers/select';
+import { headerWithLanguage } from './csvDefinitions';
+import { sanitizeStringValue } from './sanitizationUtils';
+import { LabelInfoBase } from './typeParsers/shared';
 
 class ArrangeThesauriError extends Error {
   row: CSVRow;

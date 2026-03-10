@@ -1,5 +1,5 @@
-import type { Application } from 'express';
-import { Preserve } from './preserve.js';
+import { Application } from 'express';
+import { Preserve } from './preserve';
 
 export const PreserveRoutes = (app: Application) => {
   app.post('/api/preserve/', async (req, res, _next) => {

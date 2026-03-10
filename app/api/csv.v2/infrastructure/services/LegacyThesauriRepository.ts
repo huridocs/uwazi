@@ -1,9 +1,9 @@
-import thesauri from '#api/thesauri/thesauri.js';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import thesauri from 'api/thesauri/thesauri';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import {
   ThesauriRepository,
   ThesaurusValueInput,
-} from '../../application/contracts/ThesauriRepository.js';
+} from '../../application/contracts/ThesauriRepository';
 
 export class LegacyThesauriRepository implements ThesauriRepository {
   // eslint-disable-next-line class-methods-use-this

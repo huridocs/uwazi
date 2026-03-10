@@ -57,25 +57,13 @@ const linkValidation = property => {
 
 const validImageFile = file => file.mimetype && file.mimetype.includes('image');
 
-const validMediaFile = file => {
-  const mimeType = file.mimetype || file.headers?.get?.('content-type') || '';
-  return (
-    (mimeType && (mimeType.includes('video') || mimeType.includes('audio'))) ||
-    (file.url && ReactPlayer.canPlay(file.url))
-  );
-};
+const validMediaFile = file =>
+  (file.mimetype && (file.mimetype.includes('video') || file.mimetype.includes('audio'))) ||
+  (file.url && ReactPlayer.canPlay(file.url));
 
-export {
-  notEmpty,
-  labelAndUrl,
-  latAndLon,
-  geolocationValidation,
-  linkValidation,
-  validImageFile,
-  validMediaFile,
-};
+export { notEmpty, labelAndUrl, latAndLon, validImageFile, validMediaFile };
 
-const validator = {
+export default {
   generate(template, noTitle = false) {
     const validationObject = {
       title: { required: notEmpty },
@@ -85,7 +73,7 @@ const validator = {
       delete validationObject.title;
     }
 
-    (template.properties || []).forEach(property => {
+    template.properties.forEach(property => {
       if (property.required) {
         validationObject[`metadata.${property.name}`] = { required: notEmpty };
       }
@@ -102,5 +90,3 @@ const validator = {
     return validationObject;
   },
 };
-
-export { validator };

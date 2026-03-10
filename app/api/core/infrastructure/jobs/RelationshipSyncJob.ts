@@ -1,15 +1,15 @@
-import relationships from '#api/relationships/index.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import relationships from 'api/relationships';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ObjectId } from 'mongodb';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO.js';
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { EntityNotFoundError } from 'api/core/application/errors';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO';
 
 type Params = UserAwareDispatchableParams & {
   templateId: string;

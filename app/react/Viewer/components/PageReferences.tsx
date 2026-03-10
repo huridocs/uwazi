@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
+import { IStore } from 'app/istore';
+import { ConnectionSchema } from 'shared/types/connectionType';
 import { createSelector } from 'reselect';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { IStore } from '#app/istore.js';
-import { ConnectionSchema } from '#shared/types/connectionType.js';
-import { unique } from '#shared/filterUnique.js';
-import { SelectionRectangleSchema } from '#shared/types/commonTypes.js';
-import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { unique } from 'shared/filterUnique';
+import { SelectionRectangleSchema } from 'shared/types/commonTypes';
+import { selectionHandlers } from 'V2/Components/PDFViewer';
 
 type ReferenceGroup = {
   _id: string;
@@ -22,16 +22,13 @@ interface PageReferencesProps {
   activeReference: string;
   onClick: (c: ConnectionSchema, groupedReferences: string[]) => {};
   enableClickAction?: boolean;
-  /** Scale at which the PDF page is rendered; references (stored in scale=1) are scaled by this for display */
-  renderScale?: number;
 }
 
 const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
   props: PageReferencesProps
 ) => {
   const referenceGroup = useRef<string[]>();
-  // Stored references are in scale=1; multiply by renderScale to get display coordinates
-  const pdfScaleFactor = props.renderScale ?? 1;
+  const pdfScaleFactor = 1;
 
   const handleClick = useCallback(
     (reference: ConnectionSchema) =>
@@ -128,22 +125,16 @@ const indexdReferencesByPage = createSelector(
       )
 );
 
-type RefMap = { get(key: string): unknown };
-type RectList = {
-  size: number;
-  get(i: number): { get(k: string): unknown; toJS(): SelectionRectangleSchema };
-};
-
 const groupByRectangle = createSelector(
   (state: IStore) => state.documentViewer.references,
   references =>
-    references.reduce((groups, ref) => {
+    references.reduce((groups, reference) => {
       if (!groups) return [];
-      const reference = ref as RefMap;
-      if (ref?.get('template') || !ref) return groups;
-      const rectangles = (reference.get('reference') as RefMap | undefined)?.get(
-        'selectionRectangles'
-      ) as RectList | undefined;
+
+      if (reference?.get('template') || !reference) return groups;
+
+      const rectangles = reference.get('reference')?.get('selectionRectangles');
+
       if (!rectangles?.size) return groups;
 
       const hasGroup = groups?.some(refGroups =>

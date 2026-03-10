@@ -1,18 +1,18 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
-import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory.js';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
+import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory';
 import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
-} from '../MongoPXEntitiesStatusDataSource.js';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
+} from '../MongoPXEntitiesStatusDataSource';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 
 const createSut = () => {
   const connection = getConnection();

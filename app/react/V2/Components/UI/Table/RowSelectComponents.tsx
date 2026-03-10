@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef } from 'react';
 import { Row, Table } from '@tanstack/react-table';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 import { Tooltip } from 'flowbite-react';
 
 const IndeterminateCheckboxRow = <

@@ -1,5 +1,5 @@
-import Immutable from '#shared/immutableWrapper.js';
-import * as types from '#app/Entities/actions/actionTypes.js';
+import Immutable from 'immutable';
+import * as types from 'app/Entities/actions/actionTypes';
 
 export const initialState = { userSelectedTab: false };
 

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { ValidationError } from 'ajv';
 
-import { AbstractController } from '../AbstractController.js';
+import { AbstractController } from '../AbstractController';
 
 const Schema = z.object({
   name: z.string(),

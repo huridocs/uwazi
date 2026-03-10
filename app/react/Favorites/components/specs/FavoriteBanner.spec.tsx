@@ -5,7 +5,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import { FavoriteBanner, FavoriteBannerProps } from '../FavoriteBanner.js';
+import { FavoriteBanner, FavoriteBannerProps } from '../FavoriteBanner';
 
 const localStorageMock = (() => {
   let store: any = {};

@@ -1,13 +1,13 @@
 import request, { Response as SuperTestResponse } from 'supertest';
-import type { Application, Request, Response, NextFunction } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { fixtures, document1 } from './fixtures.js';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { fixtures, document1 } from './fixtures';
 
-import { documentRoutes } from '../routes.js';
+import { documentRoutes } from '../routes';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

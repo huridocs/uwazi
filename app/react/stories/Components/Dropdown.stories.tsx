@@ -1,7 +1,7 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Dropdown } from '#V2/Components/UI/Header/Dropdown.js';
-import type { DropdownItem } from '#V2/Components/UI/Header/Dropdown.js';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Dropdown } from 'app/V2/Components/UI/Header/Dropdown';
+import type { DropdownItem } from 'app/V2/Components/UI/Header/Dropdown';
 
 const meta: Meta<typeof Dropdown> = {
   title: 'Components/UI/Dropdown',
@@ -25,7 +25,6 @@ const meta: Meta<typeof Dropdown> = {
     },
   },
 };
-export default meta;
 
 type Story = StoryObj<typeof Dropdown>;
 
@@ -136,3 +135,4 @@ const WithCustomStyling: Story = {
 };
 
 export { Basic, WithExternalLinks, MixedLinks, LongTitle, ManyItems, WithCustomStyling };
+export default meta;

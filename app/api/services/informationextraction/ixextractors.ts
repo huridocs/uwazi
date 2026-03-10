@@ -1,19 +1,19 @@
 /* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from '#api/suggestions/suggestions.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { IXExtractorType } from '#shared/types/extractorType.js';
+import { Suggestions } from 'api/suggestions/suggestions';
+import templates from 'api/core/v1_layer/templates';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { IXExtractorType } from 'shared/types/extractorType';
 import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
-} from '#api/suggestions/blankSuggestions.js';
-import { Subset } from '#shared/tsUtils.js';
-import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { IXExtractorModel as model } from './IXExtractorModel.js';
-import { IXErrorCode, IXValidationError } from './IXValidationError.js';
+} from 'api/suggestions/blankSuggestions';
+import { Subset } from 'shared/tsUtils';
+import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { DomainError } from 'api/core/domain/error/DomainError';
+import { IXExtractorModel as model } from './IXExtractorModel';
+import { IXErrorCode, IXValidationError } from './IXValidationError';
 
 type AllowedPropertyTypes =
   | Subset<

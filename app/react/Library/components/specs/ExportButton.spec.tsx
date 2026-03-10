@@ -2,13 +2,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import thunk from 'redux-thunk';
 
-import { ExportButton, ExportButtonProps } from '#app/Library/components/ExportButton.js';
+import ExportButton, { ExportButtonProps } from 'app/Library/components/ExportButton';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import { Modal } from '#app/Layout/Modal.js';
+import Modal from 'app/Layout/Modal';
 import Immutable from 'immutable';
-import { LocalForm } from '#app/Forms/Form.js';
-import * as actions from '../../actions/exportActions.js';
+import { LocalForm } from 'app/Forms/Form';
+import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {
   let component: any;
@@ -74,10 +74,8 @@ describe('ExportButton', () => {
     });
 
     it('should not dispatch on click', () => {
-      jest.spyOn(actions, 'exportDocuments').mockReturnValue(async () => Promise.resolve());
+      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
-      (actions.exportDocuments as jest.Mock).mockClear();
-      component.find('.btn').simulate('click');
       expect(actions.exportDocuments).not.toHaveBeenCalled();
     });
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { DisplayPill } from '../../DisplayPills.js';
-import { PXTable } from '../../../types.js';
+import { DisplayPill } from '../../DisplayPills';
+import { PXTable } from '../../../types';
 
 const TemplateCell = ({
   cell,

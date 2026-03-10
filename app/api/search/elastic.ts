@@ -5,10 +5,10 @@ import {
   RequestNDBody,
   TransportRequestOptions,
 } from '@elastic/elasticsearch/lib/Transport';
-import { config } from '#api/config.js';
-import { tenants } from '#api/tenants/index.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { IndicesCreate, IndicesDelete, IndicesPutMapping, SearchResponse } from './elasticTypes.js';
+import { config } from 'api/config';
+import { tenants } from 'api/tenants';
+import { EntitySchema } from 'shared/types/entityType';
+import { IndicesCreate, IndicesDelete, IndicesPutMapping, SearchResponse } from './elasticTypes';
 
 const elasticClient = new elasticSearch.Client({
   nodes: config.elasticsearch.nodes,

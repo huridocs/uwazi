@@ -1,11 +1,11 @@
-import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
-import { Entity } from '#api/core/domain/entity/Entity.js';
-import { denormalizeRelated } from '#api/entities/denormalize.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper.js';
-import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
+import { Listener } from 'api/core/libs/eventEmitter/Listener';
+import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
+import { EntityUpdatedEvent } from 'api/core/domain/entity/EntityUpdatedEvent';
+import { Entity } from 'api/core/domain/entity/Entity';
+import { denormalizeRelated } from 'api/entities/denormalize';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
+import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper';
+import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper';
 
 type Deps = {
   templatesDS: TemplatesDataSource;

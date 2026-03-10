@@ -1,6 +1,6 @@
-import settings from '#api/settings/settings.js';
-import type { Application } from 'express';
-import needsAuthorization from '../auth/authMiddleware.js';
+import settings from 'api/settings/settings';
+import { Application } from 'express';
+import needsAuthorization from '../auth/authMiddleware';
 
 export default (app: Application) => {
   app.get('/api/settings', (req, res, next) => {

@@ -1,7 +1,7 @@
-import '#api/utils/jasmineHelpers.js';
-import instrumentRoutes from '../../utils/instrumentRoutes.js';
-import pages from '../pages.js';
-import pagesRoutes from '../routes.js';
+import 'api/utils/jasmineHelpers';
+import instrumentRoutes from '../../utils/instrumentRoutes';
+import pages from '../pages';
+import pagesRoutes from '../routes';
 
 describe('Pages Routes (to be updated)', () => {
   let routes;

@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import translations from '#api/i18n/translations.js';
-import templates from '#api/core/v1_layer/templates/templates.js';
-import entities from '#api/entities/entities.js';
-import { search } from '#api/search/index.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { testingDB } from '#api/utils/testing_db.js';
+import translations from 'api/i18n/translations';
+import templates from 'api/core/v1_layer/templates/templates';
+import entities from 'api/entities/entities';
+import { search } from 'api/search';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingDB } from 'api/utils/testing_db';
 import { thesauri } from '../thesauri.js';
 import {
   fixtures,
@@ -15,7 +15,7 @@ import {
   dictionaryIdToTranslate,
   dictionaryValueId,
   dictionaryWithValueGroups,
-} from './fixtures.js';
+} from './fixtures';
 
 const factory = getFixturesFactory();
 

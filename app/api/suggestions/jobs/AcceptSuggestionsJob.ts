@@ -1,13 +1,13 @@
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { emitToTenant } from 'api/socketio/setupSockets';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { ObjectId } from 'mongodb';
-import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import ixmodels from 'api/services/informationextraction/ixmodels';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase.js';
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { HeartbeatCallback } from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase';
 
 type CustomParams = UserAwareDispatchableParams & {
   extractorId: string;

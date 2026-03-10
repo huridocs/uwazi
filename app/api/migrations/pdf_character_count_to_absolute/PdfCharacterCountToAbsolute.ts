@@ -6,7 +6,7 @@ import path from 'path';
 import { promisify } from 'util';
 import * as os from 'os';
 
-import { AbsolutePositionLettersList, AbsolutePositionTag } from './AbsolutePositionLettersList.js';
+import { AbsolutePositionLettersList, AbsolutePositionTag } from './AbsolutePositionLettersList';
 
 export interface AbsolutePositionReference {
   text: string;

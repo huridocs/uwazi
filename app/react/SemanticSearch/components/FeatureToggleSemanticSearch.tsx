@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { NeedAuthorization } from '#app/Auth/index.js';
+import { NeedAuthorization } from 'app/Auth';
 
 type PropTypes = {
   semanticSearchActivated: boolean;

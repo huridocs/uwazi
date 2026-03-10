@@ -1,4 +1,4 @@
-import { TocSchema } from '#shared/types/commonTypes.js';
+import { TocSchema } from 'shared/types/commonTypes';
 
 export type ProcessedTocEntry = {
   entry: TocSchema;

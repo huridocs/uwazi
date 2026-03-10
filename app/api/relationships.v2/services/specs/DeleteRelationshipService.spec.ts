@@ -1,18 +1,18 @@
-import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
-import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
-import { User } from '#api/users.v2/model/User.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
+import { User } from 'api/users.v2/model/User';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource.js';
-import { MissingRelationshipError } from '../../errors/relationshipErrors.js';
-import { DeleteRelationshipService } from '../DeleteRelationshipService.js';
-import { DenormalizationService } from '../DenormalizationService.js';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
+import { MissingRelationshipError } from '../../errors/relationshipErrors';
+import { DeleteRelationshipService } from '../DeleteRelationshipService';
+import { DenormalizationService } from '../DenormalizationService';
 
 const factory = getFixturesFactory();
 

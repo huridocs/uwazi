@@ -1,24 +1,29 @@
-import Mark from 'mark.js';
-import { isClient } from '#app/utils/index.js';
+import { isClient } from 'app/utils';
+
+let Mark;
+if (isClient) {
+  Mark = require('mark.js');
+  window.Marker = Mark;
+}
 
 let marker;
-const Marker = {
+export default {
   init(selector) {
-    if (!isClient) return;
     marker = new Mark(selector);
-    window.Marker = marker;
+    if (isClient) {
+      window.Marker = marker;
+    }
   },
 
   markRegExp(regexp, options) {
-    if (marker) marker.markRegExp(regexp, options);
+    marker.markRegExp(regexp, options);
   },
 
   mark(text, options) {
-    if (marker) marker.mark(text, options);
+    marker.mark(text, options);
   },
 
   unmark() {
-    if (marker) marker.unmark();
+    marker.unmark();
   },
 };
-export { Marker };

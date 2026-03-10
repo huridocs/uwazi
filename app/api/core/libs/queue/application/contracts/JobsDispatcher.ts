@@ -1,4 +1,4 @@
-import { Dispatchable } from './Dispatchable.js';
+import { Dispatchable } from './Dispatchable';
 
 export interface DispatchableClass<T extends Dispatchable> {
   new (...args: any[]): T;

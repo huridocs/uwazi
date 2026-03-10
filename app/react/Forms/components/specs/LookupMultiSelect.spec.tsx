@@ -6,7 +6,7 @@ import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { LookupMultiSelect, LookupMultiSelectProps } from '../LookupMultiSelect.js';
+import { LookupMultiSelect, LookupMultiSelectProps } from '../LookupMultiSelect';
 
 describe('LookupMultiSelect (React Testing Library)', () => {
   let props: Partial<LookupMultiSelectProps>;

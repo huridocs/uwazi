@@ -1,4 +1,4 @@
-import { secondsToDate, secondsToISODate, parseLocalizedDate } from '../dateHelpers.js';
+import { secondsToDate, secondsToISODate, parseLocalizedDate } from '../dateHelpers';
 
 describe('Date formatting helpers', () => {
   describe('seconds to localized dates', () => {

@@ -1,9 +1,9 @@
-import testingDB from '#api/utils/testing_db.js';
-import { config } from '#api/config.js';
+import testingDB from 'api/utils/testing_db';
+import { config } from 'api/config';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import migration from '../index.js';
-import { fixtures } from './fixtures.js';
+import migration from '../index';
+import { fixtures } from './fixtures';
 
 async function exists(path) {
   try {

@@ -1,3 +1,3 @@
-import * as actions from './actions/modalActions.js';
+import * as actions from './actions/modalActions';
 
 export default { actions };

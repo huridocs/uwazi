@@ -1,9 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
-import { api } from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { IXSuggestionsQuery } from '#shared/types/suggestionType.js';
-import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { SuggestionValue } from '#V2/Routes/Settings/IX/types.js';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
+import { IXSuggestionsQuery } from 'shared/types/suggestionType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { SuggestionValue } from 'V2/Routes/Settings/IX/types';
 
 type ProcessParameters = {
   extractorId: string;

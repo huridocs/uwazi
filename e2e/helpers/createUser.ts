@@ -1,5 +1,5 @@
-import { host } from '../config.js';
-import disableTransitions from './disableTransitions.js';
+import { host } from '../config';
+import disableTransitions from './disableTransitions';
 
 interface CreateUserType {
   username: string;

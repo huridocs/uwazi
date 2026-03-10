@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { UnlockAccountView as UnlockAccount } from '../UnlockAccount.js';
+import { UnlockAccount } from '../UnlockAccount';
 
 describe('UnlockAccount', () => {
   let props;

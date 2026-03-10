@@ -1,10 +1,8 @@
 import React from 'react';
-import { extendedHtmlTags, visualizationHtmlTags } from './utils.js';
+import { extendedHtmlTags, visualizationHtmlTags } from './utils';
 
-const isValidTagName = (tagName: string, sanitized: boolean): boolean => {
-  const list = !sanitized ? extendedHtmlTags : visualizationHtmlTags;
-  return list.some(t => t.toLowerCase() === tagName.toLowerCase());
-};
+const isValidTagName = (tagName: string, sanitized: boolean): boolean =>
+  !sanitized ? extendedHtmlTags.includes(tagName) : visualizationHtmlTags.includes(tagName);
 
 const ValidatedElement = (
   type: string | React.JSXElementConstructor<any>,

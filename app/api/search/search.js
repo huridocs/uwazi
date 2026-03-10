@@ -1,29 +1,29 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
-import translations from '#api/i18n/translations.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
-import userGroups from '#api/usergroups/userGroups.js';
-import usersModel from '#api/users/users.js';
-import { createError } from '#api/utils/index.js';
-import date from '#api/utils/date.js';
-import { sequentialPromises } from '#shared/asyncUtils.js';
-import propertiesHelper from '#shared/commonProperties.js';
-import { preloadOptionsLimit, preloadOptionsSearch } from '#shared/config.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { filterOptions } from '#shared/optionsUtils.js';
-import { checkWritePermissions } from '#shared/permissionsUtils.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { UserRole } from '#shared/types/userSchema.js';
-import templatesModel from '../core/v1_layer/templates/index.js';
-import entitiesModel from '../entities/entitiesModel.js';
-import thesauri from '../thesauri/index.js';
-import documentQueryBuilder from './documentQueryBuilder.js';
-import { elastic } from './elastic.js';
-import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
-import * as v2 from './v2_support.js';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import translations from 'api/i18n/translations';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
+import userGroups from 'api/usergroups/userGroups';
+import usersModel from 'api/users/users';
+import { createError } from 'api/utils';
+import date from 'api/utils/date';
+import { sequentialPromises } from 'shared/asyncUtils';
+import propertiesHelper from 'shared/commonProperties';
+import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { filterOptions } from 'shared/optionsUtils';
+import { checkWritePermissions } from 'shared/permissionsUtils';
+import { propertyTypes } from 'shared/propertyTypes';
+import { UserRole } from 'shared/types/userSchema';
+import templatesModel from '../core/v1_layer/templates';
+import entitiesModel from '../entities/entitiesModel';
+import thesauri from '../thesauri';
+import documentQueryBuilder from './documentQueryBuilder';
+import { elastic } from './elastic';
+import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
+import * as v2 from './v2_support';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {

@@ -2,10 +2,10 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { RenderResult, screen } from '@testing-library/react';
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import { SortDropdown } from '../SortDropdown.js';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { SortDropdown } from '../SortDropdown';
 
 describe('Sort dropdown', () => {
   let props: any;
@@ -46,7 +46,7 @@ describe('Sort dropdown', () => {
   beforeEach(() => {
     props = {
       locale: 'en',
-      templates: Immutable.fromJS(templates),
+      templates: fromJS(templates),
       search: {
         order: 'asc',
         sort: 'creationDate',
@@ -100,7 +100,7 @@ describe('Sort dropdown', () => {
   });
 
   it('should not duplicate the entry when multiple options have the same property name', () => {
-    props.templates = Immutable.fromJS([
+    props.templates = fromJS([
       {
         _id: 'id1',
         properties: [

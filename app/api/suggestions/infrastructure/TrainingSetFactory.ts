@@ -1,4 +1,4 @@
-import { MarkSuggestionsUseForTrainingUseCase } from '../application/MarkSuggestionsUseForTrainingUseCase.js';
+import { MarkSuggestionsUseForTrainingUseCase } from '../application/MarkSuggestionsUseForTrainingUseCase';
 
 const TrainingSetFactory = {
   createUseCase: () => new MarkSuggestionsUseForTrainingUseCase(),

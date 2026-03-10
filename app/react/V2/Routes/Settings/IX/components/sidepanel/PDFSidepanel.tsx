@@ -3,37 +3,27 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
-import { FileType } from '#shared/types/fileType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { PropertyValueSchema } from '#shared/types/commonTypes.js';
-import { Translate } from '#app/I18N/index.js';
-import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
-import {
-  Button,
-  Sidepanel,
-  ToggleButton,
-  Truncate,
-  VerticalDrawer,
-} from '#V2/Components/UI/index.js';
-import { PDF, PDFHandle, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { Checkbox } from '#V2/Components/Forms/index.js';
+import { FileType } from 'shared/types/fileType';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { PropertyValueSchema } from 'shared/types/commonTypes';
+import { Translate } from 'app/I18N';
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
+import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Components/UI';
+import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
+import type { PDFHandle } from 'V2/Components/PDFViewer';
+import { notificationAtom } from 'V2/atoms';
+import { Checkbox } from 'V2/Components/Forms';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '../../helpers/index.js';
-import { SidepanelForms } from './SidepanelForms.js';
-import {
-  highlightsAtom,
-  selectionErrorAtom,
-  textSelectionAtom,
-  selectionsAtom,
-} from '../atoms/index.js';
-import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
-import { SidepanelProps } from './types.js';
+} from '../../helpers';
+import { SidepanelForms } from './SidepanelForms';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from '../atoms';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
+import { SidepanelProps } from './types';
 
 enum HighlightColors {
   CURRENT = '#B1F7A3',
@@ -124,18 +114,10 @@ const PDFSidepanel = ({
     }
   }, [highlights, selectedText]);
 
-  useEffect(() => {
+  const handlePdfReady = () => {
     const key = highlightKeyToScrollRef.current;
-    if (!showSidepanel || !key) return;
-    const scrollToSelection = () => pdfRef.current?.scrollToHighlight(key);
-    scrollToSelection();
-    const raf = requestAnimationFrame(scrollToSelection);
-    const timers = [200, 500, 1000, 2000].map(d => setTimeout(scrollToSelection, d));
-    return () => {
-      cancelAnimationFrame(raf);
-      timers.forEach(t => clearTimeout(t));
-    };
-  }, [showSidepanel, highlights]);
+    if (key) pdfRef.current?.scrollToHighlight(key);
+  };
 
   useEffect(() => {
     if (dirtyFields.field) {
@@ -222,11 +204,8 @@ const PDFSidepanel = ({
             ref={pdfRef}
             fileUrl={`/api/files/${pdfFile.filename}`}
             highlights={highlights}
-            onPdfReady={() => {
-              const key = highlightKeyToScrollRef.current;
-              if (key) pdfRef.current?.scrollToHighlight(key);
-            }}
-            onSelect={(selection: any) => {
+            onPdfReady={handlePdfReady}
+            onSelect={selection => {
               if (!selection.selectionRectangles.length) {
                 setSelectionError('Could not detect the area for the selected text');
                 setSelectedText(undefined);

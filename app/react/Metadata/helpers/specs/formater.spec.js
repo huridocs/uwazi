@@ -3,10 +3,10 @@
 import Immutable from 'immutable';
 import { Settings } from 'luxon';
 
-import { metadataSelectors } from '../../selectors.js';
+import { metadataSelectors } from '../../selectors';
 
-import { formater } from '../formater.js';
-import { doc, templates, thesauris, relationships } from './fixtures.js';
+import formater from '../formater';
+import { doc, templates, thesauris, relationships } from './fixtures';
 
 describe('metadata formater', () => {
   function assessBasicProperties(element, [label, name, translateContext, value]) {

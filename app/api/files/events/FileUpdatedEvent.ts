@@ -1,5 +1,5 @@
-import { AbstractEvent } from '#api/core/libs/eventsbus/index.js';
-import { FileType } from '#shared/types/fileType.js';
+import { AbstractEvent } from 'api/core/libs/eventsbus';
+import { FileType } from 'shared/types/fileType';
 
 interface FileUpdatedData {
   before: FileType;

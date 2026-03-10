@@ -1,13 +1,6 @@
-/* eslint-disable import/exports-last */
-/* eslint-disable import/no-default-export */
 import React, { useRef, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import {
-  CodeEditor,
-  CodeEditorProps,
-  CodeEditorInstance,
-} from '#V2/Components/CodeEditor/index.js';
-import { CodeEditorComponent } from '#V2/Components/CodeEditor/CodeEditorComponent.js';
+import type { Meta, StoryObj } from '@storybook/react';
+import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/CodeEditor';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
 myButton.addEventListener('click', function () {
@@ -83,8 +76,6 @@ const meta: Meta<typeof CodeEditor> = {
   component: CodeEditor,
 };
 
-export default meta;
-
 type Story = StoryObj<typeof CodeEditor>;
 
 const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) => {
@@ -93,8 +84,8 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
 
   return (
     <div className="tw-content">
-      <div className="overflow-y-auto w-full h-96 min-h-[24rem]">
-        <CodeEditorComponent
+      <div className="overflow-y-auto w-full h-96">
+        <CodeEditor
           language={language}
           intialValue={intialValue}
           onMount={editor => {
@@ -144,3 +135,4 @@ const HTMLEditor: Story = {
 };
 
 export { JSEditor, HTMLEditor };
+export default meta;

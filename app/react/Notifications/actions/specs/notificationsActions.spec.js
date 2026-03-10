@@ -1,6 +1,6 @@
-import { mockID } from '#shared/uniqueID.js';
-import * as actions from '#app/Notifications/actions/notificationsActions.js';
-import * as types from '#app/Notifications/actions/actionTypes.js';
+import { mockID } from 'shared/uniqueID';
+import * as actions from 'app/Notifications/actions/notificationsActions';
+import * as types from 'app/Notifications/actions/actionTypes';
 
 describe('notificationsActions', () => {
   describe('async actions', () => {

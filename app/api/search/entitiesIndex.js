@@ -1,19 +1,18 @@
-import { detectLanguage } from '#shared/detectLanguage.js';
-import entities from '#api/entities/index.js';
-import { legacyLogger } from '#api/log/index.js';
-import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
-import PromisePoolModule from '@supercharge/promise-pool';
-const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
-import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
-import { LanguageUtils } from '#shared/language/index.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
-import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
-import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
-import { elastic } from './elastic.js';
+import { detectLanguage } from 'shared/detectLanguage';
+import entities from 'api/entities';
+import { legacyLogger } from 'api/log';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import PromisePool from '@supercharge/promise-pool';
+import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
+import { LanguageUtils } from 'shared/language';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { otherLanguageSchema } from 'shared/language/availableLanguages';
+import { getTenantESMapping } from 'api/tenants/tenantESMapping';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
+import { elastic } from './elastic';
 
 class IndexError extends Error {}
 

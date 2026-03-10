@@ -1,8 +1,8 @@
-import { api } from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { ClientSettings } from '#app/apiResponseTypes.js';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
+import { ClientSettings } from 'app/apiResponseTypes';
 
-const SettingsAPI = {
+export default {
   async save(settings: RequestParams<ClientSettings>): Promise<ClientSettings> {
     return api.post('settings', settings).then((response: any) => response.json);
   },
@@ -15,4 +15,3 @@ const SettingsAPI = {
     return api.get('stats', query).then((response: any) => response.json);
   },
 };
-export { SettingsAPI };

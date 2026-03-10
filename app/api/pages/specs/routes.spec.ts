@@ -1,11 +1,11 @@
-import type { Application } from 'express';
+import { Application } from 'express';
 import request from 'supertest';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { setUpApp } from 'api/utils/testingRoutes';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import pagesRoutes from '../routes.js';
-import { fixtures } from './fixtures.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import pagesRoutes from '../routes';
+import { fixtures } from './fixtures';
 
 const getUser = () => ({ _username: 'user 1', role: 'admin' });
 

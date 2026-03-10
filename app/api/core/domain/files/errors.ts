@@ -1,5 +1,5 @@
-import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { ProcessingPDF } from './ProcessingPDF.js';
+import { DomainError } from 'api/core/domain/error/DomainError';
+import { ProcessingPDF } from './ProcessingPDF';
 
 export class ProcessingFileNotFound extends DomainError {
   constructor(fileId: string) {

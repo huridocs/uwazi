@@ -2,7 +2,7 @@
 import path from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { migrator } from '../migrator.js';
+import { migrator } from '../migrator';
 
 describe('Unique migrations', () => {
   it('should not repeat migration deltas', async () => {

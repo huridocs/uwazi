@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { mapStateToProps, FormValue } from '../FormValue.js';
+import { mapStateToProps, FormValue } from '../FormValue';
 
 describe('FormValue', () => {
   let props;

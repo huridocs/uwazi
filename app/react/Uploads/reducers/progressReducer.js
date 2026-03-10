@@ -1,10 +1,10 @@
-import Immutable from '#shared/immutableWrapper.js';
+import Immutable from 'immutable';
 
-import * as types from '#app/Uploads/actions/actionTypes.js';
+import * as types from 'app/Uploads/actions/actionTypes';
 
 const initialState = {};
 
-const progressReducer = (state = initialState, action = {}) => {
+const documents = (state = initialState, action = {}) => {
   if (action.type === types.NEW_UPLOAD_DOCUMENT) {
     return state.set(action.doc, 0);
   }
@@ -21,4 +21,4 @@ const progressReducer = (state = initialState, action = {}) => {
   return Immutable.fromJS(state);
 };
 
-export { progressReducer };
+export default documents;

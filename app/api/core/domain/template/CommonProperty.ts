@@ -1,5 +1,5 @@
-import { CommonPropertyInvalidError } from './errors.js';
-import { Context, Property, PropertyProps } from './Property.js';
+import { CommonPropertyInvalidError } from 'api/core/domain/template/errors';
+import { Context, Property, PropertyProps } from './Property';
 
 type Props = {
   isCommonProperty?: boolean;

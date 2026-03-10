@@ -1,7 +1,7 @@
 import { Component, Children } from 'react';
 import PropTypes from 'prop-types';
 
-import { isClient } from '#app/utils/index.js';
+import { isClient } from 'app/utils';
 
 class CustomProvider extends Component {
   constructor(props) {
@@ -56,4 +56,4 @@ CustomProvider.childContextTypes = {
   language: PropTypes.string,
 };
 
-export { CustomProvider };
+export default CustomProvider;

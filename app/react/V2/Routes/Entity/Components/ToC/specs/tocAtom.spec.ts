@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 import { createStore } from 'jotai';
-import { TocSchema } from '#shared/types/commonTypes.js';
-import { TextSelection } from '@huridocs/react-text-selection-handler';
-import { tocStateAtom, tocActions, convertTextSelectionToTocEntry } from '../tocAtom.js';
+import { TocSchema } from 'shared/types/commonTypes';
+import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import { tocStateAtom, tocActions, convertTextSelectionToTocEntry } from '../tocAtom';
 
 // Test data
 const simpleToc: TocSchema[] = [

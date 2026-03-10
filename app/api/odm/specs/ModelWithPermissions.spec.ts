@@ -1,13 +1,10 @@
-import { PermissionSchema } from '#shared/types/permissionType.js';
-import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
-import {
-  instanceModelWithPermissions,
-  ModelWithPermissions,
-} from '#api/odm/ModelWithPermissions.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import testingDB from '#api/utils/testing_db.js';
+import { PermissionSchema } from 'shared/types/permissionType';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { instanceModelWithPermissions, ModelWithPermissions } from 'api/odm/ModelWithPermissions';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import testingDB from 'api/utils/testing_db';
 import * as mongoose from 'mongoose';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 describe('ModelWithPermissions', () => {
   let model: ModelWithPermissions<any>;

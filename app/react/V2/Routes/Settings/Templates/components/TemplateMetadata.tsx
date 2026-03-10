@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { ColorPicker } from '#V2/Components/Forms/ColorPicker.js';
-import { InputField } from '#V2/Components/Forms/InputField.js';
-import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
-import { Select, OptionSchema } from '#V2/Components/Forms/Select.js';
-import { Translate, t } from '#app/I18N/index.js';
-import { templateColors } from './defaultTemplateColors.js';
+import { ColorPicker } from 'app/V2/Components/Forms/ColorPicker';
+import { InputField } from 'app/V2/Components/Forms/InputField';
+import { Checkbox } from 'app/V2/Components/Forms/Checkbox';
+import { Select, OptionSchema } from 'app/V2/Components/Forms/Select';
+import { Translate, t } from 'app/I18N';
+
+const templateColors = [
+  '#628ccf',
+  '#ff8282',
+  '#ff8a4c',
+  '#faca15',
+  '#16bdca',
+  '#31c48d',
+  '#9eb0fd',
+  '#f17eb8',
+  '#ac94fa',
+  '#9ca3af',
+];
 
 export interface TemplateMetadataValues {
   name: string;

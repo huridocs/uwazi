@@ -1,12 +1,12 @@
-import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import { z } from 'zod';
-import { UpdateThesaurusUseCaseInput } from '#api/core/application/UpdateThesaurus.js';
-import { CSVLoader } from '#api/csv/index.js';
+import { UpdateThesaurusUseCaseInput } from 'api/core/application/UpdateThesaurus';
+import { CSVLoader } from 'api/csv';
 import { ObjectId } from 'mongodb';
-import { LoggerFactory } from '../../factories/LoggerFactory.js';
-import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO.js';
-import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper.js';
-import { UpdateThesaurusUseCaseFactory } from '../../factories/UpdateThesaurusUseCaseFactory.js';
+import { LoggerFactory } from '../../factories/LoggerFactory';
+import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO';
+import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper';
+import { UpdateThesaurusUseCaseFactory } from '../../factories/UpdateThesaurusUseCaseFactory';
 
 const ValueEntrySchema = z.object({
   label: z.string(),

@@ -1,9 +1,8 @@
-import get from 'lodash/get.js';
-import has from 'lodash/has.js';
-import { FileType } from '#shared/types/fileType.js';
-import { PreviewMetadataProperty, ValuePropertyTypes } from '#app/V2/domain/entities/types.js';
-import { ProcessingContext, AdapterMetadataProperty } from './types.js';
-import { BasePropertyProcessor } from './BasePropertyProcessor.js';
+import { get, has } from 'lodash';
+import { FileType } from 'shared/types/fileType';
+import { PreviewMetadataProperty, ValuePropertyTypes } from 'app/V2/domain/entities/types';
+import { ProcessingContext, AdapterMetadataProperty } from './types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class PreviewPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'PreviewPropertyProcessor';

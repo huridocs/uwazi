@@ -1,4 +1,4 @@
-import { PagesAPI } from './PagesAPI.js';
+import PagesAPI from './PagesAPI';
 
 export default {
   api: PagesAPI,

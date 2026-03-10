@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { EntityStatus } from '../domain/PXEntityStatusModel.js';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 export type MongoPXEntityStatusDBO = {
   _id: ObjectId;

@@ -1,6 +1,6 @@
 import React from 'react';
-import { CreateExtractorProvider } from './CreateExtractorContext.js';
-import { Dialog } from './Dialog.js';
+import { CreateExtractorProvider } from './CreateExtractorContext';
+import { Dialog } from './Dialog';
 
 const CreateDialog = ({
   isOpen = false,

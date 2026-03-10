@@ -1,10 +1,10 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { createStore, Provider } from 'jotai';
-import { Entity } from '#V2/domain/index.js';
-import { FileType } from '#shared/types/fileType.js';
-import { settingsAtom } from '#V2/atoms/index.js';
-import { FileList } from '#V2/Routes/Entity/Components/FileList.js';
+import { Entity } from 'V2/domain';
+import { FileType } from 'shared/types/fileType';
+import { settingsAtom } from 'V2/atoms';
+import { FileList } from 'V2/Routes/Entity/Components/FileList';
 
 const store = createStore();
 store.set(settingsAtom, { languages: [{ key: 'en', label: 'English' }] });
@@ -13,8 +13,6 @@ const meta: Meta<typeof FileList> = {
   title: 'Components/FileList',
   component: FileList,
 };
-
-export default meta;
 
 type Story = StoryObj<typeof FileList>;
 
@@ -111,3 +109,4 @@ const WithFiles: Story = {
 };
 
 export { Empty, WithFiles };
+export default meta;

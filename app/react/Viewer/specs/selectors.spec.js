@@ -1,5 +1,5 @@
-import Immutable from 'immutable';
-import * as selectors from '../selectors.js';
+import { fromJS as Immutable } from 'immutable';
+import * as selectors from '../selectors';
 
 describe('Viewer selectors', () => {
   let state;
@@ -7,9 +7,9 @@ describe('Viewer selectors', () => {
   beforeEach(() => {
     state = {
       documentViewer: {
-        doc: Immutable.fromJS({ sharedId: 'docSharedId' }),
-        targetDoc: Immutable.fromJS({ sharedId: 'targetDocSharedId' }),
-        references: Immutable.fromJS([
+        doc: Immutable({ sharedId: 'docSharedId' }),
+        targetDoc: Immutable({ sharedId: 'targetDocSharedId' }),
+        references: Immutable([
           {
             _id: 'r1',
             entity: 'docSharedId',
@@ -43,7 +43,7 @@ describe('Viewer selectors', () => {
             hub: 'hub4',
           },
         ]),
-        targetDocReferences: Immutable.fromJS([
+        targetDocReferences: Immutable([
           {
             _id: 'r9',
             entity: 'docSharedId',

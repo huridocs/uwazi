@@ -4,10 +4,10 @@
 
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import Immutable from 'immutable';
-import { ILink } from '#app/V2/shared/types.js';
-import { IImmutable } from '#shared/types/Immutable.js';
-import { DropdownMenu } from '../DropdownMenu.js';
+import { fromJS } from 'immutable';
+import { ILink } from 'app/V2/shared/types';
+import { IImmutable } from 'shared/types/Immutable';
+import { DropdownMenu } from '../DropdownMenu';
 
 const links: ILink[] = [
   {
@@ -29,7 +29,7 @@ describe('DropdownMenu', () => {
   let hideMobileMenuMock: Function;
 
   beforeEach(() => {
-    immutableLinks = Immutable.fromJS(links);
+    immutableLinks = fromJS(links);
     hideMobileMenuMock = jest.fn();
     // @ts-ignore
   });
@@ -78,7 +78,7 @@ describe('DropdownMenu', () => {
   });
 
   it('should have correct link if the link is external', () => {
-    const externalLink = Immutable.fromJS({
+    const externalLink = fromJS({
       title: 'title 1',
       url: '/some_url',
       sublinks: [

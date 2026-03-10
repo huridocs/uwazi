@@ -1,4 +1,4 @@
-import { ReadableV1Connection } from './relationships.testOneHub.js';
+import { ReadableV1Connection } from './relationships.testOneHub';
 
 type GetMigrationHubRecordsRequest = {
   page: string;

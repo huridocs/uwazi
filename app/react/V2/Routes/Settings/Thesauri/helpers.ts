@@ -2,17 +2,14 @@ import { SetStateAction } from 'react';
 import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
-import assign from 'lodash/assign.js';
-import isEqual from 'lodash/isEqual.js';
-import orderBy from 'lodash/orderBy.js';
-import remove from 'lodash/remove.js';
-import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { get as getThesauri } from '#V2/api/thesauri/index.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import { httpRequest } from '#shared/superagent.js';
-import uniqueID from '#shared/uniqueID.js';
-import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import { ThesaurusRow } from './components/TableComponents.js';
+import { assign, isEqual, orderBy, remove } from 'lodash';
+import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { get as getThesauri } from 'V2/api/thesauri';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { httpRequest } from 'shared/superagent';
+import uniqueID from 'shared/uniqueID';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
+import { ThesaurusRow } from './components/TableComponents';
 
 const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>
   item.rowId === searchedItem.rowId ? item : undefined;
@@ -39,7 +36,7 @@ const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =
   });
 
 const addSelection =
-  (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => (item: ThesaurusRow) => {
+  (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => (item: any) => {
     if (item.rowId in selectedRows) {
       selection.push(item);
     }

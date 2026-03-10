@@ -3,19 +3,16 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { useAtomValue } from 'jotai';
-import keyBy from 'lodash/keyBy.js';
-import merge from 'lodash/merge.js';
-import intersectionBy from 'lodash/intersectionBy.js';
-import values from 'lodash/values.js';
+import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { Row, createColumnHelper } from '@tanstack/react-table';
-import { Translate, I18NApi, t } from '#app/I18N/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
-import { Button, Table, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { useApiCaller } from '#V2/CustomHooks/useApiCaller.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { InstallLanguagesModal } from './components/InstallLanguagesModal.js';
+import { Translate, I18NApi, t } from 'app/I18N';
+import { RequestParams } from 'app/utils/RequestParams';
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
+import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { LanguageSchema } from 'shared/types/commonTypes';
+import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 import {
   DefaultHeader,
   LabelHeader,
@@ -25,7 +22,7 @@ import {
   ResetButton,
   UninstallButton,
   LanguageLabel,
-} from './components/TableComponents.js';
+} from './components/TableComponents';
 
 type TableLanguages = LanguageSchema & { rowId: string };
 const columnHelper = createColumnHelper<TableLanguages>();

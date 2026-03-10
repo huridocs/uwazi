@@ -1,9 +1,9 @@
-import { api } from '#app/utils/api.js';
-import { EntitiesAPI } from '../Entities/EntitiesAPI.js';
+import api from 'app/utils/api';
+import EntitiesApi from '../Entities/EntitiesAPI';
 
-const documentsAPI = {
+export default {
   get(requestParams) {
-    return EntitiesAPI.get(requestParams);
+    return EntitiesApi.get(requestParams);
   },
 
   countByTemplate(requestParams) {
@@ -34,4 +34,3 @@ const documentsAPI = {
     return api.delete('documents', requestParams).then(response => response.json);
   },
 };
-export { documentsAPI };

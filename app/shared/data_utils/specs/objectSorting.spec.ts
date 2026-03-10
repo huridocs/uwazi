@@ -1,4 +1,4 @@
-import { sortByStrings } from '../objectSorting.js';
+import { sortByStrings } from '../objectSorting';
 
 describe('sortByStrings()', () => {
   it('should sort the objects by the given properties in place', () => {

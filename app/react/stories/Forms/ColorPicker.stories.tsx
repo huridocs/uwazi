@@ -1,8 +1,8 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { action } from 'storybook/actions';
-import { fn } from 'storybook/test';
-import { ColorPicker } from '#V2/Components/Forms/index.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
+import { fn } from '@storybook/test';
+import { ColorPicker } from 'app/V2/Components/Forms';
 
 const meta: Meta<typeof ColorPicker> = {
   title: 'Forms/ColorPicker',
@@ -16,7 +16,6 @@ const meta: Meta<typeof ColorPicker> = {
     },
   },
 };
-export default meta;
 
 type Story = StoryObj<typeof ColorPicker>;
 
@@ -46,3 +45,5 @@ const Basic: Story = {
 };
 
 export { Basic };
+
+export default meta;

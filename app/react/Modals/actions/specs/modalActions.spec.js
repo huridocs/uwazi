@@ -1,5 +1,5 @@
-import * as actions from '#app/Modals/actions/modalActions.js';
-import * as types from '#app/Modals/actions/actionTypes.js';
+import * as actions from 'app/Modals/actions/modalActions';
+import * as types from 'app/Modals/actions/actionTypes';
 
 describe('modalsActions', () => {
   describe('showModal', () => {

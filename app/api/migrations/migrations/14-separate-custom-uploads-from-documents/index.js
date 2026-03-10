@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
-import { config } from '#api/config.js';
+import { config } from 'api/config';
 
 const rename = util.promisify(fs.rename);
 

@@ -1,16 +1,16 @@
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DBFixture } from '#api/utils/testing_db.js';
-import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DBFixture } from 'api/utils/testing_db';
+import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import { ObjectId } from 'mongodb';
-import { tenants } from '#api/tenants/index.js';
-import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener.js';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
-import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
-import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
+import { tenants } from 'api/tenants';
+import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
+import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 
 const languages = ['en', 'es'];
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { SettingsContent } from '../SettingsContent.js';
+import { SettingsContent } from '../SettingsContent';
 
 describe('ConfirmationModal', () => {
   const render = () => {

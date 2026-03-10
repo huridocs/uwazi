@@ -1,7 +1,7 @@
 import { createStore } from 'jotai';
-import { isClient } from '#app/utils/index.js';
-import { getStore as getClientStore } from './client.store.js';
-import { getStore as getServerStore } from './server.store.js';
+import { isClient } from 'app/utils';
+import { getStore as getClientStore } from './client.store';
+import { getStore as getServerStore } from './server.store';
 
 type AtomStore = ReturnType<typeof createStore>;
 

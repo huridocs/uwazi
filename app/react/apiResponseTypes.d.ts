@@ -1,14 +1,14 @@
-import { UserGroupSchema } from '#shared/types/userGroupType.js';
-import { UserSchema } from '#shared/types/userType.js';
+import { UserGroupSchema } from 'shared/types/userGroupType';
+import { UserSchema } from 'shared/types/userType';
 import {
   PreserveConfig,
   Settings,
   SettingsFilterSchema,
   SettingsLinkSchema,
-} from '#shared/types/settingsType.js';
-import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
+} from 'shared/types/settingsType';
+import { LanguageSchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { TemplateSchema } from 'shared/types/templateType';
 
 export interface GroupMemberSchema {
   refId: string;
@@ -60,10 +60,8 @@ export type Template = TemplateSchema & {
   properties?: Property[];
 };
 
-export interface ClientSettings extends Omit<
-  Settings,
-  '_id | filters | links | features | languages'
-> {
+export interface ClientSettings
+  extends Omit<Settings, '_id | filters | links | features | languages'> {
   _id?: string;
   filters?: ClientSettingsFilterSchema[];
   languages?: ClientLanguageSchema[];

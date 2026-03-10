@@ -2,8 +2,8 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from '#api/common.v2/infrastructure/AbstractController.js';
-import { TrainingSetFactory } from '../infrastructure/TrainingSetFactory.js';
+} from 'api/common.v2/infrastructure/AbstractController';
+import { TrainingSetFactory } from '../infrastructure/TrainingSetFactory';
 
 type Dependencies = AbstractControllerDependencies<Request>;
 

@@ -5,9 +5,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { globalMatomoAtom, settingsAtom } from '#V2/atoms/index.js';
-import { TestAtomStoreProvider } from '#V2/testing/index.js';
-import { Matomo } from '../Matomo.js';
+import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
+import { TestAtomStoreProvider } from 'V2/testing';
+import { Matomo } from '../Matomo';
 
 describe('Matomo', () => {
   const originalLocation = window.location;
@@ -28,9 +28,7 @@ describe('Matomo', () => {
     window.location = originalLocation;
   });
 
-  const renderComponent = (
-    storeState: Array<[typeof globalMatomoAtom | typeof settingsAtom, unknown]>
-  ) => {
+  const renderComponent = (storeState: any) => {
     render(
       <MemoryRouter>
         <TestAtomStoreProvider initialValues={storeState}>

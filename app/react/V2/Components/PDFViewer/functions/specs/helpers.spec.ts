@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import { triggerScroll } from '../helpers.js';
+import { triggerScroll } from '../helpers';
 
 describe('triggerScroll', () => {
   //defined as any since the correct definition of the react ref type has no impact on the test
@@ -21,7 +21,7 @@ describe('triggerScroll', () => {
 
     requestAnimationFrameSpy = jest
       .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation((cb: FrameRequestCallback) => {
+      .mockImplementation(cb => {
         setTimeout(cb, 0);
         return 1;
       });

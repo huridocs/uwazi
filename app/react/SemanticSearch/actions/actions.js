@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
-import { actions } from '#app/BasicReducer/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import { actions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
 
-import { api } from '../SemanticSearchAPI.js';
+import api from '../SemanticSearchAPI';
 
 export function fetchSearches() {
   return dispatch =>

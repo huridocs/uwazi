@@ -11,20 +11,12 @@
   "fakeTimers": {
     "legacyFakeTimers": true
   },
-  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
   "transform": {
-    "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }],
-    "^.*/setUpJestServer\\.js$": ["babel-jest", { "rootMode": "upward" }]
+    "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }]
   },
   "moduleNameMapper": {
-    "^#api/(.*)\\.js$": "<rootDir>/api/$1",
-    "^#api/(.*)": "<rootDir>/api/$1",
-    "^#shared/(.*)\\.js$": "<rootDir>/shared/$1",
-    "^#shared/(.*)": "<rootDir>/shared/$1",
     "^api/(.*)": "<rootDir>/api/$1",
     "^shared/(.*)": "<rootDir>/shared/$1",
-    "^app/(.*)\\.js$": "<rootDir>/$1",
-    "^app/(.*)": "<rootDir>/$1",
     "^uuid$": "<rootDir>/../node_modules/uuid/dist/index.js"
   }
 }

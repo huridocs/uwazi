@@ -1,11 +1,6 @@
-import { getStore } from '#shared/atomStore/index.js';
-import { getRoutes } from './Routes.js';
-import { settingsAtom, userAtom } from './V2/atoms/index.js';
+import { getStore } from 'shared/atomStore';
+import { getRoutes } from './Routes';
+import { settingsAtom, userAtom } from './V2/atoms';
 
-let _routes;
-export const getAppRoutes = () => {
-  if (!_routes) {
-    _routes = getRoutes?.(getStore().get(settingsAtom), getStore().get(userAtom)?._id);
-  }
-  return _routes;
-};
+export const routes =
+  getRoutes && getRoutes(getStore().get(settingsAtom), getStore().get(userAtom)?._id);

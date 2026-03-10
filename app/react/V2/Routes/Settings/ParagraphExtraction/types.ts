@@ -1,4 +1,4 @@
-import { Extractor, EntityStatus } from '#V2/shared/ParagraphExtractionTypes.js';
+import { Extractor, EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 
 type PXTemplate = {
   _id: string;

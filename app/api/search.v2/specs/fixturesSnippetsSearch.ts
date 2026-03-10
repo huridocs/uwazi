@@ -1,5 +1,5 @@
-import db, { testingDB, DBFixture } from '#api/utils/testing_db.js';
-import { FileType } from '#shared/types/fileType.js';
+import db, { testingDB, DBFixture } from 'api/utils/testing_db';
+import { FileType } from 'shared/types/fileType';
 
 const entity1enId = testingDB.id();
 const entity2enId = testingDB.id();

@@ -7,7 +7,7 @@
 /* eslint-disable max-statements */
 
 import { Document, ObjectId } from 'mongodb';
-import { buildPipelineFromDiff } from './PipelineBuilder.js';
+import { buildPipelineFromDiff } from './PipelineBuilder';
 
 type MongoDocument = Document & { _id: ObjectId };
 

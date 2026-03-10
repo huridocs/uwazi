@@ -1,5 +1,5 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { PXEntityStatusModel, EntityStatus } from './PXEntityStatusModel.js';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { PXEntityStatusModel, EntityStatus } from './PXEntityStatusModel';
 
 type CreateInput = {
   extractorId: string;

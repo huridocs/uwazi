@@ -1,5 +1,5 @@
-import { api } from '#app/Entities/V2NewRelationshipsAPI.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import api from 'app/Entities/V2NewRelationshipsAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 
 const getRelationshipsByEntity = sharedId => api.get(new RequestParams({ sharedId }));
 

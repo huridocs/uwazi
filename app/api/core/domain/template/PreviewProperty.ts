@@ -1,8 +1,8 @@
-import { Context } from '#api/core/domain/template/Property.js';
-import { PropertyTypeInvalidTypeError } from './errors.js';
-import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty.js';
-import { PropertyTypeEnum } from './PropertyType.js';
-import { PreviewEntry, PropertyAssignment } from './PropertyValue.js';
+import { Context } from 'api/core/domain/template/Property';
+import { PropertyTypeInvalidTypeError } from './errors';
+import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
+import { PropertyTypeEnum } from './PropertyType';
+import { PreviewEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Preview;

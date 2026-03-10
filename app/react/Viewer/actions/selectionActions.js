@@ -1,4 +1,4 @@
-import * as types from '#app/Viewer/actions/actionTypes.js';
+import * as types from 'app/Viewer/actions/actionTypes';
 
 export function setSelection(sourceRange, sourceFile) {
   return {

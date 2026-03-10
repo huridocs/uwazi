@@ -1,4 +1,4 @@
-import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 
 export class GetTranslationsService {
   private translationsDS: TranslationsDataSource;

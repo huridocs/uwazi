@@ -1,8 +1,8 @@
-import { RawEntity } from '#api/csv/entityRow.js';
-import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
-import { ensure } from '#shared/tsUtils.js';
-import { generateID } from '#shared/IDGenerator.js';
-import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils.js';
+import { RawEntity } from 'api/csv/entityRow';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ensure } from 'shared/tsUtils';
+import { generateID } from 'shared/IDGenerator';
+import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils';
 
 export interface ParserResult {
   data: MetadataObjectSchema[];

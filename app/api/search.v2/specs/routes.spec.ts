@@ -1,10 +1,11 @@
 import request from 'supertest';
-import type { Application } from 'express';
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import { elastic } from '#api/search/index.js';
+import { Application } from 'express';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { elastic } from 'api/search';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { searchRoutes } from '../routes.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DomainError } from 'api/core/domain/error/DomainError';
+import { searchRoutes } from '../routes';
 
 import {
   fixturesTitleSearch,
@@ -18,8 +19,7 @@ import {
   entity3es,
   entity4es,
   entity5es,
-} from './fixturesTitleSearch.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
+} from './fixturesTitleSearch';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);

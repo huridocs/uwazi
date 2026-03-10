@@ -1,4 +1,4 @@
-import { Thesaurus } from '../Thesaurus.js';
+import { Thesaurus } from '../Thesaurus';
 
 describe('Thesaurus', () => {
   it('should create a new thesaurus', () => {

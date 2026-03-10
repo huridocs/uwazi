@@ -1,6 +1,6 @@
-import { getStore } from '#shared/atomStore/index.js';
-import { EntityCompositionUseCase } from '../useCases/EntityCompositionUseCase.js';
-import { EntityRepository } from '#V2/infrastructure/repositories/EntityRepository.js';
+import { getStore } from 'shared/atomStore';
+import { EntityCompositionUseCase } from '../useCases/EntityCompositionUseCase';
+import { EntityRepository } from '../../infrastructure/repositories/EntityRepository';
 
 export class DependencyContainer {
   private static instance: DependencyContainer;

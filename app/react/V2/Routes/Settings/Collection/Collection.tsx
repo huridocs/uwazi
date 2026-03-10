@@ -5,21 +5,21 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import isUndefined from 'lodash/isUndefined.js';
+import { isUndefined } from 'lodash';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import * as SettingsAPI from '#V2/api/settings/index.js';
-import * as TemplatesAPI from '#V2/api/templates/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
-import { Button, Card } from '#V2/Components/UI/index.js';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { Translate, t } from '#app/I18N/index.js';
-import { ClientSettings, Template } from '#app/apiResponseTypes.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import * as tips from './collectionSettingsTips.js';
-import { CollectionOptionToggle } from './CollectionOptionToggle.js';
+import * as SettingsAPI from 'V2/api/settings';
+import * as TemplatesAPI from 'V2/api/templates';
+import { notificationAtom } from 'app/V2/atoms';
+import { InputField, Select, MultiSelect, Geolocation } from 'app/V2/Components/Forms';
+import { Button, Card } from 'app/V2/Components/UI';
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { Translate, t } from 'app/I18N';
+import { ClientSettings, Template } from 'app/apiResponseTypes';
+import { FetchResponseError } from 'shared/JSONRequest';
+import * as tips from './collectionSettingsTips';
+import { CollectionOptionToggle } from './CollectionOptionToggle';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -322,7 +322,7 @@ const Collection = () => {
                       tips.publicForm[2]
                     )}
                     options={templateOptions}
-                    onChange={(newValues: any) => {
+                    onChange={newValues => {
                       setValue('allowedPublicTemplates', newValues);
                     }}
                     value={settings.allowedPublicTemplates || []}
@@ -357,7 +357,7 @@ const Collection = () => {
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
                     value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
-                    onChange={(newValues: any) => {
+                    onChange={newValues => {
                       clearErrors('mapLayers');
                       if (!newValues.length) {
                         setError(

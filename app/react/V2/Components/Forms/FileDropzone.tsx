@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState, useId } from 'react';
-import Dropzone, { DropzoneOptions } from 'react-dropzone-esm';
+import React, { useEffect, useState } from 'react';
+import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { Translate } from '#app/I18N/index.js';
-import { formatBytes } from '#V2/shared/formatHelpers.js';
+import { Translate } from 'app/I18N';
+import { formatBytes } from 'V2/shared/formatHelpers';
 
 type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];
@@ -14,7 +14,6 @@ type FileDropzoneProps = {
 const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [totalSize, setTotalSize] = useState<number>(0);
-  const inputId = useId();
 
   useEffect(() => {
     let result = 0;
@@ -50,10 +49,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
           className={`p-4 bg-gray-50 rounded-sm border border-gray-300 border-dashed ${className}`}
         >
           <div {...getRootProps()}>
-            <label className="sr-only" htmlFor={inputId}>
-              <Translate>Browse files to upload</Translate>
-            </label>
-            <input {...getInputProps()} id={inputId} />
+            <input {...getInputProps()} />
             <div className="flex flex-col gap-4">
               <ArrowUpTrayIcon className="m-auto w-auto text-gray-200 max-w-20" />
 
@@ -71,7 +67,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
               <div
                 // eslint-disable-next-line react/no-array-index-key
                 key={`${file.name}-${index}`}
-                className="text-sm border border-gray-300 bg-gray-100 px-0.5 rounded-sm flex flex-nowrap gap-1 align-middle"
+                className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded-sm flex flex-nowrap gap-1 align-middle"
               >
                 <span className="truncate max-w-32">{file.name}</span>
                 <span>-</span>

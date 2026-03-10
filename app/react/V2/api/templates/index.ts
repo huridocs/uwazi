@@ -1,10 +1,10 @@
 import { IncomingHttpHeaders } from 'http';
-import { api } from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { Template } from '#app/apiResponseTypes.js';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
+import { ClientTemplateSchema } from 'V2/shared/types';
+import { Template } from 'app/apiResponseTypes';
 
-const get = async (headers?: IncomingHttpHeaders): Promise<ClientTemplateSchema[]> => {
+const get = async (headers?: IncomingHttpHeaders): Promise<Template[]> => {
   try {
     const requestParams = new RequestParams({}, headers);
     const response = await api.get('templates', requestParams);

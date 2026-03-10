@@ -1,15 +1,15 @@
 /* eslint-disable max-statements */
 import path from 'path';
 
-import translations from '#api/i18n/translations.js';
-import thesauri from '#api/thesauri/index.js';
-import entities from '#api/entities/index.js';
-import { fixtureFactory } from '#api/csv/specs/csvLoaderSelectsFixtures.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { fixtures } from './csvLoaderSelectsFixtures.js';
+import translations from 'api/i18n/translations';
+import thesauri from 'api/thesauri';
+import entities from 'api/entities';
+import { fixtureFactory } from 'api/csv/specs/csvLoaderSelectsFixtures';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { fixtures } from './csvLoaderSelectsFixtures';
 
-import { CSVLoader } from '../csvLoader.js';
-import { ArrangeThesauriError } from '../arrangeThesauri.js';
+import { CSVLoader } from '../csvLoader';
+import { ArrangeThesauriError } from '../arrangeThesauri';
 
 const loader = new CSVLoader();
 

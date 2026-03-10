@@ -1,5 +1,5 @@
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers/index.js';
+import { clearCookiesAndLogin } from '../helpers';
 
 describe('Activity log', () => {
   before(() => {

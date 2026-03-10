@@ -1,5 +1,5 @@
-import db from '#api/utils/testing_db.js';
-import { BulkWriteStream } from '../BulkWriteStream.js';
+import db from 'api/utils/testing_db';
+import { BulkWriteStream } from '../BulkWriteStream';
 
 const fixtures = {
   values: [{ value: -1 }, { value: 0 }],

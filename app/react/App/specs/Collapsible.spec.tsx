@@ -7,7 +7,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
-import { Collapsible } from '../Collapsible.js';
+import { Collapsible } from '../Collapsible';
 
 describe('Collapsible', () => {
   let component: CommonWrapper;

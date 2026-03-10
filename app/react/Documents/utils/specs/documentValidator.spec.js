@@ -1,4 +1,4 @@
-import validator, { required } from '../documentValidator.js';
+import validator, { required } from '../documentValidator';
 
 describe('documentValidator', () => {
   const fieldsTemplate = [

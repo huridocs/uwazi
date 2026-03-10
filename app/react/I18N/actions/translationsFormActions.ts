@@ -1,8 +1,7 @@
-import { IImmutable } from '#shared/types/Immutable.js';
-import { generateID } from '#shared/IDGenerator.js';
-import { ClientTranslationSchema } from '#app/istore.js';
-import filter from 'lodash/filter.js';
-import find from 'lodash/find.js';
+import { IImmutable } from 'shared/types/Immutable';
+import { generateID } from 'shared/IDGenerator';
+import { ClientTranslationSchema } from 'app/istore';
+import { filter, find } from 'lodash';
 
 type LocaleTranslation = { locale: string; [key: string]: string };
 

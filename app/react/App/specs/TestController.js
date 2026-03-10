@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteHandler } from '../RouteHandler.js';
+import RouteHandler from '../RouteHandler';
 
 class TestController extends RouteHandler {
   static requestState() {
@@ -11,4 +11,4 @@ class TestController extends RouteHandler {
   }
 }
 
-export { TestController };
+export default TestController;

@@ -1,4 +1,4 @@
-import { clearCookiesAndLogin } from '../helpers/login.js';
+import { clearCookiesAndLogin } from '../helpers/login';
 
 const mainSearchResults = [
   'Artavia Murillo et al',

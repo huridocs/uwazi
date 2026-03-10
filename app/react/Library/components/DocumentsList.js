@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from '#app/Multireducer/index.js';
-import { actions as actionCreators } from '#app/BasicReducer/index.js';
+import { wrapDispatch } from 'app/Multireducer';
+import { actions as actionCreators } from 'app/BasicReducer';
 
 import {
   searchDocuments,
@@ -10,8 +10,8 @@ import {
   unselectDocument,
   unselectAllDocuments,
   selectDocuments,
-} from '#app/Library/actions/libraryActions.js';
-import { DocumentsListWithRouter } from '../../Layout/DocumentsList.js';
+} from 'app/Library/actions/libraryActions';
+import DocumentsList from '../../Layout/DocumentsList';
 
 function clickOnDocument(e, doc, active, multipleSelection = false) {
   const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
@@ -91,5 +91,4 @@ function mapDispatchToProps(dispatch, props) {
 
 export { clickOnDocument, selectAllDocuments, mapStateToProps };
 
-const LibraryDocumentsList = connect(mapStateToProps, mapDispatchToProps)(DocumentsListWithRouter);
-export { LibraryDocumentsList };
+export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);

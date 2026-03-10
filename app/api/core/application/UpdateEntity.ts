@@ -1,16 +1,16 @@
-import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { AbstractUseCase } from '../libs/UseCase.js';
-import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
-import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { InputFile } from '../infrastructure/files/InputFile.js';
-import { FilesService } from './FilesService.js';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
-import { FilesDataSource } from './contracts/FilesDataSource.js';
-import { BaseFile } from '../domain/files/BaseFile.js';
-import { EntitiesService } from './EntitiesService.js';
+import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { AbstractUseCase } from '../libs/UseCase';
+import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
+import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { InputFile } from '../infrastructure/files/InputFile';
+import { FilesService } from './FilesService';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
+import { FilesDataSource } from './contracts/FilesDataSource';
+import { BaseFile } from '../domain/files/BaseFile';
+import { EntitiesService } from './EntitiesService';
 
 type Input = {
   sharedId: string;
@@ -63,14 +63,14 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]).all();
 
-    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, (f: BaseFile) =>
+    const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, f =>
       (input.files || []).some(file => file.id === f.id)
     );
 
     const updatedFiles: BaseFile[] = [];
 
     if (input.files) {
-      keptFiles.forEach((keptFile: BaseFile) => {
+      keptFiles.forEach(keptFile => {
         const update = input.files!.find(file => file.id === keptFile.id);
         if (!update) return;
 

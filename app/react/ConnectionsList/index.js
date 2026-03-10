@@ -1,7 +1,7 @@
-import { connectionsListReducer as reducer } from './reducers/reducer.js';
-import { ResetSearch } from './components/ResetSearch.js';
-import { ConnectionsList } from './components/ConnectionsList.js';
-import { ConnectionsGroups } from './components/ConnectionsGroups.js';
-import * as actions from './actions/actions.js';
+import reducer from './reducers/reducer';
+import ResetSearch from './components/ResetSearch';
+import ConnectionsList from './components/ConnectionsList';
+import { ConnectionsGroups } from './components/ConnectionsGroups';
+import * as actions from './actions/actions';
 
 export { reducer, ResetSearch, ConnectionsGroups, ConnectionsList, actions };

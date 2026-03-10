@@ -6,13 +6,13 @@ import {
   defaultState,
   renderConnected,
   renderConnectedContainer,
-} from '#app/utils/test/renderConnected.js';
-import * as uploadActions from '#app/Uploads/actions/uploadsActions.js';
+} from 'app/utils/test/renderConnected';
+import * as uploadActions from 'app/Uploads/actions/uploadsActions';
 import { ShallowWrapper } from 'enzyme';
 import { act, fireEvent, screen } from '@testing-library/react';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { Provider } from 'react-redux';
-import { LibraryFooter } from '../LibraryFooter.js';
+import { LibraryFooter } from '../LibraryFooter';
 
 describe('LibraryFooter', () => {
   it.each(['library', 'uploads'])(
@@ -78,8 +78,8 @@ describe('LibraryFooter', () => {
     it('should close the footer if when scrollcount increases', async () => {
       const state = {
         ...defaultState,
-        exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(false) },
-        user: Immutable.fromJS({ _id: '1234' }),
+        exportSearchResults: { exportSearchResultsProcessing: fromJS(false) },
+        user: fromJS({ _id: '1234' }),
       };
       const { renderResult, store } = renderConnectedContainer(
         <LibraryFooter storeKey="library" scrollCount={0} />,

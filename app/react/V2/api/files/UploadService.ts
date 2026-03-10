@@ -1,7 +1,7 @@
 import superagent, { MultipartValueSingle, SuperAgentRequest } from 'superagent';
-import { APIURL } from '#app/config.js';
-import { FileType } from '#shared/types/fileType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
+import { APIURL } from 'app/config';
+import { FileType } from 'shared/types/fileType';
+import { FetchResponseError } from 'shared/JSONRequest';
 
 type Endpoint = 'attachment' | 'custom' | 'document';
 

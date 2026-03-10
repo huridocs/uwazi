@@ -1,4 +1,4 @@
-import { ShellExecutor } from '../ShellExecutor.js';
+import { ShellExecutor } from '../ShellExecutor';
 
 describe('ShellExecutor', () => {
   let shellExecutor: ShellExecutor;

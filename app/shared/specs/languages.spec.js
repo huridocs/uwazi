@@ -1,6 +1,6 @@
-import { detectLanguage } from '#shared/detectLanguage.js';
-import { availableLanguages, LanguageUtils } from '#shared/language/index.js';
-import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
+import { detectLanguage } from 'shared/detectLanguage';
+import { availableLanguages, LanguageUtils } from 'shared/language';
+import { otherLanguageSchema } from 'shared/language/availableLanguages';
 
 describe('languages', () => {
   describe('detectLanguage', () => {

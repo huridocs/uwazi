@@ -1,15 +1,15 @@
-import thesauri from '#api/thesauri/index.js';
-import { RawEntity } from '#api/csv/entityRow.js';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
-import { ensure } from '#shared/tsUtils.js';
-import { sanitizeStringValue } from '../sanitizationUtils.js';
+import thesauri from 'api/thesauri';
+import { RawEntity } from 'api/csv/entityRow';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ensure } from 'shared/tsUtils';
+import { sanitizeStringValue } from '../sanitizationUtils';
 import {
   LabelInfo,
   determineParentChildRelationship,
   generateMetadataValue,
   parseParentChildWithSpaces,
-} from './shared.js';
+} from './shared';
 
 type ParserResult = {
   data: MetadataObjectSchema[];

@@ -1,4 +1,4 @@
-import { MultiselectListOption } from '#V2/Components/Forms/index.js';
+import { MultiselectListOption } from '..';
 
 const pizzas: MultiselectListOption[] = [
   { label: 'Margherita', value: 'MGT', searchLabel: 'Margherita' },

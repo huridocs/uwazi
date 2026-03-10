@@ -1,5 +1,5 @@
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { provenanceTypes } from '#shared/provenanceTypes.js';
+import { propertyTypes } from 'shared/propertyTypes';
+import { provenanceTypes } from 'shared/provenanceTypes';
 
 export const emitSchemaTypes = true;
 

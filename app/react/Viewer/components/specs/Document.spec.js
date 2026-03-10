@@ -5,8 +5,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { PDF } from '#app/PDF/index.js';
-import { Document } from '#app/Viewer/components/Document.js';
+import { PDF } from 'app/PDF';
+import { Document } from 'app/Viewer/components/Document.js';
 
 // eslint-disable-next-line max-statements
 describe('Document', () => {

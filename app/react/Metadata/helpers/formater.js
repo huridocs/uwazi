@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import { DateTime } from 'luxon';
 import Immutable from 'immutable';
-import { advancedSort } from '#app/utils/advancedSort.js';
-import { store } from '#app/store.js';
-import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
+import { advancedSort } from 'app/utils/advancedSort';
+import { store } from 'app/store';
+import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 
 const prepareRelatedEntity = (options, propValue, templates, property) => {
   const relation =
@@ -143,7 +143,7 @@ const getPropertyType = (propertyName, templates) => {
   return 'text';
 };
 
-const formater = {
+export default {
   formatDateRange(daterange = {}) {
     let from = '';
     let to = '';
@@ -612,4 +612,4 @@ const formater = {
   },
 };
 
-export { propertyValueFormatter, formater };
+export { propertyValueFormatter };

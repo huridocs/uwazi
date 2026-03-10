@@ -1,14 +1,12 @@
 /* eslint-disable max-classes-per-file */
 //@ts-ignore
-import PromisePoolModule from '@supercharge/promise-pool';
-const PromisePool =
-  (PromisePoolModule as { default?: typeof PromisePoolModule }).default ?? PromisePoolModule;
-import { SyncDBDataSource } from '#api/core/infrastructure/mongodb/common/SyncDBDataSource.js';
-import { model as updatelogsModel } from '#api/updatelogs/index.js';
+import PromisePool from '@supercharge/promise-pool';
+import { SyncDBDataSource } from 'api/core/infrastructure/mongodb/common/SyncDBDataSource';
+import { model as updatelogsModel } from 'api/updatelogs';
 import mongoose from 'mongoose';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { FileType } from '#shared/types/fileType.js';
-import { DataType, UwaziFilterQuery, models } from './model.js';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import { DataType, UwaziFilterQuery, models } from './model';
 
 const getBatchSteps = async <T, U>(
   model: SyncDBDataSource<T, U>,

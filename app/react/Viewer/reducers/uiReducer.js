@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import * as types from '#app/Viewer/actions/actionTypes.js';
+import * as types from 'app/Viewer/actions/actionTypes';
 
 const initialState = { reference: {}, snippet: {}, enableClickAction: true, activeReferences: [] };
 

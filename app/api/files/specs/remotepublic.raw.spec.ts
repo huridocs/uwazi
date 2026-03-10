@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express, { Request, Response, NextFunction } from 'express';
-import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
+import { routesErrorHandler } from 'api/utils/routesErrorHandler';
 
 describe('/api/remotepublic raw body', () => {
   it('does not run JSON parser and keeps raw body for proxy', async () => {

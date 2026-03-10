@@ -1,4 +1,4 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 
 const postToOcr = async (filename: string) => {
   await api.post(`files/${filename}/ocr`);

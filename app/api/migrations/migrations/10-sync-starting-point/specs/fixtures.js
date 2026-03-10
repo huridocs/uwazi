@@ -1,4 +1,4 @@
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
 const settings = db.id();
 const [template1, template2, entity1, entity2, entity3] = [

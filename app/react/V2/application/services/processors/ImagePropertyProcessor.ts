@@ -1,8 +1,8 @@
-import { ImageMetadataProperty } from '#app/V2/domain/entities/types.js';
-import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
-import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
-import { ProcessingContext, AdapterMetadataProperty } from './types.js';
-import { BasePropertyProcessor } from './BasePropertyProcessor.js';
+import { ImageMetadataProperty } from 'app/V2/domain/entities/types';
+import { reportErrorToSentry } from 'app/V2/shared/errorUtils';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { ProcessingContext, AdapterMetadataProperty } from './types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class ImagePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'ImagePropertyProcessor';

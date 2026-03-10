@@ -1,19 +1,19 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import loadable from '@loadable/component';
-import { DatePickerProps } from './DatePickerComponent.js';
-import { DateRangePickerProps } from './DateRangePickerComponent.js';
+import { DatePickerProps } from './DatePickerComponent';
+import { DateRangePickerProps } from './DateRangePickerComponent';
 
 const DatePickerComponent = loadable(async () => {
   const { DatePickerComponent: Component } = await import(
-    /* webpackChunkName: "LazyLoadDatePickerComponent" */ './DatePickerComponent.js'
+    /* webpackChunkName: "LazyLoadDatePickerComponent" */ './DatePickerComponent'
   );
   return Component;
 });
 
 const DateRangePickerComponent = loadable(async () => {
   const { DateRangePickerComponent: Component } = await import(
-    /* webpackChunkName: "LazyLoadDateRangePickerComponent" */ './DateRangePickerComponent.js'
+    /* webpackChunkName: "LazyLoadDateRangePickerComponent" */ './DateRangePickerComponent'
   );
   return Component;
 });

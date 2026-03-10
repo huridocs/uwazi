@@ -1,7 +1,7 @@
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy.js';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;

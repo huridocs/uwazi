@@ -1,10 +1,10 @@
-import type { Application } from 'express';
-import { TemplateMutationController } from '#api/core/infrastructure/express/template/TemplateMutationController.js';
-import { SetTemplateAsDefaultController } from '#api/core/infrastructure/express/template/SetTemplateAsDefaultController/SetTemplateAsDefaultController.js';
-import { GetTemplatesController } from '#api/core/infrastructure/express/template/GetTemplatesController.js';
-import { DeleteTemplateController } from '#api/core/infrastructure/express/template/DeleteTemplateController/DeleteTemplateController.js';
-import { CountTemplatesByThesaurusController } from '#api/core/infrastructure/express/template/CountTemplatesByThesaurusController.js';
-import needsAuthorization from '../../../../auth/authMiddleware.js';
+import { Application } from 'express';
+import { TemplateMutationController } from 'api/core/infrastructure/express/template/TemplateMutationController';
+import { SetTemplateAsDefaultController } from 'api/core/infrastructure/express/template/SetTemplateAsDefaultController/SetTemplateAsDefaultController';
+import { GetTemplatesController } from 'api/core/infrastructure/express/template/GetTemplatesController';
+import { DeleteTemplateController } from 'api/core/infrastructure/express/template/DeleteTemplateController/DeleteTemplateController';
+import { CountTemplatesByThesaurusController } from 'api/core/infrastructure/express/template/CountTemplatesByThesaurusController';
+import needsAuthorization from '../../../../auth/authMiddleware';
 
 export default (app: Application) => {
   app.get('/api/templates', GetTemplatesController.createHandler());

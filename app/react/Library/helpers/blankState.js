@@ -1,4 +1,4 @@
-import { store } from '#app/store.js';
+import { store } from 'app/store';
 
 export default function blankState() {
   const state = store.getState();

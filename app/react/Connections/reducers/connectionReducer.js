@@ -1,8 +1,8 @@
-import Immutable from '#shared/immutableWrapper.js';
+import { fromJS } from 'immutable';
 
-import * as viewerTypes from '#app/Viewer/actions/actionTypes.js';
+import * as viewerTypes from 'app/Viewer/actions/actionTypes';
 
-import * as types from '../actions/actionTypes.js';
+import * as types from '../actions/actionTypes';
 
 const initialState = {
   template: '',
@@ -18,10 +18,10 @@ const resetState = state => {
   propertiesToReset.forEach(key => {
     newState[key] = '';
   });
-  return Immutable.fromJS(newState);
+  return fromJS(newState);
 };
 
-const connectionReducer = (state = initialState, action = {}) => {
+export default function (state = initialState, action = {}) {
   let newState;
 
   switch (action.type) {
@@ -50,8 +50,6 @@ const connectionReducer = (state = initialState, action = {}) => {
       return state.delete('sourceRange');
 
     default:
-      return Immutable.fromJS(state);
+      return fromJS(state);
   }
-};
-
-export { connectionReducer };
+}

@@ -1,5 +1,6 @@
-import { renderConnected } from '#app/utils/test/renderConnected.js';
-import { SearchList } from '../SearchList.jsx';
+import React from 'react';
+import { shallow } from 'enzyme';
+import { SearchListComponent as SearchList } from '../SearchList';
 
 describe('SearchList', () => {
   let searches;
@@ -22,7 +23,7 @@ describe('SearchList', () => {
 
   const getProps = () => ({ searches });
 
-  const render = () => renderConnected(SearchList, getProps(), {});
+  const render = () => shallow(<SearchList {...getProps()} />);
 
   it('should render list of SearchItem with specified searches', () => {
     const component = render();

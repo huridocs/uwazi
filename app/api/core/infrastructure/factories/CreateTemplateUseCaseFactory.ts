@@ -1,13 +1,13 @@
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
-import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
-import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
-import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
-import { LegacyPageService } from '../mongodb/page/LegacyPageService.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
+import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
+import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService';
+import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
+import { LegacyPageService } from '../mongodb/page/LegacyPageService';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
 class CreateTemplateUseCaseFactory {
   static create() {

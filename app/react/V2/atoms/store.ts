@@ -1,24 +1,20 @@
+import { sortBy } from 'lodash';
 import { createStore } from 'jotai';
-import sortBy from 'lodash/sortBy.js';
-import { isClient } from '#app/utils/index.js';
-import { store as reduxStore } from '#app/store.js';
-import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
-import {
-  ClientTemplateSchema,
-  ClientTranslationSchema,
-  RelationshipTypesType,
-} from '#app/istore.js';
-import { getStore } from '#shared/atomStore/client.store.js';
-import { globalMatomoAtom } from './globalMatomoAtom.js';
-import { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
-import { relationshipTypesAtom } from './relationshipTypes.js';
-import { settingsAtom } from './settingsAtom.js';
-import { templatesAtom } from './templatesAtom.js';
-import { translationsAtom, localeAtom } from './translationsAtoms.js';
-import { userAtom } from './userAtom.js';
-import { thesauriAtom } from './thesauriAtom.js';
-import { serverIsMobileAtom } from './isMobileAtom.js';
-import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
+import { isClient } from 'app/utils';
+import { store as reduxStore } from 'app/store';
+import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientTemplateSchema, ClientTranslationSchema, RelationshipTypesType } from 'app/istore';
+import { getStore } from 'shared/atomStore/client.store';
+import { globalMatomoAtom } from './globalMatomoAtom';
+import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
+import { relationshipTypesAtom } from './relationshipTypes';
+import { settingsAtom } from './settingsAtom';
+import { templatesAtom } from './templatesAtom';
+import { translationsAtom, localeAtom } from './translationsAtoms';
+import { userAtom } from './userAtom';
+import { thesauriAtom } from './thesauriAtom';
+import { serverIsMobileAtom } from './isMobileAtom';
+import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };

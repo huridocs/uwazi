@@ -1,22 +1,20 @@
-import yargs from 'yargs';
-import { config } from '#api/config.js';
-import { DB } from '#api/odm/index.js';
-import { tenants } from '#api/tenants/index.js';
+import { config } from 'api/config';
+import { DB } from 'api/odm';
+import { tenants } from 'api/tenants';
 
-import { denormalizeMetadata } from '#api/entities/denormalize.js';
-import entities from '#api/entities/entities.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
-import translationsModel, { IndexedTranslations } from '#api/i18n/translations.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { search } from '#api/search/index.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { denormalizeMetadata } from 'api/entities/denormalize';
+import entities from 'api/entities/entities';
+import entitiesModel from 'api/entities/entitiesModel';
+import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { search } from 'api/search';
+import templates from 'api/core/v1_layer/templates';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { inspect } from 'util';
-import { hideBin } from 'yargs/helpers';
 
-const { tenant, allTenants } = yargs(hideBin(process.argv))
+const { tenant, allTenants } = require('yargs')
   .option('tenant', {
     alias: 't',
     type: 'string',
@@ -28,7 +26,7 @@ const { tenant, allTenants } = yargs(hideBin(process.argv))
     type: 'boolean',
     describe: 'All tenants',
     default: false,
-  }).parseSync();
+  }).argv;
 
 async function handleTenant(tenantName: string) {
   await tenants.run(async () => {

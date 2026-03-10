@@ -1,20 +1,20 @@
 import React, { Fragment, useCallback } from 'react';
-import { Translate } from '#app/I18N/index.js';
-import { Entity, MetadataProperty } from '#V2/domain/index.js';
-import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { Button } from '#V2/Components/UI/index.js';
-import { Date } from './Date.js';
-import { Geolocation } from './Geolocation.js';
-import { Relationship } from './Relationship.js';
-import { Media } from './Media.js';
-import { Image } from './Image.js';
-import { SimpleValue } from './SimpleValue.js';
-import { Title } from './Title.js';
-import { Markdown } from './Markdown.js';
-import { Select } from './Select.js';
-import { MetadataCard } from './MetadataCard.js';
-import { TemplateLabel } from './TemplateLabel.js';
-import { LinkProperty } from './LinkProperty.js';
+import { Translate } from 'app/I18N';
+import { Entity, MetadataProperty } from 'V2/domain';
+import { Panel } from 'V2/Components/Layouts/Panel';
+import { Button } from 'V2/Components/UI';
+import { Date } from './Date';
+import { Geolocation } from './Geolocation';
+import { Relationship } from './Relationship';
+import { Media } from './Media';
+import { Image } from './Image';
+import { SimpleValue } from './SimpleValue';
+import { Title } from './Title';
+import { Markdown } from './Markdown';
+import { Select } from './Select';
+import { MetadataCard } from './MetadataCard';
+import { TemplateLabel } from './TemplateLabel';
+import { LinkProperty } from './LinkProperty';
 
 type MetadataDisplayProps = {
   entity: Entity;

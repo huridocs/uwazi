@@ -1,14 +1,14 @@
-import { IGNORED_ENDPOINTS } from '#api/activitylog/activitylogMiddleware.js';
-import { deleteFile, storage } from '#api/files/index.js';
-import { tenants } from '#api/tenants/index.js';
-import date from '#api/utils/date.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { legacyLogger } from '#api/log/index.js';
+import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import { deleteFile, storage } from 'api/files';
+import { tenants } from 'api/tenants';
+import date from 'api/utils/date';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { legacyLogger } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import waitForExpect from 'wait-for-expect';
-import activitylog from '../activitylog.js';
-import activitylogMiddleware from '../activitylogMiddleware.js';
+import activitylog from '../activitylog';
+import activitylogMiddleware from '../activitylogMiddleware';
 
 describe('activitylogMiddleware', () => {
   let req;

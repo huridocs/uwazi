@@ -1,8 +1,8 @@
-import validateRequest from './validateRequest.js';
-import createError from './Error.js';
+import validateRequest from './validateRequest';
+import createError from './Error';
 
-export { handleError } from './handleError.js';
-export { parseQuery } from './parseQueryMiddleware.js';
+export { handleError } from './handleError';
+export { parseQuery } from './parseQueryMiddleware';
 
 const validation = {
   validateRequest,

@@ -1,6 +1,6 @@
-export { AddTemplatesModal } from './AddTemplatesModal.js';
-export { createColumns } from './TableComponents.js';
-export { FiltersSidepanel } from './FiltersSidepanel.js';
+export { AddTemplatesModal } from './AddTemplatesModal';
+export { createColumns } from './TableComponents';
+export { FiltersSidepanel } from './FiltersSidepanel';
 export {
   filterAvailableTemplates,
   updateFilters,
@@ -8,6 +8,6 @@ export {
   deleteFilters,
   sanitizeFilters,
   formatFilters,
-} from './helpers.js';
-export { sidepanelAtom } from './sidepanelAtom.js';
-export type { LoaderData, Filter } from './helpers.js';
+} from './helpers';
+export { sidepanelAtom } from './sidepanelAtom';
+export type { LoaderData, Filter } from './helpers';

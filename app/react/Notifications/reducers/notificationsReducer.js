@@ -1,10 +1,10 @@
 import Immutable from 'immutable';
 
-import * as actions from '#app/Notifications/actions/actionTypes.js';
+import * as actions from 'app/Notifications/actions/actionTypes';
 
 const initialState = [];
 
-const notificationsReducer = (state = initialState, action = {}) => {
+export default function notificationsReducer(state = initialState, action = {}) {
   if (action.type === actions.NOTIFY) {
     return state.push(Immutable.fromJS(action.notification));
   }
@@ -14,6 +14,4 @@ const notificationsReducer = (state = initialState, action = {}) => {
   }
 
   return Immutable.fromJS(state);
-};
-
-export { notificationsReducer };
+}

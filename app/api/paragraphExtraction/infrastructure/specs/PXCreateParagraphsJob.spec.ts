@@ -1,20 +1,20 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { PXCreateParagraphs } from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
-import { PXExtractionService } from '#api/paragraphExtraction/domain/PXExtractionService.js';
-import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { PXCreateParagraphs } from 'api/paragraphExtraction/application/PXCreateParagraphs';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { PXExtractionService } from 'api/paragraphExtraction/domain/PXExtractionService';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
-} from '../MongoPXEntitiesStatusDataSource.js';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
-import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob.js';
-import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory.js';
+} from '../MongoPXEntitiesStatusDataSource';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
+import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
+import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory';
 
 const extractionDBO: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),

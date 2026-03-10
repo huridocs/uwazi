@@ -1,4 +1,4 @@
-import { syncedPromiseLoop } from '../promiseUtils.js';
+import { syncedPromiseLoop } from '../promiseUtils';
 
 describe('promiseUtils', () => {
   describe('syncedPromiseLoop', () => {

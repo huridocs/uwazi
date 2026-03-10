@@ -1,5 +1,5 @@
-import { Fixture } from '../types.js';
-import db from '#api/utils/testing_db.js';
+import { Fixture } from '../types';
+import db from 'api/utils/testing_db';
 
 const fixtures: Fixture = {
   settings: [{ _id: db.id(), languages: [{ key: 'en' }, { key: 'es' }] }],

@@ -1,4 +1,4 @@
-import inlineEditReducer from '../inlineEditReducer.js';
+import inlineEditReducer from '../inlineEditReducer';
 
 describe('inlineEditReducer', () => {
   let initialState;

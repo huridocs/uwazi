@@ -3,8 +3,8 @@ import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { TargetDocument } from '#app/Viewer/components/TargetDocument.js';
-import * as viewerSelectors from '../../selectors.js';
+import TargetDocument from 'app/Viewer/components/TargetDocument';
+import * as viewerSelectors from '../../selectors';
 
 describe('TargetDocument', () => {
   let component;

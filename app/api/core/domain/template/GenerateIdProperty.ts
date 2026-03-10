@@ -1,10 +1,10 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
-import { generateID } from '#shared/IDGenerator.js';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { generateID } from 'shared/IDGenerator';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors.js';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
-import { PropertyTypeEnum } from './PropertyType.js';
-import { GeneratedIdEntry, PropertyAssignment } from './PropertyValue.js';
+import { PropertyTypeInvalidTypeError } from './errors';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { PropertyTypeEnum } from './PropertyType';
+import { GeneratedIdEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.GeneratedId;

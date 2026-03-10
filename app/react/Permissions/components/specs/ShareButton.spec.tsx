@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { ShareButton } from '../ShareButton.js';
-import { ShareEntityModal } from '../ShareEntityModal.js';
+import { ShareButton } from '../ShareButton';
+import { ShareEntityModal } from '../ShareEntityModal';
 
 describe('ShareButton', () => {
   it('should not render the modal by default', () => {

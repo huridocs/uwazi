@@ -1,20 +1,20 @@
 /* eslint-disable camelcase */
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import Immutable from 'immutable';
-import { IStore } from '#app/istore.js';
+import { fromJS } from 'immutable';
+import { IStore } from 'app/istore';
 
 const defaultState = {
   locale: 'en',
-  inlineEdit: Immutable.fromJS({ inlineEdit: false }),
-  translations: Immutable.fromJS([
+  inlineEdit: fromJS({ inlineEdit: false }),
+  translations: fromJS([
     {
       locale: 'en',
       contexts: [],
     },
   ]),
-  settings: Immutable.fromJS({}),
-  templates: Immutable.fromJS({}),
+  settings: fromJS({}),
+  templates: fromJS({}),
 };
 
 const middlewares = [thunk];

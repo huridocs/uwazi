@@ -1,18 +1,18 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
   TemplateDoesNotExistError,
-} from '../../domain/template/errors.js';
-import { RelationshipPropertyCreatorService } from '../propertyCreatorService/RelationshipPropertyCreatorService.js';
+} from '../../domain/template/errors';
+import { RelationshipPropertyCreatorService } from '../propertyCreatorService/RelationshipPropertyCreatorService';
 
 const factory = getFixturesFactory();
 

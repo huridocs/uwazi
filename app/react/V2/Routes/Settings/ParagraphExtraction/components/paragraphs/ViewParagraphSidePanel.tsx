@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { Translate } from '#app/I18N/index.js';
-import { Button } from '#app/V2/Components/UI/index.js';
-import { Sidepanel } from '#app/V2/Components/UI/Sidepanel.js';
-import { TablePXEntityParagraphRow } from '#app/V2/shared/ParagraphExtractionTypes.js';
-import { ViewParagraph } from './ViewParagraph.js';
+import { Translate } from 'app/I18N';
+import { Button } from 'app/V2/Components/UI';
+import { Sidepanel } from 'app/V2/Components/UI/Sidepanel';
+import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
+import { ViewParagraph } from './ViewParagraph';
 
 type ViewParagraphSidePanelProps = {
   isSidePanelOpen: boolean;

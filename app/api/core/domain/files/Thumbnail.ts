@@ -1,12 +1,12 @@
 import {
   ThumbnailDBO,
   ThumbnailDTO,
-} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import { LanguageUtils } from '#shared/language/index.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
-import { FileContents } from './FileContents.js';
-import { FileWithContents } from './FileWithContents.js';
+} from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+import { LanguageUtils } from 'shared/language';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
+import { FileContents } from './FileContents';
+import { FileWithContents } from './FileWithContents';
 
 type Props = BaseFileProps & {
   entity: string;

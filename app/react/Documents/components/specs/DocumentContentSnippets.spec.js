@@ -5,8 +5,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
-import { I18NLink } from '#app/I18N/index.js';
-import { DocumentContentSnippets } from '../SnippetList.js';
+import { I18NLink } from 'app/I18N';
+import { DocumentContentSnippets } from '../SnippetList';
 
 describe('SnippetList', () => {
   let component;

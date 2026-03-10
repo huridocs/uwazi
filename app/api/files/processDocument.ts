@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
-import { convertToPDFService } from '#api/services/convertToPDF/convertToPdfService.js';
-import settings from '#api/settings/index.js';
-import { FileType } from '#shared/types/fileType.js';
+import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
+import settings from 'api/settings';
+import { FileType } from 'shared/types/fileType';
 import { ObjectId } from 'mongodb';
-import { files } from './files.js';
-import { PDF } from './PDF.js';
+import { files } from './files';
+import { PDF } from './PDF';
 
 export const createProcessingFile = async (
   entitySharedId: string,

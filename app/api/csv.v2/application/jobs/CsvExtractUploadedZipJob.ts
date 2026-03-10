@@ -1,19 +1,16 @@
 import path from 'path';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
-import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource.js';
-import { CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport.js';
-import { CsvImportRow } from '../../domain/CsvImportRow.js';
-import {
-  CsvImportFileNormalizer,
-  NormalizeResult as FileNormalizeResult,
-} from '../services/CsvImportFileNormalizer.js';
-import { CsvImportRowsStager } from '../services/CsvImportRowsStager.js';
-import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler.js';
-import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { AbstractUseCase } from 'api/core/libs/UseCase';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
+import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
+import { CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
+import { CsvImportRow } from '../../domain/CsvImportRow';
+import { CsvImportFileNormalizer } from '../services/CsvImportFileNormalizer';
+import { CsvImportRowsStager } from '../services/CsvImportRowsStager';
+import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler';
+import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
@@ -84,48 +81,12 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     });
   }
 
-  private static toExtractionMetadata(
-    csvImport: CsvImportDomain,
-    normalizeResult: FileNormalizeResult
-  ) {
-    if (normalizeResult.sourceType === 'csv') {
-      return {
-        sourceType: 'csv' as const,
-        originalUploadSizeBytes: csvImport.file.size,
-        extractedFilesCount: 1,
-        files: [
-          {
-            filename: csvImport.file.originalName,
-            sizeBytes: csvImport.file.size,
-          },
-        ],
-      };
-    }
-
-    return {
-      sourceType: 'zip' as const,
-      originalUploadSizeBytes: csvImport.file.size,
-      extractedFilesCount: normalizeResult.extractedFilesCount,
-      totalFilesInZip: normalizeResult.totalFilesInZip,
-      files: normalizeResult.files,
-    };
-  }
-
-  async handleExtractionSuccess(
-    importId: string,
-    context: { tenantName: string; userId: string },
-    normalizeResult: FileNormalizeResult
-  ) {
+  async handleExtractionSuccess(importId: string, context: { tenantName: string; userId: string }) {
     // success: clear any prior failure and mark files extracted
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
-    const extraction = CsvExtractUploadedZipJob.toExtractionMetadata(csvImport, normalizeResult);
     await this.transactionManager.run(async () => {
       const cleared = CsvImportDomain.clearFailure(csvImport);
-      const withExtraction = CsvImportDomain.withExtraction(cleared, extraction);
-      const updated = CsvImportDomain.withStatus(
-        withExtraction,
-        CsvImportStatus.ExtractingFilesDone
-      );
+      const updated = CsvImportDomain.withStatus(cleared, CsvImportStatus.ExtractingFilesDone);
       await this.deps.csvImportsDS.update(updated);
       await this.dispatchPreflight(importId, context.tenantName, context.userId);
     });
@@ -184,7 +145,7 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     userId: string;
   }) {
     try {
-      const normalizeResult = await this.deps.fileNormalizer.normalize({
+      await this.deps.fileNormalizer.normalize({
         importId: params.importId,
         destination: params.destination,
         filename: params.filename,
@@ -196,14 +157,10 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
           }),
       });
       await this.stageRows(params.importId, params.destination, params.callbacks);
-      await this.handleExtractionSuccess(
-        params.importId,
-        {
-          tenantName: params.tenantName,
-          userId: params.userId,
-        },
-        normalizeResult
-      );
+      await this.handleExtractionSuccess(params.importId, {
+        tenantName: params.tenantName,
+        userId: params.userId,
+      });
       CsvExtractUploadedZipJob.emitSuccess(params.callbacks, params.importId);
     } catch (e) {
       await this.handleError(params.importId, params.callbacks, e as Error);

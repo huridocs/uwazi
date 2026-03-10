@@ -2,18 +2,18 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { DocumentSidePanelWithRouter } from '#app/Documents/components/DocumentSidePanel.js';
-import { actions as actionCreators } from '#app/BasicReducer/index.js';
-import { actions } from '#app/Metadata/index.js';
-import { deleteDocument, searchSnippets } from '#app/Library/actions/libraryActions.js';
-import { deleteEntity } from '#app/Entities/actions/actions.js';
-import { multiReducer } from '#app/Multireducer/index.js';
-import modals from '#app/Modals/index.js';
+import { DocumentSidePanel } from 'app/Documents';
+import { actions as actionCreators } from 'app/BasicReducer';
+import { actions } from 'app/Metadata';
+import { deleteDocument, searchSnippets } from 'app/Library/actions/libraryActions';
+import { deleteEntity } from 'app/Entities/actions/actions';
+import multiReducer from 'app/Multireducer';
+import modals from 'app/Modals';
 
-import { EntityForm } from '#app/Library/containers/EntityForm.js';
+import EntityForm from 'app/Library/containers/EntityForm';
 
-import { getDocumentReferences, saveDocument } from '#app/Library/actions/libraryActions.js';
-import semanticSearchActions from '../actions/index.js';
+import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions';
+import semanticSearchActions from '../actions';
 
 export const mapStateToProps = ({ semanticSearch, library, templates }) => ({
   open: !semanticSearch.selectedDocument.isEmpty(),
@@ -51,8 +51,4 @@ export function mapDispatchToProps(dispatch, props) {
   );
 }
 
-const DocumentResultsPanel = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DocumentSidePanelWithRouter);
-export { DocumentResultsPanel };
+export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);

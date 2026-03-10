@@ -1,8 +1,8 @@
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
-import { ValidateFormatError, ValidateFormatOptions, peekHeaders, validateFormat } from '../csv.js';
-import { mockCsvFileReadStream } from './helpers.js';
+import { ValidateFormatError, ValidateFormatOptions, peekHeaders, validateFormat } from '../csv';
+import { mockCsvFileReadStream } from './helpers';
 
 const mockFileStream = (content: string) => {
   const mockedFile = mockCsvFileReadStream(content);

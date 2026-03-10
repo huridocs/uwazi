@@ -1,6 +1,6 @@
 /** @format */
 
-import { Immutable } from '#shared/immutableWrapper.js';
+import Immutable from 'immutable';
 
 const SET = 'SET';
 const SET_IN = 'SET_IN';

@@ -4,8 +4,8 @@ import path from 'path';
 import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { Db } from 'mongodb';
-import { config } from '#api/config.js';
-import { FileDocument, MigrationStorageFileType, TenantSnapshot } from './types.js';
+import { config } from 'api/config';
+import { FileDocument, MigrationStorageFileType, TenantSnapshot } from './types';
 
 const defaultTenantSnapshot = (): TenantSnapshot => config.defaultTenant;
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { Helmet } from 'react-helmet';
-import { I18NLink } from '#app/I18N/index.js';
-import { settingsAtom } from '#V2/atoms/index.js';
+import { I18NLink } from 'app/I18N';
+import { settingsAtom } from 'V2/atoms';
 
 interface SiteNameProps {
   className?: string;

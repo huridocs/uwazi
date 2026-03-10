@@ -3,19 +3,15 @@
  */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import { Entity as EntityType } from '#V2/domain/entities/Entity.js';
-import {
-  TestAtomStoreProvider,
-  TestRouterContext,
-  setupMatchMediaMock,
-} from '#V2/testing/index.js';
-import { settingsAtom, userAtom } from '#V2/atoms/index.js';
-import * as utils from '#app/utils/index.js';
-import * as files from '#V2/api/files/index.js';
-import { Entity } from '../Entity.js';
+import { Entity as EntityType } from 'V2/domain/entities/Entity';
+import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
+import { settingsAtom, userAtom } from 'V2/atoms';
+import * as utils from 'app/utils';
+import * as files from 'V2/api/files';
+import { Entity } from '../Entity';
 
-jest.mock('#V2/Components/PDFViewer', () => ({
-  ...jest.requireActual('#V2/Components/PDFViewer'),
+jest.mock('V2/Components/PDFViewer', () => ({
+  ...jest.requireActual('V2/Components/PDFViewer'),
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 

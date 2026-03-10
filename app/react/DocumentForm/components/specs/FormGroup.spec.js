@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { FormGroup } from '#app/DocumentForm/components/FormGroup.js';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
 
 describe('FormGroup', () => {
   let component;

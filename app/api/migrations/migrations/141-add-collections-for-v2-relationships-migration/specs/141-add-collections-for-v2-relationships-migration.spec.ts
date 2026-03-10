@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
-import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
+import testingDB from 'api/utils/testing_db';
+import migration from '../index';
 
 let db: Db;
 

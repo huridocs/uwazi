@@ -1,14 +1,14 @@
-import testingDB from '#api/utils/testing_db.js';
+import testingDB from 'api/utils/testing_db';
 import {
   convertToPDFService,
   MimeTypeNotSupportedForConversion,
-} from '#api/services/convertToPDF/convertToPdfService.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+} from 'api/services/convertToPDF/convertToPdfService';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
-import { files, UpdateFileError } from '../files.js';
-import { attachmentsPath, setupTestUploadedPaths } from '../filesystem.js';
-import { processDocument } from '../processDocument.js';
+import { files, UpdateFileError } from '../files';
+import { attachmentsPath, setupTestUploadedPaths } from '../filesystem';
+import { processDocument } from '../processDocument';
 
 describe('processDocument', () => {
   beforeEach(async () => {

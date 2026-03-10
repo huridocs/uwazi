@@ -1,4 +1,4 @@
-import { objectIndex } from '../objectIndex.js';
+import { objectIndex } from '../objectIndex';
 
 class Source {
   text: string;

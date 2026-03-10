@@ -1,4 +1,4 @@
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
 const adminUserId = db.id();
 const thesaurusId = db.id();

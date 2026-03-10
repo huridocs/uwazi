@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import db from '#api/utils/testing_db.js';
-import thesauri from '#api/thesauri/index.js';
-import { templateUtils } from '#api/core/v1_layer/templates/index.js';
-import translations from '#api/i18n/translations.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import db from 'api/utils/testing_db';
+import thesauri from 'api/thesauri';
+import { templateUtils } from 'api/core/v1_layer/templates';
+import translations from 'api/i18n/translations';
+import { TemplateSchema } from 'shared/types/templateType';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 
-import { arrangeThesauri, ArrangeThesauriError } from '../arrangeThesauri.js';
+import { arrangeThesauri, ArrangeThesauriError } from '../arrangeThesauri';
 
 const createTestFixtures = () => {
   const selectThesaurusId = db.id();

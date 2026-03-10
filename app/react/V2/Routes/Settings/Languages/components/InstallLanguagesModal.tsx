@@ -1,14 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Translate, I18NApi } from '#app/I18N/index.js';
-import { Button, Modal } from '#app/V2/Components/UI/index.js';
-import {
-  defaultSearch,
-  MultiselectList,
-  MultiselectListOption,
-} from '#app/V2/Components/Forms/index.js';
-import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { useApiCaller } from '#app/V2/CustomHooks/useApiCaller.js';
+import { Translate, I18NApi } from 'app/I18N';
+import { Button, Modal } from 'app/V2/Components/UI';
+import { defaultSearch, MultiselectList, MultiselectListOption } from 'app/V2/Components/Forms';
+import { LanguageSchema } from 'shared/types/commonTypes';
+import { RequestParams } from 'app/utils/RequestParams';
+import { useApiCaller } from 'app/V2/CustomHooks/useApiCaller';
 
 type InstallLanguagesModalProps = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;

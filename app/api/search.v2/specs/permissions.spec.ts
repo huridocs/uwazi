@@ -1,12 +1,12 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import type { Application } from 'express';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Application } from 'express';
 import request from 'supertest';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
-import { searchRoutes } from '../routes.js';
-import { permissionsLevelFixtures, users } from './permissionsFiltersFixtures.js';
+import { searchRoutes } from '../routes';
+import { permissionsLevelFixtures, users } from './permissionsFiltersFixtures';
 
 describe('entities GET permissions + published filter', () => {
   const app: Application = setUpApp(searchRoutes);

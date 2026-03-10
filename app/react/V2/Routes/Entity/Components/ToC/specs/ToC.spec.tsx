@@ -3,8 +3,8 @@
  */
 import React, { useState } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { TocSchema } from '#shared/types/commonTypes.js';
-import { ToC } from '../ToC.js';
+import { TocSchema } from 'shared/types/commonTypes';
+import { ToC } from '../ToC';
 
 // Test data
 const simpleToc: TocSchema[] = [

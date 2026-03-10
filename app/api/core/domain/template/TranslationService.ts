@@ -1,4 +1,4 @@
-import { Template } from '#api/core/domain/template/Template.js';
+import { Template } from 'api/core/domain/template/Template';
 
 interface TranslationService {
   /**

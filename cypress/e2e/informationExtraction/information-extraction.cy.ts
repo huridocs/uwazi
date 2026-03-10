@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import { clearCookiesAndLogin, editPropertyForExtractor } from '../helpers/index.js';
+import { clearCookiesAndLogin, editPropertyForExtractor } from '../helpers';
 import 'cypress-axe';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
 

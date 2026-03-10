@@ -3,8 +3,8 @@ import {
   deleteFilters,
   updateFilters,
   sanitizeFilters,
-} from '../helpers.js';
-import { filters, templates } from './fixtures.js';
+} from '../helpers';
+import { filters, templates } from './fixtures';
 
 describe('Filters helpers', () => {
   describe('filterAvailableTemplates', () => {

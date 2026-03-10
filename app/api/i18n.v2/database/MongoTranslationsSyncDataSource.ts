@@ -1,10 +1,10 @@
 import { DeleteResult, Filter, ObjectId, OptionalId } from 'mongodb';
 
-import { SyncDBDataSource } from '#api/core/infrastructure/mongodb/common/SyncDBDataSource.js';
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { TranslationMappers } from './TranslationMappers.js';
-import { TranslationDBO } from '../schemas/TranslationDBO.js';
-import { TranslationSyO } from '../schemas/TranslationSyO.js';
+import { SyncDBDataSource } from 'api/core/infrastructure/mongodb/common/SyncDBDataSource';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { TranslationMappers } from './TranslationMappers';
+import { TranslationDBO } from '../schemas/TranslationDBO';
+import { TranslationSyO } from '../schemas/TranslationSyO';
 
 export class MongoTranslationsSyncDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>

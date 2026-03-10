@@ -4,14 +4,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { socket } from '#app/socket.js';
+import { socket } from 'app/socket';
 
 import {
   SemanticSearchSidePanel,
   mapStateToProps,
   mapDispatchToProps,
-} from '../SemanticSearchPanel.js';
-import * as actions from '../../actions/actions.js';
+} from '../SemanticSearchPanel';
+import * as actions from '../../actions/actions';
 
 describe('SemanticSearchPanel', () => {
   let initialState;

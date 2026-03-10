@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb';
-import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { FileType } from '#shared/types/fileType.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-import { DBFixture } from '#api/utils/testing_db.js';
-import { tenants } from '#api/tenants/index.js';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource.js';
-import { MongoExtractorBuilder } from './MongoPXExtractorBuilder.js';
-import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource.js';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO.js';
-import { PXFilesDeletedListener } from '../PXFilesDeletedListener.js';
+import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { FileType } from 'shared/types/fileType';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { DBFixture } from 'api/utils/testing_db';
+import { tenants } from 'api/tenants';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
+import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
+import { PXFilesDeletedListener } from '../PXFilesDeletedListener';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();

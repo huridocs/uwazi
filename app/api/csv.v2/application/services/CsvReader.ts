@@ -1,8 +1,8 @@
 import csvtojson from 'csvtojson';
 import { Readable } from 'stream';
 import readline from 'readline';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { CsvReaderError } from './CsvReaderError.js';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { CsvReaderError } from './CsvReaderError';
 
 type CsvReaderOptions = {
   delimiters?: string[];

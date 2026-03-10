@@ -9,7 +9,7 @@ exports[`DocumentResults render should render results summary and snippets above
       className="item-info"
     >
       <div>
-        <Connect(Icon)
+        <Icon
           className="item-icon item-icon-center"
         />
         <h1

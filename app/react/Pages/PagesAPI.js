@@ -1,6 +1,6 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 
-const PagesAPI = {
+export default {
   get(requestParams) {
     return api.get('pages', requestParams).then(response => response.json);
   },
@@ -17,4 +17,3 @@ const PagesAPI = {
     return api.delete('pages', requestParams).then(response => response.json);
   },
 };
-export { PagesAPI };

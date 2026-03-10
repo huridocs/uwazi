@@ -2,8 +2,8 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
-import * as stories from '#app/stories/Metadata.stories.jsx';
+import { DEFAULT_ENTITY_BASE_PATH } from 'V2/application/optionsPresets';
+import * as stories from 'app/stories/Metadata.stories';
 
 describe('Metadata Display', () => {
   const { Basic } = composeStories(stories);
@@ -97,89 +97,6 @@ describe('Metadata Display', () => {
       mount(<Basic />);
       cy.get('div[data-testid="map-container"]').should('exist');
       cy.checkA11y();
-    });
-  });
-
-  describe('Empty metadata fields', () => {
-    const checkProperties = () => {
-      cy.contains('dd', 'Title of the displayed entity');
-      cy.contains('dd', 'Oct 2, 2025');
-      cy.contains('dd', 'Oct 13, 2025');
-
-      cy.contains('dt', 'A basic simple text').should('not.exist');
-      cy.contains('dt', 'Single Date').should('not.exist');
-      cy.contains('dt', 'Markdown field using sanitized HTML tags').should('not.exist');
-      cy.contains('dt', 'Media with an image').should('not.exist');
-      cy.contains('dt', 'Grouped geolocation 1').should('not.exist');
-      cy.contains('dt', 'External link').should('not.exist');
-      cy.contains('dt', 'Single select').should('not.exist');
-      cy.contains('dt', 'Relationship with inheritance').should('not.exist');
-    };
-
-    it('should not render empty metadata fields', () => {
-      Basic.args.dbEntity = {
-        _id: '1',
-        language: 'en',
-        mongoLanguage: 'en',
-        sharedId: 'shared1',
-        title: 'Title of the displayed entity',
-        template: 'template1',
-        creationDate: 1759374706197, // Oct 2, 2025
-        editDate: 1760366924144, // Oct 13, 2025
-        metadata: {
-          simple_text: [
-            {
-              value: '',
-            },
-          ],
-          markdown_html: [
-            {
-              value: '',
-            },
-          ],
-          single_date: [],
-          multiple_dates: [],
-          date_range: [],
-          multiple_date_ranges: [],
-          selected_image: [
-            {
-              value: '',
-              alt: '',
-            },
-          ],
-          incident_location: [],
-          external_link: [
-            {
-              value: null,
-            },
-          ],
-          status_selection: [],
-          related_people: [],
-          video_of_event: [{ value: '' }],
-        },
-      };
-
-      mount(<Basic />);
-
-      checkProperties();
-    });
-
-    it('should not render missing metadata fields', () => {
-      Basic.args.dbEntity = {
-        _id: '1',
-        language: 'en',
-        mongoLanguage: 'en',
-        sharedId: 'shared1',
-        title: 'Title of the displayed entity',
-        template: 'template1',
-        creationDate: 1759374706197, // Oct 2, 2025
-        editDate: 1760366924144, // Oct 13, 2025
-        metadata: {},
-      };
-
-      mount(<Basic />);
-
-      checkProperties();
     });
   });
 });

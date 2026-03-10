@@ -3,9 +3,9 @@
  */
 import React from 'react';
 import { ReactWrapper } from 'enzyme';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
-import { state } from './fixture/state.js';
-import { EntitySection } from '../EntitySection.js';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
+import { state } from './fixture/state';
+import { EntitySection } from '../EntitySection';
 
 describe('EntitySection Markdown', () => {
   let component: ReactWrapper<

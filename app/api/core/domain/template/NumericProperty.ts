@@ -1,9 +1,9 @@
-import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { z } from 'zod';
-import { PropertyTypeInvalidTypeError } from './errors.js';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty.js';
-import { PropertyTypeEnum } from './PropertyType.js';
-import { NumericPropertyValue, PropertyAssignment } from './PropertyValue.js';
+import { PropertyTypeInvalidTypeError } from './errors';
+import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { PropertyTypeEnum } from './PropertyType';
+import { NumericPropertyValue, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Numeric;

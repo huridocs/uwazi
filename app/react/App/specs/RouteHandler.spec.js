@@ -7,10 +7,10 @@ import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Settings } from 'luxon';
-import { api } from '#app/utils/api.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { I18NUtils } from '#app/I18N/index.js';
-import { RouteHandler } from '../RouteHandler.js';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
+import { I18NUtils } from 'app/I18N';
+import RouteHandler from '../RouteHandler';
 import { APIURL } from '../../config.js';
 
 class TestController extends RouteHandler {
@@ -26,8 +26,6 @@ class TestController extends RouteHandler {
   }
 }
 
-const originalRequestState = TestController.requestState;
-
 describe('RouteHandler', () => {
   let component;
   let instance;
@@ -40,11 +38,11 @@ describe('RouteHandler', () => {
   ];
   let state;
 
-  const context = { store: { getState: () => state, dispatch: jest.fn() } };
+  const context = { store: { getState: () => state, dispatch: jasmine.createSpy('dispatch') } };
 
   beforeEach(() => {
-    jest.spyOn(api, 'locale');
-    jest.spyOn(I18NUtils, 'saveLocale');
+    spyOn(api, 'locale');
+    spyOn(I18NUtils, 'saveLocale');
 
     state = {
       settings: { collection: Immutable.fromJS({ languages }) },
@@ -58,9 +56,7 @@ describe('RouteHandler', () => {
     backend.get(`${APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
     delete window.__initialData__;
 
-    jest
-      .spyOn(TestController, 'requestState')
-      .mockImplementation((...args) => originalRequestState.apply(TestController, args));
+    spyOn(TestController, 'requestState').and.callThrough();
 
     RouteHandler.renderedFromServer = false;
 
@@ -73,10 +69,7 @@ describe('RouteHandler', () => {
     instance.constructor = TestController;
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-    backend.restore();
-  });
+  afterEach(() => backend.restore());
 
   describe('static requestState', () => {
     it('should return a promise with an empty array', done => {
@@ -117,13 +110,13 @@ describe('RouteHandler', () => {
 
     describe('when params change', () => {
       it('should request the clientState', () => {
-        jest.spyOn(instance, 'getClientState');
+        spyOn(instance, 'getClientState');
         component.setProps(props);
         expect(instance.getClientState).toHaveBeenCalledWith(props);
       });
 
       it('should call emptyState', () => {
-        jest.spyOn(instance, 'emptyState');
+        spyOn(instance, 'emptyState');
         instance.componentDidUpdate(props);
         expect(instance.emptyState).toHaveBeenCalled();
       });
@@ -131,7 +124,7 @@ describe('RouteHandler', () => {
 
     describe('when path changes', () => {
       it('should request the clientState', () => {
-        jest.spyOn(instance, 'getClientState');
+        spyOn(instance, 'getClientState');
         props = {
           params: { ...routeParams },
           location,
@@ -144,7 +137,7 @@ describe('RouteHandler', () => {
 
     describe('when params are the same', () => {
       it('should NOT request the clientState', () => {
-        jest.spyOn(instance, 'getClientState');
+        spyOn(instance, 'getClientState');
         component.setProps({ params: { ...routeParams }, location });
         expect(instance.getClientState).not.toHaveBeenCalled();
       });

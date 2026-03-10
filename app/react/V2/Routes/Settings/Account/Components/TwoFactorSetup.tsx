@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { Button, Card, CopyValueInput, Sidepanel } from '#V2/Components/UI/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { RequestParams } from 'app/utils/RequestParams';
+
+import { notificationAtom } from 'app/V2/atoms';
+
+import { Button, Card, CopyValueInput, Sidepanel } from 'app/V2/Components/UI';
+import { Translate } from 'app/I18N';
 import loadable from '@loadable/component';
-import { InputField } from '#V2/Components/Forms/index.js';
+import { InputField } from 'app/V2/Components/Forms';
 
 const QRCodeSVG = loadable(
   async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),

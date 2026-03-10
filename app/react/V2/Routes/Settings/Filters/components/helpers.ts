@@ -1,5 +1,5 @@
-import { ClientSettingsFilterSchema } from '#app/apiResponseTypes.js';
-import { ClientTemplateSchema } from '#app/istore.js';
+import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
+import { ClientTemplateSchema } from 'app/istore';
 
 type Filter = ClientSettingsFilterSchema & {
   rowId: string;

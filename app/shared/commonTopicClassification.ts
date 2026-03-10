@@ -1,5 +1,5 @@
-import { propertyTypes } from '#shared/propertyTypes.js';
-import { TemplateSchema } from './types/templateType.js';
+import { propertyTypes } from 'shared/propertyTypes';
+import { TemplateSchema } from './types/templateType';
 
 export function convertThesaurusName(thesaurusName: string) {
   return `${thesaurusName.toLowerCase().replace(/[^0-9a-z]/g, '')}`;

@@ -1,6 +1,6 @@
-export type { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase.js';
-export { DependencyContainer } from './container/DependencyContainer.js';
-export { FluentCompositionBuilder } from './FluentCompositionBuilder.js';
+export type { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase';
+export { DependencyContainer } from './container/DependencyContainer';
+export { FluentCompositionBuilder } from './FluentCompositionBuilder';
 
 export type {
   PropertyTypeProcessor,
@@ -8,4 +8,4 @@ export type {
   EntityPermissions,
   ProcessingContext,
   CompositionOptions,
-} from './services/processors/types.js';
+} from './services/processors/types';

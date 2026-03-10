@@ -1,14 +1,14 @@
 import qs from 'qs';
-import type { Application } from 'express';
+import { Application } from 'express';
 import request from 'supertest';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingDB } from '#api/utils/testing_db.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingDB } from 'api/utils/testing_db';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
-import { searchRoutes } from '../routes.js';
-import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { setupTestingEnviroment } from './setupTestingEnvironment.js';
+import { searchRoutes } from '../routes';
+import { elasticTesting } from 'api/utils/elastic_testing';
+import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Pagination', () => {
   const factory = getFixturesFactory();

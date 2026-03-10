@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { config } from '#api/config.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { config } from 'api/config';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 
 export const buildS3Client = () => {
   const client = new S3Client({

@@ -8,4 +8,4 @@ type ShowIfProps = {
 // eslint-disable-next-line react/jsx-no-useless-fragment
 const ShowIf = ({ if: condition, children }: ShowIfProps) => (!condition ? <></> : children);
 
-export { ShowIf };
+export default ShowIf;

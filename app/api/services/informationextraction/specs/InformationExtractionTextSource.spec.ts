@@ -1,19 +1,19 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
 import moment from 'moment';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
-import * as setupSockets from '#api/socketio/setupSockets.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
-import { InformationExtraction } from '../InformationExtraction.js';
-import { factory, fixtures } from './fixtures.js';
-import { IXModelsModel } from '../IXModelsModel.js';
-import { ExtractionKey } from '../ExtractionKey.js';
-import { IXWebSocketEvents } from '../WebSocketEvents.js';
-import { NoEntitiesForTraining } from '../TrainModelForText.js';
-import { getEntitiesForTraining } from '../ixMaterials.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
+import { ExternalDummyService } from 'api/services/tasksmanager/specs/ExternalDummyService';
+import * as setupSockets from 'api/socketio/setupSockets';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import entitiesModel from 'api/entities/entitiesModel';
+import { InformationExtraction } from '../InformationExtraction';
+import { factory, fixtures } from './fixtures';
+import { IXModelsModel } from '../IXModelsModel';
+import { ExtractionKey } from '../ExtractionKey';
+import { IXWebSocketEvents } from '../WebSocketEvents';
+import { NoEntitiesForTraining } from '../TrainModelForText';
+import { getEntitiesForTraining } from '../ixMaterials';
 
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');

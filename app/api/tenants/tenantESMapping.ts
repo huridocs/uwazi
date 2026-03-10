@@ -1,5 +1,5 @@
-import { tenants } from './index.js';
-import elasticMapping from '../../../database/elastic_mapping/elastic_mapping.js';
+import { tenants } from './index';
+import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 
 const getTenantESMapping = () => {
   const tenantElasticMapping = {

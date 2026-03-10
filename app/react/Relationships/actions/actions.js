@@ -1,17 +1,17 @@
-import sortBy from 'lodash/sortBy.js';
-import { api } from '#app/utils/api.js';
-import { actions } from '#app/BasicReducer/index.js';
-import { debounce } from '#app/utils/index.js';
+import { sortBy } from 'lodash';
+import api from 'app/utils/api';
+import { actions } from 'app/BasicReducer';
+import { debounce } from 'app/utils';
 import { createSelector } from 'reselect';
-import { notificationActions } from '#app/Notifications/index.js';
-import { referencesActions } from '#app/Viewer/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { SearchAPI } from '#app/Search/SearchAPI.js';
-import { t } from '#app/I18N/index.js';
-import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
-import * as types from './actionTypes.js';
-import * as uiActions from './uiActions.js';
-import * as routeUtils from '../utils/routeUtils.js';
+import { notificationActions } from 'app/Notifications';
+import { referencesActions } from 'app/Viewer';
+import { RequestParams } from 'app/utils/RequestParams';
+import SearchApi from 'app/Search/SearchAPI';
+import { t } from 'app/I18N';
+import EntitiesApi from '../../Entities/EntitiesAPI';
+import * as types from './actionTypes';
+import * as uiActions from './uiActions';
+import * as routeUtils from '../utils/routeUtils';
 
 function parseResults(results, parentEntity, editing) {
   return { type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing };
@@ -225,7 +225,7 @@ function immidiateSearch(dispatch, searchTerm) {
     includeUnpublished: true,
   });
 
-  return SearchAPI.search(requestParams).then(({ rows: results }) => {
+  return SearchApi.search(requestParams).then(({ rows: results }) => {
     dispatch(actions.set('relationships/searchResults', results));
   });
 }

@@ -1,9 +1,9 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { fn } from 'storybook/test';
-import { action } from 'storybook/actions';
-import { ConfirmationModal } from '#V2/Components/UI/ConfirmationModal.js';
-import { Translate } from '#app/I18N/index.js';
+import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import { action } from '@storybook/addon-actions';
+import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
+import { Translate } from 'app/I18N';
 
 const meta: Meta<typeof ConfirmationModal> = {
   title: 'Components/Modal/ConfirmationModal',
@@ -15,8 +15,6 @@ const meta: Meta<typeof ConfirmationModal> = {
     },
   },
 };
-
-export default meta;
 
 type Story = StoryObj<typeof ConfirmationModal>;
 
@@ -90,3 +88,5 @@ const PasswordConfirm: Story = {
 };
 
 export { BasicConfirmation, TextConfirmation, WarningConfirmation, PasswordConfirm };
+
+export default meta;

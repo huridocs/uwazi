@@ -1,18 +1,18 @@
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { Db, ObjectId } from 'mongodb';
 
-import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { PXExtractor } from '../domain/PXExtractor.js';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
+import { PXExtractor } from '../domain/PXExtractor';
 import {
   ExistsInput,
   GetParagraphsIdsInput,
   PXExtractorsDataSource,
-} from '../domain/PXExtractorDataSource.js';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
-import { PXValidationError } from '../domain/PXValidationError.js';
-import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource.js';
-import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO.js';
+} from '../domain/PXExtractorDataSource';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { PXValidationError } from '../domain/PXValidationError';
+import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
+import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 

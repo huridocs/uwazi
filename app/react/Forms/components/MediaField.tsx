@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import isObject from 'lodash/isObject.js';
-import { Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/UI/index.js';
-import { ClientFile } from '#app/istore.js';
-import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
-import {
-  MediaModal,
-  MediaModalProps,
-  MediaModalType,
-} from '#app/Metadata/components/MediaModal.js';
-import { MarkdownMedia, TimeLink } from '#app/Markdown/components/MarkdownMedia.js';
-import { ImageViewer } from '#app/Metadata/components/ImageViewer.js';
+import { isObject } from 'lodash';
+import { Translate } from 'app/I18N';
+import { Icon } from 'app/UI';
+import { ClientFile } from 'app/istore';
+import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
+import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
+import MarkdownMedia, { TimeLink } from 'app/Markdown/components/MarkdownMedia';
+import { ImageViewer } from 'app/Metadata/components/ImageViewer';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | { data: string; originalFile: Partial<File> } | null;
@@ -160,4 +156,4 @@ const MediaField = (props: MediaFieldProps) => {
   );
 };
 
-export { MediaField };
+export default MediaField;

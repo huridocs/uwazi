@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Icon } from '#app/UI/index.js';
-import { IconSelectorItem } from '../IconSelectorItem.js';
+import { Icon } from 'UI';
+import IconSelectorItem from '../IconSelectorItem';
 
 describe('IconSelectorItem', () => {
   let component;

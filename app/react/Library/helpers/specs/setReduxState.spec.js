@@ -1,6 +1,6 @@
-import * as actionTypes from '#app/Library/actions/actionTypes.js';
-import * as libraryActions from '../../actions/libraryActions.js';
-import setReduxState from '../setReduxState.js';
+import * as actionTypes from 'app/Library/actions/actionTypes';
+import * as libraryActions from '../../actions/libraryActions';
+import setReduxState from '../setReduxState';
 
 describe('setReduxState()', () => {
   const aggregations = { buckets: [] };

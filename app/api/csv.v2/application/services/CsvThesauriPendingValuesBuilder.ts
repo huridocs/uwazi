@@ -1,15 +1,15 @@
 /* eslint-disable max-lines */
-import { Template } from '#api/core/domain/template/Template.js';
-import { Property } from '#api/core/domain/template/Property.js';
-import { PropertyName } from '#api/core/domain/template/PropertyName.js';
-import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import { CsvImportRow } from '../../domain/CsvImportRow.js';
-import { HeaderAnalysis } from './CsvHeaderAnalyzer.js';
+import { Template } from 'api/core/domain/template/Template';
+import { Property } from 'api/core/domain/template/Property';
+import { PropertyName } from 'api/core/domain/template/PropertyName';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
+import { CsvImportRow } from '../../domain/CsvImportRow';
+import { HeaderAnalysis } from './CsvHeaderAnalyzer';
 import {
   CsvThesauriPendingValues,
   CsvThesauriPendingEntry,
   CsvThesauriPendingIssue,
-} from '../../domain/CsvThesauriPendingValues.js';
+} from '../../domain/CsvThesauriPendingValues';
 
 type BuildParams = {
   importId: string;

@@ -2,14 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
-import * as ThesauriAPI from '#V2/api/thesauri/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
-import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
-import { ThesauriTable } from './components/ThesauriTable.js';
-import type { ThesauriRow } from './components/ThesauriTable.js';
+import { Translate } from 'app/I18N';
+import * as ThesauriAPI from 'app/V2/api/thesauri';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { Button, ConfirmationModal } from 'app/V2/Components/UI';
+import { notificationAtom, templatesAtom } from 'app/V2/atoms';
+import { ClientThesaurus, Template } from 'app/apiResponseTypes';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
+import { ThesauriTable } from './components/ThesauriTable';
+import type { ThesauriRow } from './components/ThesauriTable';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -57,10 +58,7 @@ const ThesauriList = () => {
         text: <Translate>Thesauri deleted</Translate>,
       });
     } catch (e) {
-      setNotifications({
-        type: 'error',
-        text: e.message,
-      });
+      handleUnexpectedError(e, 'Error deleting thesaurus');
     } finally {
       await revalidator.revalidate();
       setShowConfirmationModal(false);

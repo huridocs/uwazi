@@ -1,4 +1,4 @@
-import { MongoIdHandler } from '../mongodb/common/MongoIdGenerator.js';
+import { MongoIdHandler } from '../mongodb/common/MongoIdGenerator';
 
 export class IdGeneratorFactory {
   static default() {

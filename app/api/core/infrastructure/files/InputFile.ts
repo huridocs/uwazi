@@ -3,18 +3,18 @@ import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { stat } from 'fs/promises';
 
-import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
-import { generateFileName, temporalFilesPath } from '#api/files/filesystem.js';
-import date from '#api/utils/date.js';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
+import { mimeTypeFromUrl } from 'api/files/extensionHelper';
+import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
+import date from 'api/utils/date';
 import path from 'path';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-import { CustomUpload } from '../../domain/files/CustomUpload.js';
-import { FileAttachment } from '../../domain/files/FileAttachment.js';
-import { FileContents } from '../../domain/files/FileContents.js';
-import { ProcessingPDF } from '../../domain/files/ProcessingPDF.js';
-import { URLAttachment } from '../../domain/files/URLAttachment.js';
+import { CustomUpload } from '../../domain/files/CustomUpload';
+import { FileAttachment } from '../../domain/files/FileAttachment';
+import { FileContents } from '../../domain/files/FileContents';
+import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
+import { URLAttachment } from '../../domain/files/URLAttachment';
 
 type FileMetadata = {
   fieldname: string;

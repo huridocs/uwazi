@@ -1,5 +1,5 @@
-import db from '#api/utils/testing_db.js';
-import { Fixture } from '../types.js';
+import db from 'api/utils/testing_db';
+import { Fixture } from '../types';
 
 const ids = {
   thesaurus_1: db.id(),

@@ -1,7 +1,7 @@
 /** @format */
 
 /* eslint-disable max-len */
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
 const userId = db.id();
 

@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
-import * as types from '#app/Uploads/actions/actionTypes.js';
+import * as types from 'app/Uploads/actions/actionTypes';
 
-import { progressReducer } from '#app/Uploads/reducers/progressReducer.js';
+import progressReducer from 'app/Uploads/reducers/progressReducer';
 
 describe('uploadsReducer', () => {
   const initialState = Immutable.fromJS({});

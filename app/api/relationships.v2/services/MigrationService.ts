@@ -1,24 +1,24 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { SaveStream } from '#api/common.v2/contracts/SaveStream.js';
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { objectIndexToArrays, objectIndexToSets } from '#shared/data_utils/objectIndex.js';
-import { TestOneHubRequest } from '#shared/types/api.v2/relationships.testOneHub.js';
-import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
-import { HubDataSource } from '../contracts/HubDataSource.js';
-import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource.js';
-import { V1Connection, ReadableV1Connection, V1TextReference } from '../model/V1Connection.js';
+import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
+import { SaveStream } from 'api/common.v2/contracts/SaveStream';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
+import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
+import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
+import { HubDataSource } from '../contracts/HubDataSource';
+import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
+import { V1Connection, ReadableV1Connection, V1TextReference } from '../model/V1Connection';
 import {
   EntityPointer,
   FilePointer,
   TextReferencePointer,
   Relationship,
   Selection,
-} from '../model/Relationship.js';
-import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource.js';
-import { MigrationHubRecord } from '../model/MigrationHubRecord.js';
+} from '../model/Relationship';
+import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource';
+import { MigrationHubRecord } from '../model/MigrationHubRecord';
 
 const HUB_BATCH_SIZE = 1000;
 

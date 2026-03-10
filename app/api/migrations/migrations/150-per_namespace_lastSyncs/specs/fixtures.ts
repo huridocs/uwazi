@@ -1,4 +1,4 @@
-import { DBFixture } from '../types.js';
+import { DBFixture } from '../types';
 
 export const fixtures: DBFixture = {
   syncs: [

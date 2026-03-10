@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
-import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { PermissionSchema } from '#shared/types/permissionType.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { ClientUserSchema } from '#app/apiResponseTypes.js';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { PermissionSchema } from 'shared/types/permissionType';
+import { EntitySchema } from 'shared/types/entityType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 
 type PropTypes = {
   children: React.ReactNode;
@@ -57,5 +57,4 @@ const NeedAuthorization: React.FC<PropTypes> = ({
 
 const mapStateToProps = ({ user }: any) => ({ user });
 
-const NeedAuthorizationConnected = connect(mapStateToProps)(NeedAuthorization);
-export { NeedAuthorizationConnected as NeedAuthorization };
+export default connect(mapStateToProps)(NeedAuthorization);

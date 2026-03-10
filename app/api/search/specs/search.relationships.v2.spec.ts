@@ -1,9 +1,9 @@
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
-import { elastic } from '../elastic.js';
-import { search } from '../search.js';
-import { fixturesTimeOut } from './fixtures_elastic.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import testingDB from 'api/utils/testing_db';
+import { elastic } from '../elastic';
+import { search } from '../search';
+import { fixturesTimeOut } from './fixtures_elastic';
 
 const fixturesFactory = getFixturesFactory();
 const elasticIndex = 'relationship_v2_testing_index';

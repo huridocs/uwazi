@@ -1,4 +1,4 @@
-import { EntitySchema } from '#shared/types/entityType.js';
+import { EntitySchema } from 'shared/types/entityType';
 
 export class EntityCompositionSanitizer {
   sanitizeComposedEntity(composedEntity: any): EntitySchema {
@@ -79,3 +79,5 @@ export class EntityCompositionSanitizer {
     return { value: item };
   }
 }
+
+export default EntityCompositionSanitizer;

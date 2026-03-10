@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { settingsAtom } from 'V2/atoms/settingsAtom';
 
 // Utility function to get nested property value from an object
 const getNestedProperty = (obj: any, path: string): any =>

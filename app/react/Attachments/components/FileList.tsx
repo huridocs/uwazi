@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { withContext } from '#app/componentWrappers.js';
-import { advancedSort } from '#app/utils/advancedSort.js';
-import { Translate } from '#app/I18N/index.js';
-import { FileType } from '#shared/types/fileType.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { UploadButton } from '#app/Metadata/components/UploadButton.js';
-import { LanguageUtils } from '#shared/language/index.js';
-import { NeedAuthorization } from '#app/Auth/index.js';
-import { ConnectedFile as File } from './File.js';
+import { withContext } from 'app/componentWrappers';
+import { advancedSort } from 'app/utils/advancedSort';
+import { Translate } from 'app/I18N';
+import { FileType } from 'shared/types/fileType';
+import { EntitySchema } from 'shared/types/entityType';
+import UploadButton from 'app/Metadata/components/UploadButton';
+import { LanguageUtils } from 'shared/language';
+import { NeedAuthorization } from 'app/Auth';
+import { ConnectedFile as File } from './File';
 import './scss/filelist.scss';
 
 const defaultProps = {
@@ -38,7 +38,8 @@ const orderFilesByLanguage = (files: FileType[], systemLanguage: string) => {
   }
   return orderedFiles;
 };
-class FileList extends Component<FileListProps> {
+
+export class FileList extends Component<FileListProps> {
   static arrangeFiles(files: Array<FileType> = []) {
     return advancedSort(files, { property: 'originalname' });
   }
@@ -92,5 +93,4 @@ class FileList extends Component<FileListProps> {
   }
 }
 
-const FileListConnected = withContext(FileList);
-export { FileListConnected as FileList };
+export default withContext(FileList);

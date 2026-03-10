@@ -1,26 +1,26 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { DBFixture } from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { Entity } from '#api/core/domain/entity/Entity.js';
-import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
-import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
-import { TextProperty } from '#api/core/domain/template/TextProperty.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
-import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
-import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { tenants } from '#api/tenants/index.js';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { Entity } from 'api/core/domain/entity/Entity';
+import { NumericProperty } from 'api/core/domain/template/NumericProperty';
+import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
+import { TextProperty } from 'api/core/domain/template/TextProperty';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
+import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { EntitiesServiceDeps } from '../EntitiesService.js';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
+import { EventEmitter } from 'api/core/libs/eventEmitter/EventEmitter';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { EntitiesServiceDeps } from '../EntitiesService';
 
 const factory = getFixturesFactory();
 

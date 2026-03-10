@@ -2,26 +2,19 @@
 /* eslint-disable no-console */
 /* eslint-disable global-require */
 
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+require('dotenv').config();
 
 const { NODE_ENV } = process.env;
 
-// Note: require.extensions is not available in ESM
-// These extensions will be handled by the build process
+require.extensions['.scss'] = function scss() {};
+require.extensions['.css'] = function css() {};
 
 process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
 
 (async () => {
   if (NODE_ENV === 'production') {
     try {
-      await import('./app/server.js');
+      require('./app/server.js');
     } catch (e) {
       console.error(e);
       console.error(
@@ -31,8 +24,7 @@ process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
       );
     }
   } else {
-    const { default: babelRegister } = await import('@babel/register');
-    babelRegister({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
-    await import('./app/server.js');
+    require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
+    require('./app/server.js');
   }
 })();

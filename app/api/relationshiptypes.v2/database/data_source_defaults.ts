@@ -1,6 +1,6 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoRelationshipTypesDataSource } from './MongoRelationshipTypesDataSource.js';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { MongoRelationshipTypesDataSource } from './MongoRelationshipTypesDataSource';
 
 const DefaultRelationshipTypesDataSource = (transactionManager: MongoTransactionManager) => {
   const db = getConnection();

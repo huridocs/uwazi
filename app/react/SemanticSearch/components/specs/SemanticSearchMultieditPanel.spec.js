@@ -1,16 +1,17 @@
+/** @format */
+
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
 
-import { multiReducer } from '#app/Multireducer/index.js';
-import * as metadataActions from '#app/Metadata/actions/actions.js';
-import * as searchActions from '#app/SemanticSearch/actions/actions.js';
-import { SemanticSearchMultieditPanel } from '../SemanticSearchMultieditPanel.js';
-
-const mockStore = configureStore([thunk]);
+import multiReducer from 'app/Multireducer';
+import * as metadataActions from 'app/Metadata/actions/actions';
+import * as searchActions from 'app/SemanticSearch/actions/actions';
+import {
+  mapStateToProps,
+  mapDispatchToProps,
+  SemanticSearchMultieditPanel,
+} from '../SemanticSearchMultieditPanel';
 
 describe('SemanticSearchMultieditPanel', () => {
   let state;
@@ -57,24 +58,20 @@ describe('SemanticSearchMultieditPanel', () => {
     };
     mockAction(metadataActions, 'loadTemplate');
     mockAction(metadataActions, 'resetReduxForm');
-    jest.spyOn(metadataActions, 'multipleUpdate').mockReturnValue(() => Promise.resolve());
+    mockAction(metadataActions, 'multipleUpdate');
     mockAction(searchActions, 'setEditSearchEntities');
     mockAction(searchActions, 'getSearch');
     dispatch = jest.fn().mockImplementation(() => Promise.resolve());
     jest.spyOn(multiReducer, 'wrapDispatch').mockReturnValue(dispatch);
   });
 
-  const render = () => {
-    const store = mockStore(state);
-    return shallow(
-      <Provider store={store}>
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <SemanticSearchMultieditPanel {...props} />
-      </Provider>
-    )
-      .dive()
-      .dive();
-  };
+  const getProps = () => ({
+    ...props,
+    ...mapStateToProps(state),
+    ...mapDispatchToProps(dispatch, props),
+  });
+
+  const render = () => shallow(<SemanticSearchMultieditPanel {...getProps()} />);
 
   it('should render multi edit form for semantic search multi edit documents', () => {
     const component = render();

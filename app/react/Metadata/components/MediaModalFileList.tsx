@@ -1,10 +1,10 @@
 import React, { MouseEventHandler } from 'react';
 import { filesize } from 'filesize';
-import { Translate } from '#app/I18N/index.js';
-import { ClientFile } from '#app/istore.js';
-import { RenderAttachment } from '#app/Attachments/index.js';
-import { AttachmentSchema } from '#shared/types/commonTypes.js';
-import { isSerializedFile } from '#shared/fileUploadUtils.js';
+import { Translate } from 'app/I18N';
+import { ClientFile } from 'app/istore';
+import { RenderAttachment } from 'app/Attachments';
+import { AttachmentSchema } from 'shared/types/commonTypes';
+import { isSerializedFile } from 'shared/fileUploadUtils';
 
 type MediaModalFileListProps = {
   filteredAttachments: (AttachmentSchema | ClientFile)[];

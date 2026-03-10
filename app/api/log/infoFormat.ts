@@ -1,5 +1,5 @@
-import { tenants } from '#api/tenants/index.js';
-import { config } from '#api/config.js';
+import { tenants } from 'api/tenants';
+import { config } from 'api/config';
 
 const addTenant = (info: any, { instanceName }: { instanceName: string }) => {
   let tenantName = instanceName;

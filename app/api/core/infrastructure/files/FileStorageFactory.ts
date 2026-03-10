@@ -1,10 +1,10 @@
-import { tenants } from '#api/tenants/index.js';
+import { tenants } from 'api/tenants';
 
-import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
-import { buildS3Client } from '#api/infrastructure/S3Client.js';
-import { FileSystemStorage } from './FileSystemStorage.js';
-import { PathManager } from './PathManager.js';
-import { S3FileStorage } from './S3FileStorage.js';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { buildS3Client } from 'api/infrastructure/S3Client';
+import { FileSystemStorage } from './FileSystemStorage';
+import { PathManager } from './PathManager';
+import { S3FileStorage } from './S3FileStorage';
 
 export class FileStorageFactory {
   static default() {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSetAtom } from 'jotai';
 import { useSearchParams } from 'react-router';
-import { Translate } from '#app/I18N/index.js';
-import { Button } from '#V2/Components/UI/index.js';
+import { Translate } from 'app/I18N';
+import { Button } from 'app/V2/Components/UI';
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import { filterSidepanelAtom } from './filterSidepanelAtom.js';
+import { filterSidepanelAtom } from './filterSidepanelAtom';
 
 const FilterSidepanelButton = () => {
   const setOpen = useSetAtom(filterSidepanelAtom);

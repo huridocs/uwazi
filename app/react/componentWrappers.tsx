@@ -9,8 +9,8 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router';
-import { AppMainContext } from './App/AppMainContext.js';
-import { searchParamsFromSearchParams } from './utils/routeHelpers.js';
+import { AppMainContext } from './App/AppMainContext';
+import { searchParamsFromSearchParams } from './utils/routeHelpers';
 
 const withRouter =
   <T,>(Component: React.ComponentClass<T & { params?: any }, any>) =>

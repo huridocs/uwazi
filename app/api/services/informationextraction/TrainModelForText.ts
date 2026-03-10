@@ -1,23 +1,23 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable max-statements */
-import { UseCase } from '#api/core/libs/UseCase.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { UseCase } from 'api/core/libs/UseCase';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import urljoin from 'url-join';
-import request from '#shared/JSONRequest.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import request from 'shared/JSONRequest';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import moment from 'moment';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { EnforcedWithId } from '#api/odm/index.js';
-import { IXExtractorType } from '#shared/types/extractorType.js';
-import { Suggestions } from '#api/suggestions/suggestions.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import { getPropertyTrainingEntities } from './FetchMaterialsForTraining.js';
-import { PropertySourceMaterials } from './InformationExtraction.js';
-import { IXTaskService } from './TaskService.js';
-import { IXServices } from './IXServices.js';
-import { ExtractionKey } from './ExtractionKey.js';
-import { IXWebSocketEvents } from './WebSocketEvents.js';
-import ixmodels from './ixmodels.js';
+import { emitToTenant } from 'api/socketio/setupSockets';
+import { EnforcedWithId } from 'api/odm';
+import { IXExtractorType } from 'shared/types/extractorType';
+import { Suggestions } from 'api/suggestions/suggestions';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { getPropertyTrainingEntities } from './FetchMaterialsForTraining';
+import { PropertySourceMaterials } from './InformationExtraction';
+import { IXTaskService } from './TaskService';
+import { IXServices } from './IXServices';
+import { ExtractionKey } from './ExtractionKey';
+import { IXWebSocketEvents } from './WebSocketEvents';
+import ixmodels from './ixmodels';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -102,9 +102,7 @@ class TrainModelForText implements UseCase<Input, Output> {
           let labelText = entity.metadata?.[extractor.property]?.[0]?.value;
 
           if (targetProperty.type === 'date') {
-            labelText = moment(Number(labelText) * 1000)
-              .utc()
-              .format('YYYY-MM-DD');
+            labelText = moment(Number(labelText) * 1000).format('YYYY-MM-DD');
           }
 
           if (extractor.property === 'title') {

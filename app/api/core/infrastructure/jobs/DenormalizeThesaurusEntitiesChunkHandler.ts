@@ -1,12 +1,9 @@
-import {
-  HeartbeatCallback,
-  JobInfo,
-} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import { DenormalizeThesaurusEntitiesUseCaseFactory } from '../factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { DenormalizeThesaurusEntitiesUseCaseFactory } from '../factories/DenormalizeThesaurusEntitiesUseCaseFactory';
 
 type Params = {
   thesaurusId: string;

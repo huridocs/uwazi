@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
 import request from 'supertest';
-import type { Application, Request, Response, NextFunction } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from '#api/search/index.js';
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { search } from 'api/search';
+import { setUpApp } from 'api/utils/testingRoutes';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { routes } from '../routes.js';
-import { thesauri } from '../thesauri.js';
-import { fixtures } from './fixtures.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { routes } from '../routes';
+import { thesauri } from '../thesauri';
+import { fixtures } from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

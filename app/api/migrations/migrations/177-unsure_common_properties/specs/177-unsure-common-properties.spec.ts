@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
-import testingDB from '#api/utils/testing_db.js';
+import testingDB from 'api/utils/testing_db';
 import { Db, ObjectId } from 'mongodb';
-import migration from '../index.js';
-import { TemplateSchema } from '../types.js';
+import migration from '../index';
+import { TemplateSchema } from '../types';
 
 describe('migration test', () => {
   let db: Db;

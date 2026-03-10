@@ -1,13 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Textarea } from '#V2/Components/Forms/index.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { Textarea } from 'V2/Components/Forms';
 
 const meta: Meta<typeof Textarea> = {
   title: 'Forms/Textarea',
   component: Textarea,
 };
-export default meta;
 
 type Story = StoryObj<typeof Textarea>;
 
@@ -65,3 +64,5 @@ const WithErrorMessage = {
 };
 
 export { Basic, WithClearFieldButton, WithError, WithErrorMessage };
+
+export default meta;

@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { CreateEntitySchema } from '../Schemas.js';
+import { CreateEntitySchema } from '../Schemas';
 
 describe('CreateEntitySchema', () => {
   it('should parse all property types correctly (happy path)', () => {

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
 const letterThesaurusId = db.id();
 

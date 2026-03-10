@@ -1,7 +1,7 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
-import { MatchQueryNode } from '../model/MatchQueryNode.js';
-import { Relationship } from '../model/Relationship.js';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { MatchQueryNode } from '../model/MatchQueryNode';
+import { Relationship } from '../model/Relationship';
 
 export interface RelationshipsDataSource {
   insert(relationships: Relationship[]): Promise<Relationship[]>;

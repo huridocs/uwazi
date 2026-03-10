@@ -1,9 +1,9 @@
-import { UploadAttachment } from './components/UploadAttachment.js';
-import { manageAttachmentsReducer } from './reducers/manageAttachmentsReducer.js';
-import { reducer } from './reducers/reducer.js';
-import { RenderAttachment } from './components/RenderAttachment.js';
-import { AttachmentsList } from './components/AttachmentsList.js';
-import { AttachmentsModal } from './components/AttachmentsModal.js';
+import UploadAttachment from './components/UploadAttachment';
+import { manageAttachmentsReducer } from './reducers/manageAttachmentsReducer';
+import reducer from './reducers/reducer';
+import { RenderAttachment } from './components/RenderAttachment';
+import AttachmentsList from './components/AttachmentsList';
+import { AttachmentsModal } from './components/AttachmentsModal';
 
 export {
   AttachmentsList,

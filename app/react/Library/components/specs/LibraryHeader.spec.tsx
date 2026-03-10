@@ -5,17 +5,17 @@
 import React from 'react';
 import { formReducer, FormState } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import * as libraryActions from '#app/Library/actions/libraryActions.js';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import * as libraryActions from 'app/Library/actions/libraryActions';
 
-import { IStore } from '#app/istore.js';
-import { IImmutable } from '#shared/types/Immutable.js';
+import { IStore } from 'app/istore';
+import { IImmutable } from 'shared/types/Immutable';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
-import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader.js';
-import { SearchBar } from '../SearchBar.js';
+import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';
+import { SearchBar } from '../SearchBar';
 
 jest.mock('../SortDropdown', () => ({
   __esModule: true,
@@ -32,7 +32,7 @@ describe('LibraryHeader', () => {
     selectAllDocuments: jest.fn(),
     SearchBar,
     searchCentered: false,
-    filters: Immutable.fromJS([]),
+    filters: fromJS([]),
     tableViewMode: false,
     scrollCount: 0,
   };
@@ -54,7 +54,7 @@ describe('LibraryHeader', () => {
     };
   } = {
     ...defaultState,
-    templates: Immutable.fromJS([
+    templates: fromJS([
       {
         _id: 'template1',
         name: 'Template 1',
@@ -78,7 +78,7 @@ describe('LibraryHeader', () => {
       },
     ]),
     library: {
-      ui: Immutable.fromJS({
+      ui: fromJS({
         filtersPanel: [],
         selectedDocuments: [],
         zoomLevel: 2,
@@ -88,16 +88,16 @@ describe('LibraryHeader', () => {
           { name: 'column1', label: 'Column 1' },
         ],
       }),
-      filters: Immutable.fromJS({ documentTypes: ['template2'], properties: [] }),
+      filters: fromJS({ documentTypes: ['template2'], properties: [] }),
       search: {
         sort: 'desc',
       },
       searchForm: { ...storeState.form },
     },
     settings: {
-      collection: Immutable.fromJS({}),
+      collection: fromJS({}),
     },
-    user: Immutable.fromJS({}),
+    user: fromJS({}),
   };
 
   const render = () => {
@@ -116,7 +116,7 @@ describe('LibraryHeader', () => {
   it('should render a Select All button only if authorized', () => {
     render();
     expect(screen.queryByText('Select all')).not.toBeInTheDocument();
-    state.user = Immutable.fromJS({ _id: 'user1', role: 'admin' });
+    state.user = fromJS({ _id: 'user1', role: 'admin' });
     renderResult.unmount();
     render();
     expect(screen.queryByText('Select all')).toBeInTheDocument();

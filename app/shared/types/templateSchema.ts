@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-import { objectIdSchema, propertySchema } from '#shared/types/commonSchemas.js';
+import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 
 export const emitSchemaTypes = true;
 

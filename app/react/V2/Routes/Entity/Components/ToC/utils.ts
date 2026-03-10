@@ -1,5 +1,5 @@
-import { TocSchema } from '#shared/types/commonTypes.js';
-import type { ProcessedTocEntry } from './types.js';
+import { TocSchema } from 'shared/types/commonTypes';
+import type { ProcessedTocEntry } from './types';
 
 export const getPageNumber = (entry: TocSchema): number | null => {
   const page = entry.selectionRectangles?.find(rect => rect.page)?.page;

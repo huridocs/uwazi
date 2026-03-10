@@ -1,13 +1,24 @@
-import { spawn } from 'child_process';
+/* eslint-disable global-require */
+const { spawn } = require('child_process');
+const url = require('url');
 
-process.env.ROOT_PATH = process.env.ROOT_PATH || new URL('.', import.meta.url).pathname;
+if (process.env.NODE_ENV !== 'production') {
+  require('@babel/register')({
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    plugins: ['@babel/plugin-transform-modules-commonjs'],
+  });
+}
+
+process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
+
+const { config } = require('../app/api/config');
 
 const file = process.argv[2];
+
 const clParameters = process.argv.slice(3);
 
 if (file) {
-  const dbHost = process.env.DBHOST || 'mongodb://127.0.0.1/';
-  const mongoUri = new URL(dbHost);
+  const mongoUri = url.parse(config.DBHOST);
   const bashProcess = spawn(file, clParameters, {
     env: {
       ...process.env,

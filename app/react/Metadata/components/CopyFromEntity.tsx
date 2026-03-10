@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 
-import { TemplateSchema } from '#shared/types/templateType.js';
+import { TemplateSchema } from 'shared/types/templateType';
+import { IImmutable } from 'shared/types/Immutable';
+import comonProperties from 'shared/commonProperties';
+import { Icon } from 'UI';
+import { ClientEntitySchema } from 'app/istore';
+import { Translate } from 'app/I18N';
+import { actions, ShowMetadata, wrapEntityMetadata } from 'app/Metadata';
+import { store } from 'app/store';
 
-import { IImmutable } from '#shared/types/Immutable.js';
-
-import comonProperties from '#shared/commonProperties.js';
-import { Icon } from '#UI/Icon/Icon.js';
-import { Translate } from '#app/I18N/index.js';
-
-import { actions, ShowMetadata, wrapEntityMetadata } from '#app/Metadata/index.js';
-import { store } from '#app/store.js';
-import { SearchEntities } from './SearchEntities.js';
-import { ClientEntitySchema } from '#app/istore.js';
+import { SearchEntities } from './SearchEntities';
 
 type CopyFromEntityProps = {
   isVisible: boolean;

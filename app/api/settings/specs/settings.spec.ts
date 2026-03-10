@@ -1,10 +1,10 @@
-import translations from '#api/i18n/translations.js';
-import { WithId } from '#api/odm/index.js';
-import db from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { Settings } from '#shared/types/settingsType.js';
-import settings from '../settings.js';
-import fixtures, { linkFixtures, newLinks } from './fixtures.js';
+import translations from 'api/i18n/translations';
+import { WithId } from 'api/odm';
+import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Settings } from 'shared/types/settingsType';
+import settings from '../settings';
+import fixtures, { linkFixtures, newLinks } from './fixtures';
 
 describe('settings', () => {
   beforeEach(async () => {

@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 interface query {
   [key: string]: string;

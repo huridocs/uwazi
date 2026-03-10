@@ -5,7 +5,7 @@ import {
   ObjectIdSchema,
   PropertyValueSchema,
   SelectionRectanglesSchema,
-} from '#shared/types/commonTypes.js';
+} from 'shared/types/commonTypes';
 
 export interface CommonSuggestion {
   tenant: string;

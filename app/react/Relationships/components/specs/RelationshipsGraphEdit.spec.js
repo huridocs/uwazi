@@ -1,13 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
-import configureMockStore from 'redux-mock-store';
+import { fromJS } from 'immutable';
 
-import { RelationshipsGraphEditView } from '../RelationshipsGraphEdit.js';
-import { LeftRelationshipConnected } from '../LeftRelationship.js';
-import { RightRelationship } from '../RightRelationship.js';
-
-const mockStore = configureMockStore([]);
+import { RelationshipsGraphEdit } from '../RelationshipsGraphEdit';
+import LeftRelationship from '../LeftRelationship';
+import RightRelationship from '../RightRelationship';
 
 describe('RelationshipsGraphEdit', () => {
   let component;
@@ -52,35 +49,26 @@ describe('RelationshipsGraphEdit', () => {
     ];
 
     props = {
-      parentEntity: Immutable.fromJS({}),
-      hubs: Immutable.fromJS(hubs),
+      parentEntity: fromJS({}),
+      hubs: fromJS(hubs),
       editing: false,
-      searchResults: Immutable.fromJS({ rows: [] }),
+      searchResults: fromJS({ rows: [] }),
       parseResults: jasmine.createSpy('parseResults'),
       addHub: jasmine.createSpy('addHub'),
     };
   });
 
   const render = () => {
-    const store = mockStore({
-      relationships: {
-        list: { sort: Immutable.fromJS({}) },
-        hubs: props.hubs,
-        hubActions: Immutable.fromJS({}),
-      },
-    });
-    component = shallow(<RelationshipsGraphEditView {...props} />, {
-      context: { store },
-    });
+    component = shallow(<RelationshipsGraphEdit {...props} />);
   };
 
   it('should render a LeftRelationship component for each hub', () => {
     render();
-    const leftRelationshipComponents = component.find(LeftRelationshipConnected);
+    const leftRelationshipComponents = component.find(LeftRelationship);
     expect(leftRelationshipComponents.length).toBe(2);
     expect(leftRelationshipComponents.at(0).props().index).toBe(0);
-    expect(leftRelationshipComponents.at(0).props().hub).toEqual(Immutable.fromJS(hubs[0]));
-    expect(leftRelationshipComponents.at(1).props().hub).toEqual(Immutable.fromJS(hubs[1]));
+    expect(leftRelationshipComponents.at(0).props().hub).toEqual(fromJS(hubs[0]));
+    expect(leftRelationshipComponents.at(1).props().hub).toEqual(fromJS(hubs[1]));
   });
 
   it('should render a RightRelationship component for each hub', () => {
@@ -88,8 +76,8 @@ describe('RelationshipsGraphEdit', () => {
     const rightRelationshipComponents = component.find(RightRelationship);
     expect(rightRelationshipComponents.length).toBe(2);
     expect(rightRelationshipComponents.at(0).props().index).toBe(0);
-    expect(rightRelationshipComponents.at(0).props().hub).toEqual(Immutable.fromJS(hubs[0]));
-    expect(rightRelationshipComponents.at(1).props().hub).toEqual(Immutable.fromJS(hubs[1]));
+    expect(rightRelationshipComponents.at(0).props().hub).toEqual(fromJS(hubs[0]));
+    expect(rightRelationshipComponents.at(1).props().hub).toEqual(fromJS(hubs[1]));
   });
 
   describe('when editing', () => {
@@ -121,7 +109,7 @@ describe('RelationshipsGraphEdit', () => {
       props.parseResults.calls.reset();
       instance.componentDidUpdate(props);
       expect(props.parseResults).not.toHaveBeenCalled();
-      props.searchResults = Immutable.fromJS({ rows: [] });
+      props.searchResults = fromJS({ rows: [] });
       instance.componentDidUpdate(props);
       expect(props.parseResults).toHaveBeenCalledWith(
         props.searchResults,

@@ -1,4 +1,4 @@
-const colorScheme = [
+export default [
   '#0088FE',
   '#00ABC4',
   '#00C49F',
@@ -20,4 +20,4 @@ const light = [
   '#d0a7d8',
 ];
 
-export { light, colorScheme };
+export { light };

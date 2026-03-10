@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { APIURL } from '#app/config.js';
+import { APIURL } from 'app/config';
 import superagent, { MultipartValueSingle } from 'superagent';
 
 interface Fields {

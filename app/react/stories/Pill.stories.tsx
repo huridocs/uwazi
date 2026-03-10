@@ -1,12 +1,11 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Pill } from '#V2/Components/UI/Pill.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { Pill } from 'V2/Components/UI/Pill';
 
 const meta: Meta<typeof Pill> = {
   title: 'Components/Pill',
   component: Pill,
 };
-export default meta;
 
 type Story = StoryObj<typeof Pill>;
 
@@ -30,3 +29,5 @@ const Basic = {
 };
 
 export { Basic };
+
+export default meta;

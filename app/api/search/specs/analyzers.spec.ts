@@ -1,6 +1,6 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { elasticClient } from '../elastic.js';
-import { fixturesTimeOut } from './fixtures_elastic.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { elasticClient } from '../elastic';
+import { fixturesTimeOut } from './fixtures_elastic';
 
 describe('custom language analyzers', () => {
   const elasticIndex = 'analyzers_index_test';

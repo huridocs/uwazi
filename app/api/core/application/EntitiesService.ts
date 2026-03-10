@@ -1,23 +1,20 @@
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { search } from '#api/search/index.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { User } from '#api/users.v2/model/User.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { Entity, EntityIcon } from '../domain/entity/Entity.js';
-import { SettingsDataSource } from './contracts/SettingsDataSource.js';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
-import { EventsBus } from '../libs/eventsbus/index.js';
-import { TransactionManager } from './contracts/TransactionManager.js';
-import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher.js';
-import { RelationshipSyncJob } from '../infrastructure/jobs/RelationshipSyncJob.js';
-import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob.js';
-import {
-  EntityPermissionChecker,
-  Specification,
-} from '../domain/entity/EntityPermissionChecker.js';
-import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
-import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { search } from 'api/search';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { User } from 'api/users.v2/model/User';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { Entity, EntityIcon } from '../domain/entity/Entity';
+import { SettingsDataSource } from './contracts/SettingsDataSource';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
+import { EventsBus } from '../libs/eventsbus';
+import { TransactionManager } from './contracts/TransactionManager';
+import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
+import { RelationshipSyncJob } from '../infrastructure/jobs/RelationshipSyncJob';
+import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob';
+import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
+import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent';
+import { EventEmitter } from '../libs/eventEmitter/EventEmitter';
 
 type CreateInput = {
   icon?: EntityIcon;

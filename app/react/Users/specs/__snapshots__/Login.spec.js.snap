@@ -74,10 +74,10 @@ exports[`Login on instance should render the component with the login form 1`] =
             <span
               className="button forgot-password "
               onClick={[Function]}
-              title="Forgot Password or Username?"
+              title="Forgot Password?"
             >
               <Translate>
-                Forgot Password or Username?
+                Forgot Password?
               </Translate>
             </span>
           </div>

@@ -1,9 +1,9 @@
 import Immutable from 'immutable';
 
-import * as actions from '#app/ContextMenu/actions/actionTypes.js';
-import * as ViewerActions from '#app/Viewer/actions/actionTypes.js';
-import * as UploadActions from '#app/Uploads/actions/actionTypes.js';
-import * as LibraryActions from '#app/Library/actions/actionTypes.js';
+import * as actions from 'app/ContextMenu/actions/actionTypes';
+import * as ViewerActions from 'app/Viewer/actions/actionTypes';
+import * as UploadActions from 'app/Uploads/actions/actionTypes';
+import * as LibraryActions from 'app/Library/actions/actionTypes';
 
 const initialState = { open: false, menu: null };
 
@@ -13,7 +13,7 @@ const panels = {
   viewMetadataPanel: 'MetadataPanelMenu',
 };
 
-const contextMenuReducer = (state = initialState, action = {}) => {
+export default function contextMenuReducer(state = initialState, action = {}) {
   if (action.type === actions.OPEN_MENU) {
     return state.set('open', true);
   }
@@ -53,6 +53,4 @@ const contextMenuReducer = (state = initialState, action = {}) => {
   }
 
   return Immutable.fromJS(state);
-};
-
-export { contextMenuReducer };
+}

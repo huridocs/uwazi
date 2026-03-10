@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
-import { createReducer } from '#app/BasicReducer/index.js';
+import createReducer from 'app/BasicReducer';
 
-const importReducer = combineReducers({
+export default combineReducers({
   showImportPanel: createReducer('showImportPanel', false),
   importUploadProgress: createReducer('importUploadProgress', 0),
   importProgress: createReducer('importProgress', 0),
@@ -10,5 +10,3 @@ const importReducer = combineReducers({
   importError: createReducer('importError', {}),
   importRowExceptions: createReducer('importRowExceptions', {}),
 });
-
-export { importReducer };

@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import * as types from '#app/Library/actions/actionTypes.js';
-import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
+import * as types from 'app/Library/actions/actionTypes';
+import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 
 const initialState = Immutable.fromJS({
   searchTerm: '',
@@ -13,7 +13,7 @@ const initialState = Immutable.fromJS({
   tableViewColumns: [],
 });
 
-const uiReducer = (state = initialState, action = {}) => {
+export default function ui(state = initialState, action = {}) {
   if (action.type === types.SET_SEARCHTERM) {
     let newState = state.set('searchTerm', action.searchTerm);
     if (!action.searchTerm) {
@@ -166,6 +166,4 @@ const uiReducer = (state = initialState, action = {}) => {
   }
 
   return Immutable.fromJS(state);
-};
-
-export { uiReducer };
+}

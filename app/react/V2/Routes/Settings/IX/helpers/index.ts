@@ -4,8 +4,8 @@ export {
   getMetadataFromProperty,
   formatAccepted,
   escapeLucene,
-} from './helpers.js';
-export { searchRelatedEntities } from './loaderHelper.js';
+} from './helpers';
+export { searchRelatedEntities } from './loaderHelper';
 export {
   SELECT_TYPES,
   coerceValue,
@@ -14,4 +14,4 @@ export {
   handleEntitySave,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
-} from './sidepanelFunctions.js';
+} from './sidepanelFunctions';

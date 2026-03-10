@@ -1,11 +1,11 @@
 import React from 'react';
-import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
-import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
-import { Icon } from '#app/UI/index.js';
-import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
-import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
+import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N';
+import { NeedAuthorization } from 'V2/Components/UI/NeedAuthorization';
+import { Icon } from 'app/UI';
+import { PreserveIcon } from 'app/Layout/PreserveIcon';
+import { FeatureToggle } from 'V2/Components/UI/FeatureToggle';
 import { useAtomValue } from 'jotai';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { settingsAtom } from 'V2/atoms/settingsAtom';
 
 const SettingsNavigation = () => {
   const settings = useAtomValue(settingsAtom);

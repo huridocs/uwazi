@@ -1,7 +1,7 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
-import { MultiselectListOption } from './MultiselectList.js';
-import { Pill } from '../../UI/Pill.js';
+import { Translate } from 'app/I18N';
+import { MultiselectListOption } from './MultiselectList';
+import { Pill } from '../../UI/Pill';
 
 interface MultiselectListButtonItemProps {
   item: MultiselectListOption;

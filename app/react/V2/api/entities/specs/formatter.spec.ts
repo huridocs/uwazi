@@ -1,5 +1,5 @@
-import { EntitySchema } from '#shared/types/entityType.js';
-import { update } from '../formatter.js';
+import { EntitySchema } from 'shared/types/entityType';
+import { update } from '../formatter';
 
 describe('update entity', () => {
   let entity: EntitySchema;

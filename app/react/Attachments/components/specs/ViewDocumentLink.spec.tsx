@@ -2,10 +2,10 @@ import { Link } from 'react-router';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { CurrentLocationLink } from '#app/Layout/index.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { CurrentLocationLink } from 'app/Layout';
+import { EntitySchema } from 'shared/types/entityType';
 
-import { ViewDocumentLink } from '../ViewDocumentLink.js';
+import { ViewDocumentLink } from '../ViewDocumentLink';
 
 let pathname = 'entity/';
 
@@ -36,9 +36,7 @@ describe('ViewDocumentLink', () => {
   describe('when on viewer', () => {
     it('should change file name and set page 1 if its in document view', () => {
       const component = renderComponent(entity);
-      expect(
-        (component.find(CurrentLocationLink).props() as { queryParams: unknown }).queryParams
-      ).toEqual({
+      expect(component.find(CurrentLocationLink).props().queryParams).toEqual({
         file: 'file.pdf',
         page: 1,
       });

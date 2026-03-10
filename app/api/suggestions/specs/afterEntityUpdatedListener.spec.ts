@@ -1,12 +1,12 @@
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
-import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate.js';
-import { AfterEntityUpdatedListener } from '../listeners/afterEntityUpdatedListener.js';
-import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged.js';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
+import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
+import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';
+import { AfterEntityUpdatedListener } from '../listeners/afterEntityUpdatedListener';
+import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged';
 
 const factory = getFixturesFactory();
 

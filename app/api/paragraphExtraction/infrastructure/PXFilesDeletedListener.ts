@@ -1,20 +1,20 @@
-import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
-import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;

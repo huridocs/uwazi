@@ -1,11 +1,11 @@
-import { search } from '#api/search/search.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { search } from 'api/search/search';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
-import { AggregationBucket, Aggregations } from '#shared/types/aggregations.js';
-import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { UserSchema } from '#shared/types/userType.js';
-import { fixturesTimeOut } from './fixtures_elastic.js';
+import { AggregationBucket, Aggregations } from 'shared/types/aggregations';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { UserSchema } from 'shared/types/userType';
+import { fixturesTimeOut } from './fixtures_elastic';
 import {
   group1,
   permissionsLevelFixtures,
@@ -13,7 +13,7 @@ import {
   template2Id,
   template3Id,
   users,
-} from './permissionsFiltersFixtures.js';
+} from './permissionsFiltersFixtures';
 
 function getAggregationCountByType(typesBuckets: AggregationBucket[], templateId: ObjectIdSchema) {
   return typesBuckets.find(a => a.key === templateId.toString())?.filtered.doc_count;

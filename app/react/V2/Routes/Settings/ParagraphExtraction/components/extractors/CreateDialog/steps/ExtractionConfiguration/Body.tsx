@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
-import { Translate } from '#app/I18N/index.js';
-import { OptionSchema, Select } from '#V2/Components/Forms/index.js';
+import { Translate } from 'app/I18N';
+import { OptionSchema, Select } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
-import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
-import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
+import { relationshipTypesAtom, templatesAtom } from 'app/V2/atoms';
+import { TemplateSchema } from 'shared/types/templateType';
+import { useCreateExtractorContext } from '../../CreateExtractorContext';
 
 const getOptions = (options: OptionSchema[]) => [
   {

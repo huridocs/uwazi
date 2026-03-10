@@ -1,5 +1,5 @@
-import { risonDecodeOrIgnore } from '#app/utils/index.js';
-import markdownEscapedValues from '#app/utils/markdownEscapedValues.js';
+import { risonDecodeOrIgnore } from 'app/utils';
+import markdownEscapedValues from 'app/utils/markdownEscapedValues';
 
 const listPlaceholder = '{---UWAZILIST---}';
 const listEscape = '{list}';

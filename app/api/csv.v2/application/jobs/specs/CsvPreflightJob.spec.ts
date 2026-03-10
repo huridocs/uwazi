@@ -1,15 +1,20 @@
 /* eslint-disable max-statements, max-classes-per-file */
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
-import { CsvImportRow } from '../../../domain/CsvImportRow.js';
-import { CsvPreflightJobFactory } from '../../../infrastructure/factories/CsvPreflightJobFactory.js';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { tenants } from 'api/tenants/tenantContext';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
+import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { CsvImportRow } from '../../../domain/CsvImportRow';
+import { CsvPreflightJob } from '../CsvPreflightJob';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -17,7 +22,6 @@ const createCallbacks = () => ({
   onStart: jest.fn(),
   onSuccess: jest.fn(),
   onError: jest.fn(),
-  onProgress: jest.fn(),
 });
 
 const stageRows = async (
@@ -60,13 +64,26 @@ const insertImport = async (
 
 const buildUseCase = () => {
   const transactionManager = TransactionManagerFactory.default();
+  const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+  const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  const thesauriValuesDS =
+    CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
   const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
     dispatchMany: jest.fn().mockResolvedValue(undefined),
   }) as jest.Mocked<JobsDispatcher>;
-  const { useCase, csvImportsDS, rowsDS, thesauriValuesDS } = CsvPreflightJobFactory.build({
-    transactionManager,
+  const useCase = new CsvPreflightJob({
+    csvImportsDS,
+    rowsDS,
+    templatesDS,
+    settingsDS,
+    thesauriDS,
+    thesauriValuesDS,
     jobsDispatcher,
+    transactionManager,
   });
   return {
     useCase,
@@ -94,21 +111,14 @@ const fixtures = {
       fixturesFactory.property('select_property', 'select', {
         content: fixturesFactory.id('preflightThesaurus').toString(),
       }),
-      fixturesFactory.property('rel_property', 'relationship', {
-        content: fixturesFactory.id('relatedTemplate').toString(),
-      }),
     ]),
-    fixturesFactory.template('relatedTemplate', []),
   ],
 };
 
 describe('CsvPreflightJob (integration)', () => {
   const template = fixtures.templates[0];
   const templateId = template._id.toString();
-  const selectPropertyId = template
-    .properties!.find(property => property.name === 'select_property')!
-    ._id!.toString();
-  const relatedTemplateId = fixtures.templates[1]._id.toString();
+  const selectPropertyId = template.properties![0]!._id!.toString();
   const thesaurusId = fixtures.dictionaries![0]!._id.toString();
 
   beforeAll(async () => {
@@ -119,12 +129,7 @@ describe('CsvPreflightJob (integration)', () => {
     jest.clearAllMocks();
     await testingEnvironment.setFixtures(fixtures);
     await Promise.all(
-      [
-        'csv_imports',
-        'csv_import_rows',
-        'csv_import_thesauri_values',
-        'csv_import_relationships_pending_values',
-      ].map(async collectionName => {
+      ['csv_imports', 'csv_import_rows', 'csv_import_thesauri_values'].map(async collectionName => {
         const collection = testingEnvironment.db.getCollection(collectionName);
         if (collection) {
           await collection.deleteMany({});
@@ -146,7 +151,7 @@ describe('CsvPreflightJob (integration)', () => {
     await insertImport(csvImportsDS, { importId, templateId, userId });
     await stageRows(rowsDS, {
       importId,
-      csv: 'title,select_property__en,select_property__es,rel_property\nrow,New Value,Nuevo Valor,Related 1|Related 2',
+      csv: 'title,select_property__en,select_property__es\nrow,New Value,Nuevo Valor',
     });
 
     const callbacks = createCallbacks();
@@ -154,13 +159,13 @@ describe('CsvPreflightJob (integration)', () => {
 
     expect(result).toEqual({
       importId,
-      status: CsvImportStatus.PreflightScanDone,
+      status: CsvImportStatus.PreflightThesauriDone,
     });
     expect(callbacks.onStart).toHaveBeenCalledWith({ importId });
     expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
 
     const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
-    expect(updatedImport.status).toBe(CsvImportStatus.PreflightScanDone);
+    expect(updatedImport.status).toBe(CsvImportStatus.PreflightThesauriDone);
     const pendingDocs = await thesauriValuesDS.getByImport(importId);
     expect(pendingDocs).toHaveLength(1);
     expect(pendingDocs[0]).toEqual(
@@ -180,18 +185,6 @@ describe('CsvPreflightJob (integration)', () => {
         ],
       })
     );
-    const pendingRelationships = await testingEnvironment.db
-      .getCollection('csv_import_relationships_pending_values')!
-      .find({ importId })
-      .toArray();
-    expect(pendingRelationships).toEqual([
-      expect.objectContaining({
-        importId,
-        templateId: relatedTemplateId,
-        titles: ['Related 1', 'Related 2'],
-      }),
-    ]);
-    expect(callbacks.onProgress).toHaveBeenCalled();
     expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
       CsvCreateThesauriValuesJobHandler,
       expect.objectContaining({ importId, tenantName, userId })

@@ -1,6 +1,5 @@
-import { selectRestrictedEntities } from '../helpers/index.js';
-import { clearCookiesAndLogin } from '../helpers/login.js';
-import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
+import { selectRestrictedEntities } from '../helpers';
+import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Public Form', () => {
   before(() => {
@@ -9,13 +8,8 @@ describe('Public Form', () => {
     clearCookiesAndLogin();
   });
 
-  beforeEach(() => {
-    cy.cleanupUnexpectedUi();
-  });
-
   describe('whitelist templates', () => {
     it('should navigate to collection settings', () => {
-      dismissModalIfVisible();
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
       cy.get('select[name="defaultLibraryView"]').select('Cards');
@@ -38,14 +32,13 @@ describe('Public Form', () => {
 
   describe('create a page', () => {
     it('should create a page with a public form and add it to the navbar', () => {
-      dismissModalIfVisible();
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form Page', { delay: 0 });
       cy.contains('Markdown').click();
-      typeInEditor(
-        'html',
-        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
+      cy.get('div[data-mode-id="html"]').type(
+        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />',
+        { parseSpecialCharSequences: false, delay: 0 }
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -75,7 +68,6 @@ describe('Public Form', () => {
     });
 
     it('should visit the page and do a submit for the first template', () => {
-      dismissModalIfVisible();
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
@@ -97,7 +89,6 @@ describe('Public Form', () => {
 
   describe('public form with image and media files', () => {
     it('should go back a use the other template for the form', () => {
-      dismissModalIfVisible();
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Public Form Page')
@@ -122,7 +113,6 @@ describe('Public Form', () => {
     });
 
     it('should revisit the page and fill the text, select and date fields', () => {
-      dismissModalIfVisible();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').matchImageSnapshot();
@@ -130,23 +120,23 @@ describe('Public Form', () => {
         force: true,
         delay: 0,
       });
-      cy.contains('label', 'Descriptor', { timeout: 12000 });
-      cy.get('select').first().select('505e38c8-210f-45b1-a81f-aa34d933cbae', { force: true });
+      cy.get('select').select('505e38c8-210f-45b1-a81f-aa34d933cbae');
       cy.get('.react-datepicker-wrapper input').type('2022/02/10', { delay: 0 });
       cy.get('textarea').type('A description for the report', { delay: 0 });
     });
 
     it('should fill the Fotografía field', () => {
       cy.contains('.image button[type=button]', 'Add file').eq(0).click();
-      cy.get('div[role=dialog] input[type=file]', { timeout: 12000 }).selectFile(
-        './cypress/test_files/batman.jpg',
-        { force: true }
-      );
+      cy.contains('button', 'Select from computer');
+      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
       cy.get('img').should('be.visible');
     });
 
     it('should fill the Video field', () => {
       cy.get('.media button[type=button]').click();
+      cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(
         './cypress/test_files/short-video.mp4',
         {
@@ -166,10 +156,10 @@ describe('Public Form', () => {
 
     it('should fill the Imagen adicional field', () => {
       cy.contains('.image button[type=button]', 'Add file').click();
-      cy.get('div[role=dialog] input[type=file]', { timeout: 12000 }).selectFile(
-        './cypress/test_files/batman.jpg',
-        { force: true }
-      );
+      cy.contains('button', 'Select from computer');
+      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
       cy.get('.form-group.image').should('have.length', 2);
     });
 
@@ -186,27 +176,24 @@ describe('Public Form', () => {
   describe('check created entities', () => {
     it('should check the first entity', () => {
       cy.get('a[aria-label="Library"]').click();
-      cy.contains('Published', { timeout: 12000 });
+      cy.contains('Published', { timeout: 100 });
       selectRestrictedEntities();
       cy.contains('h2', 'Test public submit entity').click();
       cy.contains('Test public submit entity');
     });
 
-    it('should check the second entity', () => {
-      cy.get('.library-viewer').scrollTo('top');
-      cy.contains('h2', 'Entity with image and media fields').click();
-      cy.contains('aside.is-active a', 'View').click();
-      cy.contains('Entity with image and media fields');
-    });
-
     it('should check the second entity with files', () => {
-      cy.get('a[aria-label="Library"]').click();
       cy.get('.library-viewer').scrollTo('top');
       cy.contains('h2', 'Entity with image and media fields').click();
       cy.intercept('GET', '/api/files/*').as('waitForImages');
       cy.contains('aside.is-active a', 'View').click();
+      //wait for .multimedia-img to be visible
       cy.get('.multimedia-img').should('be.visible');
+
+      // Wait for attachment files to be present instead of network requests (caching compatible)
       cy.get('.attachment-name span:first-of-type').should('have.length', 3);
+
+      // get the names of the supporting files in first span of .attachment-name
       cy.get('.attachment-name span:first-of-type').then($spans => {
         const names = $spans.toArray().map(span => span.textContent);
         expect(names).to.deep.equal(['batman.jpg', 'batman.jpg', 'short-video.mp4']);
@@ -217,16 +204,15 @@ describe('Public Form', () => {
   describe('error handling', () => {
     // eslint-disable-next-line max-statements
     it('should catch an unexpected error on rendering', () => {
-      dismissModalIfVisible();
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form with error', { delay: 0 });
       cy.contains('Markdown').click();
-      typeInEditor(
-        'html',
+      cy.get('div[data-mode-id="html"]').type('{selectAll}{del}', { delay: 0 });
+      cy.get('div[data-mode-id="html"]').type(
         '<h1>Public form with error</h1><PublicForm template="invalid template" />',
-        true
+        { parseSpecialCharSequences: false }
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);

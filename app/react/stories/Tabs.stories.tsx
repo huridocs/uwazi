@@ -1,14 +1,12 @@
 /* eslint-disable import/no-default-export */
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Tabs } from '#V2/Components/UI/Tabs.js';
+import { Meta, StoryObj } from '@storybook/react';
+import { Tabs } from 'V2/Components/UI/Tabs';
 
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',
   component: Tabs,
 };
-
-export default meta;
 
 type Story = StoryObj<typeof Tabs>;
 
@@ -51,3 +49,5 @@ export const Basic = {
     tabListAriaLabel: 'Entity detail sections',
   },
 };
+
+export default meta;

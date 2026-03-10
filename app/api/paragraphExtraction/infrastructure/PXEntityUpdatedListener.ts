@@ -1,18 +1,18 @@
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource.js';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
-import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
-import { EntityStatus } from '../domain/PXEntityStatusModel.js';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
+import { EntitySchema } from 'shared/types/entityType';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

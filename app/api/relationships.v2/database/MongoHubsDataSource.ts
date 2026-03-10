@@ -1,8 +1,8 @@
 /* eslint-disable max-classes-per-file */
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { MongoDataSource } from '../../core/infrastructure/mongodb/common/MongoDataSource.js';
-import { HubDataSource, HubType } from '../contracts/HubDataSource.js';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoDataSource } from '../../core/infrastructure/mongodb/common/MongoDataSource';
+import { HubDataSource, HubType } from '../contracts/HubDataSource';
 
 class TemporaryDataSourceError extends Error {}
 

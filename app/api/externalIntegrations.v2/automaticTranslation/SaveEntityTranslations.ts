@@ -1,9 +1,9 @@
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
-import { TranslationResult } from './types/TranslationResult.js';
-import { Validator } from './infrastructure/Validator.js';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { TranslationResult } from './types/TranslationResult';
+import { Validator } from './infrastructure/Validator';
 
 export class SaveEntityTranslations {
   static AITranslatedText = '(AI translated)';

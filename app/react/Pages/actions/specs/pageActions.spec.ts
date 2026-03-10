@@ -2,13 +2,13 @@
  * @jest-environment jsdom
  */
 import { actions as formActions } from 'react-redux-form';
-import { RequestParams } from '#app/utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams';
 
-import { actions as basicActions } from '#app/BasicReducer/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { PagesAPI as api } from '#app/Pages/PagesAPI.js';
+import { actions as basicActions } from 'app/BasicReducer';
+import { notificationActions } from 'app/Notifications';
+import api from 'app/Pages/PagesAPI';
 
-import * as actions from '../pageActions.js';
+import * as actions from '../pageActions';
 
 describe('Page actions', () => {
   let dispatch: jasmine.Spy;

@@ -1,11 +1,11 @@
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
-import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import entities from '#api/entities/index.js';
-import { dbSessionContext } from '#api/odm/sessionsContext.js';
-import relationships from '#api/relationships/relationships.js';
-import { withConnectedData } from '#api/relationships/relationshipsHelpers.js';
-import settings from '#api/settings/index.js';
-import { Relation } from '../../../relationships/RelationsV1Collection.js';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import entities from 'api/entities';
+import { dbSessionContext } from 'api/odm/sessionsContext';
+import relationships from 'api/relationships/relationships';
+import { withConnectedData } from 'api/relationships/relationshipsHelpers';
+import settings from 'api/settings';
+import { Relation } from '../../../relationships/RelationsV1Collection';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';

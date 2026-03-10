@@ -5,18 +5,16 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import cloneDeep from 'lodash/cloneDeep.js';
-import isEqual from 'lodash/isEqual.js';
-
-import { Translate } from '#app/I18N/index.js';
-import * as SettingsAPI from '#V2/api/settings/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { MenuForm } from './components/MenuForm.js';
-import { columns } from './components/TableComponents.js';
-import { Link, sanitizeIds } from './shared.js';
+import { cloneDeep, isEqual } from 'lodash';
+import { Translate } from 'app/I18N';
+import * as SettingsAPI from 'app/V2/api/settings';
+import { notificationAtom } from 'app/V2/atoms';
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { Button, Table, Sidepanel, ConfirmNavigationModal } from 'app/V2/Components/UI';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { MenuForm } from './components/MenuForm';
+import { columns } from './components/TableComponents';
+import { Link, sanitizeIds } from './shared';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

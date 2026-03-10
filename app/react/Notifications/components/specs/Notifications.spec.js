@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { NotificationsView } from '#app/Notifications/components/Notifications.js';
-import { Notification } from '#app/Notifications/components/Notification.js';
+import { Notifications } from 'app/Notifications/components/Notifications';
+import Notification from 'app/Notifications/components/Notification';
 
 describe('Notifications', () => {
   let component;
@@ -15,7 +15,7 @@ describe('Notifications', () => {
         { message: '2', type: '2', id: 2 },
       ],
     };
-    component = shallow(<NotificationsView {...props} />);
+    component = shallow(<Notifications {...props} />);
   });
 
   it('should render all notifications passed', () => {

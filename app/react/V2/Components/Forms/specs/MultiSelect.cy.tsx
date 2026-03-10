@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/Forms/MultiSelect.stories.js';
+import * as stories from 'app/stories/Forms/MultiSelect.stories';
 
 const { Basic: MultiSelect } = composeStories(stories);
 
@@ -62,7 +62,7 @@ describe('MultiSelect', () => {
       const onChangeSpy = cy.stub().as('onChange');
       mount(
         <MultiSelect
-          onChange={(value: string[]) => {
+          onChange={value => {
             onChangeSpy(value);
           }}
         />

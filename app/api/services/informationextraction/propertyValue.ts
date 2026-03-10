@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { ensure } from '#shared/tsUtils.js';
-import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
+import { ensure } from 'shared/tsUtils';
+import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 
 type EntityValue = { value?: string; label?: string };
 

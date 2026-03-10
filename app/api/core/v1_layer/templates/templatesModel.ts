@@ -1,6 +1,6 @@
-import { instanceModel } from '#api/odm/index.js';
+import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
-import { TemplateSchema } from '../../../../shared/types/templateType.js';
+import { TemplateSchema } from '../../../../shared/types/templateType';
 
 const mongoSchema = new mongoose.Schema(
   {

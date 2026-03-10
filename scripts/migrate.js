@@ -1,5 +1,5 @@
-import { DB } from '#api/odm/index.js';
-import { runMigration } from '#api/migrations/migrate.js';
+import { DB } from '../app/api/odm';
+import { runMigration } from '../app/api/migrations/migrate';
 
 process.on('unhandledRejection', error => {
   throw error;

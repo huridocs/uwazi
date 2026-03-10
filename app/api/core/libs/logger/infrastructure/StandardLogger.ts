@@ -1,8 +1,8 @@
-import { Tenant } from '#api/tenants/tenantContext.js';
-import { Logger } from '../contracts/Logger.js';
-import { LogEntry, LogMetadata } from './LogEntry.js';
-import { LogLevel, LogLevels } from './LogLevels.js';
-import { LogWriter } from './LogWriter.js';
+import { Tenant } from 'api/tenants/tenantContext';
+import { Logger } from '../contracts/Logger';
+import { LogEntry, LogMetadata } from './LogEntry';
+import { LogLevel, LogLevels } from './LogLevels';
+import { LogWriter } from './LogWriter';
 
 class StandardLogger implements Logger {
   private write: LogWriter;

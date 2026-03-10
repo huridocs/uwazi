@@ -1,24 +1,15 @@
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
-import { dirname } from 'path';
+
+import { cleanupTestUploadedPaths, createDirIfNotExists, setupTestUploadedPaths } from 'api/files';
+import { FileType } from 'api/migrations/migrations/172-files_detect_and_assign_mimetype/types';
+import { appContext } from 'api/utils/AppContext';
+import { elasticTesting } from 'api/utils/elastic_testing';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
+import { testingTenants } from 'api/utils/testingTenants';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-import {
-  cleanupTestUploadedPaths,
-  createDirIfNotExists,
-  setupTestUploadedPaths,
-} from '#api/files/index.js';
-import { FileType } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/types.js';
-import { appContext } from '#api/utils/AppContext.js';
-import { elasticTesting } from '#api/utils/elastic_testing.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { UserSchema } from '#shared/types/userType.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { UserSchema } from 'shared/types/userType';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;

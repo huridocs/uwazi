@@ -1,4 +1,4 @@
-import { Template } from '#app/apiResponseTypes.js';
+import { Template } from 'app/apiResponseTypes';
 
 const filterPXQualifiedTemplates = (template: Template) =>
   template.properties?.some(({ type }) => type === 'markdown') &&

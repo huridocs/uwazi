@@ -5,15 +5,15 @@ import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
 import QueryString from 'qs';
 
-import { legacyLogger } from '#api/log/index.js';
-import { search } from '#api/search/index.js';
-import { CSVExporter } from '#api/csv/index.js';
-import settings from '#api/settings/index.js';
-import captchaMiddleware from '#api/auth/captchaMiddleware.js';
-import { csvExportParamsSchema } from '#shared/types/searchParameterSchema.js';
-import { CsvExportBody } from '#shared/types/searchParameterType.js';
-import { temporalFilesPath, generateFileName } from './filesystem.js';
-import { validation } from '../utils/index.js';
+import { legacyLogger } from 'api/log';
+import { search } from 'api/search';
+import { CSVExporter } from 'api/csv';
+import settings from 'api/settings';
+import captchaMiddleware from 'api/auth/captchaMiddleware';
+import { csvExportParamsSchema } from 'shared/types/searchParameterSchema';
+import { CsvExportBody } from 'shared/types/searchParameterType';
+import { temporalFilesPath, generateFileName } from './filesystem';
+import { validation } from '../utils';
 
 export default (app: Application) => {
   const generateExportFileName = (databaseName: string = '') =>

@@ -1,9 +1,9 @@
 import path from 'path';
-import { deleteFiles } from '#api/files/index.js';
-import { createTestingZip } from '#api/csv/specs/helpers.js';
+import { deleteFiles } from 'api/files';
+import { createTestingZip } from 'api/csv/specs/helpers';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import zipFile from '../zipFile.js';
+import zipFile from '../zipFile';
 
 describe('zipFile', () => {
   beforeAll(async () => {

@@ -7,10 +7,10 @@ import {
   UwaziQueryOptions,
   EnforcedWithId,
   UwaziUpdateOptions,
-} from './model.js';
-import { tenants } from '../tenants/tenantContext.js';
-import { DB } from './DB.js';
-import { dbSessionContext } from './sessionsContext.js';
+} from './model';
+import { tenants } from '../tenants/tenantContext';
+import { DB } from './DB';
+import { dbSessionContext } from './sessionsContext';
 
 export class MongooseModelWrapper<T> {
   dbs: { [k: string]: mongoose.Model<DataType<T>> };

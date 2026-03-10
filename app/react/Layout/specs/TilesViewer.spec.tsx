@@ -1,10 +1,10 @@
 import Immutable from 'immutable';
 
-import { Doc } from '#app/Library/components/Doc.js';
-import { TilesViewer } from '#app/Layout/TilesViewer.js';
-import { renderConnected } from '#app/utils/test/renderConnected.js';
+import Doc from 'app/Library/components/Doc';
+import { TilesViewer } from 'app/Layout/TilesViewer';
+import { renderConnected } from 'app/utils/test/renderConnected';
 
-import { RowList } from '../Lists.js';
+import { RowList } from '../Lists';
 
 describe('TilesViewer', () => {
   let component: any;

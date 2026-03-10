@@ -1,8 +1,8 @@
-export * from '../urlParams.js';
-export { PDFView } from './PDFView.js';
-export { TabLabel } from './TabLabel.js';
-export { ReferencesPanel } from './ReferencesPanel/ReferencesPanel.js';
-export { SearchResults } from './SearchResults.js';
-export { SearchHintsModal } from './SearchHintsModal.js';
-export { FileList } from './FileList.js';
-export { ToCPanel } from './ToC/ToCPanel.js';
+export * from '../urlParams';
+export { PDFView } from './PDFView';
+export { TabLabel } from './TabLabel';
+export { ReferencesPanel } from './ReferencesPanel';
+export { SearchResults } from './SearchResults';
+export { SearchHintsModal } from './SearchHintsModal';
+export { FileList } from './FileList';
+export { ToCPanel } from './ToC/ToCPanel';

@@ -1,40 +1,37 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-import {
-  AbstractImageProperty,
-  ImageStyle,
-} from '#api/core/domain/template/AbstractImageProperty.js';
-import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
-import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
-import { DateProperty } from '#api/core/domain/template/DateProperty.js';
-import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
-import { FilterableProperty } from '#api/core/domain/template/FilterableProperty.js';
-import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
-import { GeolocationProperty } from '#api/core/domain/template/GeoLocationProperty.js';
-import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
-import { LinkProperty } from '#api/core/domain/template/LinkProperty.js';
-import { MarkdownProperty } from '#api/core/domain/template/MarkdownProperty.js';
-import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
-import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
-import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
-import { MultiDateRangeProperty } from '#api/core/domain/template/MultiDateRangeProperty.js';
-import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
-import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
-import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
-import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
-import { Property } from '#api/core/domain/template/Property.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
-import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { TextProperty } from '#api/core/domain/template/TextProperty.js';
-import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
+import { AbstractImageProperty, ImageStyle } from 'api/core/domain/template/AbstractImageProperty';
+import { CommonProperty } from 'api/core/domain/template/CommonProperty';
+import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
+import { DateProperty } from 'api/core/domain/template/DateProperty';
+import { DateRangeProperty } from 'api/core/domain/template/DateRangeProperty';
+import { FilterableProperty } from 'api/core/domain/template/FilterableProperty';
+import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
+import { GeolocationProperty } from 'api/core/domain/template/GeoLocationProperty';
+import { ImageProperty } from 'api/core/domain/template/ImageProperty';
+import { LinkProperty } from 'api/core/domain/template/LinkProperty';
+import { MarkdownProperty } from 'api/core/domain/template/MarkdownProperty';
+import { MediaProperty } from 'api/core/domain/template/MediaProperty';
+import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';
+import { MultiDateProperty } from 'api/core/domain/template/MultiDateProperty';
+import { MultiDateRangeProperty } from 'api/core/domain/template/MultiDateRangeProperty';
+import { MultiSelectProperty } from 'api/core/domain/template/select/MultiSelectProperty';
+import { NestedProperty } from 'api/core/domain/template/NestedProperty';
+import { NumericProperty } from 'api/core/domain/template/NumericProperty';
+import { PreviewProperty } from 'api/core/domain/template/PreviewProperty';
+import { Property } from 'api/core/domain/template/Property';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
+import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
+import { Template } from 'api/core/domain/template/Template';
+import { TextProperty } from 'api/core/domain/template/TextProperty';
+import { TitleProperty } from 'api/core/domain/template/TitleProperty';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { mapPropertyQuery } from 'api/core/infrastructure/mongodb/template/QueryMapper';
 import { ObjectId } from 'mongodb';
-import { PropertySchema } from '#shared/types/commonTypes.js';
-import { TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO.js';
-import { TemplateDBO } from './DBOs/TemplateDBO.js';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO';
+import { TemplateDBO } from './DBOs/TemplateDBO';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {

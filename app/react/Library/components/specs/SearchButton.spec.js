@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { SearchButtonView as SearchButton } from '#app/Library/components/SearchButton.js';
+import { SearchButton } from 'app/Library/components/SearchButton';
 
 describe('SearchButton', () => {
   let component;

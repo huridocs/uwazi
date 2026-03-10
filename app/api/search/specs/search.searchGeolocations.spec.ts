@@ -1,10 +1,10 @@
-import db from '#api/utils/testing_db.js';
-import { search } from '#api/search/search.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import db from 'api/utils/testing_db';
+import { search } from 'api/search/search';
+import { EntitySchema } from 'shared/types/entityType';
 
-import inheritanceFixtures, { ids } from './fixturesInheritance.js';
-import { fixturesTimeOut } from './fixtures_elastic.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import inheritanceFixtures, { ids } from './fixturesInheritance';
+import { fixturesTimeOut } from './fixtures_elastic';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 describe('search.searchGeolocations', () => {
   const user = { _id: 'u1' };

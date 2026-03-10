@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
 import { Popover } from '@headlessui/react';
-import { InputField } from '#app/V2/Components/Forms/index.js';
+import { InputField } from 'app/V2/Components/Forms';
 import { usePopper } from 'react-popper';
-import { Translate } from '#app/I18N/index.js';
 
 type ColorPickerProps = {
   name: string;
@@ -62,17 +61,11 @@ const ColorPicker = ({
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
-    strategy: 'fixed',
+    strategy: 'absolute',
     modifiers: [
       {
         name: 'offset',
         options: { offset: [0, 8] },
-      },
-      {
-        name: 'preventOverflow',
-        options: {
-          boundary: undefined,
-        },
       },
     ],
   });
@@ -80,7 +73,7 @@ const ColorPicker = ({
   return (
     <div className={`${className}`}>
       <Popover className="relative">
-        {() => (
+        {({ close }) => (
           <>
             <Popover.Button
               ref={setReferenceElement}
@@ -91,7 +84,6 @@ const ColorPicker = ({
                 className="rounded-md w-6 h-6"
                 style={{ backgroundColor: localValue }}
               />
-              <Translate className="sr-only">Template color</Translate>
             </Popover.Button>
             <Popover.Panel
               ref={setPopperElement}
@@ -100,7 +92,7 @@ const ColorPicker = ({
               className="flex flex-col gap-2 p-2 bg-white rounded-xl shadow-lg w-56 z-20 border border-gray-100"
             >
               <ul
-                className="grid grid-cols-5 grid-rows-2 gap-2 p-2"
+                className="grid grid-cols-5 grid-rows-2 gap-2 mb-2 p-2"
                 data-testid="colorpicker-popover"
               >
                 {options.map((color: string) => (
@@ -110,6 +102,7 @@ const ColorPicker = ({
                       className="w-8 h-8 rounded-md flex items-center justify-center focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                       onClick={() => {
                         changeColor(color);
+                        close();
                       }}
                     >
                       <span className="sr-only">{color}</span>
@@ -122,18 +115,6 @@ const ColorPicker = ({
                   </li>
                 ))}
               </ul>
-              <label className="flex flex-row gap-2 items-center cursor-pointer w-fit ">
-                <Translate>Pick a color</Translate>
-                <input
-                  type="color"
-                  className="rounded-md w-6 h-6 cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-primary-500"
-                  data-testid="custom-colorpicker"
-                  value={localValue}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    changeColor(e.target.value);
-                  }}
-                />
-              </label>
               <InputField
                 id={name}
                 type="text"

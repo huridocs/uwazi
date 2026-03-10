@@ -1,4 +1,4 @@
-import { EntitySchema } from '#shared/types/entityType.js';
+import { EntitySchema } from 'shared/types/entityType';
 
 type SearchResponse<T> = {
   data: T[];

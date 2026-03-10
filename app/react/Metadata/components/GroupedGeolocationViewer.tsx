@@ -1,13 +1,13 @@
 import React from 'react';
-import { GeolocationViewer } from '#app/Metadata/components/GeolocationViewer.js';
+import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { connect, ConnectedProps } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 import { bindActionCreators, Dispatch } from 'redux';
-import { IStore } from '../../istore.js';
-import { ensure } from '../../../shared/tsUtils.js';
-import { Pill } from './Pill.js';
-import * as actions from '../../Relationships/actions/actions.js';
+import { IStore } from '../../istore';
+import { ensure } from '../../../shared/tsUtils';
+import { Pill } from './Pill';
+import * as actions from '../../Relationships/actions/actions';
 
 interface GeolocationMarker {
   lat: string;

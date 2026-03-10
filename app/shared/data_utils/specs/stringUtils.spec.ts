@@ -1,4 +1,4 @@
-import { compareStringLists, escapeEspecialChars } from '../stringUtils.js';
+import { compareStringLists, escapeEspecialChars } from '../stringUtils';
 
 describe('compareStringLists()', () => {
   it('should throw an error on different length strings', () => {

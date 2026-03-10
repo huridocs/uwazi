@@ -1,5 +1,5 @@
-import { Thesaurus } from '../Thesaurus.js';
-import { ThesaurusDiff } from '../ThesaurusDiff.js';
+import { Thesaurus } from '../Thesaurus';
+import { ThesaurusDiff } from '../ThesaurusDiff';
 
 describe('ThesaurusDiff', () => {
   it('should compute diff', () => {

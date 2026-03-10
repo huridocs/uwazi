@@ -1,4 +1,4 @@
-import { queryToFilter, filterToQuery } from '../publishedStatusFilter.js';
+import { queryToFilter, filterToQuery } from '../publishedStatusFilter';
 
 describe('publishedStatus filter helpers', () => {
   describe('filterToQuery', () => {

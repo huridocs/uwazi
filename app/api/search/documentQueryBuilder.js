@@ -1,17 +1,17 @@
 /* eslint-disable camelcase, max-lines */
 
-import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { preloadOptionsSearch } from '#shared/config.js';
-import { UserRole } from '#shared/types/userSchema.js';
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { preloadOptionsSearch } from 'shared/config';
+import { UserRole } from 'shared/types/userSchema';
 import {
   generatedTocAggregations,
   permissionsLevelAgreggations,
   permissionsUsersAgreggations,
   propertyToAggregation,
   publishingStatusAgreggations,
-} from './metadataAggregations.js';
-import filterToMatch, { multiselectFilter } from './metadataMatchers.js';
+} from './metadataAggregations';
+import filterToMatch, { multiselectFilter } from './metadataMatchers';
 
 const nested = (filters, path) => ({
   nested: {

@@ -1,16 +1,16 @@
-import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd.js';
-import { files, generateFileName, storage } from '#api/files/index.js';
-import { processDocument } from '#api/files/processDocument.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { tenants } from '#api/tenants/index.js';
+import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd';
+import { files, generateFileName, storage } from 'api/files';
+import { processDocument } from 'api/files/processDocument';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { emitToTenant } from 'api/socketio/setupSockets';
+import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import * as os from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { TaskManager } from '../tasksmanager/TaskManager.js';
-import { convertToPDFService } from './convertToPdfService.js';
+import { TaskManager } from '../tasksmanager/TaskManager';
+import { convertToPDFService } from './convertToPdfService';
 
 const ajv = new Ajv();
 

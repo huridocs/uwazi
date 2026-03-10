@@ -5,32 +5,9 @@ const clickOnCreateEntity = () => {
 };
 
 const clickOnEditEntity = (buttonTitle: string = 'Edit') => {
-  let didFetchDictionaries = false;
-  cy.intercept('GET', 'api/dictionaries', req => {
-    didFetchDictionaries = true;
-    req.continue();
-  }).as('fetchThesauri');
-  cy.get('body').then($body => {
-    const sidePanelEditButton = $body.find(
-      `aside.metadata-sidepanel.is-active button.edit-metadata:contains("${buttonTitle}")`
-    );
-    if (sidePanelEditButton.length) {
-      cy.get('aside.metadata-sidepanel.is-active')
-        .contains('button.edit-metadata', buttonTitle)
-        .as('editButton');
-      cy.get('@editButton').scrollIntoView();
-      cy.get('@editButton').click({ force: true });
-      return;
-    }
-    cy.contains('button', buttonTitle).as('editButton');
-    cy.get('@editButton').scrollIntoView();
-    cy.get('@editButton').click({ force: true });
-  });
-  cy.then(() => {
-    if (didFetchDictionaries) {
-      cy.wait('@fetchThesauri');
-    }
-  });
+  cy.intercept('GET', 'api/dictionaries').as('fetchThesauri');
+  cy.contains('button', buttonTitle).click();
+  cy.wait('@fetchThesauri');
 };
 
 const shareSearchTerm = (term: string, expectedTerm?: string) => {

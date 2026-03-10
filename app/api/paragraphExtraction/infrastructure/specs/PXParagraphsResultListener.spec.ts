@@ -1,11 +1,11 @@
-import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob.js';
-import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener.js';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
+import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
 
 jest.mock('api/services/tasksmanager/TaskManager');
 

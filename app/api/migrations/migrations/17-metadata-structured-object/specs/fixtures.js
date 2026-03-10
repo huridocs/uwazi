@@ -1,6 +1,6 @@
 /** @format */
 
-import db from '#api/utils/testing_db.js';
+import db from 'api/utils/testing_db';
 
 const [t1] = [db.id()];
 const [dc, di] = [db.id(), db.id()];

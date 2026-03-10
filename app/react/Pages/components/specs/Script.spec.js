@@ -4,7 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { Script } from '../Script.js';
+import Script from '../Script';
 
 const workingScript = {
   input: 'console.log("works!");',
@@ -22,20 +22,19 @@ describe('PageCreator', () => {
   let context;
 
   beforeEach(() => {
-    const dispatch = jasmine.createSpy('dispatch');
-    props = { scriptRendered: false, onError: jest.fn(), dispatch };
+    props = { scriptRendered: false, onError: jest.fn() };
     document.body.innerHTML = '';
     context = {
       store: {
         getState: () => ({}),
-        dispatch,
+        dispatch: jasmine.createSpy('dispatch'),
         subscribe: jasmine.createSpy('subscribe'),
       },
     };
   });
 
   const render = () => {
-    component = shallow(<Script {...props} />, { context });
+    component = shallow(<Script {...props} />, { context }).dive();
   };
 
   const testScriptTag = (amount, content = null, index = null) => {

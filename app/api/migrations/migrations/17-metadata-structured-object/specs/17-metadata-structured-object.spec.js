@@ -1,6 +1,6 @@
-import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures, { i2 } from './fixtures.js';
+import testingDB from 'api/utils/testing_db';
+import migration from '../index';
+import fixtures, { i2 } from './fixtures';
 
 describe('migration metadata-structured-object', () => {
   beforeEach(async () => {

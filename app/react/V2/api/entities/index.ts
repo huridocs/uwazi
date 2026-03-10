@@ -1,15 +1,15 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 import { IncomingHttpHeaders } from 'http';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { SearchQuery, CompoundFilter } from '#shared/types/SearchQueryType.js';
+import { EntitySchema } from 'shared/types/entityType';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { RequestParams } from 'app/utils/RequestParams';
+import { SearchQuery, CompoundFilter } from 'shared/types/SearchQueryType';
 import qs from 'qs';
-import { getEntityCompositionUseCase } from '#V2/application/container/singletons.js';
-import { cardViewOptions } from '#V2/application/optionsPresets.js';
-import { Entity } from '#V2/domain/entities/Entity.js';
-import { EntitySearchResponse } from '../types.js';
-import * as formatter from './formatter.js';
+import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
+import { cardViewOptions } from 'V2/application/optionsPresets';
+import { Entity } from 'V2/domain/entities/Entity';
+import { EntitySearchResponse } from '../types';
+import * as formatter from './formatter';
 
 const getById = async ({
   _id,
@@ -157,7 +157,7 @@ const searchByTitle = async (
       })
     );
 
-    return compositionResults.filter((entity: Entity | null): entity is Entity => entity !== null);
+    return compositionResults.filter((entity): entity is Entity => entity !== null);
   } catch (e) {
     return [];
   }

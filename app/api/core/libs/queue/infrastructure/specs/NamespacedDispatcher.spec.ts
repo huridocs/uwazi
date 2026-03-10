@@ -1,13 +1,13 @@
 import {
   Dispatchable,
   HeartbeatCallback,
-} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { JobDBO, MongoQueueAdapter } from '../MongoQueueAdapter.js';
-import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
+} from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { JobDBO, MongoQueueAdapter } from '../MongoQueueAdapter';
+import { NamespacedDispatcher } from '../NamespacedDispatcher';
 
 class TestJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this

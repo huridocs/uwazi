@@ -3,10 +3,10 @@ import {
   DateMetadataProperty,
   DatePropertyTypes,
   DateRangeMetadataProperty,
-} from '#V2/domain/entities/types.js';
-import { DateRangeSchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
-import { ProcessingContext, AdapterMetadataProperty } from './types.js';
-import { BasePropertyProcessor } from './BasePropertyProcessor.js';
+} from 'app/V2/domain/entities/types';
+import { DateRangeSchema, MetadataObjectSchema } from 'shared/types/commonTypes';
+import { ProcessingContext, AdapterMetadataProperty } from './types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class DatePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DatePropertyProcessor';

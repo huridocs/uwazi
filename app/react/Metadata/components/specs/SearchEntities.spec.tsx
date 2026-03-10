@@ -1,11 +1,11 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { SearchInput } from '#app/Layout/SearchInput.js';
-import { sleep } from '#shared/tsUtils.js';
-import { SearchAPI } from '#app/Search/SearchAPI.js';
-import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '../SearchEntities.js';
+import SearchInput from 'app/Layout/SearchInput';
+import { sleep } from 'shared/tsUtils';
+import SearchApi from 'app/Search/SearchAPI';
+import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '../SearchEntities';
 
-import { SearchResults } from '#app/Connections/components/SearchResults.js';
+import SearchResults from 'app/Connections/components/SearchResults';
 
 describe('SearchEntities', () => {
   let component: ShallowWrapper<SearchEntitiesProps, SearchEntitiesState, SearchEntities>;
@@ -16,7 +16,7 @@ describe('SearchEntities', () => {
       onSelect: jasmine.createSpy('onSelect'),
       onFinishSearch: jasmine.createSpy('onFinishedSearch'),
     };
-    spyOn(SearchAPI, 'search').and.returnValue(
+    spyOn(SearchApi, 'search').and.returnValue(
       Promise.resolve({
         rows: [
           {
@@ -36,7 +36,7 @@ describe('SearchEntities', () => {
       render();
       component.find(SearchInput).simulate('change', { target: { value: 'test' } });
       await sleep(401);
-      expect(SearchAPI.search).toHaveBeenLastCalledWith({
+      expect(SearchApi.search).toHaveBeenLastCalledWith({
         data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
         headers: {},
       });
@@ -57,7 +57,7 @@ describe('SearchEntities', () => {
   describe('when initial search provided', () => {
     it('should should request for the entities after mounting', async () => {
       component = shallow(<SearchEntities {...{ ...props, initialSearchTerm: 'test' }} />);
-      expect(SearchAPI.search).toHaveBeenLastCalledWith({
+      expect(SearchApi.search).toHaveBeenLastCalledWith({
         data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
         headers: {},
       });

@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
+import { fromJS as Immutable } from 'immutable';
 
-import { UploadSupportingFile } from '#app/Attachments/components/UploadSupportingFile.js';
-import { AttachmentsList } from '../AttachmentsList.js';
+import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
+import AttachmentsList from '../AttachmentsList';
 
 describe('AttachmentsList', () => {
   let component;
@@ -11,7 +11,7 @@ describe('AttachmentsList', () => {
   let files;
 
   beforeEach(() => {
-    files = Immutable.fromJS([
+    files = Immutable([
       { originalname: 'Human name 1', filename: 'filename1.ext' },
       { originalname: 'A Human name 2', filename: 'filename2.ext' },
     ]);
@@ -57,14 +57,14 @@ describe('AttachmentsList', () => {
 
   describe('when files is empty', () => {
     it('should render nothing if user not logged in', () => {
-      props.files = Immutable.fromJS([]);
+      props.files = Immutable([]);
       render();
       expect(component).toMatchSnapshot();
     });
 
     it('should add button in Downloads section', () => {
-      props.files = Immutable.fromJS([]);
-      props.user = Immutable.fromJS({ _id: 'user' });
+      props.files = Immutable([]);
+      props.user = Immutable({ _id: 'user' });
       render();
       expect(component).toMatchSnapshot();
     });

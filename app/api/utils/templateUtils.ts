@@ -1,10 +1,10 @@
 import uuid from 'node-uuid';
 
-import settings from '#api/settings/settings.js';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { safeName as sharedSafeName } from '#shared/propertyNames.js';
-import { PropertySchema } from '#shared/types/commonTypes.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
+import settings from 'api/settings/settings';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { safeName as sharedSafeName } from 'shared/propertyNames';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 const safeName = sharedSafeName;
 
@@ -32,7 +32,8 @@ function generateIds(properties: ThesaurusSchema[] = []) {
   }));
 }
 interface PropertyOrThesaurusSchema
-  extends Partial<PropertySchema>, Partial<ThesaurusValueSchema> {}
+  extends Partial<PropertySchema>,
+    Partial<ThesaurusValueSchema> {}
 
 const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
   properties.reduce<PropertyOrThesaurusSchema[]>((flatProps, p) => {

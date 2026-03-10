@@ -1,4 +1,4 @@
-import { Filter } from '../helpers.js';
+import { Filter } from '../helpers';
 
 const templates = [
   {

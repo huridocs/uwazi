@@ -1,8 +1,8 @@
 import {
   PdfCharacterCountToAbsolute,
   AbsolutePositionReference,
-} from '#api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute.js';
-import { AbsolutePositionTag } from '#api/migrations/pdf_character_count_to_absolute/AbsolutePositionLettersList.js';
+} from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
+import { AbsolutePositionTag } from 'api/migrations/pdf_character_count_to_absolute/AbsolutePositionLettersList';
 
 const pdfInfo = [
   390, 4185, 8442, 13610, 18103, 21746, 25061, 28330, 31252, 34412, 38036, 41557, 44914, 48421,

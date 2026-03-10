@@ -1,4 +1,4 @@
-import { Fixture } from '../types.js';
+import { Fixture } from '../types';
 
 const fixtures: Fixture = {};
 

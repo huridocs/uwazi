@@ -1,7 +1,6 @@
 import React from 'react';
-
-import { Translate } from '#app/I18N/index.js';
-import { TableHeader } from '../components/TableHeader.js';
+import { Translate } from 'app/I18N';
+import { TableHeader } from '../components/TableHeader';
 
 const generateTableHeader =
   (

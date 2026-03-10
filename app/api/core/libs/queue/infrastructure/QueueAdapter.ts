@@ -1,4 +1,4 @@
-import { Params } from '../application/contracts/Dispatchable.js';
+import { Params } from '../application/contracts/Dispatchable';
 
 export interface Job {
   id: string;

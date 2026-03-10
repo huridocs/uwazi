@@ -1,7 +1,7 @@
-import translations from '#api/i18n/translations.js';
+import translations from 'api/i18n/translations';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { ContextType } from '#shared/translationSchema.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ContextType } from 'shared/translationSchema';
 import relationtypes from '../relationtypes.js';
 import fixtures, { canNotBeDeleted, against, inRelProperty } from './fixtures.js';
 

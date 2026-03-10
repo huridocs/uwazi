@@ -1,9 +1,9 @@
-import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import settings from '#api/settings/index.js';
-import { createError } from '#api/utils/index.js';
+import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import settings from 'api/settings';
+import { createError } from 'api/utils';
 import { inspect } from 'util';
-import { TemplateFacade } from '../../facades/TemplateFacade.js';
-import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO.js';
+import { TemplateFacade } from '../../facades/TemplateFacade';
+import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO';
 
 type TemplateMutationResponseDTO = TemplateDBO;
 

@@ -4,7 +4,7 @@
 # ssh_user=${2}
 gh_token=${3}
 
-release_version="$(node -p "require('./package.json').version" | cut -d"-" -f1)-testing$(date +%s)"
+release_version="$(yarn version | grep version: | cut -d" " -f4 | cut -d"-" -f1)-testing$(date +%s)"
 # previous_tag="$(git tag -l --sort=committerdate | grep "\-rc" | tail -n1)"
 # release_notes="$(git log --oneline "$previous_tag".. | grep -v Merge | grep "(.*)" | cut -d" " -f2- |  awk '{print "* " $0}')"
 

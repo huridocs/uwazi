@@ -8,8 +8,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { config } from '#api/config.js';
-import testingDB from '#api/utils/testing_db.js';
+import testingDB from 'api/utils/testing_db';
 import {
   fileAlreadyCompleteId,
   fileMissingBothLocalId,
@@ -20,8 +19,8 @@ import {
   fileMissingSizeS3,
   fileMissingSizeS3Id,
   fixtures,
-} from './fixtures.js';
-import migration from '../index.js';
+} from './fixtures';
+import migration from '..';
 
 const createSut = () => ({
   sut: {
@@ -31,7 +30,6 @@ const createSut = () => ({
 });
 
 describe('migration fix-missing-fields-on-files', () => {
-  const sharedDb = config.SHARED_DB;
   const uploadsPath = path.join(__dirname, '../../../../files/specs/uploads/182-migration');
   const customUploadsPath = path.join(
     __dirname,
@@ -39,7 +37,7 @@ describe('migration fix-missing-fields-on-files', () => {
   );
 
   let s3Client: S3Client;
-  const { bucket } = config.s3;
+  const bucket = process.env.S3_BUCKET || 'uwazi-development';
 
   beforeAll(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
@@ -49,10 +47,13 @@ describe('migration fix-missing-fields-on-files', () => {
     await mkdir(uploadsPath, { recursive: true });
     await mkdir(customUploadsPath, { recursive: true });
 
-    await testingDB.db(sharedDb).collection('tenants').deleteMany({ dbName: testingDB.dbName });
+    await testingDB
+      .db('uwazi_shared_db')
+      .collection('tenants')
+      .deleteMany({ dbName: testingDB.dbName });
 
     await testingDB
-      .db(sharedDb)
+      .db('uwazi_shared_db')
       .collection('tenants')
       .insertOne({
         name: 'test-tenant',
@@ -84,7 +85,10 @@ describe('migration fix-missing-fields-on-files', () => {
   });
 
   afterAll(async () => {
-    await testingDB.db(sharedDb).collection('tenants').deleteMany({ dbName: testingDB.dbName });
+    await testingDB
+      .db('uwazi_shared_db')
+      .collection('tenants')
+      .deleteMany({ dbName: testingDB.dbName });
 
     await rm(uploadsPath, { recursive: true, force: true });
     await rm(customUploadsPath, { recursive: true, force: true });
@@ -136,7 +140,7 @@ describe('migration fix-missing-fields-on-files', () => {
     const content = '1234567890123';
 
     await testingDB
-      .db(sharedDb)
+      .db('uwazi_shared_db')
       .collection('tenants')
       .updateOne({ dbName: testingDB.dbName }, { $set: { featureFlags: { s3Storage: true } } });
 
@@ -156,7 +160,7 @@ describe('migration fix-missing-fields-on-files', () => {
     expect(file!.creationDate).toBe(123);
 
     await testingDB
-      .db(sharedDb)
+      .db('uwazi_shared_db')
       .collection('tenants')
       .updateOne({ dbName: testingDB.dbName }, { $set: { featureFlags: { s3Storage: false } } });
 
@@ -185,7 +189,7 @@ describe('migration fix-missing-fields-on-files', () => {
     const { sut } = createSut();
 
     await testingDB
-      .db(sharedDb)
+      .db('uwazi_shared_db')
       .collection('tenants')
       .updateOne({ dbName: testingDB.dbName }, { $set: { featureFlags: { s3Storage: true } } });
 
@@ -197,7 +201,7 @@ describe('migration fix-missing-fields-on-files', () => {
     expect(file!.creationDate).toBe(fileMissingBothS3Id.getTimestamp().getTime());
 
     await testingDB
-      .db(sharedDb)
+      .db('uwazi_shared_db')
       .collection('tenants')
       .updateOne({ dbName: testingDB.dbName }, { $set: { featureFlags: { s3Storage: false } } });
   });

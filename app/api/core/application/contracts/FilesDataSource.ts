@@ -1,13 +1,13 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
-import { ResultType } from '#api/core/libs/Result.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ProcessingPDF } from '../../domain/files/ProcessingPDF.js';
-import { FileNotFound, ProcessingFileNotFound } from '../../domain/files/errors.js';
-import { FileType } from '../../domain/files/FileType.js';
-import { ProcessedPDF } from '../../domain/files/ProcessedPDF.js';
-import { Segmentation } from '../../domain/files/Segmentation.js';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { BaseFile } from 'api/core/domain/files/BaseFile';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { ResultType } from 'api/core/libs/Result';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
+import { FileNotFound, ProcessingFileNotFound } from '../../domain/files/errors';
+import { FileType } from '../../domain/files/FileType';
+import { ProcessedPDF } from '../../domain/files/ProcessedPDF';
+import { Segmentation } from '../../domain/files/Segmentation';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];

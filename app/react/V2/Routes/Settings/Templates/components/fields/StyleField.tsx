@@ -1,7 +1,7 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { RadioSelect } from '#V2/Components/Forms/index.js';
-import { t, Translate } from '#app/I18N/index.js';
+import { RadioSelect } from 'V2/Components/Forms';
+import { t, Translate } from 'app/I18N';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { Tooltip } from 'flowbite-react';
 

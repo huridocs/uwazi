@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import testingDB from 'api/utils/testing_db';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';

@@ -6,15 +6,15 @@ import { createReadStream, createWriteStream } from 'fs';
 import { access, readdir } from 'fs/promises';
 import path from 'path';
 
-import { config } from '#api/config.js';
-import { legacyLogger } from '#api/log/index.js';
-import { tenants } from '#api/tenants/index.js';
-import { FileType } from '#shared/types/fileType.js';
+import { config } from 'api/config';
+import { legacyLogger } from 'api/log';
+import { tenants } from 'api/tenants';
+import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { buildS3Client } from '#api/infrastructure/S3Client.js';
-import { FileNotFound } from './FileNotFound.js';
+import { buildS3Client } from 'api/infrastructure/S3Client';
+import { FileNotFound } from './FileNotFound';
 import {
   activityLogPath,
   attachmentsPath,
@@ -22,8 +22,8 @@ import {
   customUploadsPath,
   deleteFile,
   uploadsPath,
-} from './filesystem.js';
-import { S3Error, S3Storage } from './S3Storage.js';
+} from './filesystem';
+import { S3Error, S3Storage } from './S3Storage';
 
 let s3Instance: S3Storage;
 
@@ -50,7 +50,7 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
   new Promise((resolve, reject) => {
     const _buf: Buffer[] = [];
     stream.on('data', (chunk: any) => _buf.push(chunk));
-    stream.on('end', () => resolve(Buffer.concat(_buf as unknown as Uint8Array[])));
+    stream.on('end', () => resolve(Buffer.concat(_buf)));
     stream.on('error', (err: unknown) => reject(err));
   });
 

@@ -1,5 +1,5 @@
-import Immutable from '#shared/immutableWrapper.js';
-import * as types from '../actions/actionTypes.js';
+import { fromJS } from 'immutable';
+import * as types from '../actions/actionTypes';
 
 const initialState = {
   editing: false,
@@ -7,7 +7,7 @@ const initialState = {
   addTo: { hubIndex: null, rightRelationshipIndex: null },
 };
 
-const hubActionsReducer = (state = initialState, action = {}) => {
+export default function (state = initialState, action = {}) {
   switch (action.type) {
     case types.EDIT_RELATIONSHIPS:
       return state.set('editing', action.value);
@@ -24,8 +24,6 @@ const hubActionsReducer = (state = initialState, action = {}) => {
       return state.set('saving', false);
 
     default:
-      return Immutable.fromJS(state);
+      return fromJS(state);
   }
-};
-
-export { hubActionsReducer };
+}

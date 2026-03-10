@@ -1,15 +1,15 @@
 import superagent from 'superagent';
 
-import { actions as basicActions } from '#app/BasicReducer/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
-import * as metadata from '#app/Metadata/index.js';
-import * as types from '#app/Uploads/actions/actionTypes.js';
-import * as libraryTypes from '#app/Library/actions/actionTypes.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { t } from '#app/I18N/index.js';
+import { actions as basicActions } from 'app/BasicReducer';
+import { notificationActions } from 'app/Notifications';
+import { selectSingleDocument } from 'app/Library/actions/libraryActions';
+import * as metadata from 'app/Metadata';
+import * as types from 'app/Uploads/actions/actionTypes';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
+import { RequestParams } from 'app/utils/RequestParams';
+import { t } from 'app/I18N';
 import { APIURL } from '../../config.js';
-import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
+import EntitiesApi from '../../Entities/EntitiesAPI';
 
 export function enterUploads() {
   return {

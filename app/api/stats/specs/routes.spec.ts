@@ -1,9 +1,9 @@
-import type { Application, NextFunction, Request, Response } from 'express';
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import statsRoutes from '../routes.js';
+import { Application, NextFunction, Request, Response } from 'express';
+import { setUpApp } from 'api/utils/testingRoutes';
+import statsRoutes from '../routes';
 import request from 'supertest';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { fixtures } from './fixtures.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { fixtures } from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

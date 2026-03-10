@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
-import { wrapValidator } from '#shared/tsUtils.js';
-import { connectionSchema } from '#shared/types/connectionSchema.js';
+import { wrapValidator } from 'shared/tsUtils';
+import { connectionSchema } from 'shared/types/connectionSchema';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);

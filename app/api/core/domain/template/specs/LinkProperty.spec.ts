@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors.js';
-import { LinkProperty } from '../LinkProperty.js';
-import { PropertyTypeEnum } from '../PropertyType.js';
+import { PropertyTypeInvalidTypeError } from '../errors';
+import { LinkProperty } from '../LinkProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('LinkProperty', () => {
   it('should set defaults values if not provided', () => {

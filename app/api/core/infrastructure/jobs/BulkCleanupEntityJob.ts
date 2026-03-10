@@ -1,12 +1,9 @@
-import {
-  HeartbeatCallback,
-  JobInfo,
-} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import { BulkCleanupEntityUseCaseFactory } from '../factories/BulkCleanupEntityUseCaseFactory.js';
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { BulkCleanupEntityUseCaseFactory } from '../factories/BulkCleanupEntityUseCaseFactory';
 
 type Params = UserAwareDispatchableParams & {
   sharedIds: string[];

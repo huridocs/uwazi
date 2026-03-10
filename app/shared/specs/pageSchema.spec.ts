@@ -1,8 +1,8 @@
-import db from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import { validatePage } from '#shared/types/pageSchema.js';
-import { PageType } from '#shared/types/pageType.js';
+import { validatePage } from 'shared/types/pageSchema';
+import { PageType } from 'shared/types/pageType';
 
 describe('pageSchema', () => {
   let page: PageType;

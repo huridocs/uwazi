@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { Icon } from '#UI/index.js';
+import { Icon } from 'UI';
 
-import { UploadButtonView } from '../UploadButton.js';
+import { UploadButton } from '../UploadButton';
 
 describe('UploadButton', () => {
   let component;
@@ -22,13 +22,12 @@ describe('UploadButton', () => {
       progress: Immutable.fromJS({}),
       entitySharedId: 'sharedabc1',
       uploadDocument: jasmine.createSpy('uploadDocument'),
-      updateMainDocument: jasmine.createSpy('updateMainDocument'),
       storeKey: 'storeKey',
     };
   });
 
   const render = () => {
-    component = shallow(<UploadButtonView {...props} />, { context });
+    component = shallow(<UploadButton {...props} />, { context });
   };
 
   describe('render', () => {

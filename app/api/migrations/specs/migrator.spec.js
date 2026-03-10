@@ -1,14 +1,14 @@
 import { toHaveBeenCalledBefore } from 'jest-extended';
 import path from 'path';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import testingDB from '../../utils/testing_db.js';
-import migrationsModel from '../migrationsModel.js';
-import { migrator } from '../migrator.js';
-import migration1 from './testMigrations/1-migrationTest.js';
-import migration10 from './testMigrations/10-migrationTest.js';
-import migration2 from './testMigrations/2-migrationTest.js';
+import testingDB from '../../utils/testing_db';
+import migrationsModel from '../migrationsModel';
+import { migrator } from '../migrator';
+import migration1 from './testMigrations/1-migrationTest';
+import migration10 from './testMigrations/10-migrationTest';
+import migration2 from './testMigrations/2-migrationTest';
 
 expect.extend({ toHaveBeenCalledBefore });
 
@@ -31,13 +31,6 @@ describe('migrator', () => {
     beforeEach(async () => {
       await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
-      migrator.loader = p =>
-        Promise.resolve(
-          (function (r) {
-            const m = r(p);
-            return m.default ?? m;
-          })(require)
-        );
       jest.spyOn(migration1, 'up');
       jest.spyOn(migration2, 'up');
       jest.spyOn(migration10, 'up');

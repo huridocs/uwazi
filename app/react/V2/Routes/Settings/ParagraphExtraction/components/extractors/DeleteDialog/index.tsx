@@ -1,11 +1,11 @@
 import React from 'react';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
-import { ConfirmationModal } from '#V2/Components/UI/index.js';
-import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
-import { notificationAtom } from '#V2/atoms/index.js';
-import { PXTable } from '../../../types.js';
+import { Translate } from 'app/I18N';
+import { ConfirmationModal } from 'V2/Components/UI';
+import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
+import { notificationAtom } from 'V2/atoms';
+import { PXTable } from '../../../types';
 
 const DeleteDialog = ({
   setIsProcessing,

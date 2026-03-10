@@ -1,9 +1,9 @@
-import uniqueID from '#shared/uniqueID.js';
-import { PropertySchema } from '#shared/types/commonTypes.js';
-import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
+import uniqueID from 'shared/uniqueID';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
 
-import { t } from '#app/I18N/index.js';
-import { PropertyRow } from './components/TemplateEditorTableComponents.js';
+import { t } from 'app/I18N';
+import { PropertyRow } from './components/TemplateEditorTableComponents';
 
 const commonPropertyTitle: ClientProperty = {
   label: 'Title',
@@ -31,6 +31,7 @@ const properties: ClientProperty[] = [];
 // @ts-ignore
 const emptyTemplate: ClientTemplateSchema = {
   name: '',
+  color: '#C03B22',
   entityViewPage: '',
   properties,
   commonProperties: [commonPropertyTitle, commonPropertyDateAdded, commonPropertyDateModified],

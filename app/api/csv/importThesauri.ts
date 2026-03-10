@@ -1,11 +1,11 @@
-import { createError } from '#api/utils/index.js';
+import { createError } from 'api/utils';
 import csvtojson from 'csvtojson';
-import { availableLanguages } from '#shared/language/index.js';
-import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
+import { availableLanguages } from 'shared/language';
+import { LanguageSchema } from 'shared/types/commonTypes';
+import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Readable } from 'stream';
-import { CSVRow } from './csv.js';
-import { sanitizeStringValue } from './sanitizationUtils.js';
+import { CSVRow } from './csv';
+import { sanitizeStringValue } from './sanitizationUtils';
 
 type ParsedValue = { nested: boolean; value: string };
 type ParsedRow = Record<string, ParsedValue>;

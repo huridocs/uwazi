@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
 import crypto from 'crypto';
-import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { encryptPassword } from 'api/auth/encryptPassword';
 
 const PUBLIC_USER_ID = new ObjectId('698c35e7cf8880419d91fe4d');
 

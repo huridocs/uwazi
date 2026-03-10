@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable max-statements */
-import { Translation } from '../Translation.js';
-import { TranslationCollection } from '../TranslationCollection.js';
+import { Translation } from '../Translation';
+import { TranslationCollection } from '../TranslationCollection';
 
 describe('TranslationCollection', () => {
   const createTranslation = (

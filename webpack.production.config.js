@@ -1,18 +1,16 @@
-/* eslint-disable */
-import webpack from 'webpack';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import TerserWebpackPlugin from 'terser-webpack-plugin';
-import configFactory from './webpack/config.cjs';
+process.env.NODE_ENV = 'production';
+const webpack = require('webpack');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserWebpackPlugin = require('terser-webpack-plugin');
 
 const production = true;
-const config = configFactory(production);
+const config = require('./webpack/config')(production);
 
-config.context = import.meta.url.replace('file://', '').replace('/webpack.production.config.js', '');
 config.devtool = 'hidden-source-map';
+config.context = __dirname;
 config.mode = 'production';
 
-// Filter out falsy plugins (e.g., conditional CYPRESS plugin)
-config.plugins = config.plugins.filter(Boolean).concat([
+config.plugins = config.plugins.concat([
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify('production'),
@@ -32,4 +30,4 @@ config.performance = {
   hints: 'warning',
 };
 
-export default config;
+module.exports = config;

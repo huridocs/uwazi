@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import Immutable from 'immutable';
-import { Collapsible } from '#app/App/Collapsible.js';
-import { LibraryViewRelationshipsComp } from '../LibraryViewRelationships.js';
+import { fromJS as Immutable } from 'immutable';
+import { Collapsible } from 'app/App/Collapsible';
+import { LibraryViewRelationshipsComp } from '../LibraryViewRelationships';
 
 describe('LibraryViewRelationships', () => {
   let component: ShallowWrapper;
@@ -16,9 +16,9 @@ describe('LibraryViewRelationships', () => {
   beforeEach(() => {
     props = {
       expanded: false,
-      parentEntity: Immutable.fromJS({ _id: 'someparentid' }),
-      searchResults: Immutable.fromJS({ rows: [] }),
-      hubs: Immutable.fromJS([
+      parentEntity: Immutable({ _id: 'someparentid' }),
+      searchResults: Immutable({ rows: [] }),
+      hubs: Immutable([
         {
           hub: 'hubid',
           leftRelationship: { template: 'tempId', hub: 'hubid', entity: 'entityid', entityData },
@@ -64,7 +64,7 @@ describe('LibraryViewRelationships', () => {
   it('should not show default labels if none available', () => {
     const customProps = {
       ...props,
-      hubs: Immutable.fromJS([
+      hubs: Immutable([
         {
           hub: 'hubid',
           leftRelationship: { template: null, hub: 'hubid', entity: 'entityid', entityData },

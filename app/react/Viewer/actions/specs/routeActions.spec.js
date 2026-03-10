@@ -1,9 +1,9 @@
-import { APIURL } from '#app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
-import * as relationships from '#app/Relationships/utils/routeUtils.js';
-import Immutable from 'immutable';
-import { getDocument } from '#app/Viewer/actions/documentActions.js';
-import * as routeActions from '../routeActions.js';
+import * as relationships from 'app/Relationships/utils/routeUtils';
+import { fromJS } from 'immutable';
+import { getDocument } from 'app/Viewer/actions/documentActions';
+import * as routeActions from '../routeActions';
 
 jest.mock('app/Viewer/actions/documentActions');
 jest.mock('app/Viewer/referencesAPI');
@@ -81,7 +81,7 @@ describe('Viewer routeActions', () => {
       requestParams.onlyHeaders = () => {};
       const globalResources = {
         settings: {
-          collection: Immutable.fromJS({
+          collection: fromJS({
             languages: [
               {
                 key: 'es',

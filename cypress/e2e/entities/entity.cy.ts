@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import { clearCookiesAndLogin } from '../helpers/login.js';
-import { changeLanguage, clickOnEditEntity, saveEntity } from '../helpers/index.js';
+import { clearCookiesAndLogin } from '../helpers/login';
+import { changeLanguage, clickOnEditEntity, saveEntity } from '../helpers';
 
 const entityTitle = 'Entity with all props';
 const textWithHtml = `<h1>The title</h1>
@@ -170,7 +170,7 @@ describe('Entities', () => {
         if (propertyType === 'Relationship') {
           cy.get('select[name="relationType"]').select(2);
           cy.get('select[name="content"]').select(5);
-        } else if (propertyType === 'Media') {
+        } else if (propertyType === 'media') {
           cy.get('input[name="showInCard"]').check();
         }
 
@@ -307,11 +307,9 @@ describe('Entities', () => {
       cy.contains('Text');
       cy.intercept('GET', 'api/files/*').as('getFile');
       clickOnEditEntity();
-      cy.get('#metadataForm', { timeout: 12000 }).should('exist');
-      // Wait for media player to load in the edit form
+      // Wait for the video element to exist in the edit form (it may not be visible due to scrolling)
       cy.contains('.form-group.media', 'Media').within(() => {
-        cy.get('.video-container', { timeout: 12000 }).should('exist');
-        cy.get('video, .react-player', { timeout: 12000 }).should('exist');
+        cy.get('video').should('exist');
       });
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1000);
       cy.addTimeLink(1000, 'Control point', 1, 12, 0);
@@ -321,7 +319,6 @@ describe('Entities', () => {
     });
 
     it('should render the player for internal media on library card and entity view', () => {
-      cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
@@ -335,7 +332,6 @@ describe('Entities', () => {
       cy.intercept('GET', 'api/files/*').as('getFile');
       cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
       clickOnEditEntity();
-      cy.get('#metadataForm', { timeout: 12000 }).should('exist');
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1500);
       cy.contains('Update');
       // Wait for media elements to load in the edit form
@@ -343,8 +339,7 @@ describe('Entities', () => {
         cy.get('img').should('exist');
       });
       cy.contains('.form-group.media', 'Media').within(() => {
-        cy.get('.video-container', { timeout: 12000 }).should('exist');
-        cy.get('video, .react-player', { timeout: 12000 }).should('exist');
+        cy.get('video').should('exist');
       });
       clickMediaAction('Media', 'Update');
       addVideo('', false);
@@ -357,7 +352,6 @@ describe('Entities', () => {
     });
 
     it('should show the external player on library card and entity view', () => {
-      cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').matchImageSnapshot();
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
@@ -439,7 +433,6 @@ describe('Entities', () => {
       cy.get('.metadata-type-multiselect').should('contain.text', 'MultiselectActivoNew Value');
     });
   });
-
   describe('Entity Translations', () => {
     it('should change the entity in Spanish', () => {
       changeLanguage('Español');
@@ -494,7 +487,6 @@ describe('Entities', () => {
       cy.contains('.metadata-type-text > dd', 'Texto de prueba en Español').should('exist');
     });
   });
-
   describe('Empty properties', () => {
     it('should be able to remove all the values from properties.', () => {
       changeLanguage('English');

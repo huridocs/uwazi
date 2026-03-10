@@ -1,15 +1,15 @@
 /* eslint-disable max-statements */
-import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { IXExtractorType } from '#shared/types/extractorType.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
-import { filesModel } from '#api/files/filesModel.js';
-import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
-import { ensure } from '#shared/tsUtils.js';
+import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { IXExtractorType } from 'shared/types/extractorType';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import entitiesModel from 'api/entities/entitiesModel';
+import { filesModel } from 'api/files/filesModel';
+import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
+import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { LanguageUtils } from '#shared/language/index.js';
+import { EntitySchema } from 'shared/types/entityType';
+import { LanguageUtils } from 'shared/language';
 import {
   getEntitiesForTraining,
   getFilesForTraining,
@@ -17,10 +17,10 @@ import {
   MAX_TRAINING_FILES_NUMBER,
   MAX_TRAINING_ENTITIES_NUMBER,
   PropertyValue,
-} from './ixMaterials.js';
-import { IXServices } from './IXServices.js';
-import { IXModelsModel } from './IXModelsModel.js';
-import { deriveTrainingPropertyValue } from './propertyValue.js';
+} from './ixMaterials';
+import { IXServices } from './IXServices';
+import { IXModelsModel } from './IXModelsModel';
+import { deriveTrainingPropertyValue } from './propertyValue';
 
 // Stage A — fetch marked for training
 async function getMarkedEntityPairs(extractorId: ObjectId) {

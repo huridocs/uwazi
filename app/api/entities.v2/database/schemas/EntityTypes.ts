@@ -1,6 +1,6 @@
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 import { ObjectId } from 'mongodb';
-import { PermissionSchema } from '#shared/types/permissionType.js';
+import { PermissionSchema } from 'shared/types/permissionType';
 
 type IconDBO = {
   _id: string | null;

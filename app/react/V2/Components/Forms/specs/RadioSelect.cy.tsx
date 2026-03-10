@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/Forms/RadioSelect.stories.js';
+import * as stories from 'app/stories/Forms/RadioSelect.stories';
 
 const { Basic, Horizontal } = composeStories(stories);
 

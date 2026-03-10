@@ -1,10 +1,10 @@
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
 import qs from 'qs';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UserRole } from '#shared/types/userSchema.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { UserRole } from 'shared/types/userSchema';
 import activitylogRoutes from '../routes.js';
-import activitylog from '../activitylog.js';
+import activitylog from '../activitylog';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { Translate } from 'app/I18N';
 
 export interface EntityCounterProps {
   selectedEntitiesCount: number;

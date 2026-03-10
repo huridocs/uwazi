@@ -1,10 +1,10 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { TablePXEntityParagraphRow } from '#V2/shared/ParagraphExtractionTypes.js';
-import { generateTableHeader } from '../../../utils/generateTableHeader.js';
-import { LanguagesCell } from './LanguagesCell.js';
-import { ParagraphCountCell } from './ParagraphCountCell.js';
-import { ActionCell } from './ActionCell.js';
-import { TextCell } from './TextCell.js';
+import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
+import { generateTableHeader } from '../../../utils/generateTableHeader';
+import { LanguagesCell } from './LanguagesCell';
+import { ParagraphCountCell } from './ParagraphCountCell';
+import { ActionCell } from './ActionCell';
+import { TextCell } from './TextCell';
 
 const pxColumnHelper = createColumnHelper<TablePXEntityParagraphRow>();
 

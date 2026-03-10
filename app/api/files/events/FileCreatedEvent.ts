@@ -1,7 +1,7 @@
-import { AbstractEvent } from '#api/core/libs/eventsbus/index.js';
-import { WithId } from '#api/odm/model.js';
+import { AbstractEvent } from 'api/core/libs/eventsbus';
+import { WithId } from 'api/odm/model';
 
-import { FileType } from '#shared/types/fileType.js';
+import { FileType } from 'shared/types/fileType';
 
 interface FileCreationData {
   newFile: WithId<FileType>;

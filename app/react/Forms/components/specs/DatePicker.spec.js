@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 
 import { DateTime, Settings } from 'luxon';
 import DatePickerComponent from 'react-datepicker';
-import { DatePicker } from '../DatePicker.js';
+import DatePicker from '../DatePicker';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

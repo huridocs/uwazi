@@ -1,22 +1,20 @@
-import { api } from '#app/utils/api.js';
+import api from 'app/utils/api';
 import {
   loadGrantedPermissions,
   savePermissions,
   searchCollaborators,
-} from '#app/Permissions/PermissionsAPI.js';
-import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
+} from 'app/Permissions/PermissionsAPI';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
-jest.mock('#app/utils/api.js', () => ({
-  api: {
-    get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),
-    put: jest.fn().mockResolvedValue({ json: [{ refId: 'user1', type: 'group', level: 'read' }] }),
-    post: jest.fn().mockResolvedValue({
-      json: {
-        ids: ['shared1', 'shared2'],
-        permissions: [{ refId: 'user1', type: 'group', level: 'read' }],
-      },
-    }),
-  },
+jest.mock('app/utils/api', () => ({
+  get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),
+  put: jest.fn().mockResolvedValue({ json: [{ refId: 'user1', type: 'group', level: 'read' }] }),
+  post: jest.fn().mockResolvedValue({
+    json: {
+      ids: ['shared1', 'shared2'],
+      permissions: [{ refId: 'user1', type: 'group', level: 'read' }],
+    },
+  }),
 }));
 
 describe('PermissionsAPI', () => {

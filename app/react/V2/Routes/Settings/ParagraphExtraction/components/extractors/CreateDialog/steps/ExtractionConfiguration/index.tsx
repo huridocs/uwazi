@@ -1,7 +1,7 @@
 import React from 'react';
-import { Body } from './Body.js';
-import { Footer } from './Footer.js';
-import { Translate } from '#app/I18N/index.js';
+import { Body } from './Body';
+import { Footer } from './Footer';
+import { Translate } from 'app/I18N';
 
 const ExtractionConfigurationStep = {
   Body,

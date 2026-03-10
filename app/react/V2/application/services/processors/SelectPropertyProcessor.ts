@@ -1,8 +1,8 @@
-import { SelectMetadataProperty, SelectPropertyTypes } from '#app/V2/domain/entities/types.js';
-import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
-import { ProcessingContext, AdapterMetadataProperty } from './types.js';
-import { BasePropertyProcessor } from './BasePropertyProcessor.js';
+import { SelectMetadataProperty, SelectPropertyTypes } from 'app/V2/domain/entities/types';
+import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { ProcessingContext, AdapterMetadataProperty } from './types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class SelectPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'SelectPropertyProcessor';

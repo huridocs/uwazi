@@ -1,35 +1,35 @@
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { files, storage } from '#api/files/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import relationships from '#api/relationships/relationships.js';
-import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import settings from '#api/settings/settings.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import users from '#api/users/users.js';
-import createError from '#api/utils/Error.js';
-import { handleError } from '#api/utils/handleError.js';
+import { ProcessingPDF } from 'api/core/domain/files/ProcessingPDF';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
+import { files, storage } from 'api/files';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import relationships from 'api/relationships/relationships';
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
+import settings from 'api/settings/settings';
+import { emitToTenant } from 'api/socketio/setupSockets';
+import { tenants } from 'api/tenants/tenantContext';
+import users from 'api/users/users';
+import createError from 'api/utils/Error';
+import { handleError } from 'api/utils/handleError';
 import { ObjectId } from 'mongodb';
-import request from '#shared/JSONRequest.js';
-import { LanguageUtils } from '#shared/language/index.js';
-import { FileType } from '#shared/types/fileType.js';
+import request from 'shared/JSONRequest';
+import { LanguageUtils } from 'shared/language';
+import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { EnforcedWithId } from '../../odm/model.js';
-import { OcrRecord, OcrStatus } from './ocrModel.js';
+import { EnforcedWithId } from '../../odm/model';
+import { OcrRecord, OcrStatus } from './ocrModel';
 import {
   createForFile,
   getForSourceFile,
   getForSourceOrTargetFile,
   markError,
   markReady,
-} from './ocrRecords.js';
+} from './ocrRecords';
 
 interface OcrSettings {
   url: string;

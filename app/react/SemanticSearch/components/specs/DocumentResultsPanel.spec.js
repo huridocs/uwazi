@@ -1,15 +1,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import { multiReducer } from '#app/Multireducer/index.js';
-import { actions as basicActions } from '#app/BasicReducer/index.js';
-import actions from '../../actions/index.js';
+import multiReducer from 'app/Multireducer';
+import { actions as basicActions } from 'app/BasicReducer';
+import actions from '../../actions';
 
-import {
-  DocumentResultsPanel,
-  mapDispatchToProps,
-  mapStateToProps,
-} from '../DocumentResultsPanel.js';
+import DocumentResultsPanel, { mapDispatchToProps, mapStateToProps } from '../DocumentResultsPanel';
 
 describe('DocumentResultsPanel', () => {
   let state;

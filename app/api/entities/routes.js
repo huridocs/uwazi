@@ -1,25 +1,25 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
-import { uploadMiddleware } from '#api/files/index.js';
-import { search } from '#api/search/index.js';
-import { tenants } from '#api/tenants/index.js';
-import { withTransaction } from '#api/utils/withTransaction.js';
-import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { BulkDeleteEntityController } from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
-import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
-import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
-import needsAuthorization from '../auth/authMiddleware.js';
-import templates from '../core/v1_layer/templates/templates.js';
-import { thesauri } from '../thesauri/thesauri.js';
-import { parseQuery, validation } from '../utils/index.js';
-import date from '../utils/date.js';
-import entities from './entities.js';
-import { saveEntity } from './entitySavingManager.js';
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
+import { uploadMiddleware } from 'api/files';
+import { search } from 'api/search';
+import { tenants } from 'api/tenants';
+import { withTransaction } from 'api/utils/withTransaction';
+import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { BulkDeleteEntityController } from 'api/core/infrastructure/express/entity/BulkDeleteEntityController';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
+import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
+import { UpdateEntityController } from 'api/core/infrastructure/express/entity/UpdateEntityController';
+import needsAuthorization from '../auth/authMiddleware';
+import templates from '../core/v1_layer/templates/templates';
+import { thesauri } from '../thesauri/thesauri';
+import { parseQuery, validation } from '../utils';
+import date from '../utils/date';
+import entities from './entities';
+import { saveEntity } from './entitySavingManager';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);

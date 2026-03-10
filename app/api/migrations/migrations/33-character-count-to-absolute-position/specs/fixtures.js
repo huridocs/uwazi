@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import testingDB from 'api/utils/testing_db';
 
 const firstConnectionId = testingDB.id();
 const secondConnectionId = testingDB.id();

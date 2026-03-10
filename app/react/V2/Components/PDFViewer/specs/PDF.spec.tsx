@@ -1,12 +1,14 @@
 /**
  * @jest-environment jsdom
  */
+
 import React from 'react';
 import { render, act, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
-import { PDF, PDFProps, PDFHandle } from '../PDF.js';
-import * as helpers from '../functions/helpers.js';
-import * as snippetFuncs from '../functions/snippetToHighlight.js';
+import { PDF, PDFProps } from '../PDF';
+import type { PDFHandle } from '../PDF';
+import * as helpers from '../functions/helpers';
+import * as snippetFuncs from '../functions/snippetToHighlight';
 
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();

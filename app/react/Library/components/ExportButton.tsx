@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { Icon } from '#app/UI/index.js';
-import { t, Translate } from '#app/I18N/index.js';
+import { Icon } from 'app/UI';
+import { t, Translate } from 'app/I18N';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { wrapDispatch } from '#app/Multireducer/index.js';
-import { exportDocuments } from '#app/Library/actions/exportActions.js';
-import { User } from '#api/users/usersModel.js';
-import { Modal } from '#app/Layout/Modal.js';
-import { CaptchaValue } from '#shared/types/Captcha.js';
-import { Captcha, FormGroup } from '#app/ReactReduxForms/index.js';
-import { IImmutable } from '#shared/types/Immutable.js';
-import { LocalForm } from '#app/Forms/Form.js';
-import { ExportStore } from '../reducers/ExportStoreType.js';
+import { wrapDispatch } from 'app/Multireducer';
+import { exportDocuments } from 'app/Library/actions/exportActions';
+import { User } from 'api/users/usersModel';
+import Modal from 'app/Layout/Modal';
+import { CaptchaValue } from 'shared/types/Captcha';
+import { Captcha, FormGroup } from 'app/ReactReduxForms';
+import { IImmutable } from 'shared/types/Immutable';
+import { LocalForm } from 'app/Forms/Form';
+import { ExportStore } from '../reducers/ExportStoreType';
 
 type ExportButtonProps = {
   processing: boolean;
@@ -122,5 +122,4 @@ function mapStateToProps(state: ExportStore) {
 
 export type { ExportButtonProps };
 
-const ExportButtonConnected = connect(mapStateToProps, mapDispatchToProps)(ExportButton);
-export { ExportButtonConnected as ExportButton };
+export default connect(mapStateToProps, mapDispatchToProps)(ExportButton);

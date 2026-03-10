@@ -1,11 +1,11 @@
-import { search } from '#api/search/search.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-import { AggregationBucket, Aggregations } from '#shared/types/aggregations.js';
-import { UserSchema } from '#shared/types/userType.js';
-import { EntitySchema } from '../../../shared/types/entityType.js';
-import { fixturesTimeOut } from './fixtures_elastic.js';
-import { group1, permissionsLevelFixtures, users } from './permissionsFiltersFixtures.js';
+import { search } from 'api/search/search';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { AggregationBucket, Aggregations } from 'shared/types/aggregations';
+import { UserSchema } from 'shared/types/userType';
+import { EntitySchema } from '../../../shared/types/entityType';
+import { fixturesTimeOut } from './fixtures_elastic';
+import { group1, permissionsLevelFixtures, users } from './permissionsFiltersFixtures';
 
 describe('Permissions filters', () => {
   const userFactory = new UserInContextMockFactory();

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Translate } from '#app/I18N/index.js';
-import { ImageMetadataProperty } from '#V2/domain/entities/types.js';
-import { MetadataFieldProps } from './types.js';
-import { PropertyLabel } from './PropertyLabel.js';
-import { MetadataCard } from './MetadataCard.js';
+import { Translate } from 'app/I18N';
+import { ImageMetadataProperty } from 'V2/domain/entities/types';
+import { MetadataFieldProps } from './types';
+import { PropertyLabel } from './PropertyLabel';
+import { MetadataCard } from './MetadataCard';
 
 type ImageProps = MetadataFieldProps & {
   values: ImageMetadataProperty['values'];
@@ -12,14 +12,6 @@ type ImageProps = MetadataFieldProps & {
 
 const Image = ({ label, hideLabel, translationContext, values, imageStyle }: ImageProps) => {
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
-
-  if (!values?.length) {
-    return null;
-  }
-
-  if (values.length && !values[0].value) {
-    return null;
-  }
 
   return (
     <MetadataCard>

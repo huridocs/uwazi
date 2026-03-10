@@ -1,5 +1,5 @@
-import { BaseFile, BaseFileProps } from './BaseFile.js';
-import { FileContents } from './FileContents.js';
+import { BaseFile, BaseFileProps } from './BaseFile';
+import { FileContents } from './FileContents';
 
 export type BaseDocumentProps = BaseFileProps & {
   content: FileContents;

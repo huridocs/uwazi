@@ -1,11 +1,11 @@
-import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes';
 import {
   Language,
   LanguageCode,
   availableLanguages,
   otherLanguageSchema,
-} from './availableLanguages.js';
-import { LanguageISO6393 } from './languageISO639_3.js';
+} from './availableLanguages';
+import { LanguageISO6393 } from './languageISO639_3';
 
 class LanguageUtils {
   private static createLanguageIndex(code: LanguageCode) {

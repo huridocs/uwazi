@@ -1,14 +1,14 @@
 import { ObjectId } from 'mongodb';
 
-import { Property } from '#api/core/domain/template/Property.js';
-import { Template } from '#api/core/domain/template/Template.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { Property } from 'api/core/domain/template/Property';
+import { Template } from 'api/core/domain/template/Template';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 
-import { Entity } from '#api/core/domain/entity/Entity.js';
-import { ParagraphOutput } from './PXExtractionService.js';
-import { PXErrorCode, PXValidationError } from './PXValidationError.js';
-import { EntityTranslation } from '#api/core/domain/entity/EntityTranslation.js';
+import { Entity } from 'api/core/domain/entity/Entity';
+import { ParagraphOutput } from './PXExtractionService';
+import { PXErrorCode, PXValidationError } from './PXValidationError';
+import { EntityTranslation } from 'api/core/domain/entity/EntityTranslation';
 
 export type PXExtractorProps = {
   id: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
-import { DocumentLanguageView as DocumentLanguage, mapStateToProps } from '../DocumentLanguage.js';
+import { fromJS as Immutable } from 'immutable';
+import { DocumentLanguage, mapStateToProps } from '../DocumentLanguage';
 
 jest.mock('app/I18N', () => ({
   t: (_context, key) => key,
@@ -14,7 +14,7 @@ describe('DocumentLanguage', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({
+      doc: Immutable({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
@@ -37,7 +37,7 @@ describe('DocumentLanguage', () => {
   describe('When file matches current locale', () => {
     it('should not show a language', () => {
       props.locale = 'es';
-      props.doc = props.doc.set('file', Immutable.fromJS({ language: 'spa' }));
+      props.doc = props.doc.set('file', Immutable({ language: 'spa' }));
 
       render();
 
@@ -48,7 +48,7 @@ describe('DocumentLanguage', () => {
   describe('When file does not match current locale', () => {
     it('should include language tag ISO639-1 if file language is a supported language', () => {
       props.locale = 'es';
-      props.doc = props.doc.set('file', Immutable.fromJS({ language: 'eng' }));
+      props.doc = props.doc.set('file', Immutable({ language: 'eng' }));
 
       render();
 
@@ -56,7 +56,7 @@ describe('DocumentLanguage', () => {
       expect(component.find('.item-type__documentLanguage').text()).toBe('en');
 
       props.locale = 'es';
-      props.doc = props.doc.set('file', Immutable.fromJS({ language: 'por' }));
+      props.doc = props.doc.set('file', Immutable({ language: 'por' }));
 
       render();
 
@@ -66,7 +66,7 @@ describe('DocumentLanguage', () => {
 
     it('should include language tag in FRANC detection if file language is not supported language', () => {
       props.locale = 'es';
-      props.doc = props.doc.set('file', Immutable.fromJS({ language: 'not' }));
+      props.doc = props.doc.set('file', Immutable({ language: 'not' }));
 
       render();
 
@@ -76,7 +76,7 @@ describe('DocumentLanguage', () => {
 
     it('should render OTHER if file language is undetected', () => {
       props.locale = 'es';
-      props.doc = props.doc.set('file', Immutable.fromJS({ language: 'other' }));
+      props.doc = props.doc.set('file', Immutable({ language: 'other' }));
 
       render();
 

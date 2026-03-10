@@ -1,4 +1,4 @@
-import { isMobileDevice, getUserAgent } from '../detectDevice.js';
+import { isMobileDevice, getUserAgent } from '../detectDevice';
 
 describe('detectDevice', () => {
   describe('isMobileDevice', () => {

@@ -1,4 +1,4 @@
-import { ArrayUtils } from '../Array.js';
+import { ArrayUtils } from '../Array';
 
 describe('ArrayUtils', () => {
   describe('runInBatches', () => {

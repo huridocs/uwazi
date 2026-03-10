@@ -1,10 +1,10 @@
-import { UseCase } from '#api/core/libs/UseCase.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { UseCase } from 'api/core/libs/UseCase';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource.js';
-import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntityJob.js';
-import { EntityStatus } from '../domain/PXEntityStatusModel.js';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntityJob';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 type Input = {
   userId: string;

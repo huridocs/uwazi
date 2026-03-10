@@ -1,6 +1,6 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { SaveStream } from '#api/common.v2/contracts/SaveStream.js';
-import { MigrationHubRecord } from '../model/MigrationHubRecord.js';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { SaveStream } from 'api/common.v2/contracts/SaveStream';
+import { MigrationHubRecord } from '../model/MigrationHubRecord';
 
 interface MigrationHubRecordDataSource {
   getAll(): ResultSet<MigrationHubRecord>;

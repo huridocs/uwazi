@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { SearchInput } from '#app/Layout/SearchInput.js';
-import { SearchFormView } from '../SearchForm.js';
+import SearchInput from 'app/Layout/SearchInput';
+import { SearchForm } from '../SearchForm';
 
 describe('SearchForm', () => {
   let component;
@@ -13,7 +13,7 @@ describe('SearchForm', () => {
       search: jasmine.createSpy('search'),
       connectionType: 'basic',
     };
-    component = shallow(<SearchFormView {...props} />);
+    component = shallow(<SearchForm {...props} />);
   });
 
   describe('onChange', () => {

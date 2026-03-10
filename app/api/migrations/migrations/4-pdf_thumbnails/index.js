@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import path from 'path';
 import { spawn } from 'child-process-promise';
-import { config } from '#api/config.js';
+import { config } from 'api/config';
 
 export default {
   delta: 4,

@@ -2,11 +2,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { EventBus, PDFJSViewer, PDFJS } from './pdfjs.js';
-import { TextHighlight } from './types.js';
-import { calculateScaling } from './functions/calculateScaling.js';
-import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
-
+import { EventBus, PDFJSViewer, PDFJS } from './pdfjs';
+import { TextHighlight } from './types';
+import { calculateScaling } from './functions/calculateScaling';
+import { adjustSelectionsToScale } from './functions/handleTextSelection';
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;

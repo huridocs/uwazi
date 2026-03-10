@@ -1,5 +1,5 @@
 import { applicationEventsBus } from '.';
-import { EventConstructor } from './EventsBus.js';
+import { EventConstructor } from './EventsBus';
 
 const spyOnEmit = () => {
   const spy = jest.spyOn(applicationEventsBus, 'emit');

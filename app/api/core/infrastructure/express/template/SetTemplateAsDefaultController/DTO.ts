@@ -1,4 +1,4 @@
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 import { z } from 'zod';
 
 export const SetTemplateAsDefaultSchema = z.object({

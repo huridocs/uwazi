@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { testingDB as db, DBFixture } from '#api/utils/testing_db.js';
+import { testingDB as db, DBFixture } from 'api/utils/testing_db';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();

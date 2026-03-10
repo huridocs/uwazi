@@ -1,21 +1,14 @@
 import React from 'react';
-import Immutable from 'immutable';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
 import { shallow } from 'enzyme';
-import { Doc } from '#app/Library/components/Doc.js';
-import DropdownList from 'react-widgets/lib/DropdownList.js';
-import * as types from '../../actions/actionTypes.js';
+import { fromJS } from 'immutable';
+import Doc from 'app/Library/components/Doc';
+import DropdownList from 'react-widgets/lib/DropdownList';
 
-import { RightRelationship } from '../RightRelationship.js';
-import { HubRelationshipMetadata } from '../HubRelationshipMetadata.js';
-
-const mockStore = configureStore([thunk]);
+import { RightRelationship } from '../RightRelationship';
+import HubRelationshipMetadata from '../HubRelationshipMetadata';
 
 describe('RelationshipsGraphEdit', () => {
   let component;
-  let store;
   let props;
   let hub;
 
@@ -43,13 +36,13 @@ describe('RelationshipsGraphEdit', () => {
 
     props = {
       index: 0,
-      hubActions: Immutable.fromJS({ editing: false }),
+      hubActions: fromJS({ editing: false }),
       search: { sort: 'creationDate', order: 'desc', treatAs: 'number' },
       relationTypes: [{ _id: '123', name: 'Friend' }],
-      parentEntity: Immutable.fromJS({}),
-      hub: Immutable.fromJS(hub),
+      parentEntity: fromJS({}),
+      hub: fromJS(hub),
       editing: false,
-      searchResults: Immutable.fromJS({ rows: [] }),
+      searchResults: fromJS({ rows: [] }),
       updateRightRelationshipType: jasmine.createSpy('updateRightRelationshipType'),
       toggleRemoveRightRelationshipGroup: jasmine.createSpy('toggleRemoveRightRelationshipGroup'),
       toggleMoveEntity: jasmine.createSpy('toggleMoveEntity'),
@@ -61,28 +54,8 @@ describe('RelationshipsGraphEdit', () => {
     };
   });
 
-  const getStoreData = () => ({
-    locale: 'en',
-    relationships: {
-      list: { sort: props.search },
-      hubs: Immutable.List([props.hub]),
-      hubActions: props.hubActions,
-    },
-    relationTypes: Immutable.fromJS(props.relationTypes),
-    translations: Immutable.fromJS([
-      { locale: 'en', contexts: props.relationTypes.map(r => ({ id: r._id })) },
-    ]),
-  });
-
   const render = () => {
-    store = mockStore(getStoreData());
-    component = shallow(
-      <Provider store={store}>
-        <RightRelationship {...props} />
-      </Provider>
-    )
-      .dive({ context: { store } })
-      .dive();
+    component = shallow(<RightRelationship {...props} />);
   };
 
   describe('render()', () => {
@@ -92,11 +65,11 @@ describe('RelationshipsGraphEdit', () => {
       expect(component.find('.rightRelationshipsTypeGroup').length).toBe(2);
       expect(component.find(Doc).length).toBe(4);
       expect(component.find(Doc).at(0).props().doc).toEqual(
-        Immutable.fromJS(hub.rightRelationships[0].relationships[0].entityData)
+        fromJS(hub.rightRelationships[0].relationships[0].entityData)
       );
       expect(component.find(HubRelationshipMetadata).length).toBe(4);
       expect(component.find(HubRelationshipMetadata).at(0).props().relationship).toEqual(
-        Immutable.fromJS(hub.rightRelationships[0].relationships[0])
+        fromJS(hub.rightRelationships[0].relationships[0])
       );
     });
   });
@@ -105,9 +78,7 @@ describe('RelationshipsGraphEdit', () => {
     it('should select that connection', () => {
       render();
       component.find(Doc).at(0).simulate('click');
-      expect(store.getActions()).toContainEqual(
-        jasmine.objectContaining({ type: 'relationships/connection/SET' })
-      );
+      expect(props.selectConnection).toHaveBeenCalled();
     });
   });
 
@@ -121,7 +92,7 @@ describe('RelationshipsGraphEdit', () => {
         text: ':D',
         selectionRectangles: [],
       };
-      props.hub = Immutable.fromJS(hub);
+      props.hub = fromJS(hub);
       render();
       expect(component).toMatchSnapshot();
     });
@@ -129,56 +100,36 @@ describe('RelationshipsGraphEdit', () => {
 
   describe('while editing', () => {
     beforeEach(() => {
-      props.hubActions = Immutable.fromJS({ editing: true });
+      props.hubActions = fromJS({ editing: true });
       render();
     });
 
     describe('clicking on the delete button next to a relationship', () => {
       it('should mark that relationship to be deleted', () => {
         component.find('.removeEntity button').at(0).simulate('click');
-        expect(store.getActions()).toContainEqual({
-          type: types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY,
-          index: 0,
-          rightIndex: 0,
-          relationshipIndex: 0,
-        });
+        expect(props.toggleRemoveEntity).toHaveBeenCalledWith(0, 0, 0);
       });
     });
 
     describe('clicking on the delete button next to a right group', () => {
       it('should mark that entire gtoup to be deleted', () => {
         component.find('.removeRightRelationshipGroup button').at(0).simulate('click');
-        expect(store.getActions()).toContainEqual({
-          type: types.TOGGLE_REMOVE_RELATIONSHIPS_RIGHT_GROUP,
-          index: 0,
-          rightIndex: 0,
-        });
+        expect(props.toggleRemoveRightRelationshipGroup).toHaveBeenCalledWith(0, 0);
       });
     });
 
     describe('clicking on the add new relationship', () => {
       it('should call setAddToData and openAddEntitiesPanel', () => {
         component.find('.relationships-new').at(0).simulate('click');
-        expect(store.getActions()).toContainEqual({
-          type: types.SET_RELATIONSHIPS_ADD_TO_DATA,
-          index: 0,
-          rightIndex: 0,
-        });
-        expect(store.getActions()).toContainEqual({ type: types.OPEN_RELATIONSHIPS_PANEL });
+        expect(props.setAddToData).toHaveBeenCalledWith(0, 0);
+        expect(props.openAddEntitiesPanel).toHaveBeenCalled();
       });
     });
 
     describe('changing the template of a group', () => {
       it('should call updateRightRelationshipType', () => {
         component.find(DropdownList).at(0).simulate('change', { _id: 3 });
-        expect(store.getActions()).toContainEqual(
-          jasmine.objectContaining({
-            type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE,
-            index: 0,
-            rightIndex: 0,
-            _id: 3,
-          })
-        );
+        expect(props.updateRightRelationshipType).toHaveBeenCalledWith(0, 0, 3);
       });
     });
   });

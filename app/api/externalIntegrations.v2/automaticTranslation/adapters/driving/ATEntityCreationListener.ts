@@ -1,7 +1,7 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory.js';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
 
 export class ATEntityCreationListener {
   private eventBus: EventsBus;

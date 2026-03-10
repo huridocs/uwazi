@@ -1,5 +1,5 @@
-import { EntitySchema } from '#shared/types/entityType.js';
-import { EntityCompositionSanitizer } from '../services/sanitizers/EntityCompositionSanitizer.js';
+import { EntitySchema } from 'shared/types/entityType';
+import { EntityCompositionSanitizer } from '../services/sanitizers/EntityCompositionSanitizer';
 
 export interface EntitySaveUseCase {
   saveEntity(entityId: string, formData: any, options?: SaveOptions): Promise<SaveResult>;
@@ -85,3 +85,5 @@ export class EntitySaveUseCaseImpl implements EntitySaveUseCase {
     });
   }
 }
+
+export default EntitySaveUseCaseImpl;

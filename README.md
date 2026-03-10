@@ -28,7 +28,7 @@ Before anything else you will need to install the application dependencies:
 - [**ICU Analysis Plugin (recommended)**](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
 - [**MongoDB 7.0.24**](https://www.mongodb.com/docs/v5.0/installation/) The MongoDB installation needs to be configured as a Replica Set. It can be a single-node replica set, but Replica Set must be [initialized](https://www.mongodb.com/docs/v6.0/tutorial/deploy-replica-set/). If you have a previous version installed, please follow the instructions on how to [upgrade here](https://www.mongodb.com/docs/manual/release-notes/5.0-upgrade-standalone/).
 - [**mongosh**](https://www.mongodb.com/docs/mongodb-shell/) The new mongosh dependency needs to be added.
-- **Yarn 4+** The project uses Yarn 4.13.0 (see `packageManager` in package.json). Run `corepack enable` before your first `yarn install` so Node uses the correct version. Alternatively, npm 10+ is supported if you prefer to switch.
+- [**Yarn**](https://yarnpkg.com/en/docs/install)
 - **pdftotext (Poppler)** tested to work on version 22.12 but it's recommended to use the [latest available for your platform](https://poppler.freedesktop.org/). Make sure to **install libjpeg-dev** if you build from source.
 
 # Production
@@ -42,7 +42,6 @@ If you want to use the latest development code:
 ```
 $ git clone https://github.com/huridocs/uwazi.git
 $ cd uwazi
-$ corepack enable
 $ yarn install
 $ yarn blank-state
 ```
@@ -77,17 +76,7 @@ This will launch a webpack server and nodemon app server for hot reloading any c
 $ yarn webpack-server
 ```
 
-This will launch a webpack server. You can also pass `--analyze` to get detailed info on the webpack build.
-
-### Storybook
-
-For component development and documentation:
-
-```
-$ yarn storybook
-```
-
-Cypress component tests (`yarn cy-components`) use Storybook stories.
+This will launch a webpack server. You can also pass `--analyze`to get detailed info on the webpack build.
 
 ### Testing
 

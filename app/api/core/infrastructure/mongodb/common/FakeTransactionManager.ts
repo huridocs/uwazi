@@ -1,4 +1,4 @@
-import { MongoTransactionManager } from './MongoTransactionManager.js';
+import { MongoTransactionManager } from './MongoTransactionManager';
 
 export class FakeMongoTransactionManager extends MongoTransactionManager {
   async run<T>(callback: () => Promise<T>) {
