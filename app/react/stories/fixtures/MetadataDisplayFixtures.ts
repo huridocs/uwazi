@@ -76,7 +76,7 @@ const templates: Template[] = [
       {
         _id: '1.2',
         type: 'markdown',
-        label: 'Markdown field using standar markdown syntax',
+        label: 'Markdown field using standard markdown syntax',
         noLabel: false,
         name: 'markdown_syntax',
       },
@@ -625,7 +625,7 @@ const rawEntity: EntitySchema = {
       entity: 'shared1',
       type: 'document',
       filename: 'batman.pdf',
-      originalname: 'Anoying rich kid.pdf',
+      originalname: 'Annoying rich kid.pdf',
       mimetype: 'application/pdf',
       size: 1,
       status: 'ready',
