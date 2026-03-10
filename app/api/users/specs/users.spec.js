@@ -570,8 +570,12 @@ describe('Users', () => {
       const expectedMailOptions = {
         from: emailSender,
         to: 'test@email.com',
-        subject: 'Password set',
-        text: `To set your password click on the following link:\ndomain/setpassword/${key}\nThis link will be valid for 24 hours.`,
+        subject: 'Password recovery',
+        text:
+          'Your username is: username\n' +
+          'To set your password click on the following link:\n' +
+          `domain/setpassword/${key}\n` +
+          'This link will be valid for 24 hours.',
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
     });
