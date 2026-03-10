@@ -4,7 +4,6 @@ import { wrapValidator } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import ValidationError from 'ajv/dist/runtime/validation_error.js';
 import { validateMetadataField } from './validateMetadataField.js';
 import { customErrorMessages, validators } from './metadataValidators.js';
 
@@ -19,7 +18,7 @@ const validateField =
       return err;
     } catch (e) {
       const currentErrors = await err;
-      if (e instanceof ValidationError) {
+      if (e instanceof Ajv.ValidationError) {
         return currentErrors.concat(e.errors);
       }
       throw e;
