@@ -183,7 +183,9 @@ describe('Pages', () => {
     it('display the entity in custom page', () => {
       dismissModalIfVisible();
       cy.contains('a', 'Library').click();
-      cy.contains('.multiselectItem-name > span', 'Medida Provisional', { timeout: 12000 }).click();
+      cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Medida Provisional', {
+        timeout: 12000,
+      }).click();
       cy.contains('Acevedo Jaramillo', { timeout: 12000 });
       cy.contains('.item-document .item-name', 'Acevedo Jaramillo', { timeout: 12000 }).click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
