@@ -1,6 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { Provider, useSetAtom } from 'jotai';
 import { FileCard, EntityFile } from '../FileCard.js';
 import { settingsAtom } from '../../../../../../../app/react/V2/atoms/index.js';

@@ -205,7 +205,7 @@ Cypress.Commands.add('addTimeLink', (duration, label, index = 0, seconds = -1, m
 Cypress.Commands.add('blankState', () => {
   const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
   cy.exec('yarn blank-state --force', { env, failOnNonZeroExit: false }).then(result => {
-    if (result.code === 1) {
+    if (result.exitCode === 1) {
       cy.exec('yarn blank-state --force', { env, failOnNonZeroExit: false });
     }
   });
