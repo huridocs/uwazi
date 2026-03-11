@@ -24,6 +24,11 @@ const fixtures: DBFixture = {
           url: 'http://otherurl',
         },
       },
+      // Sensitive fields that should not be exposed to unauthenticated users
+      mailerConfig: 'smtp://user:password@smtp.example.com',
+      contactEmail: 'admin@uwazi.com',
+      senderEmail: 'noreply@uwazi.com',
+      mapApiKey: 'testMapApiKey123',
     },
   ],
   templates: [

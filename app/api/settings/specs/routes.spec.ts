@@ -26,9 +26,12 @@ jest.mock(
 jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
 
 describe('Settings routes', () => {
-  const getApp = (userRole?: string) =>
+  const getApp = (userRole?: string | null) =>
     setUpApp(settingsRoutes, (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = { role: userRole };
+      if (userRole !== null) {
+        (req as any).user = { role: userRole };
+      }
+      // when userRole is null, req.user remains undefined (unauthenticated)
       next();
     });
 
@@ -42,31 +45,62 @@ describe('Settings routes', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET', () => {
-    it('should respond with settings', async () => {
-      const response = await request(getApp()).get('/api/settings').expect(200);
-      expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
-      expect(response.body.features).toBe(undefined);
+    describe('unauthenticated users', () => {
+      it('should return only whitelisted public fields', async () => {
+        const response = await request(getApp(null)).get('/api/settings').expect(200);
+
+        // Should include public fields
+        expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
+        expect(response.body.mapApiKey).toBe('testMapApiKey123');
+        expect(response.body.allowedPublicTemplates).toEqual(['id1', 'id2']);
+
+        // Should NOT include sensitive fields
+        expect(response.body.mailerConfig).toBeUndefined();
+        expect(response.body.contactEmail).toBeUndefined();
+        expect(response.body.senderEmail).toBeUndefined();
+        expect(response.body.features).toBeUndefined();
+      });
     });
 
-    it('should return the collection features for admins and editors', async () => {
-      const [adminResponse, editorResponse] = await Promise.all([
-        await request(getApp('admin')).get('/api/settings').expect(200),
-        await request(getApp('editor')).get('/api/settings').expect(200),
-      ]);
+    describe('authenticated non-admin/editor users', () => {
+      it('should return all fields except features', async () => {
+        const response = await request(getApp('collaborator')).get('/api/settings').expect(200);
 
-      const expectedResponse = {
-        'metadata-extraction': true,
-        metadataExtraction: {
-          url: 'http:someurl',
-        },
-        segmentation: {
-          url: 'http://otherurl',
-        },
-      };
+        expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
+        expect(response.body.mailerConfig).toBe('smtp://user:password@smtp.example.com');
+        expect(response.body.contactEmail).toBe('admin@uwazi.com');
+        expect(response.body.senderEmail).toBe('noreply@uwazi.com');
+        expect(response.body.features).toBeUndefined();
+      });
+    });
 
-      expect(adminResponse.body.features).toEqual(expect.objectContaining(expectedResponse));
+    describe('admins and editors', () => {
+      it('should return all settings including features', async () => {
+        const [adminResponse, editorResponse] = await Promise.all([
+          request(getApp('admin')).get('/api/settings').expect(200),
+          request(getApp('editor')).get('/api/settings').expect(200),
+        ]);
 
-      expect(editorResponse.body.features).toEqual(expect.objectContaining(expectedResponse));
+        const expectedFeatures = {
+          'metadata-extraction': true,
+          metadataExtraction: {
+            url: 'http:someurl',
+          },
+          segmentation: {
+            url: 'http://otherurl',
+          },
+        };
+
+        // Admins should see all fields including features
+        expect(adminResponse.body.features).toEqual(expect.objectContaining(expectedFeatures));
+        expect(adminResponse.body.mailerConfig).toBe('smtp://user:password@smtp.example.com');
+        expect(adminResponse.body.contactEmail).toBe('admin@uwazi.com');
+        expect(adminResponse.body.senderEmail).toBe('noreply@uwazi.com');
+
+        // Editors should also see all fields including features
+        expect(editorResponse.body.features).toEqual(expect.objectContaining(expectedFeatures));
+        expect(editorResponse.body.mailerConfig).toBe('smtp://user:password@smtp.example.com');
+      });
     });
   });
 
