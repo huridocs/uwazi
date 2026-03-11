@@ -32,19 +32,6 @@ config.optimization.moduleIds = 'named';
 config.optimization.emitOnErrors = false;
 config.devtool = 'source-map';
 
-// config.resolve = config.resolve || {};
-// config.resolve.alias = {
-//   ...(config.resolve.alias || {}),
-//   'pdfjs-dist/webpack.mjs': path.join(
-//     rootPath,
-//     'app/react/V2/Components/PDFViewer/shims/pdfjs-webpack.hot.ts'
-//   ),
-//   'pdfjs-dist/web/pdf_viewer.mjs': path.join(
-//     rootPath,
-//     'app/react/V2/Components/PDFViewer/shims/pdfjs-web-viewer.hot.ts'
-//   ),
-// };
-
 config.output = {
   path: path.join(rootPath, 'dist'),
   publicPath: 'http://localhost:8080/',
