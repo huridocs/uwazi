@@ -31,7 +31,6 @@ describe('Settings routes', () => {
       if (typeof userRole === 'string') {
         (req as any).user = { role: userRole };
       }
-      // when userRole is undefined, req.user remains undefined (unauthenticated)
       next();
     });
 
@@ -49,12 +48,10 @@ describe('Settings routes', () => {
       it('should return only whitelisted public fields', async () => {
         const response = await request(getApp()).get('/api/settings').expect(200);
 
-        // Should include public fields
         expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
         expect(response.body.mapApiKey).toBe('testMapApiKey123');
         expect(response.body.allowedPublicTemplates).toEqual(['id1', 'id2']);
 
-        // Should NOT include sensitive fields
         expect(response.body.mailerConfig).toBeUndefined();
         expect(response.body.contactEmail).toBeUndefined();
         expect(response.body.senderEmail).toBeUndefined();

@@ -50,11 +50,9 @@ export default (app: Application) => {
         if (req.user?.role === 'admin' || req.user?.role === 'editor') {
           res.json(response);
         } else if (req.user?.role) {
-          // Authenticated non-admin/editor users: all fields except features
           const { features, ...partialSettings } = response;
           res.json(partialSettings);
         } else {
-          // Unauthenticated users (or invalid/missing role): only whitelisted public fields
           res.json(pickPublicFields(response));
         }
       })
