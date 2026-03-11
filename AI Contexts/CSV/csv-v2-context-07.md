@@ -718,6 +718,11 @@ This section captures what was done in the latest development pass and must be u
 - Standard command to run focused Jest specs in this repo:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest path-or-string-to-file`
 - This is now the default command format for CSV v2 verification.
+- Environment note:
+  - In sandboxed agent environments, Jest/DB-backed specs can show false negatives
+    (timeouts, setup/connection issues) that do not reproduce locally.
+  - If this happens, rerun the same command outside sandbox restrictions before
+    concluding there is a code regression.
 
 #### 18.2 CSV v2 JobHandler typing alignment (core-safe)
 
