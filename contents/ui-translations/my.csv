@@ -369,6 +369,7 @@ Flag,အလံ
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,စကားဝှက် မေ့နေပါသလား။
 Forms and email configuration,ပုံစံများနှင့် အီးမေးလ် ဖွဲ့စည်းတည်ဆောက်ပုံ
 From,From
@@ -400,6 +401,9 @@ Hybrid,Hybrid
 Icon,အိုင်ကွန်
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",ပြင်ပ URL ဖြစ်ပါက URL ပုံစံအပြည့်အစုံကို သုံးပါ။ ဥပမာ- http://www.uwazi.io။
 "If you want to continue, please type",ဆက်လက်ဆောင်ရွက်လိုပါက ကျေးဇူးပြု၍ စာရိုက်ပါ
 Import,ထည့်သွင်းရန်

@@ -18,9 +18,10 @@ type Dependencies = {
   extractorsDS: PXExtractorsDataSource;
 };
 
-class PXGetEntityParagraphs
-  implements UseCase<PXGetEntityParagraphsInput, GetExtractedParagraphsOutput>
-{
+class PXGetEntityParagraphs implements UseCase<
+  PXGetEntityParagraphsInput,
+  GetExtractedParagraphsOutput
+> {
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: PXGetEntityParagraphsInput): Promise<GetExtractedParagraphsOutput> {

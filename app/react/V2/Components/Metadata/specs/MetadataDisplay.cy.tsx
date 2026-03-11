@@ -1,6 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
 import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
 import * as stories from '#app/stories/Metadata.stories.jsx';
@@ -16,7 +16,7 @@ describe('Metadata Display', () => {
     });
 
     it('renders the entity title with the icon', () => {
-      cy.contains('dt', 'Title').should('not.be.visible');
+      cy.contains('dt', 'Title').find('.sr-only').should('exist');
       cy.contains('dd', 'Title of the displayed entity').should('exist');
       cy.contains('dd', 'Title of the displayed entity').find('span[role="img"]').should('exist');
     });
@@ -35,7 +35,7 @@ describe('Metadata Display', () => {
     });
 
     it('renders markdown syntax (bold/italic) content', () => {
-      cy.contains('dt', 'Markdown field using standar markdown syntax').should('exist');
+      cy.contains('dt', 'Markdown field using standard markdown syntax').should('exist');
       cy.contains('strong', 'Bold text').should('exist');
       cy.contains('em', 'italic text').should('exist');
       cy.contains('dd', 'italic text').within(() => {
@@ -80,7 +80,7 @@ describe('Metadata Display', () => {
         '/short-video-thumbnail.jpg'
       );
 
-      cy.get('img[alt="Anoying rich kid.pdf"]').should('have.attr', 'src', '/batman.jpg');
+      cy.get('img[alt="Annoying rich kid.pdf"]').should('have.attr', 'src', '/batman.jpg');
     });
 
     it('renders media timelinks as buttons', () => {
