@@ -26,12 +26,12 @@ jest.mock(
 jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
 
 describe('Settings routes', () => {
-  const getApp = (userRole?: string | null) =>
+  const getApp = (userRole?: string) =>
     setUpApp(settingsRoutes, (req: Request, _res: Response, next: NextFunction) => {
-      if (userRole !== null) {
+      if (typeof userRole === 'string') {
         (req as any).user = { role: userRole };
       }
-      // when userRole is null, req.user remains undefined (unauthenticated)
+      // when userRole is undefined, req.user remains undefined (unauthenticated)
       next();
     });
 
@@ -47,7 +47,7 @@ describe('Settings routes', () => {
   describe('GET', () => {
     describe('unauthenticated users', () => {
       it('should return only whitelisted public fields', async () => {
-        const response = await request(getApp(null)).get('/api/settings').expect(200);
+        const response = await request(getApp()).get('/api/settings').expect(200);
 
         // Should include public fields
         expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));

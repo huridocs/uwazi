@@ -28,6 +28,7 @@ const fixtures: DBFixture = {
       mailerConfig: 'smtp://user:password@smtp.example.com',
       contactEmail: 'admin@uwazi.com',
       senderEmail: 'noreply@uwazi.com',
+      // Public field (intentionally exposed to unauthenticated users for map rendering)
       mapApiKey: 'testMapApiKey123',
     },
   ],
