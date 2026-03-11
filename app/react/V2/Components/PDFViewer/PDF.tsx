@@ -242,18 +242,19 @@ const PDF = ({
     return <div>{error}</div>;
   }
 
+  const viewerStyle = {
+    height: size?.height || '100%',
+    width: size?.width || '100%',
+    overflow: size?.overflow || 'auto',
+    '--page-border': '0px solid transparent',
+    '--page-margin': '0 auto',
+    '--scale-round-x': '0.01px',
+    '--scale-round-y': '0.01px',
+  };
+
   return (
     <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div
-        id="pdf-container"
-        className="pdfViewer"
-        ref={pdfContainerRef}
-        style={{
-          height: size?.height || '100%',
-          width: size?.width || '100%',
-          overflow: size?.overflow || 'auto',
-        }}
-      >
+      <div id="pdf-container" className="pdfViewer" ref={pdfContainerRef} style={viewerStyle}>
         {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const regionId = number.toString();
