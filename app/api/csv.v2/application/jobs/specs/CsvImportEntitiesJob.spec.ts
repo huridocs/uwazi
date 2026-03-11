@@ -61,7 +61,7 @@ const stageRows = async (
   const rows = parsed.map((line, index) =>
     CsvImportRow.create({
       importId: params.importId,
-      index,
+      rowIndex: index,
       headers,
       values: line.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')),
     })

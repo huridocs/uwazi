@@ -169,7 +169,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const stagedRows = await rowsDS.getByImport(id);
     expect(stagedRows).toHaveLength(3);
     expect(stagedRows[1].values).toEqual(['', '']);
-    expect(stagedRows[1].index).toBe(1);
+    expect(stagedRows[1].rowIndex).toBe(1);
   });
 
   it('should stage rows in batches for large CSVs', async () => {

@@ -151,7 +151,7 @@ const processImportBatch = async (params: {
       errors.push(
         CsvImportRowError.create({
           importId: csvImport.id,
-          rowIndex: row.index,
+          rowIndex: row.rowIndex,
           message: (error as Error).message,
         })
       );

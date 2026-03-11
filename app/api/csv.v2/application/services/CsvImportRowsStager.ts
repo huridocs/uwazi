@@ -80,7 +80,7 @@ const shouldInsertEmptyRow = (ctx: AccumulatorContext) =>
 const addEmptyRow = (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
   const emptyRow = CsvImportRow.create({
     importId: params.importId,
-    index: ctx.currentIndex,
+    rowIndex: ctx.currentIndex,
     headers: ctx.headers!,
     values: new Array(ctx.headers!.length).fill(''),
   });
@@ -131,7 +131,7 @@ const createRowsAccumulator = (params: RowsAccumulatorParams): RowsAccumulator =
       }
       const row = CsvImportRow.create({
         importId: params.importId,
-        index: ctx.currentIndex,
+        rowIndex: ctx.currentIndex,
         headers: ctx.headers!,
         values,
       });
