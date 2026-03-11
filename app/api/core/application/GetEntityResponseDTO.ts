@@ -1,5 +1,5 @@
-import { EntityDBO } from '../../entities.v2/database/schemas/EntityTypes';
-import { fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes';
+import { EntityDBO } from '../../entities.v2/database/schemas/EntityTypes.js';
+import { fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
 
 /**
  * Represents a relation in the GetEntity response.

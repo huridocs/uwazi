@@ -520,4 +520,4 @@ const fixtures: DBFixture = {
 };
 
 export default fixtures;
-export { adminId, user1Id, user2Id, unpublishedDocId, permissions, templateId };
+export { adminId, user1Id, user2Id, unpublishedDocId, permissions, templateId, batmanFinishesId };

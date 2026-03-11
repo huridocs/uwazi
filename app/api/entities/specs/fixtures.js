@@ -2,7 +2,6 @@
 /* eslint-disable max-len */
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db from '#api/utils/testing_db.js';
-import commonProperties from '#shared/commonProperties.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 const fixtureFactory = getFixturesFactory();
@@ -269,8 +268,8 @@ export default {
         ],
       },
       permissions: [
-        { refId: user1Id, level: AccessLevels.READ, type: PermissionType.USER },
-        { refId: user2Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
       ],
     },
     {
@@ -285,8 +284,8 @@ export default {
         ],
       },
       permissions: [
-        { refId: user1Id, level: AccessLevels.READ, type: PermissionType.USER },
-        { refId: user2Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
       ],
     },
     //select/multiselect/date sync
@@ -300,7 +299,7 @@ export default {
       published: true,
       metadata: { property1: [{ value: 'text' }] },
       permissions: [
-        { refId: user1Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
         { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
       ],
     },
@@ -315,7 +314,7 @@ export default {
       published: true,
       metadata: { property1: [{ value: 'text' }] },
       permissions: [
-        { refId: user1Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
         { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
       ],
     },
@@ -330,7 +329,7 @@ export default {
       published: true,
       metadata: { property1: [{ value: 'text' }] },
       permissions: [
-        { refId: user1Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
         { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
       ],
     },
@@ -500,7 +499,7 @@ export default {
       title: 'Restricted Entity',
       published: false,
       metadata: {},
-      permissions: [{ refId: user1Id, level: AccessLevels.READ, type: PermissionType.USER }],
+      permissions: [{ refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER }],
     },
     {
       _id: db.id(),

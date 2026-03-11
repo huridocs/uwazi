@@ -9,7 +9,12 @@ import routes from '#api/entities/routes';
 import { testingTenants } from '#api/utils/testingTenants';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { UserRole } from '#shared/types/userSchema.js';
-import fixtures, { permissions, unpublishedDocId, user1Id } from './routesGetFixtures';
+import fixtures, {
+  permissions,
+  unpublishedDocId,
+  user1Id,
+  batmanFinishesId,
+} from './routesGetFixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -96,15 +101,18 @@ describe.each([
       });
     });
 
-    it('should return entity by MongoDB _id', async () => {
-      new UserInContextMockFactory().mock(authenticatedUser);
-      const entity = await getEntity(app, 'shared1', { omitRelationships: true });
+    if (featureFlags.v2GetEntity) {
+      it('should not support _id parameter (V2 only supports sharedId)', async () => {
+        new UserInContextMockFactory().mock(authenticatedUser);
+        const response = await getEntity(app, '', {
+          _id: batmanFinishesId.toString(),
+          omitRelationships: true,
+          expectStatus: 400,
+        });
 
-      expect(entity).toMatchObject({
-        sharedId: 'shared1',
-        title: expect.any(String),
+        expect(response.body).toMatchObject({ error: 'sharedId is required' });
       });
-    });
+    }
 
     it('should return 404 when entity does not exist', async () => {
       const response = await getEntity(appWithoutUser, 'nonexistent', { expectStatus: 404 });
@@ -123,8 +131,7 @@ describe.each([
 
   describe('Published status filtering', () => {
     it('should not return unpublished entities to unauthenticated users', async () => {
-      const response = await getEntity(appWithoutUser, '', {
-        _id: unpublishedDocId.toString(),
+      const response = await getEntity(appWithoutUser, 'other', {
         omitRelationships: true,
         expectStatus: 404,
       });

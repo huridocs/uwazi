@@ -215,13 +215,11 @@ export default app => {
       // V2 implementation
       if (tenants.current()?.featureFlags?.v2GetEntity) {
         try {
-          // Support both sharedId and _id parameters (V1 compatibility)
-          const { sharedId, _id, include = [], omitRelationships } = req.query;
-          const entityId = sharedId || _id;
+          const { sharedId, include = [], omitRelationships } = req.query;
 
-          if (!entityId) {
+          if (!sharedId) {
             res.status(400);
-            res.json({ error: 'sharedId or _id is required' });
+            res.json({ error: 'sharedId is required' });
             return;
           }
 
@@ -238,7 +236,7 @@ export default app => {
 
           const useCase = GetEntityUseCaseFactory.default(req.language, req.user || null);
           const result = await useCase.execute({
-            sharedId: entityId,
+            sharedId,
             published,
             includeRelationships,
           });
