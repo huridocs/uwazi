@@ -117,35 +117,35 @@ const PDFPage = ({
   }, [eventBus, page, ready]);
 
   useEffect(() => {
-    const renderPage = () => {
-      const pageViewer = pageViewerRef.current;
-      if (pageViewer?.renderingState === RenderingStates.INITIAL) {
-        pageViewer?.draw().catch(e => {
-          setError(e.message);
-        });
+    const renderPage = ({ pageNumber }: { pageNumber: number | string }) => {
+      if (pageNumber === page.toString()) {
+        const pageViewer = pageViewerRef.current;
+        if (pageViewer?.renderingState === RenderingStates.INITIAL) {
+          pageViewer?.draw().catch(e => {
+            setError(e.message);
+          });
+        }
       }
     };
 
-    const unmountPage = () => {
-      const pageViewer = pageViewerRef.current;
-      if (pageViewer?.renderingState === RenderingStates.FINISHED) {
-        pageViewer?.destroy();
-      } else {
-        pageViewer?.cancelRendering();
+    const unmountPage = ({ pageNumber }: { pageNumber: string }) => {
+      if (pageNumber === page.toString()) {
+        const pageViewer = pageViewerRef.current;
+        if (pageViewer?.renderingState === RenderingStates.FINISHED) {
+          pageViewer?.destroy();
+        } else {
+          pageViewer?.cancelRendering();
+        }
       }
     };
 
-    eventBus.on('renderpage', ({ pageNumber }: { pageNumber: number | string }) => {
-      if (pageNumber === page.toString()) {
-        renderPage();
-      }
-    });
+    eventBus.on('renderpage', renderPage);
+    eventBus.on('unmountpage', unmountPage);
 
-    eventBus.on('unmountpage', ({ pageNumber }: { pageNumber: string }) => {
-      if (pageNumber === page.toString()) {
-        unmountPage();
-      }
-    });
+    return () => {
+      eventBus.off('renderpage', renderPage);
+      eventBus.off('unmountpage', unmountPage);
+    };
   }, [eventBus, page]);
 
   if (error) {

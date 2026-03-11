@@ -195,11 +195,17 @@ const PDF = ({
   }, [pdfEventBus]);
 
   useEffect(() => {
-    pdfEventBus.on('pageready', ({ pageNumber }: { pageNumber: number }) => {
+    const readyHandler = ({ pageNumber }: { pageNumber: number }) => {
       if (pageNumber === 1) {
         pdfEventBus.dispatch('renderpage', { pageNumber });
       }
-    });
+    };
+
+    pdfEventBus.on('pageready', readyHandler);
+
+    return () => {
+      pdfEventBus.off('pageready', readyHandler);
+    };
   }, [pdfEventBus]);
 
   useEffect(() => {
