@@ -118,6 +118,7 @@ module.exports = defineConfig({
     },
   },
   component: {
+    justInTimeCompile: false,
     devServer: {
       framework: 'react',
       bundler: 'webpack',

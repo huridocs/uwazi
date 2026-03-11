@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { ToggleButton } from '../ToggleButton.js';
 
 describe('ToggleButton', () => {

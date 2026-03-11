@@ -369,6 +369,7 @@ Flag,İşaretle
 for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
+Forgot Password or Username?,Forgot Password or Username?
 Forgot Password?,Parolanızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
 From,From
@@ -400,6 +401,9 @@ Hybrid,Hybrid
 Icon,Simge
 ID,ID
 ID:,ID:
+"If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Harici bir URL ise, tam olarak oluşturulmuş bir URL kullanın: http://www.uwazi.io."
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
 Import,İçe aktar
