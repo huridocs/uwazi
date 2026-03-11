@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
 import map from 'lodash/map.js';
 import * as stories from '#app/stories/Table.stories.js';

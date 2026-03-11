@@ -23,9 +23,11 @@ describe('Paragraph Extraction', () => {
 
   describe('Extractor Dashboard', () => {
     it('should verify PX dummy service is reachable', () => {
-      const pxUrl = Cypress.env('PARAGRAPH_EXTRACTION_URL') || 'http://127.0.0.1:5051';
-      cy.log(`Checking PX service at ${pxUrl}`);
-      cy.request({ url: pxUrl, failOnStatusCode: false }).its('status').should('be.gte', 100);
+      cy.env(['PARAGRAPH_EXTRACTION_URL']).then(({ PARAGRAPH_EXTRACTION_URL: pxUrl }) => {
+        const url = pxUrl || 'http://127.0.0.1:5051';
+        cy.log(`Checking PX service at ${url}`);
+        cy.request({ url, failOnStatusCode: false }).its('status').should('be.gte', 100);
+      });
     });
 
     it('should navigate to the PX dashboard', () => {

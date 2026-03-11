@@ -1,6 +1,6 @@
 /* eslint-disable import/no-default-export */
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { TocSchema } from '#shared/types/commonTypes.js';
 import { ToC, type ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/ToC.js';
 import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/utils.js';

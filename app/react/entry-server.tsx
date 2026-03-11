@@ -26,6 +26,9 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import templatesApi from '#api/core/v1_layer/templates/templates.js';
+import thesauriApi from '../api/thesauri/thesauri.js';
+import relationtypes from '../api/relationtypes/relationtypes.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
 import { tenants } from '../api/tenants/index.js';
@@ -60,12 +63,10 @@ class ServerRenderingFetchError extends Error {
 }
 
 const onlySystemTranslations = (translations: IndexedTranslations[]) => {
-  const rows = translations.map(translation => {
+  return translations.map(translation => {
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
-
-  return { json: { rows } };
 };
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
@@ -85,10 +86,8 @@ const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers 
 };
 
 const logSSRAborted = (req: ExpressRequest, step: string, ssrStart: bigint, routeName?: string) => {
-  let elapsedMs: number | undefined;
-
   const now = process.hrtime.bigint();
-  elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
+  const elapsedMs = Math.round(Number(now - ssrStart) / 1_000_000);
 
   LoggerFactory.default().debug('SSR Aborted', {
     aborted: req.aborted,
@@ -157,56 +156,48 @@ const getAssets = async () => {
 const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language?: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
   api.locale(locale);
-  const headers = {
-    'Content-Language': locale,
-    Cookie: `connect.sid=${req.cookies['connect.sid']}`,
-    tenant: req.get('tenant'),
-  };
-
   const userAgent = req.get('user-agent') || '';
-
-  const requestParams = new RequestParams({}, headers);
 
   const translations = await translationsApi.get();
 
   const [
-    userApiResponse = { json: {} },
+    userApiResponse = {},
     settingsApiResponse = {
-      json: {
-        languages: settings.languages,
-        private: settings.private,
-        site_name: settings.site_name,
-      },
+      languages: settings.languages,
+      private: settings.private,
+      site_name: settings.site_name,
     },
-    templatesApiResponse = { json: { rows: [] } },
-    thesaurisApiResponse = { json: { rows: [] } },
-    relationTypesApiResponse = { json: { rows: [] } },
+    templatesApiResponse = [],
+    thesaurisApiResponse = [],
+    relationTypesApiResponse = [],
     translationsApiResponse = onlySystemTranslations(translations),
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          api.get('user', requestParams),
-          api.get('settings', requestParams),
-          api.get('templates', requestParams),
-          api.get('dictionaries', requestParams),
-          api.get('relationTypes', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
+          Promise.resolve(req.user || {}),
+          Promise.resolve(settings),
+          templatesApi.get(),
+          thesauriApi.dictionaries(),
+          relationtypes.get(),
+          Promise.resolve(translations),
         ])
       : [];
 
   const reduxData = {
-    user: userApiResponse.json,
-    templates: sortBy(templatesApiResponse.json.rows, 'name'),
-    thesauris: thesaurisApiResponse.json.rows,
-    relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
-    translations: translationsApiResponse.json.rows,
+    user: userApiResponse,
+    templates: sortBy(templatesApiResponse, 'name'),
+    thesauris: thesaurisApiResponse,
+    relationTypes: sortBy(relationTypesApiResponse, 'name'),
+    translations: translationsApiResponse,
     settings: {
-      collection: { ...settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
+      collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
     },
   };
 
+  const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
+
   const reduxStore = createReduxStore({
-    ...reduxData,
+    ...convertObjectIdsToStrings(reduxData),
     locale,
   } as unknown as IStore);
 
@@ -214,12 +205,12 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     reduxStore,
     atomStoreData: {
       locale,
-      settings: settingsApiResponse.json,
-      thesauri: thesaurisApiResponse.json.rows,
-      templates: templatesApiResponse.json.rows,
-      user: userApiResponse.json,
-      translations: translationsApiResponse.json.rows,
-      relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
+      settings: settingsApiResponse,
+      thesauri: thesaurisApiResponse,
+      templates: templatesApiResponse,
+      user: userApiResponse,
+      translations: translationsApiResponse,
+      relationTypes: sortBy(relationTypesApiResponse, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
   };
@@ -295,7 +286,7 @@ const prepareStoreData = async (
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
 
   const atomStore = getStore();
-  hydrateAtomStore(atomStoreData, atomStore);
+  hydrateAtomStore(atomStoreData as any, atomStore);
   const reduxState = reduxStore.getState();
 
   return {
