@@ -6,14 +6,20 @@ import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
 
 /**
  * Filters metadata relationship properties based on user permissions.
- * For unauthenticated users, only published entity references are kept.
- * For authenticated users, only accessible entity references (based on permissions) are kept.
+ *
+ * Behavior varies by user type and filterUnauthorized setting:
+ * - Unauthenticated users (no user):
+ *   - filterUnauthorized=false: Mark inaccessible entities with authorized: false
+ *   - filterUnauthorized=true: Remove inaccessible entities completely
+ * - Authenticated users (collaborators, editors, admins):
+ *   - Collaborators: Always mark inaccessible entities with authorized: false (never remove)
+ *   - Editors/Admins: Have access to all entities (no filtering or marking)
  *
  * @param metadata - The entity metadata object containing relationship arrays
  * @param relationshipPropertyNames - Set of property names that are of type 'relationship'
  * @param permissionChecker - The permission checker instance
  * @param user - Optional authenticated user
- * @param filterOut - If true, removes inaccessible entities; if false, marks them with authorized: false
+ * @param filterUnauthorized - If true, removes inaccessible entities for unauthenticated users only
  * @returns Filtered metadata object with inaccessible relationship references removed or marked
  */
 export async function filterMetadataRelationships(
@@ -21,7 +27,7 @@ export async function filterMetadataRelationships(
   relationshipPropertyNames: Set<string>,
   permissionChecker: MongoEntityPermissionChecker,
   user?: User,
-  filterOut = false
+  filterUnauthorized = false
 ): Promise<Record<string, any>> {
   if (!metadata) {
     return {};
@@ -70,13 +76,16 @@ export async function filterMetadataRelationships(
 
     if (!Array.isArray(values)) continue;
 
-    if (filterOut) {
-      // Old behavior: Remove inaccessible entities completely
+    // Only filter out inaccessible entities for unauthenticated users when filterUnauthorized is true
+    // For authenticated users (including collaborators), always mark with authorized: false instead
+    if (filterUnauthorized && !user) {
+      // For unauthenticated users: Remove inaccessible entities completely
       filteredMetadata[propName] = values.filter(
         v => v && typeof v.value === 'string' && accessibleIdSet.has(v.value)
       );
     } else {
-      // New default behavior: Keep all entities but mark inaccessible ones with authorized: false
+      // For authenticated users OR when filterUnauthorized=false:
+      // Keep all entities but mark inaccessible ones with authorized: false
       filteredMetadata[propName] = values.map(v => {
         if (v && typeof v.value === 'string' && !accessibleIdSet.has(v.value)) {
           return { ...v, authorized: false };

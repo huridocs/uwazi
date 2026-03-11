@@ -133,7 +133,7 @@ const fixtures: DBFixture = {
     ),
     fixtureFactory.entity(
       'shared',
-      undefined,
+      'template_test',
       {},
       {
         _id: docId1,
@@ -146,7 +146,7 @@ const fixtures: DBFixture = {
     ),
     fixtureFactory.entity(
       'shared',
-      undefined,
+      'template_test',
       { text: [{ value: 'test' }] },
       {
         _id: docId2,
@@ -265,7 +265,7 @@ const fixtures: DBFixture = {
     // 'sharedPerm' entity
     fixtureFactory.entity(
       'sharedPerm',
-      undefined,
+      'template_test',
       {},
       {
         title: 'Entity With Permissions',

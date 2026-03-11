@@ -324,8 +324,24 @@ const collaboratorUser = {
   email: 'collaborator@test.com',
 };
 
+const adminUser = {
+  _id: db.id(),
+  role: UserRole.ADMIN,
+  username: 'admin',
+  email: 'admin@test.com',
+};
+
+const editorUser = {
+  _id: db.id(),
+  role: UserRole.EDITOR,
+  username: 'editor',
+  email: 'editor@test.com',
+};
+
 let appWithCollaborator: Application;
 let appWithUser1: Application;
+let appWithAdmin: Application;
+let appWithEditor: Application;
 
 describe('GET /api/entities - V2 - Metadata relationship permission filtering', () => {
   beforeAll(() => {
@@ -336,21 +352,22 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
   });
 
   beforeEach(async () => {
-    // App with authenticated user
-    app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = {
-        _id: db.id(),
-        role: UserRole.COLLABORATOR,
-        username: 'user 1',
-        email: 'user@test.com',
-      };
-      next();
-    });
-
     // App without user (unauthenticated)
     appWithoutUser = setUpApp(routes);
 
-    // App with collaborator user
+    // App with admin user
+    appWithAdmin = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = adminUser;
+      next();
+    });
+
+    // App with editor user
+    appWithEditor = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = editorUser;
+      next();
+    });
+
+    // App with collaborator user (no special permissions)
     appWithCollaborator = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
       (req as any).user = collaboratorUser;
       next();
@@ -372,173 +389,310 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
     testingTenants.changeCurrentTenant({ featureFlags: { v2GetEntity: true } });
   });
 
-  it('should mark unpublished entities with authorized:false for unauthenticated users', async () => {
-    const entity = await getEntity(appWithoutUser, 'testEntityWithMixedRefs', {
-      omitRelationships: true,
-      language: 'en',
-    });
+  describe('not logged in', () => {
+    describe('default behavior (filterUnauthorized=false)', () => {
+      it('should not have access to unpublished entities (authorized: false)', async () => {
+        const entity = await getEntity(appWithoutUser, 'testEntityWithMixedRefs', {
+          omitRelationships: true,
+          language: 'en',
+        });
 
-    expect(entity.metadata.friends).toMatchObject([
-      { value: 'shared1', label: expect.any(String) },
-      { value: 'unpublishedForTest', authorized: false },
-    ]);
-  });
-
-  it('should include entities user has explicit permissions to, even if unpublished', async () => {
-    const entity = await getEntity(appWithUser1, 'entityPointingToOther', {
-      omitRelationships: true,
-      language: 'en',
-    });
-
-    expect(entity.metadata.friends).toContainEqual(
-      expect.objectContaining({ value: 'other', label: expect.any(String) })
-    );
-  });
-
-  it('should mark entities user lacks permissions to with authorized:false', async () => {
-    const entity = await getEntity(appWithCollaborator, 'entityWithRestrictedRef', {
-      omitRelationships: true,
-      language: 'en',
-    });
-
-    expect(entity.metadata.friends).toMatchObject([
-      { value: 'shared2', label: expect.any(String) },
-      { value: 'restrictedEntity', authorized: false },
-    ]);
-  });
-
-  it('should filter multiple relationship properties independently', async () => {
-    const entity = await getEntity(appWithoutUser, 'shared', {
-      omitRelationships: true,
-      language: 'en',
-    });
-
-    expect(entity.metadata.friends).toMatchObject([
-      { value: 'shared2', label: expect.any(String) },
-    ]);
-    expect(entity.metadata.friends[0]).not.toHaveProperty('authorized');
-
-    expect(entity.metadata.enemies).toMatchObject([
-      { value: 'shared2', label: expect.any(String) },
-    ]);
-    expect(entity.metadata.enemies[0]).not.toHaveProperty('authorized');
-  });
-
-  it('should mark all inaccessible referenced entities with authorized:false', async () => {
-    const entity = await getEntity(appWithoutUser, 'entityWithOnlyRestrictedRefs', {
-      omitRelationships: true,
-      language: 'en',
-    });
-
-    expect(entity.metadata.friends.length).toBeGreaterThan(0);
-    entity.metadata.friends.forEach((friend: any) => {
-      expect(friend.authorized).toBe(false);
-    });
-  });
-
-  it('should mark inaccessible entities with authorized:false while keeping accessible ones unmarked', async () => {
-    const entity = await getEntity(appWithoutUser, 'entityWithMixedAccess', {
-      omitRelationships: true,
-      language: 'en',
-    });
-
-    expect(entity.metadata.enemies).toHaveLength(3);
-    expect(entity.metadata.enemies).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ value: 'shared1', label: expect.any(String) }),
-        expect.objectContaining({ value: 'shared2', label: expect.any(String) }),
-        expect.objectContaining({ value: 'restrictedEntity', authorized: false }),
-      ])
-    );
-  });
-
-  it('should keep restricted entities with authorized:false flag while preserving denormalized data', async () => {
-    const entity = await getEntity(appWithoutUser, 'entityReferencingUnpublished', {
-      omitRelationships: true,
-      language: 'en',
-    });
-
-    expect(entity.metadata.friends).toMatchObject([
-      { value: 'shared2', label: 'shared2title' },
-      { value: 'unpublishedForTest', authorized: false },
-    ]);
-
-    entity.metadata.friends.forEach((friend: any) => {
-      if (friend.authorized === false) {
-        expect(friend.value).toBeDefined();
-      }
-    });
-  });
-
-  describe('with filterUnauthorizedRelated setting enabled', () => {
-    beforeEach(async () => {
-      await testingEnvironment.setUp({
-        ...fixtures,
-        settings: [
-          {
-            ...fixtures.settings![0],
-            features: {
-              filterUnauthorizedRelated: true,
-            },
-          } as any,
-        ],
-      });
-
-      testingTenants.changeCurrentTenant({
-        featureFlags: { v2GetEntity: true },
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'shared1', label: expect.any(String) },
+          { value: 'unpublishedForTest', authorized: false },
+        ]);
       });
     });
 
-    it('should filter out unpublished entities completely (with filterOut)', async () => {
-      const entity = await getEntity(appWithoutUser, 'testEntityWithMixedRefs', {
-        omitRelationships: true,
-        language: 'en',
+    describe('with filterUnauthorized setting enabled', () => {
+      beforeEach(async () => {
+        // Recreate app
+        appWithoutUser = setUpApp(routes);
+
+        await testingEnvironment.setUp({
+          ...fixtures,
+          settings: [
+            {
+              ...fixtures.settings![0],
+              features: {
+                filterUnauthorizedRelated: true,
+              },
+            } as any,
+          ],
+        });
+
+        testingTenants.changeCurrentTenant({
+          featureFlags: { v2GetEntity: true },
+        });
       });
 
-      expect(entity.metadata.friends).toMatchObject([
-        { value: 'shared1', label: expect.any(String) },
-      ]);
+      it('should have access to published entities only (no authorized flag, unpublished filtered out)', async () => {
+        const entity = await getEntity(appWithoutUser, 'entityWithMixedAccess', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        expect(entity.metadata.enemies).toMatchObject([
+          { value: 'shared1', label: expect.any(String) },
+          { value: 'shared2', label: expect.any(String) },
+        ]);
+        expect(entity.metadata.enemies).toHaveLength(2);
+        expect(entity.metadata.enemies.every((e: any) => !e.hasOwnProperty('authorized'))).toBe(
+          true
+        );
+      });
+
+      it('should return empty array when all entities are unpublished', async () => {
+        const entity = await getEntity(appWithoutUser, 'entityWithOnlyRestrictedRefs', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        expect(entity.metadata.friends).toEqual([]);
+      });
+    });
+  });
+
+  describe('admin/editors', () => {
+    describe('default behavior (filterUnauthorized=false)', () => {
+      it.each([
+        { getApp: () => appWithAdmin, role: 'admin' },
+        { getApp: () => appWithEditor, role: 'editor' },
+      ])('should have access to all entities including unpublished ($role)', async ({ getApp }) => {
+        const entity = await getEntity(getApp(), 'testEntityWithMixedRefs', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'shared1', label: expect.any(String) },
+          { value: 'unpublishedForTest', label: expect.any(String) },
+        ]);
+      });
+
+      it.each([
+        { getApp: () => appWithAdmin, role: 'admin' },
+        { getApp: () => appWithEditor, role: 'editor' },
+      ])('should not add authorized:false flag to any entities ($role)', async ({ getApp }) => {
+        const entity = await getEntity(getApp(), 'entityWithRestrictedRef', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'shared2', label: expect.any(String) },
+          { value: 'restrictedEntity', label: expect.any(String) },
+        ]);
+        entity.metadata.friends.forEach((friend: any) => {
+          expect(friend).not.toHaveProperty('authorized');
+        });
+      });
+
+      it('should access entities with explicit permissions without issues', async () => {
+        const entity = await getEntity(appWithAdmin, 'entityWithOnlyRestrictedRefs', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'restrictedEntity', label: expect.any(String) },
+          { value: 'unpublishedForTest', label: expect.any(String) },
+        ]);
+        entity.metadata.friends.forEach((friend: any) => {
+          expect(friend).not.toHaveProperty('authorized');
+        });
+      });
     });
 
-    it('should filter out entities user does not have permissions to access (with filterOut)', async () => {
-      const entity = await getEntity(appWithCollaborator, 'entityWithRestrictedRef', {
-        omitRelationships: true,
-        language: 'en',
+    describe('with filterUnauthorized setting enabled', () => {
+      beforeEach(async () => {
+        // Recreate apps
+        appWithAdmin = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+          (req as any).user = adminUser;
+          next();
+        });
+
+        appWithEditor = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+          (req as any).user = editorUser;
+          next();
+        });
+
+        await testingEnvironment.setUp({
+          ...fixtures,
+          settings: [
+            {
+              ...fixtures.settings![0],
+              features: {
+                filterUnauthorizedRelated: true,
+              },
+            } as any,
+          ],
+        });
+
+        testingTenants.changeCurrentTenant({
+          featureFlags: { v2GetEntity: true },
+        });
       });
 
-      expect(entity.metadata.friends).toMatchObject([
-        { value: 'shared2', label: expect.any(String) },
-      ]);
+      it.each([
+        { getApp: () => appWithAdmin, role: 'admin' },
+        { getApp: () => appWithEditor, role: 'editor' },
+      ])('should still have access to all entities ($role)', async ({ getApp }) => {
+        const entity = await getEntity(getApp(), 'testEntityWithMixedRefs', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'shared1', label: expect.any(String) },
+          { value: 'unpublishedForTest', label: expect.any(String) },
+        ]);
+      });
+
+      it.each([
+        { getApp: () => appWithAdmin, role: 'admin' },
+        { getApp: () => appWithEditor, role: 'editor' },
+      ])(
+        'should not add authorized:false flag even with setting enabled ($role)',
+        async ({ getApp }) => {
+          const entity = await getEntity(getApp(), 'entityWithRestrictedRef', {
+            omitRelationships: true,
+            language: 'en',
+          });
+
+          expect(entity.metadata.friends).toMatchObject([
+            { value: 'shared2', label: expect.any(String) },
+            { value: 'restrictedEntity', label: expect.any(String) },
+          ]);
+          entity.metadata.friends.forEach((friend: any) => {
+            expect(friend).not.toHaveProperty('authorized');
+          });
+        }
+      );
+    });
+  });
+
+  describe('collaborators', () => {
+    describe('default behavior (filterUnauthorized=false)', () => {
+      it('should have access to published entities (no authorized flag) (regardless of explicit permissions)', async () => {
+        const entity = await getEntity(appWithCollaborator, 'entityWithRestrictedRef', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        // shared2 is published but has no explicit permissions for collaboratorUser
+        // It should still be accessible without the authorized:false flag
+        const shared2Entity = entity.metadata.friends.find((f: any) => f.value === 'shared2');
+        expect(shared2Entity).toBeDefined();
+        expect(shared2Entity).not.toHaveProperty('authorized');
+      });
+
+      it('should not have access to unpublished entities without explicit permissions (authorized: false)', async () => {
+        const entity = await getEntity(appWithCollaborator, 'entityWithRestrictedRef', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        // restrictedEntity is unpublished and has no explicit permissions for collaboratorUser
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'shared2', label: expect.any(String) },
+          { value: 'restrictedEntity', authorized: false },
+        ]);
+      });
+
+      it('should have access to unpublished entities with explicit permissions (no authorized flag)', async () => {
+        const entity = await getEntity(appWithUser1, 'entityPointingToOther', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        // 'other' is unpublished but user1 has explicit permissions
+        expect(entity.metadata.friends).toContainEqual(
+          expect.objectContaining({ value: 'other', label: expect.any(String) })
+        );
+
+        const otherEntity = entity.metadata.friends.find((f: any) => f.value === 'other');
+        expect(otherEntity).not.toHaveProperty('authorized');
+      });
     });
 
-    it('should return empty array when all referenced entities are inaccessible (with filterOut)', async () => {
-      const entity = await getEntity(appWithoutUser, 'entityWithOnlyRestrictedRefs', {
-        omitRelationships: true,
-        language: 'en',
+    describe('with filterUnauthorized setting enabled', () => {
+      beforeEach(async () => {
+        // Recreate apps
+        appWithCollaborator = setUpApp(
+          routes,
+          (req: Request, _res: Response, next: NextFunction) => {
+            (req as any).user = collaboratorUser;
+            next();
+          }
+        );
+
+        appWithUser1 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+          (req as any).user = {
+            _id: user1Id,
+            role: UserRole.COLLABORATOR,
+            username: 'user1',
+            email: 'user1@test.com',
+          };
+          next();
+        });
+
+        await testingEnvironment.setUp({
+          ...fixtures,
+          settings: [
+            {
+              ...fixtures.settings![0],
+              features: {
+                filterUnauthorizedRelated: true,
+              },
+            } as any,
+          ],
+        });
+
+        testingTenants.changeCurrentTenant({
+          featureFlags: { v2GetEntity: true },
+        });
       });
 
-      expect(entity.metadata.friends).toEqual([]);
-    });
+      it('should not have access to unpublished entities without explicit permissions (authorized: false)', async () => {
+        const entity = await getEntity(appWithCollaborator, 'entityWithRestrictedRef', {
+          omitRelationships: true,
+          language: 'en',
+        });
 
-    it('should handle mixed accessible and inaccessible entities in same relationship array (with filterOut)', async () => {
-      const entity = await getEntity(appWithoutUser, 'entityWithMixedAccess', {
-        omitRelationships: true,
-        language: 'en',
+        // Even with filterUnauthorized=true, collaborators get entities marked (not filtered)
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'shared2', label: expect.any(String) },
+          { value: 'restrictedEntity', authorized: false },
+        ]);
       });
 
-      expect(entity.metadata.enemies).toMatchObject([
-        { value: 'shared1', label: expect.any(String) },
-        { value: 'shared2', label: expect.any(String) },
-      ]);
-    });
+      it('should have access to unpublished entities with explicit permissions (no authorized flag)', async () => {
+        const entity = await getEntity(appWithUser1, 'entityPointingToOther', {
+          omitRelationships: true,
+          language: 'en',
+        });
 
-    it('should not leak entity information through metadata for completely restricted entities (with filterOut)', async () => {
-      const entity = await getEntity(appWithoutUser, 'entityReferencingUnpublished', {
-        omitRelationships: true,
-        language: 'en',
+        expect(entity.metadata.friends).toContainEqual(
+          expect.objectContaining({ value: 'other', label: expect.any(String) })
+        );
+
+        const otherEntity = entity.metadata.friends.find((f: any) => f.value === 'other');
+        expect(otherEntity).not.toHaveProperty('authorized');
       });
 
-      expect(entity.metadata.friends).toMatchObject([{ value: 'shared2', label: 'shared2title' }]);
+      it('should not filter out inaccessible entities (unlike unauthenticated users)', async () => {
+        const entity = await getEntity(appWithCollaborator, 'testEntityWithMixedRefs', {
+          omitRelationships: true,
+          language: 'en',
+        });
+
+        // Should keep both entities but mark the unpublished one
+        expect(entity.metadata.friends).toMatchObject([
+          { value: 'shared1', label: expect.any(String) },
+          { value: 'unpublishedForTest', authorized: false },
+        ]);
+      });
     });
   });
 });
