@@ -102,6 +102,27 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
     return Result.ok(false);
   }
 
+  async getPublishedEntities(sharedIds: string[]): Promise<ResultType<string[], Error>> {
+    const entities = await this.getCollection()
+      .aggregate([
+        {
+          $match: {
+            sharedId: { $in: sharedIds },
+            published: true,
+          },
+        },
+        {
+          $group: {
+            _id: '$sharedId',
+            sharedId: { $first: '$sharedId' },
+          },
+        },
+      ])
+      .toArray();
+
+    return Result.ok(entities.map(entity => entity.sharedId));
+  }
+
   async checkWritePermission(file: BaseFile, user?: User): Promise<ResultType<boolean, Error>> {
     if (!user) {
       return Result.ok(false);

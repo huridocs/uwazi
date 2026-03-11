@@ -5,6 +5,42 @@ import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
 import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
 
 /**
+ * Get list of entity sharedIds that the user has read access to.
+ * Uses batch permission checking for efficiency for both authenticated and unauthenticated users.
+ */
+async function getAccessibleEntityIds(
+  sharedIds: string[],
+  permissionChecker: MongoEntityPermissionChecker,
+  user?: User
+): Promise<string[]> {
+  if (sharedIds.length === 0) {
+    return [];
+  }
+
+  // For authenticated users, use batch filtering with a read specification
+  if (user) {
+    const specification = new Specification({
+      type: PermissionType.User,
+      level: AccessLevel.Read,
+      actor: user,
+    });
+
+    const result = await permissionChecker.filterEntities(sharedIds, specification);
+
+    if (result.isOk()) {
+      return result.getData();
+    }
+
+    // If filterEntities fails (e.g., no permissions), return empty array
+    return [];
+  }
+
+  // For unauthenticated users, batch check published status using a single query
+  const result = await permissionChecker.getPublishedEntities(sharedIds);
+  return result.isOk() ? result.getData() : [];
+}
+
+/**
  * Filters metadata relationship properties based on user permissions.
  *
  * Behavior varies by user type and filterUnauthorized setting:
@@ -96,48 +132,4 @@ export async function filterMetadataRelationships(
   }
 
   return filteredMetadata;
-}
-
-/**
- * Get list of entity sharedIds that the user has read access to.
- * Uses batch permission checking for efficiency when user is authenticated.
- * For unauthenticated users, checks published status individually.
- */
-async function getAccessibleEntityIds(
-  sharedIds: string[],
-  permissionChecker: MongoEntityPermissionChecker,
-  user?: User
-): Promise<string[]> {
-  if (sharedIds.length === 0) {
-    return [];
-  }
-
-  // For authenticated users, use batch filtering with a read specification
-  if (user) {
-    const specification = new Specification({
-      type: PermissionType.User,
-      level: AccessLevel.Read,
-      actor: user,
-    });
-
-    const result = await permissionChecker.filterEntities(sharedIds, specification);
-
-    if (result.isOk()) {
-      return result.getData();
-    }
-
-    // If filterEntities fails (e.g., no permissions), return empty array
-    return [];
-  }
-
-  // For unauthenticated users, check each entity individually using checkReadPermission
-  // This will only return published entities
-  const accessible: string[] = [];
-  for (const sharedId of sharedIds) {
-    const hasPermission = await permissionChecker.checkReadPermission(sharedId, undefined);
-    if (hasPermission.isOk() && hasPermission.getData()) {
-      accessible.push(sharedId);
-    }
-  }
-  return accessible;
 }

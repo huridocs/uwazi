@@ -25,8 +25,6 @@ const templateChangingNamesProps = {
 const templateForGetWithRelationships = db.id();
 
 const adminId = db.id();
-const user1Id = db.id();
-const user2Id = db.id();
 
 const dictionary = db.id();
 const c1 = db.id();
@@ -441,141 +439,11 @@ export default {
       sharedId: 'shared2',
       language: 'en',
       title: 'shared2title',
-      published: true,
       metadata: {
         property1: [{ value: 'something to be inherited' }],
       },
     },
     { sharedId: 'source2', language: 'en' },
-    // Test fixtures for metadata relationship permission filtering
-    {
-      _id: db.id(),
-      sharedId: 'unpublishedForTest',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Unpublished Test Entity',
-      published: false,
-      metadata: {},
-    },
-    {
-      _id: db.id(),
-      sharedId: 'testEntityWithMixedRefs',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Entity With Mixed References',
-      published: true,
-      metadata: {
-        friends: [
-          { icon: null, label: 'shared1title', type: 'entity', value: 'shared1' },
-          {
-            icon: null,
-            label: 'Unpublished Test Entity',
-            type: 'entity',
-            value: 'unpublishedForTest',
-          },
-        ],
-      },
-    },
-    {
-      _id: db.id(),
-      sharedId: 'entityPointingToOther',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Entity Pointing To Other',
-      published: true,
-      metadata: {
-        friends: [{ icon: null, label: 'Unpublished entity', type: 'entity', value: 'other' }],
-      },
-    },
-    {
-      _id: db.id(),
-      sharedId: 'restrictedEntity',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Restricted Entity',
-      published: false,
-      metadata: {},
-      permissions: [{ refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER }],
-    },
-    {
-      _id: db.id(),
-      sharedId: 'entityWithRestrictedRef',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Entity With Restricted Ref',
-      published: true,
-      metadata: {
-        friends: [
-          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
-          { icon: null, label: 'Restricted Entity', type: 'entity', value: 'restrictedEntity' },
-        ],
-      },
-    },
-    {
-      _id: db.id(),
-      sharedId: 'entityWithOnlyRestrictedRefs',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Entity With Only Restricted Refs',
-      published: true,
-      metadata: {
-        friends: [
-          { icon: null, label: 'Restricted Entity', type: 'entity', value: 'restrictedEntity' },
-          {
-            icon: null,
-            label: 'Unpublished Test Entity',
-            type: 'entity',
-            value: 'unpublishedForTest',
-          },
-        ],
-      },
-    },
-    {
-      _id: db.id(),
-      sharedId: 'entityWithMixedAccess',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Entity With Mixed Access',
-      published: true,
-      metadata: {
-        friends: [
-          { icon: null, label: 'shared1title', type: 'entity', value: 'shared1' },
-          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
-        ],
-        enemies: [
-          { icon: null, label: 'shared1title', type: 'entity', value: 'shared1' },
-          { icon: null, label: 'Restricted Entity', type: 'entity', value: 'restrictedEntity' },
-          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
-        ],
-      },
-    },
-    {
-      _id: db.id(),
-      sharedId: 'entityReferencingUnpublished',
-      template: templateId,
-      type: 'entity',
-      language: 'en',
-      title: 'Entity Referencing Unpublished',
-      published: true,
-      metadata: {
-        friends: [
-          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
-          {
-            icon: null,
-            label: 'Unpublished Test Entity',
-            type: 'entity',
-            value: 'unpublishedForTest',
-          },
-        ],
-      },
-    },
     {
       title: 'entity one',
       sharedId: 'id1',
@@ -709,9 +577,6 @@ export default {
       _id: db.id(),
       languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
       featureFlags: { v2UpdateEntity: true },
-      features: {
-        filterUnauthorizedRelated: false,
-      },
     },
   ],
   templates: [
@@ -782,7 +647,6 @@ export default {
     {
       _id: templateWithEntityAsThesauri2,
       name: 'template_with_thesauri_as_template',
-      commonProperties: [],
       properties: [
         {
           _id: db.id(),
@@ -810,25 +674,27 @@ export default {
       { default: true }
     ),
 
-    fixtureFactory.template(
-      'entityGetTestTemplate',
-      [{ _id: db.id(), type: 'text', name: 'some_property' }],
-      { _id: entityGetTestTemplateId }
-    ),
-    fixtureFactory.template(
-      'templateWithOnlyAnyRelationship',
-      [
+    {
+      _id: entityGetTestTemplateId,
+      name: 'entityGetTestTemplate',
+      properties: [{ _id: db.id(), type: 'text', name: 'some_property' }],
+    },
+    {
+      _id: templateWithOnlyAnyRelationship,
+      name: 'templateWithOnlyAnyRelationship',
+      properties: [
         {
           _id: db.id(),
           type: 'relationship',
           name: 'relationship_to_any_template',
+          // No content set to test no content apart from content: ""
         },
       ],
-      { _id: templateWithOnlyAnyRelationship }
-    ),
-    fixtureFactory.template('templateForGetWithRelationships', [], {
+    },
+    {
       _id: templateForGetWithRelationships,
-    }),
+      name: 'templateForGetWithRelationships',
+    },
   ],
   relationtypes: [
     { _id: relationType1 },
@@ -1013,6 +879,4 @@ export {
   permissions,
   entityGetTestTemplateId,
   fixtureFactory,
-  user1Id,
-  user2Id,
 };

@@ -9,7 +9,6 @@ import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/Mon
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { User } from '#api/users.v2/model/User.js';
 import { fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { filterMetadataRelationships } from './utils/filterMetadataRelationships.js';

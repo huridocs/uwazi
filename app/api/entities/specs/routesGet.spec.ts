@@ -11,7 +11,6 @@ import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { UserRole } from '#shared/types/userSchema.js';
 import fixtures, {
   permissions,
-  unpublishedDocId,
   user1Id,
   batmanFinishesId,
 } from './routesGetFixtures';

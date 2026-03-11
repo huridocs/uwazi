@@ -15,7 +15,7 @@ import path from 'path';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import entities from '../entities.js';
-import fixtures, { permissions, templateId } from './fixtures.js';
+import fixtures, { templateId } from './fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

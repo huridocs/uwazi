@@ -48,6 +48,7 @@ interface EntityPermissionChecker {
   ): Promise<ResultType<string[], Error>>;
   checkReadPermission(sharedId: string, user?: User): Promise<ResultType<boolean, Error>>;
   checkWritePermission(file: BaseFile, user?: User): Promise<ResultType<boolean, Error>>;
+  getPublishedEntities(sharedIds: string[]): Promise<ResultType<string[], Error>>;
 }
 
 export { Specification };
