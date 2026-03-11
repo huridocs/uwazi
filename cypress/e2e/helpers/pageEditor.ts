@@ -12,8 +12,18 @@ const clearMonaco = (selector: string) => {
   cy.get(selector).first().realClick().realPress(['Control', 'a']).realPress('Backspace');
 };
 
-const typeMonaco = (selector: string, value: string) => {
-  cy.get(selector).first().realClick().realType(escapeRealType(value));
+const typeMonaco = (selector: string, value: string, blurAndVerify?: string) => {
+  const typeDelay = blurAndVerify ? 15 : 0;
+  cy.get(selector).first().realClick().realType(escapeRealType(value), { delay: typeDelay });
+  if (blurAndVerify) {
+    cy.contains('[role="tab"]', 'Basic').realClick();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(600);
+    const panel = selector.includes('panel-Advanced') ? 'Advanced' : 'Code';
+    const tabLabel = panel === 'Advanced' ? 'Javascript' : 'Markdown';
+    cy.contains('[role="tab"]', tabLabel).click();
+    cy.get(selector).closest(`#panel-${panel}`).should('contain.text', blurAndVerify);
+  }
 };
 
 const clearTarget = (selector: string) => {
@@ -37,7 +47,12 @@ export const dismissModalIfVisible = () => {
   });
 };
 
-export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear = false) => {
+export const typeInEditor = (
+  mode: 'html' | 'javascript',
+  value: string,
+  clear = false,
+  blurAndVerify?: string
+) => {
   const monacoSelector = getMonacoSelector(mode);
   const textareaSelector = getTextareaSelector(mode);
   cy.get('body', { timeout: 20000 }).should($body => {
@@ -48,7 +63,7 @@ export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear =
       if (clear) {
         clearMonaco(monacoSelector);
       }
-      typeMonaco(monacoSelector, value);
+      typeMonaco(monacoSelector, value, blurAndVerify);
       return;
     }
     let selector = 'textarea[name="metadata.content"]';

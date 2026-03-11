@@ -43,7 +43,7 @@ describe('Pages', () => {
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'Custom home page', { delay: 0 });
       cy.contains('Markdown').click();
-      typeInEditor('html', '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>');
+      typeInEditor('html', '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>', false, 'Custom HomePage');
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.contains('button.bg-success-700', 'Save').click();
@@ -159,9 +159,9 @@ describe('Pages', () => {
       cy.clearAndType('input[name="title"]', 'My entity view page', { delay: 0 });
       cy.contains('Activate').click();
       cy.contains('Markdown').click();
-      typeInEditor('html', contents);
+      typeInEditor('html', contents, false, 'My entity view');
       cy.contains('Javascript').click();
-      typeInEditor('javascript', script);
+      typeInEditor('javascript', script, false, 'currentEntitySharedId');
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.contains('button.bg-success-700', 'Save').click();

@@ -45,7 +45,9 @@ describe('Public Form', () => {
       cy.contains('Markdown').click();
       typeInEditor(
         'html',
-        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
+        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />',
+        false,
+        'PublicForm'
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -109,7 +111,8 @@ describe('Public Form', () => {
       typeInEditor(
         'html',
         '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
-        true
+        true,
+        'PublicForm'
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -226,7 +229,8 @@ describe('Public Form', () => {
       typeInEditor(
         'html',
         '<h1>Public form with error</h1><PublicForm template="invalid template" />',
-        true
+        true,
+        'PublicForm'
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
