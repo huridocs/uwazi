@@ -48,9 +48,11 @@ describe('Settings routes', () => {
       it('should return only whitelisted public fields', async () => {
         const response = await request(getApp()).get('/api/settings').expect(200);
 
-        expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
-        expect(response.body.mapApiKey).toBe('testMapApiKey123');
-        expect(response.body.allowedPublicTemplates).toEqual(['id1', 'id2']);
+        expect(response.body).toMatchObject({
+          site_name: 'Uwazi',
+          mapApiKey: 'testMapApiKey123',
+          allowedPublicTemplates: ['id1', 'id2'],
+        });
 
         expect(response.body.mailerConfig).toBeUndefined();
         expect(response.body.contactEmail).toBeUndefined();
@@ -63,10 +65,12 @@ describe('Settings routes', () => {
       it('should return all fields except features', async () => {
         const response = await request(getApp('collaborator')).get('/api/settings').expect(200);
 
-        expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
-        expect(response.body.mailerConfig).toBe('smtp://user:password@smtp.example.com');
-        expect(response.body.contactEmail).toBe('admin@uwazi.com');
-        expect(response.body.senderEmail).toBe('noreply@uwazi.com');
+        expect(response.body).toMatchObject({
+          site_name: 'Uwazi',
+          mailerConfig: 'smtp://user:password@smtp.example.com',
+          contactEmail: 'admin@uwazi.com',
+          senderEmail: 'noreply@uwazi.com',
+        });
         expect(response.body.features).toBeUndefined();
       });
     });
@@ -78,25 +82,19 @@ describe('Settings routes', () => {
           request(getApp('editor')).get('/api/settings').expect(200),
         ]);
 
-        const expectedFeatures = {
-          'metadata-extraction': true,
-          metadataExtraction: {
-            url: 'http:someurl',
-          },
-          segmentation: {
-            url: 'http://otherurl',
-          },
+        const expectedSettings = {
+          mailerConfig: 'smtp://user:password@smtp.example.com',
+          contactEmail: 'admin@uwazi.com',
+          senderEmail: 'noreply@uwazi.com',
+          features: expect.objectContaining({
+            'metadata-extraction': true,
+            metadataExtraction: { url: 'http:someurl' },
+            segmentation: { url: 'http://otherurl' },
+          }),
         };
 
-        // Admins should see all fields including features
-        expect(adminResponse.body.features).toEqual(expect.objectContaining(expectedFeatures));
-        expect(adminResponse.body.mailerConfig).toBe('smtp://user:password@smtp.example.com');
-        expect(adminResponse.body.contactEmail).toBe('admin@uwazi.com');
-        expect(adminResponse.body.senderEmail).toBe('noreply@uwazi.com');
-
-        // Editors should also see all fields including features
-        expect(editorResponse.body.features).toEqual(expect.objectContaining(expectedFeatures));
-        expect(editorResponse.body.mailerConfig).toBe('smtp://user:password@smtp.example.com');
+        expect(adminResponse.body).toMatchObject(expectedSettings);
+        expect(editorResponse.body).toMatchObject(expectedSettings);
       });
     });
   });
