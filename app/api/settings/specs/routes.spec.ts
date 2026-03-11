@@ -44,43 +44,13 @@ describe('Settings routes', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET', () => {
-    describe('unauthenticated users', () => {
-      it('should return only whitelisted public fields', async () => {
-        const response = await request(getApp()).get('/api/settings').expect(200);
-
-        expect(response.body).toMatchObject({
-          site_name: 'Uwazi',
-          mapApiKey: 'testMapApiKey123',
-          allowedPublicTemplates: ['id1', 'id2'],
-        });
-
-        expect(response.body.mailerConfig).toBeUndefined();
-        expect(response.body.contactEmail).toBeUndefined();
-        expect(response.body.senderEmail).toBeUndefined();
-        expect(response.body.publicFormDestination).toBeUndefined();
-        expect(response.body.features).toBeUndefined();
-      });
-    });
-
     describe('non-admin users', () => {
-      it('should return only whitelisted public fields for editors', async () => {
-        const response = await request(getApp('editor')).get('/api/settings').expect(200);
-
-        expect(response.body).toMatchObject({
-          site_name: 'Uwazi',
-          mapApiKey: 'testMapApiKey123',
-          allowedPublicTemplates: ['id1', 'id2'],
-        });
-
-        expect(response.body.mailerConfig).toBeUndefined();
-        expect(response.body.contactEmail).toBeUndefined();
-        expect(response.body.senderEmail).toBeUndefined();
-        expect(response.body.publicFormDestination).toBeUndefined();
-        expect(response.body.features).toBeUndefined();
-      });
-
-      it('should return only whitelisted public fields for collaborators', async () => {
-        const response = await request(getApp('collaborator')).get('/api/settings').expect(200);
+      it.each([
+        ['unauthenticated', undefined],
+        ['editor', 'editor'],
+        ['collaborator', 'collaborator'],
+      ])('should return only whitelisted public fields for %s users', async (_label, role) => {
+        const response = await request(getApp(role)).get('/api/settings').expect(200);
 
         expect(response.body).toMatchObject({
           site_name: 'Uwazi',
