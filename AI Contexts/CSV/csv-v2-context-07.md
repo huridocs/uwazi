@@ -388,6 +388,8 @@ is confusing and inconsistent with thesauri preflight behavior.
 - **Doc hygiene is mandatory:** Whenever a user gives new instructions or corrections,
   update the relevant CSV v2 context docs in the same iteration so the next agent can
   continue without extra guidance. These MDs are the source of truth.
+- **Indexes context companion:** For CSV v2 Mongo indexing decisions and migration notes,
+  read and maintain `AI Contexts/CSV/csv-v2-context-07-indexes.md` together with this file.
 - **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
   in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
