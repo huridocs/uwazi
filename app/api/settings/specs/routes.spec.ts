@@ -57,6 +57,7 @@ describe('Settings routes', () => {
         expect(response.body.mailerConfig).toBeUndefined();
         expect(response.body.contactEmail).toBeUndefined();
         expect(response.body.senderEmail).toBeUndefined();
+        expect(response.body.publicFormDestination).toBeUndefined();
         expect(response.body.features).toBeUndefined();
       });
     });

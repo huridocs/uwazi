@@ -29,6 +29,8 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   'allowedPublicTemplates',
   'custom',
   'customCSS',
+  'allowcustomJS',
+  'customJS',
 ];
 
 const pickPublicFields = (settingsData: Settings): Partial<Settings> => {

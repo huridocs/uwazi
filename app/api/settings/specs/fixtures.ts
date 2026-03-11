@@ -27,6 +27,7 @@ const fixtures: DBFixture = {
       mailerConfig: 'smtp://user:password@smtp.example.com',
       contactEmail: 'admin@uwazi.com',
       senderEmail: 'noreply@uwazi.com',
+      publicFormDestination: 'http://example.com/submit',
       mapApiKey: 'testMapApiKey123',
     },
   ],
