@@ -78,20 +78,29 @@ const PDFPage = ({
     if (ready && pageViewer && baseViewportSize) {
       const newScale = calculateScaling(baseViewportSize.width, containerWidth);
 
-      const nextPageHeight = baseViewportSize.height * newScale;
-
-      setPageHeight(previousHeight => {
-        if (previousHeight && Math.abs(previousHeight - nextPageHeight) <= 0.5) {
-          return previousHeight;
-        }
-
-        return nextPageHeight;
-      });
-
       if (Math.abs(pageViewer.scale - newScale) > 0.01) {
+        const previousRenderingState = pageViewer.renderingState;
+        const shouldRedraw = previousRenderingState !== RenderingStates.INITIAL;
+        const nextPageHeight = baseViewportSize.height * newScale;
+        setPageHeight(nextPageHeight);
         setPdfScale(newScale);
         onScaleChange?.(newScale);
         pageViewer.update({ scale: newScale });
+
+        if (shouldRedraw) {
+          if (
+            previousRenderingState === RenderingStates.RUNNING ||
+            previousRenderingState === RenderingStates.PAUSED
+          ) {
+            pageViewer.cancelRendering();
+          }
+
+          pageViewer.reset();
+
+          pageViewer.draw().catch((e: Error) => {
+            setError(e.message);
+          });
+        }
       }
     }
   }, [containerWidth, onScaleChange, ready]);
