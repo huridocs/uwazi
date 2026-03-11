@@ -903,3 +903,48 @@ Implementation simplifications performed:
   - `CsvCreateThesauriValuesJob` finalize path,
   - `CsvCreateRelationshipEntitiesJob` finalize path.
 - Kept mandatory guards at loop boundaries, pre-dispatch, and pre-success callback.
+
+### 19) TODO — Document ReadTheDocs import instructions
+
+We should create and maintain user-facing documentation in ReadTheDocs that explains
+how to run CSV imports end-to-end.
+
+Required scope:
+
+- Upload requirements and supported file formats (`CSV` and `ZIP` with `import.csv` at root).
+- Column conventions (`file`, `attachments`, language suffix rules, and relationship fields).
+- Preflight/import behavior, including row-error handling and failed-rows report usage.
+- Cancel semantics (cooperative stop, no rollback/cleanup of already-applied work).
+- Troubleshooting section for common import failures and recovery steps.
+
+### 20) Priority order (agreed, Mar 2026)
+
+The following order is explicitly agreed and should drive upcoming iterations.
+
+#### 20.1 Primary priorities (fixed order)
+
+1. **Establish and ship CSV v2 index migrations**
+   - Define baseline indexes for current query paths (`importId`, `status`, `templateId`, `rowIndex`, report lookups) and add them through idempotent Mongo migrations.
+2. **Complete CSV v2 boundary cleanup from v1 dependencies**
+   - Remove remaining v1 architectural references/wrappers from `csv.v2` paths and replace them with v2-native contracts/data-source usage.
+3. **Implement terminal artifact cleanup for imports**
+   - Add reliable, retry-safe cleanup of CSV-owned artifacts (original upload + extracted staging files) when imports reach terminal states.
+4. **Freeze file-column contract for CSV inputs**
+   - Define and document exact behavior for `file__LANG`, `file`, and `files` so parsing/import behavior is deterministic and consistent across API, jobs, and UX.
+5. **Standardize row error taxonomy and reporting output**
+   - Finalize user-facing error naming/messages and reporting structure so diagnostics are clear, actionable, and stable for frontend/support usage.
+
+#### 20.2 Remaining work (recommended order after primary priorities)
+
+1. **Stabilize tests/infrastructure in CI-like environment**
+   - Ensure Mongo + Elasticsearch-backed CSV v2 suites are green and deterministic.
+   - Address queue test pollution with explicit isolation/cleanup strategy.
+2. **Close missing integration coverage**
+   - Full pipeline chain coverage.
+   - Files/attachments edge cases (`missing file`, `S3 vs disk` behavior).
+   - Batch/failure-threshold/report-path scenarios in entities import.
+3. **Finalize API payloads for UX polling/recovery**
+   - Detail/list projections for row-errors summary/report path and extraction metadata.
+   - Add pagination for imports list endpoint if needed for scale.
+4. **Publish ReadTheDocs import guidance**
+   - Implement the documentation scope defined in section 19.
