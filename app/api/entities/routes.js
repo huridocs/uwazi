@@ -13,6 +13,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
+import { GetEntityUseCaseFactory } from '#api/core/infrastructure/factories/GetEntityUseCaseFactory.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import templates from '../core/v1_layer/templates/templates.js';
 import { thesauri } from '../thesauri/thesauri.js';
@@ -214,11 +215,6 @@ export default app => {
       // V2 implementation
       if (tenants.current()?.featureFlags?.v2GetEntity) {
         try {
-          const { GetEntityUseCaseFactory } = await import(
-            '../core/infrastructure/factories/GetEntityUseCaseFactory.js'
-          );
-          const { User } = await import('../users.v2/model/User.js');
-
           // Support both sharedId and _id parameters (V1 compatibility)
           const { sharedId, _id, include = [], omitRelationships } = req.query;
           const entityId = sharedId || _id;
@@ -229,7 +225,6 @@ export default app => {
             return;
           }
 
-          const language = req.language;
           const isAuthenticated = !!req.user;
 
           // Only filter by published for unauthenticated users
@@ -241,23 +236,11 @@ export default app => {
           // Convert omitRelationships to includeRelationships (inverse logic)
           const includeRelationships = !omitRelationships;
 
-          // Convert req.user to User domain object if authenticated
-          const user = req.user
-            ? User.createFrom({
-                id: req.user._id.toString(),
-                role: req.user.role,
-                groups: req.user.groups || [],
-              })
-            : undefined;
-
-          const useCase = GetEntityUseCaseFactory.default(language);
+          const useCase = GetEntityUseCaseFactory.default(req.language, req.user || null);
           const result = await useCase.execute({
             sharedId: entityId,
-            language,
             published,
             includeRelationships,
-            isAuthenticated,
-            user,
           });
 
           if (result.isError()) {
@@ -266,36 +249,15 @@ export default app => {
             return;
           }
 
-          const entityDBO = result.getDataOrThrow();
+          const entity = result.getDataOrThrow();
 
-          // Convert EntityDBO to V1 format inline
-          const v1Entity = {
-            _id: entityDBO._id,
-            sharedId: entityDBO.sharedId,
-            language: entityDBO.language,
-            title: entityDBO.title,
-            published: entityDBO.published,
-            template: entityDBO.template,
-            creationDate: entityDBO.creationDate,
-            editDate: entityDBO.editDate,
-            metadata: entityDBO.metadata,
-            icon: entityDBO.icon,
-            documents: entityDBO.documents || [],
-            attachments: entityDBO.attachments || [],
-          };
-
-          // Conditionally include permissions if requested
-          if (includePermissions && entityDBO.permissions) {
-            v1Entity.permissions = entityDBO.permissions;
-          }
-
-          // Include relations if they were fetched
-          if (entityDBO.relations) {
-            v1Entity.relations = entityDBO.relations;
+          // Remove permissions if not explicitly requested
+          if (!includePermissions) {
+            delete entity.permissions;
           }
 
           // Return in V1 format: { rows: [entity] }
-          res.json({ rows: [v1Entity] });
+          res.json({ rows: [entity] });
           return;
         } catch (error) {
           return next(error);

@@ -23,7 +23,7 @@ type Deps<ExtendedDeps> = {
 } & ExtendedDeps;
 
 type Context = {
-  actor: UserSchema; // Using legacy User for now.
+  actor?: UserSchema; // Using legacy User for now. Optional to support unauthenticated requests
   tenant: Tenant; // Using legacy Tenant for now
   targetLanguage?: LanguageISO6391;
 };

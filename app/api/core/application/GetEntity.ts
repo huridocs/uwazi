@@ -10,7 +10,6 @@ import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { User } from '#api/users.v2/model/User.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { filterMetadataRelationships } from './utils/filterMetadataRelationships.js';
@@ -20,24 +19,24 @@ type Deps = {
   permissionChecker: MongoEntityPermissionChecker;
   templatesDataSource: TemplatesDataSource;
   settingsDataSource: SettingsDataSource;
-  relationshipsDataSource?: MongoRelationshipsV1DataSource;
-  filesDataSource?: MongoFilesDataSource;
+  relationshipsDataSource: MongoRelationshipsV1DataSource;
+  filesDataSource: MongoFilesDataSource;
 };
 
 type Input = {
   sharedId: string;
-  language?: LanguageISO6391;
   published?: boolean;
   includeRelationships?: boolean;
-  isAuthenticated?: boolean;
-  user?: User;
 };
 
 type Output = ResultType<GetEntityResponseDTO, EntityDoesNotExistError>;
 
 class GetEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { sharedId, language, published, includeRelationships, isAuthenticated, user } = input;
+    const { sharedId, published, includeRelationships } = input;
+    const language = this.targetLanguage;
+    const isAuthenticated = !!this.actor;
+    const user = isAuthenticated ? this.getActor() : undefined;
 
     const entityResult = await this.deps.entityDAO.getBySharedId(sharedId, language, published);
 
@@ -72,15 +71,12 @@ class GetEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     let fileDTOs: fileDTO[] = [];
 
-    // remove condition, filesdatashource should not be optional
-    if (this.deps.filesDataSource) {
-      const filesResultSet = this.deps.filesDataSource.getByEntitiesIds([sharedId]);
-      const files = await filesResultSet.all();
-      fileDTOs = files.map((file: BaseFile) => file.toDTO());
-    }
+    const filesResultSet = this.deps.filesDataSource.getByEntitiesIds([sharedId]);
+    const files = await filesResultSet.all();
+    fileDTOs = files.map((file: BaseFile) => file.toDTO());
 
     let filteredRelations: RelationDTO[] = [];
-    if (includeRelationships && this.deps.relationshipsDataSource && language) {
+    if (includeRelationships) {
       const includeUnpublished = isAuthenticated ?? false;
       const relations = (await this.deps.relationshipsDataSource.getByEntity(
         sharedId,

@@ -11,9 +11,10 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
+import { UserSchema } from '#shared/types/userType.js';
 
 export class GetEntityUseCaseFactory {
-  static default(targetLanguage?: LanguageISO6391) {
+  static default(targetLanguage?: LanguageISO6391, actorParam?: UserSchema | null) {
     const tenant = tenants.current();
     const transactionManager = TransactionManagerFactory.default();
     const entityDAO = new MongoEntityDAO(
@@ -43,7 +44,9 @@ export class GetEntityUseCaseFactory {
       transactionManager as MongoTransactionManager
     );
 
-    const actor = permissionsContext.getUserInContext();
+    // If actorParam is null, use undefined. If not provided (undefined), fall back to permissionsContext
+    const actor =
+      actorParam === null ? undefined : (actorParam ?? permissionsContext.getUserInContext());
 
     const useCase = new GetEntityUseCase(
       {
@@ -54,7 +57,7 @@ export class GetEntityUseCaseFactory {
         templatesDataSource,
         settingsDataSource,
       },
-      actor ? { actor, tenant, targetLanguage } : undefined
+      actor ? { actor, tenant, targetLanguage } : { tenant, targetLanguage }
     );
 
     return useCase;
