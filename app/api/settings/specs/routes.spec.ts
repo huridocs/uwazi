@@ -62,40 +62,56 @@ describe('Settings routes', () => {
       });
     });
 
-    describe('authenticated non-admin/editor users', () => {
-      it('should return all fields except features', async () => {
+    describe('non-admin users', () => {
+      it('should return only whitelisted public fields for editors', async () => {
+        const response = await request(getApp('editor')).get('/api/settings').expect(200);
+
+        expect(response.body).toMatchObject({
+          site_name: 'Uwazi',
+          mapApiKey: 'testMapApiKey123',
+          allowedPublicTemplates: ['id1', 'id2'],
+        });
+
+        expect(response.body.mailerConfig).toBeUndefined();
+        expect(response.body.contactEmail).toBeUndefined();
+        expect(response.body.senderEmail).toBeUndefined();
+        expect(response.body.publicFormDestination).toBeUndefined();
+        expect(response.body.features).toBeUndefined();
+      });
+
+      it('should return only whitelisted public fields for collaborators', async () => {
         const response = await request(getApp('collaborator')).get('/api/settings').expect(200);
+
+        expect(response.body).toMatchObject({
+          site_name: 'Uwazi',
+          mapApiKey: 'testMapApiKey123',
+          allowedPublicTemplates: ['id1', 'id2'],
+        });
+
+        expect(response.body.mailerConfig).toBeUndefined();
+        expect(response.body.contactEmail).toBeUndefined();
+        expect(response.body.senderEmail).toBeUndefined();
+        expect(response.body.publicFormDestination).toBeUndefined();
+        expect(response.body.features).toBeUndefined();
+      });
+    });
+
+    describe('admin users', () => {
+      it('should return all settings including sensitive fields', async () => {
+        const response = await request(getApp('admin')).get('/api/settings').expect(200);
 
         expect(response.body).toMatchObject({
           site_name: 'Uwazi',
           mailerConfig: 'smtp://user:password@smtp.example.com',
           contactEmail: 'admin@uwazi.com',
           senderEmail: 'noreply@uwazi.com',
-        });
-        expect(response.body.features).toBeUndefined();
-      });
-    });
-
-    describe('admins and editors', () => {
-      it('should return all settings including features', async () => {
-        const [adminResponse, editorResponse] = await Promise.all([
-          request(getApp('admin')).get('/api/settings').expect(200),
-          request(getApp('editor')).get('/api/settings').expect(200),
-        ]);
-
-        const expectedSettings = {
-          mailerConfig: 'smtp://user:password@smtp.example.com',
-          contactEmail: 'admin@uwazi.com',
-          senderEmail: 'noreply@uwazi.com',
+          publicFormDestination: 'http://example.com/submit',
           features: expect.objectContaining({
             'metadata-extraction': true,
             metadataExtraction: { url: 'http:someurl' },
             segmentation: { url: 'http://otherurl' },
           }),
-        };
-
-        expect(adminResponse.body).toMatchObject(expectedSettings);
-        expect(editorResponse.body).toMatchObject(expectedSettings);
+        });
       });
     });
   });

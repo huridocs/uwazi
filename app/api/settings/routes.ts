@@ -49,11 +49,8 @@ export default (app: Application) => {
     settings
       .get({}, select)
       .then(response => {
-        if (req.user?.role === 'admin' || req.user?.role === 'editor') {
+        if (req.user?.role === 'admin') {
           res.json(response);
-        } else if (req.user?.role) {
-          const { features, ...partialSettings } = response;
-          res.json(partialSettings);
         } else {
           res.json(pickPublicFields(response));
         }
