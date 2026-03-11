@@ -46,28 +46,25 @@ class GetEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const entity = entityResult.getData();
 
-    const templateResult = await this.deps.templatesDataSource.getById(entity.template.toString());
+    const template = (
+      await this.deps.templatesDataSource.getById(entity.template.toString())
+    ).getDataOrThrow();
 
-    if (templateResult.isOk()) {
-      const template = templateResult.getData();
+    const relationshipPropertyNames = new Set(
+      (template.properties || [])
+        .filter(prop => prop.type === PropertyTypeEnum.Relationship)
+        .map(prop => prop.name)
+    );
 
-      // Get names of all relationship-type properties
-      const relationshipPropertyNames = new Set(
-        (template.properties || [])
-          .filter(prop => prop.type === PropertyTypeEnum.Relationship)
-          .map(prop => prop.name)
-      );
+    const filterUnauthorized = await this.deps.settingsDataSource.readFilterUnauthorizedRelated();
 
-      const filterUnauthorized = await this.deps.settingsDataSource.readFilterUnauthorizedRelated();
-
-      entity.metadata = await filterMetadataRelationships(
-        entity.metadata,
-        relationshipPropertyNames,
-        this.deps.permissionChecker,
-        user,
-        filterUnauthorized
-      );
-    }
+    entity.metadata = await filterMetadataRelationships(
+      entity.metadata,
+      relationshipPropertyNames,
+      this.deps.permissionChecker,
+      user,
+      filterUnauthorized
+    );
 
     let fileDTOs: fileDTO[] = [];
 
