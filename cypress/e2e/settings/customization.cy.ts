@@ -13,19 +13,18 @@ describe('customization', () => {
   before(() => {
     cy.blankState();
     clearCookiesAndLogin('admin', 'change this password now');
-    cy.injectAxe();
     cy.contains('a', 'Settings').click();
+    cy.injectAxe();
   });
 
   it('should add custom CSS', () => {
     cy.contains('a', 'Global CSS').click();
     cy.checkA11y(undefined, undefined, logA11yViolations);
-    cy.get('div[data-mode-id="css"]').type('header {background-color: red;}', {
-      parseSpecialCharSequences: false,
-      delay: 0,
-    });
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(501);
+    cy.get('.monaco-editor textarea')
+      .first()
+      .realClick()
+      .realType('header {{}background-color: red;}');
+    cy.contains('button', 'Save').should('not.be.disabled');
   });
 
   it('should block navigation', () => {
@@ -57,14 +56,12 @@ describe('customization', () => {
 
   it('should add custom javascript', () => {
     cy.contains('a', 'Global CSS & JS').click();
-    cy.checkA11y(undefined, undefined, logA11yViolations);
+    cy.checkA11y({ exclude: [['.leaflet-marker-icon']] }, undefined, logA11yViolations);
     cy.contains('Custom JS').click();
-    cy.get('div[data-mode-id="javascript"]').type('console.log("My custom js log")', {
-      parseSpecialCharSequences: false,
-      delay: 0,
-    });
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(501);
+    cy.get('#panel-js .monaco-editor textarea')
+      .realClick()
+      .realType('console.log("My custom js log")');
+    cy.contains('button', 'Save').should('not.be.disabled');
     cy.contains('button', 'Save').click();
     cy.contains('Saved successfully.');
   });

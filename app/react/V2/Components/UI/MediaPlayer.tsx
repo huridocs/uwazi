@@ -1,6 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
-import ReactPlayer, { ReactPlayerProps } from 'react-player';
+import ReactPlayerModule, { ReactPlayerProps } from 'react-player';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 
@@ -12,7 +15,7 @@ interface MediaPlayerProps extends ReactPlayerProps {
     url?: string;
     fileName?: string;
   };
-  playerRef?: React.RefObject<ReactPlayer>;
+  playerRef?: React.RefObject<React.ComponentRef<typeof ReactPlayer>>;
   className?: string;
 }
 
