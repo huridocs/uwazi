@@ -122,8 +122,8 @@ const PDFPage = ({
   }, [eventBus, page, ready]);
 
   useEffect(() => {
-    const renderPage = ({ pageNumber }: { pageNumber: number | string }) => {
-      if (pageNumber === page.toString()) {
+    const renderPage = ({ pageNumber }: { pageNumber: number }) => {
+      if (pageNumber === page) {
         const pageViewer = pageViewerRef.current;
         if (pageViewer?.renderingState === RenderingStates.INITIAL) {
           pageViewer?.draw().catch(e => {
@@ -133,8 +133,8 @@ const PDFPage = ({
       }
     };
 
-    const unmountPage = ({ pageNumber }: { pageNumber: string }) => {
-      if (pageNumber === page.toString()) {
+    const unmountPage = ({ pageNumber }: { pageNumber: number }) => {
+      if (pageNumber === page) {
         const pageViewer = pageViewerRef.current;
         if (pageViewer?.renderingState === RenderingStates.FINISHED) {
           pageViewer?.destroy();

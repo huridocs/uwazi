@@ -17,7 +17,7 @@ type Story = StoryObj<typeof PDF>;
 const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
   const pdfControlsRef = useRef<PDFControls | null>(null);
   const [currentScale, setCurrentScale] = useState(1);
-  const [currentPage, setCurrentPage] = useState<string | null>('1');
+  const [currentPage, setCurrentPage] = useState<number | null>(1);
   const [lastSelection, setLastSelection] = useState<TextSelection | null>(null);
   const [snippetText, setSnippetText] = useState('');
 
@@ -33,7 +33,7 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
     setCurrentScale(scale);
   };
 
-  const handlePageChange = (page: string) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 

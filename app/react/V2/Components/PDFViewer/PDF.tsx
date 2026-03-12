@@ -20,7 +20,7 @@ const CHANGE_PAGE_THRESHOLD: number = 0.4;
 type Snippet = { text: string; page: number; filename?: string };
 
 type PDFControls = {
-  goToPage: (page: string | number) => void;
+  goToPage: (page: number) => void;
   scrollToHighlight: (highlightKey: string) => void;
   activateSnippet: (snippet: Snippet) => void;
   deactivateSnippet: () => void;
@@ -32,7 +32,7 @@ interface PDFProps {
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
   onScaleChange?: (scale: number) => void;
-  onPageChange?: (pageNumber: string) => void;
+  onPageChange?: (pageNumber: number) => void;
   onPdfReady?: (controls: PDFControls) => void;
   size?: { height?: string; width?: string };
 }
@@ -200,18 +200,16 @@ const PDF = ({
   useEffect(() => {
     const observerHandler: IntersectionObserverCallback = entries => {
       entries.forEach(entry => {
+        const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
+
         if (entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
-          onPageChangeRef.current?.(entry.target.getAttribute('data-pagenumber') || '0');
+          onPageChangeRef.current?.(pageNumber);
         }
 
         if (entry.isIntersecting) {
-          pdfEventBus.dispatch('renderpage', {
-            pageNumber: entry.target.getAttribute('data-pagenumber'),
-          });
+          pdfEventBus.dispatch('renderpage', { pageNumber });
         } else {
-          pdfEventBus.dispatch('unmountpage', {
-            pageNumber: entry.target.getAttribute('data-pagenumber'),
-          });
+          pdfEventBus.dispatch('unmountpage', { pageNumber });
         }
       });
     };
@@ -234,7 +232,7 @@ const PDF = ({
       }
     };
 
-    const renderedHandler = ({ pageNumber }: { pageNumber: number | string }) => {
+    const renderedHandler = ({ pageNumber }: { pageNumber: number }) => {
       if (Number(pageNumber) === 1) {
         pdfReadyCallback();
         pdfEventBus.off('pagerendered', renderedHandler);
