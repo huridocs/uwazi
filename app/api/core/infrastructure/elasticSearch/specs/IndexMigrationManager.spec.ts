@@ -48,13 +48,14 @@ const makeClient = ({
 
 describe('IndexMigrationManager', () => {
   const registry = { products: makeDefinition('products', 'products') };
+  let consoleLogSpy: jest.SpyInstance;
 
   beforeAll(() => {
-    jest.spyOn(console, 'log').mockImplementation();
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
   });
 
   afterAll(() => {
-    jest.spyOn(console, 'log').mockRestore();
+    consoleLogSpy.mockRestore();
   });
 
   describe('migrate()', () => {
