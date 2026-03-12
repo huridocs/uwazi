@@ -164,7 +164,6 @@ const PDFPage = ({
   return (
     <div
       ref={pageContainerRef}
-      className="border mb-4 border-gray-200 relative"
       style={pageHeight ? { minHeight: `${pageHeight}px` } : undefined}
       data-testid="pdf-page"
       data-pagenumber={page}
