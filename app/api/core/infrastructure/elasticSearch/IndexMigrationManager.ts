@@ -103,6 +103,14 @@ class IndexMigrationManager {
     });
   }
 
+  async getCurrentPhysicalIndex(indexName: string): Promise<string> {
+    const definition = this.deps.registry[indexName];
+    if (!definition) {
+      throw new Error(`Unknown index "${indexName}" — not found in registry.`);
+    }
+    return this.resolvePhysicalIndex(definition.alias);
+  }
+
   async rollback(indexName: string, toVersion: number): Promise<void> {
     const definition = this.deps.registry[indexName];
 

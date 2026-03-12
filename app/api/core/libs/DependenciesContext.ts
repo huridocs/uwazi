@@ -4,6 +4,7 @@ import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js'
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 import { Logger } from './logger/contracts/Logger.js';
+import { TenantAwareESClient } from '../infrastructure/elasticSearch/TenantAwareESClient.js';
 
 type Dependencies = {
   eventEmitter: EventEmitter;
@@ -11,6 +12,7 @@ type Dependencies = {
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
   logger: Logger;
+  elasticClient: TenantAwareESClient;
 };
 
 class DependenciesContext extends AsyncLocalStorage<Dependencies> {
