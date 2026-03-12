@@ -1,5 +1,4 @@
 import path from 'path';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
@@ -14,6 +13,7 @@ import {
 import { CsvImportRowsStager } from '../services/CsvImportRowsStager.js';
 import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
@@ -39,7 +39,7 @@ type Input = {
   callbacks: Callbacks;
 };
 
-class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
+class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
   private static parseStoragePath(storagePath: string) {
     const filename = path.basename(storagePath);
     const destination = path.dirname(storagePath);
@@ -70,10 +70,6 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
       throw new NonRetryableJobError(new Error('CSV import storage path not found'));
     }
     return csvImport.storage.path;
-  }
-
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
   private async isCancelled(importId: string) {
@@ -153,7 +149,8 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const withCleanup = this.withCleanupPendingIfFailed(withStatus, withStatus.status);
+      await this.deps.csvImportsDS.update(withCleanup);
     });
   }
 

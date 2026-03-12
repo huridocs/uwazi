@@ -3,12 +3,13 @@ import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDa
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvHeaderAnalyzer, AnalyzerOptions } from '../services/CsvHeaderAnalyzer.js';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
@@ -24,9 +25,12 @@ import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js'
 import { persistRowErrorsReport } from '../services/CsvImportEntitiesErrorReporting.js';
 import { processImportRows } from './CsvImportEntitiesRowsProcessor.js';
 import { Callbacks, ImportContext } from './CsvImportEntitiesTypes.js';
+import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type Input = {
   importId: string;
+  tenantName?: string;
+  userId?: string;
   callbacks: Callbacks;
 };
 type Deps = {
@@ -43,6 +47,7 @@ type Deps = {
   filesService: FilesService;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
   idGenerator: IdGenerator;
+  jobsDispatcher: JobsDispatcher;
   batchSize?: number;
 };
 
@@ -52,7 +57,7 @@ const CSV_IMPORT_ROW_FAILURE_RATIO_STOP = 0.6;
 const CSV_IMPORT_ROW_FAILURE_CONSECUTIVE_STOP = 25;
 const CSV_IMPORT_ROW_FAILURE_ABSOLUTE_STOP = 500;
 
-class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
+class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
   private getBatchSize() {
     return Math.max(1, this.deps.batchSize ?? DEFAULT_BATCH_SIZE);
   }
@@ -63,10 +68,6 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
       const updated = CsvImportDomain.withStatus(csvImport, status);
       await this.deps.csvImportsDS.update(updated);
     });
-  }
-
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
   private async persistFailure(importId: string, error: Error) {
@@ -88,7 +89,8 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const withCleanup = this.withCleanupPendingIfFailed(withStatus, withStatus.status);
+      await this.deps.csvImportsDS.update(withCleanup);
     });
   }
 
@@ -149,7 +151,10 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
     csvImport: CsvImport,
     entitiesCreated: number,
     processedRows: number,
-    failedRows: number
+    failedRows: number,
+    importId: string,
+    tenantName: string,
+    userId: string
   ) {
     await this.transactionManager.run(async () => {
       const updatedStats: CsvImportStats = {
@@ -160,11 +165,19 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
       };
       const cleared = CsvImportDomain.clearFailure(csvImport);
       const withStatus = CsvImportDomain.withStatus(cleared, CsvImportStatus.ImportEntitiesDone);
-      await this.deps.csvImportsDS.update(withStatus.withStats(updatedStats));
+      const withStats = withStatus.withStats(updatedStats);
+      const withFilesCleanup = CsvImportDomain.withFilesCleanup(withStats, 'pending');
+      await this.deps.csvImportsDS.update(withFilesCleanup);
+      await this.dispatchFilesCleanup(importId, tenantName, userId);
     });
   }
 
-  private async runImport(importId: string, callbacks: Callbacks) {
+  private async runImport(
+    importId: string,
+    callbacks: Callbacks,
+    tenantName: string,
+    userId?: string
+  ) {
     const context = await this.loadContext(importId);
     const { entitiesCreated, csvImport, processedRows, shouldStop, stopReason, cancelled } =
       await processImportRows({
@@ -205,7 +218,15 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
     if (shouldStop) {
       throw new NonRetryableJobError(new Error(stopReason || 'Stopped due to failure policy'));
     }
-    await this.finalizeSuccess(csvImport, entitiesCreated, processedRows, report.failedRows);
+    await this.finalizeSuccess(
+      csvImport,
+      entitiesCreated,
+      processedRows,
+      report.failedRows,
+      importId,
+      tenantName,
+      userId ?? csvImport.createdBy
+    );
   }
 
   async execute(input: Input): Promise<void> {
@@ -218,7 +239,9 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
     await this.setStatus(importId, CsvImportStatus.ImportEntities);
 
     try {
-      await this.runImport(importId, callbacks);
+      const tenantName = input.tenantName ?? tenants.current().name;
+      const userId = input.userId;
+      await this.runImport(importId, callbacks, tenantName, userId);
       if (await this.deps.csvImportsDS.isCancelled(importId)) {
         return;
       }

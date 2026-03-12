@@ -49,6 +49,7 @@ export class MongoCsvImportsDataSource
       {
         $set: {
           status: CsvImportStatus.Cancelled,
+          filesCleanup: 'pending',
           updatedAt: Date.now(),
         },
       }

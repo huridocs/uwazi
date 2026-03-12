@@ -13,6 +13,10 @@ import {
   RelationshipsProgress,
 } from '../../application/jobs/CsvCreateRelationshipEntitiesJob.js';
 import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
+import {
+  dispatchCleanupAfterCancelledStage,
+  handleTerminalFailureCleanup,
+} from './CsvCleanupDispatch.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -102,12 +106,23 @@ export class CsvCreateRelationshipEntitiesJobHandler extends UserAwareDispatchab
           },
         },
       });
+      await dispatchCleanupAfterCancelledStage({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+      });
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       heartbeat();
     } catch (error) {
-      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
-        await this.deps.useCase.markAsFailed(this.params.importId);
-      }
+      await handleTerminalFailureCleanup({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+        error,
+        jobInfo,
+      });
       throw error;
     }
   }

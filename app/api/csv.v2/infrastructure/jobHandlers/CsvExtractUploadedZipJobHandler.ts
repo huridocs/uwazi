@@ -13,6 +13,10 @@ import {
   ExtractionProgress,
 } from '../../application/jobs/CsvExtractUploadedZipJob.js';
 import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
+import {
+  dispatchCleanupAfterCancelledStage,
+  handleTerminalFailureCleanup,
+} from './CsvCleanupDispatch.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -102,11 +106,21 @@ export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Param
           },
         },
       });
+      await dispatchCleanupAfterCancelledStage({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+      });
     } catch (e) {
-      // If this was the last retry attempt, mark as definitively failed.
-      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
-        await this.deps.useCase.markAsFailed(this.params.importId);
-      }
+      await handleTerminalFailureCleanup({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+        error: e,
+        jobInfo,
+      });
       throw e;
     }
   }

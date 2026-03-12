@@ -13,6 +13,10 @@ import {
   ThesauriCreationProgress,
 } from '../../application/jobs/CsvCreateThesauriValuesJob.js';
 import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
+import {
+  dispatchCleanupAfterCancelledStage,
+  handleTerminalFailureCleanup,
+} from './CsvCleanupDispatch.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -103,10 +107,21 @@ export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Par
           },
         },
       });
+      await dispatchCleanupAfterCancelledStage({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+      });
     } catch (error) {
-      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
-        await this.deps.useCase.markAsFailed(this.params.importId);
-      }
+      await handleTerminalFailureCleanup({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+        error,
+        jobInfo,
+      });
       throw error;
     }
   }

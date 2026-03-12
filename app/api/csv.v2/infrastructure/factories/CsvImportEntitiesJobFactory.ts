@@ -4,6 +4,8 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -11,6 +13,7 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob.js';
 import { CsvEntitiesImportMapper } from '../../application/services/CsvEntitiesImportMapper.js';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
@@ -19,6 +22,7 @@ type FactoryOptions = {
   transactionManager?: MongoTransactionManager;
   fileStorage?: FileStorage;
   batchSize?: number;
+  jobsDispatcher?: JobsDispatcher;
 };
 
 const buildCsvDataSources = (transactionManager: MongoTransactionManager) => {
@@ -75,6 +79,8 @@ class CsvImportEntitiesJobFactory {
   static build(options: FactoryOptions = {}) {
     const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
+    const jobsDispatcher =
+      options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
     const dataSources = buildCsvDataSources(transactionManager);
     const services = buildEntityServices(transactionManager, fileStorage);
     const mapper = new CsvEntitiesImportMapper(
@@ -96,6 +102,7 @@ class CsvImportEntitiesJobFactory {
       filesService: services.filesService,
       propertyAssignmentCreatorServiceStrategy: services.propertyAssignmentCreatorServiceStrategy,
       idGenerator: services.idGenerator,
+      jobsDispatcher,
       batchSize: options.batchSize,
     });
 

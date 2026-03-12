@@ -8,6 +8,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CsvImportRow } from '../../../domain/CsvImportRow.js';
 import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
@@ -88,11 +90,16 @@ const insertImport = async (
 const buildUseCase = () => {
   const transactionManager = TransactionManagerFactory.default();
   const fileStorage = new FileSystemStorage(new PathManager({ tenant: tenants.current() }));
+  const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
+    dispatch: jest.fn().mockResolvedValue(undefined),
+    dispatchMany: jest.fn().mockResolvedValue(undefined),
+  }) as jest.Mocked<JobsDispatcher>;
   const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } =
     CsvImportEntitiesJobFactory.build({
       transactionManager,
       fileStorage,
       batchSize: 2,
+      jobsDispatcher,
     });
 
   return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS };

@@ -392,6 +392,8 @@ is confusing and inconsistent with thesauri preflight behavior.
   continue without extra guidance. These MDs are the source of truth.
 - **Indexes context companion:** For CSV v2 Mongo indexing decisions and migration notes,
   read and maintain `AI Contexts/CSV/csv-v2-context-07-indexes.md` together with this file.
+- **Cleanup context companion:** For terminal artifact-cleanup job design and handoff notes,
+  read and maintain `AI Contexts/CSV/csv-v2-context-07-cleanup.md` together with this file.
 - **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
   in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -619,6 +621,10 @@ Follow-up maintenance rule:
 - Revisit and evolve indexes whenever new CSV v2 query paths are introduced (treat index review as part of done criteria for new read/write patterns).
 
 ### 16) TODO — Cleanup extracted/original files after import reaches terminal state
+
+Source of truth for this track:
+
+- `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
 
 Problem:
 
@@ -1004,6 +1010,64 @@ Implementation simplifications performed:
 - Handoff rule for next agent:
   - use the current bridge-preserving baseline as the starting point,
   - proceed with the next approved task, not compat bridge removal by default.
+
+#### 18.14 Cleanup workstream context split (Mar 2026)
+
+- Added dedicated cleanup handoff/source-of-truth document:
+  - `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
+- Cleanup scope and constraints are now tracked separately from the v1-boundary track:
+  - cleanup runs as a dedicated background job/handler,
+  - dispatch on terminal states (`completed`, `failed`, `cancelled`),
+  - no user-facing status/event changes (housekeeping only),
+  - internal cleanup-state field recommended on `csv_imports` (`fileCleanup` structured state).
+- This main context now references the cleanup companion in:
+  - section 7 (agent-specific companion docs),
+  - section 16 (cleanup TODO source-of-truth pointer).
+
+#### 18.15 Cleanup trigger clarification (Mar 2026)
+
+- Cleanup dispatch semantics were tightened after race-risk review:
+  - do **not** dispatch cleanup directly from cancel endpoint/use case,
+  - run cleanup only at terminal-safe stage boundaries.
+- Agreed trigger points:
+  - success: only after entities-import terminal success,
+  - cancel: after the currently running stage exits cleanly with `cancelled`,
+  - hard failures: non-retryable or retry-exhausted terminal failures.
+- Internal cleanup marker simplified to:
+  - `filesCleanup: 'pending' | 'done' | 'failed'`
+  - no additional attempts/retry/error payload on `csv_imports`.
+- Source of truth:
+  - `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
+
+#### 18.16 Cleanup stage implementation + dedup refactor (Mar 2026)
+
+- Implemented cleanup stage in CSV v2:
+  - `CsvCleanupImportFilesJob`
+  - `CsvCleanupImportFilesJobHandler`
+  - `CsvCleanupImportFilesJobFactory`
+  - queue registration in `queueRegistry`.
+- Import-level internal marker implemented as agreed:
+  - `filesCleanup: 'pending' | 'done' | 'failed'`
+  - no attempt/error payload expansion on `csv_imports`.
+- Cleanup scope finalized in code:
+  - delete original upload + extracted staging assets,
+  - preserve failed-rows report artifact (`csv-imports/{importId}/reports/failed_rows.csv`) for UX download flow.
+- Terminal cleanup dispatch is now active for:
+  - entities-import success (`import:entities:done`),
+  - cooperative-cancel exits at stage boundaries,
+  - terminal failures (non-retryable and retry-exhausted).
+- Design cleanup to remove repeated logic:
+  - job-level cleanup behavior centralized in:
+    - `app/api/csv.v2/application/jobs/CsvCleanupAwareJob.ts`
+  - handler-level terminal cleanup flow centralized in:
+    - `app/api/csv.v2/infrastructure/jobHandlers/CsvCleanupDispatch.ts`
+  - stage jobs/handlers now call shared helpers instead of duplicating the same blocks.
+- Verification:
+  - new integration spec added:
+    - `app/api/csv.v2/application/jobs/specs/CsvCleanupImportFilesJob.spec.ts`
+  - full CSV v2 suite passes:
+    - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
+    - result: pass (17 suites, 66 tests).
 
 ### 19) TODO — Document ReadTheDocs import instructions
 

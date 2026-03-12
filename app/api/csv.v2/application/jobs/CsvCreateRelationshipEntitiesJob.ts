@@ -1,6 +1,5 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntitiesService } from '#api/core/application/EntitiesService.js';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
@@ -24,6 +23,7 @@ import {
   createRelationshipEntitiesBatch,
   loadRelationshipCreationContext,
 } from '../services/CsvRelationshipEntitiesCreator.js';
+import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type RelationshipsProgress = {
   importId: string;
@@ -55,17 +55,13 @@ type Deps = {
 
 const RELATIONSHIP_TITLES_CHUNK_SIZE = 250;
 
-class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps> {
+class CsvCreateRelationshipEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
   private async setStatus(importId: string, status: CsvImportStatus) {
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     await this.transactionManager.run(async () => {
       const updated = CsvImportDomain.withStatus(csvImport, status);
       await this.deps.csvImportsDS.update(updated);
     });
-  }
-
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
   private async persistFailure(importId: string, error: Error) {
@@ -86,7 +82,8 @@ class CsvCreateRelationshipEntitiesJob extends AbstractUseCase<Input, void, Deps
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const withCleanup = this.withCleanupPendingIfFailed(withStatus, withStatus.status);
+      await this.deps.csvImportsDS.update(withCleanup);
     });
   }
 

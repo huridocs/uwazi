@@ -1,5 +1,4 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
@@ -20,6 +19,7 @@ import {
 import { CsvCreateRelationshipEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
 import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier.js';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type ThesauriCreationProgress = {
   importId: string;
@@ -54,7 +54,7 @@ type PendingValuesProcessingResult = {
   observed: number;
 };
 
-class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
+class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
   private pendingValuesApplier: PendingThesauriValuesApplier;
 
   constructor(deps: Deps) {
@@ -71,10 +71,6 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
       const updated = CsvImportDomain.withStatus(csvImport, status);
       await this.deps.csvImportsDS.update(updated);
     });
-  }
-
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
   private async getImport(importId: string) {
@@ -202,7 +198,8 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const withCleanup = this.withCleanupPendingIfFailed(withStatus, withStatus.status);
+      await this.deps.csvImportsDS.update(withCleanup);
     });
   }
 
