@@ -1,5 +1,5 @@
 import type { Client } from '@elastic/elasticsearch';
-import { IndexMigrationManager } from '../IndexMigreationManager.js';
+import { IndexMigrationManager } from '../IndexMigrationManager.js';
 import { MigrationValidationError, type IndexDefinition } from '../Types.js';
 
 const makeDefinition = (alias: string, prefix: string): IndexDefinition =>
