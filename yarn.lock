@@ -121,9 +121,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.1006.0":
-  version: 3.1006.0
-  resolution: "@aws-sdk/client-s3@npm:3.1006.0"
+"@aws-sdk/client-s3@npm:3.1007.0":
+  version: 3.1007.0
+  resolution: "@aws-sdk/client-s3@npm:3.1007.0"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:5.2.0"
     "@aws-crypto/sha256-browser": "npm:5.2.0"
@@ -180,7 +180,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.2.2"
     "@smithy/util-waiter": "npm:^4.2.12"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/bacbfc2d7e490510e198a9c4f91fd4520b9046258328d813d337def9da438432f0219080dc34d3afb24526f3f8f765d473d2fc85c6deabb0d9fea267c84f0700
+  checksum: 10c0/a7ff23e4c844866414f51c52ba62de329a2be4a8cd72fc13f966d4b3f6bce0f30360db4145e0551b6389a35c145e0795788507e2674073e769c75e6431d59687
   languageName: node
   linkType: hard
 
@@ -4432,6 +4432,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@smithy/abort-controller@npm:^4.2.12":
+  version: 4.2.12
+  resolution: "@smithy/abort-controller@npm:4.2.12"
+  dependencies:
+    "@smithy/types": "npm:^4.13.1"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/839bee519c6bc4cf405395f71a07d0b5b42c22ce1c0163a157a61e18804d5dacd4ade1a3b2b69fea26462eecff4c92593726e96318f16ea8adfb419e7f3dab43
+  languageName: node
+  linkType: hard
+
 "@smithy/chunked-blob-reader-native@npm:^4.2.3":
   version: 4.2.3
   resolution: "@smithy/chunked-blob-reader-native@npm:4.2.3"
@@ -4728,6 +4738,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@smithy/node-http-handler@npm:^4.4.15":
+  version: 4.4.15
+  resolution: "@smithy/node-http-handler@npm:4.4.15"
+  dependencies:
+    "@smithy/abort-controller": "npm:^4.2.12"
+    "@smithy/protocol-http": "npm:^5.3.12"
+    "@smithy/querystring-builder": "npm:^4.2.12"
+    "@smithy/types": "npm:^4.13.1"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/7b3869cbb212eb12afcf76dd3747a4375c416bc38a2734d811727c728229c74dbf128599dcc5d98fc0f09f80f00ffa0b8530ab591ef9b790c8e2fb451acf2aa3
+  languageName: node
+  linkType: hard
+
 "@smithy/property-provider@npm:^4.2.11":
   version: 4.2.11
   resolution: "@smithy/property-provider@npm:4.2.11"
@@ -4748,6 +4771,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@smithy/protocol-http@npm:^5.3.12":
+  version: 5.3.12
+  resolution: "@smithy/protocol-http@npm:5.3.12"
+  dependencies:
+    "@smithy/types": "npm:^4.13.1"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/f71f8e54d42637acbef9f01e3974a8ad46187ae020366de4dc84dac7ba8413a8a6fb21369c83b660afa110fc5a56d185c7e48de7d2cf45351ebb1b29aa77962b
+  languageName: node
+  linkType: hard
+
 "@smithy/querystring-builder@npm:^4.2.11":
   version: 4.2.11
   resolution: "@smithy/querystring-builder@npm:4.2.11"
@@ -4756,6 +4789,17 @@ __metadata:
     "@smithy/util-uri-escape": "npm:^4.2.2"
     tslib: "npm:^2.6.2"
   checksum: 10c0/88790ee8c7a01730beba913fdf38d1790113c82c956d20cccd43a5b527f19e23df7eff86ddf41e3e615d0af562e31f61a7fed014c9fce8db924623258a4d14f8
+  languageName: node
+  linkType: hard
+
+"@smithy/querystring-builder@npm:^4.2.12":
+  version: 4.2.12
+  resolution: "@smithy/querystring-builder@npm:4.2.12"
+  dependencies:
+    "@smithy/types": "npm:^4.13.1"
+    "@smithy/util-uri-escape": "npm:^4.2.2"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/171c0d4da2fd024466741e6ee1c05cac5664e0da82c4ac5afd3218278925c25ed00bc3518e02481f4daf3f366034f273fb1cb579f146f10d0edee14dc5676c21
   languageName: node
   linkType: hard
 
@@ -4825,6 +4869,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.6.2"
   checksum: 10c0/c6d8ab088214089e1e1b9bb3e1305fdaac0b0802b1772a6326821a671bc1a4fcd00c492928db455a022281f5a60471f0560402a74e0e4a0824ee8cb2163c0b73
+  languageName: node
+  linkType: hard
+
+"@smithy/types@npm:^4.13.1":
+  version: 4.13.1
+  resolution: "@smithy/types@npm:4.13.1"
+  dependencies:
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/775ed9748d9290b8816d933bfb9726eb9301ef2fe9fba1bfbc1966372b9f0d4dd1d3b611aca3c000094bed2ca9d821e10fe2795a75df5bc305bc8845a1e413f7
   languageName: node
   linkType: hard
 
@@ -23131,7 +23184,7 @@ __metadata:
   resolution: "uwazi@workspace:."
   dependencies:
     "@4tw/cypress-drag-drop": "npm:^2.3.1"
-    "@aws-sdk/client-s3": "npm:3.1006.0"
+    "@aws-sdk/client-s3": "npm:3.1007.0"
     "@babel/cli": "npm:7.28.6"
     "@babel/core": "npm:7.28.6"
     "@babel/eslint-parser": "npm:7.28.6"
@@ -23179,7 +23232,7 @@ __metadata:
     "@sentry/react": "npm:^9.9.0"
     "@sentry/tracing": "npm:^7.114.0"
     "@simonsmith/cypress-image-snapshot": "npm:^10.0.3"
-    "@smithy/node-http-handler": "npm:^4.4.14"
+    "@smithy/node-http-handler": "npm:^4.4.15"
     "@socket.io/redis-adapter": "npm:7.2.0"
     "@socket.io/redis-emitter": "npm:5.1.0"
     "@storybook/addon-docs": "npm:10.2.17"
