@@ -1,22 +1,16 @@
-import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
-import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { TemplatesDataSource } from '#api/core/domain/template/TemplatesDataSource.js';
 import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
-import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
-import { filterMetadataRelationships } from './utils/filterMetadataRelationships.js';
 import { fileDBO, fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
+import { EntitiesQueryService } from './EntitiesQueryService.js';
+import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 
 type Deps = {
   entityDAO: MongoEntityDAO;
-  permissionChecker: MongoEntityPermissionChecker;
-  templatesDataSource: TemplatesDataSource;
-  settingsDataSource: SettingsDataSource;
   relationshipsDataSource: MongoRelationshipsV1DataSource;
+  entitiesQueryService: EntitiesQueryService;
 };
 
 type Input = {
@@ -57,25 +51,11 @@ class GetEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       return Result.fail(new EntityNotFoundError(sharedId));
     }
 
-    const template = (
-      await this.deps.templatesDataSource.getById(entity.template.toString())
-    ).getDataOrThrow();
+    // Use EntitiesQueryService to filter metadata relationship properties with batch optimization
+    const filteredMetadataMap =
+      await this.deps.entitiesQueryService.authorizeRelationshipProperties([entity], user);
 
-    const relationshipPropertyNames = new Set(
-      (template.properties || [])
-        .filter(prop => prop.type === PropertyTypeEnum.Relationship)
-        .map(prop => prop.name)
-    );
-
-    const filterUnauthorized = await this.deps.settingsDataSource.readFilterUnauthorizedRelated();
-
-    entity.metadata = await filterMetadataRelationships(
-      entity.metadata,
-      relationshipPropertyNames,
-      this.deps.permissionChecker,
-      user,
-      filterUnauthorized
-    );
+    entity.metadata = filteredMetadataMap.get(entity.sharedId)!;
 
     let filteredRelations: RelationDTO[] = [];
     if (includeRelationships) {

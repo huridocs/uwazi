@@ -76,7 +76,7 @@ describe('MongoEntityDAO', () => {
     // eslint-disable-next-line max-statements
     it('should return entity with files separated as documents and attachments', async () => {
       const dao = createSut();
-      const result = dao.getWithFile({ sharedId: 'entity_1', language: 'en' });
+      const result = dao.getWithFiles({ sharedId: 'entity_1', language: 'en' });
       const entities = await result.toArray();
       const entity = entities[0];
 
@@ -91,7 +91,7 @@ describe('MongoEntityDAO', () => {
 
     it('should return empty array when no entities match', async () => {
       const dao = createSut();
-      const result = dao.getWithFile({ sharedId: 'non_existent', language: 'en' });
+      const result = dao.getWithFiles({ sharedId: 'non_existent', language: 'en' });
       const entities = await result.toArray();
 
       expect(entities).toHaveLength(0);

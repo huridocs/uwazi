@@ -52,13 +52,13 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
               cond: { $eq: ['$$attachment.type', 'attachment'] },
             },
           },
+          // Explicitly preserve published field
+          published: { $ifNull: ['$published', false] },
         },
       },
 
       {
-        $project: {
-          files: 0,
-        },
+        $unset: 'files',
       },
     ]);
   }

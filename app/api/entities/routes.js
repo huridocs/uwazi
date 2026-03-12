@@ -106,7 +106,7 @@ export default app => {
         const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
         const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
         const entityInTargetLanguage = await entityDAO
-          .getWithFile({ language: req.language, sharedId: result.sharedId })
+          .getWithFiles({ language: req.language, sharedId: result.sharedId })
           .next();
 
         await updateThesauriWithEntity(entityInTargetLanguage, req);

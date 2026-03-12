@@ -151,7 +151,7 @@ describe('upload routes', () => {
         .post('/api/public')
         .field('entity', JSON.stringify(req.body.entity));
 
-      expect(response.status).toBe(200);
+      expect(response).toHaveStatus(200);
       expect(response.body.user).toEqual(writerUserFromDb._id.toString());
       expect(response.body.user).not.toEqual(PUBLIC_USER_ID.toString());
     });
