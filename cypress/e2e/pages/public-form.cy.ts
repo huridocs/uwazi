@@ -232,7 +232,7 @@ describe('Public Form', () => {
         'html',
         '<h1>Public form with error</h1><PublicForm template="invalid template" />',
         true,
-        'invalid template',
+        'PublicForm',
         true
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
