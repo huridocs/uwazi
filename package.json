@@ -108,7 +108,7 @@
     "@types/express-serve-static-core": "4.17.33"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.1006.0",
+    "@aws-sdk/client-s3": "3.1007.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
@@ -130,7 +130,7 @@
     "@sentry/profiling-node": "^7.114.0",
     "@sentry/react": "^9.9.0",
     "@sentry/tracing": "^7.114.0",
-    "@smithy/node-http-handler": "^4.4.14",
+    "@smithy/node-http-handler": "^4.4.15",
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.1.0",
     "@supercharge/promise-pool": "^3.3.0",
