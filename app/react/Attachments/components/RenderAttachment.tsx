@@ -1,5 +1,8 @@
 import React from 'react';
-import ReactPlayer from 'react-player';
+import ReactPlayerModule from 'react-player';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import { ClientFile } from '#app/istore.js';
 import { MarkdownMedia } from '#app/Markdown/components/MarkdownMedia.js';

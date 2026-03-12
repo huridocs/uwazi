@@ -1,7 +1,10 @@
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import DatePickerComponent, { registerLocale } from 'react-datepicker';
+import DatePickerModule, { registerLocale } from 'react-datepicker';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const DatePickerComponent = resolveDefaultExport(DatePickerModule);
 import * as localization from 'date-fns/locale';
 import { DateTime } from 'luxon';
 import 'react-datepicker/dist/react-datepicker.css';

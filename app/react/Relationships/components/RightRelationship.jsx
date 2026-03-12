@@ -5,7 +5,10 @@ import React, { Component } from 'react';
 import { Icon } from '#UI/Icon/Icon.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { Doc } from '#app/Library/components/Doc.js';
-import DropdownList from 'react-widgets/lib/DropdownList.js';
+import DropdownListModule from 'react-widgets/lib/DropdownList.js';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const DropdownList = resolveDefaultExport(DropdownListModule);
 import * as actions from '../actions/actions.js';
 import * as uiActions from '../actions/uiActions.js';
 import { HubRelationshipMetadata } from './HubRelationshipMetadata.js';

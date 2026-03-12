@@ -10,7 +10,7 @@ export const constructFile = ({ serializedFile: base64, originalname }: ClientFi
   const fileContent = fileParts[1];
   const buff = Buffer.from(fileContent, 'base64');
 
-  return new File([buff], originalname || '', { type: fileFormat });
+  return new File([new Uint8Array(buff)], originalname || '', { type: fileFormat });
 };
 
 export const prepareHTMLMediaView = (supportingFile: ClientFile) => {
