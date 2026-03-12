@@ -1,6 +1,6 @@
 # CSV Import V2 — Context 07 Indexes
 
-Date: 2026-03-11  
+Date: 2026-03-12  
 Owner: CSV Import V2 initiative  
 Purpose: Track Mongo index decisions and migration implementation notes for `csv.v2`.
 
@@ -53,7 +53,7 @@ It records:
 - `deleteMany({ importId })`,
 - insert per `{ importId, templateId }` document.
 
-## 3) Proposed baseline indexes (to implement via migration)
+## 3) Baseline indexes (implemented via migration `185`)
 
 ### `csv_imports`
 
@@ -90,7 +90,19 @@ It records:
    - `{ importId: 1, templateId: 1 }`
    - `unique: true`
 
-## 4) Migration implementation notes
+## 4) Migration implementation status and notes
+
+Status: **Implemented and tested**.
+
+- Migration:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/index.ts`
+- Spec:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+- Focused verification command:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+- Latest verification result (Mar 2026): pass (7/7 tests).
+
+Implementation conventions retained for future index migrations:
 
 - Follow existing migration style under `app/api/migrations/migrations/*/index.ts`.
 - Use `176-update_entity_title_indexes` as the concrete reference pattern for this work:
@@ -104,10 +116,16 @@ It records:
   - indexes exist with expected keys/options,
   - no duplicate/conflicting index definitions are introduced.
 
-## 5) Open decisions for next agent
+## 5) Open decisions / follow-up triggers
 
 1. **Resolved (Mar 2026):** `status_updatedAt` is intentionally deferred.
    - Rationale: keep index set minimal until real status+time query paths exist in production usage.
    - Follow-up trigger: add it when cleanup/finalizer/status-sweep queries are implemented.
 2. **Resolved (Mar 2026):** use migration delta `185` for CSV v2 index work.
+
+## 6) Next active priority after indexes
+
+With index migrations complete, the next active CSV v2 priority is:
+
+- **Complete CSV v2 boundary cleanup from v1 dependencies** in `app/api/csv.v2/**`.
 

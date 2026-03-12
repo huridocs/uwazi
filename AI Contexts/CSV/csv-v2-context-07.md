@@ -600,26 +600,21 @@ Required behavior (split by scenario):
 - Row-error messages now include property, token, reason, candidate count, and scope context.
 - No fallback behavior remains (`first/last match` resolution removed).
 
-### 15) TODO — Define and maintain Mongo indexes for CSV v2 collections
+### 15) Mongo indexes for CSV v2 collections
 
-Problem:
+**Status (Mar 2026): Implemented and verified**
 
-- CSV v2 now relies on multiple collections (`csv_imports`, `csv_import_rows`,
-  `csv_import_row_errors`, `csv_import_thesauri_values`,
-  `csv_import_relationships_pending_values`, `csv_import_relationships_values`) but index strategy
-  is not explicitly documented/owned in the module.
-- As query patterns evolve (status polling, per-import scans, report generation), missing or stale
-  indexes can degrade performance and increase lock pressure.
+- Baseline CSV v2 indexes were added via migration:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/index.ts`
+- Migration spec exists and validates all baseline index names/keys/options:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+- Focused verification command:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+  - result: pass (7/7 tests).
 
-Required behavior:
+Follow-up maintenance rule:
 
-- Define baseline indexes based on current query practices (importId/status/templateId/rowIndex paths).
-- Add indexes via **Mongo migrations** (not mongoose model/index definitions), since we are moving
-  away from mongoose-managed indexes.
-- Before implementing, review existing migrations that add indexes and follow the same patterns
-  (idempotency, naming, rollback policy, and test strategy).
-- Add index migration coverage in tests where appropriate.
-- Revisit and evolve indexes whenever new query paths are introduced (treat as part of done criteria).
+- Revisit and evolve indexes whenever new CSV v2 query paths are introduced (treat index review as part of done criteria for new read/write patterns).
 
 ### 16) TODO — Cleanup extracted/original files after import reaches terminal state
 
@@ -924,22 +919,24 @@ Required scope:
 - Cancel semantics (cooperative stop, no rollback/cleanup of already-applied work).
 - Troubleshooting section for common import failures and recovery steps.
 
-### 20) Priority order (agreed, Mar 2026)
+### 20) Priority order (agreed, Mar 2026; updated after index migration completion)
 
 The following order is explicitly agreed and should drive upcoming iterations.
 
 #### 20.1 Primary priorities (fixed order)
 
-1. **Establish and ship CSV v2 index migrations**
-   - Define baseline indexes for current query paths (`importId`, `status`, `templateId`, `rowIndex`, report lookups) and add them through idempotent Mongo migrations.
-2. **Complete CSV v2 boundary cleanup from v1 dependencies**
+1. **Complete CSV v2 boundary cleanup from v1 dependencies**
    - Remove remaining v1 architectural references/wrappers from `csv.v2` paths and replace them with v2-native contracts/data-source usage.
-3. **Implement terminal artifact cleanup for imports**
+2. **Implement terminal artifact cleanup for imports**
    - Add reliable, retry-safe cleanup of CSV-owned artifacts (original upload + extracted staging files) when imports reach terminal states.
-4. **Freeze file-column contract for CSV inputs**
+3. **Freeze file-column contract for CSV inputs**
    - Define and document exact behavior for `file__LANG`, `file`, and `files` so parsing/import behavior is deterministic and consistent across API, jobs, and UX.
-5. **Standardize row error taxonomy and reporting output**
+4. **Standardize row error taxonomy and reporting output**
    - Finalize user-facing error naming/messages and reporting structure so diagnostics are clear, actionable, and stable for frontend/support usage.
+
+Index migration completion note:
+
+- Previous primary priority (**establish and ship CSV v2 index migrations**) is complete via migration delta `185` and its dedicated spec coverage.
 
 #### 20.2 Remaining work (recommended order after primary priorities)
 
