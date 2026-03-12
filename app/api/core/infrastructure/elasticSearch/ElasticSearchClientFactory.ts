@@ -4,6 +4,7 @@ import { getSharedConnection } from '../mongodb/common/getConnectionForCurrentTe
 import { MongoTenantRoutingRepository } from './MongoTenantRoutingRepository';
 import { TenantAwareESClient } from './TenantAwareESClient';
 import { TenantIndexResolver } from './TenantIndexResolver';
+import { config } from '#api/config.js';
 
 class ElasticSearchClientFactory {
   private static instance: Client;
