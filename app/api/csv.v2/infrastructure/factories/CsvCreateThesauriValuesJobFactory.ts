@@ -4,8 +4,8 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvCreateThesauriValuesJob } from '../../application/jobs/CsvCreateThesauriValuesJob.js';
-import { LegacyThesauriRepository } from '../services/LegacyThesauriRepository.js';
-import { LegacyTranslationsRepository } from '../services/LegacyTranslationsRepository.js';
+import { CsvThesauriRepository } from '../services/CsvThesauriRepository.js';
+import { CsvTranslationsRepository } from '../services/CsvTranslationsRepository.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
 import { ThesauriRepository } from '../../application/contracts/ThesauriRepository.js';
@@ -39,8 +39,8 @@ class CsvCreateThesauriValuesJobFactory {
     const useCase = new CsvCreateThesauriValuesJob({
       csvImportsDS,
       thesauriValuesDS,
-      thesauriRepo: options.thesauriRepo ?? new LegacyThesauriRepository(),
-      translationsRepo: options.translationsRepo ?? new LegacyTranslationsRepository(),
+      thesauriRepo: options.thesauriRepo ?? new CsvThesauriRepository(transactionManager),
+      translationsRepo: options.translationsRepo ?? new CsvTranslationsRepository(transactionManager),
       transactionManager,
       jobsDispatcher,
     });

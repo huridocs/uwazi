@@ -1,5 +1,4 @@
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import {
   CsvImportThesauriAppliedValue,
@@ -9,6 +8,7 @@ import { CsvThesauriPendingChild } from '../../domain/CsvThesauriPendingValues.j
 import { ThesauriRepository } from '../contracts/ThesauriRepository.js';
 import { TranslationsRepository } from '../contracts/TranslationsRepository.js';
 import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff.js';
+import { normalizeCsvThesaurusLabel } from './CsvThesaurusLabelNormalizer.js';
 
 type Deps = {
   thesauriRepo: ThesauriRepository;
@@ -27,7 +27,7 @@ type IndexedRoot = {
 };
 
 const normalizeLabel = (label: string) =>
-  normalizeThesaurusLabel(sanitizeThesaurusLabel(label) || '');
+  normalizeCsvThesaurusLabel(sanitizeThesaurusLabel(label) || '');
 
 const buildThesaurusIndex = (thesaurus: ThesaurusSchema) => {
   const roots = new Map<string, IndexedRoot>();
@@ -108,7 +108,11 @@ class PendingThesauriValuesApplier {
         diff.valuesToAppend
       );
       if (Object.keys(diff.translations).length) {
-        await this.deps.translationsRepo.updateEntries(pendingDoc.thesaurusId, diff.translations);
+        await this.deps.translationsRepo.updateEntries(
+          pendingDoc.thesaurusId,
+          diff.translations,
+          existingThesaurus.name
+        );
       }
     }
 

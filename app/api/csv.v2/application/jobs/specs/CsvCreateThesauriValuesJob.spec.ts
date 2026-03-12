@@ -58,7 +58,7 @@ describe('CsvCreateThesauriValuesJob', () => {
       markAsApplied: jest.fn().mockResolvedValue(undefined),
     };
     const thesauriRepo = {
-      getById: jest.fn().mockResolvedValue({ _id: 'thes', values: [] }),
+      getById: jest.fn().mockResolvedValue({ _id: 'thes', name: 'Thesaurus', values: [] }),
       appendValues: jest.fn().mockResolvedValue({
         _id: 'thes',
         values: [
@@ -103,7 +103,7 @@ describe('CsvCreateThesauriValuesJob', () => {
     expect(translationsRepo.updateEntries).toHaveBeenCalledWith('thes', {
       en: { Country: 'Country', 'Country::City': 'City' },
       es: { Country: 'País', 'Country::City': 'Ciudad' },
-    });
+    }, 'Thesaurus');
     expect(thesauriValuesDS.markAsApplied).toHaveBeenCalledWith(
       expect.objectContaining({
         importId: 'import-id',

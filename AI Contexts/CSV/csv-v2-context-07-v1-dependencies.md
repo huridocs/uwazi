@@ -55,21 +55,36 @@ Why this approach was used:
   - no v1 file imports from CSV v2 tests remain,
   - eventual `app/api/csv/**` removal will not break CSV v2 tests.
 
-### 2.3 Production-path legacy dependencies (priority migration target)
+### 2.3 Production-path legacy dependencies (migration status)
 
-1. Legacy adapters used by thesauri-create stage:
-   - `app/api/csv.v2/infrastructure/services/LegacyThesauriRepository.ts`
-     - imports `#api/thesauri/thesauri.js`
-   - `app/api/csv.v2/infrastructure/services/LegacyTranslationsRepository.ts`
-     - imports `#api/i18n/translations.js`
-   - Factory usage:
+Status: **Thesauri/translation + normalization replacement completed (Mar 2026)**.
+
+What changed:
+
+1. Replaced legacy adapters in thesauri-create stage:
+   - Removed:
+     - `app/api/csv.v2/infrastructure/services/LegacyThesauriRepository.ts`
+     - `app/api/csv.v2/infrastructure/services/LegacyTranslationsRepository.ts`
+   - Added:
+     - `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
+       - uses core `ThesauriDataSourceFactory` (v2 DS path)
+     - `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
+       - uses `i18n.v2` `DefaultTranslationsDataSource` + `Translation` model (`upsert`)
+   - Factory wiring updated:
      - `app/api/csv.v2/infrastructure/factories/CsvCreateThesauriValuesJobFactory.ts`
 
-2. Direct legacy normalization import from `#api/thesauri/thesauri.js`:
-   - `app/api/csv.v2/application/services/CsvThesauriValuesDiff.ts`
-   - `app/api/csv.v2/application/services/PendingThesauriValuesApplier.ts`
-   - `app/api/csv.v2/application/services/CsvEntitiesImportMapper.ts`
-   - All use `normalizeThesaurusLabel(...)`.
+2. Replaced direct v1 normalization usage:
+   - Added:
+     - `app/api/csv.v2/application/services/CsvThesaurusLabelNormalizer.ts`
+   - Updated callers:
+     - `app/api/csv.v2/application/services/CsvThesauriValuesDiff.ts`
+     - `app/api/csv.v2/application/services/PendingThesauriValuesApplier.ts`
+     - `app/api/csv.v2/application/services/CsvEntitiesImportMapper.ts`
+
+Net result:
+
+- No remaining `#api/thesauri/thesauri.js` imports in `app/api/csv.v2/**`.
+- No remaining `#api/i18n/translations.js` imports in `app/api/csv.v2/**`.
 
 ## 3) What is available in V2 today
 
@@ -118,10 +133,8 @@ Conclusion:
 ### 5.2 Migrate now (next slice)
 
 1. ✅ Done — replace test-only `createTestingZip` imports from `app/api/csv/specs/helpers.js` with CSV v2 local helper.
-2. Replace legacy thesauri/translations adapters in CSV create-thesauri flow with V2-native data-source/services usage.
-3. Remove direct `normalizeThesaurusLabel` imports from `#api/thesauri/thesauri.js` in CSV services:
-   - introduce a CSV-local normalization utility with documented parity behavior, or
-   - use an equivalent V2-safe shared utility if one exists and is stable.
+2. ✅ Done — replace legacy thesauri/translations adapters in CSV create-thesauri flow with V2-native data-source/services usage.
+3. ✅ Done — remove direct `normalizeThesaurusLabel` imports from `#api/thesauri/thesauri.js` in CSV services via CSV v2 local normalizer utility.
 
 ### 5.3 Guardrails while migrating
 
@@ -132,13 +145,14 @@ Conclusion:
 ## 6) Suggested execution order
 
 1. ✅ Completed: test helper decoupling (`createTestingZip`).
-2. Normalization import decoupling (`normalizeThesaurusLabel`) — moderate risk, add focused tests.
-3. Legacy repository replacement in thesauri-create job — highest risk, integration-focused verification.
+2. ✅ Completed: normalization import decoupling (`normalizeThesaurusLabel`).
+3. ✅ Completed: thesauri-create repository replacement off legacy adapters.
+4. Next candidate: remove temporary compatibility bridges (`v1CSVImportCompat`, v1 route fallback) when product/UI rollout allows.
 
 ## 7) Verification checklist for this workstream
 
 - No `app/api/csv.v2/**` production file imports from:
-  - `#api/csv/**`
+  - `#api/csv/**` (except intentional v1 fallback in `infrastructure/http/routes.ts`)
   - `#api/thesauri/thesauri.js`
   - `#api/i18n/translations.js`
 - V1 fallback route and compat emitter remain only where intentionally allowed.
@@ -154,3 +168,42 @@ Conclusion:
 - Migration spec output-noise cleanup applied:
   - `app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts` now mocks `process.stdout.write` in `beforeAll`.
   - focused spec still passes after change.
+- Thesauri-v2 replacement verification passed:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/services/specs/CsvEntitiesImportMapper.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
+  - result: pass (3 suites, 17 tests).
+
+### 8.1 Clarifications from review (Mar 2026)
+
+- **Normalization semantics (important):**
+  - V1 `normalizeThesaurusLabel` uses `trim().toLowerCase()` for matching/dedup.
+  - Stored labels are not forced to lowercase; lowercasing is used for comparison keys.
+  - Effective behavior remains case-insensitive uniqueness for matching (no separate values differing only by case).
+- **Adapter rationale:**
+  - Current `CsvThesauriRepository` and `CsvTranslationsRepository` were introduced as an incremental bridge to remove v1 imports from `csv.v2` production code while minimizing service-level churn.
+  - This is transitional and should be collapsed in the next pass (see section 9).
+- **TS fix applied:**
+  - `CsvThesauriRepository` no longer initializes `thesauriDS` from `this.transactionManager` in a field initializer.
+  - DS initialization now happens in constructor (fixes "used before initialization" error).
+
+## 9) Next-agent first priority — collapse temporary adapters
+
+This is the **first priority** for the next agent in the boundary-cleanup track.
+
+Goal:
+
+- Remove the temporary CSV adapter layer introduced in this pass:
+  - `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
+  - `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
+- Refactor CSV thesauri-create flow to consume core v2 contracts/services directly (or equivalent v2-native path), avoiding CSV-local wrapper repositories.
+
+Scope guidance:
+
+- Start from `CsvCreateThesauriValuesJob` / `PendingThesauriValuesApplier` contracts and push them toward native v2 DS/service shapes.
+- Preserve current behavior and idempotency semantics.
+- Do not touch core queue/router/dispatcher contracts.
+
+Acceptance for this priority:
+
+- No CSV-local adapter repositories needed for thesauri/translations.
+- CSV v2 production code remains free of `#api/thesauri/thesauri.js` and `#api/i18n/translations.js`.
+- Focused tests for thesauri-create/applier/mapper stay green.

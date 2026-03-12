@@ -926,6 +926,43 @@ Implementation simplifications performed:
   - CSV v2 focused extraction specs pass.
   - `185-csv_v2_indexes` focused spec still passes after stdout-silencing update.
 
+#### 18.10 Thesauri v2 replacement pass (Mar 2026)
+
+- Removed CSV v2 dependency on legacy thesauri/translations modules:
+  - deleted:
+    - `app/api/csv.v2/infrastructure/services/LegacyThesauriRepository.ts`
+    - `app/api/csv.v2/infrastructure/services/LegacyTranslationsRepository.ts`
+  - added:
+    - `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
+    - `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
+  - updated factory wiring:
+    - `app/api/csv.v2/infrastructure/factories/CsvCreateThesauriValuesJobFactory.ts`
+- Replaced direct `normalizeThesaurusLabel` usage from v1 module:
+  - added `app/api/csv.v2/application/services/CsvThesaurusLabelNormalizer.ts`
+  - updated:
+    - `CsvThesauriValuesDiff`
+    - `PendingThesauriValuesApplier`
+    - `CsvEntitiesImportMapper`
+- `PendingThesauriValuesApplier` now passes context label to translations repository updates
+  (to preserve thesaurus context metadata when upserting translation keys).
+- Verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/services/specs/CsvEntitiesImportMapper.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
+  - result: pass (3 suites, 17 tests).
+- Remaining intentional compatibility bridges are tracked in:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
+
+#### 18.11 Review clarifications + next first priority (Mar 2026)
+
+- Clarified behavior: v1 thesaurus normalization lowercases labels for matching/dedup keys,
+  but does not force stored labels to lowercase; effective matching remains case-insensitive.
+- Fixed TS issue in `CsvThesauriRepository` ("transaction manager used before initialization")
+  by moving DS initialization into constructor.
+- **Explicit next-agent first priority (for boundary cleanup):**
+  - Collapse temporary CSV adapter repositories introduced in 18.10 and refactor thesauri-create
+    flow to consume v2-native contracts/services directly.
+  - Source of truth for this priority:
+    - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md` (section "Next-agent first priority — collapse temporary adapters").
+
 ### 19) TODO — Document ReadTheDocs import instructions
 
 We should create and maintain user-facing documentation in ReadTheDocs that explains
