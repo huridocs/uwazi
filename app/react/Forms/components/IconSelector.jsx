@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { iconNames } from '#UI/Icon/library.js';
 import { CountryList } from '#app/UI/index.js';
-import DropdownList from 'react-widgets/lib/DropdownList.js';
+import DropdownListModule from 'react-widgets/lib/DropdownList.js';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const DropdownList = resolveDefaultExport(DropdownListModule);
 import { IconSelectorItem } from './IconSelectorItem.js';
 
 export class IconSelector extends Component {

@@ -1,10 +1,8 @@
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
 
-const updateDatasetScript = `window.updatePageDatasets("default",{rows:[],totalRows:292,relation:"eq",aggregations:
-{all:{tipo:{meta:{},doc_count:915,buckets:[{key:"57d8a9c4-f0cd-4290-b15e-ddf2b3c6ef91",doc_count:6,filtered:
-{meta:{},doc_count:2},label:"De asunto"},{key:"d79ab686-a987-4a1e-a26a-0a604a5f3aae",doc_count:6,filtered:
-{meta:{},doc_count:2},label:"En casos"}],count:11}}}});`;
+const updateDatasetScript =
+  'window.updatePageDatasets("default",{rows:[],totalRows:292,relation:"eq",aggregations:{all:{tipo:{meta:{},doc_count:915,buckets:[{key:"57d8a9c4-f0cd-4290-b15e-ddf2b3c6ef91",doc_count:6,filtered:{meta:{},doc_count:2},label:"De asunto"},{key:"d79ab686-a987-4a1e-a26a-0a604a5f3aae",doc_count:6,filtered:{meta:{},doc_count:2},label:"En casos"}],count:11}}}});';
 
 const graphs = {
   barChart: '<BarChart property="tipo" context="58ada34c299e8267485450fb" />',
@@ -20,7 +18,7 @@ const insertChart = (chart: string, chartName: string) => {
   cy.get('input[name="title"]').type('{selectAll}{backspace}', { delay: 0 });
   cy.get('input[name="title"]').type(chartName, { delay: 0 });
   cy.contains('Markdown').click();
-  typeInEditor('html', `<Dataset />\n${chart}`);
+  typeInEditor('html', `<Dataset />\n${chart}`, false, 'property', true);
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(501);
 };
@@ -106,16 +104,9 @@ describe('Graphs in Page ', () => {
       dismissModalIfVisible();
       cy.contains('tr', 'Bar chart graph').contains('button', 'Edit').click();
       cy.contains('[role="tab"]', 'Javascript').click();
-      // delete extra closing keys added by the code editor when writing this text
-      typeInEditor('javascript', updateDatasetScript, true);
-      cy.get('body').then($body => {
-        if ($body.find('div[data-mode-id="javascript"]').length) {
-          cy.get('div[data-mode-id="javascript"]').type('{backspace}{backspace}');
-        }
-      });
-      // wait for editor to update
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(501);
+      cy.get('#panel-Advanced .monaco-editor textarea', { timeout: 10000 }).should('exist');
+      typeInEditor('javascript', updateDatasetScript, true, 'updatePageDatasets', true);
+      cy.contains('button.bg-success-700', 'Save').should('not.be.disabled');
       savePage();
       visitPage();
       takeSnapshot();

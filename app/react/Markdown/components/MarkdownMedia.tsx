@@ -3,7 +3,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
-import ReactPlayer from 'react-player';
+import ReactPlayerModule from 'react-player';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
 import { Icon } from '#app/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { validMediaFile } from '#app/Metadata/helpers/validator.js';
@@ -58,7 +61,7 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
 const MarkdownMedia = (props: MarkdownMediaProps) => {
   //Given the testing conditions, ref should be declared in this specific order.
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<ReactPlayer>(null);
+  const playerRef = useRef<React.ComponentRef<typeof ReactPlayer>>(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
     timeHours: '',
