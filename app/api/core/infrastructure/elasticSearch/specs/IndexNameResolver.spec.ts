@@ -1,9 +1,9 @@
 import { IndexNameResolver } from '../IndexNameResolver.js';
-import type { TenantRoutingRepository } from '../TenantRoutingRepository.js';
+import type { TenantRoutingDataSource } from '../TenantRoutingDataSource.js';
 
 const makeRepository = (
-  override: Partial<TenantRoutingRepository> = {}
-): TenantRoutingRepository => ({
+  override: Partial<TenantRoutingDataSource> = {}
+): TenantRoutingDataSource => ({
   findRoute: jest.fn().mockResolvedValue(null),
   upsertRoute: jest.fn().mockResolvedValue(undefined),
   deleteRoute: jest.fn().mockResolvedValue(undefined),

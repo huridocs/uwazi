@@ -1,7 +1,7 @@
 import { Client } from '@elastic/elasticsearch';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
 import { getSharedConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoTenantRoutingRepository } from './MongoTenantRoutingRepository';
+import { MongoTenantRoutingDataSource } from './MongoTenantRoutingDataSource';
 import { TenantAwareESClient } from './TenantAwareESClient';
 import { IndexNameResolver } from './IndexNameResolver';
 import { config } from '#api/config.js';
@@ -10,12 +10,12 @@ class ElasticSearchClientFactory {
   private static instance: Client;
 
   static tenantAware(tenantId: string): TenantAwareESClient {
-    const mongoTenantRoutingRepository = new MongoTenantRoutingRepository(
+    const mongoTenantRoutingDataSource = new MongoTenantRoutingDataSource(
       getSharedConnection(),
       TransactionManagerFactory.createForSharedDataBase()
     );
 
-    const resolver = new IndexNameResolver(mongoTenantRoutingRepository);
+    const resolver = new IndexNameResolver(mongoTenantRoutingDataSource);
 
     return new TenantAwareESClient({
       client: ElasticSearchClientFactory.getInstance(),

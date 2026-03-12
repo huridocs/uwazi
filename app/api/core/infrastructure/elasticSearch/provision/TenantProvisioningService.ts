@@ -1,6 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
 import { IndexNameResolver } from '../IndexNameResolver';
-import { TenantRoutingRepository } from '../TenantRoutingRepository';
 import {
   ProvisioningResult,
   GroupAlreadyExistsError,
@@ -9,11 +8,12 @@ import {
   IndexDefinition,
 } from '../Types';
 import { GroupAliasNameBuilder } from './GroupAliasNameBuilder';
+import { TenantRoutingDataSource } from '../TenantRoutingDataSource';
 
 type Deps = {
   esClient: Client;
   registry: Record<string, IndexDefinition>;
-  routingRepository: TenantRoutingRepository;
+  routingRepository: TenantRoutingDataSource;
   resolver: IndexNameResolver;
 };
 

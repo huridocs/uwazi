@@ -1,12 +1,12 @@
 import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '../mongodb/common/MongoDataSource';
-import { TenantRouting, TenantRoutingRepository } from './TenantRoutingRepository';
+import { TenantRouting, TenantRoutingDataSource } from './TenantRoutingDataSource';
 
 type TenantRoutingDocument = { _id: ObjectId } & TenantRouting;
 
-class MongoTenantRoutingRepository
+class MongoTenantRoutingDataSource
   extends MongoDataSource<TenantRoutingDocument>
-  implements TenantRoutingRepository
+  implements TenantRoutingDataSource
 {
   protected collectionName = 'tenantRoutings';
 
@@ -29,5 +29,5 @@ class MongoTenantRoutingRepository
   }
 }
 
-export { MongoTenantRoutingRepository };
+export { MongoTenantRoutingDataSource };
 export type { TenantRoutingDocument };

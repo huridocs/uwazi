@@ -6,10 +6,10 @@ type TenantRouting = {
   assignedAt: Date;
 };
 
-interface TenantRoutingRepository {
+interface TenantRoutingDataSource {
   findRoute(tenantId: string, aliasName: string): Promise<string | null>;
   upsertRoute(record: Omit<TenantRouting, 'assignedAt'>): Promise<void>;
   deleteRoute(tenantId: string, aliasName: string): Promise<void>;
 }
 
-export type { TenantRoutingRepository, TenantRouting };
+export type { TenantRoutingDataSource, TenantRouting };

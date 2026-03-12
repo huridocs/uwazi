@@ -1,10 +1,10 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { MongoTenantRoutingRepository } from '../MongoTenantRoutingRepository.js';
+import { MongoTenantRoutingDataSource } from '../MongoTenantRoutingDataSource.js';
 
 const createSut = () =>
-  new MongoTenantRoutingRepository(getConnection(), TransactionManagerFactory.default());
+  new MongoTenantRoutingDataSource(getConnection(), TransactionManagerFactory.default());
 
 const fixtures = {
   tenantRoutings: [
@@ -39,7 +39,7 @@ const fixtures = {
   ],
 };
 
-describe('MongoTenantRoutingRepository', () => {
+describe('MongoTenantRoutingDataSource', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
   });

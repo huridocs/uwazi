@@ -1,7 +1,7 @@
-import type { TenantRoutingRepository } from './TenantRoutingRepository.js';
+import { TenantRoutingDataSource } from './TenantRoutingDataSource';
 
 class IndexNameResolver {
-  constructor(private readonly repository: TenantRoutingRepository) {}
+  constructor(private readonly repository: TenantRoutingDataSource) {}
 
   async resolve(aliasName: string, tenantId: string): Promise<string> {
     const route = await this.repository.findRoute(tenantId, aliasName);

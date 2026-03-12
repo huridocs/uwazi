@@ -1,7 +1,7 @@
 import type { Client } from '@elastic/elasticsearch';
 import { GroupAliasNameBuilder } from '../provision/GroupAliasNameBuilder.js';
 import { TenantProvisioningService } from '../provision/TenantProvisioningService.js';
-import type { TenantRoutingRepository } from '../TenantRoutingRepository.js';
+import type { TenantRoutingDataSource } from '../TenantRoutingDataSource.js';
 import {
   GroupAlreadyExistsError,
   GroupNotFoundError,
@@ -43,7 +43,7 @@ const makeResources = ({
 } = {}) => {
   const { esClient, createMock, reindexMock, deleteByQueryMock } = makeEsClient(existsAliasResult);
   const upsertRoute = jest.fn().mockResolvedValue(undefined);
-  const routingRepository: TenantRoutingRepository = {
+  const routingRepository: TenantRoutingDataSource = {
     findRoute: jest.fn(),
     upsertRoute,
     deleteRoute: jest.fn(),
