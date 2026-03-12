@@ -79,7 +79,9 @@ describe('Public Form', () => {
 
     it('should visit the page and do a submit for the first template', () => {
       dismissModalIfVisible();
+      cy.contains('a', 'Pages').scrollIntoView();
       cy.contains('a', 'Pages').click();
+      dismissModalIfVisible();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').matchImageSnapshot();
