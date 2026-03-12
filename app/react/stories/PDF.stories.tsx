@@ -5,15 +5,9 @@ import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { PDF, PDFControls, Snippet } from '#V2/Components/PDFViewer/index.js';
 import { highlights, searchResults } from './fixtures/PDFStoryFixtures.js';
 
-const meta: Meta<typeof PDF> = {
-  title: 'Viewers/PDF',
-  component: PDF,
-  args: { onSelect: fn(), onDeselect: fn() },
-};
+type PDFStoryProps = React.ComponentProps<typeof PDF> & { startOnPage?: number };
 
-type Story = StoryObj<typeof PDF>;
-
-const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
+const PdfStoryContent: React.FC<PDFStoryProps> = ({ startOnPage, ...args }) => {
   const pdfControlsRef = useRef<PDFControls | null>(null);
   const [currentScale, setCurrentScale] = useState(1);
   const [currentPage, setCurrentPage] = useState<number | null>(1);
@@ -62,12 +56,17 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
         <p className="font-semibold">PDF Container: ({maxPages} pages)</p>
         <div className="p-4 h-[80vh] rounded-md border overflow-y-scroll">
           <PDF
-            fileUrl="/sample.pdf"
+            fileUrl={args.fileUrl}
             onSelect={handleSelect}
             onDeselect={handleDeselect}
             onScaleChange={handleScaleChange}
             onPageChange={handlePageChange}
-            onPdfReady={handlePdfReady}
+            onPdfReady={(controllers, pages) => {
+              handlePdfReady(controllers, pages);
+              if (startOnPage) {
+                controllers.goToPage(startOnPage);
+              }
+            }}
             highlights={args.highlights}
             size={{ height: '100%', width: '100%' }}
           />
@@ -122,6 +121,38 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
             Clear highlighted snippet
           </button>
         </div>
+        {args.highlights && (
+          <>
+            <hr className="my-4" />
+            <p>Text selections:</p>
+            <div className="flex flex-row gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  pdfControlsRef.current?.scrollToHighlight('1-1');
+                }}
+              >
+                Page 1-1
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  pdfControlsRef.current?.scrollToHighlight('1-2');
+                }}
+              >
+                Page 1-2
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  pdfControlsRef.current?.scrollToHighlight('22-1');
+                }}
+              >
+                Page 22
+              </button>
+            </div>
+          </>
+        )}
         <hr className="my-4" />
         <div>
           <p>Current selection:</p>
@@ -133,6 +164,25 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
     </div>
   );
 };
+
+const meta = {
+  title: 'Viewers/PDF',
+  component: PdfStoryContent,
+  args: {
+    fileUrl: '/sample.pdf',
+    onSelect: fn(),
+    onDeselect: fn(),
+    startOnPage: undefined,
+  },
+  argTypes: {
+    startOnPage: {
+      control: { type: 'number' },
+      description: 'Page to navigate to after the PDF is ready',
+    },
+  },
+} satisfies Meta<PDFStoryProps>;
+
+type Story = StoryObj<typeof meta>;
 
 const Primary: Story = {
   // eslint-disable-next-line react/jsx-props-no-spreading
@@ -152,7 +202,7 @@ const WithSelections: Story = {
 
 const WithAutoScroll: Story = {
   ...Primary,
-  args: {},
+  args: { startOnPage: 10 },
 };
 
 export { Basic, WithSelections, WithAutoScroll };

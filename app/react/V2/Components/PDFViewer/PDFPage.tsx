@@ -171,7 +171,7 @@ const PDFPage = ({
         };
 
         return (
-          <div key={scaledHightlight.key} data-highlight-key={scaledHightlight.key}>
+          <div key={scaledHightlight.key} data-highlight-key={`${page}-${scaledHightlight.key}`}>
             <Highlight
               textSelection={scaledHightlight.textSelection}
               color={scaledHightlight.color}
