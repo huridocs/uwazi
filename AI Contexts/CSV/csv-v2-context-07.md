@@ -963,6 +963,37 @@ Implementation simplifications performed:
   - Source of truth for this priority:
     - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md` (section "Next-agent first priority — collapse temporary adapters").
 
+#### 18.12 Temporary thesauri adapter layer removed (Mar 2026)
+
+- Completed the follow-up from 18.11:
+  - deleted:
+    - `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
+    - `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
+    - `app/api/csv.v2/application/contracts/ThesauriRepository.ts`
+    - `app/api/csv.v2/application/contracts/TranslationsRepository.ts`
+- `CsvCreateThesauriValuesJobFactory` now injects native dependencies directly:
+  - core `ThesauriDataSource` via `ThesauriDataSourceFactory.default(...)`
+  - `i18n.v2` `TranslationsDataSource` via `DefaultTranslationsDataSource(...)`
+- `PendingThesauriValuesApplier` now consumes those native contracts directly to:
+  - load/update thesauri values,
+  - upsert translations.
+- No CSV-local thesauri/translations repository wrappers remain in production code.
+- Follow-up maintainability pass:
+  - split `PendingThesauriValuesApplier` helper logic into focused service modules:
+    - `PendingThesauriThesaurusGateway`
+    - `PendingThesauriTranslationsGateway`
+    - `PendingThesauriAppliedValuesCollector`
+  - goal: keep applier orchestration readable while preserving behavior.
+- Test typing cleanup:
+  - removed `as any` / `as unknown` casting from
+    - `CsvCreateThesauriValuesJob.spec.ts`
+    - `PendingThesauriValuesApplier.spec.ts`
+  - replaced with typed test doubles implementing real contracts.
+- `CsvCreateThesauriValuesJobFactory` now lazily resolves a Mongo transaction manager only when DS defaults are needed, allowing typed non-Mongo transaction-manager doubles in tests without async-context failures.
+- Focused verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
+  - result: pass (2 suites, 4 tests).
+
 ### 19) TODO — Document ReadTheDocs import instructions
 
 We should create and maintain user-facing documentation in ReadTheDocs that explains

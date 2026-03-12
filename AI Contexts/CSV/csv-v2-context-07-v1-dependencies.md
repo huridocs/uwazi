@@ -185,25 +185,38 @@ Conclusion:
   - `CsvThesauriRepository` no longer initializes `thesauriDS` from `this.transactionManager` in a field initializer.
   - DS initialization now happens in constructor (fixes "used before initialization" error).
 
-## 9) Next-agent first priority — collapse temporary adapters
+### 8.2 Adapter-collapse completion (Mar 2026)
 
-This is the **first priority** for the next agent in the boundary-cleanup track.
+Status: **Completed**.
 
-Goal:
+Changes:
 
-- Remove the temporary CSV adapter layer introduced in this pass:
-  - `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
-  - `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
-- Refactor CSV thesauri-create flow to consume core v2 contracts/services directly (or equivalent v2-native path), avoiding CSV-local wrapper repositories.
+- Removed temporary CSV adapter layer:
+  - deleted `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
+  - deleted `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
+- Removed temporary CSV adapter contracts:
+  - deleted `app/api/csv.v2/application/contracts/ThesauriRepository.ts`
+  - deleted `app/api/csv.v2/application/contracts/TranslationsRepository.ts`
+- Refactored thesauri-create wiring to consume v2-native contracts directly:
+  - `CsvCreateThesauriValuesJobFactory` now injects:
+    - core `ThesauriDataSource` (`ThesauriDataSourceFactory.default(...)`)
+    - `i18n.v2` `TranslationsDataSource` (`DefaultTranslationsDataSource(...)`)
+  - `PendingThesauriValuesApplier` now reads/updates thesauri through `ThesauriDataSource`
+    and upserts translations through `TranslationsDataSource`, with no CSV-local repository wrappers.
 
-Scope guidance:
+Verification:
 
-- Start from `CsvCreateThesauriValuesJob` / `PendingThesauriValuesApplier` contracts and push them toward native v2 DS/service shapes.
-- Preserve current behavior and idempotency semantics.
-- Do not touch core queue/router/dispatcher contracts.
+- `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
+- result: pass (2 suites, 4 tests).
+- Follow-up quality pass:
+  - extracted helper modules from `PendingThesauriValuesApplier` to reduce complexity/readability load.
+  - removed `as any` / `as unknown` casts from related specs by introducing typed test doubles.
+  - adjusted factory to lazily allocate Mongo TM defaults so typed non-Mongo test doubles can be used without app-context errors.
 
-Acceptance for this priority:
+## 9) Updated next candidate in boundary-cleanup track
 
-- No CSV-local adapter repositories needed for thesauri/translations.
-- CSV v2 production code remains free of `#api/thesauri/thesauri.js` and `#api/i18n/translations.js`.
-- Focused tests for thesauri-create/applier/mapper stay green.
+With temporary thesauri/translations adapters removed, the next candidate in this workstream is:
+
+- remove remaining intentional compatibility bridges when product rollout allows:
+  - `v1CSVImportCompat` emitter path
+  - v1 fallback route path in `csv.v2` HTTP routing.

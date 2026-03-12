@@ -1,65 +1,209 @@
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { Result } from '#api/core/libs/Result.js';
 import { PendingThesauriValuesApplier } from '../PendingThesauriValuesApplier.js';
 import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
 import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues.js';
-import { ThesauriRepository, ThesaurusValueInput } from '../../contracts/ThesauriRepository.js';
-import { TranslationsRepository } from '../../contracts/TranslationsRepository.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { Translation, TranslationContext } from '#api/i18n.v2/model/Translation.js';
+import { TranslationContextModel } from '#api/i18n.v2/model/TranslationContextModel.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { BulkDeleteKeysByContext, UpdateKeysByContextProps } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { DeleteResult, UpdateResult } from 'mongodb';
+import { Id } from '#api/core/libs/Id.js';
 
-const createTranslationsRepo = (): TranslationsRepository => ({
-  async updateEntries(): Promise<void> {
-    /* noop */
-  },
-});
+class InMemoryResultSet<T> implements ResultSet<T> {
+  constructor(private values: T[]) {}
 
-const createThesauriRepo = (initial: ThesaurusSchema): ThesauriRepository => {
-  let counter = 0;
-  let thesaurus = initial;
+  async all() {
+    return this.values;
+  }
 
-  const nextId = () => {
-    counter += 1;
-    return `id-${counter}`;
-  };
+  async page(number: number, size: number) {
+    const start = Math.max(0, number * size);
+    return this.values.slice(start, start + size);
+  }
 
-  return {
-    async getById() {
-      return thesaurus;
-    },
-    async appendValues(
-      _thesaurusId: string,
-      values: ThesaurusValueInput[]
-    ): Promise<ThesaurusSchema> {
-      const existingValues = thesaurus.values || [];
+  async first() {
+    return this.values[0] ?? null;
+  }
 
-      values.forEach(rootToAppend => {
-        const existingRoot = existingValues.find(v => v.label === rootToAppend.label);
+  async hasNext() {
+    return false;
+  }
 
-        if (existingRoot) {
-          const existingChildren = existingRoot.values || [];
-          const childrenToAdd =
-            rootToAppend.values?.map(child => ({
-              id: nextId(),
-              label: child.label,
-            })) || [];
-          existingRoot.values = [...existingChildren, ...childrenToAdd];
-        } else {
-          const withIds = {
-            id: nextId(),
-            label: rootToAppend.label,
-            values:
-              rootToAppend.values?.map(child => ({
-                id: nextId(),
-                label: child.label,
-              })) || [],
-          };
-          existingValues.push(withIds);
-        }
-      });
+  async nextBatch(size: number) {
+    return this.values.slice(0, size);
+  }
 
-      thesaurus = { ...thesaurus, values: existingValues };
-      return thesaurus;
-    },
-  };
-};
+  async forEach(callback: (item: T) => Promise<void | boolean> | void | boolean) {
+    for (const item of this.values) {
+      const result = await callback(item);
+      if (result === false) {
+        break;
+      }
+    }
+  }
+
+  async forEachBatch(
+    batchSize: number,
+    callback: (items: T[]) => Promise<void | boolean> | void | boolean
+  ) {
+    const firstBatch = this.values.slice(0, batchSize);
+    await callback(firstBatch);
+  }
+
+  async find(predicate: (item: T) => Promise<boolean> | boolean) {
+    for (const item of this.values) {
+      if (await predicate(item)) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  async every(predicate: (item: T) => Promise<boolean> | boolean) {
+    for (const item of this.values) {
+      if (!(await predicate(item))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async some(predicate: (item: T) => Promise<boolean> | boolean) {
+    for (const item of this.values) {
+      if (await predicate(item)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async indexed(predicate: (item: T) => string | number) {
+    return this.values.reduce<Record<string | number, Awaited<T>>>((acc, item) => {
+      acc[predicate(item)] = item as Awaited<T>;
+      return acc;
+    }, {});
+  }
+}
+
+class FakeTranslationsDataSource implements TranslationsDataSource {
+  public upsertCalls: Translation[][] = [];
+
+  async insert(translations: Translation[]): Promise<Translation[]> {
+    return translations;
+  }
+
+  async upsert(translations: Translation[]): Promise<Translation[]> {
+    this.upsertCalls.push(translations);
+    return translations;
+  }
+
+  getAll(): ResultSet<Translation> {
+    return new InMemoryResultSet<Translation>([]);
+  }
+
+  getByLanguage(_language: string): ResultSet<Translation> {
+    return new InMemoryResultSet<Translation>([]);
+  }
+
+  getByContext(_context: string): ResultSet<Translation> {
+    return new InMemoryResultSet<Translation>([]);
+  }
+
+  getContextAndKeys(_contextId: string, _keys: string[]): ResultSet<Translation> {
+    return new InMemoryResultSet<Translation>([]);
+  }
+
+  async deleteByContextId(_contextId: string): Promise<DeleteResult> {
+    return { acknowledged: true, deletedCount: 0 };
+  }
+
+  async deleteByLanguage(_language: string): Promise<DeleteResult> {
+    return { acknowledged: true, deletedCount: 0 };
+  }
+
+  async deleteKeysByContext(_contextId: string, _keysToDelete: string[]): Promise<DeleteResult> {
+    return { acknowledged: true, deletedCount: 0 };
+  }
+
+  async bulkDeleteKeysByContext(_props: BulkDeleteKeysByContext): Promise<void> {}
+
+  async updateContextLabel(_contextId: string, _contextLabel: string): Promise<UpdateResult> {
+    return {
+      acknowledged: true,
+      matchedCount: 0,
+      modifiedCount: 0,
+      upsertedCount: 0,
+      upsertedId: null,
+    };
+  }
+
+  async updateKeysByContext(_contextId: string, _keyChanges: { [p: string]: string }): Promise<void> {}
+
+  async updateKeysByContextV2(_props: UpdateKeysByContextProps): Promise<void> {}
+
+  async calculateNonexistentKeys(_contextId: string, keys: string[]): Promise<string[]> {
+    return keys;
+  }
+
+  async getContext(
+    _contextInfo: TranslationContext,
+    _languages: LanguageISO6391[],
+    _defaultLanguage: LanguageISO6391
+  ): Promise<TranslationContextModel> {
+    throw new Error('not implemented');
+  }
+
+  async updateContext(_context: TranslationContextModel): Promise<void> {}
+}
+
+class FakeThesauriDataSource implements ThesauriDataSource {
+  constructor(private thesaurus: ThesaurusSchema) {}
+
+  async getById(_id: string) {
+    return Result.ok(toCoreThesaurus(this.thesaurus));
+  }
+
+  async exists(_thesaurus: Thesaurus) {
+    return Result.ok<false>(false);
+  }
+
+  async create(_thesaurus: Thesaurus) {}
+
+  async update(nextThesaurus: Thesaurus): Promise<void> {
+    this.thesaurus = {
+      _id: nextThesaurus.id,
+      name: nextThesaurus.name,
+      values: nextThesaurus.values.map(root => ({
+        id: root.id,
+        label: root.label,
+        values: root.values?.map(child => ({
+          id: child.id,
+          label: child.label,
+        })),
+      })),
+    };
+  }
+}
+
+const toCoreThesaurus = (schema: ThesaurusSchema) =>
+  new Thesaurus({
+    id: typeof schema._id === 'string' ? schema._id : schema._id?.toString() || 'thesaurus-id',
+    name: schema.name,
+    values:
+      schema.values?.map(root => ({
+        id: root.id ?? new Id({}).value,
+        label: root.label,
+        values: root.values?.map(child => ({
+          id: child.id ?? new Id({}).value,
+          label: child.label,
+        })),
+      })) || [],
+  });
 
 const buildPendingDoc = ({
   importId,
@@ -112,9 +256,10 @@ describe('PendingThesauriValuesApplier', () => {
       ],
     };
 
+    const translationsDS = new FakeTranslationsDataSource();
     const applier = new PendingThesauriValuesApplier({
-      thesauriRepo: createThesauriRepo(existing),
-      translationsRepo: createTranslationsRepo(),
+      thesauriDS: new FakeThesauriDataSource(existing),
+      translationsDS,
     });
 
     const pendingDoc = buildPendingDoc({
@@ -137,9 +282,10 @@ describe('PendingThesauriValuesApplier', () => {
 
   it('should capture newly appended IDs in appliedValues', async () => {
     const thesaurusId = 'th-2';
+    const translationsDS = new FakeTranslationsDataSource();
     const applier = new PendingThesauriValuesApplier({
-      thesauriRepo: createThesauriRepo({ name: 'th', values: [] }),
-      translationsRepo: createTranslationsRepo(),
+      thesauriDS: new FakeThesauriDataSource({ _id: thesaurusId, name: 'th', values: [] }),
+      translationsDS,
     });
 
     const pendingDoc = buildPendingDoc({
@@ -186,9 +332,10 @@ describe('PendingThesauriValuesApplier', () => {
       ],
     };
 
+    const translationsDS = new FakeTranslationsDataSource();
     const applier = new PendingThesauriValuesApplier({
-      thesauriRepo: createThesauriRepo(existing),
-      translationsRepo: createTranslationsRepo(),
+      thesauriDS: new FakeThesauriDataSource(existing),
+      translationsDS,
     });
 
     const entry = new CsvThesauriPendingEntry({

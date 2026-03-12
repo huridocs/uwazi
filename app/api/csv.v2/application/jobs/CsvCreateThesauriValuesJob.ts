@@ -2,10 +2,10 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
-import { ThesauriRepository } from '../../application/contracts/ThesauriRepository.js';
-import { TranslationsRepository } from '../../application/contracts/TranslationsRepository.js';
 import {
   CsvImport,
   CsvImportDomain,
@@ -43,8 +43,8 @@ type Input = {
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
-  thesauriRepo: ThesauriRepository;
-  translationsRepo: TranslationsRepository;
+  thesauriDS: ThesauriDataSource;
+  translationsDS: TranslationsDataSource;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
 };
@@ -60,8 +60,8 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
   constructor(deps: Deps) {
     super(deps);
     this.pendingValuesApplier = new PendingThesauriValuesApplier({
-      thesauriRepo: deps.thesauriRepo,
-      translationsRepo: deps.translationsRepo,
+      thesauriDS: deps.thesauriDS,
+      translationsDS: deps.translationsDS,
     });
   }
 
