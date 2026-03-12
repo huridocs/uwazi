@@ -1,7 +1,6 @@
 import type { Client } from '@elastic/elasticsearch';
 import { GroupAliasNameBuilder } from '../provision/GroupAliasNameBuilder.js';
 import { TenantProvisioningService } from '../provision/TenantProvisioningService.js';
-import type { TenantRoutingDataSource } from '../TenantRoutingDataSource.js';
 import {
   GroupAlreadyExistsError,
   GroupNotFoundError,
@@ -9,6 +8,7 @@ import {
 } from '../Types.js';
 import type { IndexDefinition } from '../Types.js';
 import { IndexNameResolver } from '../IndexNameResolver.js';
+import { TenantRoutingDataSource } from '../TenantRoutingDataSource.js';
 
 const registry: Record<string, IndexDefinition> = {
   products: {
@@ -169,6 +169,7 @@ describe('TenantProvisioningService', () => {
         expect(firstCall.body.source.index).toBe('products');
         expect(firstCall.body.source.query).toEqual({ term: { tenantId: 'bigcorp' } });
         expect(firstCall.body.dest.index).toBe('products_group_enterprise');
+        expect(firstCall.body.dest.pipeline).toBe('none');
       });
 
       it('calls delta sync reindex after first reindex completes', async () => {
@@ -206,6 +207,41 @@ describe('TenantProvisioningService', () => {
         await expect(sut.assignTenant('bigcorp', 'products', 'enterprise')).rejects.toThrow(
           'ES reindex failed'
         );
+      });
+
+      describe('pipeline bypass', () => {
+        it("bulk reindex includes pipeline: 'none' to bypass ingest pipeline", async () => {
+          const { sut, reindexMock } = makeResources({ existsAliasResult: true });
+          await sut.assignTenant('bigcorp', 'products', 'enterprise');
+          const firstCall = reindexMock.mock.calls[0][0];
+          expect(firstCall.body.dest.pipeline).toBe('none');
+        });
+
+        it("delta reindex includes pipeline: 'none' to bypass ingest pipeline", async () => {
+          const { sut, reindexMock } = makeResources({ existsAliasResult: true });
+          await sut.assignTenant('bigcorp', 'products', 'enterprise');
+          const deltaCall = reindexMock.mock.calls[1][0];
+          expect(deltaCall.body.dest.pipeline).toBe('none');
+        });
+
+        it('delta reindex query filters by both tenantId AND updatedAt >= reindexStartedAt', async () => {
+          const fixedDate = '2024-06-01T12:00:00.000Z';
+          const spy = jest.spyOn(Date.prototype, 'toISOString').mockReturnValueOnce(fixedDate);
+          const { sut, reindexMock } = makeResources({ existsAliasResult: true });
+
+          await sut.assignTenant('bigcorp', 'products', 'enterprise');
+          spy.mockRestore();
+
+          const deltaCall = reindexMock.mock.calls[1][0];
+          const mustArray = deltaCall.body.source.query.bool.must;
+          expect(mustArray).toHaveLength(2);
+          expect(mustArray).toEqual(
+            expect.arrayContaining([
+              { term: { tenantId: 'bigcorp' } },
+              { range: { updatedAt: { gte: fixedDate } } },
+            ])
+          );
+        });
       });
     });
 

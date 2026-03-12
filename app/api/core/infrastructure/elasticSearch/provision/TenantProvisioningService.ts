@@ -119,7 +119,7 @@ class TenantProvisioningService {
       wait_for_completion: true,
       body: {
         source: { index: sourceAlias, query: { term: { tenantId } } },
-        dest: { index: targetAlias },
+        dest: { index: targetAlias, pipeline: 'none' },
       },
     });
 
@@ -134,7 +134,7 @@ class TenantProvisioningService {
             },
           },
         },
-        dest: { index: targetAlias },
+        dest: { index: targetAlias, pipeline: 'none' },
       },
     });
 

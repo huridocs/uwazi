@@ -1,5 +1,7 @@
+/* eslint-disable max-statements */
 import { Client } from '@elastic/elasticsearch';
 import type { IndexDefinition, IngestPipelineDefinition } from '../Types.js';
+import { IngestPipelineRegistry } from '../IngestPipelineRegistry.js';
 import {
   ElasticSearchBootstrapper,
   ElasticSearchBootstrapperDeps,
@@ -167,6 +169,75 @@ describe('ElasticSearchBootstrapper', () => {
         });
 
         await expect(sut.execute()).rejects.toThrow();
+      });
+    });
+
+    describe('Pipeline applied to index on document write', () => {
+      it('sets created_at and updated_at on first write, preserves created_at on re-index', async () => {
+        const alias = uniqueAlias();
+        createdIndexes.push(alias);
+        const pipelineDef = IngestPipelineRegistry.documentTimestamps;
+        createdPipelines.push(pipelineDef.id);
+
+        const { sut } = createSut({
+          registry: {
+            [alias]: {
+              alias,
+              physicalPrefix: alias,
+              settings: {
+                number_of_shards: 1,
+                'index.default_pipeline': pipelineDef.id,
+              },
+              mappings: {
+                properties: {
+                  created_at: { type: 'date' },
+                  updated_at: { type: 'date' },
+                },
+              },
+            } as unknown as IndexDefinition,
+          },
+          pipelineRegistry: { [pipelineDef.id]: pipelineDef },
+        });
+
+        await sut.execute();
+
+        // First write — document body has no timestamp fields
+        const docId = 'test-doc-pipeline';
+        await client.index({ index: alias, id: docId, body: { title: 'First' }, refresh: true });
+
+        const { body: first } = await client.get({
+          index: alias,
+          id: docId,
+        });
+        const src1 = first._source!;
+
+        expect(src1.created_at).toBeDefined();
+        expect(Date.parse(src1.created_at)).not.toBeNaN();
+        expect(src1.updated_at).toBeDefined();
+        expect(Date.parse(src1.updated_at)).not.toBeNaN();
+
+        const firstCreatedAt = src1.created_at;
+
+        // Brief pause so the second ingest timestamp is strictly later
+        // eslint-disable-next-line no-promise-executor-return
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Re-index the same doc, include created_at so the pipeline's conditional leaves it untouched
+        await client.index({
+          index: alias,
+          id: docId,
+          body: { title: 'Updated', created_at: firstCreatedAt },
+          refresh: true,
+        });
+
+        const { body: second } = await client.get({
+          index: alias,
+          id: docId,
+        });
+        const src2 = second._source!;
+
+        expect(src2.created_at).toBe(firstCreatedAt);
+        expect(src2.updated_at).not.toBe(firstCreatedAt);
       });
     });
   });

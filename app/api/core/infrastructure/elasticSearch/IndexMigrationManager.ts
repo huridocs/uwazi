@@ -72,7 +72,7 @@ class IndexMigrationManager {
 
     await this.deps.client.reindex({
       wait_for_completion: waitForCompletion,
-      body: { source: { index: currentPhysical }, dest: { index: newPhysical } },
+      body: { source: { index: currentPhysical }, dest: { index: newPhysical, pipeline: 'none' } },
     });
 
     await this.deltaReindex(currentPhysical, newPhysical, startedAt, waitForCompletion);
@@ -98,7 +98,7 @@ class IndexMigrationManager {
           index: currentPhysical,
           query: { range: { updatedAt: { gte: startedAt } } },
         },
-        dest: { index: newPhysical },
+        dest: { index: newPhysical, pipeline: 'none' },
       },
     });
   }

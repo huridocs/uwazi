@@ -104,7 +104,10 @@ describe('IndexMigrationManager', () => {
       // first call is the bulk reindex — no source query
       expect(reindexMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          body: { source: { index: 'products_v1' }, dest: { index: 'products_v2' } },
+          body: {
+            source: { index: 'products_v1' },
+            dest: { index: 'products_v2', pipeline: 'none' },
+          },
         })
       );
     });
@@ -208,6 +211,30 @@ describe('IndexMigrationManager', () => {
 
         expect(updateAliasesMock).not.toHaveBeenCalled();
       });
+
+      it("bulk reindex includes pipeline: 'none' to bypass ingest pipeline", async () => {
+        const { client, reindexMock } = makeClient({ currentPhysical: 'products_v1' });
+        const manager = new IndexMigrationManager({ client, registry });
+
+        await manager.migrate({ indexName: 'products', targetVersion: 2 });
+
+        const firstCall = reindexMock.mock.calls[0][0] as {
+          body: { dest: { pipeline: unknown } };
+        };
+        expect(firstCall.body.dest.pipeline).toBe('none');
+      });
+
+      it("delta reindex includes pipeline: 'none' to bypass ingest pipeline", async () => {
+        const { client, reindexMock } = makeClient({ currentPhysical: 'products_v1' });
+        const manager = new IndexMigrationManager({ client, registry });
+
+        await manager.migrate({ indexName: 'products', targetVersion: 2 });
+
+        const secondCall = reindexMock.mock.calls[1][0] as {
+          body: { dest: { pipeline: unknown } };
+        };
+        expect(secondCall.body.dest.pipeline).toBe('none');
+      });
     });
 
     it('runs validation hook before alias swap', async () => {
@@ -310,6 +337,18 @@ describe('IndexMigrationManager', () => {
       };
       const addAction = call.body.actions.find(a => a.add !== undefined);
       expect(addAction?.add?.index).toBe('products_v1');
+    });
+
+    it('does not call reindex API (rollback is alias swap only)', async () => {
+      const { client, reindexMock } = makeClient({
+        currentPhysical: 'products_v2',
+        targetExists: true,
+      });
+      const manager = new IndexMigrationManager({ client, registry });
+
+      await manager.rollback('products', 1);
+
+      expect(reindexMock).not.toHaveBeenCalled();
     });
 
     it('throws if target physical index does not exist', async () => {
