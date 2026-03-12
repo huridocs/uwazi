@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Truncate } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof Truncate> = {

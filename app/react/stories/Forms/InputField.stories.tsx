@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { InputField } from '#V2/Components/Forms/index.js';
 

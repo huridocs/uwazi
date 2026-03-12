@@ -1,6 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Notification.stories.js';
 

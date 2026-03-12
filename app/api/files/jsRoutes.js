@@ -1,18 +1,17 @@
-import proxy from 'express-http-proxy';
-import cors from 'cors';
-import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import settings from '#api/settings/index.js';
 import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
-import mailer from '#api/utils/mailer.js';
+import cors from 'cors';
+import proxy from 'express-http-proxy';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
-import { createError, validation } from '../utils/index.js';
+import { createError } from '../utils/index.js';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');
@@ -43,39 +42,15 @@ const routes = app => {
     (req, _res, next) => {
       try {
         req.body.entity = JSON.parse(req.body.entity);
-        if (req.body.email) {
-          req.body.email = JSON.parse(req.body.email);
-        }
       } catch (err) {
         next(err);
         return;
       }
       next();
     },
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          properties: {
-            email: {
-              type: 'object',
-              properties: {
-                to: { type: 'string' },
-                from: { type: 'string' },
-                text: { type: 'string' },
-                html: { type: 'string' },
-                subject: { type: 'string' },
-              },
-              required: ['to', 'from', 'text', 'subject'],
-            },
-          },
-        },
-      },
-    }),
     async (req, res, next) => {
       const { allowedPublicTemplates } = await settings.get();
-      const { entity, email } = req.body;
+      const { entity } = req.body;
 
       if (entity._id) {
         next(createError('Unauthorized _id property', 403));
@@ -102,10 +77,6 @@ const routes = app => {
         const entityWithFiles = await entityDAO
           .getWithFile({ language: req.language, sharedId: result.sharedId })
           .next();
-
-        if (email) {
-          await mailer.send(email);
-        }
 
         res.json(entityWithFiles);
       } catch (error) {

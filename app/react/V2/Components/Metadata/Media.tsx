@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import ReactPlayer from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
 import { MediaMetadataProperty } from '#V2/domain/entities/types.js';
@@ -23,7 +22,9 @@ const Media = ({
   height = 300,
 }: MediaProps) => {
   const { value, alt, timelinks = [] } = values[0];
-  const playerRef = useRef<ReactPlayer>(null);
+  type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
+  type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
+  const playerRef = useRef<PlayerInstance>(null);
 
   const handleTimelinkClick = (time: number) => {
     playerRef.current?.seekTo(time, 'seconds');

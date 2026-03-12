@@ -151,13 +151,13 @@ class LoginComponent extends RouteHandler {
                       <div className="form-text">
                         {this.state.error && <span>{t('System', 'Login failed')} - </span>}
                         <span
-                          title={t('System', 'Forgot Password?', null, false)}
+                          title={t('System', 'Forgot Password or Username?', null, false)}
                           onClick={this.setRecoverPassword}
                           className={`button forgot-password ${
                             this.state.error ? 'label-danger' : ''
                           }`}
                         >
-                          <Translate>Forgot Password?</Translate>
+                          <Translate>Forgot Password or Username?</Translate>
                         </span>
                       </div>
                     </div>
@@ -203,6 +203,16 @@ class LoginComponent extends RouteHandler {
                         </p>
                       </div>
                     </Field>
+                  </div>
+                )}
+                {this.state.recoverPassword && (
+                  <div className="tw-content">
+                    <div className="pb-4 px-4">
+                      <Translate className="text-sm text-gray-500">
+                        If an account exists with the email you provided, you will receive an email
+                        with instructions to reset your password.
+                      </Translate>
+                    </div>
                   </div>
                 )}
                 <p>

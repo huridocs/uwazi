@@ -1,7 +1,7 @@
 /* eslint-disable import/exports-last */
 /* eslint-disable import/no-default-export */
 import React, { useRef, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   CodeEditor,
   CodeEditorProps,
@@ -99,6 +99,9 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
           intialValue={intialValue}
           onMount={editor => {
             editorInstance.current = editor;
+            if (typeof window !== 'undefined') {
+              (window as { __codeEditor?: typeof editor }).__codeEditor = editor;
+            }
           }}
           fallbackElement={fallbackElement}
         />

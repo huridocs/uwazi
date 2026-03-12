@@ -1,6 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { VideoPlayer } from '../VideoPlayer.js';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
 import { setupMediaIntercepts, setupMediaElement } from './testHelpers.js';

@@ -1,6 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
-import { mount } from '@cypress/react18';
+import { mount } from 'cypress/react';
 import { DatePicker } from '#V2/Components/Forms/index.js';
 
 describe('DatePicker (V2 Forms)', () => {

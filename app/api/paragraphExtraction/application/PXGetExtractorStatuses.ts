@@ -23,9 +23,10 @@ type Dependencies = {
   filesDS: FilesDataSource;
 };
 
-class PXGetExtractorStatuses
-  implements UseCase<GetExtractorStatusesInput, PXGetExtractorStatusesOutput>
-{
+class PXGetExtractorStatuses implements UseCase<
+  GetExtractorStatusesInput,
+  PXGetExtractorStatusesOutput
+> {
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: GetExtractorStatusesInput): Promise<PXGetExtractorStatusesOutput> {

@@ -64,10 +64,13 @@ echo "  ✅ FontAwesome imports fixed in ${FIX_TIME}s"
 
 echo "📦 Step 5: Installing production dependencies..."
 DEPS_START=$(date +%s)
-yarn install --production=true --modules-folder=./prod/node_modules
-DEPS_TIME=$(($(date +%s) - DEPS_START))
-echo "  ✅ Production dependencies installed in ${DEPS_TIME}s"
-
+cp package.json prod/
+cp yarn.lock prod/
+cp .yarnrc.yml prod/
+(cd prod && yarn install --immutable) || {
+	echo "❌ yarn install failed. Production dependencies may be incomplete."
+	exit 1
+}
 echo "🔧 Step 5.5: Adding exports to FontAwesome packages for ESM..."
 EXPORTS_START=$(date +%s)
 python3 <<'PYTHON_SCRIPT'
@@ -109,6 +112,11 @@ if os.path.exists(regular_root) and os.path.exists(regular_prod):
 PYTHON_SCRIPT
 EXPORTS_TIME=$(($(date +%s) - EXPORTS_START))
 echo "  ✅ FontAwesome exports added in ${EXPORTS_TIME}s"
+(cd prod && yarn workspaces focus -A --production) || {
+	(cd prod && npm prune --omit=dev --legacy-peer-deps) || exit 1
+}
+DEPS_TIME=$(($(date +%s) - DEPS_START))
+echo "  ✅ Production dependencies installed in ${DEPS_TIME}s"
 
 echo "🖥️  Step 6: Copying server files..."
 SERVER_FILES_START=$(date +%s)
