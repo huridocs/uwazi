@@ -6,7 +6,7 @@ import { render, act, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
 import { PDF, PDFProps, PDFHandle } from '../PDF.js';
 import * as helpers from '../functions/helpers.js';
-import * as snippetFuncs from '../functions/snippetToHighlight.js';
+import * as snippetFuncs from '../functions/handleSnippets.js';
 
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();

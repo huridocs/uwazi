@@ -11,7 +11,7 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
-import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight.js';
+import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { PDFPage } from './PDFPage.js';
 
@@ -33,7 +33,7 @@ interface PDFProps {
   onDeselect?: () => any;
   onScaleChange?: (scale: number) => void;
   onPageChange?: (pageNumber: number) => void;
-  onPdfReady?: (controls: PDFControls) => void;
+  onPdfReady?: (controls: PDFControls, maxPages: number) => void;
   size?: { height?: string; width?: string };
 }
 
@@ -56,8 +56,9 @@ const PDF = ({
   onPdfReady,
   size,
 }: PDFProps) => {
-  const pageRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const pageRefsMap = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const animationFrameIdRef = useRef<number>(0);
+  const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasCalledOnReadyRef = useRef(false);
@@ -68,10 +69,6 @@ const PDF = ({
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
   const [pdfEventBus] = useState(new EventBus());
   const onPageChangeRef = useRef(onPageChange);
-
-  useEffect(() => {
-    onPageChangeRef.current = onPageChange;
-  }, [onPageChange]);
 
   const handleScaleChange = useCallback(
     (scale: number) => {
@@ -90,13 +87,8 @@ const PDF = ({
   );
 
   const goToPage = useCallback(
-    (page: string | number) => {
-      const pageNumber = Number.parseInt(String(page), 10);
-      if (!Number.isFinite(pageNumber)) {
-        return;
-      }
-
-      const pageRef = { current: pageRefsMap.current[pageNumber.toString()] };
+    (page: number) => {
+      const pageRef = { current: pageRefsMap.current[page] };
       animationFrameIdRef.current = triggerScroll(pageRef, animationFrameIdRef.current);
     },
     [pageRefsMap]
@@ -112,12 +104,25 @@ const PDF = ({
   }, []);
 
   const activateSnippet = useCallback((snippet: Snippet) => {
-    const pageContainer = pageRefsMap.current[snippet.page.toString()];
-    if (pageContainer) {
-      highlightSnippetInPage(pageContainer, snippet);
-      const firstMark = pageContainer.querySelector('mark');
-      firstMark?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const pageContainer = pageRefsMap.current[snippet.page];
+
+    if (!pageContainer) {
+      return;
     }
+
+    if (tryHighlightAndScroll(pageContainer, snippet)) {
+      return;
+    }
+
+    pageContainer.scrollIntoView({ block: 'start' });
+
+    const observer = new MutationObserver(() => {
+      if (tryHighlightAndScroll(pageContainer, snippet)) {
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(pageContainer, { childList: true, subtree: true });
   }, []);
 
   const deactivateSnippet = useCallback(() => {
@@ -131,14 +136,17 @@ const PDF = ({
       return;
     }
 
-    onPdfReady({
-      goToPage,
-      scrollToHighlight,
-      activateSnippet,
-      deactivateSnippet,
-    });
+    onPdfReady(
+      {
+        goToPage,
+        scrollToHighlight,
+        activateSnippet,
+        deactivateSnippet,
+      },
+      pdf?.numPages || 0
+    );
     hasCalledOnReadyRef.current = true;
-  }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet]);
+  }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet, pdf]);
 
   useEffect(() => {
     getPDFFile(fileUrl)
@@ -148,16 +156,7 @@ const PDF = ({
       .catch((e: Error) => {
         setError(e.message);
       });
-  }, [fileUrl]);
 
-  useEffect(
-    () => () => {
-      cancelAnimationFrame(animationFrameIdRef.current);
-    },
-    []
-  );
-
-  useEffect(() => {
     hasCalledOnReadyRef.current = false;
   }, [fileUrl]);
 
@@ -248,6 +247,18 @@ const PDF = ({
     };
   }, [pdfReadyCallback, pdfEventBus]);
 
+  useEffect(() => {
+    onPageChangeRef.current = onPageChange;
+  }, [onPageChange]);
+
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(animationFrameIdRef.current);
+      cancelAnimationFrame(snippetAnimationFrameIdRef.current);
+    },
+    []
+  );
+
   const viewerStyle = {
     height: size?.height || '100%',
     width: size?.width || '100%',
@@ -267,7 +278,7 @@ const PDF = ({
       <div id="pdf-container" className="pdfViewer" ref={pdfContainerRef} style={viewerStyle}>
         {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-            const regionId = number.toString();
+            const regionId = number;
             const pageHighlights = highlights ? highlights[regionId] : undefined;
 
             return (
@@ -279,7 +290,7 @@ const PDF = ({
                 }}
                 className="border mb-4 border-gray-200 relative"
               >
-                <SelectionRegion regionId={regionId}>
+                <SelectionRegion regionId={regionId.toString()}>
                   <PDFPage
                     pdf={pdf}
                     page={number}
