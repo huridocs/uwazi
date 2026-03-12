@@ -39,6 +39,10 @@ describe('Public Form', () => {
   describe('create a page', () => {
     it('should create a page with a public form and add it to the navbar', () => {
       dismissModalIfVisible();
+      cy.contains('a', 'Settings').realClick();
+      cy.contains('nav[aria-label="Settings navigation"]', 'Pages', { timeout: 10000 }).should(
+        'be.visible'
+      );
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form Page', { delay: 0 });
@@ -79,11 +83,17 @@ describe('Public Form', () => {
 
     it('should visit the page and do a submit for the first template', () => {
       dismissModalIfVisible();
+      cy.contains('a', 'Settings').realClick();
+      dismissModalIfVisible();
+      cy.contains('nav[aria-label="Settings navigation"]', 'Pages', { timeout: 10000 }).should(
+        'be.visible'
+      );
       cy.contains('a', 'Pages').scrollIntoView();
       cy.contains('a', 'Pages').click();
-      dismissModalIfVisible();
+      cy.contains('a', 'Public Form Link').should('be.visible');
+      cy.contains('a', 'Public Form Link').scrollIntoView();
       cy.contains('a', 'Public Form Link').click();
-      cy.contains('h1', 'Public form submition');
+      cy.contains('h1', 'Public form submition').should('be.visible');
       cy.get('body').matchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Test public submit entity', {
         force: true,
@@ -130,8 +140,13 @@ describe('Public Form', () => {
 
     it('should revisit the page and fill the text, select and date fields', () => {
       dismissModalIfVisible();
+      cy.contains('nav[aria-label="Settings navigation"]', 'Pages', { timeout: 10000 }).should(
+        'be.visible'
+      );
+      cy.contains('a', 'Public Form Link').should('be.visible');
+      cy.contains('a', 'Public Form Link').scrollIntoView();
       cy.contains('a', 'Public Form Link').click();
-      cy.contains('h1', 'Public form submition');
+      cy.contains('h1', 'Public form submition').should('be.visible');
       cy.get('body').matchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Entity with image and media fields', {
         force: true,
