@@ -41,9 +41,10 @@ import { setupQueueWorker } from './setupQueueWorker.js';
 
 import '#api/core/infrastructure/listeners/Listeners.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
-import { IndexBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/IndexBootstrapper.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { IndexMappingRegistry } from '#api/core/infrastructure/elasticSearch/IndexMappingRegistry.js';
+import { ElasticSearchBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/ElasticSearchBootstrapper.js';
+import { IngestPipelineRegistry } from '#api/core/infrastructure/elasticSearch/IngestPipelineRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -181,12 +182,13 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   const port = config.PORT;
 
   // Setup of ES indexes
-  const indexBootstrapper = new IndexBootstrapper({
+  const elasticSearchBootstrapper = new ElasticSearchBootstrapper({
     client: ElasticSearchClientFactory.getInstance(),
     registry: IndexMappingRegistry,
+    pipelineRegistry: IngestPipelineRegistry,
   });
 
-  await indexBootstrapper.bootstrapAll();
+  await elasticSearchBootstrapper.execute();
 
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {

@@ -1,5 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import type {
+  IndicesIndexSettings,
+  IngestProcessorContainer,
   MappingTypeMapping,
   QueryDslQueryContainer,
   SearchResponse,
@@ -27,8 +29,14 @@ export interface ExecutionContext extends TenantContextData {
 export interface IndexDefinition {
   alias: string;
   physicalPrefix: string;
-  settings: Record<string, unknown>;
+  settings: IndicesIndexSettings;
   mappings: MappingTypeMapping;
+}
+
+export interface IngestPipelineDefinition {
+  id: string;
+  description: string;
+  processors: IngestProcessorContainer[];
 }
 
 export interface SearchOptions {
