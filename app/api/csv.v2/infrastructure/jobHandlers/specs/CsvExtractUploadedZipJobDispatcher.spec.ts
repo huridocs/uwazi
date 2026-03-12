@@ -8,7 +8,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { createTestingZip } from '#api/csv/specs/helpers.js';
+import { createTestingZip } from '#api/csv.v2/specs/helpers/createTestingZip.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

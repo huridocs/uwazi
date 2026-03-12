@@ -10,7 +10,7 @@ import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStor
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { createTestingZip } from '#api/csv/specs/helpers.js';
+import { createTestingZip } from '#api/csv.v2/specs/helpers/createTestingZip.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
