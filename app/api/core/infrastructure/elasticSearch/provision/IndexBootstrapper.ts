@@ -1,4 +1,4 @@
-import { Client } from '@elastic/elasticsearch';
+import { Client, errors } from '@elastic/elasticsearch';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IndexDefinition } from '../Types';
 
@@ -16,6 +16,7 @@ class IndexBootstrapper {
     );
   }
 
+  // eslint-disable-next-line max-statements
   async bootstrapOne(_name: string, definition: IndexDefinition): Promise<void> {
     const { alias, physicalPrefix, settings, mappings } = definition;
     const physicalIndex = `${physicalPrefix}_v1`;
@@ -27,14 +28,27 @@ class IndexBootstrapper {
       return;
     }
 
-    await this.deps.client.indices.create({
-      index: physicalIndex,
-      body: {
-        settings,
-        mappings,
-        aliases: { [alias]: {} },
-      },
-    });
+    try {
+      await this.deps.client.indices.create({
+        index: physicalIndex,
+        body: {
+          settings,
+          mappings,
+          aliases: { [alias]: {} },
+        },
+      });
+    } catch (err) {
+      if (
+        err instanceof errors.ResponseError &&
+        err.meta.body?.error?.type === 'resource_already_exists_exception'
+      ) {
+        console.log(
+          `[IndexBootstrapper] Physical index "${physicalIndex}" already exists (race condition) — skipping.`
+        );
+        return;
+      }
+      throw err;
+    }
   }
 }
 
