@@ -43,7 +43,12 @@ describe('Pages', () => {
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'Custom home page', { delay: 0 });
       cy.contains('Markdown').click();
-      typeInEditor('html', '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>', false, 'Custom HomePage');
+      typeInEditor(
+        'html',
+        '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
+        false,
+        'Custom HomePage'
+      );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.contains('button.bg-success-700', 'Save').click();

@@ -1,5 +1,8 @@
 import React, { useMemo, useRef } from 'react';
-import ReactModal from 'react-modal';
+import ReactModalModule from 'react-modal';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactModal = resolveDefaultExport(ReactModalModule);
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';

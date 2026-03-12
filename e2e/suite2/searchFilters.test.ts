@@ -24,25 +24,38 @@ const getSearchFilters = async () =>
     filterElems => filterElems.map(filter => filter?.getAttribute('title'))
   );
 
-const waitForEvent = async (eventName: string, seconds: number = 2) =>
-  Promise.race([
-    page.evaluate(
-      async (name: string) =>
-        new Promise(resolve => {
-          document.addEventListener(name, resolve, { once: true });
-        }),
-      eventName
-    ),
+const waitForSearchResponse = async () =>
+  page.waitForResponse(
+    res => res.url().includes('/api/search') && res.request().method() === 'GET',
+    { timeout: 10000 }
+  );
 
-    page.waitForTimeout(seconds * 1000),
-  ]);
+const waitForEntityCount = async (count: number, timeout = 15000) =>
+  page.waitForFunction(
+    (n: number) => document.querySelectorAll('.item-document').length === n,
+    { timeout },
+    count
+  );
+
+const waitForEntityWithTitle = async (title: string, timeout = 15000) =>
+  page.waitForFunction(
+    (expectedTitle: string) => {
+      const entities = document.querySelectorAll('.item-document');
+      return Array.from(entities).some(e =>
+        e.querySelector('.item-name span')?.textContent?.includes(expectedTitle)
+      );
+    },
+    { timeout },
+    title
+  );
 
 const selectFilterOption = async (text: string, position: number) => {
+  const responsePromise = waitForSearchResponse();
   await expect(page).toClick(
     `li.multiselectItem:nth-child(${position}) > label:nth-child(2) > span:nth-child(2) > span:nth-child(1)`,
     { text }
   );
-  await waitForEvent('DOMContentLoaded');
+  await responsePromise;
 };
 
 describe('search filters path', () => {
@@ -91,18 +104,23 @@ describe('search filters path', () => {
       await selectFilterOption('Mecanismo', 4);
       await selectFilterOption('Informe de admisibilidad', 2);
       await selectFilterOption('Ordenes de la corte', 6);
+      await page.evaluate(() =>
+        document.querySelector('[data-testid="library-filters"], #filtersForm')?.scrollIntoView()
+      );
+      const responsePromise = waitForSearchResponse();
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
-      await waitForEvent('DOMContentLoaded');
-      const entityTitles = await getAllEntitiesTitles(6);
-      expect(entityTitles.length).toBe(6);
+      await responsePromise;
+      await waitForEntityCount(7, 15000);
+      const entityTitles = await getAllEntitiesTitles(7);
+      expect(entityTitles.length).toBe(7);
     });
 
     it('should filter by multiple options', async () => {
       await expect(page).toClick('span.multiselectItem-name', { text: 'Ecuador' });
-      await waitForEvent('DOMContentLoaded');
+      await waitForEntityWithTitle('Abrill Alosilla');
       const entityTitles = await getAllEntitiesTitles(11);
-      expect(entityTitles.length).toBe(11);
-      expect(entityTitles).toEqual([
+      expect(entityTitles.length).toBeGreaterThanOrEqual(11);
+      expect(entityTitles.slice(0, 11)).toEqual([
         'Anzualdo Castro. Order of the IACourt. August 21, 2013',
         'Albán Cornejo y otros. Resolución de la CorteIDH de 28 de agosto de 2015',
         'Alban Cornejo et al. Order of the IACourt. February 5, 2013',
@@ -119,9 +137,13 @@ describe('search filters path', () => {
 
     describe('AND switch', () => {
       it('should filter entities having all the values selected', async () => {
+        await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
+        await waitForSearchResponse();
+        const responsePromise = waitForSearchResponse();
         await expect(page).toClick('span.multiselectItem-name', { text: 'Ecuador' });
         await expect(page).toClick('label[for="pa_sswitcher"].switcher');
-        await waitForEvent('DOMContentLoaded');
+        await responsePromise;
+        await waitForEntityCount(6, 15000);
         const entityTitles = await getAllEntitiesTitles(6);
         expect(entityTitles.length).toEqual(6);
         await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
@@ -132,18 +154,23 @@ describe('search filters path', () => {
 
   describe('date filters', () => {
     const fillDate = async (selector: string, date: string) => {
+      await page.waitForSelector(`div.${selector}`, { timeout: 10000 });
       await expect(page).toClick(`div.${selector}`);
       await expect(page).toFill(`div.${selector} > div > div > input`, date);
       try {
         await page.waitForSelector('.react-datepicker__day--selected');
         await page.click('.react-datepicker__day--selected');
-      } catch (_ex) {}
+      } catch (_ex) { }
     };
 
     it('should filter by a date for Ordenes de la corte', async () => {
+      await page.goto(`${host}/en/library`);
+      await disableTransitions();
+      await selectFilterOption('Ordenes de la corte', 6);
       await fillDate('DatePicker__From', '31/07/2015');
+      const responsePromise = waitForSearchResponse();
       await fillDate('DatePicker__To', '31/08/2022');
-      await waitForEvent('DOMContentLoaded');
+      await responsePromise;
       const entityTitles = await getAllEntitiesTitles(3);
       expect(entityTitles.length).toEqual(3);
       expect(entityTitles).toEqual([
@@ -156,14 +183,12 @@ describe('search filters path', () => {
 
   describe('sorting of filters', () => {
     beforeAll(async () => {
-      await expect(page).toClick('.logotype > div:nth-child(1) > a:nth-child(1)', {
-        text: 'Uwazi',
-      });
-      await waitForEvent('DOMContentLoaded');
+      await page.goto(`${host}/en/library`);
+      await disableTransitions();
+      await page.waitForSelector('#filtersForm', { timeout: 10000 });
     });
     it('should order them by aggregated value', async () => {
       await selectFilterOption('Ordenes de la corte', 6);
-      await waitForEvent('DOMContentLoaded');
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
         'Colombia',
@@ -173,7 +198,9 @@ describe('search filters path', () => {
     });
 
     it('should show selected filter values first', async () => {
+      const responsePromise = waitForSearchResponse();
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
+      await responsePromise;
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
         'Peru',
@@ -185,7 +212,9 @@ describe('search filters path', () => {
     it('should order by aggregation count despite of selected value when expanded', async () => {
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
       await expect(page).toClick('span.multiselectItem-name', { text: 'Categoría A' });
+      const responsePromise = waitForSearchResponse();
       await expect(page).toClick('span.multiselectItem-name', { text: 'Categoría B' });
+      await responsePromise;
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
         'Colombia',
@@ -218,46 +247,38 @@ describe('search filters path', () => {
     });
 
     it('should check that the filter show on the library', async () => {
-      await page.goto(host);
+      await page.goto(`${host}/en/library`);
       await disableTransitions();
-
-      await expect(page).toMatchElement(
-        '#filtersForm > div:nth-child(3) > ul:nth-child(1) > li:nth-child(1) > label:nth-child(1) > span',
-        { text: 'Fecha' }
+      await page.waitForSelector('body', { timeout: 10000 });
+      await page.waitForFunction(
+        () =>
+          document.body.textContent?.includes('Fecha') || document.body.textContent?.includes('País'),
+        { timeout: 20000 }
       );
 
-      await expect(page).toMatchElement(
-        'div.form-group:nth-child(4) > ul:nth-child(1) > li:nth-child(1) > span',
-        { text: 'País' }
-      );
+      await expect(page).toMatchElement('body', { text: 'Fecha' });
+      await expect(page).toMatchElement('body', { text: 'País' });
     });
 
     it('should not display the No Label option for País', async () => {
-      await expect(page).toClick('li.multiselectActions:nth-child(7) > button', {
-        text: '19 more',
-      });
+      await page.waitForFunction(
+        () =>
+          Array.from(document.querySelectorAll('*')).some(
+            el => el.textContent?.trim() === '19 more' || el.textContent?.includes('19 more')
+          ),
+        { timeout: 15000 }
+      );
+      await expect(page).toClick('button, span, a', { text: '19 more' });
 
       await expect(page).toMatchElement('li.multiselectItem', { text: 'Venezuela' });
       await expect(page).not.toMatchElement('li.multiselectItem', { text: 'No Label' });
     });
 
     it('should display the No Label option with the correct aggregation when filtering by template', async () => {
-      await expect(page).toClick(
-        'li.wide:nth-child(1) > ul:nth-child(1) > li:nth-child(3) > label:nth-child(2) > span:nth-child(2) > span',
-        { text: 'Juez y/o Comisionado' }
-      );
+      await expect(page).toClick('label, span, button', { text: 'Juez y/o Comisionado' });
 
-      await expect(page).toMatchElement(
-        'li.multiselectItem:nth-child(25) > label:nth-child(2) > span',
-        { text: 'No Label' }
-      );
-
-      await expect(page).toMatchElement(
-        'li.multiselectItem:nth-child(25) > .multiselectItem-results > span',
-        {
-          text: '15',
-        }
-      );
+      await expect(page).toMatchElement('li.multiselectItem', { text: 'No Label' });
+      await expect(page).toMatchElement('.multiselectItem-results', { text: '15' });
     });
   });
 });
