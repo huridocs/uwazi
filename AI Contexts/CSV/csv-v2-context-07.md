@@ -995,6 +995,16 @@ Implementation simplifications performed:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
   - result: pass (2 suites, 4 tests).
 
+#### 18.13 Boundary-cleanup status checkpoint (Mar 2026, latest)
+
+- CSV-local thesauri/translations adapters are removed and covered by focused tests.
+- Remaining v1 compatibility bridges are identified and documented in:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
+- **Current decision:** bridge removal (`v1` fallback route + `CsvV1CompatEmitter`) is explicitly deferred for now and should not be executed in the next slice unless re-prioritized by user/team.
+- Handoff rule for next agent:
+  - use the current bridge-preserving baseline as the starting point,
+  - proceed with the next approved task, not compat bridge removal by default.
+
 ### 19) TODO — Document ReadTheDocs import instructions
 
 We should create and maintain user-facing documentation in ReadTheDocs that explains

@@ -221,3 +221,11 @@ With temporary thesauri/translations adapters removed, the next candidate in thi
 - remove remaining intentional compatibility bridges when product rollout allows:
   - `v1CSVImportCompat` emitter path
   - v1 fallback route path in `csv.v2` HTTP routing.
+
+### 9.1 Current decision (Mar 2026, latest)
+
+- **Deferred intentionally (not now):** do not remove the remaining compatibility bridges yet.
+- Keep current behavior unchanged for:
+  - v1 fallback route in `app/api/csv.v2/infrastructure/http/routes.ts`
+  - compat emitter flow (`CsvV1CompatEmitter`, `v1CSVImportCompat` flag, queue wiring)
+- Next agent should start from this deferred baseline and pick up the next approved task, not bridge removal, unless user/team re-prioritizes explicitly.
