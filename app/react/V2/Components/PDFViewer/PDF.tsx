@@ -21,7 +21,7 @@ type Snippet = { text: string; page: number; filename?: string };
 
 type PDFControls = {
   goToPage: (page: number) => void;
-  scrollToHighlight: (highlightKey: string) => void;
+  scrollToHighlight: (page: number, highlightKey: string) => void;
   activateSnippet: (snippet: Snippet) => void;
   deactivateSnippet: () => void;
 };
@@ -94,9 +94,9 @@ const PDF = ({
     [pageRefsMap]
   );
 
-  const scrollToHighlight = useCallback((highlightKey: string) => {
+  const scrollToHighlight = useCallback((page: number, highlightKey: string) => {
     const highlightWrapper = pdfContainerRef.current?.querySelector(
-      `[data-highlight-key="${highlightKey}"]`
+      `[data-highlight-key="${page}-${highlightKey}"]`
     );
     const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
     const elementToScroll = highlightRectangle || highlightWrapper;

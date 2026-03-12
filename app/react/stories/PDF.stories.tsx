@@ -129,7 +129,7 @@ const PdfStoryContent: React.FC<PDFStoryProps> = ({ startOnPage, ...args }) => {
               <button
                 type="button"
                 onClick={() => {
-                  pdfControlsRef.current?.scrollToHighlight('1-1');
+                  pdfControlsRef.current?.scrollToHighlight(1, '1');
                 }}
               >
                 Page 1-1
@@ -137,7 +137,7 @@ const PdfStoryContent: React.FC<PDFStoryProps> = ({ startOnPage, ...args }) => {
               <button
                 type="button"
                 onClick={() => {
-                  pdfControlsRef.current?.scrollToHighlight('1-2');
+                  pdfControlsRef.current?.scrollToHighlight(1, '2');
                 }}
               >
                 Page 1-2
@@ -145,7 +145,7 @@ const PdfStoryContent: React.FC<PDFStoryProps> = ({ startOnPage, ...args }) => {
               <button
                 type="button"
                 onClick={() => {
-                  pdfControlsRef.current?.scrollToHighlight('22-1');
+                  pdfControlsRef.current?.scrollToHighlight(22, '1');
                 }}
               >
                 Page 22
