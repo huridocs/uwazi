@@ -100,7 +100,7 @@ const PDF = ({
     );
     const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
     const elementToScroll = highlightRectangle || highlightWrapper;
-    elementToScroll?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    elementToScroll?.scrollIntoView({ block: 'center' });
   }, []);
 
   const activateSnippet = useCallback((snippet: Snippet) => {
