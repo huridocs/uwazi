@@ -1,6 +1,9 @@
 import React, { useRef } from 'react';
 import { connect } from 'react-redux';
-import ReactModal from 'react-modal';
+import ReactModalModule from 'react-modal';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactModal = resolveDefaultExport(ReactModalModule);
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone-esm';
 import { bindActionCreators, Dispatch } from 'redux';

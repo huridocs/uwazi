@@ -3,6 +3,53 @@ const getTextareaSelector = (mode: 'html' | 'javascript') =>
     ? 'textarea[name="metadata.script"]'
     : 'textarea[name="metadata.markdown"], textarea[name="metadata.content"]';
 
+const getMonacoSelector = (mode: 'html' | 'javascript') =>
+  `#panel-${mode === 'html' ? 'Code' : 'Advanced'} .monaco-editor textarea`;
+
+const escapeRealType = (s: string) => s.replace(/\{/g, '{{}');
+
+const clearMonaco = (selector: string) => {
+  cy.get(selector).first().realClick().realPress(['Control', 'a']).realPress('Backspace');
+};
+
+const pasteMonaco = (selector: string, value: string) => {
+  cy.get(selector).first().realClick();
+  cy.window().then(async win => win.navigator.clipboard.writeText(value));
+  cy.get(selector).first().realPress(['Control', 'v']);
+};
+
+const getPanelFromSelector = (selector: string) =>
+  selector.includes('panel-Advanced') ? 'Advanced' : 'Code';
+
+const selectedPanelSelector = '[data-headlessui-state="selected"]';
+
+const typeMonaco = (selector: string, value: string, blurAndVerify?: string, paste = false) => {
+  if (paste) {
+    pasteMonaco(selector, value);
+  } else {
+    const typeDelay = blurAndVerify ? 15 : 0;
+    cy.get(selector).first().realClick().realType(escapeRealType(value), { delay: typeDelay });
+  }
+  if (blurAndVerify) {
+    cy.contains('[role="tab"]', 'Basic').realClick();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(600);
+    const panel = getPanelFromSelector(selector);
+    const tabLabel = panel === 'Advanced' ? 'Javascript' : 'Markdown';
+    cy.contains('[role="tab"]', tabLabel).click();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
+    cy.get(selectedPanelSelector)
+      .filter(':has(.monaco-editor)')
+      .find('.monaco-editor')
+      .first()
+      .invoke('text')
+      .then((text: string) => {
+        expect(text, `expected editor to contain "${blurAndVerify}"`).to.include(blurAndVerify);
+      });
+  }
+};
+
 const clearTarget = (selector: string) => {
   cy.get(selector).type('{selectAll}{backspace}', { delay: 0 });
 };
@@ -24,8 +71,14 @@ export const dismissModalIfVisible = () => {
   });
 };
 
-export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear = false) => {
-  const monacoSelector = `div[data-mode-id="${mode}"]`;
+export const typeInEditor = (
+  mode: 'html' | 'javascript',
+  value: string,
+  clear = false,
+  blurAndVerify?: string,
+  paste = false
+) => {
+  const monacoSelector = getMonacoSelector(mode);
   const textareaSelector = getTextareaSelector(mode);
   cy.get('body', { timeout: 20000 }).should($body => {
     expect($body.find(`${monacoSelector}, ${textareaSelector}`).length).to.be.greaterThan(0);
@@ -33,9 +86,9 @@ export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear =
   cy.get('body').then($body => {
     if ($body.find(monacoSelector).length) {
       if (clear) {
-        clearTarget(monacoSelector);
+        clearMonaco(monacoSelector);
       }
-      typeTarget(monacoSelector, value);
+      typeMonaco(monacoSelector, value, blurAndVerify, paste);
       return;
     }
     let selector = 'textarea[name="metadata.content"]';
@@ -48,6 +101,10 @@ export const typeInEditor = (mode: 'html' | 'javascript', value: string, clear =
     if (clear) {
       clearTarget(selector);
     }
-    typeTarget(selector, value);
+    if (paste) {
+      cy.get(selector).invoke('val', value).trigger('input');
+    } else {
+      typeTarget(selector, value);
+    }
   });
 };

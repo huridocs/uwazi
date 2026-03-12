@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactModal from 'react-modal';
+import ReactModalModule from 'react-modal';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactModal = resolveDefaultExport(ReactModalModule);
 import { Translate } from '#app/I18N/index.js';
 
 class Modal extends Component {
