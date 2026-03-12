@@ -15,6 +15,8 @@ import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHigh
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { PDFPage } from './PDFPage.js';
 
+const CHANGE_PAGE_THRESHOLD: number = 0.4;
+
 type Snippet = { text: string; page: number; filename?: string };
 
 type PDFControls = {
@@ -30,7 +32,7 @@ interface PDFProps {
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
   onScaleChange?: (scale: number) => void;
-  onPageChange?: (pageNumber: number) => void;
+  onPageChange?: (pageNumber: string) => void;
   onPdfReady?: (controls: PDFControls) => void;
   size?: { height?: string; width?: string };
 }
@@ -65,6 +67,11 @@ const PDF = ({
   const [error, setError] = useState<string>();
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
   const [pdfEventBus] = useState(new EventBus());
+  const onPageChangeRef = useRef(onPageChange);
+
+  useEffect(() => {
+    onPageChangeRef.current = onPageChange;
+  }, [onPageChange]);
 
   const handleScaleChange = useCallback(
     (scale: number) => {
@@ -193,6 +200,10 @@ const PDF = ({
   useEffect(() => {
     const observerHandler: IntersectionObserverCallback = entries => {
       entries.forEach(entry => {
+        if (entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
+          onPageChangeRef.current?.(entry.target.getAttribute('data-pagenumber') || '0');
+        }
+
         if (entry.isIntersecting) {
           pdfEventBus.dispatch('renderpage', {
             pageNumber: entry.target.getAttribute('data-pagenumber'),
@@ -208,8 +219,7 @@ const PDF = ({
     intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
       root: null,
       rootMargin: '500px 0px 500px 0px',
-      scrollMargin: '500px 0px 500px 0px',
-      threshold: 0.1,
+      threshold: [0.1, CHANGE_PAGE_THRESHOLD],
     });
 
     return () => {
@@ -280,7 +290,6 @@ const PDF = ({
                     highlights={pageHighlights}
                     containerWidth={containerWidth}
                     onScaleChange={handleScaleChange}
-                    onPageChange={onPageChange}
                   />
                 </SelectionRegion>
               </div>

@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { fn } from 'storybook/test';
-import { PDF, PDFHandle } from '#V2/Components/PDFViewer/index.js';
+import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { highlights } from './fixtures/PDFStoryFixtures.js';
 
@@ -14,126 +15,66 @@ const meta: Meta<typeof PDF> = {
 type Story = StoryObj<typeof PDF>;
 
 const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
-  const pdfRef = useRef<PDFHandle | null>(null);
+  const pdfControlsRef = useRef<PDFControls | null>(null);
   const [currentScale, setCurrentScale] = useState(1);
-  const [currentPage, setCurrentPage] = useState<number | null>(null);
-  const [lastSelection, setLastSelection] = useState<any | null>(null);
+  const [currentPage, setCurrentPage] = useState<string | null>('1');
+  const [lastSelection, setLastSelection] = useState<TextSelection | null>(null);
   const [snippetText, setSnippetText] = useState('');
 
-  const handleSelect = (selection: any) => {
+  const handleSelect = (selection: TextSelection) => {
     setLastSelection(selection);
-    args.onSelect?.(selection);
   };
 
   const handleDeselect = () => {
     setLastSelection(null);
-    args.onDeselect?.();
   };
 
   const handleScaleChange = (scale: number) => {
     setCurrentScale(scale);
-    args.onScaleChange?.(scale);
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: string) => {
     setCurrentPage(page);
-    args.onPageChange?.(page);
-  };
-
-  const goToPage2 = () => {
-    pdfRef.current?.goToPage(2);
-  };
-
-  const scrollToFirstHighlight = () => {
-    const pageIds = Object.keys(args.highlights || {});
-    if (!pageIds.length) return;
-    const firstPageHighlights = (args.highlights || {})[pageIds[0]] || [];
-    if (!firstPageHighlights.length) return;
-    pdfRef.current?.scrollToHighlight(firstPageHighlights[0].key);
-  };
-
-  const handleSnippetChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-    const { value } = event.target;
-    setSnippetText(value);
-
-    if (!value) {
-      pdfRef.current?.deactivateSnippet();
-      return;
-    }
-
-    pdfRef.current?.activateSnippet({
-      text: value,
-      page: currentPage || 1,
-    });
-  };
-
-  const clearSnippet = () => {
-    setSnippetText('');
-    pdfRef.current?.deactivateSnippet();
   };
 
   return (
-    <div className="tw-content space-y-4">
-      <div className="flex flex-wrap items-end gap-4 text-sm">
-        <button
-          type="button"
-          className="bg-gray-50 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-100 text-gray-900"
-          onClick={goToPage2}
-        >
-          Go to page 2
-        </button>
-        <button
-          type="button"
-          className="bg-gray-50 px-4 py-2 rounded-md border border-gray-300  cursor-pointer hover:bg-gray-100 text-gray-900"
-          onClick={scrollToFirstHighlight}
-        >
-          Scroll to first highlight
-        </button>
-        <InputField
-          id="snippet-search"
-          label="Search snippet"
-          type="search"
-          value={snippetText}
-          onChange={handleSnippetChange}
-          clearFieldAction={clearSnippet}
-          className="w-80"
-        />
-      </div>
-
-      <div className="flex gap-4">
-        <div className="flex flex-col gap-2 basis-2/3 min-w-[480px]">
-          <p className="font-semibold">PDF Container:</p>
-          <div className="p-4 h-[80vh] rounded-md border overflow-scroll">
-            <PDF
-              fileUrl="/sample.pdf"
-              onSelect={handleSelect}
-              onDeselect={handleDeselect}
-              onScaleChange={handleScaleChange}
-              onPageChange={handlePageChange}
-              highlights={args.highlights}
-              size={{ height: '100%', width: '100%' }}
-            />
-          </div>
-          <p>End of container</p>
+    <div className="w-full flex gap-4">
+      <div className="w-3/4">
+        <p className="font-semibold">PDF Container:</p>
+        <div className="p-4 h-[80vh] rounded-md border overflow-y-scroll">
+          <PDF
+            fileUrl="/sample.pdf"
+            onSelect={handleSelect}
+            onDeselect={handleDeselect}
+            onScaleChange={handleScaleChange}
+            onPageChange={handlePageChange}
+            // onPdfReady={handlePdfReady}
+            highlights={args.highlights}
+            size={{ height: '100%', width: '100%' }}
+          />
         </div>
-
-        <div className="flex flex-col gap-2 basis-1/3 min-w-[260px] text-sm text-gray-900">
-          <p className="font-semibold">Debug info</p>
-          <div className="mt-2 space-y-1">
-            <div>
-              <span className="font-semibold">Current page:</span> <span>{currentPage ?? '—'}</span>
-            </div>
-            <div>
-              <span className="font-semibold">Current scale:</span>{' '}
-              <span>{currentScale.toFixed(3)}</span>
-            </div>
-            <div>
-              <span className="font-semibold">Last selection:</span>
-              <pre className="mt-1 max-h-40 w-[360px] overflow-y-auto overflow-x-hidden bg-gray-100 p-2 rounded text-xs whitespace-pre-wrap">
-                {lastSelection ? JSON.stringify(lastSelection, null, 2) : '—'}
-              </pre>
-            </div>
-          </div>
+        <p>End of container</p>
+      </div>
+      <div className="w-1/4">
+        <div className="flex flex-col gap-2">
+          <p>Current page: {currentPage}</p>
+          <p>Current scale: {currentScale}</p>
+        </div>
+        <hr className="my-4" />
+        <div className="flex justify-between">
+          <button type="button" onClick={() => {}}>
+            Prev page
+          </button>
+          <button type="button" onClick={() => {}}>
+            Next page
+          </button>
+        </div>
+        <hr className="my-4" />
+        <div>
+          <p>Current selection:</p>
+          <pre className="h-96 overflow-y-auto overflow-x-hidden whitespace-pre-wrap wrap-break-word">
+            {lastSelection ? JSON.stringify(lastSelection, null, 2) : 'No selection'}
+          </pre>
         </div>
       </div>
     </div>
@@ -141,6 +82,7 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
 };
 
 const Primary: Story = {
+  // eslint-disable-next-line react/jsx-props-no-spreading
   render: args => <PdfStoryContent {...args} />,
 };
 
@@ -155,10 +97,10 @@ const WithSelections: Story = {
   },
 };
 
-const WithScroll: Story = {
+const WithAutoScroll: Story = {
   ...Primary,
   args: {},
 };
 
-export { Basic, WithSelections, WithScroll };
+export { Basic, WithSelections, WithAutoScroll };
 export default meta;

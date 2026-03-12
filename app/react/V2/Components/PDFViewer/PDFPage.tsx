@@ -14,7 +14,6 @@ interface PDFPageProps {
   highlights?: TextHighlight[];
   containerWidth?: number;
   onScaleChange?: (scale: number) => void;
-  onPageChange?: (pageNumber: number) => void;
 }
 
 const PDFPage = ({
@@ -25,7 +24,6 @@ const PDFPage = ({
   containerWidth,
   highlights,
   onScaleChange,
-  onPageChange,
 }: PDFPageProps) => {
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useState(1);
@@ -34,8 +32,6 @@ const PDFPage = ({
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const pageViewerRef = useRef<typeof PDFPageView.prototype | null>(null);
   const baseViewportSizeRef = useRef<{ width: number; height: number } | null>(null);
-  const onPageChangeRef = useRef(onPageChange);
-  onPageChangeRef.current = onPageChange;
 
   useEffect(() => {
     pdf
