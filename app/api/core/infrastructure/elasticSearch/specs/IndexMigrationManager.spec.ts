@@ -1,6 +1,10 @@
 import type { Client } from '@elastic/elasticsearch';
 import { IndexMigrationManager } from '../IndexMigrationManager.js';
-import { MigrationValidationError, type IndexDefinition } from '../Types.js';
+import {
+  MigrationAlreadyOnVersionError,
+  MigrationValidationError,
+  type IndexDefinition,
+} from '../Types.js';
 
 const makeDefinition = (alias: string, prefix: string): IndexDefinition =>
   ({
@@ -68,12 +72,13 @@ describe('IndexMigrationManager', () => {
       );
     });
 
-    it('no-ops when already on target version', async () => {
+    it('throws MigrationAlreadyOnVersionError when already on target version', async () => {
       const { client, createMock } = makeClient({ currentPhysical: 'products_v2' });
       const manager = new IndexMigrationManager({ client, registry });
 
-      await manager.migrate({ indexName: 'products', targetVersion: 2 });
-
+      await expect(manager.migrate({ indexName: 'products', targetVersion: 2 })).rejects.toThrow(
+        MigrationAlreadyOnVersionError
+      );
       expect(createMock).not.toHaveBeenCalled();
     });
 
@@ -312,6 +317,72 @@ describe('IndexMigrationManager', () => {
       const manager = new IndexMigrationManager({ client, registry });
 
       await expect(manager.rollback('products', 1)).rejects.toThrow('products_v1');
+    });
+  });
+
+  describe('resolvePhysicalIndex — error handling', () => {
+    it('preserves the original ES error as cause when getAlias throws', async () => {
+      const originalError = new Error('index_not_found_exception');
+      const client = {
+        indices: {
+          getAlias: jest.fn().mockRejectedValue(originalError),
+          create: jest.fn(),
+          exists: jest.fn(),
+          updateAliases: jest.fn(),
+          delete: jest.fn(),
+        },
+        reindex: jest.fn(),
+      } as unknown as Client;
+      const manager = new IndexMigrationManager({ client, registry });
+
+      let thrown: unknown;
+      try {
+        await manager.migrate({ indexName: 'products', targetVersion: 2 });
+      } catch (err) {
+        thrown = err;
+      }
+
+      expect(thrown).toBeInstanceOf(Error);
+      expect((thrown as Error).message).toContain('Alias "products" not found');
+      expect((thrown as Error & { cause: unknown }).cause).toBe(originalError);
+    });
+  });
+
+  describe('getCurrentPhysicalIndex()', () => {
+    it('returns the current physical index name for a known index', async () => {
+      const { client } = makeClient({ currentPhysical: 'products_v3' });
+      const manager = new IndexMigrationManager({ client, registry });
+
+      const result = await manager.getCurrentPhysicalIndex('products');
+
+      expect(result).toBe('products_v3');
+    });
+
+    it('throws on unknown indexName', async () => {
+      const { client } = makeClient();
+      const manager = new IndexMigrationManager({ client, registry });
+
+      await expect(manager.getCurrentPhysicalIndex('orders')).rejects.toThrow(
+        'Unknown index "orders"'
+      );
+    });
+
+    it('throws if alias not found in ES', async () => {
+      const client = {
+        indices: {
+          getAlias: jest.fn().mockRejectedValue(new Error('index_not_found_exception')),
+          create: jest.fn(),
+          exists: jest.fn(),
+          updateAliases: jest.fn(),
+          delete: jest.fn(),
+        },
+        reindex: jest.fn(),
+      } as unknown as Client;
+      const manager = new IndexMigrationManager({ client, registry });
+
+      await expect(manager.getCurrentPhysicalIndex('products')).rejects.toThrow(
+        'Alias "products" not found'
+      );
     });
   });
 });

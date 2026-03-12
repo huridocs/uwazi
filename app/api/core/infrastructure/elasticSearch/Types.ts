@@ -102,3 +102,10 @@ export class MigrationValidationError extends Error {
     this.name = 'MigrationValidationError';
   }
 }
+
+export class MigrationAlreadyOnVersionError extends Error {
+  constructor(indexName: string, version: number) {
+    super(`Index "${indexName}" is already on version ${version} — no migration needed.`);
+    this.name = 'MigrationAlreadyOnVersionError';
+  }
+}

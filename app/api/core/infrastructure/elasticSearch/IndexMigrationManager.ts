@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { IndexDefinition, MigrationValidationError } from './Types';
+import { IndexDefinition, MigrationAlreadyOnVersionError, MigrationValidationError } from './Types';
 
 interface MigrationOptions {
   indexName: string;
@@ -28,7 +28,7 @@ class IndexMigrationManager {
     const currentVersion = IndexMigrationManager.parseVersion(currentPhysical);
 
     if (currentVersion === options.targetVersion) {
-      return;
+      throw new MigrationAlreadyOnVersionError(options.indexName, options.targetVersion);
     }
 
     await this.buildAndMigrate({
@@ -138,8 +138,8 @@ class IndexMigrationManager {
 
     try {
       response = await this.deps.client.indices.getAlias({ name: alias });
-    } catch {
-      throw new Error(`Alias "${alias}" not found.`);
+    } catch (cause) {
+      throw new Error(`Alias "${alias}" not found.`, { cause });
     }
 
     const indexes = Object.keys(response.body);
