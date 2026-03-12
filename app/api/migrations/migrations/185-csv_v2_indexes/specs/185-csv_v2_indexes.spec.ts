@@ -22,6 +22,7 @@ afterAll(async () => {
 
 describe('185-csv_v2_indexes migration', () => {
   beforeAll(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation((_str: string | Uint8Array) => true);
     await initTest();
   });
 
