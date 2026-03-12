@@ -2,7 +2,7 @@ import { GroupAliasNameBuilder } from '../provision/GroupAliasNameBuilder.js';
 
 describe('GroupAliasNameBuilder', () => {
   describe('toAlias()', () => {
-    it("derives '<logicalName>_group_<groupName>' for a named group", () => {
+    it("derives '<aliasName>_group_<groupName>' for a named group", () => {
       expect(GroupAliasNameBuilder.toAlias('enterprise', 'products')).toBe(
         'products_group_enterprise'
       );

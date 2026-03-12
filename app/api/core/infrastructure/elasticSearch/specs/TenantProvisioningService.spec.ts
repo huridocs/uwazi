@@ -8,7 +8,7 @@ import {
   TenantAlreadyInGroupError,
 } from '../Types.js';
 import type { IndexDefinition } from '../Types.js';
-import { TenantIndexResolver } from '../TenantIndexResolver.js';
+import { IndexNameResolver } from '../IndexNameResolver.js';
 
 const registry: Record<string, IndexDefinition> = {
   products: {
@@ -46,14 +46,13 @@ const makeResources = ({
   const routingRepository: TenantRoutingRepository = {
     findRoute: jest.fn(),
     upsertRoute,
-    findTenantsByGroup: jest.fn(),
     deleteRoute: jest.fn(),
   };
   const invalidate = jest.fn();
   // Todo: fix typing here.
 
   //@ts-ignore
-  const resolver: TenantIndexResolver = {
+  const resolver: IndexNameResolver = {
     resolve: jest.fn().mockResolvedValue(resolverReturns),
     invalidate,
   };
@@ -72,7 +71,7 @@ const makeResources = ({
 
 describe('TenantProvisioningService', () => {
   describe('createGroup()', () => {
-    it('throws on unknown logicalName in registry', async () => {
+    it('throws on unknown aliasName in registry', async () => {
       const { sut } = makeResources();
       await expect(sut.createGroup('enterprise', 'invoices')).rejects.toThrow(
         'Unknown logical index "invoices"'
@@ -127,7 +126,7 @@ describe('TenantProvisioningService', () => {
 
   describe('assignTenant()', () => {
     describe('error guards', () => {
-      it('throws on unknown logicalName in registry', async () => {
+      it('throws on unknown aliasName in registry', async () => {
         const { sut } = makeResources({ existsAliasResult: true });
         await expect(sut.assignTenant('bigcorp', 'invoices', 'enterprise')).rejects.toThrow(
           'Unknown logical index "invoices"'
@@ -216,13 +215,13 @@ describe('TenantProvisioningService', () => {
         await sut.assignTenant('bigcorp', 'products', 'enterprise');
         expect(upsertRoute).toHaveBeenCalledWith({
           tenantId: 'bigcorp',
-          logicalName: 'products',
+          aliasName: 'products',
           resolvedAlias: 'products_group_enterprise',
           groupName: 'enterprise',
         });
       });
 
-      it('calls resolver.invalidate with correct tenantId and logicalName', async () => {
+      it('calls resolver.invalidate with correct tenantId and aliasName', async () => {
         const { sut, invalidate } = makeResources({ existsAliasResult: true });
         await sut.assignTenant('bigcorp', 'products', 'enterprise');
         expect(invalidate).toHaveBeenCalledWith('bigcorp', 'products');

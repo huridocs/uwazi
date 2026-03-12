@@ -10,28 +10,28 @@ const fixtures = {
   tenantRoutings: [
     {
       tenantId: 'tenant-a',
-      logicalName: 'products',
+      aliasName: 'products',
       resolvedAlias: 'products_group_enterprise',
       groupName: 'enterprise',
       assignedAt: new Date('2024-01-01'),
     },
     {
       tenantId: 'tenant-a',
-      logicalName: 'orders',
+      aliasName: 'orders',
       resolvedAlias: 'orders_group_enterprise',
       groupName: 'enterprise',
       assignedAt: new Date('2024-01-01'),
     },
     {
       tenantId: 'tenant-b',
-      logicalName: 'products',
+      aliasName: 'products',
       resolvedAlias: 'products_group_enterprise',
       groupName: 'enterprise',
       assignedAt: new Date('2024-01-01'),
     },
     {
       tenantId: 'tenant-c',
-      logicalName: 'products',
+      aliasName: 'products',
       resolvedAlias: 'products_shared',
       groupName: 'shared',
       assignedAt: new Date('2024-01-01'),
@@ -51,7 +51,7 @@ describe('MongoTenantRoutingRepository', () => {
   });
 
   describe('findRoute()', () => {
-    it('returns the resolvedAlias for an exact tenantId+logicalName match', async () => {
+    it('returns the resolvedAlias for an exact tenantId+aliasName match', async () => {
       const sut = createSut();
       const result = await sut.findRoute('tenant-a', 'products');
       expect(result).toBe('products_group_enterprise');
@@ -63,13 +63,13 @@ describe('MongoTenantRoutingRepository', () => {
       expect(result).toBeNull();
     });
 
-    it('returns null when tenantId matches but logicalName does not', async () => {
+    it('returns null when tenantId matches but aliasName does not', async () => {
       const sut = createSut();
       const result = await sut.findRoute('tenant-a', 'invoices');
       expect(result).toBeNull();
     });
 
-    it('returns null when logicalName matches but tenantId does not', async () => {
+    it('returns null when aliasName matches but tenantId does not', async () => {
       const sut = createSut();
       const result = await sut.findRoute('tenant-x', 'products');
       expect(result).toBeNull();
@@ -81,7 +81,7 @@ describe('MongoTenantRoutingRepository', () => {
       const sut = createSut();
       await sut.upsertRoute({
         tenantId: 'tenant-new',
-        logicalName: 'products',
+        aliasName: 'products',
         resolvedAlias: 'products_group_small',
         groupName: 'small',
       });
@@ -94,13 +94,13 @@ describe('MongoTenantRoutingRepository', () => {
       const before = new Date();
       await sut.upsertRoute({
         tenantId: 'tenant-new',
-        logicalName: 'products',
+        aliasName: 'products',
         resolvedAlias: 'products_group_small',
         groupName: 'small',
       });
       const docs = await testingEnvironment.db.getAllFrom('tenantRoutings');
       const created = docs.find(
-        (d: any) => d.tenantId === 'tenant-new' && d.logicalName === 'products'
+        (d: any) => d.tenantId === 'tenant-new' && d.aliasName === 'products'
       );
       expect(created?.assignedAt).toBeInstanceOf(Date);
       expect((created?.assignedAt as Date).getTime()).toBeGreaterThanOrEqual(before.getTime());
@@ -110,7 +110,7 @@ describe('MongoTenantRoutingRepository', () => {
       const sut = createSut();
       await sut.upsertRoute({
         tenantId: 'tenant-a',
-        logicalName: 'products',
+        aliasName: 'products',
         resolvedAlias: 'products_group_premium',
         groupName: 'premium',
       });
@@ -122,48 +122,20 @@ describe('MongoTenantRoutingRepository', () => {
       const sut = createSut();
       await sut.upsertRoute({
         tenantId: 'tenant-a',
-        logicalName: 'products',
+        aliasName: 'products',
         resolvedAlias: 'products_group_premium',
         groupName: 'premium',
       });
       const docs = await testingEnvironment.db.getAllFrom('tenantRoutings');
       const updated = docs.find(
-        (d: any) => d.tenantId === 'tenant-a' && d.logicalName === 'products'
+        (d: any) => d.tenantId === 'tenant-a' && d.aliasName === 'products'
       );
       expect((updated?.assignedAt as Date).getTime()).toBe(new Date('2024-01-01').getTime());
     });
   });
 
-  describe('findTenantsByGroup()', () => {
-    it('returns all tenantIds for the matching group+logicalName', async () => {
-      const sut = createSut();
-      const result = await sut.findTenantsByGroup('enterprise', 'products');
-      expect(result).toHaveLength(2);
-      expect(result).toEqual(expect.arrayContaining(['tenant-a', 'tenant-b']));
-    });
-
-    it('returns empty array when no tenants match', async () => {
-      const sut = createSut();
-      const result = await sut.findTenantsByGroup('nonexistent', 'products');
-      expect(result).toEqual([]);
-    });
-
-    it('does not include tenants from a different group', async () => {
-      const sut = createSut();
-      const result = await sut.findTenantsByGroup('shared', 'products');
-      expect(result).not.toContain('tenant-a');
-      expect(result).not.toContain('tenant-b');
-    });
-
-    it('does not include tenants with a different logicalName', async () => {
-      const sut = createSut();
-      const result = await sut.findTenantsByGroup('enterprise', 'orders');
-      expect(result).toEqual(['tenant-a']);
-    });
-  });
-
   describe('deleteRoute()', () => {
-    it('removes the route for the specified tenantId+logicalName', async () => {
+    it('removes the route for the specified tenantId+aliasName', async () => {
       const sut = createSut();
       await sut.deleteRoute('tenant-a', 'products');
       const result = await sut.findRoute('tenant-a', 'products');
@@ -177,7 +149,7 @@ describe('MongoTenantRoutingRepository', () => {
       expect(result).toBe('products_group_enterprise');
     });
 
-    it('does not remove routes for the same tenant with a different logicalName', async () => {
+    it('does not remove routes for the same tenant with a different aliasName', async () => {
       const sut = createSut();
       await sut.deleteRoute('tenant-a', 'products');
       const result = await sut.findRoute('tenant-a', 'orders');

@@ -2,10 +2,10 @@ import type { Client } from '@elastic/elasticsearch';
 import { TenantAwareESClient } from '../TenantAwareESClient';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { BulkIndexingError } from '../Types';
-import { TenantIndexResolver } from '../TenantIndexResolver';
+import { IndexNameResolver } from '../IndexNameResolver';
 
 const makeResolver = (alias = 'resolved-index') =>
-  TestUtils.mockClass<TenantIndexResolver>({
+  TestUtils.mockClass<IndexNameResolver>({
     resolve: jest.fn().mockResolvedValue(alias),
     invalidate: jest.fn(),
   });

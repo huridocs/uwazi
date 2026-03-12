@@ -3,7 +3,7 @@ import { TransactionManagerFactory } from '../factories/TransactionManagerFactor
 import { getSharedConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { MongoTenantRoutingRepository } from './MongoTenantRoutingRepository';
 import { TenantAwareESClient } from './TenantAwareESClient';
-import { TenantIndexResolver } from './TenantIndexResolver';
+import { IndexNameResolver } from './IndexNameResolver';
 import { config } from '#api/config.js';
 
 class ElasticSearchClientFactory {
@@ -15,11 +15,11 @@ class ElasticSearchClientFactory {
       TransactionManagerFactory.createForSharedDataBase()
     );
 
-    const tenantIndexResolver = new TenantIndexResolver(mongoTenantRoutingRepository);
+    const resolver = new IndexNameResolver(mongoTenantRoutingRepository);
 
     return new TenantAwareESClient({
       client: ElasticSearchClientFactory.getInstance(),
-      resolver: tenantIndexResolver,
+      resolver,
       tenantId,
     });
   }

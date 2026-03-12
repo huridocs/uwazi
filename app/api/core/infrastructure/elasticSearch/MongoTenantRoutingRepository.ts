@@ -10,27 +10,22 @@ class MongoTenantRoutingRepository
 {
   protected collectionName = 'tenantRoutings';
 
-  async findRoute(tenantId: string, logicalName: string): Promise<string | null> {
-    const doc = await this.getCollection().findOne({ tenantId, logicalName });
+  async findRoute(tenantId: string, aliasName: string): Promise<string | null> {
+    const doc = await this.getCollection().findOne({ tenantId, aliasName });
     return doc?.resolvedAlias ?? null;
   }
 
   async upsertRoute(record: Omit<TenantRouting, 'assignedAt'>): Promise<void> {
-    const { tenantId, logicalName, resolvedAlias, groupName } = record;
+    const { tenantId, aliasName, resolvedAlias, groupName } = record;
     await this.getCollection().updateOne(
-      { tenantId, logicalName },
+      { tenantId, aliasName },
       { $set: { resolvedAlias, groupName }, $setOnInsert: { assignedAt: new Date() } },
       { upsert: true }
     );
   }
 
-  async findTenantsByGroup(groupName: string, logicalName: string): Promise<string[]> {
-    const docs = await this.getCollection().find({ groupName, logicalName }).toArray();
-    return docs.map(doc => doc.tenantId);
-  }
-
-  async deleteRoute(tenantId: string, logicalName: string): Promise<void> {
-    await this.getCollection().deleteOne({ tenantId, logicalName });
+  async deleteRoute(tenantId: string, aliasName: string): Promise<void> {
+    await this.getCollection().deleteOne({ tenantId, aliasName });
   }
 }
 

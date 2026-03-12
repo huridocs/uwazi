@@ -9,7 +9,7 @@ import {
   type BulkOptions,
   BulkIndexingError,
 } from './Types';
-import { TenantIndexResolver } from './TenantIndexResolver';
+import { IndexNameResolver } from './IndexNameResolver';
 
 const tenantFilter = (tenantId: string): QueryDslQueryContainer => ({
   term: { tenantId },
@@ -21,7 +21,7 @@ const Schema = z.object({
 
 type Deps = {
   client: Client;
-  resolver: TenantIndexResolver;
+  resolver: IndexNameResolver;
   tenantId: string;
 };
 

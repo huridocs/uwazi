@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { TenantIndexResolver } from '../TenantIndexResolver';
+import { IndexNameResolver } from '../IndexNameResolver';
 import { TenantRoutingRepository } from '../TenantRoutingRepository';
 import {
   ProvisioningResult,
@@ -14,19 +14,19 @@ type Deps = {
   esClient: Client;
   registry: Record<string, IndexDefinition>;
   routingRepository: TenantRoutingRepository;
-  resolver: TenantIndexResolver;
+  resolver: IndexNameResolver;
 };
 
 class TenantProvisioningService {
   constructor(private deps: Deps) {}
 
-  async createGroup(groupName: string, logicalName: string): Promise<ProvisioningResult> {
+  async createGroup(groupName: string, aliasName: string): Promise<ProvisioningResult> {
     const startMs = Date.now();
-    const definition = this.deps.registry[logicalName];
-    if (!definition) throw new Error(`Unknown logical index "${logicalName}"`);
+    const definition = this.deps.registry[aliasName];
+    if (!definition) throw new Error(`Unknown logical index "${aliasName}"`);
 
-    const alias = GroupAliasNameBuilder.toAlias(groupName, logicalName);
-    const physicalIndex = GroupAliasNameBuilder.createInitialPhysicalIndex(groupName, logicalName);
+    const alias = GroupAliasNameBuilder.toAlias(groupName, aliasName);
+    const physicalIndex = GroupAliasNameBuilder.createInitialPhysicalIndex(groupName, aliasName);
 
     const aliasExists = await this.deps.esClient.indices.existsAlias({ name: alias });
     if (aliasExists.body) throw new GroupAlreadyExistsError(groupName, alias);
@@ -43,7 +43,7 @@ class TenantProvisioningService {
     return {
       success: true,
       operation: 'create-group',
-      details: { groupName, logicalName, alias, physicalIndex },
+      details: { groupName, aliasName, alias, physicalIndex },
       durationMs: Date.now() - startMs,
     };
   }
@@ -58,26 +58,26 @@ class TenantProvisioningService {
    */
   async assignTenant(
     tenantId: string,
-    logicalName: string,
+    aliasName: string,
     groupName: string
   ): Promise<ProvisioningResult> {
     const startMs = Date.now();
-    if (!this.deps.registry[logicalName]) throw new Error(`Unknown logical index "${logicalName}"`);
+    if (!this.deps.registry[aliasName]) throw new Error(`Unknown logical index "${aliasName}"`);
 
     const { currentAlias, targetAlias } = await this.resolveAssignment(
       tenantId,
-      logicalName,
+      aliasName,
       groupName
     );
     const reindexedCount = await this.doTenantReindex(currentAlias, targetAlias, tenantId);
 
     await this.deps.routingRepository.upsertRoute({
       tenantId,
-      logicalName,
+      aliasName,
       resolvedAlias: targetAlias,
       groupName,
     });
-    this.deps.resolver.invalidate(tenantId, logicalName);
+    this.deps.resolver.invalidate(tenantId, aliasName);
 
     await this.deps.esClient.deleteByQuery({
       index: currentAlias,
@@ -87,21 +87,21 @@ class TenantProvisioningService {
     return {
       success: true,
       operation: 'assign-tenant',
-      details: { tenantId, logicalName, groupName, targetAlias, reindexed: reindexedCount },
+      details: { tenantId, aliasName, groupName, targetAlias, reindexed: reindexedCount },
       durationMs: Date.now() - startMs,
     };
   }
 
   private async resolveAssignment(
     tenantId: string,
-    logicalName: string,
+    aliasName: string,
     groupName: string
   ): Promise<{ currentAlias: string; targetAlias: string }> {
-    const targetAlias = GroupAliasNameBuilder.toAlias(groupName, logicalName);
+    const targetAlias = GroupAliasNameBuilder.toAlias(groupName, aliasName);
     const targetExists = await this.deps.esClient.indices.existsAlias({ name: targetAlias });
     if (!targetExists.body) throw new GroupNotFoundError(groupName, targetAlias);
 
-    const currentAlias = await this.deps.resolver.resolve(logicalName, tenantId);
+    const currentAlias = await this.deps.resolver.resolve(aliasName, tenantId);
     if (currentAlias === targetAlias) throw new TenantAlreadyInGroupError(tenantId, groupName);
 
     return { currentAlias, targetAlias };

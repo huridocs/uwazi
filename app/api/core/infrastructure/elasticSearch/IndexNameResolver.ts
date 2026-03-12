@@ -1,6 +1,6 @@
 import type { TenantRoutingRepository } from './TenantRoutingRepository.js';
 
-class TenantIndexResolver {
+class IndexNameResolver {
   constructor(private readonly repository: TenantRoutingRepository) {}
 
   async resolve(aliasName: string, tenantId: string): Promise<string> {
@@ -15,4 +15,4 @@ class TenantIndexResolver {
   }
 }
 
-export { TenantIndexResolver };
+export { IndexNameResolver };
