@@ -26,7 +26,10 @@ class PendingThesauriValuesApplier {
   constructor(private deps: Deps) {}
 
   async apply(pendingDoc: CsvImportThesauriValues): Promise<ApplyResult> {
-    const existingThesaurus = await getThesaurusSchemaById(this.deps.thesauriDS, pendingDoc.thesaurusId);
+    const existingThesaurus = await getThesaurusSchemaById(
+      this.deps.thesauriDS,
+      pendingDoc.thesaurusId
+    );
     const diff = CsvThesauriValuesDiff.diff(pendingDoc, existingThesaurus);
 
     let appliedValues: CsvImportThesauriAppliedValue[] = [];

@@ -73,7 +73,9 @@ describe('PendingThesauriValuesApplier', () => {
     });
   };
 
-  const replaceThesaurusValues = async (values: Array<{ id: string; label: string; values?: Array<{ id: string; label: string }> }>) => {
+  const replaceThesaurusValues = async (
+    values: Array<{ id: string; label: string; values?: Array<{ id: string; label: string }> }>
+  ) => {
     const transactionManager = TransactionManagerFactory.default();
     const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
     const current = (await thesauriDS.getById(thesaurusId)).getDataOrThrow();
