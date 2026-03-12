@@ -21,11 +21,14 @@ import {
 } from './relationshipsHelpers.js';
 import { validateConnectionSchema } from './validateConnectionSchema.js';
 import { relationshipsSearch } from './relationshipsSearch.js';
+import { ValidationError } from '#api/core/domain/error/ValidationError.js';
 
 function excludeRefs(template) {
   delete template.refs;
   return template;
 }
+
+class RequiredParameters extends ValidationError {}
 
 function getPropertiesToBeConnections(template) {
   const props = [];
@@ -396,7 +399,10 @@ export default {
 
   async search(entitySharedId, query, language, user) {
     if (!entitySharedId || !language) {
-      throw new Error('entitySharedId and language are required');
+      throw new RequiredParameters(
+        'entitySharedId and language are required',
+        'relationships.search.required_parameters'
+      );
     }
 
     return relationshipsSearch(entitySharedId, query, language, user);
