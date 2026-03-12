@@ -23,7 +23,10 @@ describe('Stats routes', () => {
 
   describe('GET /api/stats', () => {
     it('returns the aggregated stats', async () => {
-      const { body } = await request(app).get('/api/stats').expect(200);
+      const { body } = await request(app)
+        .get('/api/stats')
+        .set('content-language', 'en')
+        .expect(200);
 
       expect(body).toEqual({
         users: {
@@ -32,7 +35,7 @@ describe('Stats routes', () => {
           editor: expect.any(Number),
           collaborator: expect.any(Number),
         },
-        entities: { total: expect.any(Number) },
+        entities: { total: 5 },
         files: { total: expect.any(Number) },
         storage: { total: expect.any(Number) },
       });

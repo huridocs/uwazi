@@ -14,11 +14,11 @@ export class RetrieveStatsService {
     this.db = db;
   }
 
-  async execute() {
+  async execute(language: string) {
     return {
       users: await this.calculateUserStats(),
       files: await this.calculateFileStats(),
-      entities: await this.calculateEntityStats(),
+      entities: await this.calculateEntityStats(language),
       storage: await this.calculateStorageStats(),
     };
   }
@@ -75,8 +75,10 @@ export class RetrieveStatsService {
     }
   }
 
-  private async calculateEntityStats() {
-    return { total: await this.db.collection('entities').countDocuments() };
+  private async calculateEntityStats(language: string) {
+    return {
+      total: await this.db.collection('entities').countDocuments({ language }),
+    };
   }
 
   private async calculateFileStats() {
