@@ -52,6 +52,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - TODO: Audit `csv.v2` internal imports and ensure they use **relative paths** (avoid `/api` syntax).
 - TODO: Ensure **all stages update `csv_imports.status`** (and stats) even when no work is done,
   so the UI can rely on status transitions instead of missing socket messages.
+- Dedicated dependency audit/handoff for this workstream:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
 
 #### 3.4 Tests and coverage gaps
 
@@ -927,6 +929,7 @@ The following order is explicitly agreed and should drive upcoming iterations.
 
 1. **Complete CSV v2 boundary cleanup from v1 dependencies**
    - Remove remaining v1 architectural references/wrappers from `csv.v2` paths and replace them with v2-native contracts/data-source usage.
+   - Use `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md` as the source of truth for current inventory, allowed temporary bridges, and migration order.
 2. **Implement terminal artifact cleanup for imports**
    - Add reliable, retry-safe cleanup of CSV-owned artifacts (original upload + extracted staging files) when imports reach terminal states.
 3. **Freeze file-column contract for CSV inputs**
