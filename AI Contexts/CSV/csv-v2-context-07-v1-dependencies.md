@@ -37,6 +37,10 @@ Status: **Decoupled from v1 (Mar 2026)**.
    - updated imports:
      - `app/api/csv.v2/application/jobs/specs/CsvExtractUploadedZipJob.spec.ts`
      - `app/api/csv.v2/infrastructure/jobHandlers/specs/CsvExtractUploadedZipJobDispatcher.spec.ts`
+   - typing alignment:
+     - added dev dependency `@types/yazl`
+     - helper import uses named export (`import { ZipFile } from 'yazl'`)
+     - temporary ambient shim `app/shared/types/yazl.d.ts` was removed after installing real types
 
 What this helper does:
 
@@ -140,3 +144,13 @@ Conclusion:
 - V1 fallback route and compat emitter remain only where intentionally allowed.
 - Focused Jest specs for touched CSV v2 flows pass with the standard command.
 - This file and `csv-v2-context-07.md` are updated in the same iteration.
+
+## 8) Latest progress update (Mar 2026)
+
+- `createTestingZip` decoupling completed without touching v1 files.
+- Focused verification passed:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/jobs/specs/CsvExtractUploadedZipJob.spec.ts app/api/csv.v2/infrastructure/jobHandlers/specs/CsvExtractUploadedZipJobDispatcher.spec.ts`
+  - result: pass (2 suites, 9 tests).
+- Migration spec output-noise cleanup applied:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts` now mocks `process.stdout.write` in `beforeAll`.
+  - focused spec still passes after change.

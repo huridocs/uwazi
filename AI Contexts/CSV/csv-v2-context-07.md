@@ -908,6 +908,24 @@ Implementation simplifications performed:
   - `CsvCreateRelationshipEntitiesJob` finalize path.
 - Kept mandatory guards at loop boundaries, pre-dispatch, and pre-success callback.
 
+#### 18.9 V1-dependency cleanup progress + migration spec polish (Mar 2026)
+
+- Added dedicated handoff/inventory doc for this workstream:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
+- Decoupled CSV v2 tests from v1 helper imports:
+  - Created `app/api/csv.v2/specs/helpers/createTestingZip.ts`.
+  - Updated CSV v2 extraction specs to import this v2-local helper instead of `#api/csv/specs/helpers.js`.
+- Typing cleanup for the new helper:
+  - Added dev dependency `@types/yazl`.
+  - Updated helper import to `import { ZipFile } from 'yazl'`.
+  - Removed temporary ambient declaration shim once real types were installed.
+- Migration spec output suppression aligned with repo convention:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+    now mocks `process.stdout.write` in `beforeAll` to avoid printing migration banners during tests.
+- Verification:
+  - CSV v2 focused extraction specs pass.
+  - `185-csv_v2_indexes` focused spec still passes after stdout-silencing update.
+
 ### 19) TODO — Document ReadTheDocs import instructions
 
 We should create and maintain user-facing documentation in ReadTheDocs that explains
