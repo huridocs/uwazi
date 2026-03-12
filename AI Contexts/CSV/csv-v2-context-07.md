@@ -1069,6 +1069,20 @@ Implementation simplifications performed:
     - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
     - result: pass (17 suites, 66 tests).
 
+#### 18.17 Cleanup follow-up stabilization + handoff target (Mar 2026)
+
+- Test-stability follow-up implemented:
+  - `CsvImportEntitiesJobFactory.build(...)` now allows optional `jobsDispatcher` injection.
+  - `CsvImportEntitiesJob.spec.ts` injects a mocked dispatcher to avoid queue/session flakiness
+    in full-suite execution (`Transaction ... has been committed`).
+  - Production wiring remains unchanged (default dispatcher path still used outside tests).
+- Cleanup workstream status:
+  - terminal artifact cleanup is implemented and verified,
+  - failed-rows report artifact is intentionally preserved.
+- Next handoff target (priority continuation):
+  - proceed to **file-column contract freeze** (`file__LANG`, `file`, `files`) as the next active
+    TODO after cleanup completion.
+
 ### 19) TODO — Document ReadTheDocs import instructions
 
 We should create and maintain user-facing documentation in ReadTheDocs that explains
@@ -1092,7 +1106,9 @@ The following order is explicitly agreed and should drive upcoming iterations.
    - Remove remaining v1 architectural references/wrappers from `csv.v2` paths and replace them with v2-native contracts/data-source usage.
    - Use `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md` as the source of truth for current inventory, allowed temporary bridges, and migration order.
 2. **Implement terminal artifact cleanup for imports**
-   - Add reliable, retry-safe cleanup of CSV-owned artifacts (original upload + extracted staging files) when imports reach terminal states.
+   - ✅ Implemented. See:
+     - `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
+   - Current behavior: cleanup removes original upload + extracted staging assets, preserves failed-rows report artifact.
 3. **Freeze file-column contract for CSV inputs**
    - Define and document exact behavior for `file__LANG`, `file`, and `files` so parsing/import behavior is deterministic and consistent across API, jobs, and UX.
 4. **Standardize row error taxonomy and reporting output**

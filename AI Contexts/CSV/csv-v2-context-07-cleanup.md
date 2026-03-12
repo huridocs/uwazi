@@ -94,7 +94,7 @@ Execution semantics:
 - Cleanup retries are allowed; terminal import outcome remains unchanged.
 - Internal `filesCleanup` should capture terminal housekeeping outcome (`done` or `failed`).
 
-## 8) Implementation checklist (next coding slice)
+## 8) Implementation checklist (completed)
 
 1. Add cleanup job + job handler in `csv.v2` with the same structure/patterns as existing stages.
 2. Add internal `filesCleanup` field mapping in domain + data source updates.
@@ -109,7 +109,7 @@ Execution semantics:
    - repeated cleanup is safe,
    - missing files do not fail terminal semantics.
 
-## 10) Implementation status (Mar 2026)
+## 9) Implementation status (Mar 2026)
 
 Status: **Implemented**.
 
@@ -141,7 +141,7 @@ Behavior now in code:
 - Cleanup is idempotent (safe on missing/deleted files).
 - Cleanup does not change `csv_imports.status`.
 
-## 11) Dispatch architecture (implemented refactor)
+## 10) Dispatch architecture (implemented refactor)
 
 To avoid repeated logic in each stage:
 
@@ -156,7 +156,7 @@ To avoid repeated logic in each stage:
 
 This keeps stage jobs/handlers aligned while avoiding copy-pasted cleanup decision blocks.
 
-## 12) Verification (latest)
+## 11) Verification (latest)
 
 - Focused cleanup job integration spec:
   - `app/api/csv.v2/application/jobs/specs/CsvCleanupImportFilesJob.spec.ts`
@@ -165,8 +165,25 @@ This keeps stage jobs/handlers aligned while avoiding copy-pasted cleanup decisi
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
   - pass: **17 suites**, **66 tests**.
 
-## 9) Guardrails
+## 12) Test stability note (Mar 2026)
+
+- A flaky integration failure was observed in `CsvImportEntitiesJob.spec.ts` under full-suite
+  execution (`Transaction ... has been committed`) when the job used the default queue dispatcher.
+- Stabilization applied:
+  - `CsvImportEntitiesJobFactory.build(...)` now supports injecting `jobsDispatcher`.
+  - `CsvImportEntitiesJob.spec.ts` injects a mocked dispatcher for deterministic integration
+    behavior while preserving production default wiring.
+- This is a test-isolation fix; production behavior continues to use `DefaultDispatcher` unless
+  explicitly overridden.
+
+## 13) Guardrails
 
 - Keep changes scoped to `app/api/csv.v2/**` and CSV context docs unless explicit approval is given.
 - Do not change core queue/router/dispatcher contracts.
 - Follow integration-first testing patterns and CSV v2 conventions already established in Context 07.
+
+## 14) Next TODO after cleanup
+
+- With cleanup implementation complete, the next prioritized item is:
+  - **Freeze file-column contract for CSV inputs** (`file__LANG`, `file`, `files`) and align
+    parser/import/UX semantics as documented in `csv-v2-context-07.md` priority section.
