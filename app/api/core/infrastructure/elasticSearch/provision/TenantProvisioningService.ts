@@ -51,10 +51,11 @@ class TenantProvisioningService {
   /**
    * Assigns a tenant to an index group by copying their documents to the group alias.
    *
-   * Steps are intentionally ordered for idempotency: the routing record is committed (step 9)
-   * before the source documents are deleted (step 11). If the service crashes between those two
-   * steps, re-running will throw `TenantAlreadyInGroupError` at step 5 — the residual duplicate
-   * documents in the source index must be cleaned up as a separate recovery operation.
+   * The operations are intentionally ordered for idempotency: the routing record is committed
+   * before the source documents are deleted. If the service crashes between those two operations,
+   * re-running will fail with `TenantAlreadyInGroupError` when updating the routing record — any
+   * residual duplicate documents in the source index must then be cleaned up as a separate
+   * recovery operation.
    */
   async assignTenant(
     tenantId: string,
