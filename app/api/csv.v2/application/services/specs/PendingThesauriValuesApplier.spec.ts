@@ -1,209 +1,29 @@
-import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { Result } from '#api/core/libs/Result.js';
+/* eslint-disable max-statements */
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PendingThesauriValuesApplier } from '../PendingThesauriValuesApplier.js';
 import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
 import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues.js';
-import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
-import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { Translation, TranslationContext } from '#api/i18n.v2/model/Translation.js';
-import { TranslationContextModel } from '#api/i18n.v2/model/TranslationContextModel.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BulkDeleteKeysByContext, UpdateKeysByContextProps } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { DeleteResult, UpdateResult } from 'mongodb';
-import { Id } from '#api/core/libs/Id.js';
+const fixturesFactory = getFixturesFactory();
 
-class InMemoryResultSet<T> implements ResultSet<T> {
-  constructor(private values: T[]) {}
-
-  async all() {
-    return this.values;
-  }
-
-  async page(number: number, size: number) {
-    const start = Math.max(0, number * size);
-    return this.values.slice(start, start + size);
-  }
-
-  async first() {
-    return this.values[0] ?? null;
-  }
-
-  async hasNext() {
-    return false;
-  }
-
-  async nextBatch(size: number) {
-    return this.values.slice(0, size);
-  }
-
-  async forEach(callback: (item: T) => Promise<void | boolean> | void | boolean) {
-    for (const item of this.values) {
-      const result = await callback(item);
-      if (result === false) {
-        break;
-      }
-    }
-  }
-
-  async forEachBatch(
-    batchSize: number,
-    callback: (items: T[]) => Promise<void | boolean> | void | boolean
-  ) {
-    const firstBatch = this.values.slice(0, batchSize);
-    await callback(firstBatch);
-  }
-
-  async find(predicate: (item: T) => Promise<boolean> | boolean) {
-    for (const item of this.values) {
-      if (await predicate(item)) {
-        return item;
-      }
-    }
-    return null;
-  }
-
-  async every(predicate: (item: T) => Promise<boolean> | boolean) {
-    for (const item of this.values) {
-      if (!(await predicate(item))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  async some(predicate: (item: T) => Promise<boolean> | boolean) {
-    for (const item of this.values) {
-      if (await predicate(item)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  async indexed(predicate: (item: T) => string | number) {
-    return this.values.reduce<Record<string | number, Awaited<T>>>((acc, item) => {
-      acc[predicate(item)] = item as Awaited<T>;
-      return acc;
-    }, {});
-  }
-}
-
-class FakeTranslationsDataSource implements TranslationsDataSource {
-  public upsertCalls: Translation[][] = [];
-
-  async insert(translations: Translation[]): Promise<Translation[]> {
-    return translations;
-  }
-
-  async upsert(translations: Translation[]): Promise<Translation[]> {
-    this.upsertCalls.push(translations);
-    return translations;
-  }
-
-  getAll(): ResultSet<Translation> {
-    return new InMemoryResultSet<Translation>([]);
-  }
-
-  getByLanguage(_language: string): ResultSet<Translation> {
-    return new InMemoryResultSet<Translation>([]);
-  }
-
-  getByContext(_context: string): ResultSet<Translation> {
-    return new InMemoryResultSet<Translation>([]);
-  }
-
-  getContextAndKeys(_contextId: string, _keys: string[]): ResultSet<Translation> {
-    return new InMemoryResultSet<Translation>([]);
-  }
-
-  async deleteByContextId(_contextId: string): Promise<DeleteResult> {
-    return { acknowledged: true, deletedCount: 0 };
-  }
-
-  async deleteByLanguage(_language: string): Promise<DeleteResult> {
-    return { acknowledged: true, deletedCount: 0 };
-  }
-
-  async deleteKeysByContext(_contextId: string, _keysToDelete: string[]): Promise<DeleteResult> {
-    return { acknowledged: true, deletedCount: 0 };
-  }
-
-  async bulkDeleteKeysByContext(_props: BulkDeleteKeysByContext): Promise<void> {}
-
-  async updateContextLabel(_contextId: string, _contextLabel: string): Promise<UpdateResult> {
-    return {
-      acknowledged: true,
-      matchedCount: 0,
-      modifiedCount: 0,
-      upsertedCount: 0,
-      upsertedId: null,
-    };
-  }
-
-  async updateKeysByContext(_contextId: string, _keyChanges: { [p: string]: string }): Promise<void> {}
-
-  async updateKeysByContextV2(_props: UpdateKeysByContextProps): Promise<void> {}
-
-  async calculateNonexistentKeys(_contextId: string, keys: string[]): Promise<string[]> {
-    return keys;
-  }
-
-  async getContext(
-    _contextInfo: TranslationContext,
-    _languages: LanguageISO6391[],
-    _defaultLanguage: LanguageISO6391
-  ): Promise<TranslationContextModel> {
-    throw new Error('not implemented');
-  }
-
-  async updateContext(_context: TranslationContextModel): Promise<void> {}
-}
-
-class FakeThesauriDataSource implements ThesauriDataSource {
-  constructor(private thesaurus: ThesaurusSchema) {}
-
-  async getById(_id: string) {
-    return Result.ok(toCoreThesaurus(this.thesaurus));
-  }
-
-  async exists(_thesaurus: Thesaurus) {
-    return Result.ok<false>(false);
-  }
-
-  async create(_thesaurus: Thesaurus) {}
-
-  async update(nextThesaurus: Thesaurus): Promise<void> {
-    this.thesaurus = {
-      _id: nextThesaurus.id,
-      name: nextThesaurus.name,
-      values: nextThesaurus.values.map(root => ({
-        id: root.id,
-        label: root.label,
-        values: root.values?.map(child => ({
-          id: child.id,
-          label: child.label,
-        })),
-      })),
-    };
-  }
-}
-
-const toCoreThesaurus = (schema: ThesaurusSchema) =>
-  new Thesaurus({
-    id: typeof schema._id === 'string' ? schema._id : schema._id?.toString() || 'thesaurus-id',
-    name: schema.name,
-    values:
-      schema.values?.map(root => ({
-        id: root.id ?? new Id({}).value,
-        label: root.label,
-        values: root.values?.map(child => ({
-          id: child.id ?? new Id({}).value,
-          label: child.label,
-        })),
-      })) || [],
-  });
+const fixtures = {
+  settings: [
+    {
+      _id: fixturesFactory.id('pendingThesauriSettings'),
+      languages: [
+        { key: 'en' as LanguageISO6391, label: 'English', default: true },
+        { key: 'es' as LanguageISO6391, label: 'Spanish' },
+      ],
+      features: { newNameGeneration: false },
+    },
+  ],
+  dictionaries: [fixturesFactory.thesauri('applier-thesaurus', [])],
+};
 
 const buildPendingDoc = ({
   importId,
@@ -243,24 +63,59 @@ const buildPendingDoc = ({
 };
 
 describe('PendingThesauriValuesApplier', () => {
-  it('should include existing IDs in appliedValues when no appends are needed', async () => {
-    const thesaurusId = 'th-1';
-    const existing: ThesaurusSchema = {
-      name: 'th',
-      values: [
-        {
-          id: 'root-id',
-          label: 'Root',
-          values: [{ id: 'child-id', label: 'Child' }],
-        },
-      ],
-    };
+  const thesaurusId = fixtures.dictionaries[0]._id.toString();
 
-    const translationsDS = new FakeTranslationsDataSource();
-    const applier = new PendingThesauriValuesApplier({
-      thesauriDS: new FakeThesauriDataSource(existing),
-      translationsDS,
+  const buildApplier = () => {
+    const transactionManager = TransactionManagerFactory.default();
+    return new PendingThesauriValuesApplier({
+      thesauriDS: ThesauriDataSourceFactory.default(transactionManager),
+      translationsDS: DefaultTranslationsDataSource(transactionManager),
     });
+  };
+
+  const replaceThesaurusValues = async (values: Array<{ id: string; label: string; values?: Array<{ id: string; label: string }> }>) => {
+    const transactionManager = TransactionManagerFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+    const current = (await thesauriDS.getById(thesaurusId)).getDataOrThrow();
+    const updated = new Thesaurus({
+      id: current.id,
+      name: current.name,
+      values,
+    });
+    await thesauriDS.update(updated);
+  };
+
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures, 'pending-thesauri-values-applier');
+  });
+
+  afterEach(async () => {
+    jest.clearAllMocks();
+    await testingEnvironment.setFixtures(fixtures);
+    await Promise.all(
+      ['translations_v2'].map(async collectionName => {
+        const collection = testingEnvironment.db.getCollection(collectionName);
+        if (collection) {
+          await collection.deleteMany({});
+        }
+      })
+    );
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
+  it('should include existing IDs in appliedValues when no appends are needed', async () => {
+    await replaceThesaurusValues([
+      {
+        id: fixturesFactory.idString('root-id'),
+        label: 'Root',
+        values: [{ id: fixturesFactory.idString('child-id'), label: 'Child' }],
+      },
+    ]);
+
+    const applier = buildApplier();
 
     const pendingDoc = buildPendingDoc({
       importId: 'imp-1',
@@ -274,19 +129,19 @@ describe('PendingThesauriValuesApplier', () => {
     expect(diff.valuesToAppend).toHaveLength(0);
     expect(appliedValues).toEqual(
       expect.arrayContaining([
-        { label: 'Root', valueId: 'root-id' },
-        { label: 'Child', parentLabel: 'Root', valueId: 'child-id' },
+        { label: 'Root', valueId: fixturesFactory.idString('root-id') },
+        {
+          label: 'Child',
+          parentLabel: 'Root',
+          valueId: fixturesFactory.idString('child-id'),
+        },
       ])
     );
   });
 
   it('should capture newly appended IDs in appliedValues', async () => {
-    const thesaurusId = 'th-2';
-    const translationsDS = new FakeTranslationsDataSource();
-    const applier = new PendingThesauriValuesApplier({
-      thesauriDS: new FakeThesauriDataSource({ _id: thesaurusId, name: 'th', values: [] }),
-      translationsDS,
-    });
+    await replaceThesaurusValues([]);
+    const applier = buildApplier();
 
     const pendingDoc = buildPendingDoc({
       importId: 'imp-2',
@@ -299,6 +154,9 @@ describe('PendingThesauriValuesApplier', () => {
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(appliedValues).toHaveLength(2);
+    const translationsDS = DefaultTranslationsDataSource(TransactionManagerFactory.default());
+    const translations = await translationsDS.getByContext(thesaurusId).all();
+    expect(translations.length).toBeGreaterThan(0);
     expect(appliedValues).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -316,27 +174,24 @@ describe('PendingThesauriValuesApplier', () => {
 
   // eslint-disable-next-line max-statements
   it('should include existing and new values together', async () => {
-    const thesaurusId = 'th-3';
-    const existing: ThesaurusSchema = {
-      name: 'th',
-      values: [
-        {
-          id: 'root-id',
-          label: 'Root',
-          values: [{ id: 'existing-child-id', label: 'Existing Child' }],
-        },
-        {
-          id: 'standalone-id',
-          label: 'Standalone Existing',
-        },
-      ],
-    };
+    await replaceThesaurusValues([
+      {
+        id: fixturesFactory.idString('existing-root-id'),
+        label: 'Root',
+        values: [
+          {
+            id: fixturesFactory.idString('existing-child-id'),
+            label: 'Existing Child',
+          },
+        ],
+      },
+      {
+        id: fixturesFactory.idString('standalone-id'),
+        label: 'Standalone Existing',
+      },
+    ]);
 
-    const translationsDS = new FakeTranslationsDataSource();
-    const applier = new PendingThesauriValuesApplier({
-      thesauriDS: new FakeThesauriDataSource(existing),
-      translationsDS,
-    });
+    const applier = buildApplier();
 
     const entry = new CsvThesauriPendingEntry({
       propertyId: 'prop-id',
@@ -406,13 +261,16 @@ describe('PendingThesauriValuesApplier', () => {
     );
     expect(appliedValues).toEqual(
       expect.arrayContaining([
-        { label: 'Root', valueId: 'root-id' },
+        {
+          label: 'Root',
+          valueId: fixturesFactory.idString('existing-root-id'),
+        },
         {
           label: 'Existing Child',
           parentLabel: 'Root',
-          valueId: 'existing-child-id',
+          valueId: fixturesFactory.idString('existing-child-id'),
         },
-        { label: 'Standalone Existing', valueId: 'standalone-id' },
+        { label: 'Standalone Existing', valueId: fixturesFactory.idString('standalone-id') },
         expect.objectContaining({
           label: 'New Child',
           parentLabel: 'Root',

@@ -984,11 +984,12 @@ Implementation simplifications performed:
     - `PendingThesauriTranslationsGateway`
     - `PendingThesauriAppliedValuesCollector`
   - goal: keep applier orchestration readable while preserving behavior.
-- Test typing cleanup:
-  - removed `as any` / `as unknown` casting from
+- Test cleanup (integration-first):
+  - replaced fake/mocked DS/result-set coverage in:
     - `CsvCreateThesauriValuesJob.spec.ts`
     - `PendingThesauriValuesApplier.spec.ts`
-  - replaced with typed test doubles implementing real contracts.
+  - both specs now run against real Mongo-backed data sources and real result sets via
+    `testingEnvironment` + fixtures, aligned with the CSV v2/core v2 testing rule.
 - `CsvCreateThesauriValuesJobFactory` now lazily resolves a Mongo transaction manager only when DS defaults are needed, allowing typed non-Mongo transaction-manager doubles in tests without async-context failures.
 - Focused verification:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`

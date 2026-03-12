@@ -210,7 +210,8 @@ Verification:
 - result: pass (2 suites, 4 tests).
 - Follow-up quality pass:
   - extracted helper modules from `PendingThesauriValuesApplier` to reduce complexity/readability load.
-  - removed `as any` / `as unknown` casts from related specs by introducing typed test doubles.
+  - converted related specs to integration-style DB tests using real data sources/result sets
+    (no fake/mocked DS/result-set layer in these specs).
   - adjusted factory to lazily allocate Mongo TM defaults so typed non-Mongo test doubles can be used without app-context errors.
 
 ## 9) Updated next candidate in boundary-cleanup track
