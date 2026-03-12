@@ -7,9 +7,8 @@ import promBundle from 'express-prom-bundle';
 import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
-import path from 'path';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
 import * as Sentry from '@sentry/node';
 
@@ -40,10 +39,14 @@ import { serverSideRender } from './react/server.js';
 import { initSentry } from './initSentry.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 
+import '#api/core/infrastructure/listeners/Listeners.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { IndexBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/IndexBootstrapper.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { IndexMappingRegistry } from '#api/core/infrastructure/elasticSearch/IndexMappingRegistry.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-import '#api/core/infrastructure/listeners/Listeners.js';
 
 mongoose.Promise = Promise;
 
@@ -135,6 +138,7 @@ app.use(appContextMiddleware);
 
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
+app.use(dependenciesContextMiddleware);
 app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
@@ -169,12 +173,20 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
         process.exit(1);
       }
     });
-    // eslint-disable-next-line global-require
+
     setupQueueWorker({ standAloneProcess: false });
   }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
   const port = config.PORT;
+
+  // Setup of ES indexes
+  const indexBootstrapper = new IndexBootstrapper({
+    client: ElasticSearchClientFactory.getInstance(),
+    registry: IndexMappingRegistry,
+  });
+
+  await indexBootstrapper.bootstrapAll();
 
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
