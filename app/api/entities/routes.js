@@ -223,11 +223,6 @@ export default app => {
             return;
           }
 
-          const isAuthenticated = !!req.user;
-
-          // Only filter by published for unauthenticated users
-          const published = isAuthenticated ? undefined : true;
-
           // Parse include parameter to check if permissions should be included
           const includePermissions = include.includes('permissions');
 
@@ -237,7 +232,6 @@ export default app => {
           const useCase = GetEntityUseCaseFactory.default(req.language, req.user || null);
           const result = await useCase.execute({
             sharedId,
-            published,
             includeRelationships,
           });
 

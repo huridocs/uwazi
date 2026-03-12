@@ -3,7 +3,6 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntityDAO } from '../mongodb/entity/MongoEntityDAO.js';
 import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
-import { FilesDataSourceFactory } from './FilesDataSourceFactory.js';
 import { GetEntityUseCase } from '../../application/GetEntity.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
@@ -24,10 +23,6 @@ export class GetEntityUseCaseFactory {
 
     const relationshipsDataSource = new MongoRelationshipsV1DataSource(
       getConnection(),
-      transactionManager as MongoTransactionManager
-    );
-
-    const filesDataSource = FilesDataSourceFactory.default(
       transactionManager as MongoTransactionManager
     );
 
@@ -52,7 +47,6 @@ export class GetEntityUseCaseFactory {
       {
         entityDAO,
         relationshipsDataSource,
-        filesDataSource,
         permissionChecker,
         templatesDataSource,
         settingsDataSource,
