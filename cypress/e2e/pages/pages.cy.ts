@@ -47,10 +47,12 @@ describe('Pages', () => {
         'html',
         '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
         false,
-        'Custom HomePage'
+        'myDiv',
+        true
       );
+      cy.contains('[role="tab"]', 'Basic').click();
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(501);
+      cy.wait(600);
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
       cy.get('input[id="page-url"]')
@@ -164,9 +166,9 @@ describe('Pages', () => {
       cy.clearAndType('input[name="title"]', 'My entity view page', { delay: 0 });
       cy.contains('Activate').click();
       cy.contains('Markdown').click();
-      typeInEditor('html', contents, false, 'My entity view');
+      typeInEditor('html', contents, false, 'Detalle', true);
       cy.contains('Javascript').click();
-      typeInEditor('javascript', script, false, 'currentEntitySharedId');
+      typeInEditor('javascript', script, false, 'currentEntitySharedId', true);
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.contains('button.bg-success-700', 'Save').click();
@@ -188,6 +190,7 @@ describe('Pages', () => {
     it('display the entity in custom page', () => {
       dismissModalIfVisible();
       cy.contains('a', 'Library').click();
+      dismissModalIfVisible();
       cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Medida Provisional', {
         timeout: 12000,
       }).click();

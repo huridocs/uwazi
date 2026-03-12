@@ -12,17 +12,41 @@ const clearMonaco = (selector: string) => {
   cy.get(selector).first().realClick().realPress(['Control', 'a']).realPress('Backspace');
 };
 
-const typeMonaco = (selector: string, value: string, blurAndVerify?: string) => {
-  const typeDelay = blurAndVerify ? 15 : 0;
-  cy.get(selector).first().realClick().realType(escapeRealType(value), { delay: typeDelay });
+const pasteMonaco = (selector: string, value: string) => {
+  cy.get(selector).first().realClick();
+  cy.window().then(async win => win.navigator.clipboard.writeText(value));
+  cy.get(selector).first().realPress(['Control', 'v']);
+};
+
+const getPanelFromSelector = (selector: string) =>
+  selector.includes('panel-Advanced') ? 'Advanced' : 'Code';
+
+const selectedPanelSelector = '[data-headlessui-state="selected"]';
+
+const typeMonaco = (selector: string, value: string, blurAndVerify?: string, paste = false) => {
+  if (paste) {
+    pasteMonaco(selector, value);
+  } else {
+    const typeDelay = blurAndVerify ? 15 : 0;
+    cy.get(selector).first().realClick().realType(escapeRealType(value), { delay: typeDelay });
+  }
   if (blurAndVerify) {
     cy.contains('[role="tab"]', 'Basic').realClick();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(600);
-    const panel = selector.includes('panel-Advanced') ? 'Advanced' : 'Code';
+    const panel = getPanelFromSelector(selector);
     const tabLabel = panel === 'Advanced' ? 'Javascript' : 'Markdown';
     cy.contains('[role="tab"]', tabLabel).click();
-    cy.get(selector).closest(`#panel-${panel}`).should('contain.text', blurAndVerify);
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
+    cy.get(selectedPanelSelector)
+      .filter(':has(.monaco-editor)')
+      .find('.monaco-editor')
+      .first()
+      .invoke('text')
+      .then((text: string) => {
+        expect(text, `expected editor to contain "${blurAndVerify}"`).to.include(blurAndVerify);
+      });
   }
 };
 
@@ -51,7 +75,8 @@ export const typeInEditor = (
   mode: 'html' | 'javascript',
   value: string,
   clear = false,
-  blurAndVerify?: string
+  blurAndVerify?: string,
+  paste = false
 ) => {
   const monacoSelector = getMonacoSelector(mode);
   const textareaSelector = getTextareaSelector(mode);
@@ -63,7 +88,7 @@ export const typeInEditor = (
       if (clear) {
         clearMonaco(monacoSelector);
       }
-      typeMonaco(monacoSelector, value, blurAndVerify);
+      typeMonaco(monacoSelector, value, blurAndVerify, paste);
       return;
     }
     let selector = 'textarea[name="metadata.content"]';
@@ -76,6 +101,10 @@ export const typeInEditor = (
     if (clear) {
       clearTarget(selector);
     }
-    typeTarget(selector, value);
+    if (paste) {
+      cy.get(selector).invoke('val', value).trigger('input');
+    } else {
+      typeTarget(selector, value);
+    }
   });
 };

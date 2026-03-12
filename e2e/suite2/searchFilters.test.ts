@@ -160,7 +160,7 @@ describe('search filters path', () => {
       try {
         await page.waitForSelector('.react-datepicker__day--selected');
         await page.click('.react-datepicker__day--selected');
-      } catch (_ex) { }
+      } catch (_ex) {}
     };
 
     it('should filter by a date for Ordenes de la corte', async () => {
@@ -252,7 +252,8 @@ describe('search filters path', () => {
       await page.waitForSelector('body', { timeout: 10000 });
       await page.waitForFunction(
         () =>
-          document.body.textContent?.includes('Fecha') || document.body.textContent?.includes('País'),
+          document.body.textContent?.includes('Fecha') ||
+          document.body.textContent?.includes('País'),
         { timeout: 20000 }
       );
 
