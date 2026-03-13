@@ -8,8 +8,8 @@ export function initSentry() {
       release: config.VERSION,
       dsn: config.sentry.dsn,
       environment: config.ENVIRONMENT,
-      integrations: (defaults) => [
-        ...defaults.filter((i) => i.name !== 'Redis'),
+      integrations: defaults => [
+        ...defaults.filter(i => i.name !== 'Redis'),
         nodeProfilingIntegration(),
       ],
       tracesSampleRate: config.sentry.tracesSampleRate,

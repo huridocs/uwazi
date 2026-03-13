@@ -15,8 +15,8 @@ if (dsn) {
     release: version,
     dsn,
     environment: process.env.ENVIRONMENT || 'development',
-    integrations: (defaults) => [
-      ...defaults.filter((i) => i.name !== 'Redis'),
+    integrations: defaults => [
+      ...defaults.filter(i => i.name !== 'Redis'),
       nodeProfilingIntegration(),
     ],
     tracesSampleRate: 0.1,
