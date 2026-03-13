@@ -13,7 +13,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
-import { GetEntityUseCaseFactory } from '#api/core/infrastructure/factories/GetEntityUseCaseFactory.js';
+import { GetEntityController } from '#api/core/infrastructure/express/entity/GetEntityController.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import templates from '../core/v1_layer/templates/templates.js';
 import { thesauri } from '../thesauri/thesauri.js';
@@ -214,46 +214,8 @@ export default app => {
     async (req, res, next) => {
       // V2 implementation
       if (tenants.current()?.featureFlags?.v2GetEntity) {
-        try {
-          const { sharedId, include = [], omitRelationships } = req.query;
-
-          if (!sharedId) {
-            res.status(400);
-            res.json({ error: 'sharedId is required' });
-            return;
-          }
-
-          // Parse include parameter to check if permissions should be included
-          const includePermissions = include.includes('permissions');
-
-          // Convert omitRelationships to includeRelationships (inverse logic)
-          const includeRelationships = !omitRelationships;
-
-          const useCase = GetEntityUseCaseFactory.default(req.language, req.user || null);
-          const result = await useCase.execute({
-            sharedId,
-            includeRelationships,
-          });
-
-          if (result.isError()) {
-            res.status(404);
-            res.json({ rows: [] });
-            return;
-          }
-
-          const entity = result.getDataOrThrow();
-
-          // Remove permissions if not explicitly requested
-          if (!includePermissions) {
-            delete entity.permissions;
-          }
-
-          // Return in V1 format: { rows: [entity] }
-          res.json({ rows: [entity] });
-          return;
-        } catch (error) {
-          return next(error);
-        }
+        await GetEntityController.createHandler()(req, res, next);
+        return;
       }
 
       // V1 implementation

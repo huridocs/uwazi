@@ -9,7 +9,7 @@ import routes from '#api/entities/routes';
 import { testingTenants } from '#api/utils/testingTenants';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { UserRole } from '#shared/types/userSchema.js';
-import fixtures, { permissions, user1Id, batmanFinishesId } from './routesGetFixtures';
+import fixtures, { permissions, user1Id, batmanFinishesId, docId1 } from './routesGetFixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -39,7 +39,8 @@ const getEntity = async (
   const query: any = {};
   if (options._id) {
     query._id = options._id;
-  } else {
+  }
+  if (sharedId) {
     query.sharedId = sharedId;
   }
   if (options.omitRelationships !== undefined) query.omitRelationships = options.omitRelationships;
@@ -95,19 +96,6 @@ describe.each([
         title: 'Penguin almost done',
       });
     });
-
-    if (featureFlags.v2GetEntity) {
-      it('should not support _id parameter (V2 only supports sharedId)', async () => {
-        new UserInContextMockFactory().mock(authenticatedUser);
-        const response = await getEntity(app, '', {
-          _id: batmanFinishesId.toString(),
-          omitRelationships: true,
-          expectStatus: 400,
-        });
-
-        expect(response.body).toMatchObject({ error: 'sharedId is required' });
-      });
-    }
 
     it('should return 404 when entity does not exist', async () => {
       const response = await getEntity(appWithoutUser, 'nonexistent', { expectStatus: 404 });
@@ -695,6 +683,93 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
           { value: 'unpublishedForTest', authorized: false },
         ]);
       });
+    });
+  });
+});
+
+describe('GET /api/entities - V2 _id compatibility', () => {
+  beforeEach(async () => {
+    app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = authenticatedUser;
+      next();
+    });
+
+    appWithoutUser = setUpApp(routes);
+
+    await testingEnvironment.setUp(fixtures);
+
+    testingTenants.changeCurrentTenant({
+      featureFlags: { v2GetEntity: true },
+    });
+  });
+
+  it('should fetch entity by _id', async () => {
+    new UserInContextMockFactory().mock(authenticatedUser);
+    const entity = await getEntity(app, '', {
+      _id: batmanFinishesId.toString(),
+      omitRelationships: true,
+    });
+
+    expect(entity).toMatchObject({
+      sharedId: 'shared',
+      title: 'Batman finishes',
+      language: 'en',
+    });
+  });
+
+  it('should return 404 for non-existent _id', async () => {
+    new UserInContextMockFactory().mock(authenticatedUser);
+    const fakeId = db.id().toString();
+    const response = await getEntity(app, '', {
+      _id: fakeId,
+      omitRelationships: true,
+      expectStatus: 404,
+    });
+
+    expect(response.body).toMatchObject({ rows: [] });
+  });
+
+  it('should fetch entity with its own language when using _id', async () => {
+    new UserInContextMockFactory().mock(authenticatedUser);
+    // Request Spanish entity (_id: docId1) while in English language context
+    const entity = await getEntity(app, '', {
+      _id: docId1.toString(),
+      omitRelationships: true,
+      language: 'en', // Request in English context
+    });
+
+    // Should return Spanish entity (because _id is language-specific)
+    expect(entity).toMatchObject({
+      sharedId: 'shared',
+      title: 'Penguin almost done',
+      language: 'es', // Should be Spanish, not English
+    });
+  });
+
+  it('should return 400 when neither _id nor sharedId provided', async () => {
+    new UserInContextMockFactory().mock(authenticatedUser);
+    const response = await getEntity(app, '', {
+      omitRelationships: true,
+      expectStatus: 400,
+    });
+
+    expect(response.body).toMatchObject({ error: 'sharedId or _id is required' });
+  });
+
+  it('should prefer sharedId when both _id and sharedId are provided', async () => {
+    new UserInContextMockFactory().mock(authenticatedUser);
+    const fakeId = db.id().toString();
+    // Provide wrong _id but correct sharedId
+    const entity = await getEntity(app, 'shared', {
+      _id: fakeId, // Wrong _id
+      omitRelationships: true,
+      language: 'en',
+    });
+
+    // Should return entity matching sharedId (not the _id)
+    expect(entity).toMatchObject({
+      sharedId: 'shared',
+      title: 'Batman finishes',
     });
   });
 });
