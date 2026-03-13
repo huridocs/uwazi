@@ -84,6 +84,7 @@ export interface Settings {
   mapLayers?: [string, ...string[]];
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
+  filterUnauthorizedRelated?: boolean;
   sync?: SettingsSyncSchema[];
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];
@@ -123,11 +124,8 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy:
-            | 'OnlineRelationshipPropertyUpdateStrategy'
-            | 'QueuedRelationshipPropertyUpdateStrategy';
+          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
-    filterUnauthorizedRelated?: boolean;
     automaticTranslation?: AutomaticTranslationConfig;
     [k: string]: unknown | undefined;
   };
