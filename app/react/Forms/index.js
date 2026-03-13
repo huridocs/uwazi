@@ -1,4 +1,7 @@
-import DropdownList from 'react-widgets/lib/DropdownList.js';
+import DropdownListModule from 'react-widgets/lib/DropdownList.js';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const DropdownList = resolveDefaultExport(DropdownListModule);
 import { Select } from './components/Select.js';
 import { DatePicker } from './components/DatePicker.js';
 import { Captcha } from './components/Captcha.js';
