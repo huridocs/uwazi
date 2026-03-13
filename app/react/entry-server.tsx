@@ -49,6 +49,8 @@ import { loadIcons } from '#UI/Icon/library.js';
 
 loadIcons();
 
+const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
+
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
 class ServerRenderingFetchError extends Error {
@@ -182,41 +184,37 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
         ])
       : [];
 
-  const templates = templatesApiResponse.map(t => ({ ...t, _id: t._id.toString() }));
-  const thesauri = thesaurisApiResponse.map(t => ({ ...t, _id: t._id.toString() }));
-  const relationships = relationTypesApiResponse.map(r => ({ ...r, _id: r._id.toString() }));
-
-  const reduxData = {
-    user: userApiResponse,
-    templates: sortBy(templates, 'name'),
-    thesauris: thesauri,
-    relationTypes: sortBy(relationships, 'name'),
-    translations: translationsApiResponse,
-    settings: {
-      collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
+  const storeData = convertObjectIdsToStrings({
+    reduxData: {
+      user: userApiResponse,
+      templates: sortBy(templatesApiResponse, 'name'),
+      thesauris: thesaurisApiResponse,
+      relationTypes: sortBy(relationTypesApiResponse, 'name'),
+      translations: translationsApiResponse,
+      settings: {
+        collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
+      },
     },
-  };
-
-  const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
-
-  const reduxStore = createReduxStore({
-    ...convertObjectIdsToStrings(reduxData),
-    locale,
-  } as unknown as IStore);
-
-  return {
-    reduxStore,
     atomStoreData: {
       locale,
       settings: settingsApiResponse,
-      thesauri,
-      templates,
+      thesauri: thesaurisApiResponse,
+      templates: templatesApiResponse,
       user: userApiResponse,
       translations: translationsApiResponse,
-      relationTypes: sortBy(relationships, 'name'),
+      relationTypes: sortBy(translationsApiResponse, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
-  };
+  });
+
+  const reduxStore = createReduxStore({
+    ...storeData.reduxData,
+    locale,
+  } as unknown as IStore);
+
+  const { atomStoreData } = storeData;
+
+  return { reduxStore, atomStoreData };
 };
 
 const setReduxState = async (
