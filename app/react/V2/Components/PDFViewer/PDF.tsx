@@ -5,14 +5,13 @@ import {
   HandleTextSelection,
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
-import { getDocument, PDFDocumentProxy } from 'pdfjs-dist/webpack.mjs';
-import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { PDFPage } from './PDFPage.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
@@ -38,9 +37,9 @@ interface PDFProps {
 }
 
 const getPDFFile = async (fileUrl: string) =>
-  getDocument({
+  PDFJS.getDocument({
     url: fileUrl,
-    cMapUrl: 'legacy_character_maps/',
+    cMapUrl: CMAP_URL,
     cMapPacked: true,
     isEvalSupported: false,
   }).promise;

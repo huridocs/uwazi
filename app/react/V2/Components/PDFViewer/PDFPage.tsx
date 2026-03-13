@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy, PixelsPerInch } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { EventBus, PDFPageView, RenderingStates } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { TextHighlight } from './types.js';
 import { calculateScaling } from './functions/calculateScaling.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { EventBus, PDFJSViewer } from './pdfjs.js';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
@@ -30,7 +30,7 @@ const PDFPage = ({
   const [pageHeight, setPageHeight] = useState<number>();
   const [ready, setReady] = useState(false);
   const pageContainerRef = useRef<HTMLDivElement>(null);
-  const pageViewerRef = useRef<typeof PDFPageView.prototype | null>(null);
+  const pageViewerRef = useRef<typeof PDFJSViewer.PDFPageView.prototype | null>(null);
   const baseViewportSizeRef = useRef<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const PDFPage = ({
             height: baseViewportHeight,
           };
 
-          const pageViewer = new PDFPageView({
+          const pageViewer = new PDFJSViewer.PDFPageView({
             container,
             id: page,
             scale: defaultViewport.scale,
@@ -76,7 +76,7 @@ const PDFPage = ({
 
       if (Math.abs(pageViewer.scale - newScale) > 0.01) {
         const previousRenderingState = pageViewer.renderingState;
-        const shouldRedraw = previousRenderingState !== RenderingStates.INITIAL;
+        const shouldRedraw = previousRenderingState !== PDFJSViewer.RenderingStates.INITIAL;
         const nextPageHeight = baseViewportSize.height * newScale;
         setPageHeight(nextPageHeight);
         setPdfScale(newScale);
@@ -85,8 +85,8 @@ const PDFPage = ({
 
         if (shouldRedraw) {
           if (
-            previousRenderingState === RenderingStates.RUNNING ||
-            previousRenderingState === RenderingStates.PAUSED
+            previousRenderingState === PDFJSViewer.RenderingStates.RUNNING ||
+            previousRenderingState === PDFJSViewer.RenderingStates.PAUSED
           ) {
             pageViewer.cancelRendering();
           }
@@ -125,7 +125,7 @@ const PDFPage = ({
     const renderPage = ({ pageNumber }: { pageNumber: number }) => {
       if (pageNumber === page) {
         const pageViewer = pageViewerRef.current;
-        if (pageViewer?.renderingState === RenderingStates.INITIAL) {
+        if (pageViewer?.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
           pageViewer?.draw().catch(e => {
             setError(e.message);
           });
@@ -136,7 +136,7 @@ const PDFPage = ({
     const unmountPage = ({ pageNumber }: { pageNumber: number }) => {
       if (pageNumber === page) {
         const pageViewer = pageViewerRef.current;
-        if (pageViewer?.renderingState === RenderingStates.FINISHED) {
+        if (pageViewer?.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
           pageViewer?.destroy();
         } else {
           pageViewer?.cancelRendering();

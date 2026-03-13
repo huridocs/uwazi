@@ -30,7 +30,6 @@ config.plugins = config.plugins.concat([
 
 config.optimization.moduleIds = 'named';
 config.optimization.emitOnErrors = false;
-config.devtool = 'source-map';
 
 config.output = {
   path: path.join(rootPath, 'dist'),
