@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { GetEntityUseCaseFactory } from '../../factories/GetEntityUseCaseFactory.js';
+import { User } from '#api/users.v2/model/User.js';
+import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { EntityNotFoundError } from '../../../domain/entity/errors.js';
 
 const GetEntityQuerySchema = z.object({
   sharedId: z.string().optional(),
@@ -51,22 +53,27 @@ class GetEntityController extends AbstractController<any> {
         return;
       }
 
-      // Call GetEntity use case
+      // Call EntitiesQueryService
       const includeRelationships = !query.omitRelationships;
-      const useCase = GetEntityUseCaseFactory.default(resolvedLanguage, (this.user as any) || null);
-      const result = await useCase.execute({
+      const queryService = EntitiesQueryServiceFactory.default();
+
+      // Convert UserSchema to User if authenticated
+      const user = this.user
+        ? User.createFrom({
+            id: (this.user as any)._id?.toString(),
+            role: (this.user as any).role,
+            groups: ((this.user as any).groups || []).map((g: any) => g._id.toString()),
+          })
+        : undefined;
+
+      const entity = await queryService.getEntity({
         sharedId: resolvedSharedId,
+        language: resolvedLanguage,
         includeRelationships,
+        user,
       });
 
-      // Handle not found
-      if (result.isError()) {
-        this.response.status(404).json({ rows: [] });
-        return;
-      }
-
       // Format response
-      const entity = result.getDataOrThrow();
       const includePermissions = query.include.includes('permissions');
 
       if (!includePermissions) {
@@ -87,17 +94,33 @@ class GetEntityController extends AbstractController<any> {
     } catch (error: unknown) {
       const duration = Date.now() - startTime;
 
-      logger.info(
-        `Entity Get failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        {
+      // Handle EntityNotFoundError with 404
+      if (error instanceof EntityNotFoundError) {
+        logger.info('Entity not found', {
           namespace: 'Entity_Get',
           durationMs: duration,
           success: false,
           notify: false,
-          error: JSON.stringify(error),
           query: JSON.stringify(this.request.query),
-        }
-      );
+        });
+        this.response.status(404).json({ rows: [] });
+        return;
+      }
+
+      // Log full error details including stack trace
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
+      logger.error(`Entity Get failed: ${errorMessage}`, {
+        namespace: 'Entity_Get',
+        durationMs: duration,
+        success: false,
+        notify: false,
+        errorMessage,
+        errorStack,
+        errorType: error?.constructor?.name,
+        query: JSON.stringify(this.request.query),
+      });
 
       throw error;
     }

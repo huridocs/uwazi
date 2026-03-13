@@ -1,5 +1,6 @@
 import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import {
@@ -10,11 +11,18 @@ import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { AccessLevel } from '../domain/entity/AccessLevel.js';
 import { PermissionType } from '../domain/entity/PermissionType.js';
 import { Template } from '../domain/template/Template.js';
+import { MongoEntityDAO } from '../infrastructure/mongodb/entity/MongoEntityDAO.js';
+import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
+import { fileDBO, fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
+import { EntityNotFoundError } from '../domain/entity/errors.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
   entityPermissionChecker: EntityPermissionChecker;
+  entityDAO: MongoEntityDAO;
+  relationshipsDataSource: MongoRelationshipsV1DataSource;
 };
 
 /**
@@ -25,6 +33,79 @@ type Deps = {
  */
 class EntitiesQueryService {
   constructor(private deps: Deps) {}
+
+  /**
+   * Gets a single entity with all computed fields (files, relationships, filtered metadata).
+   *
+   * @param input - Query parameters
+   * @returns Entity with all computed fields, or null if not found/unauthorized
+   * @throws EntityNotFoundError if entity doesn't exist or user lacks permission
+   */
+  async getEntity(input: {
+    sharedId: string;
+    language: LanguageISO6391;
+    includeRelationships: boolean;
+    user?: User;
+  }): Promise<GetEntityResponseDTO> {
+    const { sharedId, language, includeRelationships, user } = input;
+    const isAuthenticated = !!user;
+
+    // Fetch entity with files in a single aggregated query
+    const entity = await this.deps.entityDAO
+      .getWithFiles({
+        sharedId,
+        language,
+      })
+      .next();
+
+    if (!entity) {
+      throw new EntityNotFoundError(sharedId);
+    }
+
+    // Authorization check: unauthenticated users cannot access unpublished entities
+    if (!isAuthenticated && entity.published === false) {
+      throw new EntityNotFoundError(sharedId);
+    }
+
+    // Use batch authorization for metadata relationship properties
+    const filteredMetadataMap = await this.authorizeRelationshipProperties([entity], user);
+    entity.metadata = filteredMetadataMap.get(entity.sharedId)!;
+
+    // Fetch and filter relationships if requested
+    let filteredRelations: RelationDTO[] = [];
+    if (includeRelationships) {
+      const includeUnpublished = isAuthenticated ?? false;
+      const relations = (await this.deps.relationshipsDataSource.getByEntity(
+        sharedId,
+        language,
+        includeUnpublished
+      )) as RelationDTO[];
+
+      filteredRelations = isAuthenticated
+        ? relations
+        : relations.filter(rel => rel.entityData?.published !== false);
+    }
+
+    // Build response with all computed fields
+    const response: GetEntityResponseDTO = {
+      ...entity,
+      documents: this.convertFilesToDTO(entity.documents),
+      attachments: this.convertFilesToDTO(entity.attachments),
+      ...(includeRelationships && { relations: filteredRelations }),
+    };
+
+    return response;
+  }
+
+  /**
+   * Helper to convert fileDBO (with ObjectId) to fileDTO (with string _id).
+   */
+  private convertFilesToDTO(files: fileDBO[]): fileDTO[] {
+    return files.map(file => ({
+      ...file,
+      _id: file._id.toString(),
+    })) as fileDTO[];
+  }
 
   /**
    * Authorizes relationship properties in entity metadata based on user permissions.
