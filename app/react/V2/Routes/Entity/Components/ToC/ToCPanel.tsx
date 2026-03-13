@@ -12,12 +12,12 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
+import { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
 import { BlankState } from '../BlankState.js';
 import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { useToc, useTocActions } from './tocAtom.js';
 import { getPageNumber } from './utils.js';
-import { PdfControllerApi } from '../PdfControllerContext.js';
 
 const ToCPanel = ({
   mainPdfController,
@@ -25,7 +25,7 @@ const ToCPanel = ({
   generatedToc,
   file,
 }: {
-  mainPdfController: PdfControllerApi;
+  mainPdfController: PDFControls | null;
   toc?: TocSchema[];
   generatedToc?: boolean;
   file?: FileType;
@@ -70,7 +70,7 @@ const ToCPanel = ({
     (entry: ProcessedTocEntry) => {
       const pageNumber = getPageNumber(entry.entry);
       if (pageNumber !== null) {
-        mainPdfController.goToPage(pageNumber);
+        mainPdfController?.goToPage(pageNumber);
       }
     },
     [mainPdfController]
