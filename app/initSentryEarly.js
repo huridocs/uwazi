@@ -15,9 +15,8 @@ if (dsn) {
     release: version,
     dsn,
     environment: process.env.ENVIRONMENT || 'development',
-    integrations: [
-      Sentry.httpIntegration({ spans: true }),
-      Sentry.mongoIntegration(),
+    integrations: (defaults) => [
+      ...defaults.filter((i) => i.name !== 'Redis'),
       nodeProfilingIntegration(),
     ],
     tracesSampleRate: 0.1,

@@ -8,9 +8,8 @@ export function initSentry() {
       release: config.VERSION,
       dsn: config.sentry.dsn,
       environment: config.ENVIRONMENT,
-      integrations: [
-        Sentry.httpIntegration({ spans: true }),
-        Sentry.mongoIntegration(),
+      integrations: (defaults) => [
+        ...defaults.filter((i) => i.name !== 'Redis'),
         nodeProfilingIntegration(),
       ],
       tracesSampleRate: config.sentry.tracesSampleRate,
