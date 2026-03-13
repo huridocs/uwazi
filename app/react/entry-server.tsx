@@ -62,12 +62,11 @@ class ServerRenderingFetchError extends Error {
   }
 }
 
-const onlySystemTranslations = (translations: IndexedTranslations[]) => {
-  return translations.map(translation => {
+const onlySystemTranslations = (translations: IndexedTranslations[]) =>
+  translations.map(translation => {
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
-};
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -183,11 +182,15 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
         ])
       : [];
 
+  const templates = templatesApiResponse.map(t => ({ ...t, _id: t._id.toString() }));
+  const thesauri = thesaurisApiResponse.map(t => ({ ...t, _id: t._id.toString() }));
+  const relationships = relationTypesApiResponse.map(r => ({ ...r, _id: r._id.toString() }));
+
   const reduxData = {
     user: userApiResponse,
-    templates: sortBy(templatesApiResponse, 'name'),
-    thesauris: thesaurisApiResponse,
-    relationTypes: sortBy(relationTypesApiResponse, 'name'),
+    templates: sortBy(templates, 'name'),
+    thesauris: thesauri,
+    relationTypes: sortBy(relationships, 'name'),
     translations: translationsApiResponse,
     settings: {
       collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
@@ -206,11 +209,11 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     atomStoreData: {
       locale,
       settings: settingsApiResponse,
-      thesauri: thesaurisApiResponse,
-      templates: templatesApiResponse,
+      thesauri,
+      templates,
       user: userApiResponse,
       translations: translationsApiResponse,
-      relationTypes: sortBy(relationTypesApiResponse, 'name'),
+      relationTypes: sortBy(relationships, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
   };
