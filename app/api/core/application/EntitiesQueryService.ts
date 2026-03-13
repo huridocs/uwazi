@@ -50,7 +50,6 @@ class EntitiesQueryService {
     const { sharedId, language, includeRelationships, user } = input;
     const isAuthenticated = !!user;
 
-    // Fetch entity with files in a single aggregated query
     const entity = await this.deps.entityDAO
       .getWithFiles({
         sharedId,
@@ -62,16 +61,12 @@ class EntitiesQueryService {
       throw new EntityNotFoundError(sharedId);
     }
 
-    // Authorization check: unauthenticated users cannot access unpublished entities
     if (!isAuthenticated && entity.published === false) {
       throw new EntityNotFoundError(sharedId);
     }
 
-    // Use batch authorization for metadata relationship properties
-    const filteredMetadataMap = await this.authorizeRelationshipProperties([entity], user);
-    entity.metadata = filteredMetadataMap.get(entity.sharedId)!;
+    await this.applyRelationshipPermissions([entity], user);
 
-    // Fetch and filter relationships if requested
     let filteredRelations: RelationDTO[] = [];
     if (includeRelationships) {
       const includeUnpublished = isAuthenticated ?? false;
@@ -86,7 +81,6 @@ class EntitiesQueryService {
         : relations.filter(rel => rel.entityData?.published !== false);
     }
 
-    // Build response with all computed fields
     const response: GetEntityResponseDTO = {
       ...entity,
       documents: this.convertFilesToDTO(entity.documents),
@@ -97,9 +91,6 @@ class EntitiesQueryService {
     return response;
   }
 
-  /**
-   * Helper to convert fileDBO (with ObjectId) to fileDTO (with string _id).
-   */
   private convertFilesToDTO(files: fileDBO[]): fileDTO[] {
     return files.map(file => ({
       ...file,
@@ -108,38 +99,23 @@ class EntitiesQueryService {
   }
 
   /**
-   * Authorizes relationship properties in entity metadata based on user permissions.
+   * Applies relationship permissions to entity metadata based on user permissions.
+   * Mutates entity metadata in-place by filtering or marking inaccessible relationship references.
    *
-   * High-level flow:
-   * 1. Load templates and identify which properties are relationships
-   * 2. Collect all entity IDs referenced in relationship properties
-   * 3. Check permissions for all referenced entities in one batch query
-   * 4. Filter/mark inaccessible references based on user type and settings
-   *
-   * @param entityDBOs - Array of entity database objects to filter
+   * @param entityDBOs - Array of entity database objects to process (mutated in-place)
    * @param user - Optional authenticated user for permission checking
-   * @returns Map of sharedId to filtered metadata
    */
-  async authorizeRelationshipProperties(
-    entityDBOs: EntityDBO[],
-    user?: User
-  ): Promise<Map<string, Record<string, any>>> {
+  async applyRelationshipPermissions(entityDBOs: EntityDBO[], user?: User): Promise<void> {
     if (entityDBOs.length === 0) {
-      return new Map();
+      return;
     }
 
-    // Step 1: Load templates and discover which properties contain relationships
     const templatePropsMap = await this.loadTemplateRelationshipProperties(entityDBOs);
-
-    // Step 2: Find all entities referenced across all relationship properties
     const referencedEntityIds = this.findAllReferencedEntities(entityDBOs, templatePropsMap);
-
-    // Step 3: Determine which referenced entities the user can access (batch query)
     const accessibleEntityIds = await this.determineAccessibleEntities(referencedEntityIds, user);
-
-    // Step 4: Apply authorization rules to each entity's metadata
     const filterUnauthorized = await this.deps.settingsDS.readFilterUnauthorizedRelated();
-    return this.filterMetadataByAccess(
+
+    this.applyPermissionsToMetadata(
       entityDBOs,
       templatePropsMap,
       accessibleEntityIds,
@@ -148,10 +124,6 @@ class EntitiesQueryService {
     );
   }
 
-  /**
-   * Loads templates for all entities and extracts which properties are relationships.
-   * Uses a single batch query for optimal performance.
-   */
   private async loadTemplateRelationshipProperties(
     entityDBOs: EntityDBO[]
   ): Promise<Map<string, Set<string>>> {
@@ -163,10 +135,6 @@ class EntitiesQueryService {
     return this.buildRelationshipPropertyMap(templates);
   }
 
-  /**
-   * Validates that all requested templates were successfully loaded.
-   * @throws Error if any templates are missing
-   */
   private validateAllTemplatesLoaded(templates: Template[], requestedIds: string[]): void {
     if (templates.length !== requestedIds.length) {
       const foundIds = new Set(templates.map(t => t.id));
@@ -175,9 +143,6 @@ class EntitiesQueryService {
     }
   }
 
-  /**
-   * Builds a map from template ID to set of relationship property names.
-   */
   private buildRelationshipPropertyMap(templates: Template[]): Map<string, Set<string>> {
     const templatePropsMap = new Map<string, Set<string>>();
 
@@ -191,9 +156,6 @@ class EntitiesQueryService {
     return templatePropsMap;
   }
 
-  /**
-   * Finds all entity IDs referenced in relationship properties across all entities.
-   */
   private findAllReferencedEntities(
     entityDBOs: EntityDBO[],
     templatePropsMap: Map<string, Set<string>>
@@ -203,19 +165,17 @@ class EntitiesQueryService {
     for (const entityDBO of entityDBOs) {
       const relationshipProps = templatePropsMap.get(entityDBO.template.toString());
 
-      if (!relationshipProps || relationshipProps.size === 0) {
-        continue;
-      }
+      if (relationshipProps && relationshipProps.size > 0) {
+        for (const propName of relationshipProps) {
+          const values = entityDBO.metadata?.[propName];
 
-      for (const propName of relationshipProps) {
-        const values = entityDBO.metadata?.[propName];
-
-        if (Array.isArray(values)) {
-          values.forEach(v => {
-            if (v?.value && typeof v.value === 'string') {
-              allReferencedIds.add(v.value);
-            }
-          });
+          if (Array.isArray(values)) {
+            values.forEach(v => {
+              if (v?.value && typeof v.value === 'string') {
+                allReferencedIds.add(v.value);
+              }
+            });
+          }
         }
       }
     }
@@ -223,10 +183,6 @@ class EntitiesQueryService {
     return allReferencedIds;
   }
 
-  /**
-   * Determines which referenced entities are accessible to the user.
-   * Performs a single batch permission check for optimal performance.
-   */
   private async determineAccessibleEntities(
     referencedIds: Set<string>,
     user?: User
@@ -243,9 +199,6 @@ class EntitiesQueryService {
     return new Set(accessibleIds);
   }
 
-  /**
-   * Gets entities that an authenticated user has read access to.
-   */
   private async getEntitiesUserCanRead(entityIds: string[], user: User): Promise<string[]> {
     const spec = new Specification({
       type: PermissionType.User,
@@ -257,61 +210,52 @@ class EntitiesQueryService {
     return result.isOk() ? result.getData() : [];
   }
 
-  /**
-   * Gets entities that are publicly accessible (published).
-   */
   private async getPublishedEntities(entityIds: string[]): Promise<string[]> {
     const result = await this.deps.entityPermissionChecker.getPublishedEntities(entityIds);
     return result.isOk() ? result.getData() : [];
   }
 
-  /**
-   * Filters entity metadata based on accessible entities.
-   * Either removes inaccessible references or marks them with authorized: false.
-   */
-  private filterMetadataByAccess(
+  private applyPermissionsToMetadata(
     entityDBOs: EntityDBO[],
     templatePropsMap: Map<string, Set<string>>,
     accessibleIds: Set<string>,
     filterUnauthorized: boolean,
     user?: User
-  ): Map<string, Record<string, any>> {
-    const resultMap = new Map<string, Record<string, any>>();
-
+  ): void {
     for (const entityDBO of entityDBOs) {
-      const filteredMetadata = this.filterSingleEntityMetadata(
+      this.applyPermissionsToSingleEntity(
         entityDBO,
         templatePropsMap,
         accessibleIds,
         filterUnauthorized,
         user
       );
-
-      resultMap.set(entityDBO.sharedId, filteredMetadata);
     }
-
-    return resultMap;
   }
 
-  /**
-   * Filters metadata for a single entity.
-   */
-  private filterSingleEntityMetadata(
+  private applyPermissionsToSingleEntity(
     entityDBO: EntityDBO,
     templatePropsMap: Map<string, Set<string>>,
     accessibleIds: Set<string>,
     filterUnauthorized: boolean,
     user?: User
-  ): Record<string, any> {
+  ): void {
     const templateId = entityDBO.template.toString();
-    const relationshipProps = templatePropsMap.get(templateId)!;
-    const filteredMetadata = { ...(entityDBO.metadata || {}) };
+    const relationshipProps = templatePropsMap.get(templateId);
+
+    if (!relationshipProps || relationshipProps.size === 0) {
+      return;
+    }
+
+    if (!entityDBO.metadata) {
+      entityDBO.metadata = {};
+    }
 
     for (const propName of relationshipProps) {
-      const values = filteredMetadata[propName];
+      const values = entityDBO.metadata[propName];
 
       if (Array.isArray(values)) {
-        filteredMetadata[propName] = this.filterRelationshipValues(
+        entityDBO.metadata[propName] = this.filterRelationshipValues(
           values,
           accessibleIds,
           filterUnauthorized,
@@ -319,15 +263,8 @@ class EntitiesQueryService {
         );
       }
     }
-
-    return filteredMetadata;
   }
 
-  /**
-   * Filters values in a relationship property.
-   * Unauthenticated + filterUnauthorized: removes inaccessible references.
-   * All other cases: marks inaccessible references with authorized: false.
-   */
   private filterRelationshipValues(
     values: any[],
     accessibleIds: Set<string>,
