@@ -6747,7 +6747,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yauzl@npm:^2.10.3, @types/yauzl@npm:^2.9.1":
+"@types/yauzl@npm:^2.9.1":
   version: 2.10.3
   resolution: "@types/yauzl@npm:2.10.3"
   dependencies:
@@ -23294,7 +23294,6 @@ __metadata:
     "@types/url-join": "npm:^4.0.1"
     "@types/webpack-env": "npm:^1.18.8"
     "@types/yargs-parser": "npm:^20.2.1"
-    "@types/yauzl": "npm:^2.10.3"
     "@typescript-eslint/eslint-plugin": "npm:^8.57.0"
     "@typescript-eslint/parser": "npm:^8.57.0"
     ajv: "npm:^8.18.0"
@@ -23482,7 +23481,6 @@ __metadata:
     world-countries: "npm:^5.1.0"
     xml-js: "npm:^1.6.11"
     yargs: "npm:^17.7.2"
-    yauzl: "npm:3.2.1"
     yazl: "npm:^3.3.1"
     zod: "npm:^3.24.1"
   languageName: unknown
@@ -24244,16 +24242,6 @@ __metadata:
     y18n: "npm:^4.0.0"
     yargs-parser: "npm:^18.1.2"
   checksum: 10c0/f1ca680c974333a5822732825cca7e95306c5a1e7750eb7b973ce6dc4f97a6b0a8837203c8b194f461969bfe1fb1176d1d423036635285f6010b392fa498ab2d
-  languageName: node
-  linkType: hard
-
-"yauzl@npm:3.2.1":
-  version: 3.2.1
-  resolution: "yauzl@npm:3.2.1"
-  dependencies:
-    buffer-crc32: "npm:~0.2.3"
-    pend: "npm:~1.2.0"
-  checksum: 10c0/fe1997a8ee53c42556789ca61a28278e9ea2ca8f68cae1ae9904edaf3b5fbbc5d5537a3fb8623ac82c2bd0bd9d67233ce593f1acaadfb8718489d9f06d1bb3d0
   languageName: node
   linkType: hard
 
