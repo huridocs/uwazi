@@ -99,6 +99,9 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
           intialValue={intialValue}
           onMount={editor => {
             editorInstance.current = editor;
+            if (typeof window !== 'undefined') {
+              (window as { __codeEditor?: typeof editor }).__codeEditor = editor;
+            }
           }}
           fallbackElement={fallbackElement}
         />

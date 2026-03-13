@@ -41,8 +41,10 @@ describe('I18NMenu', () => {
   let settingsAtomValue = { languages: defaultLanguages };
   let localeAtomValue = 'en';
 
-  Reflect.deleteProperty(global.window, 'location');
-  window.location = { ...window.location, assign: jest.fn() };
+  Object.defineProperty(window, 'location', {
+    value: { ...window.location, assign: jest.fn() },
+    writable: true,
+  });
 
   const renderComponent = (user?: ClientUserSchema) => {
     renderResult = render(
