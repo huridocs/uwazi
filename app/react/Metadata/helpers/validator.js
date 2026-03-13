@@ -1,4 +1,7 @@
-import ReactPlayer from 'react-player';
+import ReactPlayerModule from 'react-player';
+import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+
+const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
 
 function notEmpty(val) {
   if (Array.isArray(val)) {

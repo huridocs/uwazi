@@ -43,9 +43,16 @@ describe('Pages', () => {
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'Custom home page', { delay: 0 });
       cy.contains('Markdown').click();
-      typeInEditor('html', '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>');
+      typeInEditor(
+        'html',
+        '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
+        false,
+        'myDiv',
+        true
+      );
+      cy.contains('[role="tab"]', 'Basic').click();
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(501);
+      cy.wait(600);
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
       cy.get('input[id="page-url"]')
@@ -113,11 +120,11 @@ describe('Pages', () => {
           cy.contains('button', 'Edit').click();
         });
       cy.contains('Markdown').click();
-      cy.get('div[data-mode-id="html"]').should('exist');
+      cy.get('#panel-Code .monaco-editor').should('exist');
       cy.contains('<EntityData');
       cy.contains('Javascript').click();
       cy.contains('toISOString');
-      cy.get('div[data-mode-id="javascript"]').should('exist');
+      cy.get('#panel-Advanced .monaco-editor').should('exist');
     });
 
     it('should allow to edit and get a preview of the page', () => {
@@ -159,9 +166,9 @@ describe('Pages', () => {
       cy.clearAndType('input[name="title"]', 'My entity view page', { delay: 0 });
       cy.contains('Activate').click();
       cy.contains('Markdown').click();
-      typeInEditor('html', contents);
+      typeInEditor('html', contents, false, 'Detalle', true);
       cy.contains('Javascript').click();
-      typeInEditor('javascript', script);
+      typeInEditor('javascript', script, false, 'currentEntitySharedId', true);
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.contains('button.bg-success-700', 'Save').click();
@@ -170,6 +177,7 @@ describe('Pages', () => {
     });
 
     it('should set the entity as entity view', () => {
+      dismissModalIfVisible();
       cy.contains('a', 'Templates').click();
       cy.contains('a', 'Medida Provisional').click();
       cy.contains('Display entity view from page').click();
@@ -180,8 +188,12 @@ describe('Pages', () => {
     });
 
     it('display the entity in custom page', () => {
+      dismissModalIfVisible();
       cy.contains('a', 'Library').click();
-      cy.contains('.multiselectItem-name > span', 'Medida Provisional', { timeout: 12000 }).click();
+      dismissModalIfVisible();
+      cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Medida Provisional', {
+        timeout: 12000,
+      }).click();
       cy.contains('Acevedo Jaramillo', { timeout: 12000 });
       cy.contains('.item-document .item-name', 'Acevedo Jaramillo', { timeout: 12000 }).click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
@@ -197,8 +209,8 @@ describe('Pages', () => {
   });
 
   describe('Pages list', () => {
-    const deletePage = (selector: string) => {
-      cy.get(selector).check();
+    const deletePage = (pageName: string) => {
+      cy.contains('tr', pageName).find('input[type="checkbox"]').check();
       cy.contains('Delete').click();
       cy.contains('Accept').click();
     };
@@ -215,7 +227,7 @@ describe('Pages', () => {
 
     it('should allow to cancel deletion', () => {
       cy.contains('a', 'Pages').click();
-      cy.get('table > tbody > tr:nth-child(4) > td label > input').check();
+      cy.contains('tr', 'Page with error').find('input[type="checkbox"]').check();
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
       cy.contains('div[role="dialog"] button', 'Cancel').click();
@@ -224,7 +236,7 @@ describe('Pages', () => {
     });
 
     it('should delete a page with confirmation', () => {
-      deletePage('table > tbody > tr:nth-child(4) > td label > input');
+      deletePage('Page with error');
       cy.contains('Deleted successfully');
       cy.contains('Country page');
       cy.contains('Page with error').should('not.exist');
@@ -232,7 +244,7 @@ describe('Pages', () => {
     });
 
     it('should not delete a page used as entity view', () => {
-      deletePage('table > tbody > tr:nth-child(1) > td label > input');
+      deletePage('Country page');
       cy.contains('An error occurred');
       cy.contains('Country page');
     });

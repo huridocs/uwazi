@@ -45,7 +45,10 @@ describe('Public Form', () => {
       cy.contains('Markdown').click();
       typeInEditor(
         'html',
-        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
+        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />',
+        false,
+        'template="58ada34c299e82674854504b"',
+        true
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -76,7 +79,9 @@ describe('Public Form', () => {
 
     it('should visit the page and do a submit for the first template', () => {
       dismissModalIfVisible();
+      cy.contains('a', 'Pages').scrollIntoView();
       cy.contains('a', 'Pages').click();
+      dismissModalIfVisible();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').matchImageSnapshot();
@@ -106,10 +111,12 @@ describe('Public Form', () => {
           cy.contains('button', 'Edit').click();
         });
       cy.contains('Markdown').click();
-      cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
-      cy.get('div[data-mode-id="html"]').type(
+      typeInEditor(
+        'html',
         '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
-        { parseSpecialCharSequences: false, delay: 0 }
+        true,
+        'template="624b29b432bdcda07b3854b9"',
+        true
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -226,6 +233,8 @@ describe('Public Form', () => {
       typeInEditor(
         'html',
         '<h1>Public form with error</h1><PublicForm template="invalid template" />',
+        true,
+        'PublicForm',
         true
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
