@@ -16,9 +16,14 @@ services:
       - 'ES_JAVA_OPTS=-Xms2g -Xmx2g'
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -sf http://localhost:9200/_cluster/health']
+      interval: 20s
+      timeout: 10s
+      retries: 10
 
   mongo:
-    image: "mongo:7.0"
+    image: 'mongo:7.0'
     container_name: uwazi-mongo
     command: mongod --replSet "uwazi_replica_set"
     volumes:
@@ -27,12 +32,23 @@ services:
       - '27017:27017'
     ulimits:
       nofile:
-        soft: "65536"
-        hard: "65536"
+        soft: '65536'
+        hard: '65536'
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.18.0
+    container_name: kibana_uwazi
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - '5601:5601'
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
 
   mongoreplicaset_start_script:
-    image: "mongo:7.0"
-    restart: "no"
+    image: 'mongo:7.0'
+    restart: 'no'
     container_name: mongoreplicaset_start_script
     depends_on:
       - mongo

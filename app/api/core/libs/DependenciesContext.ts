@@ -24,6 +24,14 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     return this.getStore()!.transactionManager;
   }
 
+  get elasticClient() {
+    if (!this.getStore()?.elasticClient) {
+      throw new Error('ElasticClient is not set');
+    }
+
+    return this.getStore()!.elasticClient;
+  }
+
   get logger() {
     if (!this.getStore()?.logger) {
       throw new Error('Logger is not set');
