@@ -1,23 +1,19 @@
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
 import { config } from '#api/config.js';
 
-let sentryWasInitialized = false;
-
 export function initSentry() {
-  if (config.sentry.dsn && !sentryWasInitialized) {
+  if (config.sentry.dsn && !Sentry.isInitialized()) {
     Sentry.init({
       release: config.VERSION,
       dsn: config.sentry.dsn,
       environment: config.ENVIRONMENT,
       integrations: [
-        Sentry.httpIntegration({ tracing: true }),
-        new Tracing.Integrations.Mongo({ useMongoose: true }),
+        Sentry.httpIntegration({ spans: true }),
+        Sentry.mongoIntegration(),
         nodeProfilingIntegration(),
       ],
       tracesSampleRate: config.sentry.tracesSampleRate,
     });
-    sentryWasInitialized = true;
   }
 }
