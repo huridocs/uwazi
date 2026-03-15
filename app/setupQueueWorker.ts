@@ -65,12 +65,11 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](inspect(error), { job: context?.job });
   if (prettyError.logLevel === 'error') {
-    Sentry.withScope(scope => {
-      if (context?.job) {
-        scope.setExtra('job', context.job);
-      }
-      Sentry.captureException(error);
-    });
+    const scope = Sentry.getCurrentScope();
+    if (context?.job) {
+      scope.setExtra('job', context.job);
+    }
+    Sentry.captureException(error);
   }
 };
 
