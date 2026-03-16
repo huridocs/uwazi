@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 
+import './initSentryEarly.js';
 import compression from 'compression';
 import express from 'express';
 import promBundle from 'express-prom-bundle';
@@ -36,7 +37,6 @@ import { handleError } from './api/utils/handleError.js';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware.js';
 import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
-import { initSentry } from './initSentry.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 
 import '#api/core/infrastructure/listeners/Listeners.js';
@@ -65,7 +65,6 @@ const metricsMiddleware = promBundle({
 });
 
 app.use(metricsMiddleware);
-initSentry();
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
