@@ -202,7 +202,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       templates: templatesApiResponse,
       user: userApiResponse,
       translations: translationsApiResponse,
-      relationTypes: sortBy(translationsApiResponse, 'name'),
+      relationTypes: sortBy(relationTypesApiResponse, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
   });
@@ -212,9 +212,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     locale,
   } as unknown as IStore);
 
-  const { atomStoreData } = storeData;
-
-  return { reduxStore, atomStoreData };
+  return { reduxStore, atomStoreData: storeData.atomStoreData };
 };
 
 const setReduxState = async (
