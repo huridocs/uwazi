@@ -9,7 +9,16 @@ import routes from '#api/entities/routes';
 import { testingTenants } from '#api/utils/testingTenants';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { UserRole } from '#shared/types/userSchema.js';
-import fixtures, { permissions, user1Id, batmanFinishesId, docId1 } from './routesGetFixtures';
+import fixtures, {
+  permissions,
+  user1Id,
+  user2Id,
+  user3Id,
+  adminId,
+  testGroup1Id,
+  batmanFinishesId,
+  docId1,
+} from './routesGetFixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -122,8 +131,270 @@ describe.each([
       expect(response.body).toMatchObject({ rows: [] });
     });
 
-    it('should return unpublished entities to authenticated users with permission', async () => {
-      await getEntity(app, 'other', { omitRelationships: true });
+    it('should return unpublished entities to authenticated users with READ permission', async () => {
+      // user1 has READ permission on 'other' entity
+      const user1 = {
+        _id: user1Id,
+        role: UserRole.EDITOR,
+        username: 'user1',
+        email: 'user1@test.com',
+      };
+      const appWithUser1 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user1;
+        next();
+      });
+      new UserInContextMockFactory().mock(user1);
+
+      await getEntity(appWithUser1, 'other', { omitRelationships: true });
+    });
+  });
+
+  describe('Security: Entity access control', () => {
+    it('should allow admins to access any unpublished entity without explicit permissions', async () => {
+      const adminUser = {
+        _id: adminId,
+        role: UserRole.ADMIN,
+        username: 'admin',
+        email: 'admin@test.com',
+      };
+      const appWithAdmin = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = adminUser;
+        next();
+      });
+      new UserInContextMockFactory().mock(adminUser);
+
+      // 'other' entity is unpublished, admin has NO explicit permission
+      const entity = await getEntity(appWithAdmin, 'other', { omitRelationships: true });
+      expect(entity).toBeDefined();
+      expect(entity.sharedId).toBe('other');
+      expect(entity.title).toContain('Unpublished entity'); // Language can be ES or EN
+    });
+
+    it('should allow editors to access any unpublished entity without explicit permissions', async () => {
+      // Create an editor that is NOT in the permissions list for 'other'
+      const editorUser = {
+        _id: db.id(), // Random ID not in permissions
+        role: UserRole.EDITOR,
+        username: 'editor',
+        email: 'editor@test.com',
+      };
+      const appWithEditor = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = editorUser;
+        next();
+      });
+      new UserInContextMockFactory().mock(editorUser);
+
+      // 'other' entity is unpublished, editor has NO explicit permission
+      const entity = await getEntity(appWithEditor, 'other', { omitRelationships: true });
+      expect(entity).toBeDefined();
+      expect(entity.sharedId).toBe('other');
+    });
+
+    it('should deny collaborators access to unpublished entities without explicit permissions', async () => {
+      const collaboratorUser = {
+        _id: db.id(), // Random ID not in permissions
+        role: UserRole.COLLABORATOR,
+        username: 'collaborator',
+        email: 'collaborator@test.com',
+      };
+      const appWithCollaborator = setUpApp(
+        routes,
+        (req: Request, _res: Response, next: NextFunction) => {
+          (req as any).user = collaboratorUser;
+          next();
+        }
+      );
+      new UserInContextMockFactory().mock(collaboratorUser);
+
+      const response = await getEntity(appWithCollaborator, 'other', {
+        omitRelationships: true,
+        expectStatus: 404,
+      });
+      expect(response.body).toMatchObject({ rows: [] });
+    });
+
+    it('should allow collaborators with WRITE permission to access unpublished entities', async () => {
+      const user2 = {
+        _id: user2Id,
+        role: UserRole.COLLABORATOR,
+        username: 'user2',
+        email: 'user2@test.com',
+      };
+      const appWithUser2 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user2;
+        next();
+      });
+      new UserInContextMockFactory().mock(user2);
+
+      const entity = await getEntity(appWithUser2, 'other', { omitRelationships: true });
+      expect(entity).toBeDefined();
+      expect(entity.sharedId).toBe('other');
+    });
+
+    it('should allow collaborators with READ permission to access unpublished entities', async () => {
+      const user1 = {
+        _id: user1Id, // user1 has READ permission on 'other'
+        role: UserRole.COLLABORATOR,
+        username: 'user1',
+        email: 'user1@test.com',
+      };
+      const appWithUser1 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user1;
+        next();
+      });
+      new UserInContextMockFactory().mock(user1);
+
+      const entity = await getEntity(appWithUser1, 'other', { omitRelationships: true });
+      expect(entity).toBeDefined();
+      expect(entity.sharedId).toBe('other');
+    });
+
+    (featureFlags.v2GetEntity ? it : it.skip)(
+      'should allow collaborators with group-based permissions to access unpublished entities',
+      async () => {
+        const user3 = {
+          _id: user3Id,
+          role: UserRole.COLLABORATOR,
+          username: 'user3',
+          email: 'user3@test.com',
+          groups: [{ _id: testGroup1Id, name: 'testGroup1' }], // user3 is in testGroup1 which has WRITE on 'other'
+        };
+        const appWithUser3 = setUpApp(
+          routes,
+          (req: Request, _res: Response, next: NextFunction) => {
+            (req as any).user = user3;
+            next();
+          }
+        );
+        new UserInContextMockFactory().mock(user3);
+
+        const entity = await getEntity(appWithUser3, 'other', { omitRelationships: true });
+        expect(entity).toBeDefined();
+        expect(entity.sharedId).toBe('other');
+      }
+    );
+  });
+
+  describe('Security: Permissions field access control', () => {
+    it('should not expose permissions field to unauthenticated users', async () => {
+      // 'shared' is a published entity accessible to unauthenticated users
+      const entity = await getEntity(appWithoutUser, 'shared', {
+        include: ['permissions'],
+        omitRelationships: true,
+      });
+      expect(entity.permissions).toBeUndefined();
+    });
+
+    it('should always expose permissions field to admins', async () => {
+      const adminUser = {
+        _id: adminId,
+        role: UserRole.ADMIN,
+        username: 'admin',
+        email: 'admin@test.com',
+      };
+      const appWithAdmin = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = adminUser;
+        next();
+      });
+      new UserInContextMockFactory().mock(adminUser);
+
+      const entity = await getEntity(appWithAdmin, 'other', {
+        include: ['permissions'],
+        omitRelationships: true,
+      });
+      expect(entity.permissions).toBeDefined();
+      expect(Array.isArray(entity.permissions)).toBe(true);
+    });
+
+    it('should always expose permissions field to editors', async () => {
+      const editorUser = {
+        _id: db.id(), // Random ID without explicit permissions
+        role: UserRole.EDITOR,
+        username: 'editor',
+        email: 'editor@test.com',
+      };
+      const appWithEditor = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = editorUser;
+        next();
+      });
+      new UserInContextMockFactory().mock(editorUser);
+
+      const entity = await getEntity(appWithEditor, 'other', {
+        include: ['permissions'],
+        omitRelationships: true,
+      });
+      expect(entity.permissions).toBeDefined();
+      expect(Array.isArray(entity.permissions)).toBe(true);
+    });
+
+    it('should expose permissions field to collaborators with WRITE access', async () => {
+      const user2 = {
+        _id: user2Id, // user2 has WRITE permission on 'other'
+        role: UserRole.COLLABORATOR,
+        username: 'user2',
+        email: 'user2@test.com',
+      };
+      const appWithUser2 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user2;
+        next();
+      });
+      new UserInContextMockFactory().mock(user2);
+
+      const entity = await getEntity(appWithUser2, 'other', {
+        include: ['permissions'],
+        omitRelationships: true,
+      });
+      expect(entity.permissions).toBeDefined();
+      expect(Array.isArray(entity.permissions)).toBe(true);
+    });
+
+    (featureFlags.v2GetEntity ? it : it.skip)(
+      'should expose permissions field to collaborators with WRITE access via group membership',
+      async () => {
+        const user3 = {
+          _id: user3Id,
+          role: UserRole.COLLABORATOR,
+          username: 'user3',
+          email: 'user3@test.com',
+          groups: [{ _id: testGroup1Id, name: 'testGroup1' }], // testGroup1 has WRITE on 'other'
+        };
+        const appWithUser3 = setUpApp(
+          routes,
+          (req: Request, _res: Response, next: NextFunction) => {
+            (req as any).user = user3;
+            next();
+          }
+        );
+        new UserInContextMockFactory().mock(user3);
+
+        const entity = await getEntity(appWithUser3, 'other', {
+          include: ['permissions'],
+          omitRelationships: true,
+        });
+        expect(entity.permissions).toBeDefined();
+        expect(Array.isArray(entity.permissions)).toBe(true);
+      }
+    );
+
+    it('should not expose permissions to users with only READ access', async () => {
+      // user1 has READ on 'other', but is a COLLABORATOR (not privileged)
+      const user1 = {
+        _id: user1Id,
+        role: UserRole.COLLABORATOR, // Changed from EDITOR to properly test non-privileged behavior
+        username: 'user1',
+        email: 'user1@test.com',
+      };
+      const appWithUser1 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user1;
+        next();
+      });
+      new UserInContextMockFactory().mock(user1);
+
+      const entity = await getEntity(appWithUser1, 'other', {
+        include: ['permissions'],
+        omitRelationships: true,
+      });
+      expect(entity.permissions).toBeUndefined();
     });
   });
 

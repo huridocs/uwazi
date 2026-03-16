@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { User } from '#api/users.v2/model/User.js';
+import { AccessLevels } from '#shared/types/permissionSchema.js';
 import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
@@ -70,7 +71,10 @@ class GetEntityController extends AbstractController<any> {
 
       const includePermissions = query.include.includes('permissions');
 
-      if (!includePermissions) {
+      // Security: Filter permissions field based on user authorization (V1 parity)
+      if (includePermissions) {
+        this.applyPermissionsFieldSecurity(entity, user);
+      } else {
         delete entity.permissions;
       }
 
@@ -107,6 +111,57 @@ class GetEntityController extends AbstractController<any> {
 
       throw error;
     }
+  }
+
+  /**
+   * Applies permissions field security based on user authorization.
+   * Mirrors V1's ModelWithPermissions.controlPermissionsData behavior.
+   *
+   * @param entity - Entity to filter permissions field
+   * @param user - Optional authenticated user
+   */
+  private applyPermissionsFieldSecurity(entity: any, user?: User): void {
+    if (entity.published) {
+      return;
+    }
+    if (!user) {
+      // Unauthenticated users never see permissions
+      delete entity.permissions;
+      return;
+    }
+
+    if (user.isPrivileged()) {
+      // Admins and editors always see permissions
+      return;
+    }
+
+    // Non-privileged users: check if they have WRITE access
+    if (!this.userHasWriteAccess(entity, user)) {
+      delete entity.permissions;
+    }
+  }
+
+  /**
+   * Checks if a user has WRITE access to an entity.
+   * Includes checking both direct user permissions and group memberships.
+   *
+   * @param entity - Entity to check access for
+   * @param user - User to check permissions
+   * @returns true if user has WRITE access, false otherwise
+   */
+  private userHasWriteAccess(entity: any, user: User): boolean {
+    if (!entity.permissions || !Array.isArray(entity.permissions)) {
+      return false;
+    }
+
+    // Get all permission IDs (user ID + all group IDs)
+    const userPermissionIds = [user._id, ...(user.groups || [])];
+
+    // Check if any of the user's IDs have WRITE level access
+    return entity.permissions.some((permission: any) => {
+      const refId = permission.refId?.toString?.() || permission.refId;
+      return permission.level === AccessLevels.WRITE && userPermissionIds.includes(refId);
+    });
   }
 }
 

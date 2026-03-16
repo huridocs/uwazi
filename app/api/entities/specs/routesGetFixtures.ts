@@ -13,6 +13,10 @@ const templateForGetWithRelationships = fixtureFactory.id('templateForGetWithRel
 const adminId = fixtureFactory.id('admin');
 const user1Id = fixtureFactory.id('user1');
 const user2Id = fixtureFactory.id('user2');
+const user3Id = fixtureFactory.id('user3');
+
+// Group IDs
+const testGroup1Id = fixtureFactory.id('testGroup1');
 
 // Entity IDs - using fixtureFactory.id for stable references
 const batmanFinishesId = fixtureFactory.id('shared-en');
@@ -43,6 +47,10 @@ const fixtures: DBFixture = {
     fixtureFactory.user('admin', UserRole.ADMIN, 'admin@uwazi.com', 'hashedpass'),
     fixtureFactory.user('user1', UserRole.EDITOR, 'user1@uwazi.com', 'hashedpass'),
     fixtureFactory.user('user2', UserRole.EDITOR, 'user2@uwazi.com', 'hashedpass'),
+    {
+      ...fixtureFactory.user('user3', UserRole.COLLABORATOR, 'user3@uwazi.com', 'hashedpass'),
+      groups: [{ _id: testGroup1Id, name: 'Test Group 1' }],
+    } as any,
   ],
 
   files: [
@@ -168,7 +176,7 @@ const fixtures: DBFixture = {
         title: 'EN',
         published: true,
         permissions: [
-          { refId: user1Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+          { refId: user1Id.toString(), level: AccessLevels.WRITE, type: PermissionType.USER },
           { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
         ],
       }
@@ -184,7 +192,7 @@ const fixtures: DBFixture = {
         creationDate: 1,
         published: true,
         permissions: [
-          { refId: user1Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+          { refId: user1Id.toString(), level: AccessLevels.WRITE, type: PermissionType.USER },
           { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
         ],
       }
@@ -200,7 +208,7 @@ const fixtures: DBFixture = {
         creationDate: 1,
         published: true,
         permissions: [
-          { refId: user1Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+          { refId: user1Id.toString(), level: AccessLevels.WRITE, type: PermissionType.USER },
           { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
         ],
       }
@@ -238,8 +246,9 @@ const fixtures: DBFixture = {
         title: 'Unpublished entity',
         published: false,
         permissions: [
-          { refId: user1Id, level: AccessLevels.READ, type: PermissionType.USER },
-          { refId: user2Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+          { refId: user1Id.toString(), level: AccessLevels.READ, type: PermissionType.USER },
+          { refId: user2Id.toString(), level: AccessLevels.WRITE, type: PermissionType.USER },
+          { refId: testGroup1Id, level: AccessLevels.WRITE, type: PermissionType.GROUP },
         ],
       }
     ),
@@ -257,8 +266,9 @@ const fixtures: DBFixture = {
         title: 'Unpublished entity ES',
         language: 'es',
         permissions: [
-          { refId: user1Id, level: AccessLevels.READ, type: PermissionType.USER },
-          { refId: user2Id, level: AccessLevels.WRITE, type: PermissionType.USER },
+          { refId: user1Id.toString(), level: AccessLevels.READ, type: PermissionType.USER },
+          { refId: user2Id.toString(), level: AccessLevels.WRITE, type: PermissionType.USER },
+          { refId: testGroup1Id, level: AccessLevels.WRITE, type: PermissionType.GROUP },
         ],
       }
     ),
@@ -271,6 +281,7 @@ const fixtures: DBFixture = {
         title: 'Entity With Permissions',
         language: 'es',
         permissions,
+        published: true,
       }
     ),
     // Entities for relationship testing
@@ -524,6 +535,8 @@ export {
   adminId,
   user1Id,
   user2Id,
+  user3Id,
+  testGroup1Id,
   unpublishedDocId,
   permissions,
   templateId,

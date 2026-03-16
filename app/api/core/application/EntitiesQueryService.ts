@@ -65,6 +65,17 @@ class EntitiesQueryService {
       throw new EntityNotFoundError(sharedId);
     }
 
+    // Security: Check READ permissions for unpublished entities (non-privileged users)
+    if (entity.published === false && user && !user.isPrivileged()) {
+      const hasReadPermission = await this.deps.entityPermissionChecker.checkReadPermission(
+        sharedId,
+        user
+      );
+      if (!hasReadPermission.getDataOrThrow()) {
+        throw new EntityNotFoundError(sharedId);
+      }
+    }
+
     await this.applyRelationshipPermissions([entity], user);
 
     let filteredRelations: RelationDTO[] = [];

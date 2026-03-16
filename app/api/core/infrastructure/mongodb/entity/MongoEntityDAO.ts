@@ -62,30 +62,6 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
       },
     ]);
   }
-
-  async getBySharedId(
-    sharedId: string,
-    language?: LanguageISO6391,
-    published?: boolean
-  ): Promise<ResultType<EntityDBO, EntityNotFoundError>> {
-    const match: any = { sharedId };
-
-    if (language) {
-      match.language = language;
-    }
-
-    if (published !== undefined) {
-      match.published = published;
-    }
-
-    const entity = await this.getCollection().findOne(match);
-
-    if (!entity) {
-      return Result.fail(new EntityNotFoundError(sharedId));
-    }
-
-    return Result.ok(entity);
-  }
 }
 
 export { MongoEntityDAO };
