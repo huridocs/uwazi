@@ -26,7 +26,6 @@ describe('MongoSlotsDataSource', () => {
   });
 
   beforeEach(async () => {
-    await testingEnvironment.setFixtures({});
     await getSlotsCollection().deleteMany({});
   });
 

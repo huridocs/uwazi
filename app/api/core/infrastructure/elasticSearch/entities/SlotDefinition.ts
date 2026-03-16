@@ -33,7 +33,7 @@ const AmountPerSlotType: Record<SlotType, number> = {
 };
 
 class SlotsMapper {
-  private static dictionary = new Map<string, SlotType>([
+  private static propertyTypeSlotTypeDictionary = new Map<string, SlotType>([
     ['text', 'txt'],
     ['link', 'txt'],
     ['markdown', 'txt'],
@@ -74,14 +74,35 @@ class SlotsMapper {
     ['geolocation', 'geolocation'],
   ]);
 
-  private static slotTypes = Array.from(new Set(this.dictionary.values()));
+  private static slotTypes = Array.from(new Set(this.propertyTypeSlotTypeDictionary.values()));
+
+  private static slotTypePropertyTypeDictionary = new Map<SlotType, PropertyType>([
+    ['txt', 'text'],
+    ['date', 'date'],
+    ['num', 'numeric'],
+    ['range', 'daterange'],
+    ['select', 'select'],
+    ['relationship', 'relationship'],
+    ['geolocation', 'geolocation'],
+
+    ['relationship_txt', 'relationship'],
+    ['relationship_num', 'relationship'],
+    ['relationship_date', 'relationship'],
+    ['relationship_range', 'relationship'],
+    ['relationship_select', 'relationship'],
+    ['relationship_geolocation', 'relationship'],
+  ]);
 
   static toSlotType(propertyType: PropertyType): SlotType | undefined {
-    return this.dictionary.get(propertyType);
+    return this.propertyTypeSlotTypeDictionary.get(propertyType);
   }
 
   static slotList(): SlotType[] {
     return [...this.slotTypes];
+  }
+
+  static toPropertyType(slotType: SlotType): PropertyType | undefined {
+    return this.slotTypePropertyTypeDictionary.get(slotType);
   }
 
   static createSlotName(slotType: SlotType, index: number): string {

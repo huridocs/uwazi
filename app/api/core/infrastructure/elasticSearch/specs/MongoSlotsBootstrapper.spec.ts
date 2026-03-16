@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSlotsDataSource } from '../entities/MongoSlotsDataSource.js';
+import { MongoSlotsDataSource, SlotDocument } from '../entities/MongoSlotsDataSource.js';
 import { AmountPerSlotType, SlotsMapper } from '../entities/SlotDefinition.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
@@ -23,9 +23,9 @@ const dropSlotsCollection = async () => {
 
 const getSlotsCollection = () => getConnection().collection(collectionName);
 
-const expectedSlots = SlotsMapper.slotList().flatMap(slotType =>
+const expectedSlots: Omit<SlotDocument, '_id'>[] = SlotsMapper.slotList().flatMap(slotType =>
   Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-    type: slotType,
+    type: SlotsMapper.toPropertyType(slotType)!,
     slotName: SlotsMapper.createSlotName(slotType, index + 1),
     assignedTo: null,
   }))
@@ -97,7 +97,7 @@ describe('MongoSlotsBootstrapper', () => {
 
       await getSlotsCollection().createIndex({ slotName: 1 }, { unique: true });
       await getSlotsCollection().insertOne({
-        type: 'txt',
+        type: 'text',
         slotName: SlotsMapper.createSlotName('txt', 1),
         assignedTo: 'existing_property',
       });
@@ -108,7 +108,6 @@ describe('MongoSlotsBootstrapper', () => {
         slotName: SlotsMapper.createSlotName('txt', 1),
       });
 
-      console.log(existingSlot);
       expect(existingSlot?.assignedTo).toBe('existing_property');
     });
   });
