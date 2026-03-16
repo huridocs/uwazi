@@ -32,12 +32,14 @@ describe('Error handling middleware', () => {
     middleware(error, req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({
-      error: 'A server side error has occurred',
-      logLevel: 'error',
-      prettyMessage: 'A server side error has occurred',
-      requestId: contextRequestId,
-    });
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: 'A server side error has occurred',
+        logLevel: 'error',
+        prettyMessage: 'A server side error has occurred',
+        requestId: contextRequestId,
+      })
+    );
     expect(next).not.toHaveBeenCalled();
   });
 

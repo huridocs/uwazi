@@ -1,9 +1,10 @@
-import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { ObjectId } from 'mongodb';
+import { z } from 'zod';
 import { EntityNotFoundError } from '../../../domain/entity/errors.js';
+import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 
 const GetEntityQuerySchema = z.object({
   sharedId: z.string().optional(),
@@ -29,7 +30,6 @@ class GetEntityController extends AbstractController<any> {
       let resolvedLanguage = this.language;
 
       if (!query.sharedId && query._id) {
-        const { ObjectId } = await import('mongodb');
         const connection = getConnection();
         const entity = await connection
           .collection('entities')

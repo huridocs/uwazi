@@ -57,8 +57,7 @@ describe('public routes', () => {
           path.join(os.tmpdir(), 'attachment.txt'),
           'filename with special char ñ.txt'
         )
-        .field('attachments_originalname[0]', 'filename with special char ñ.txt')
-
+        .field('attachments_originalname[0]', 'filename with special char ñ.txt');
 
       expect(response).toHaveStatus(200);
 
