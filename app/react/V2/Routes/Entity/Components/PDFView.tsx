@@ -74,6 +74,7 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
         next.set(PAGE_PARAM, currentPage);
       }
       initialPage.current = Number(currentPage);
+      pdfContols.current?.goToPage(Number(currentPage));
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
     [searchParams, setSearchParams]
