@@ -49,6 +49,8 @@ import { loadIcons } from '#UI/Icon/library.js';
 
 loadIcons();
 
+const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
+
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
 class ServerRenderingFetchError extends Error {
@@ -62,12 +64,11 @@ class ServerRenderingFetchError extends Error {
   }
 }
 
-const onlySystemTranslations = (translations: IndexedTranslations[]) => {
-  return translations.map(translation => {
+const onlySystemTranslations = (translations: IndexedTranslations[]) =>
+  translations.map(translation => {
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
-};
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -183,26 +184,17 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
         ])
       : [];
 
-  const reduxData = {
-    user: userApiResponse,
-    templates: sortBy(templatesApiResponse, 'name'),
-    thesauris: thesaurisApiResponse,
-    relationTypes: sortBy(relationTypesApiResponse, 'name'),
-    translations: translationsApiResponse,
-    settings: {
-      collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
+  const storeData = convertObjectIdsToStrings({
+    reduxData: {
+      user: userApiResponse,
+      templates: sortBy(templatesApiResponse, 'name'),
+      thesauris: thesaurisApiResponse,
+      relationTypes: sortBy(relationTypesApiResponse, 'name'),
+      translations: translationsApiResponse,
+      settings: {
+        collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
+      },
     },
-  };
-
-  const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
-
-  const reduxStore = createReduxStore({
-    ...convertObjectIdsToStrings(reduxData),
-    locale,
-  } as unknown as IStore);
-
-  return {
-    reduxStore,
     atomStoreData: {
       locale,
       settings: settingsApiResponse,
@@ -213,7 +205,14 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       relationTypes: sortBy(relationTypesApiResponse, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
-  };
+  });
+
+  const reduxStore = createReduxStore({
+    ...storeData.reduxData,
+    locale,
+  } as unknown as IStore);
+
+  return { reduxStore, atomStoreData: storeData.atomStoreData };
 };
 
 const setReduxState = async (
