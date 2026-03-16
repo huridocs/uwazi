@@ -83,6 +83,10 @@ class SlotsMapper {
   static slotList(): SlotType[] {
     return [...this.slotTypes];
   }
+
+  static createSlotName(slotType: SlotType, index: number): string {
+    return `${slotType}_${index.toString().padStart(2, '0')}`;
+  }
 }
 
 export { AmountPerSlotType, SlotsMapper };
