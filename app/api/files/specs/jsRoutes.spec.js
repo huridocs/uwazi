@@ -11,7 +11,7 @@ import { search } from '#api/search/index.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import uploadRoutes from '../jsRoutes.js';
-import { allowedPublicTemplate, fixtures, templateId } from './fixtures.js';
+import { allowedPublicTemplate, fixtures, templateId, writerUser } from './fixtures.js';
 import { legacyLogger } from '../../log.js';
 
 const mockExport = jest.fn();
@@ -27,11 +27,17 @@ jest.mock('../../auth/captchaMiddleware.ts', () => () => (_req, _res, next) => {
 describe('upload routes', () => {
   let app;
   let req;
+  let user = writerUser;
 
   beforeEach(async () => {
     jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    app = setUpApp(uploadRoutes);
+
+    user = writerUser;
+    app = setUpApp(uploadRoutes, (req, _res, next) => {
+      req.user = user;
+      next();
+    });
 
     req = {
       language: 'es',
@@ -65,6 +71,7 @@ describe('upload routes', () => {
 
     it('should create an Entity and return the created Entity on body response', async () => {
       testingEnvironment.resetPermissions();
+      user = undefined; // To test that the Public user is used when no user is authenticated
 
       const response = await request(app)
         .post('/api/public')
@@ -140,11 +147,9 @@ describe('upload routes', () => {
     });
 
     it('should use authenticated user instead of Public user when user is logged in', async () => {
-      // Use an existing user from fixtures (writerUser)
       const mongodb = getConnection();
       const writerUserFromDb = await mongodb.collection('users').findOne({ username: 'writer' });
 
-      // Set the writer user in permissions context to simulate authenticated request
       testingEnvironment.setPermissions(writerUserFromDb);
 
       const response = await request(app)

@@ -82,14 +82,7 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   protected get user(): User {
-    const user = this.dependencies.request.user;
-    return user
-      ? User.createFrom({
-          id: user._id?.toString(),
-          role: user.role,
-          groups: (user.groups || []).map((g: any) => g._id.toString()),
-        })
-      : User.public();
+    return User.createFrom(this.dependencies.request.user);
   }
 
   protected get response() {
@@ -106,7 +99,7 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   protected ensureUser() {
-    if (this.user.isPublic()) {
+    if (this.user.isAnonymous()) {
       throw new Error('User not found');
     }
   }

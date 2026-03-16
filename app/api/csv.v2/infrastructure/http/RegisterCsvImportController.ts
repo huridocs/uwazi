@@ -14,7 +14,7 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
     if (!this.request.inputFile) throw new Error('File is not available on request object');
 
     const user = this.user;
-    if (user.isPublic()) {
+    if (user.isAnonymous()) {
       this.response.status(401).json({ message: 'User not found in request context' });
       return;
     }

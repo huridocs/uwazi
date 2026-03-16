@@ -53,11 +53,7 @@ abstract class AbstractUseCase<
   }
 
   protected getActor(): User {
-    return User.createFrom({
-      id: this.context?.actor?._id?.toString(),
-      role: this.context?.actor?.role,
-      groups: (this.context?.actor?.groups || []).map(g => g._id.toString()),
-    });
+    return User.createFrom(this.context?.actor);
   }
 
   protected get targetLanguage() {

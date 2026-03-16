@@ -14,7 +14,7 @@ const collaboratorUser = new User(factory.id('collab_user').toString(), 'collabo
   factory.id('collab_group').toString(),
 ]);
 const otherCollaborator = new User(factory.id('other_collab').toString(), 'collaborator', []);
-const publicUser = User.public();
+const publicUser = User.createFrom(null);
 
 const fixtures: DBFixture = {
   settings: [

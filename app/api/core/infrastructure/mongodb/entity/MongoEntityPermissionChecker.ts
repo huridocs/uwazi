@@ -74,7 +74,7 @@ class MongoEntityPermissionChecker
     return Result.ok(grantedEntities);
   }
 
-  async checkReadPermission(sharedId: string, user?: User): Promise<ResultType<boolean, Error>> {
+  async checkReadPermission(sharedId: string, user: User): Promise<ResultType<boolean, Error>> {
     const [entity] = await this.getCollection()
       .aggregate([
         { $match: { sharedId } },
@@ -98,14 +98,11 @@ class MongoEntityPermissionChecker
       return Result.ok(true);
     }
 
-    if (user) {
-      const userRefIds = [user._id, ...user.groups];
-      const userRefIdsAsStrings = userRefIds.map(id => id.toString());
-      return Result.ok(
-        entity.permissions?.some((perm: any) => userRefIdsAsStrings.includes(perm.refId.toString()))
-      );
-    }
-    return Result.ok(false);
+    const userRefIds = [user._id, ...user.groups];
+    const userRefIdsAsStrings = userRefIds.map(id => id.toString());
+    return Result.ok(
+      entity.permissions?.some((perm: any) => userRefIdsAsStrings.includes(perm.refId.toString()))
+    );
   }
 
   async getPublishedEntities(sharedIds: string[]): Promise<ResultType<string[], Error>> {

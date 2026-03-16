@@ -12,6 +12,7 @@ import cors from 'cors';
 import proxy from 'express-http-proxy';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
 import { createError } from '../utils/index.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');
@@ -73,7 +74,11 @@ const routes = app => {
 
         const result = await EntityFacade.create(entity, req.language, req.inputFiles);
 
-        const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
+        const entityDAO = new MongoEntityDAO(
+          getConnection(),
+          TransactionManagerFactory.default(),
+          User.createFrom(userForContext)
+        );
         const entityWithFiles = await entityDAO
           .getWithFiles({ language: req.language, sharedId: result.sharedId })
           .next();

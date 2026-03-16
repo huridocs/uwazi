@@ -21,6 +21,7 @@ import { parseQuery, validation } from '../utils/index.js';
 import date from '../utils/date.js';
 import entities from './entities.js';
 import { saveEntity } from './entitySavingManager.js';
+import { User } from '#api/users.v2/model/User.js';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -103,7 +104,11 @@ export default app => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
       if (!entityToSave?.sharedId) {
-        const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
+        const entityDAO = new MongoEntityDAO(
+          getConnection(),
+          TransactionManagerFactory.default(),
+          User.createFrom(req.user)
+        );
         const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
         const entityInTargetLanguage = await entityDAO
           .getWithFiles({ language: req.language, sharedId: result.sharedId })

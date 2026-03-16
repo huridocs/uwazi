@@ -53,7 +53,7 @@ class EntitiesQueryService {
     user: User;
   }): Promise<GetEntityResponseDTO> {
     const { sharedId, language, includeRelationships, includePermissions, user } = input;
-    const isAuthenticated = !user.isPublic();
+    const isAuthenticated = !user.isAnonymous();
 
     const entity = await this.deps.entityDAO
       .getWithFiles({
@@ -106,7 +106,7 @@ class EntitiesQueryService {
     user: User,
     includePermissions: boolean
   ): void {
-    if (!includePermissions || user.isPublic()) {
+    if (!includePermissions || user.isAnonymous()) {
       delete entity.permissions;
       return;
     }
@@ -217,7 +217,7 @@ class EntitiesQueryService {
     }
 
     const referencedArray = Array.from(referencedIds);
-    const accessibleIds = !user.isPublic()
+    const accessibleIds = !user.isAnonymous()
       ? await this.getEntitiesUserCanRead(referencedArray, user)
       : await this.getPublishedEntities(referencedArray);
 
@@ -296,7 +296,7 @@ class EntitiesQueryService {
     filterUnauthorized: boolean,
     user: User
   ): any[] {
-    const shouldRemoveInaccessible = filterUnauthorized && user.isPublic();
+    const shouldRemoveInaccessible = filterUnauthorized && user.isAnonymous();
 
     if (shouldRemoveInaccessible) {
       return values.filter(
