@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { MongoServerError, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../../mongodb/common/MongoDataSource';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
@@ -25,17 +25,25 @@ class MongoSlotsDataSource extends MongoDataSource<SlotDocument> {
   protected collectionName = 'elasticSlots';
 
   async assignSlot({ propertyName, type }: AssignSlotInput) {
-    const result = await this.getCollection().updateOne(
-      {
-        assignedTo: null,
-        type,
-      },
-      {
-        $set: {
-          assignedTo: propertyName,
+    let result;
+    try {
+      result = await this.getCollection().updateOne(
+        {
+          assignedTo: null,
+          type,
         },
+        {
+          $set: {
+            assignedTo: propertyName,
+          },
+        }
+      );
+    } catch (error) {
+      if (error instanceof MongoServerError && error.code === 11000) {
+        throw new Error(`Property "${propertyName}" is already assigned to a slot`);
       }
-    );
+      throw error;
+    }
 
     if (result.modifiedCount === 0) {
       throw new Error(`No available slots for type ${type}`);
