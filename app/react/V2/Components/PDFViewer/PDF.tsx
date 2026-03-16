@@ -16,6 +16,7 @@ import { PDFPage } from './PDFPage.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
 const BORDER_WIDTH: number = 1;
+const WIDTH_SAFETY_BUFFER: number = 2;
 
 type Snippet = { text: string; page: number; filename?: string };
 
@@ -167,7 +168,10 @@ const PDF = ({
       return undefined;
     }
 
-    const initialWidth = Math.max(0, container.clientWidth || container.offsetWidth);
+    const getAvailableWidth = () =>
+      Math.max(0, Math.floor(container.clientWidth - BORDER_WIDTH * 2 - WIDTH_SAFETY_BUFFER));
+
+    const initialWidth = getAvailableWidth();
 
     setContainerWidth(initialWidth);
 
@@ -179,7 +183,7 @@ const PDF = ({
         }
 
         resizeTimeoutRef.current = setTimeout(() => {
-          const newWidth = Math.max(0, entry.contentRect.width - BORDER_WIDTH);
+          const newWidth = getAvailableWidth();
           setContainerWidth(newWidth);
         }, 150);
       }
@@ -263,10 +267,8 @@ const PDF = ({
     height: size?.height || '100%',
     width: size?.width || '100%',
     overflow: 'auto',
-    '--page-border': '0px solid transparent',
-    '--page-margin': '0 auto',
-    '--scale-round-x': '0',
-    '--scale-round-y': '0',
+    '--page-border': 'none',
+    '--page-margin': '0',
   };
 
   if (error) {
