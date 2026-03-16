@@ -15,6 +15,7 @@ import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { PDFPage } from './PDFPage.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
+const BORDER_WIDTH: number = 1;
 
 type Snippet = { text: string; page: number; filename?: string };
 
@@ -178,7 +179,7 @@ const PDF = ({
         }
 
         resizeTimeoutRef.current = setTimeout(() => {
-          const newWidth = Math.max(0, entry.contentRect.width);
+          const newWidth = Math.max(0, entry.contentRect.width - BORDER_WIDTH);
           setContainerWidth(newWidth);
         }, 150);
       }
@@ -264,8 +265,8 @@ const PDF = ({
     overflow: 'auto',
     '--page-border': '0px solid transparent',
     '--page-margin': '0 auto',
-    '--scale-round-x': '0.01px',
-    '--scale-round-y': '0.01px',
+    '--scale-round-x': '0',
+    '--scale-round-y': '0',
   };
 
   if (error) {
@@ -284,10 +285,11 @@ const PDF = ({
               <div
                 key={`page-${regionId}`}
                 id={`page-${regionId}-container`}
+                style={{ borderWidth: BORDER_WIDTH }}
                 ref={el => {
                   pageRefsMap.current[regionId] = el;
                 }}
-                className="border mb-4 border-gray-200 relative"
+                className="mb-4 border-gray-200 relative"
               >
                 <SelectionRegion regionId={regionId.toString()}>
                   <PDFPage
