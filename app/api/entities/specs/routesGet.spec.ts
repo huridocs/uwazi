@@ -392,12 +392,10 @@ describe.each([
         new UserInContextMockFactory().mock(authenticatedUser);
         const entity = await getEntity(app, 'getWithRelRoot');
 
-        expect(entity).toMatchObject({
-          relations: [
-            expect.objectContaining({ entity: 'getWithRelRoot' }),
-            expect.objectContaining({ entity: 'getWithRelPublic' }),
-          ],
-        });
+        const entityIds = entity.relations.map((r: any) => r.entity);
+        expect(entityIds).toContain('getWithRelRoot');
+        expect(entityIds).toContain('getWithRelPublic');
+        expect(entityIds).not.toContain('getWithRelPrivate'); // collaborator has no permission
       });
 
       it('should include relationships for unauthenticated users viewing published entities', async () => {
@@ -406,6 +404,52 @@ describe.each([
         expect(entity).toMatchObject({
           relations: expect.any(Array),
         });
+      });
+
+      it('should include unpublished relations for admin users', async () => {
+        const adminUser = {
+          _id: adminId,
+          role: UserRole.ADMIN,
+          username: 'admin',
+          email: 'admin@test.com',
+        };
+        const appWithAdmin = setUpApp(
+          routes,
+          (req: Request, _res: Response, next: NextFunction) => {
+            (req as any).user = adminUser;
+            next();
+          }
+        );
+        new UserInContextMockFactory().mock(adminUser);
+
+        const entity = await getEntity(appWithAdmin, 'getWithRelRoot');
+
+        const entityIds = entity.relations.map((r: any) => r.entity);
+        expect(entityIds).toContain('getWithRelPublic');
+        expect(entityIds).toContain('getWithRelPrivate');
+      });
+
+      it('should include unpublished relations for editor users', async () => {
+        const editorUser = {
+          _id: db.id(),
+          role: UserRole.EDITOR,
+          username: 'editor',
+          email: 'editor@test.com',
+        };
+        const appWithEditor = setUpApp(
+          routes,
+          (req: Request, _res: Response, next: NextFunction) => {
+            (req as any).user = editorUser;
+            next();
+          }
+        );
+        new UserInContextMockFactory().mock(editorUser);
+
+        const entity = await getEntity(appWithEditor, 'getWithRelRoot');
+
+        const entityIds = entity.relations.map((r: any) => r.entity);
+        expect(entityIds).toContain('getWithRelPublic');
+        expect(entityIds).toContain('getWithRelPrivate');
       });
     });
 
@@ -423,9 +467,9 @@ describe.each([
       it('should filter out unpublished entities from relations array', async () => {
         const entity = await getEntity(appWithoutUser, 'getWithRelRoot');
 
-        expect(entity).toMatchObject({
-          relations: expect.any(Array),
-        });
+        const entityIds = entity.relations.map((r: any) => r.entity);
+        expect(entityIds).toContain('getWithRelPublic');
+        expect(entityIds).not.toContain('getWithRelPrivate');
       });
 
       it('should return relations property (not relationships)', async () => {
