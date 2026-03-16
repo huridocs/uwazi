@@ -1,6 +1,7 @@
 import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { AccessLevels } from '#shared/types/permissionSchema.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import {
@@ -11,7 +12,10 @@ import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { AccessLevel } from '../domain/entity/AccessLevel.js';
 import { PermissionType } from '../domain/entity/PermissionType.js';
 import { Template } from '../domain/template/Template.js';
-import { MongoEntityDAO } from '../infrastructure/mongodb/entity/MongoEntityDAO.js';
+import {
+  EntityWithFiles,
+  MongoEntityDAO,
+} from '../infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { fileDBO, fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
@@ -45,10 +49,11 @@ class EntitiesQueryService {
     sharedId: string;
     language: LanguageISO6391;
     includeRelationships: boolean;
-    user?: User;
+    includePermissions: boolean;
+    user: User;
   }): Promise<GetEntityResponseDTO> {
-    const { sharedId, language, includeRelationships, user } = input;
-    const isAuthenticated = !!user;
+    const { sharedId, language, includeRelationships, includePermissions, user } = input;
+    const isAuthenticated = !user.isPublic();
 
     const entity = await this.deps.entityDAO
       .getWithFiles({
@@ -61,26 +66,11 @@ class EntitiesQueryService {
       throw new EntityNotFoundError(sharedId);
     }
 
-    if (!isAuthenticated && entity.published === false) {
-      throw new EntityNotFoundError(sharedId);
-    }
-
-    // Security: Check READ permissions for unpublished entities (non-privileged users)
-    if (entity.published === false && user && !user.isPrivileged()) {
-      const hasReadPermission = await this.deps.entityPermissionChecker.checkReadPermission(
-        sharedId,
-        user
-      );
-      if (!hasReadPermission.getDataOrThrow()) {
-        throw new EntityNotFoundError(sharedId);
-      }
-    }
-
     await this.applyRelationshipPermissions([entity], user);
 
     let filteredRelations: RelationDTO[] = [];
     if (includeRelationships) {
-      const includeUnpublished = isAuthenticated ?? false;
+      const includeUnpublished = isAuthenticated;
       const relations = (await this.deps.relationshipsDataSource.getByEntity(
         sharedId,
         language,
@@ -91,6 +81,8 @@ class EntitiesQueryService {
         ? relations
         : relations.filter(rel => rel.entityData?.published !== false);
     }
+
+    this.applyPermissionsFieldSecurity(entity, user, includePermissions);
 
     const response: GetEntityResponseDTO = {
       ...entity,
@@ -109,14 +101,36 @@ class EntitiesQueryService {
     })) as fileDTO[];
   }
 
+  private applyPermissionsFieldSecurity(
+    entity: EntityWithFiles,
+    user: User,
+    includePermissions: boolean
+  ): void {
+    if (!includePermissions || user.isPublic()) {
+      delete entity.permissions;
+      return;
+    }
+
+    if (user.isPrivileged()) return;
+
+    if (entity.published) return;
+
+    const userIds = [user._id, ...user.groups];
+    const hasWrite =
+      Array.isArray(entity.permissions) &&
+      entity.permissions.some((p: any) => {
+        const refId = p.refId?.toString?.() ?? p.refId;
+        return p.level === AccessLevels.WRITE && userIds.includes(refId);
+      });
+
+    if (!hasWrite) delete entity.permissions;
+  }
+
   /**
    * Applies relationship permissions to entity metadata based on user permissions.
    * Mutates entity metadata in-place by filtering or marking inaccessible relationship references.
-   *
-   * @param entityDBOs - Array of entity database objects to process (mutated in-place)
-   * @param user - Optional authenticated user for permission checking
    */
-  async applyRelationshipPermissions(entityDBOs: EntityDBO[], user?: User): Promise<void> {
+  async applyRelationshipPermissions(entityDBOs: EntityDBO[], user: User): Promise<void> {
     if (entityDBOs.length === 0) {
       return;
     }
@@ -196,14 +210,14 @@ class EntitiesQueryService {
 
   private async determineAccessibleEntities(
     referencedIds: Set<string>,
-    user?: User
+    user: User
   ): Promise<Set<string>> {
     if (referencedIds.size === 0) {
       return new Set();
     }
 
     const referencedArray = Array.from(referencedIds);
-    const accessibleIds = user
+    const accessibleIds = !user.isPublic()
       ? await this.getEntitiesUserCanRead(referencedArray, user)
       : await this.getPublishedEntities(referencedArray);
 
@@ -231,7 +245,7 @@ class EntitiesQueryService {
     templatePropsMap: Map<string, Set<string>>,
     accessibleIds: Set<string>,
     filterUnauthorized: boolean,
-    user?: User
+    user: User
   ): void {
     for (const entityDBO of entityDBOs) {
       this.applyPermissionsToSingleEntity(
@@ -249,7 +263,7 @@ class EntitiesQueryService {
     templatePropsMap: Map<string, Set<string>>,
     accessibleIds: Set<string>,
     filterUnauthorized: boolean,
-    user?: User
+    user: User
   ): void {
     const templateId = entityDBO.template.toString();
     const relationshipProps = templatePropsMap.get(templateId);
@@ -280,9 +294,9 @@ class EntitiesQueryService {
     values: any[],
     accessibleIds: Set<string>,
     filterUnauthorized: boolean,
-    user?: User
+    user: User
   ): any[] {
-    const shouldRemoveInaccessible = filterUnauthorized && !user;
+    const shouldRemoveInaccessible = filterUnauthorized && user.isPublic();
 
     if (shouldRemoveInaccessible) {
       return values.filter(

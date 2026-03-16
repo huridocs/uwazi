@@ -2,6 +2,7 @@ import {
   EntitiesQueryService,
   EntitiesQueryServiceDeps,
 } from '#api/core/application/EntitiesQueryService.js';
+import { User } from '#api/users.v2/model/User.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
@@ -16,7 +17,7 @@ type FactoryDeps = Partial<EntitiesQueryServiceDeps> & {
 };
 
 class EntitiesQueryServiceFactory {
-  static default(deps?: FactoryDeps) {
+  static default(user: User, deps?: FactoryDeps) {
     const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
 
     const entityPermissionChecker =
@@ -36,7 +37,7 @@ class EntitiesQueryServiceFactory {
 
     const entityDAO =
       deps?.entityDAO ??
-      new MongoEntityDAO(getConnection(), transactionManager as MongoTransactionManager);
+      new MongoEntityDAO(getConnection(), transactionManager as MongoTransactionManager, user);
 
     const relationshipsDataSource =
       deps?.relationshipsDataSource ??

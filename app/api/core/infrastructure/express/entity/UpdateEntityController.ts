@@ -16,7 +16,8 @@ class UpdateEntityController extends AbstractController<Request> {
       const useCase = UpdateEntityUseCaseFactory.default();
       const entityDAO = new MongoEntityDAO(
         getConnection(),
-        DependenciesContext.transactionManager as MongoTransactionManager
+        DependenciesContext.transactionManager as MongoTransactionManager,
+        this.user
       );
 
       let parsed: UpdateEntityRequest;

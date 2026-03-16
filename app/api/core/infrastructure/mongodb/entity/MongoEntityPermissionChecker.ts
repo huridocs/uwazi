@@ -2,12 +2,18 @@ import {
   EntityPermissionChecker,
   Specification,
 } from '#api/core/domain/entity/EntityPermissionChecker.js';
+import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { User } from '#api/users.v2/model/User.js';
-import { MongoEntityDAO } from './MongoEntityDAO.js';
+import { MongoDataSource } from '../common/MongoDataSource.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 
-class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermissionChecker {
+class MongoEntityPermissionChecker
+  extends MongoDataSource<EntityDBO>
+  implements EntityPermissionChecker
+{
+  protected collectionName = 'entities';
+
   async filterEntities(
     sharedIds: string[],
     specification: Specification

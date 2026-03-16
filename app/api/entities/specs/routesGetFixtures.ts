@@ -248,7 +248,7 @@ const fixtures: DBFixture = {
         permissions: [
           { refId: user1Id.toString(), level: AccessLevels.READ, type: PermissionType.USER },
           { refId: user2Id.toString(), level: AccessLevels.WRITE, type: PermissionType.USER },
-          { refId: testGroup1Id, level: AccessLevels.WRITE, type: PermissionType.GROUP },
+          { refId: testGroup1Id.toString(), level: AccessLevels.WRITE, type: PermissionType.GROUP },
         ],
       }
     ),
@@ -268,7 +268,7 @@ const fixtures: DBFixture = {
         permissions: [
           { refId: user1Id.toString(), level: AccessLevels.READ, type: PermissionType.USER },
           { refId: user2Id.toString(), level: AccessLevels.WRITE, type: PermissionType.USER },
-          { refId: testGroup1Id, level: AccessLevels.WRITE, type: PermissionType.GROUP },
+          { refId: testGroup1Id.toString(), level: AccessLevels.WRITE, type: PermissionType.GROUP },
         ],
       }
     ),
@@ -369,7 +369,9 @@ const fixtures: DBFixture = {
         language: 'en',
         title: 'Restricted Entity',
         published: false,
-        permissions: [{ refId: user1Id, level: AccessLevels.READ, type: PermissionType.USER }],
+        permissions: [
+          { refId: user1Id.toString(), level: AccessLevels.READ, type: PermissionType.USER },
+        ],
       }
     ),
     fixtureFactory.entity(

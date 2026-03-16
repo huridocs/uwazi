@@ -249,30 +249,24 @@ describe.each([
       expect(entity.sharedId).toBe('other');
     });
 
-    (featureFlags.v2GetEntity ? it : it.skip)(
-      'should allow collaborators with group-based permissions to access unpublished entities',
-      async () => {
-        const user3 = {
-          _id: user3Id,
-          role: UserRole.COLLABORATOR,
-          username: 'user3',
-          email: 'user3@test.com',
-          groups: [{ _id: testGroup1Id, name: 'testGroup1' }], // user3 is in testGroup1 which has WRITE on 'other'
-        };
-        const appWithUser3 = setUpApp(
-          routes,
-          (req: Request, _res: Response, next: NextFunction) => {
-            (req as any).user = user3;
-            next();
-          }
-        );
-        new UserInContextMockFactory().mock(user3);
+    it('should allow collaborators with group-based permissions to access unpublished entities', async () => {
+      const user3 = {
+        _id: user3Id,
+        role: UserRole.COLLABORATOR,
+        username: 'user3',
+        email: 'user3@test.com',
+        groups: [{ _id: testGroup1Id, name: 'testGroup1' }], // user3 is in testGroup1 which has WRITE on 'other'
+      };
+      const appWithUser3 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user3;
+        next();
+      });
+      new UserInContextMockFactory().mock(user3);
 
-        const entity = await getEntity(appWithUser3, 'other', { omitRelationships: true });
-        expect(entity).toBeDefined();
-        expect(entity.sharedId).toBe('other');
-      }
-    );
+      const entity = await getEntity(appWithUser3, 'other', { omitRelationships: true });
+      expect(entity).toBeDefined();
+      expect(entity.sharedId).toBe('other');
+    });
   });
 
   describe('Security: Permissions field access control', () => {
@@ -348,33 +342,27 @@ describe.each([
       expect(Array.isArray(entity.permissions)).toBe(true);
     });
 
-    (featureFlags.v2GetEntity ? it : it.skip)(
-      'should expose permissions field to collaborators with WRITE access via group membership',
-      async () => {
-        const user3 = {
-          _id: user3Id,
-          role: UserRole.COLLABORATOR,
-          username: 'user3',
-          email: 'user3@test.com',
-          groups: [{ _id: testGroup1Id, name: 'testGroup1' }], // testGroup1 has WRITE on 'other'
-        };
-        const appWithUser3 = setUpApp(
-          routes,
-          (req: Request, _res: Response, next: NextFunction) => {
-            (req as any).user = user3;
-            next();
-          }
-        );
-        new UserInContextMockFactory().mock(user3);
+    it('should expose permissions field to collaborators with WRITE access via group membership', async () => {
+      const user3 = {
+        _id: user3Id,
+        role: UserRole.COLLABORATOR,
+        username: 'user3',
+        email: 'user3@test.com',
+        groups: [{ _id: testGroup1Id, name: 'testGroup1' }], // testGroup1 has WRITE on 'other'
+      };
+      const appWithUser3 = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = user3;
+        next();
+      });
+      new UserInContextMockFactory().mock(user3);
 
-        const entity = await getEntity(appWithUser3, 'other', {
-          include: ['permissions'],
-          omitRelationships: true,
-        });
-        expect(entity.permissions).toBeDefined();
-        expect(Array.isArray(entity.permissions)).toBe(true);
-      }
-    );
+      const entity = await getEntity(appWithUser3, 'other', {
+        include: ['permissions'],
+        omitRelationships: true,
+      });
+      expect(entity.permissions).toBeDefined();
+      expect(Array.isArray(entity.permissions)).toBe(true);
+    });
 
     it('should not expose permissions to users with only READ access', async () => {
       // user1 has READ on 'other', but is a COLLABORATOR (not privileged)

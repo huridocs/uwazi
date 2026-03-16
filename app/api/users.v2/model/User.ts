@@ -27,6 +27,14 @@ class User {
     return ['admin', 'editor'].includes(this.role);
   }
 
+  isPublic() {
+    return this._id === '__public__';
+  }
+
+  static public() {
+    return new User('__public__', 'collaborator', []);
+  }
+
   static createFrom(props: Partial<CreateFromProps>) {
     const parsed = Schema.parse(props);
 
