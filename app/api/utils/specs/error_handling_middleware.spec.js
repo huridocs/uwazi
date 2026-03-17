@@ -135,12 +135,13 @@ describe('Error handling middleware', () => {
   });
 
   describe('when error is ClientAbortedRequestError', () => {
-    it('should not send response for ClientAbortedRequestError and not call next', () => {
+    it('should silently return when req.aborted is true', () => {
       const error = new ClientAbortedRequestError('Client aborted the request');
       req = {
         url: '/api/files/download/somefile.pdf',
         method: 'GET',
         route: { path: '/api/files/download/:filename' },
+        aborted: true,
       };
 
       middleware(error, req, res, next);
@@ -148,17 +149,16 @@ describe('Error handling middleware', () => {
       expect(res.status).not.toHaveBeenCalled();
       expect(res.json).not.toHaveBeenCalled();
       expect(next).not.toHaveBeenCalled();
+      expect(mockLogger.debug).not.toHaveBeenCalled();
     });
 
-    it('should NOT log when ClientAbortedRequestError occurs with headers already sent', () => {
+    it('should silently return when req.aborted is true and headers already sent', () => {
       const error = new ClientAbortedRequestError('Client aborted the request');
-      error.code = 'ERR_STREAM_PREMATURE_CLOSE';
       req = {
         url: '/api/files/download/somefile.pdf',
         method: 'GET',
         route: { path: '/api/files/download/:filename' },
         aborted: true,
-        query: {},
       };
       res.headersSent = true;
       res.statusCode = 200;
@@ -166,9 +166,25 @@ describe('Error handling middleware', () => {
       middleware(error, req, res, next);
 
       expect(mockLogger.debug).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(error);
+      expect(next).not.toHaveBeenCalled();
       expect(res.status).not.toHaveBeenCalled();
       expect(res.json).not.toHaveBeenCalled();
+    });
+
+    it('should handle normally when req.aborted is false', () => {
+      const error = new ClientAbortedRequestError('Client aborted the request');
+      req = {
+        url: '/api/files/download/somefile.pdf',
+        method: 'GET',
+        route: { path: '/api/files/download/:filename' },
+        aborted: false,
+      };
+
+      middleware(error, req, res, next);
+
+      expect(res.status).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalled();
+      expect(next).not.toHaveBeenCalled();
     });
   });
 });

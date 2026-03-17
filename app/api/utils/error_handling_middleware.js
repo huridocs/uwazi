@@ -4,35 +4,33 @@ import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRe
 
 // eslint-disable-next-line import/no-default-export, consistent-return
 export default (error, req, res, next) => {
-  if (res.headersSent) {
-    if (!(error instanceof ClientAbortedRequestError)) {
-      LoggerFactory.default().debug('Headers already sent when error middleware called', {
-        namespace: 'Error_Middleware',
-
-        url: req.url,
-        method: req.method,
-        routePath: req.route?.path,
-
-        aborted: req.aborted,
-        statusCodeSent: res.statusCode,
-
-        errorMessage: error.message,
-        errorCode: error.code,
-        errorName: error.name,
-        errorStack: error.stack,
-
-        query: JSON.stringify(req.query),
-
-        notify: true,
-      });
-    }
-
-    return next(error);
+  // ClientAbortedRequestError: connection already closed by client, nothing to do
+  if (error instanceof ClientAbortedRequestError && req.aborted) {
+    return;
   }
 
-  // ClientAbortedRequestError: connection already closed by client, nothing to do
-  if (error instanceof ClientAbortedRequestError) {
-    return;
+  if (res.headersSent) {
+    LoggerFactory.default().debug('Headers already sent when error middleware called', {
+      namespace: 'Error_Middleware',
+
+      url: req.url,
+      method: req.method,
+      routePath: req.route?.path,
+
+      aborted: req.aborted,
+      statusCodeSent: res.statusCode,
+
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorName: error.name,
+      errorStack: error.stack,
+
+      query: JSON.stringify(req.query),
+
+      notify: true,
+    });
+
+    return next(error);
   }
 
   const { message, code, ...rest } = handleError(error, { req });
