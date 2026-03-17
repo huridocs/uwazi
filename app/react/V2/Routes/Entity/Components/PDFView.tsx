@@ -80,10 +80,6 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
     [searchParams, setSearchParams]
   );
 
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
   const handleTextSelect = useCallback((selection: TextSelection) => {
     if (selection.selectionRectangles && selection.selectionRectangles.length > 0) {
       setSelectedText(selection);
@@ -154,11 +150,15 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
     [updatePageParam]
   );
 
-  if (!entity?.mainDocument) {
-    return <Translate>Loading</Translate>;
-  }
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
-  const { filename, originalname, totalPages } = entity.mainDocument[0];
+  const { filename, originalname, totalPages } = entity.mainDocument?.[0] || {
+    filename: '',
+    originalname: '',
+    totalPages: 0,
+  };
   const prevPage = Math.max(1, pageNumber - 1);
   const nextPage = Math.min(pageNumber + 1, totalPages || 0);
 

@@ -5,7 +5,7 @@ import {
   HandleTextSelection,
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
@@ -53,7 +53,7 @@ const PDF = ({
   const pageRefsMap = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const animationFrameIdRef = useRef<number>(0);
   const snippetAnimationFrameIdRef = useRef<number>(0);
-  const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const pdfContainerRef = useRef<HTMLDivElement | null>(null);
   const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasCalledOnReadyRef = useRef(false);
   const intersectionObserverRef = useRef<IntersectionObserver | null>();
@@ -62,11 +62,17 @@ const PDF = ({
   const [error, setError] = useState<string>();
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
   const [pdfEventBus] = useState(new EventBus());
+  const [pdfContainerElement, setPdfContainerElement] = useState<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState<{ progress: number; isLoading: boolean }>({
     isLoading: true,
     progress: 0,
   });
   const onPageChangeRef = useRef(onPageChange);
+
+  const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
+    pdfContainerRef.current = element;
+    setPdfContainerElement(element);
+  }, []);
 
   const handleScaleChange = useCallback(
     (scale: number) => {
@@ -176,14 +182,20 @@ const PDF = ({
         setPDF(file);
       })
       .catch(e => {
-        setError(e.message);
+        if (e.status === 404) {
+          setError(t('System', 'File not found', null, false));
+        } else if (e.name === 'InvalidPDFException') {
+          setError(t('System', 'This file is not a valid PDF', null, false));
+        } else {
+          setError(t('System', 'An error occurred', null, false));
+        }
       });
 
     hasCalledOnReadyRef.current = false;
   }, [fileUrl]);
 
   useEffect(() => {
-    const container = pdfContainerRef.current;
+    const container = pdfContainerElement;
 
     if (!container) {
       return undefined;
@@ -219,7 +231,7 @@ const PDF = ({
       }
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [pdfContainerElement]);
 
   useEffect(() => {
     const observerHandler: IntersectionObserverCallback = entries => {
@@ -293,58 +305,62 @@ const PDF = ({
   };
 
   if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (loading.isLoading) {
     return (
-      <div className="w-full flex flex-col gap-2">
-        <div className="flex justify-between mb-1">
-          <div className="font-medium text-gray-500">
-            <Translate>Loading</Translate> {fileUrl} ...
-          </div>
-          <span className="text-sm font-medium text-gray-500">{loading.progress}%</span>
-        </div>
-        <ProgressBar progress={loading.progress} color="gray" />
-      </div>
+      <p
+        data-testid="errorInfo"
+        className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400"
+      >
+        {error}
+      </p>
     );
   }
 
   return (
     <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div id="pdf-container" className="pdfViewer" ref={pdfContainerRef} style={viewerStyle}>
-        {pdf ? (
-          Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-            const regionId = number;
-            const pageHighlights = highlights ? highlights[regionId] : undefined;
-
-            return (
-              <div
-                key={`page-${regionId}`}
-                id={`page-${regionId}-container`}
-                style={{ borderWidth: BORDER_WIDTH }}
-                ref={el => {
-                  pageRefsMap.current[regionId] = el;
-                }}
-                className="mb-4 border-gray-200 relative"
-              >
-                <SelectionRegion regionId={regionId.toString()}>
-                  <PDFPage
-                    pdf={pdf}
-                    page={number}
-                    eventBus={pdfEventBus}
-                    intersectionObserver={intersectionObserverRef.current}
-                    highlights={pageHighlights}
-                    containerWidth={containerWidth}
-                    onScaleChange={handleScaleChange}
-                  />
-                </SelectionRegion>
+      <div className="w-full flex flex-col gap-2 h-full">
+        {loading.isLoading || !pdf ? (
+          <div className="w-full flex flex-col gap-2">
+            <div className="flex justify-between mb-1">
+              <div className="font-medium text-gray-500">
+                <Translate>Loading</Translate> ...
               </div>
-            );
-          })
-        ) : (
-          <Translate>Loading</Translate>
-        )}
+              <span className="text-sm font-medium text-gray-500">{loading.progress}%</span>
+            </div>
+            <ProgressBar progress={loading.progress} color="gray" />
+          </div>
+        ) : null}
+        <div id="pdf-container" className="pdfViewer" ref={setPdfContainer} style={viewerStyle}>
+          {pdf
+            ? Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
+                const regionId = number;
+                const pageHighlights = highlights ? highlights[regionId] : undefined;
+
+                return (
+                  <div
+                    key={`page-${regionId}`}
+                    id={`page-${regionId}-container`}
+                    style={{ borderWidth: BORDER_WIDTH }}
+                    ref={el => {
+                      pageRefsMap.current[regionId] = el;
+                    }}
+                    className="mb-4 border-gray-200 relative"
+                  >
+                    <SelectionRegion regionId={regionId.toString()}>
+                      <PDFPage
+                        pdf={pdf}
+                        page={number}
+                        eventBus={pdfEventBus}
+                        intersectionObserver={intersectionObserverRef.current}
+                        highlights={pageHighlights}
+                        containerWidth={containerWidth}
+                        onScaleChange={handleScaleChange}
+                      />
+                    </SelectionRegion>
+                  </div>
+                );
+              })
+            : null}
+        </div>
       </div>
     </HandleTextSelection>
   );
