@@ -30,15 +30,12 @@ export default (error, req, res, next) => {
     return next(error);
   }
 
-  const { message, code, ...rest } = handleError(error, { req });
-
-  // Don't attempt to send a response for client-aborted requests
-  // since headers may have already been sent during streaming
-  if (!(error instanceof ClientAbortedRequestError)) {
-    res.status(code);
-    res.json({ error: message, ...rest });
-  } else {
-    // ClientAbortedRequestError: delegate to Express default handler
-    return next(error);
+  // ClientAbortedRequestError: connection already closed by client, nothing to do
+  if (error instanceof ClientAbortedRequestError) {
+    return;
   }
+
+  const { message, code, ...rest } = handleError(error, { req });
+  res.status(code);
+  res.json({ error: message, ...rest });
 };
