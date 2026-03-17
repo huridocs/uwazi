@@ -707,9 +707,7 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
           settings: [
             {
               ...fixtures.settings![0],
-              features: {
-                filterUnauthorizedRelated: true,
-              },
+              filterUnauthorizedRelated: true,
             } as any,
           ],
         });
@@ -815,9 +813,7 @@ describe('GET /api/entities - V2 - Metadata relationship permission filtering', 
           settings: [
             {
               ...fixtures.settings![0],
-              features: {
-                filterUnauthorizedRelated: true,
-              },
+              filterUnauthorizedRelated: true,
             } as any,
           ],
         });

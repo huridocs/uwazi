@@ -53,7 +53,7 @@ abstract class AbstractUseCase<
   }
 
   protected getActor(): User {
-    return User.createFrom(this.context?.actor);
+    return User.createFrom(this.context?.actor || null);
   }
 
   protected get targetLanguage() {

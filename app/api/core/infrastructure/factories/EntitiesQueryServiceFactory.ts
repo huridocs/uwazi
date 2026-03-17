@@ -20,38 +20,16 @@ class EntitiesQueryServiceFactory {
   static default(user: User, deps?: FactoryDeps) {
     const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
 
-    const entityPermissionChecker =
-      deps?.entityPermissionChecker ??
-      new MongoEntityPermissionChecker(
-        getConnection(),
-        transactionManager as MongoTransactionManager
-      );
-
-    const settingsDS =
-      deps?.settingsDS ??
-      SettingsDataSourceFactory.cached(transactionManager as MongoTransactionManager);
-
-    const templatesDS =
-      deps?.templatesDS ??
-      TemplatesDataSourceFactory.cached(transactionManager as MongoTransactionManager);
-
-    const entityDAO =
-      deps?.entityDAO ??
-      new MongoEntityDAO(getConnection(), transactionManager as MongoTransactionManager, user);
-
-    const relationshipsDataSource =
-      deps?.relationshipsDataSource ??
-      new MongoRelationshipsV1DataSource(
-        getConnection(),
-        transactionManager as MongoTransactionManager
-      );
-
     return new EntitiesQueryService({
-      entityPermissionChecker,
-      settingsDS,
-      templatesDS,
-      entityDAO,
-      relationshipsDataSource,
+      entityPermissionChecker:
+        deps?.entityPermissionChecker ??
+        new MongoEntityPermissionChecker(getConnection(), transactionManager),
+      settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached(transactionManager),
+      templatesDS: deps?.templatesDS ?? TemplatesDataSourceFactory.cached(transactionManager),
+      entityDAO: deps?.entityDAO ?? new MongoEntityDAO(getConnection(), transactionManager, user),
+      relationshipsDataSource:
+        deps?.relationshipsDataSource ??
+        new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
     });
   }
 }

@@ -79,11 +79,8 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
               cond: { $eq: ['$$attachment.type', 'attachment'] },
             },
           },
-          // Explicitly preserve published field
-          published: { $ifNull: ['$published', false] },
         },
       },
-
       {
         $unset: 'files',
       },

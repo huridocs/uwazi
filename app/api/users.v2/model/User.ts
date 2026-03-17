@@ -48,8 +48,8 @@ class User {
     return new User('__anonymous__', 'collaborator', []);
   }
 
-  static createFrom(props: { [key: string]: any } | null | undefined): User {
-    if (props == null) {
+  static createFrom(props: { [key: string]: any } | null): User {
+    if (!props) {
       return User.anonymous();
     }
     const parsed = Schema.parse(props);

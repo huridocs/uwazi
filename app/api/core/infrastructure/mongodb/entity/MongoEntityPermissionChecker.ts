@@ -18,6 +18,9 @@ class MongoEntityPermissionChecker
     sharedIds: string[],
     specification: Specification
   ): Promise<ResultType<string[], Error>> {
+    if (specification.actor.isAnonymous()) {
+      return this.getPublishedEntities(sharedIds);
+    }
     const entities = await this.getCollection()
       .aggregate([
         { $match: { sharedId: { $in: sharedIds } } },
@@ -105,7 +108,7 @@ class MongoEntityPermissionChecker
     );
   }
 
-  async getPublishedEntities(sharedIds: string[]): Promise<ResultType<string[], Error>> {
+  private async getPublishedEntities(sharedIds: string[]): Promise<ResultType<string[], Error>> {
     const entities = await this.getCollection()
       .aggregate([
         {
@@ -126,8 +129,8 @@ class MongoEntityPermissionChecker
     return Result.ok(entities.map(entity => entity.sharedId));
   }
 
-  async checkWritePermission(file: BaseFile, user?: User): Promise<ResultType<boolean, Error>> {
-    if (!user) {
+  async checkWritePermission(file: BaseFile, user: User): Promise<ResultType<boolean, Error>> {
+    if (user.isAnonymous()) {
       return Result.ok(false);
     }
     if (user.isPrivileged()) {

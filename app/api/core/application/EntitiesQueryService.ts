@@ -18,7 +18,6 @@ import {
 } from '../infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
-import { fileDBO, fileDTO } from '../infrastructure/mongodb/files/schemas/filesTypes.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
 
 type Deps = {
@@ -29,21 +28,11 @@ type Deps = {
   relationshipsDataSource: MongoRelationshipsV1DataSource;
 };
 
-/**
- * Query service for read-only entity operations.
- *
- * This service is optimized for performance and follows CQRS pattern
- * by separating read operations from write operations (EntitiesService).
- */
 class EntitiesQueryService {
   constructor(private deps: Deps) {}
 
   /**
    * Gets a single entity with all computed fields (files, relationships, filtered metadata).
-   *
-   * @param input - Query parameters
-   * @returns Entity with all computed fields, or null if not found/unauthorized
-   * @throws EntityNotFoundError if entity doesn't exist or user lacks permission
    */
   async getEntity(input: {
     sharedId: string;
@@ -86,19 +75,35 @@ class EntitiesQueryService {
 
     const response: GetEntityResponseDTO = {
       ...entity,
-      documents: this.convertFilesToDTO(entity.documents),
-      attachments: this.convertFilesToDTO(entity.attachments),
+      documents: entity.documents.map(doc => ({ ...doc, _id: doc._id.toString() })),
+      attachments: entity.attachments.map(doc => ({ ...doc, _id: doc._id.toString() })),
       ...(includeRelationships && { relations: filteredRelations }),
     };
 
     return response;
   }
 
-  private convertFilesToDTO(files: fileDBO[]): fileDTO[] {
-    return files.map(file => ({
-      ...file,
-      _id: file._id.toString(),
-    })) as fileDTO[];
+  /**
+   * Applies relationship permissions to entity metadata based on user permissions.
+   * Mutates entity metadata in-place by filtering or marking inaccessible relationship references.
+   */
+  async applyRelationshipPermissions(entityDBOs: EntityDBO[], user: User): Promise<void> {
+    if (entityDBOs.length === 0) {
+      return;
+    }
+
+    const templatePropsMap = await this.loadTemplateRelationshipProperties(entityDBOs);
+    const referencedEntityIds = this.findAllReferencedEntities(entityDBOs, templatePropsMap);
+    const accessibleEntityIds = await this.determineAccessibleEntities(referencedEntityIds, user);
+    const filterUnauthorized = await this.deps.settingsDS.readFilterUnauthorizedRelated();
+
+    this.applyPermissionsToMetadata(
+      entityDBOs,
+      templatePropsMap,
+      accessibleEntityIds,
+      filterUnauthorized,
+      user
+    );
   }
 
   private applyPermissionsFieldSecurity(
@@ -126,29 +131,6 @@ class EntitiesQueryService {
     if (!hasWrite) delete entity.permissions;
   }
 
-  /**
-   * Applies relationship permissions to entity metadata based on user permissions.
-   * Mutates entity metadata in-place by filtering or marking inaccessible relationship references.
-   */
-  async applyRelationshipPermissions(entityDBOs: EntityDBO[], user: User): Promise<void> {
-    if (entityDBOs.length === 0) {
-      return;
-    }
-
-    const templatePropsMap = await this.loadTemplateRelationshipProperties(entityDBOs);
-    const referencedEntityIds = this.findAllReferencedEntities(entityDBOs, templatePropsMap);
-    const accessibleEntityIds = await this.determineAccessibleEntities(referencedEntityIds, user);
-    const filterUnauthorized = await this.deps.settingsDS.readFilterUnauthorizedRelated();
-
-    this.applyPermissionsToMetadata(
-      entityDBOs,
-      templatePropsMap,
-      accessibleEntityIds,
-      filterUnauthorized,
-      user
-    );
-  }
-
   private async loadTemplateRelationshipProperties(
     entityDBOs: EntityDBO[]
   ): Promise<Map<string, Set<string>>> {
@@ -157,18 +139,6 @@ class EntitiesQueryService {
 
     this.validateAllTemplatesLoaded(templates, templateIds);
 
-    return this.buildRelationshipPropertyMap(templates);
-  }
-
-  private validateAllTemplatesLoaded(templates: Template[], requestedIds: string[]): void {
-    if (templates.length !== requestedIds.length) {
-      const foundIds = new Set(templates.map(t => t.id));
-      const missingIds = requestedIds.filter(id => !foundIds.has(id));
-      throw new Error(`Templates not found: ${missingIds.join(', ')}`);
-    }
-  }
-
-  private buildRelationshipPropertyMap(templates: Template[]): Map<string, Set<string>> {
     const templatePropsMap = new Map<string, Set<string>>();
 
     for (const template of templates) {
@@ -179,6 +149,14 @@ class EntitiesQueryService {
     }
 
     return templatePropsMap;
+  }
+
+  private validateAllTemplatesLoaded(templates: Template[], requestedIds: string[]): void {
+    if (templates.length !== requestedIds.length) {
+      const foundIds = new Set(templates.map(t => t.id));
+      const missingIds = requestedIds.filter(id => !foundIds.has(id));
+      throw new Error(`Templates not found: ${missingIds.join(', ')}`);
+    }
   }
 
   private findAllReferencedEntities(
@@ -216,28 +194,17 @@ class EntitiesQueryService {
       return new Set();
     }
 
-    const referencedArray = Array.from(referencedIds);
-    const accessibleIds = !user.isAnonymous()
-      ? await this.getEntitiesUserCanRead(referencedArray, user)
-      : await this.getPublishedEntities(referencedArray);
-
-    return new Set(accessibleIds);
-  }
-
-  private async getEntitiesUserCanRead(entityIds: string[], user: User): Promise<string[]> {
     const spec = new Specification({
       type: PermissionType.User,
       level: AccessLevel.Read,
       actor: user,
     });
 
-    const result = await this.deps.entityPermissionChecker.filterEntities(entityIds, spec);
-    return result.isOk() ? result.getData() : [];
-  }
+    const accessibleIds = (
+      await this.deps.entityPermissionChecker.filterEntities(Array.from(referencedIds), spec)
+    ).getDataOrThrow();
 
-  private async getPublishedEntities(entityIds: string[]): Promise<string[]> {
-    const result = await this.deps.entityPermissionChecker.getPublishedEntities(entityIds);
-    return result.isOk() ? result.getData() : [];
+    return new Set(accessibleIds);
   }
 
   private applyPermissionsToMetadata(
@@ -270,10 +237,6 @@ class EntitiesQueryService {
 
     if (!relationshipProps || relationshipProps.size === 0) {
       return;
-    }
-
-    if (!entityDBO.metadata) {
-      entityDBO.metadata = {};
     }
 
     for (const propName of relationshipProps) {

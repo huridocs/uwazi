@@ -59,7 +59,7 @@ export class MongoSettingsDataSource
 
   async readFilterUnauthorizedRelated(): Promise<boolean> {
     const settings = await this.readSettings();
-    return !!settings?.features?.filterUnauthorizedRelated;
+    return !!settings?.filterUnauthorizedRelated;
   }
 
   async getNewRelationshipsConfiguration(): Promise<

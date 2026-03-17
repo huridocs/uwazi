@@ -46,9 +46,8 @@ interface EntityPermissionChecker {
     sharedIds: string[],
     specification: Specification
   ): Promise<ResultType<string[], Error>>;
-  checkReadPermission(sharedId: string, user?: User): Promise<ResultType<boolean, Error>>;
-  checkWritePermission(file: BaseFile, user?: User): Promise<ResultType<boolean, Error>>;
-  getPublishedEntities(sharedIds: string[]): Promise<ResultType<string[], Error>>;
+  checkReadPermission(sharedId: string, user: User): Promise<ResultType<boolean, Error>>;
+  checkWritePermission(file: BaseFile, user: User): Promise<ResultType<boolean, Error>>;
 }
 
 export { Specification };
