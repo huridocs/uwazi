@@ -13,6 +13,7 @@ import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { PDFPage } from './PDFPage.js';
 import 'pdfjs-dist/web/pdf_viewer.css';
+import { ProgressBar } from '../UI/index.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
 const BORDER_WIDTH: number = 1;
@@ -38,14 +39,6 @@ interface PDFProps {
   size?: { height?: string; width?: string };
 }
 
-const getPDFFile = async (fileUrl: string) =>
-  PDFJS.getDocument({
-    url: fileUrl,
-    cMapUrl: CMAP_URL,
-    cMapPacked: true,
-    isEvalSupported: false,
-  }).promise;
-
 // eslint-disable-next-line max-statements
 const PDF = ({
   fileUrl,
@@ -69,6 +62,10 @@ const PDF = ({
   const [error, setError] = useState<string>();
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
   const [pdfEventBus] = useState(new EventBus());
+  const [loading, setLoading] = useState<{ progress: number; isLoading: boolean }>({
+    isLoading: true,
+    progress: 0,
+  });
   const onPageChangeRef = useRef(onPageChange);
 
   const handleScaleChange = useCallback(
@@ -150,11 +147,28 @@ const PDF = ({
   }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet, pdf]);
 
   useEffect(() => {
-    getPDFFile(fileUrl)
-      .then(pdfFile => {
-        setPDF(pdfFile);
+    const handleLoading = (taksData: { loaded: number; total: number; percent: number }) => {
+      if (taksData.percent < 100) {
+        setLoading({ isLoading: true, progress: taksData.percent });
+      } else {
+        setLoading({ isLoading: false, progress: 0 });
+      }
+    };
+
+    const loadingTask = PDFJS.getDocument({
+      url: fileUrl,
+      cMapUrl: CMAP_URL,
+      cMapPacked: true,
+      isEvalSupported: false,
+    });
+
+    loadingTask.onProgress = handleLoading;
+
+    loadingTask.promise
+      .then(file => {
+        setPDF(file);
       })
-      .catch((e: Error) => {
+      .catch(e => {
         setError(e.message);
       });
 
@@ -273,6 +287,20 @@ const PDF = ({
 
   if (error) {
     return <div>{error}</div>;
+  }
+
+  if (loading.isLoading) {
+    return (
+      <div className="w-full flex flex-col gap-2">
+        <div className="flex justify-between mb-1">
+          <div className="font-medium text-gray-500">
+            <Translate>Loading</Translate> {fileUrl} ...
+          </div>
+          <span className="text-sm font-medium text-gray-500">{loading.progress}%</span>
+        </div>
+        <ProgressBar progress={loading.progress} color="gray" />
+      </div>
+    );
   }
 
   return (
