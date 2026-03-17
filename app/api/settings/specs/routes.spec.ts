@@ -28,7 +28,9 @@ jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
 describe('Settings routes', () => {
   const getApp = (userRole?: string) =>
     setUpApp(settingsRoutes, (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = { role: userRole };
+      if (typeof userRole === 'string') {
+        (req as any).user = { role: userRole };
+      }
       next();
     });
 
@@ -42,31 +44,46 @@ describe('Settings routes', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET', () => {
-    it('should respond with settings', async () => {
-      const response = await request(getApp()).get('/api/settings').expect(200);
-      expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
-      expect(response.body.features).toBe(undefined);
+    describe('non-admin users', () => {
+      it.each([
+        ['unauthenticated', undefined],
+        ['editor', 'editor'],
+        ['collaborator', 'collaborator'],
+      ])('should return only whitelisted public fields for %s users', async (_label, role) => {
+        const response = await request(getApp(role)).get('/api/settings').expect(200);
+
+        expect(response.body).toMatchObject({
+          site_name: 'Uwazi',
+          mapApiKey: 'testMapApiKey123',
+          allowedPublicTemplates: ['id1', 'id2'],
+        });
+
+        expect(response.body.mailerConfig).toBeUndefined();
+        expect(response.body.contactEmail).toBeUndefined();
+        expect(response.body.senderEmail).toBeUndefined();
+        expect(response.body.publicFormDestination).toBeUndefined();
+        expect(response.body.features).toBeUndefined();
+        expect(response.body.openPublicEndpoint).toBeUndefined();
+      });
     });
 
-    it('should return the collection features for admins and editors', async () => {
-      const [adminResponse, editorResponse] = await Promise.all([
-        await request(getApp('admin')).get('/api/settings').expect(200),
-        await request(getApp('editor')).get('/api/settings').expect(200),
-      ]);
+    describe('admin users', () => {
+      it('should return all settings including sensitive fields', async () => {
+        const response = await request(getApp('admin')).get('/api/settings').expect(200);
 
-      const expectedResponse = {
-        'metadata-extraction': true,
-        metadataExtraction: {
-          url: 'http:someurl',
-        },
-        segmentation: {
-          url: 'http://otherurl',
-        },
-      };
-
-      expect(adminResponse.body.features).toEqual(expect.objectContaining(expectedResponse));
-
-      expect(editorResponse.body.features).toEqual(expect.objectContaining(expectedResponse));
+        expect(response.body).toMatchObject({
+          site_name: 'Uwazi',
+          mailerConfig: 'smtp://user:password@smtp.example.com',
+          contactEmail: 'admin@uwazi.com',
+          senderEmail: 'noreply@uwazi.com',
+          publicFormDestination: 'http://example.com/submit',
+          features: expect.objectContaining({
+            'metadata-extraction': true,
+            metadataExtraction: { url: 'http:someurl' },
+            segmentation: { url: 'http://otherurl' },
+          }),
+        });
+      });
     });
   });
 

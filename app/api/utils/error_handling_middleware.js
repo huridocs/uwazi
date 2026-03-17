@@ -4,41 +4,36 @@ import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRe
 
 // eslint-disable-next-line import/no-default-export, consistent-return
 export default (error, req, res, next) => {
+  // ClientAbortedRequestError: connection already closed by client, nothing to do
+  if (error instanceof ClientAbortedRequestError && req.aborted) {
+    return;
+  }
+
   if (res.headersSent) {
-    if (!(error instanceof ClientAbortedRequestError)) {
-      LoggerFactory.default().debug('Headers already sent when error middleware called', {
-        namespace: 'Error_Middleware',
+    LoggerFactory.default().debug('Headers already sent when error middleware called', {
+      namespace: 'Error_Middleware',
 
-        url: req.url,
-        method: req.method,
-        routePath: req.route?.path,
+      url: req.url,
+      method: req.method,
+      routePath: req.route?.path,
 
-        aborted: req.aborted,
-        statusCodeSent: res.statusCode,
+      aborted: req.aborted,
+      statusCodeSent: res.statusCode,
 
-        errorMessage: error.message,
-        errorCode: error.code,
-        errorName: error.name,
-        errorStack: error.stack,
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorName: error.name,
+      errorStack: error.stack,
 
-        query: JSON.stringify(req.query),
+      query: JSON.stringify(req.query),
 
-        notify: true,
-      });
-    }
+      notify: true,
+    });
 
     return next(error);
   }
 
   const { message, code, ...rest } = handleError(error, { req });
-
-  // Don't attempt to send a response for client-aborted requests
-  // since headers may have already been sent during streaming
-  if (!(error instanceof ClientAbortedRequestError)) {
-    res.status(code);
-    res.json({ error: message, ...rest });
-  } else {
-    // ClientAbortedRequestError: delegate to Express default handler
-    return next(error);
-  }
+  res.status(code);
+  res.json({ error: message, ...rest });
 };
