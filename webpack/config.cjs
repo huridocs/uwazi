@@ -118,6 +118,7 @@ module.exports = production => {
           exclude: [
             path.resolve(__dirname, '../node_modules/flowbite/dist'),
             path.resolve(__dirname, '../node_modules/monaco-editor/'),
+            path.resolve(__dirname, '../node_modules/pdfjs-dist/web/pdf_viewer.css'),
             /flowbite\.min\.css$/,
           ],
           use: [
@@ -128,6 +129,36 @@ module.exports = production => {
               options: {
                 postcssOptions: {
                   config: path.resolve(__dirname, '../postcss.config.cjs'),
+                },
+              },
+            },
+          ],
+        },
+        {
+          test: /pdf_viewer\.css$/,
+          include: [path.resolve(__dirname, '../node_modules/pdfjs-dist/web')],
+          use: [
+            MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { url: false, sourceMap: true } },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  config: false,
+                  plugins: {
+                    'postcss-prefix-selector': {
+                      prefix: '.pdfViewer',
+                      transform(prefix, selector, prefixedSelector) {
+                        if (selector.startsWith('.pdfViewer')) {
+                          return selector;
+                        }
+                        if (selector === ':root') {
+                          return prefix;
+                        }
+                        return prefixedSelector;
+                      },
+                    },
+                  },
                 },
               },
             },

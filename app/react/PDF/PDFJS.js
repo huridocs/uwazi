@@ -1,4 +1,3 @@
-/* eslint-disable import/no-mutable-exports, global-require, prefer-destructuring */
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { isClient } from '#app/utils/index.js';
@@ -8,7 +7,6 @@ let pdfjsLib = {};
 
 const pdfjsLoader = async () => {
   if (isClient) {
-    import('pdfjs-dist/web/pdf_viewer.css');
     PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
 
     if (process.env.NODE_ENV === 'production') {
