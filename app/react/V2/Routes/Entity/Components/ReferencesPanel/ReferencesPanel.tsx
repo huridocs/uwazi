@@ -11,7 +11,7 @@ import { Entity } from '#V2/domain/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal } from '#V2/Components/UI/index.js';
-import { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
+import type { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { Reference } from './Reference.js';

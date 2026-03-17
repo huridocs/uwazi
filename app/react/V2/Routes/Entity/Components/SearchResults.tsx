@@ -9,7 +9,7 @@ import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
+import type { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { SEARCH_PARAM } from '../urlParams.js';
