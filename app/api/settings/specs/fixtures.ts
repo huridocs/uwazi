@@ -24,6 +24,11 @@ const fixtures: DBFixture = {
           url: 'http://otherurl',
         },
       },
+      mailerConfig: 'smtp://user:password@smtp.example.com',
+      contactEmail: 'admin@uwazi.com',
+      senderEmail: 'noreply@uwazi.com',
+      publicFormDestination: 'http://example.com/submit',
+      mapApiKey: 'testMapApiKey123',
     },
   ],
   templates: [
