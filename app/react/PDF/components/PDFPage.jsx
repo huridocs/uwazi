@@ -155,7 +155,7 @@ class PDFPage extends Component {
   }
 
   render() {
-    const style = { height: 1100 };
+    const style = { height: 1100, position: 'relative' };
     if (this.state && this.state.height) {
       style.height = this.state.height + 20;
     }

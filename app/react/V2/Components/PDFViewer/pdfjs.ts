@@ -1,7 +1,6 @@
 import * as pdfJsDist from 'pdfjs-dist';
 import * as viewer from 'pdfjs-dist/web/pdf_viewer.mjs';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
-import 'pdfjs-dist/web/pdf_viewer.css';
 
 let pdfjs = pdfJsDist;
 const PDFJSViewer = viewer;

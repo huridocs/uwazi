@@ -6,8 +6,9 @@ import { PDFPage } from '#app/PDF/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { isClient } from '../../utils/index.js';
 import { PDFJS } from '../PDFJS.js';
+import 'pdfjs-dist/web/pdf_viewer.css';
 
-const cMapUrl = '/legacy_character_maps/';
+const cMapUrl = 'legacy_character_maps/';
 const cMapPacked = true;
 
 class PDF extends Component {
@@ -162,14 +163,20 @@ class PDF extends Component {
       const normalized = selectionHandlers.adjustSelectionsToScale(selection, scale, true);
       this.props.onTextSelection(normalized);
     };
+    const viewerStyle = {
+      ...this.props.style,
+      '--page-border': 'none',
+      '--page-margin': '0',
+    };
     return (
       <HandleTextSelection onSelect={handleSelect} onDeselect={this.props.onTextDeselection}>
         <div
           ref={ref => {
             this.pdfContainer = ref;
           }}
-          style={this.props.style}
+          style={viewerStyle}
           id="pdf-container"
+          className="pdfViewer"
         >
           {(() => {
             const pages = [];

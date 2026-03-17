@@ -5,7 +5,6 @@ import {
   HandleTextSelection,
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
@@ -13,6 +12,7 @@ import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { PDFPage } from './PDFPage.js';
+import 'pdfjs-dist/web/pdf_viewer.css';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
 const BORDER_WIDTH: number = 1;
