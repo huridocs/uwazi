@@ -63,6 +63,7 @@ describe('Settings routes', () => {
         expect(response.body.senderEmail).toBeUndefined();
         expect(response.body.publicFormDestination).toBeUndefined();
         expect(response.body.features).toBeUndefined();
+        expect(response.body.openPublicEndpoint).toBeUndefined();
       });
     });
 

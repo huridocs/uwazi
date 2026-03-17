@@ -25,7 +25,6 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   'tilesProvider',
   'newNameGeneration',
   'ocrServiceEnabled',
-  'openPublicEndpoint',
   'allowedPublicTemplates',
   'custom',
   'customCSS',
