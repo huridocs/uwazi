@@ -183,11 +183,20 @@ const PDF = ({
       })
       .catch(e => {
         if (e.status === 404) {
-          setError(t('System', 'File not found', null, false));
+          setError(t('System', 'This file is no longer available.', null, false));
         } else if (e.name === 'InvalidPDFException') {
-          setError(t('System', 'This file is not a valid PDF', null, false));
+          setError(
+            t(
+              'System',
+              'This file could not be opened. It may be corrupted or not a valid PDF.',
+              null,
+              false
+            )
+          );
         } else {
-          setError(t('System', 'An error occurred', null, false));
+          setError(
+            t('System', 'This file could not be displayed. Try refreshing the page.', null, false)
+          );
         }
       });
 
