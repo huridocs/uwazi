@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
@@ -59,7 +59,7 @@ const Entity = () => {
   const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
-  const mainPdfControlsRef = useRef<PDFControls | null>(null);
+  const [pdfController, setPdfController] = useState<PDFControls | null>(null);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -73,7 +73,7 @@ const Entity = () => {
         >
           <PDFView
             onMount={controls => {
-              mainPdfControlsRef.current = controls;
+              setPdfController(controls);
             }}
             entity={entity}
             pagePlaintext={pagePlaintext}
@@ -134,7 +134,7 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
-              mainPdfController={mainPdfControlsRef.current}
+              mainPdfController={pdfController}
               toc={entity?.mainDocument?.[0].toc}
               generatedToc={entity?.mainDocument?.[0].generatedToc}
               file={entity?.mainDocument?.[0]}
@@ -146,7 +146,7 @@ const Entity = () => {
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
           content: (
             <ReferencesPanel
-              mainPdfController={mainPdfControlsRef.current}
+              mainPdfController={pdfController}
               references={entity?.references}
               entity={entity}
             />
@@ -165,7 +165,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.SEARCH,
           label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults mainPdfController={mainPdfControlsRef.current} />,
+          content: <SearchResults mainPdfController={pdfController} />,
         },
       ],
       [MAIN_TABS.METADATA]: [
@@ -182,7 +182,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.SEARCH,
           label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults mainPdfController={mainPdfControlsRef.current} />,
+          content: <SearchResults mainPdfController={pdfController} />,
         },
       ],
       [MAIN_TABS.RELATIONSHIPS]: [
@@ -194,7 +194,7 @@ const Entity = () => {
       ],
       [MAIN_TABS.FILES]: [],
     }),
-    [entity]
+    [entity, pdfController]
   );
 
   const activeMainTab = useMemo<MainTabId>(() => {

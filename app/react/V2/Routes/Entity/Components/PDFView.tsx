@@ -30,7 +30,7 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
   const user = useAtomValue(userAtom);
   const [hydrated, setHydrated] = useState(false);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
-  const pdfContols = useRef<PDFControls | null>(null);
+  const pdfControls = useRef<PDFControls | null>(null);
 
   useEffect(() => {
     setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
@@ -74,7 +74,7 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
         next.set(PAGE_PARAM, currentPage);
       }
       initialPage.current = Number(currentPage);
-      pdfContols.current?.goToPage(Number(currentPage));
+      pdfControls.current?.goToPage(Number(currentPage));
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
     [searchParams, setSearchParams]
@@ -141,7 +141,7 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
       if (isRaw) {
         updatePageParam(targetPage);
       } else {
-        pdfContols.current?.goToPage(targetPage);
+        pdfControls.current?.goToPage(targetPage);
       }
     },
     [entity?.mainDocument, isRaw, pageNumber, updatePageParam]
@@ -203,7 +203,7 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
               onPageChange={handlePageChange}
               onPdfReady={controls => {
                 const targetPage = initialPage.current || 1;
-                pdfContols.current = controls;
+                pdfControls.current = controls;
                 onMount?.(controls);
                 if (targetPage !== 1) {
                   controls.goToPage(targetPage);

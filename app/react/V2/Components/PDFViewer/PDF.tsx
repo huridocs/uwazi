@@ -30,7 +30,7 @@ type PDFControls = {
 
 interface PDFProps {
   fileUrl: string;
-  highlights?: { [page: string]: TextHighlight[] };
+  highlights?: { [page: number]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
   onScaleChange?: (scale: number) => void;
@@ -108,6 +108,8 @@ const PDF = ({
       return;
     }
 
+    let observerTimeoutId: string | number | NodeJS.Timeout | undefined;
+
     if (tryHighlightAndScroll(pageContainer, snippet)) {
       return;
     }
@@ -117,8 +119,13 @@ const PDF = ({
     const observer = new MutationObserver(() => {
       if (tryHighlightAndScroll(pageContainer, snippet)) {
         observer.disconnect();
+        clearTimeout(observerTimeoutId);
       }
     });
+
+    observerTimeoutId = setTimeout(() => {
+      observer.disconnect();
+    }, 5000);
 
     observer.observe(pageContainer, { childList: true, subtree: true });
   }, []);
