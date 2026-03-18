@@ -23,9 +23,10 @@ const createSut = (props?: CreateSutProps) => {
 };
 
 describe('BulkDeleteEntityController', () => {
-  const useCaseExecuteSpy: jest.SpyInstance = jest.fn().mockResolvedValue(undefined);
+  const useCaseExecuteSpy: jest.SpyInstance = jest.fn();
 
   beforeEach(() => {
+    useCaseExecuteSpy.mockResolvedValue({ deletedSharedIds: [] });
     jest.spyOn(tenants, 'current').mockReturnValue({} as any);
 
     jest.spyOn(BulkDeleteEntityUseCaseFactory, 'default').mockReturnValue({

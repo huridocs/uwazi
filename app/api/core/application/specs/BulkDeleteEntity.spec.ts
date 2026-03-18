@@ -172,7 +172,9 @@ describe('BulkDeleteEntityUseCase', () => {
       sharedIds: ['A1', 'A2', 'B1'],
     };
 
-    await sut.execute(input);
+    const result = await sut.execute(input);
+
+    expect(result.deletedSharedIds.sort()).toEqual(['A1', 'A2', 'B1']);
 
     const elasticResult = await elastic.search({ size: 100 });
 
@@ -349,13 +351,11 @@ describe('BulkDeleteEntityUseCase', () => {
 
   describe('Permissions', () => {
     let collaboratorId: ObjectId;
-    let editorId: ObjectId;
     let group1Id: ObjectId;
     let group2Id: ObjectId;
 
     beforeAll(() => {
       collaboratorId = factory.id('collaborator');
-      editorId = factory.id('editor');
       group1Id = factory.id('group1');
       group2Id = factory.id('group2');
     });
@@ -462,12 +462,18 @@ describe('BulkDeleteEntityUseCase', () => {
           ],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds.sort()).toEqual([
+          'entity_no_permissions',
+          'entity_published',
+          'entity_with_read',
+          'entity_with_write',
+        ]);
 
         const elasticResult = await elastic.search({ size: 100 });
         const deletedIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
 
-        // All should be deleted from elastic
         expect(deletedIds).not.toContain('entity_with_write');
         expect(deletedIds).not.toContain('entity_with_read');
         expect(deletedIds).not.toContain('entity_no_permissions');
@@ -478,7 +484,7 @@ describe('BulkDeleteEntityUseCase', () => {
     describe('Editor role', () => {
       it('should delete all entities regardless of permissions', async () => {
         const editorUser: UserSchema = {
-          _id: editorId,
+          _id: factory.id('editor'),
           role: 'editor',
           groups: [],
           email: 'editor@test.com',
@@ -496,12 +502,18 @@ describe('BulkDeleteEntityUseCase', () => {
           ],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds.sort()).toEqual([
+          'entity_no_permissions',
+          'entity_published',
+          'entity_with_read',
+          'entity_with_write',
+        ]);
 
         const elasticResult = await elastic.search({ size: 100 });
         const deletedIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
 
-        // All should be deleted from elastic
         expect(deletedIds).not.toContain('entity_with_write');
         expect(deletedIds).not.toContain('entity_with_read');
         expect(deletedIds).not.toContain('entity_no_permissions');
@@ -525,12 +537,13 @@ describe('BulkDeleteEntityUseCase', () => {
           sharedIds: ['entity_with_write', 'entity_with_read', 'entity_no_permissions'],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds).toEqual(['entity_with_write']);
 
         const elasticResult = await elastic.search({ size: 100 });
         const remainingIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
 
-        // Only entity_with_write should be deleted
         expect(remainingIds).not.toContain('entity_with_write');
         expect(remainingIds).toContain('entity_with_read');
         expect(remainingIds).toContain('entity_no_permissions');
@@ -551,7 +564,9 @@ describe('BulkDeleteEntityUseCase', () => {
           sharedIds: ['entity_with_group_write', 'entity_with_read', 'entity_no_permissions'],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds).toEqual(['entity_with_group_write']);
 
         const elasticResult = await elastic.search({ size: 100 });
         const remainingIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
@@ -577,7 +592,9 @@ describe('BulkDeleteEntityUseCase', () => {
           sharedIds: ['entity_with_read'],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds).toEqual([]);
 
         const elasticResult = await elastic.search({ size: 100 });
         const remainingIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
@@ -600,7 +617,9 @@ describe('BulkDeleteEntityUseCase', () => {
           sharedIds: ['entity_published'],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds).toEqual([]);
 
         const elasticResult = await elastic.search({ size: 100 });
         const remainingIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
@@ -623,7 +642,9 @@ describe('BulkDeleteEntityUseCase', () => {
           sharedIds: ['entity_unpublished_no_permissions'],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds).toEqual([]);
 
         const elasticResult = await elastic.search({ size: 100 });
         const remainingIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
@@ -652,12 +673,15 @@ describe('BulkDeleteEntityUseCase', () => {
           ],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds.sort()).toEqual([
+          'entity_with_group_write',
+          'entity_with_write',
+        ]);
 
         const elasticResult = await elastic.search({ size: 100 });
         const remainingIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);
-
-        // Only entities with write permission should be deleted
         expect(remainingIds).not.toContain('entity_with_write');
         expect(remainingIds).not.toContain('entity_with_group_write');
 
@@ -729,7 +753,9 @@ describe('BulkDeleteEntityUseCase', () => {
           sharedIds: ['entity_with_read', 'entity_no_permissions', 'entity_published'],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds).toEqual([]);
 
         const jobs = await jobsCollection.find().toArray();
 
@@ -776,7 +802,12 @@ describe('BulkDeleteEntityUseCase', () => {
           sharedIds: ['entity_with_group_write', 'entity_group2_write', 'entity_no_permissions'],
         };
 
-        await sut.execute(input);
+        const result = await sut.execute(input);
+
+        expect(result.deletedSharedIds.sort()).toEqual([
+          'entity_group2_write',
+          'entity_with_group_write',
+        ]);
 
         const elasticResult = await elastic.search({ size: 100 });
         const remainingIds = elasticResult.body.hits.hits.map(hit => hit._source.sharedId);

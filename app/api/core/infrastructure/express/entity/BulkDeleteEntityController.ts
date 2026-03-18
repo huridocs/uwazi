@@ -23,13 +23,13 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
         sharedIds: ArrayUtils.deduplicate(this.request?.body?.sharedIds || [], s => s),
       });
 
-      await useCase.execute(parsed);
+      const result = await useCase.execute(parsed);
 
       logger.info('Bulk delete executed successfully', {
         namespace: 'Bulk_Delete_Entity',
         success: true,
 
-        deletedCount: parsed.sharedIds.length,
+        deletedCount: result.deletedSharedIds.length,
         durationMs: Date.now() - startTime,
       });
       this.response.json('ok');
