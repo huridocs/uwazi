@@ -169,13 +169,7 @@ class DownloadFileController extends AbstractController {
     return (
       await entityPermissionChecker.checkReadPermission(
         file.entity,
-        this.request.user
-          ? User.createFrom({
-              id: this.request.user._id.toString(),
-              role: this.request.user.role,
-              groups: (this.request.user.groups || []).map(g => g._id.toString()),
-            })
-          : undefined
+        User.createFrom(this.request.user)
       )
     ).getDataOrThrow();
   }

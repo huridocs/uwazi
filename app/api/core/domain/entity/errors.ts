@@ -12,7 +12,7 @@ export class EntityTranslationDoesNotExistError extends DomainError {
   }
 }
 
-export class EntityDoesNotExistError extends DomainError {
+export class EntityNotFoundError extends DomainError {
   constructor(sharedId: string) {
     super(
       `Entity with shared ID '${sharedId}' does not exist.`,
