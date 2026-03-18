@@ -23,7 +23,7 @@ type Deps<ExtendedDeps> = {
 } & ExtendedDeps;
 
 type Context = {
-  actor: UserSchema; // Using legacy User for now.
+  actor?: UserSchema; // Using legacy User for now. Optional to support unauthenticated requests
   tenant: Tenant; // Using legacy Tenant for now
   targetLanguage?: LanguageISO6391;
 };
@@ -53,11 +53,7 @@ abstract class AbstractUseCase<
   }
 
   protected getActor(): User {
-    return User.createFrom({
-      id: this.context?.actor?._id?.toString(),
-      role: this.context?.actor?.role,
-      groups: (this.context?.actor?.groups || []).map(g => g._id.toString()),
-    });
+    return User.createFrom(this.context?.actor || null);
   }
 
   protected get targetLanguage() {

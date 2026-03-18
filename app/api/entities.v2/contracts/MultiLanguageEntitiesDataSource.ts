@@ -2,8 +2,8 @@ import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { ResultType } from '#api/core/libs/Result.js';
-import { EntityDoesNotExistError } from '#api/core/domain/entity/errors.js';
 import { Entity } from '../../core/domain/entity/Entity.js';
+import { EntityNotFoundError } from '#api/core/application/errors.js';
 
 export interface MultiLanguageEntityDataSource {
   bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
@@ -21,7 +21,7 @@ export interface MultiLanguageEntityDataSource {
 
   countByTemplateId(templateId: string): Promise<number>;
 
-  getById(id: string): Promise<ResultType<Entity, EntityDoesNotExistError>>;
+  getById(id: string): Promise<ResultType<Entity, EntityNotFoundError>>;
   getEntitiesByTemplateId(templateId: string): Promise<ResultSet<Entity>>;
   getEntitiesBySharedIds(sharedIds: string[]): Promise<ResultSet<Entity>>;
   getSharedIdsByTemplateId(templateId: string): Promise<ResultSet<string>>;

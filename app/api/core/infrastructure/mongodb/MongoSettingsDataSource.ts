@@ -57,6 +57,11 @@ export class MongoSettingsDataSource
     return !!settings?.features?.newRelationships;
   }
 
+  async readFilterUnauthorizedRelated(): Promise<boolean> {
+    const settings = await this.readSettings();
+    return !!settings?.filterUnauthorizedRelated;
+  }
+
   async getNewRelationshipsConfiguration(): Promise<
     Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
   > {
