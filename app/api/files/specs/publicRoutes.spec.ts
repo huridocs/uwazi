@@ -32,8 +32,8 @@ describe('public routes', () => {
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    await testingEnvironment.setUp(fixtures);
     await setupTestUploadedPaths();
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -41,6 +41,8 @@ describe('public routes', () => {
   describe('POST /api/public', () => {
     // eslint-disable-next-line max-statements
     it('should create the entity and store the files', async () => {
+      testingEnvironment.unsetFakeContext();
+      testingEnvironment.resetPermissions();
       await fs.writeFile(path.join(os.tmpdir(), 'attachment.txt'), 'attachment');
 
       const response = await request(app)
@@ -55,8 +57,9 @@ describe('public routes', () => {
           path.join(os.tmpdir(), 'attachment.txt'),
           'filename with special char ñ.txt'
         )
-        .field('attachments_originalname[0]', 'filename with special char ñ.txt')
-        .expect(200);
+        .field('attachments_originalname[0]', 'filename with special char ñ.txt');
+
+      expect(response).toHaveStatus(200);
 
       const { sharedId } = response.body;
 

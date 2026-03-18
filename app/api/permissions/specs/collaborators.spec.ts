@@ -22,7 +22,7 @@ describe('collaborators', () => {
     describe('matched user', () => {
       function assertUserAsCollaborator(actualContributor: any, expectedContributor: any) {
         expect(actualContributor).toEqual({
-          refId: expectedContributor._id,
+          refId: expectedContributor._id.toString(),
           label: expectedContributor.username,
           type: PermissionType.USER,
         });
