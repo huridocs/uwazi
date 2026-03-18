@@ -84,6 +84,7 @@ export interface Settings {
   mapLayers?: [string, ...string[]];
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
+  filterUnauthorizedRelated?: boolean;
   sync?: SettingsSyncSchema[];
   languages?: LanguagesListSchema;
   filters?: SettingsFilterSchema[];
