@@ -32,7 +32,7 @@ const config: StorybookConfig = {
       module: {
         ...storybookConfig.module,
         rules: [
-          ...(uwaziConfig.module?.rules ?? []),
+          //Filter storybook's css rules and use UWAZI's
           ...(storybookConfig.module?.rules ?? []).filter(
             rule =>
               rule &&
@@ -40,6 +40,7 @@ const config: StorybookConfig = {
               'test' in rule &&
               !(rule.test instanceof RegExp && rule.test.source.includes('\\.css'))
           ),
+          ...(uwaziConfig.module?.rules ?? []),
         ],
       },
       plugins: [...(storybookConfig.plugins ?? []), ...uwaziPlugins],
