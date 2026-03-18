@@ -464,9 +464,7 @@ const fixtures: DBFixture = {
         { key: 'en', label: 'English' },
       ],
       featureFlags: { v2UpdateEntity: true },
-      features: {
-        filterUnauthorizedRelated: false,
-      },
+      filterUnauthorizedRelated: false,
     } as any,
   ],
 
