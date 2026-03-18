@@ -21,7 +21,7 @@ export const collaborators = {
 
     matchedUsers.forEach((user: WithId<UserSchema>) => {
       availableCollaborators.push({
-        refId: user._id,
+        refId: user._id.toString(),
         type: PermissionType.USER,
         label: user.username!,
       });

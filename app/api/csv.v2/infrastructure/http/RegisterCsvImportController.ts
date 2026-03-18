@@ -13,8 +13,8 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
     const { template } = RequestSchema.parse(this.request.body || {});
     if (!this.request.inputFile) throw new Error('File is not available on request object');
 
-    const userId = this.user?._id;
-    if (!userId) {
+    const user = this.user;
+    if (user.isAnonymous()) {
       this.response.status(401).json({ message: 'User not found in request context' });
       return;
     }
@@ -23,7 +23,7 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
     const response = await useCase.execute({
       template,
       file: this.request.inputFile,
-      userId: userId.toString(),
+      userId: user._id,
     });
     this.jsonResponse(response);
   }
