@@ -136,19 +136,21 @@ class EntitiesService {
     });
   }
 
-  async bulkDelete(sharedIds: string[], context: DeleteContext) {
+  async bulkDelete(sharedIds: string[], context: DeleteContext): Promise<string[]> {
     this.ensureTransaction();
 
     if (sharedIds.length === 0) {
-      return;
+      return [];
     }
 
-    const grantedSharedIds = (
-      await this.deps.entityPermissionChecker.filterEntities(
-        sharedIds,
-        Specification.createDeleteSpecification(context.actor)
-      )
-    ).getDataOrThrow();
+    const grantedSharedIds = await this.deps.entityPermissionChecker.filterEntities(
+      sharedIds,
+      Specification.createDeleteSpecification(context.actor)
+    );
+
+    if (grantedSharedIds.length === 0) {
+      return [];
+    }
 
     const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 
@@ -164,6 +166,8 @@ class EntitiesService {
 
     await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
     await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
+
+    return grantedSharedIds;
   }
 
   private async getTemplateByIdOrDefault(templateId?: string) {

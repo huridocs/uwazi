@@ -30,7 +30,7 @@ class PXExtractParagraphsByEntityStatusController extends AbstractController<Req
     });
 
     await useCase.execute({
-      userId: this.user._id.toString()!,
+      userId: this.user._id,
       status: EntityStatus.New,
       extractorId,
     });
