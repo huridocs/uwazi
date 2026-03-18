@@ -1,7 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-webpack5';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import uwaziWebpackConfig from '../webpack/config.cjs';
 
@@ -9,14 +7,7 @@ const uwaziConfig = uwaziWebpackConfig();
 
 const STORYBOOK_INCOMPATIBLE_PLUGINS = new Set([
   'CleanWebpackPlugin',
-  'AssetsPlugin',
-  'BundleAnalyzerPlugin',
-  'CopyWebpackPlugin',
-  'RtlCssPlugin',
   'HotModuleReplacementPlugin',
-  'MiniCssExtractPlugin',
-  'MonacoWebpackPlugin',
-  'NodePolyfillPlugin',
 ]);
 
 const config: StorybookConfig = {
@@ -34,10 +25,8 @@ const config: StorybookConfig = {
         ...storybookConfig.resolve,
         ...uwaziConfig.resolve,
         extensions: [
-          ...new Set([
-            ...(storybookConfig.resolve?.extensions ?? []),
-            ...(uwaziConfig.resolve?.extensions ?? []),
-          ]),
+          ...(storybookConfig.resolve?.extensions ?? []),
+          ...(uwaziConfig.resolve?.extensions ?? []),
         ],
       },
       module: {
@@ -53,13 +42,7 @@ const config: StorybookConfig = {
           ),
         ],
       },
-      plugins: [
-        ...(storybookConfig.plugins ?? []),
-        ...uwaziPlugins,
-        new MiniCssExtractPlugin({}),
-        new MonacoWebpackPlugin({ languages: ['typescript', 'html', 'css'] }),
-        new NodePolyfillPlugin({ onlyAliases: ['path', 'url', 'util', 'Buffer'] }),
-      ],
+      plugins: [...(storybookConfig.plugins ?? []), ...uwaziPlugins],
     };
   },
 };
