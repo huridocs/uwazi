@@ -61,14 +61,6 @@ class GetEntityController extends AbstractController<any> {
         user,
       });
 
-      logger.info('Entity Get executed successfully', {
-        namespace: 'Entity_Get',
-        success: true,
-        durationMs: Date.now() - startTime,
-        sharedId: resolvedSharedId,
-        usedIdFallback: !!query._id,
-      });
-
       this.response.json({ rows: [entity] });
     } catch (error: unknown) {
       const duration = Date.now() - startTime;
@@ -81,11 +73,11 @@ class GetEntityController extends AbstractController<any> {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
 
-      logger.error(`Entity Get failed: ${errorMessage}`, {
+      logger.info(`Entity Get failed: ${errorMessage}`, {
         namespace: 'Entity_Get',
         durationMs: duration,
         success: false,
-        notify: false,
+        notify: true,
         errorMessage,
         errorStack,
         errorType: error?.constructor?.name,
