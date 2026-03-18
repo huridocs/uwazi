@@ -143,12 +143,14 @@ class EntitiesService {
       return;
     }
 
-    const grantedSharedIds = (
-      await this.deps.entityPermissionChecker.filterEntities(
-        sharedIds,
-        Specification.createDeleteSpecification(context.actor)
-      )
-    ).getDataOrThrow();
+    const grantedSharedIds = await this.deps.entityPermissionChecker.filterEntities(
+      sharedIds,
+      Specification.createDeleteSpecification(context.actor)
+    );
+
+    if (grantedSharedIds.length === 0) {
+      return;
+    }
 
     const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 

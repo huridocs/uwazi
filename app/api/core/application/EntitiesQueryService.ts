@@ -200,9 +200,10 @@ class EntitiesQueryService {
       actor: user,
     });
 
-    const accessibleIds = (
-      await this.deps.entityPermissionChecker.filterEntities(Array.from(referencedIds), spec)
-    ).getDataOrThrow();
+    const accessibleIds = await this.deps.entityPermissionChecker.filterEntities(
+      Array.from(referencedIds),
+      spec
+    );
 
     return new Set(accessibleIds);
   }
