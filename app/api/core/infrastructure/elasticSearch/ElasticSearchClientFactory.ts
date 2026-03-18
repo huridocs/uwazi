@@ -5,24 +5,11 @@ import { MongoTenantRoutingDataSource } from './MongoTenantRoutingDataSource';
 import { TenantAwareESClient } from './TenantAwareESClient';
 import { IndexNameResolver } from './IndexNameResolver';
 import { config } from '#api/config.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { AuthorizedEntityESClient } from './entities/AuthorizedElasticEntityClient';
 
 class ElasticSearchClientFactory {
   private static instance: Client;
-
-  static tenantAware(tenantId: string): TenantAwareESClient {
-    const mongoTenantRoutingDataSource = new MongoTenantRoutingDataSource(
-      getSharedConnection(),
-      TransactionManagerFactory.createForSharedDataBase()
-    );
-
-    const resolver = new IndexNameResolver(mongoTenantRoutingDataSource);
-
-    return new TenantAwareESClient({
-      client: ElasticSearchClientFactory.getInstance(),
-      resolver,
-      tenantId,
-    });
-  }
 
   static getInstance(): Client {
     if (!ElasticSearchClientFactory.instance) {
@@ -34,6 +21,46 @@ class ElasticSearchClientFactory {
     }
 
     return ElasticSearchClientFactory.instance;
+  }
+
+  static tenantAware(tenantId: string): TenantAwareESClient {
+    const mongoTenantRoutingDataSource = new MongoTenantRoutingDataSource(
+      getSharedConnection(),
+      TransactionManagerFactory.createForSharedDataBase()
+    );
+
+    const resolver = new IndexNameResolver(mongoTenantRoutingDataSource);
+
+    const client = ElasticSearchClientFactory.getInstance();
+
+    return new TenantAwareESClient({
+      client,
+      resolver,
+      tenantId,
+    });
+  }
+
+  static authorizedEntityClient(
+    tenantId: string,
+    actor: UserSchema | null
+  ): AuthorizedEntityESClient {
+    const mongoTenantRoutingDataSource = new MongoTenantRoutingDataSource(
+      getSharedConnection(),
+      TransactionManagerFactory.createForSharedDataBase()
+    );
+
+    const resolver = new IndexNameResolver(mongoTenantRoutingDataSource);
+
+    const elasticClient = new TenantAwareESClient({
+      client: ElasticSearchClientFactory.getInstance(),
+      resolver,
+      tenantId,
+    });
+
+    return new AuthorizedEntityESClient({
+      actor,
+      elasticClient,
+    });
   }
 }
 

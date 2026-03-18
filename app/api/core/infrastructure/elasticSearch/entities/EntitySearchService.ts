@@ -1,8 +1,8 @@
-import { TenantAwareESClient } from '../TenantAwareESClient';
+import { AuthorizedEntityESClient } from './AuthorizedElasticEntityClient';
 import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition';
 
 type Deps = {
-  elasticClient: TenantAwareESClient;
+  elasticClient: AuthorizedEntityESClient;
 };
 
 class EntitySearchService {
