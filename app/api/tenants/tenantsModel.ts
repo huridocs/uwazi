@@ -37,6 +37,7 @@ const mongoSchema = new mongoose.Schema({
     v2UpdateEntity: Boolean,
     fileCacheHeaders: Boolean,
     v2UpdateThesaurus: Boolean,
+    v2GetEntity: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

@@ -127,7 +127,7 @@ function getFixturesFactory() {
       type: PermissionSchema['type'],
       level: PermissionSchema['level']
     ): PermissionSchema => ({
-      refId: idMapper(user),
+      refId: idMapper(user).toString(),
       type,
       level,
     }),

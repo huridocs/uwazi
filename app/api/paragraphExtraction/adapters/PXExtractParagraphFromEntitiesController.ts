@@ -29,7 +29,7 @@ class PXExtractParagraphFromEntitiesController extends AbstractController<Reques
       tenantName: this.tenantName,
     });
 
-    await useCase.execute({ ...dto, userId: this.user._id.toString() });
+    await useCase.execute({ ...dto, userId: this.user._id });
 
     this.ok();
   }
