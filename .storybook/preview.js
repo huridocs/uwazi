@@ -17,10 +17,12 @@ export const parameters = {
 };
 
 export const decorators = [
-  (Story) => (
-    <div className="tw-content">
-      <Story />
-    </div>
-  ),
+  Story =>
+    React.createElement(
+      'div',
+      { id: 'tw-container', className: 'tw-content' },
+      React.createElement(Story)
+    ),
 ];
+
 export const tags = ['autodocs'];
