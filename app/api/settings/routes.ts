@@ -1,4 +1,5 @@
 import settings from '#api/settings/settings.js';
+import { tenants } from '#api/tenants/index.js';
 import type { Application } from 'express';
 import type { Settings } from '#shared/types/settingsType.js';
 import needsAuthorization from '../auth/authMiddleware.js';
@@ -48,11 +49,13 @@ export default (app: Application) => {
     settings
       .get({}, select)
       .then(response => {
-        if (req.user?.role === 'admin') {
-          res.json(response);
-        } else {
-          res.json(pickPublicFields(response));
-        }
+        const themeCustomization =
+          tenants.current().featureFlags?.themeCustomization ?? false;
+        const payload =
+          req.user?.role === 'admin'
+            ? { ...response, themeCustomization }
+            : { ...pickPublicFields(response), themeCustomization };
+        res.json(payload);
       })
       .catch(next);
   });

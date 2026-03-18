@@ -19,6 +19,7 @@ import { Translate, t } from '#app/I18N/index.js';
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
+import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 
 const collectionLoader =
@@ -26,7 +27,9 @@ const collectionLoader =
   async () => {
     const settings = await SettingsAPI.get(headers);
     const templates = await TemplatesAPI.get(headers);
-    return { settings, templates };
+    const themeCustomization =
+      (settings as ClientSettings & { themeCustomization?: boolean }).themeCustomization ?? false;
+    return { settings, templates, themeCustomization };
   };
 
 const dateOptions = () => {
@@ -68,9 +71,10 @@ const dateOptions = () => {
 };
 
 const Collection = () => {
-  const { settings, templates } = useLoaderData() as {
+  const { settings, templates, themeCustomization } = useLoaderData() as {
     settings: ClientSettings;
     templates: Template[];
+    themeCustomization: boolean;
   };
   const { links, custom, ...formData } = settings;
 
@@ -87,7 +91,10 @@ const Collection = () => {
     clearErrors,
     formState: { errors },
   } = useForm<ClientSettings>({
-    defaultValues: formData,
+    defaultValues: {
+      ...formData,
+      themeVars: formData.themeVars ?? {},
+    },
     mode: 'onSubmit',
   });
 
@@ -96,6 +103,9 @@ const Collection = () => {
       delete data.newNameGeneration;
     }
     data.private = !data.private;
+    delete (data as Record<string, unknown>)['themeColor'];
+    delete (data as Record<string, unknown>)['themeId'];
+    delete (data as Record<string, unknown>)['themeOverrides'];
     const response = await SettingsAPI.save(data);
     if (response instanceof FetchResponseError) {
       setNotifications({
@@ -172,6 +182,14 @@ const Collection = () => {
                     {...register('favicon')}
                   />
                 </div>
+                {themeCustomization && (
+                  <div className="sm:col-span-2">
+                    <ThemeSelector
+                      value={watch('themeVars') ?? {}}
+                      onChange={v => setValue('themeVars', v)}
+                    />
+                  </div>
+                )}
                 <div className="sm:col-span-1">
                   <Select
                     label={<Translate>Default View</Translate>}

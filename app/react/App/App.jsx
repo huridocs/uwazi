@@ -9,6 +9,7 @@ import { socket } from '#app/socket.js';
 import { NotificationsContainer } from '#V2/Components/UI/index.js';
 import { Matomo, CleanInsights } from '#app/V2/Components/Analitycs/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { TranslateModal } from '#app/I18N/index.js';
 import { inlineEditAtom } from '#V2/atoms/index.js';
 import { Header } from '#app/V2/Components/UI/Header/Header.js';
@@ -66,25 +67,27 @@ const App = ({ customParams }) => {
     <div id="app" className={appClassName}>
       <Notifications />
       <Cookiepopup />
-      <div className="content">
-        {shouldShowNewHeader ? (
-          <div className="tw-content">
-            <Header />
-          </div>
-        ) : (
-          <LegacyHeader />
-        )}
-        <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
-          <AppMainContext.Provider value={appContext}>
-            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-            <Confirm {...confirmOptions} />
-            <Outlet />
-            <GoogleAnalytics />
-            <Matomo />
-            <CleanInsights />
-          </AppMainContext.Provider>
-        </main>
-      </div>
+      <ThemeProvider>
+        <div className="content">
+          {shouldShowNewHeader ? (
+            <div className="tw-content">
+              <Header />
+            </div>
+          ) : (
+            <LegacyHeader />
+          )}
+          <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
+            <AppMainContext.Provider value={appContext}>
+              {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+              <Confirm {...confirmOptions} />
+              <Outlet />
+              <GoogleAnalytics />
+              <Matomo />
+              <CleanInsights />
+            </AppMainContext.Provider>
+          </main>
+        </div>
+      </ThemeProvider>
       <NotificationsContainer />
       {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
     </div>

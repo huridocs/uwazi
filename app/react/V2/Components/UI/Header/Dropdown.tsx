@@ -18,10 +18,10 @@ export const Dropdown: React.FC<DropdownProps> = ({ title, items, className = ''
   const [isOpen, setIsOpen] = React.useState(false);
 
   const trigger = (
-    <div className="flex items-center py-2 border-b-2 border-transparent hover:border-primary-600">
+    <div className="header-bar-nav-item flex items-center py-2">
       <button
         type="button"
-        className="flex items-center p-2 gap-1 text-base font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-sm"
+        className="flex items-center p-2 gap-1 text-base font-medium transition-colors rounded-sm"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >

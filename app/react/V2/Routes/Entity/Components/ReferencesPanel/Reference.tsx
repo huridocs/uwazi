@@ -2,29 +2,7 @@ import React, { useMemo } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { EntityReference } from '#V2/domain/entities/types.js';
 import { Button } from '#V2/Components/UI/Button.js';
-
-const getTextColor = (backgroundHex: string): string => {
-  if (!backgroundHex) {
-    return '#000';
-  }
-
-  let hexColor = backgroundHex.replace('#', '').trim();
-
-  if (hexColor.length === 3) {
-    hexColor = hexColor
-      .split('')
-      .map(x => x + x)
-      .join('');
-  }
-
-  const r = parseInt(hexColor.substring(0, 2), 16);
-  const g = parseInt(hexColor.substring(2, 4), 16);
-  const b = parseInt(hexColor.substring(4, 6), 16);
-
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-  return brightness > 128 ? '#000' : '#FFF';
-};
+import { getContrastTextColor } from '#shared/utils/contrast.js';
 
 type ReferenceProps = {
   reference: EntityReference;
@@ -39,7 +17,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
   const templateName = reference.targetEntity.template.name || '';
   const templateColor = reference.targetEntity.template.color || '#A4CAFE';
   const referenceText = reference.reference.text || '';
-  const textColor = useMemo(() => getTextColor(templateColor), [templateColor]);
+  const textColor = useMemo(() => getContrastTextColor(templateColor), [templateColor]);
 
   return (
     <div

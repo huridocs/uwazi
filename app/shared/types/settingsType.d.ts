@@ -56,6 +56,7 @@ export interface Settings {
   project?: string;
   site_name?: string;
   favicon?: string;
+  themeVars?: Record<string, string>;
   contactEmail?: string;
   senderEmail?: string;
   home_page?: string;

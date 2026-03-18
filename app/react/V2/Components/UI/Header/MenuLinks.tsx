@@ -18,26 +18,21 @@ const createDropdownItems = (link: any): DropdownItem[] => {
 };
 
 const linkContainerClasses = [
+  'header-bar-nav-item',
   'py-2',
-  'border-b-2',
-  'border-transparent',
-  'hover:border-primary-600',
   'flex',
   'items-center',
 ].join(' ');
 
 const linkInnerClasses = [
   'p-2',
-  'text-gray-700',
-  'hover:text-primary-600',
   'text-base',
   'font-medium',
   'transition-colors',
   'rounded-xs',
 ].join(' ');
 
-// Use !important to ensure active border overrides base border-transparent
-const activeClasses = '!border-primary-600 !text-primary-600';
+const activeClasses = 'border-primary-600';
 
 const createSimpleLink = (link: any, url: string) => {
   if (url.startsWith('http')) {

@@ -86,7 +86,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
           'border-b-2',
           inlineEditState.inlineEdit
             ? 'border-green-700 hover:border-green-700'
-            : 'border-transparent hover:border-primary-600',
+            : 'header-bar-nav-item',
         ].join(' ')}
       >
         <button
@@ -94,9 +94,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
           id="language-menu-button"
           className={[
             'flex items-center gap-1 text-base font-medium transition-colors rounded-sm p-2',
-            inlineEditState.inlineEdit
-              ? 'bg-green-50 text-green-700'
-              : 'text-gray-900 hover:text-primary-600',
+            inlineEditState.inlineEdit ? 'bg-green-50 text-green-700' : '',
           ].join(' ')}
           onClick={handleMainClick}
           aria-expanded={dropdownOpen}
