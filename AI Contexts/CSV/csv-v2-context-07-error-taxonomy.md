@@ -8,9 +8,16 @@ Purpose: Source-of-truth handoff for standardizing CSV v2 row-error taxonomy, pe
 
 ## 1) Why this file exists
 
-CSV v2 currently persists row errors as free-form messages. This is functional, but low-signal for users and hard to stabilize for UX/support.
+CSV v2 now persists structured row-error taxonomy on the write path; this file remains the
+working source of truth for what is still missing and how to evolve taxonomy safely.
 
 This doc gives the next agent a concrete implementation map so they can execute the full error-taxonomy workstream without re-discovery.
+
+Document mode:
+
+- backlog-first and implementation-guidance oriented,
+- avoid exhaustive chronological reporting,
+- keep focus on current baseline + remaining tasks.
 
 Clean-slate status (explicit):
 
@@ -29,11 +36,15 @@ Companion docs:
 
 ### 2.1 Row-error persistence shape
 
-`csv_import_row_errors` currently stores:
+`csv_import_row_errors` write-path now persists structured taxonomy fields:
 
 - `importId`
 - `rowIndex`
-- `message`
+- `message` (stable user-facing message)
+- `code` (`RowErrorCode`)
+- `property?`
+- `rawValue?`
+- `details?`
 - `createdAt`
 
 Current domain + DS:
@@ -46,18 +57,19 @@ Current domain + DS:
 Primary path:
 
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesBatchProcessor.ts`
-  - any per-row exception is caught and persisted as `message: error.message`.
+  - per-row exceptions are normalized through `CsvRowImportErrorFactory`.
 
 Representative error sources today:
 
 - file missing in extracted assets:
   - `app/api/csv.v2/application/services/CsvImportRowFilesResolver.ts`
-  - current message: `CSV import missing file "<name>" for import <id>`
+  - throws typed file error -> taxonomy maps to `FILE_NOT_FOUND`
 - relationship resolution failures:
   - `app/api/csv.v2/application/services/CsvEntitiesImportMapper.ts`
-  - current message includes property + token details in free text
+  - throws typed relationship resolution errors ->
+    `RELATIONSHIP_NOT_FOUND` / `RELATIONSHIP_AMBIGUOUS`
 - generic JS/runtime parser errors can leak internal exceptions
-  - e.g. `Cannot read properties of undefined ...`
+  - sanitized by factory to `INTERNAL_ERROR` (no raw internals in persisted user message)
 
 ### 2.3 Reporting
 
@@ -268,3 +280,53 @@ If the user asks to execute this track, the next agent should:
 1. Re-read `csv-v2-context-07.md` + this file.
 2. Implement Phase 1 → 3 first (taxonomy persisted at write path).
 3. Run focused tests and then update both docs in the same iteration.
+
+---
+
+## 12) Implementation update (Mar 2026)
+
+Delivered in this iteration (Option A preserved):
+
+- Extended `csv_import_row_errors` contract with structured taxonomy fields:
+  - required `code`,
+  - optional `property`, `rawValue`, `details`,
+  - existing `message` remains user-facing stable text.
+- Added `CsvRowImportErrorFactory` and integrated it in entities-import batch row error persistence.
+- Introduced typed producer errors for deterministic mapping:
+  - file resolution failures -> `CsvImportFileNotFoundError` -> `FILE_NOT_FOUND`,
+  - relationship resolution failures -> `CsvImportRelationshipResolutionError` ->
+    `RELATIONSHIP_NOT_FOUND` / `RELATIONSHIP_AMBIGUOUS`.
+- Unknown runtime exceptions are sanitized to `INTERNAL_ERROR` with safe message
+  (`Row could not be imported due to an internal processing error.`).
+- Failed-rows CSV behavior intentionally unchanged (**Option A**):
+  row-only export, no error columns added.
+
+## 13) Remaining work (backlog-first)
+
+Keep this section as the actionable source of truth for next iterations.
+
+1. Add import-detail projection support for compact error-summary by `RowErrorCode`
+   if/when UX requires aggregated diagnostics.
+2. Add or confirm integration coverage for failed-rows report semantics under Option A:
+   report contains failed source rows only, no error metadata columns.
+3. Keep taxonomy expansion conservative; add new codes only when a deterministic,
+   user-actionable failure class appears repeatedly and cannot be represented by existing codes.
+4. Preserve the factory-first rule: all new row-error sources must map through
+   `CsvRowImportErrorFactory` rather than persisting ad-hoc messages.
+
+### 13.1 TODO — Empty-line exception policy (agreed direction)
+
+Policy alignment (explicit):
+
+1. Row index preservation remains mandatory:
+   - source-row positions must stay reconstructable for future imports/analysis.
+2. Malformed rows remain true failures:
+   - malformed rows must continue to appear in row errors and failed-rows CSV.
+3. Empty source lines are the exception:
+   - empty lines should not be treated as row errors,
+   - empty lines should not inflate failed-rows CSV with blank records.
+
+Implementation note for future iteration:
+
+- Apply this as a reporting/error-policy decision, not by losing index traceability.
+- Preserve ability to map staged/imported rows back to original source row positions.

@@ -12,6 +12,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CsvImportRow } from '../../../domain/CsvImportRow.js';
+import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
 import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
 
@@ -447,5 +448,50 @@ describe('CsvImportEntitiesJob (integration)', () => {
     expect(rowErrorsCount).toBe(0);
     expect(callbacks.onSuccess).not.toHaveBeenCalled();
     expect(callbacks.onError).not.toHaveBeenCalled();
+  });
+
+  it('persists relationship taxonomy metadata for failed rows', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-relationship-failure');
+    const userId = fixturesFactory.idString('import-entities-relationship-failure-user');
+
+    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+      importId,
+      templateId: '',
+      values: [],
+      createdAt: Date.now(),
+    });
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title,description,rel_any\nMy Title,Some description,Unknown Related',
+    });
+
+    const callbacks = createCallbacks();
+    await useCase.execute({ importId, callbacks });
+
+    const persistedErrors = await rowErrorsDS.getByImport(importId);
+    expect(persistedErrors).toHaveLength(1);
+
+    const [error] = persistedErrors;
+    expect(error.code).toBe(RowErrorCode.RelationshipNotFound);
+    expect(error.message).toBe('Relationship value could not be resolved to an existing entity.');
+    expect(error.property).toBe('rel_any');
+    expect(error.rawValue).toBe('Unknown Related');
+    expect(error.details).toEqual({
+      unresolved: [
+        {
+          token: 'Unknown Related',
+          reason: 'not_found',
+          scope: 'any-template',
+          candidates: null,
+        },
+      ],
+    });
   });
 });

@@ -10,6 +10,30 @@ while reviewing CSV v2 context docs, the v2 code, and v1 behavior. It is intende
 guide the next iteration and ensure the pipeline is complete before adding new logic.
 It is also a handoff guide: a new agent should be able to continue by reading this alone.
 
+### 1.2) Document mode (important)
+
+This file is maintained as an **agent-readable working baseline**, not as an exhaustive
+execution diary.
+
+- Keep content focused on:
+  - current system baseline,
+  - what is still missing,
+  - implementation constraints and conventions.
+- Avoid adding long chronological iteration reports unless a detail is still necessary for
+  active decisions.
+- When historical detail exists, treat it as **context only**, never as the normative source
+  for next actions.
+
+### 1.3) Current open-work snapshot (normative)
+
+Use this snapshot first; companion docs provide deeper implementation detail.
+
+1. Keep CSV v2 scoped inside `app/api/csv.v2/**` unless explicit approval is given for core edits.
+2. Continue row-error taxonomy stabilization for UX-facing diagnostics and API projections.
+3. Improve integration coverage (full chain + import batch/report/failure-threshold scenarios).
+4. Stabilize test infrastructure behavior for CI-like parallel execution.
+5. Publish user-facing import guidance (ReadTheDocs scope in section 19).
+
 ### 1.1) Critical working rule (highest priority)
 
 - **DO NOT CHANGE CORE BEHAVIOR (queue, router, dispatcher, base controller, base result/error contracts, etc.) unless explicitly discussed in depth with the team/user first and approved.**
@@ -117,7 +141,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
    - Extracted helper logic into `CsvPreflightRelationshipsService`.
    - Removed ESLint/TS disables from the relationships job (now `CsvCreateRelationshipEntitiesJob`).
 
-### 6) What was completed in this iteration (Jan 2026)
+### 6) Legacy implementation history (archival, non-normative)
 
 1. **Relationships create stage implemented**
 
@@ -436,6 +460,13 @@ Row errors are currently low-signal for end users (e.g., an empty CSV line can s
 errors/warnings for common parsing issues (empty line, missing required columns, malformed rows),
 and avoid leaking internal exceptions directly to users.
 
+Policy clarification (agreed):
+
+- Preserve row index fidelity for analysis/import traceability.
+- Malformed rows are true failures and must remain visible in row errors and failed-rows CSV.
+- Empty source lines are the exception: they should not be surfaced as row errors and should not
+  produce blank entries in failed-rows CSV.
+
 Source of truth for this track:
 
 - `AI Contexts/CSV/csv-v2-context-07-error-taxonomy.md`
@@ -729,9 +760,13 @@ Use this as a strict gate before, during, and after implementation.
   - provide a short written proposal with alternatives and trade-offs,
   - wait for explicit approval before touching core.
 
-### 18) Latest iteration update (Mar 2026) — mandatory handoff record
+### 18) Legacy historical log (non-normative)
 
-This section captures what was done in the latest development pass and must be updated on every iteration.
+This section contains prior iteration history. It is retained for context, but it is not the
+primary source of truth for planning.
+
+When this file is updated, prefer keeping sections 1.x, active TODOs, and priority sections
+current instead of appending detailed chronological logs.
 
 #### 18.1 Test command convention (explicit)
 
@@ -1115,6 +1150,37 @@ Implementation simplifications performed:
   - `app/api/csv.v2/application/services/specs/CsvHeaderAnalyzer.spec.ts`
 - Focused verification passed:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/CsvImportRowFilesResolver.spec.ts app/api/csv.v2/application/services/specs/CsvHeaderAnalyzer.spec.ts`
+
+#### 18.19 Error taxonomy write-path implementation (Mar 2026)
+
+- Implemented taxonomy persistence for entities-import row errors:
+  - `csv_import_row_errors` now stores `code` + optional structured context
+    (`property`, `rawValue`, `details`) with stable `message`.
+- Added application mapper:
+  - `CsvRowImportErrorFactory.fromException(...)` used in
+    `CsvImportEntitiesBatchProcessor` instead of persisting raw `error.message`.
+- Producer-side normalization added:
+  - `CsvImportRowFilesResolver` now throws typed file errors (`FILE_NOT_FOUND` mapping),
+  - relationship resolver paths now throw typed relationship errors
+    (`RELATIONSHIP_NOT_FOUND` / `RELATIONSHIP_AMBIGUOUS` mappings).
+- Unknown exceptions are sanitized to `INTERNAL_ERROR` with user-safe message.
+- Option A preserved explicitly:
+  - failed-rows report remains row-only CSV with original failed source rows (no error columns).
+
+#### 18.20 Parallel-test cancellation race stabilization (Mar 2026)
+
+- Resolved an intermittent integration failure in parallel suite runs:
+  - symptom: `MongoServerError: Transaction with { txnNumber: ... } has been committed`
+    in `CsvImportEntitiesJob.spec.ts` cancellation scenario.
+- Root cause:
+  - async cancellation triggered inside `onProgress` callback could race transaction/session
+    lifecycle because progress callback completion was not awaited by the rows processor.
+- Fix:
+  - `CsvImportEntitiesRowsProcessor` now awaits `callbacks.onProgress(...)` using
+    `await Promise.resolve(...)` (supports both sync and async callbacks).
+- Verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
+  - result: pass (19 suites, 76 tests).
 
 ### 19) TODO — Document ReadTheDocs import instructions
 

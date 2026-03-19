@@ -2,6 +2,7 @@ import { Readable } from 'stream';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer.js';
+import { CsvImportFileNotFoundError } from './CsvImportRowProcessingError.js';
 
 type RowFiles = {
   attachments: InputFile[];
@@ -50,8 +51,9 @@ const resolveInputFile = async (params: {
   filename: string;
   type: 'attachment' | 'document';
   importId: string;
+  column: 'file' | 'files' | 'attachments';
 }) => {
-  const { fileStorage, destination, filename, type, importId } = params;
+  const { fileStorage, destination, filename, type, importId, column } = params;
   try {
     const fileContents = fileStorage.getFile({
       type: 'customPath',
@@ -65,7 +67,12 @@ const resolveInputFile = async (params: {
       type,
     });
   } catch (error) {
-    throw new Error(`CSV import missing file "${filename}" for import ${importId}`);
+    throw new CsvImportFileNotFoundError({
+      importId,
+      filename,
+      column,
+      cause: error,
+    });
   }
 };
 
@@ -98,6 +105,7 @@ class CsvImportRowFilesResolver {
           filename,
           type: 'document',
           importId,
+          column: fileValue === filename ? 'file' : 'files',
         })
       )
     );
@@ -110,6 +118,7 @@ class CsvImportRowFilesResolver {
           filename,
           type: 'attachment',
           importId,
+          column: 'attachments',
         })
       )
     );

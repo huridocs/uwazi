@@ -15,6 +15,7 @@ import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDat
 import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer.js';
 import { AppliedValueIndex, CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
 import { CsvImportRowFilesResolver } from '../services/CsvImportRowFilesResolver.js';
+import { CsvRowImportErrorFactory } from '../services/CsvRowImportErrorFactory.js';
 
 type BatchContext = {
   csvImport: CsvImport;
@@ -149,10 +150,10 @@ const processImportBatch = async (params: {
       consecutiveFailures = 0;
     } catch (error) {
       errors.push(
-        CsvImportRowError.create({
+        CsvRowImportErrorFactory.fromException({
           importId: csvImport.id,
           rowIndex: row.rowIndex,
-          message: (error as Error).message,
+          error,
         })
       );
       consecutiveFailures += 1;

@@ -102,14 +102,16 @@ const processImportRows = async (params: {
     currentImport = batchResult.csvImport;
     totalFailures += batchResult.rowErrorsCount;
     consecutiveFailures = batchResult.endConsecutiveFailures;
-    callbacks.onProgress({
+    await Promise.resolve(
+      callbacks.onProgress({
       importId: context.csvImport.id,
       processedRows,
       totalRows,
       batchIndex,
       batchCount,
       entitiesCreatedInBatch: batchResult.entitiesCreated,
-    });
+      })
+    );
 
     const stopDecision = evaluateStopPolicy({
       processedRows,
