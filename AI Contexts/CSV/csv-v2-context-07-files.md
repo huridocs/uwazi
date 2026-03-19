@@ -99,11 +99,14 @@ From v1 `importEntity`:
 - `attachments` column: list of filenames; extracted and stored as attachments.
 - Image/media properties can point at attachment filenames; metadata is rewritten to
   `/api/files/{filename}` or equivalent.
+- `file` should remain **single-value** for v1 parity.
+- `files` is the new explicit multi-document column and supports `|` separation.
 
 For v2, the same behavior should be preserved, but implemented with the Entities V2
 creation flow:
 
-- `file` → `InputFile(type='document')` (no metadata property assignment needed).
+- `file` / `file__{defaultLanguage}` → `InputFile(type='document')` from a single filename.
+- `files` → one or many `InputFile(type='document')` values (`|`-separated).
 - `attachments` → `InputFile(type='attachment')` list for the row.
 - Image/media values that match an attachment should be mapped to `{ attachment: index }`,
   so property assignment services resolve to the correct attachment file.
@@ -168,7 +171,8 @@ transaction conflicts. Keep Option A documented for the caveats above.
 
 1. **Detect file references in row:**
 
-   - `file` column → one or **multiple** document filenames (split by `|`)
+   - `file` (and `file__{defaultLanguage}` when present) → one document filename (v1 parity)
+   - `files` (unsuffixed only) → one or multiple document filenames (split by `|`)
    - `attachments` column → list of attachment filenames (split by `|`)
    - image/media values → may reference filenames or URLs
 
@@ -198,8 +202,11 @@ transaction conflicts. Keep Option A documented for the caveats above.
 - **Row‑level atomicity**: if any referenced file is missing, the **row fails** and
   no entity is created. This is aligned with existing row‑error policies (no new
   “stop immediately” behavior beyond the defined thresholds).
-- **`file` column**: should allow **multiple PDFs** (split by `|`), matching
-  multi‑file entity creation behavior.
+- **`file` column**: reverted to **single value** for full v1 compatibility.
+- **`files` column**: new explicit multi-file column; supports one or many values with `|`.
+- **Language behavior**:
+  - `file__{lang}` remains valid (with default-language requirements handled by header analysis).
+  - `files` must be unsuffixed (no `files__{lang}` support).
 - **Media timeLinks**: not supported in v1 CSV import (no evidence in `app/api/csv/**`).
   Defer in v2; import media without timelinks and add a TODO for future support.
 
@@ -225,12 +232,18 @@ transaction conflicts. Keep Option A documented for the caveats above.
 
 4. **Still needed — add tests:**
 
+   - ✅ `CsvImportRowFilesResolver.spec.ts` now covers:
+     - single `file`,
+     - default-language `file__{lang}`,
+     - `file` piped value treated as a single filename (v1-compatible behavior),
+     - `files` piped multi-values + combination with `file`.
+   - ✅ `CsvHeaderAnalyzer.spec.ts` now asserts `files__{lang}` is rejected (`UnknownProperty`).
    - Single-row import with an image file + media file + document.
    - Missing extracted file → row error and no entity created.
    - S3 vs disk compatibility (at least unit tests for FileStorage.getFile → InputFile.fromStream).
 
 5. (Optional but recommended) Add a preflight **file existence check**:
-   - Scan staged rows for `file` and `attachments` filenames.
+   - Scan staged rows for `file`, `files`, and `attachments` filenames.
    - Verify extracted files exist in storage.
    - Surface missing files early as preflight issues to avoid later row failures.
 

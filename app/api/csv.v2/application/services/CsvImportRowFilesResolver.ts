@@ -42,6 +42,8 @@ const getFileHeaderValue = (params: {
   return getValueFromHeader(sanitizedHeaders, rowValues, 'file');
 };
 
+const getSingleFileValue = (rawValue: string) => rawValue.trim();
+
 const resolveInputFile = async (params: {
   fileStorage: FileStorage;
   destination: string;
@@ -77,11 +79,19 @@ class CsvImportRowFilesResolver {
   }): Promise<RowFiles> {
     const { importId, rowValues, sanitizedHeaders, headerAnalysis, fileStorage } = params;
     const destination = `csv-imports/${importId}/extracted`;
-    const fileValue = getFileHeaderValue({ headerAnalysis, sanitizedHeaders, rowValues });
+    const fileValue = getSingleFileValue(
+      getFileHeaderValue({ headerAnalysis, sanitizedHeaders, rowValues })
+    );
+    const filesValue = getValueFromHeader(sanitizedHeaders, rowValues, 'files');
     const attachmentsValue = getValueFromHeader(sanitizedHeaders, rowValues, 'attachments');
 
+    const documentFilenames = [
+      ...(fileValue ? [fileValue] : []),
+      ...splitFileValues(filesValue),
+    ];
+
     const documents = await Promise.all(
-      splitFileValues(fileValue).map(async filename =>
+      documentFilenames.map(async filename =>
         resolveInputFile({
           fileStorage,
           destination,

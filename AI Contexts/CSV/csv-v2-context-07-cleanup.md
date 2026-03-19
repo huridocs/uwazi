@@ -184,6 +184,8 @@ This keeps stage jobs/handlers aligned while avoiding copy-pasted cleanup decisi
 
 ## 14) Next TODO after cleanup
 
-- With cleanup implementation complete, the next prioritized item is:
-  - **Freeze file-column contract for CSV inputs** (`file__LANG`, `file`, `files`) and align
-    parser/import/UX semantics as documented in `csv-v2-context-07.md` priority section.
+- With cleanup implementation complete:
+  - **File-column contract freeze** (`file__LANG`, `file`, `files`) was completed in the
+    follow-up iteration (see `csv-v2-context-07.md`, section 18.18).
+  - Next prioritized item is now:
+    - **Standardize row error taxonomy and reporting output**.

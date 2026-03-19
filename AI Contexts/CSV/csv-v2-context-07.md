@@ -297,7 +297,8 @@ is confusing and inconsistent with thesauri preflight behavior.
 
 - New helper `CsvImportRowFilesResolver` reads extracted files via `FileStorage`
   (`csv-imports/{importId}/extracted`) and builds `InputFile[]` for documents
-  (`file` column, split by `|`) and attachments (`attachments` column, split by `|`).
+  (`file` single-value with `file__{defaultLanguage}` support, plus `files` multi-value via `|`)
+  and attachments (`attachments` column, split by `|`).
 - `CsvEntitiesImportMapper` now returns `PropertyAssignmentInput` (not domain assignments)
   and can map image/media values to `{ attachment: index }` when filenames match attachments.
   This avoids duplicating domain normalization logic; trimming/validation happens in the
@@ -432,15 +433,24 @@ Row errors are currently low-signal for end users (e.g., an empty CSV line can s
 errors/warnings for common parsing issues (empty line, missing required columns, malformed rows),
 and avoid leaking internal exceptions directly to users.
 
-### 11) TODO — Define file column conventions (v1 parity + multi-file option)
+### 11) File column conventions (v1 parity + multi-file option)
 
-We should formalize CSV file column semantics to avoid ambiguity and align with v1:
+Status (Mar 2026): **Implemented in code + unit specs**
+
+Formalized CSV file column semantics:
 
 - `file__XX` (language-specific): **one value per cell**.
 - `file` (default language): **one value per cell**.
 - `files` (new, multi-file): allows a single value or `|`‑separated list.
+- `files` is unsuffixed only (no `files__XX` support).
 
-Goal: keep v1 semantics intact while providing an explicit multi-file column.
+Compatibility objective met:
+
+- `file` reverted to v1-compatible single-value semantics.
+- `files` is the explicit opt-in multi-file column.
+- Added/updated specs:
+  - `CsvImportRowFilesResolver.spec.ts` covers `file`, `file__default`, and `files` behavior.
+  - `CsvHeaderAnalyzer.spec.ts` asserts `files__XX` is rejected.
 
 ### 12) TODO — Add cancel endpoint (cooperative stop, no cleanup)
 
@@ -1081,7 +1091,23 @@ Implementation simplifications performed:
   - failed-rows report artifact is intentionally preserved.
 - Next handoff target (priority continuation):
   - proceed to **file-column contract freeze** (`file__LANG`, `file`, `files`) as the next active
-    TODO after cleanup completion.
+    TODO after cleanup completion (**completed in 18.18**).
+
+#### 18.18 File-column contract freeze update (Mar 2026)
+
+- Implemented contract alignment for file columns in CSV v2 entities import:
+  - `file` / `file__{defaultLanguage}` is now single-value only (v1 parity),
+  - `files` is the new explicit multi-value document column (`|` separated),
+  - `attachments` remains multi-value (`|` separated).
+- `files` suffixes are intentionally unsupported:
+  - `files__{lang}` is now explicitly rejected by header analysis as unknown property.
+- Resolver behavior updated in:
+  - `app/api/csv.v2/application/services/CsvImportRowFilesResolver.ts`
+- Spec coverage added/updated:
+  - `app/api/csv.v2/application/services/specs/CsvImportRowFilesResolver.spec.ts`
+  - `app/api/csv.v2/application/services/specs/CsvHeaderAnalyzer.spec.ts`
+- Focused verification passed:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/CsvImportRowFilesResolver.spec.ts app/api/csv.v2/application/services/specs/CsvHeaderAnalyzer.spec.ts`
 
 ### 19) TODO — Document ReadTheDocs import instructions
 
@@ -1091,7 +1117,7 @@ how to run CSV imports end-to-end.
 Required scope:
 
 - Upload requirements and supported file formats (`CSV` and `ZIP` with `import.csv` at root).
-- Column conventions (`file`, `attachments`, language suffix rules, and relationship fields).
+- Column conventions (`file`, `files`, `attachments`, language suffix rules, and relationship fields).
 - Preflight/import behavior, including row-error handling and failed-rows report usage.
 - Cancel semantics (cooperative stop, no rollback/cleanup of already-applied work).
 - Troubleshooting section for common import failures and recovery steps.
@@ -1110,7 +1136,8 @@ The following order is explicitly agreed and should drive upcoming iterations.
      - `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
    - Current behavior: cleanup removes original upload + extracted staging assets, preserves failed-rows report artifact.
 3. **Freeze file-column contract for CSV inputs**
-   - Define and document exact behavior for `file__LANG`, `file`, and `files` so parsing/import behavior is deterministic and consistent across API, jobs, and UX.
+   - ✅ Implemented in backend services/specs.
+   - Follow-up: propagate final wording to user-facing docs (ReadTheDocs scope in section 19).
 4. **Standardize row error taxonomy and reporting output**
    - Finalize user-facing error naming/messages and reporting structure so diagnostics are clear, actionable, and stable for frontend/support usage.
 
