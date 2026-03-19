@@ -395,6 +395,9 @@ is confusing and inconsistent with thesauri preflight behavior.
   read and maintain `AI Contexts/CSV/csv-v2-context-07-indexes.md` together with this file.
 - **Cleanup context companion:** For terminal artifact-cleanup job design and handoff notes,
   read and maintain `AI Contexts/CSV/csv-v2-context-07-cleanup.md` together with this file.
+- **Error taxonomy companion:** For row-error codes/messages/details standardization and
+  implementation plan, read and maintain
+  `AI Contexts/CSV/csv-v2-context-07-error-taxonomy.md` together with this file.
 - **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
   in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -432,6 +435,10 @@ Row errors are currently low-signal for end users (e.g., an empty CSV line can s
 `Cannot read properties of undefined (reading 'Value')`). We should add explicit, user-friendly
 errors/warnings for common parsing issues (empty line, missing required columns, malformed rows),
 and avoid leaking internal exceptions directly to users.
+
+Source of truth for this track:
+
+- `AI Contexts/CSV/csv-v2-context-07-error-taxonomy.md`
 
 ### 11) File column conventions (v1 parity + multi-file option)
 
