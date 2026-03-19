@@ -58,5 +58,11 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const ToggleStyleButtonsConnected = connect(mapStateToProps, mapDispatchToProps)(ToggleStyleButtons);
-export { ToggleStyleButtons as ToggleStyleButtonsView, ToggleStyleButtonsConnected as ToggleStyleButtons };
+const ToggleStyleButtonsConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ToggleStyleButtons);
+export {
+  ToggleStyleButtons as ToggleStyleButtonsView,
+  ToggleStyleButtonsConnected as ToggleStyleButtons,
+};

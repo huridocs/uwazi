@@ -485,7 +485,10 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   );
 };
 
-const MetadataFormFieldsConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataFormFields);
+const MetadataFormFieldsConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MetadataFormFields);
 export {
   MetadataFormFields as MetadataFormFieldsView,
   MetadataFormFieldsConnected as MetadataFormFields,

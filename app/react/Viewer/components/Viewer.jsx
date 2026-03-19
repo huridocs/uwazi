@@ -277,7 +277,7 @@ const mapStateToProps = state => {
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
       !documentViewer.targetDoc.get('_id') &&
-        state.contextMenu.get('type') === 'ViewerTextSelectedMenu'
+      state.contextMenu.get('type') === 'ViewerTextSelectedMenu'
     ),
     user: state.user,
     // relationships v2

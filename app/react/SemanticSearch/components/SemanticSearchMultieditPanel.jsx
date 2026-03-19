@@ -188,5 +188,8 @@ export function mapDispatchToProps(dispatch, props) {
   );
 }
 
-const SemanticSearchMultieditPanelConnected = connect(mapStateToProps, mapDispatchToProps)(SemanticSearchMultieditPanel);
+const SemanticSearchMultieditPanelConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SemanticSearchMultieditPanel);
 export { SemanticSearchMultieditPanelConnected as SemanticSearchMultieditPanel };
