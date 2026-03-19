@@ -121,12 +121,20 @@ describe('CsvCleanupImportFilesJob (integration)', () => {
     ).rejects.toBeDefined();
     await expect(
       fs.access(
-        pathManager.createPath({ type: 'customPath', destination: `${destination}/extracted`, filename: 'import.csv' })
+        pathManager.createPath({
+          type: 'customPath',
+          destination: `${destination}/extracted`,
+          filename: 'import.csv',
+        })
       )
     ).rejects.toBeDefined();
     await expect(
       fs.access(
-        pathManager.createPath({ type: 'customPath', destination: `${destination}/extracted`, filename: '1.pdf' })
+        pathManager.createPath({
+          type: 'customPath',
+          destination: `${destination}/extracted`,
+          filename: '1.pdf',
+        })
       )
     ).rejects.toBeDefined();
     await expect(

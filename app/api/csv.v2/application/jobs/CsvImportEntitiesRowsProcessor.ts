@@ -104,12 +104,12 @@ const processImportRows = async (params: {
     consecutiveFailures = batchResult.endConsecutiveFailures;
     await Promise.resolve(
       callbacks.onProgress({
-      importId: context.csvImport.id,
-      processedRows,
-      totalRows,
-      batchIndex,
-      batchCount,
-      entitiesCreatedInBatch: batchResult.entitiesCreated,
+        importId: context.csvImport.id,
+        processedRows,
+        totalRows,
+        batchIndex,
+        batchCount,
+        entitiesCreatedInBatch: batchResult.entitiesCreated,
       })
     );
 

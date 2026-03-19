@@ -53,7 +53,9 @@ class CsvImportRelationshipResolutionError extends Error {
         return `"${unresolved.token}" (${unresolved.reason}, candidates: ${unresolved.candidates || 0}, scope: ${unresolved.scope})`;
       })
       .join('; ');
-    super(`Unresolvable relationship value(s) for property "${params.property}": ${unresolvedMessage}`);
+    super(
+      `Unresolvable relationship value(s) for property "${params.property}": ${unresolvedMessage}`
+    );
     this.name = 'CsvImportRelationshipResolutionError';
     this.property = params.property;
     this.unresolved = params.unresolved;

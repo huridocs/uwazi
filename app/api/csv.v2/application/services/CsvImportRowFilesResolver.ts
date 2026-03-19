@@ -92,10 +92,7 @@ class CsvImportRowFilesResolver {
     const filesValue = getValueFromHeader(sanitizedHeaders, rowValues, 'files');
     const attachmentsValue = getValueFromHeader(sanitizedHeaders, rowValues, 'attachments');
 
-    const documentFilenames = [
-      ...(fileValue ? [fileValue] : []),
-      ...splitFileValues(filesValue),
-    ];
+    const documentFilenames = [...(fileValue ? [fileValue] : []), ...splitFileValues(filesValue)];
 
     const documents = await Promise.all(
       documentFilenames.map(async filename =>

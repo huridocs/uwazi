@@ -45,7 +45,9 @@ describe('CsvRowImportErrorFactory', () => {
     expect(rowError.code).toBe(RowErrorCode.RelationshipNotFound);
     expect(rowError.property).toBe('rel_any');
     expect(rowError.rawValue).toBe('Unknown related');
-    expect(rowError.message).toBe('Relationship value could not be resolved to an existing entity.');
+    expect(rowError.message).toBe(
+      'Relationship value could not be resolved to an existing entity.'
+    );
     expect(rowError.details).toEqual({
       unresolved: [
         {
