@@ -40,4 +40,7 @@ export function mapStateToProps(state, props) {
 }
 
 const UploadEntityStatusConnected = connect(mapStateToProps)(UploadEntityStatus);
-export { UploadEntityStatus as UploadEntityStatusView, UploadEntityStatusConnected as UploadEntityStatus };
+export {
+  UploadEntityStatus as UploadEntityStatusView,
+  UploadEntityStatusConnected as UploadEntityStatus,
+};

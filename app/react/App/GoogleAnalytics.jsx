@@ -55,4 +55,9 @@ function mapStateToProps({ settings }) {
 }
 
 const GoogleAnalyticsConnected = connect(mapStateToProps)(GoogleAnalytics);
-export { GoogleAnalytics as GoogleAnalyticsView, GoogleAnalyticsConnected as GoogleAnalytics, trackPage, mapStateToProps };
+export {
+  GoogleAnalytics as GoogleAnalyticsView,
+  GoogleAnalyticsConnected as GoogleAnalytics,
+  trackPage,
+  mapStateToProps,
+};

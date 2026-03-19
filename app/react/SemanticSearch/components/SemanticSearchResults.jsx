@@ -207,7 +207,10 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators(semanticSearchActions, dispatch);
 }
 
-const SemanticSearchResultsConnected = connect(mapStateToProps, mapDispatchToProps)(SemanticSearchResults);
+const SemanticSearchResultsConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SemanticSearchResults);
 export {
   SemanticSearchResults as SemanticSearchResultsView,
   SemanticSearchResultsConnected as SemanticSearchResults,

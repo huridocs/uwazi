@@ -107,5 +107,5 @@ RechartsBar.propTypes = {
   chartLabel: PropTypes.string,
 };
 
-const RechartsBarConnected = connect(mapStateToProps)(RechartsBar);
+const RechartsBarConnected = connect()(RechartsBar);
 export { RechartsBarConnected as Bar };

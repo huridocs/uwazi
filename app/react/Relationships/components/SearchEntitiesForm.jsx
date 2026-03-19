@@ -37,5 +37,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ search }, dispatch);
 }
 
-const SearchEntitiesFormConnected = connect(mapStateToProps, mapDispatchToProps)(SearchEntitiesForm);
+const SearchEntitiesFormConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchEntitiesForm);
 export { SearchEntitiesFormConnected as SearchEntitiesForm };
