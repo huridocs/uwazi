@@ -4,7 +4,6 @@ import type { Request, Response } from 'express';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { tenants } from '#api/tenants/index.js';
-import { User } from '#api/users/usersModel.js';
 import { ValidationError } from '#api/core/domain/error/ValidationError.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
@@ -12,6 +11,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
@@ -82,7 +82,7 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   protected get user(): User {
-    return this.dependencies.request?.user;
+    return User.createFrom(this.dependencies.request.user);
   }
 
   protected get response() {
@@ -99,7 +99,7 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   protected ensureUser() {
-    if (!this.user) {
+    if (this.user.isAnonymous()) {
       throw new Error('User not found');
     }
   }

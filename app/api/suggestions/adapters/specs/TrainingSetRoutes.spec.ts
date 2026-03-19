@@ -21,7 +21,7 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
 
 describe('POST /api/suggestions/training-set', () => {
   const app: Application = setUpApp(suggestionsRoutes, (req, _res, next) => {
-    req.user = { username: 'admin', role: 'admin' };
+    req.user = { _id: new ObjectId(), username: 'admin', role: 'admin' };
     next();
   });
 

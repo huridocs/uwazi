@@ -11,7 +11,7 @@ const InputSchema = z.object({
 
 type Input = z.infer<typeof InputSchema>;
 
-type Output = Input;
+type Output = { deletedSharedIds: string[] };
 
 type Deps = {
   entitiesService: EntitiesService;
@@ -21,14 +21,14 @@ class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   static InputSchema = InputSchema;
 
   async execute({ sharedIds }: Input): Promise<Output> {
-    await this.transactionManager.run(async () =>
+    const deletedSharedIds = await this.transactionManager.run(async () =>
       this.deps.entitiesService.bulkDelete(sharedIds, {
         actor: this.getActor(),
         tenantName: this.tenant.name,
       })
     );
 
-    return { sharedIds };
+    return { deletedSharedIds };
   }
 }
 
