@@ -102,6 +102,7 @@ const processImportRows = async (params: {
     currentImport = batchResult.csvImport;
     totalFailures += batchResult.rowErrorsCount;
     consecutiveFailures = batchResult.endConsecutiveFailures;
+    // eslint-disable-next-line no-await-in-loop
     await Promise.resolve(
       callbacks.onProgress({
         importId: context.csvImport.id,
