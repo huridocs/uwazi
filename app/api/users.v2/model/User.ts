@@ -2,13 +2,26 @@ import { z } from 'zod';
 
 type UserRole = 'admin' | 'editor' | 'collaborator';
 
-const Schema = z.object({
-  id: z.string().min(1),
-  role: z.enum(['admin', 'editor', 'collaborator']),
-  groups: z.array(z.string().min(1)),
-});
-
-type CreateFromProps = z.infer<typeof Schema>;
+const Schema = z
+  .object({
+    _id: z
+      .any()
+      .transform(v => v?.toString())
+      .pipe(z.string().min(1)),
+    role: z.enum(['admin', 'editor', 'collaborator']),
+    groups: z
+      .array(
+        z.union([
+          z.string().min(1),
+          z
+            .object({ _id: z.any() })
+            .passthrough()
+            .transform(g => g._id?.toString() as string),
+        ])
+      )
+      .default([]),
+  })
+  .passthrough();
 
 class User {
   readonly _id: string;
@@ -27,10 +40,20 @@ class User {
     return ['admin', 'editor'].includes(this.role);
   }
 
-  static createFrom(props: Partial<CreateFromProps>) {
-    const parsed = Schema.parse(props);
+  isAnonymous() {
+    return this._id === '__anonymous__';
+  }
 
-    return new User(parsed.id, parsed.role, parsed.groups);
+  private static anonymous() {
+    return new User('__anonymous__', 'collaborator', []);
+  }
+
+  static createFrom(props: { [key: string]: any } | null): User {
+    if (!props) {
+      return User.anonymous();
+    }
+    const parsed = Schema.parse(props);
+    return new User(parsed._id, parsed.role, parsed.groups);
   }
 }
 

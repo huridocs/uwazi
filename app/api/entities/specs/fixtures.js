@@ -275,6 +275,7 @@ export default {
       template: templateId,
       title: 'Unpublished entity ES',
       language: 'es',
+      published: false,
       metadata: {
         enemies: [
           { icon: null, label: 'translated1', type: 'entity', value: 'shared2' },

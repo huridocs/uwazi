@@ -11,7 +11,7 @@ import { search } from '#api/search/index.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import uploadRoutes from '../jsRoutes.js';
-import { allowedPublicTemplate, fixtures, templateId } from './fixtures.js';
+import { allowedPublicTemplate, fixtures, templateId, writerUser } from './fixtures.js';
 import { legacyLogger } from '../../log.js';
 
 const mockExport = jest.fn();
@@ -26,14 +26,20 @@ jest.mock('../../auth/captchaMiddleware.ts', () => () => (_req, _res, next) => {
 // eslint-disable-next-line max-statements
 describe('upload routes', () => {
   let app;
-  let req;
+  let baseReq;
+  let user = writerUser;
 
   beforeEach(async () => {
     jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    app = setUpApp(uploadRoutes);
 
-    req = {
+    user = writerUser;
+    app = setUpApp(uploadRoutes, (req, _res, next) => {
+      req.user = user;
+      next();
+    });
+
+    baseReq = {
       language: 'es',
       user: 'admin',
       headers: {},
@@ -53,7 +59,7 @@ describe('upload routes', () => {
       jest.spyOn(Date, 'now').mockReturnValue(1000);
       jest.spyOn(mailer, 'send').mockImplementation(() => {});
 
-      req = {
+      baseReq = {
         language: 'es',
         headers: {},
         body: {
@@ -65,15 +71,16 @@ describe('upload routes', () => {
 
     it('should create an Entity and return the created Entity on body response', async () => {
       testingEnvironment.resetPermissions();
+      user = undefined; // To test that the Public user is used when no user is authenticated
 
       const response = await request(app)
         .post('/api/public')
-        .field('entity', JSON.stringify(req.body.entity));
+        .field('entity', JSON.stringify(baseReq.body.entity));
 
       expect(response.body).toEqual({
         _id: expect.any(String),
-        title: req.body.entity.title,
-        language: req.language,
+        title: baseReq.body.entity.title,
+        language: baseReq.language,
         template: templateId.toString(),
         sharedId: expect.any(String),
         user: PUBLIC_USER_ID.toString(),
@@ -96,7 +103,7 @@ describe('upload routes', () => {
 
       const response = await request(app)
         .post('/api/public')
-        .field('entity', JSON.stringify(req.body.entity));
+        .field('entity', JSON.stringify(baseReq.body.entity));
 
       expect(response.status).toBe(403);
       expect(response.body.error).toMatch(/unauthorized public template/i);
@@ -140,18 +147,16 @@ describe('upload routes', () => {
     });
 
     it('should use authenticated user instead of Public user when user is logged in', async () => {
-      // Use an existing user from fixtures (writerUser)
       const mongodb = getConnection();
       const writerUserFromDb = await mongodb.collection('users').findOne({ username: 'writer' });
 
-      // Set the writer user in permissions context to simulate authenticated request
       testingEnvironment.setPermissions(writerUserFromDb);
 
       const response = await request(app)
         .post('/api/public')
-        .field('entity', JSON.stringify(req.body.entity));
+        .field('entity', JSON.stringify(baseReq.body.entity));
 
-      expect(response.status).toBe(200);
+      expect(response).toHaveStatus(200);
       expect(response.body.user).toEqual(writerUserFromDb._id.toString());
       expect(response.body.user).not.toEqual(PUBLIC_USER_ID.toString());
     });
