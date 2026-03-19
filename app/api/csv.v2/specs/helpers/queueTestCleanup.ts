@@ -16,11 +16,12 @@ export const cleanupCsvV2QueueJobsByImportIds = async (importIds: string[]): Pro
     return;
   }
 
-  await getSharedConnection().collection('jobs').deleteMany({
-    queue: config.queueName,
-    namespace: tenants.current().name,
-    name: { $in: CSV_V2_JOB_HANDLER_NAMES },
-    'params.importId': { $in: importIds },
-  });
+  await getSharedConnection()
+    .collection('jobs')
+    .deleteMany({
+      queue: config.queueName,
+      namespace: tenants.current().name,
+      name: { $in: CSV_V2_JOB_HANDLER_NAMES },
+      'params.importId': { $in: importIds },
+    });
 };
-
