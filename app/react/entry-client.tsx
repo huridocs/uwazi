@@ -80,7 +80,13 @@ window.console.error = (...args) => {
   if (isSilentWarning(args[0])) {
     return;
   }
-  origConsoleError.apply(window.console, args);
+  try {
+    origConsoleError.apply(window.console, args);
+  } catch {
+    try {
+      origConsoleError(...args);
+    } catch (_) {}
+  }
 };
 
 export { root };
