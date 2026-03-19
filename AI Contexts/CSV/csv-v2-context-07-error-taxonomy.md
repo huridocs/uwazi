@@ -67,6 +67,22 @@ Representative error sources today:
   - `csv_imports.stats.rowsFailed`
   - `csv_imports.rowErrors.reportPath`
 
+### 2.4 Product decision checkpoint — failed-rows CSV format
+
+This must be explicitly confirmed before implementation starts.
+
+Decision options:
+
+- **Option A (recommended for this slice):** keep failed-rows CSV as row-only export
+  - contains the original failed source rows only,
+  - no error code/message columns in the CSV artifact,
+  - taxonomy lives in `csv_import_row_errors` + API projections.
+- **Option B (future/optional):** enrich failed-rows CSV with error details
+  - add columns derived from the same taxonomy source (`code`, stable `message`, selected `details`),
+  - must never diverge from `csv_import_row_errors` semantics.
+
+Current default in this document: **Option A**.
+
 ---
 
 ## 3) Goal and non-goals
