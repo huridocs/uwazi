@@ -80,6 +80,15 @@ const csvImportRoutes = (app: Application) => {
     }
   );
 
+  app.post(
+    '/api/csvImportEntities',
+    needsAuthorization(['admin']),
+    async (req, res, next) => {
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload()(req, res, next);
+    },
+    RegisterCsvImportController.createHandler()
+  );
+
   app.get(
     '/api/csvImportEntities/imports',
     needsAuthorization(['admin']),

@@ -28,11 +28,12 @@ execution diary.
 
 Use this snapshot first; companion docs provide deeper implementation detail.
 
-1. Keep CSV v2 scoped inside `app/api/csv.v2/**` unless explicit approval is given for core edits.
-2. Continue row-error taxonomy stabilization for UX-facing diagnostics and API projections.
-3. Improve integration coverage (full chain + import batch/report/failure-threshold scenarios).
-4. Stabilize test infrastructure behavior for CI-like parallel execution.
-5. Publish user-facing import guidance (ReadTheDocs scope in section 19).
+1. **Frontend handoff first:** publish concise frontend implementation notes (feature flags, endpoints, sockets, V1 vs V2 expectations). Source of truth: `AI Contexts/CSV/csv-v2-front-end-notes.md`.
+2. Keep CSV v2 scoped inside `app/api/csv.v2/**` unless explicit approval is given for core edits.
+3. Continue row-error taxonomy stabilization for UX-facing diagnostics and API projections.
+4. Improve integration coverage (full chain + import batch/report/failure-threshold scenarios).
+5. Stabilize test infrastructure behavior for CI-like parallel execution.
+6. Publish user-facing import guidance (ReadTheDocs scope in section 19).
 
 ### 1.1) Critical working rule (highest priority)
 
@@ -101,11 +102,14 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 #### 3.7 Progress query endpoints
 
 - **Implemented (Feb 2026):** Added CSV entities-import read endpoints in `csv.v2`:
+  - `POST /api/csvImportEntities` (V2-only register/import enqueue endpoint).
   - `GET /api/csvImportEntities/imports` returns `{ rows: [...] }`.
   - `GET /api/csvImportEntities/imports/:id` returns the raw import object body.
   - List rows include `status` as a first-class field for UX list rendering.
 - **TODO (next iteration):**
   - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
+  - Add dedicated failed-rows report download endpoint for CSV v2
+    (for `rowErrors.reportPath`, admin-only, import-scoped authorization).
   - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
     collections performant and improve UX load times.
   - Include already-persisted extraction metadata in the detail response so UX can render
@@ -1213,6 +1217,21 @@ Implementation simplifications performed:
   - full CSV v2 suite passes:
     - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
     - result: pass (19 suites, 76 tests).
+
+#### 18.22 Dedicated V2 register endpoint for frontend (Mar 2026)
+
+- Added a dedicated V2 import register route:
+  - `POST /api/csvImportEntities`
+  - auth: admin
+  - middleware: V2 `UploadMiddleware` (request-time instantiation)
+  - handler: `RegisterCsvImportController`
+- Compatibility route remains:
+  - `POST /api/import` still supports V1/V2 flag-based behavior for transition/testing.
+- Frontend handoff doc updated to make V2 endpoint primary:
+  - `AI Contexts/CSV/csv-v2-front-end-notes.md`
+- Verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/files/specs/uploadRoutes.spec.ts`
+  - result: pass (includes new `POST /api/csvImportEntities` test).
 
 ### 19) TODO — Document ReadTheDocs import instructions
 
