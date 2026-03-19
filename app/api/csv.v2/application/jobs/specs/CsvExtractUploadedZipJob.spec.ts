@@ -18,6 +18,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js';
 import { CsvExtractUploadedZipJobFactory } from '#api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory.js';
+import { cleanupCsvV2QueueJobsByImportIds } from '#api/csv.v2/specs/helpers/queueTestCleanup.js';
 import { Callbacks } from '../CsvExtractUploadedZipJob.js';
 
 const callbacks: Callbacks = {
@@ -37,6 +38,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
   });
 
   afterEach(async () => {
+    await cleanupCsvV2QueueJobsByImportIds(createdImportIds);
     const base = tenants.current().uploadedDocuments;
     // eslint-disable-next-line no-restricted-syntax
     for (const id of createdImportIds.splice(0)) {
@@ -298,6 +300,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const { useCase, csvImportsDS } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('no-storage');
+    createdImportIds.push(id);
     const importDoc = CsvImportDomain.create({
       id,
       templateId: 't1',

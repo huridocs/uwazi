@@ -10,6 +10,7 @@ import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHa
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CsvImportRow } from '../../../domain/CsvImportRow.js';
 import { CsvPreflightJobFactory } from '../../../infrastructure/factories/CsvPreflightJobFactory.js';
+import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -110,6 +111,7 @@ describe('CsvPreflightJob (integration)', () => {
     ._id!.toString();
   const relatedTemplateId = fixtures.templates[1]._id.toString();
   const thesaurusId = fixtures.dictionaries![0]!._id.toString();
+  const createdImportIds: string[] = [];
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv-preflight-job');
@@ -118,6 +120,7 @@ describe('CsvPreflightJob (integration)', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await testingEnvironment.setFixtures(fixtures);
+    await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
     await Promise.all(
       [
         'csv_imports',
@@ -140,6 +143,7 @@ describe('CsvPreflightJob (integration)', () => {
   it('persists pending thesauri values and dispatches the creation job', async () => {
     const { useCase, csvImportsDS, rowsDS, thesauriValuesDS, jobsDispatcher } = buildUseCase();
     const importId = fixturesFactory.idString('preflight-happy-import');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('preflight-happy-user');
     const tenantName = tenants.current().name;
 
@@ -201,6 +205,7 @@ describe('CsvPreflightJob (integration)', () => {
   it('aggregates duplicates, trims values, and preserves nested children translations', async () => {
     const { useCase, csvImportsDS, rowsDS, thesauriValuesDS } = buildUseCase();
     const importId = fixturesFactory.idString('preflight-trim-import');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('preflight-trim-user');
     const tenantName = tenants.current().name;
 
@@ -238,6 +243,7 @@ describe('CsvPreflightJob (integration)', () => {
   it('records issues from the pending values builder and marks the import as failed', async () => {
     const { useCase, csvImportsDS, rowsDS } = buildUseCase();
     const importId = fixturesFactory.idString('preflight-issues-import');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('preflight-issues-user');
     const tenantName = tenants.current().name;
 
@@ -273,6 +279,7 @@ describe('CsvPreflightJob (integration)', () => {
   it('raises header validation errors when the default language column is missing', async () => {
     const { useCase, csvImportsDS, rowsDS } = buildUseCase();
     const importId = fixturesFactory.idString('preflight-headers-import');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('preflight-headers-user');
     const tenantName = tenants.current().name;
 

@@ -15,6 +15,7 @@ import { CsvImportRow } from '../../../domain/CsvImportRow.js';
 import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
 import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
+import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -185,6 +186,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   const template = fixtures.templates[0];
   const templateId = template._id.toString();
   const relatedTemplateId = fixtures.templates[1]._id.toString();
+  const createdImportIds: string[] = [];
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv-import-entities-job');
@@ -193,6 +195,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await testingEnvironment.setFixtures(fixtures);
+    await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
     await Promise.all(
       [
         'csv_imports',
@@ -218,6 +221,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   it('should create entities from staged rows and update stats', async () => {
     const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
     const importId = fixturesFactory.idString('import-entities-basic');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('import-entities-user');
 
     const { callbacks, updatedImport, rowErrorsCount } = await runSingleRowImport({
@@ -242,6 +246,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   it('should import rows with any-template relationship when there is a unique match', async () => {
     const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
     const importId = fixturesFactory.idString('import-entities-any-relationship');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('import-entities-any-user');
     const relatedSharedId = fixturesFactory.idString('related-any-shared');
 
@@ -314,6 +319,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   it('should import rows with multiple any-template relationships separated by pipe', async () => {
     const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
     const importId = fixturesFactory.idString('import-entities-any-relationship-multi');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('import-entities-any-multi-user');
     const relatedSharedIdA = fixturesFactory.idString('related-any-shared-a');
     const relatedSharedIdB = fixturesFactory.idString('related-any-shared-b');
@@ -416,6 +422,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   it('preserves completed batch progress when cancelled before finalization', async () => {
     const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
     const importId = fixturesFactory.idString('import-entities-cancelled-before-finalize');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('import-entities-cancel-user');
 
     await insertImport(csvImportsDS, {
@@ -453,6 +460,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   it('persists relationship taxonomy metadata for failed rows', async () => {
     const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
     const importId = fixturesFactory.idString('import-entities-relationship-failure');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('import-entities-relationship-failure-user');
 
     await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({

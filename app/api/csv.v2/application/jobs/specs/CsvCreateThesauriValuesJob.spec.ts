@@ -3,10 +3,13 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues.js';
 import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
 import { CsvCreateThesauriValuesJobFactory } from '../../../infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
+import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -35,6 +38,7 @@ const createCallbacks = () => ({
 describe('CsvCreateThesauriValuesJob (integration)', () => {
   const thesaurusId = fixtures.dictionaries[0]._id.toString();
   const templateId = fixtures.templates[0]._id.toString();
+  const createdImportIds: string[] = [];
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv-create-thesauri-values-job');
@@ -43,6 +47,7 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await testingEnvironment.setFixtures(fixtures);
+    await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
     await Promise.all(
       ['csv_imports', 'csv_import_thesauri_values', 'translations_v2'].map(async collectionName => {
         const collection = testingEnvironment.db.getCollection(collectionName);
@@ -58,8 +63,15 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
   });
 
   it('should append missing values, update translations, and persist stats', async () => {
-    const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build();
+    const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
+      dispatch: jest.fn().mockResolvedValue(undefined),
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
+    }) as jest.Mocked<JobsDispatcher>;
+    const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build({
+      jobsDispatcher,
+    });
     const importId = fixturesFactory.idString('create-thesauri-import');
+    createdImportIds.push(importId);
     const userId = fixturesFactory.idString('create-thesauri-user');
     const tenantName = tenants.current().name;
 

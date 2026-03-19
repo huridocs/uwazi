@@ -422,6 +422,9 @@ is confusing and inconsistent with thesauri preflight behavior.
 - **Error taxonomy companion:** For row-error codes/messages/details standardization and
   implementation plan, read and maintain
   `AI Contexts/CSV/csv-v2-context-07-error-taxonomy.md` together with this file.
+- **Queue test-pollution companion:** For queue isolation/cleanup hardening in CSV v2 specs,
+  read and maintain
+  `AI Contexts/CSV/csv-v2-context-07-queue-test-pollution.md` together with this file.
 - **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
   in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -446,12 +449,16 @@ is confusing and inconsistent with thesauri preflight behavior.
 Running CSV v2 tests leaves jobs in the queue collection even when tests pass. The queue uses the
 shared DB and default queue name; dispatched jobs are not auto-cleaned.
 
-**Mitigation options:**
+Scope clarification (Mar 2026):
 
-- **Test cleanup:** delete the queue collection in CSV v2 specs (`afterEach`/`afterAll`).
-- **Test queue namespace:** configure a test-only queue name to isolate/purge safely.
-- **Recording/Sync dispatcher:** use non-queue dispatchers in tests that don't need real workers.
-- **No worker during tests:** ensure the queue worker isn't running when tests enqueue jobs.
+- In `NODE_ENV=test`, shared DB resolves to `uwazi_shared_db_testing`, so this no longer pollutes
+  the main shared DB used outside tests.
+- Priority remains test quality/stability (cross-suite contamination/flakiness), but criticality is
+  lower than before this isolation change.
+
+Source of truth for this track:
+
+- `AI Contexts/CSV/csv-v2-context-07-queue-test-pollution.md`
 
 ### 10) TODO — Improve row-level error messaging
 
@@ -1182,6 +1189,31 @@ Implementation simplifications performed:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
   - result: pass (19 suites, 76 tests).
 
+#### 18.21 Queue test-pollution hardening update (Mar 2026)
+
+- Scope clarification confirmed in code:
+  - test-mode shared DB is `uwazi_shared_db_testing` (not main shared DB),
+  - queue pollution risk is test contamination/flakiness, not production DB contamination.
+- Implemented queue hardening in CSV v2 specs:
+  - added helper:
+    - `app/api/csv.v2/specs/helpers/queueTestCleanup.ts`
+    - deletes queue docs by `{ queue: config.queueName, namespace: tenants.current().name }`
+      on shared DB.
+  - wired queue cleanup in integration-spec `afterEach`:
+    - `CsvExtractUploadedZipJob.spec.ts`
+    - `CsvPreflightJob.spec.ts`
+    - `CsvCreateThesauriValuesJob.spec.ts`
+    - `CsvCreateRelationshipEntitiesJob.spec.ts`
+    - `CsvImportEntitiesJob.spec.ts`
+  - replaced remaining implicit default-dispatcher usage with mocked `jobsDispatcher` in:
+    - `CsvCreateThesauriValuesJob.spec.ts`
+    - `CsvCreateRelationshipEntitiesJob.spec.ts`
+- Verification:
+  - focused job-spec run passes (5/5),
+  - full CSV v2 suite passes:
+    - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
+    - result: pass (19 suites, 76 tests).
+
 ### 19) TODO — Document ReadTheDocs import instructions
 
 We should create and maintain user-facing documentation in ReadTheDocs that explains
@@ -1227,6 +1259,7 @@ Index migration completion note:
    - Full pipeline chain coverage.
    - Files/attachments edge cases (`missing file`, `S3 vs disk` behavior).
    - Batch/failure-threshold/report-path scenarios in entities import.
+   - User-priority override (Mar 2026): queue test-pollution hardening runs before this item.
 3. **Finalize API payloads for UX polling/recovery**
    - Detail/list projections for row-errors summary/report path and extraction metadata.
    - Add pagination for imports list endpoint if needed for scale.
