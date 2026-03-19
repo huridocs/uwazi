@@ -13,6 +13,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
+import { GetEntityController } from '#api/core/infrastructure/express/entity/GetEntityController.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import templates from '../core/v1_layer/templates/templates.js';
 import { thesauri } from '../thesauri/thesauri.js';
@@ -20,6 +21,7 @@ import { parseQuery, validation } from '../utils/index.js';
 import date from '../utils/date.js';
 import entities from './entities.js';
 import { saveEntity } from './entitySavingManager.js';
+import { User } from '#api/users.v2/model/User.js';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -102,10 +104,14 @@ export default app => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
       if (!entityToSave?.sharedId) {
-        const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
+        const entityDAO = new MongoEntityDAO(
+          getConnection(),
+          TransactionManagerFactory.default(),
+          User.createFrom(req.user)
+        );
         const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
         const entityInTargetLanguage = await entityDAO
-          .getWithFile({ language: req.language, sharedId: result.sharedId })
+          .getWithFiles({ language: req.language, sharedId: result.sharedId })
           .next();
 
         await updateThesauriWithEntity(entityInTargetLanguage, req);
@@ -204,14 +210,20 @@ export default app => {
           properties: {
             sharedId: { type: 'string' },
             _id: { type: 'string' },
-            withPdf: { type: 'string' },
             omitRelationships: { type: 'boolean' },
             include: { type: 'array', items: { type: 'string', enum: ['permissions'] } },
           },
         },
       },
     }),
-    (req, res, next) => {
+    async (req, res, next) => {
+      // V2 implementation
+      if (tenants.current()?.featureFlags?.v2GetEntity) {
+        await GetEntityController.createHandler()(req, res, next);
+        return;
+      }
+
+      // V1 implementation
       const { omitRelationships, include = [], ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
@@ -229,9 +241,9 @@ export default app => {
             res.json({ rows: [] });
             return;
           }
-          if (!req.user && _entities[0].relationships) {
+          if (!req.user && _entities[0].relations) {
             const entity = _entities[0];
-            entity.relationships = entity.relationships.filter(rel => rel.entityData.published);
+            entity.relations = entity.relations.filter(rel => rel.entityData.published);
           }
           res.json({ rows: _entities });
         })

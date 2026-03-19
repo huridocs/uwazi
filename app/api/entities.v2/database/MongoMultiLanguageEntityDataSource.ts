@@ -1,21 +1,21 @@
 /* eslint-disable max-lines */
+import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import {
   MongoDataSource,
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { search } from '#api/search/index.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
-import { Property } from '#api/core/domain/template/Property.js';
-import { Result, ResultType } from '#api/core/libs/Result.js';
-import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
-import { EntityDoesNotExistError } from '#api/core/domain/entity/errors.js';
-import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import { search } from '#api/search/index.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { Db, Filter, ObjectId } from 'mongodb';
 import { Entity } from '../../core/domain/entity/Entity.js';
+import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes.js';
 
 export class MongoMultiLanguageEntityDataSource
@@ -33,11 +33,11 @@ export class MongoMultiLanguageEntityDataSource
     });
   }
 
-  async getById(id: string): Promise<ResultType<Entity, EntityDoesNotExistError>> {
+  async getById(id: string): Promise<ResultType<Entity, EntityNotFoundError>> {
     const [entity] = await (await this.getByQuery({ sharedId: id })).all();
 
     if (!entity) {
-      return Result.fail(new EntityDoesNotExistError(id));
+      return Result.fail(new EntityNotFoundError(id));
     }
 
     return Result.ok(entity);

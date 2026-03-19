@@ -16,6 +16,9 @@ const testingTenants = {
     mockedTenant = {
       ...mockedTenant,
       ...changes,
+      featureFlags: {
+        ...changes.featureFlags,
+      },
     };
   },
 

@@ -55,6 +55,17 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeNotification }, dispatch);
 }
 
-const NotificationConnected = connect(undefined, mapDispatchToProps)(Notification);
+const mergeProps = (_s, dispatchProps, ownProps) => ({
+  ...ownProps,
+  ...dispatchProps,
+  removeNotification:
+    ownProps.removeNotification ?? dispatchProps.removeNotification,
+});
+
+const NotificationConnected = connect(
+  undefined,
+  mapDispatchToProps,
+  mergeProps
+)(Notification);
 
 export { Notification as NotificationView, NotificationConnected as Notification };

@@ -1,25 +1,53 @@
+import { Db } from 'mongodb';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { MongoDataSource } from '../common/MongoDataSource.js';
+import { User } from '#api/users.v2/model/User.js';
+import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
+import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
 import { fileDBO } from '../files/schemas/filesTypes.js';
-import { WithLookup } from '../common/WithLookup.js';
 
 type GetWithFilesMatch = {
   language?: LanguageISO6391;
   sharedId?: string;
+  published?: boolean;
 };
+
+type EntityWithFiles = EntityDBO & { documents: fileDBO[]; attachments: fileDBO[] };
 
 class MongoEntityDAO extends MongoDataSource<EntityDBO> {
   protected collectionName = 'entities';
 
-  getWithFile($match: GetWithFilesMatch) {
-    return this.getCollection().aggregate<
-      WithLookup<EntityDBO, { documents: fileDBO[]; attachments: fileDBO[] }>
-    >([
-      {
-        $match,
-      },
+  private user: User;
 
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager,
+    user: User,
+    options?: MongoDSOptions
+  ) {
+    super(db, transactionManager, options);
+    this.user = user;
+  }
+
+  private buildPermissionMatch(): Record<string, unknown> {
+    if (this.user.isPrivileged()) {
+      return {};
+    }
+
+    const userIds = [this.user._id, ...this.user.groups];
+
+    return {
+      $or: [{ permissions: { $elemMatch: { refId: { $in: userIds } } } }, { published: true }],
+    };
+  }
+
+  getWithFiles($match: GetWithFilesMatch) {
+    const permissionMatch = this.buildPermissionMatch();
+
+    return this.getCollection().aggregate<EntityWithFiles>([
+      {
+        $match: { ...$match, ...permissionMatch },
+      },
       {
         $lookup: {
           from: 'files',
@@ -53,14 +81,12 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
           },
         },
       },
-
       {
-        $project: {
-          files: 0,
-        },
+        $unset: 'files',
       },
     ]);
   }
 }
 
 export { MongoEntityDAO };
+export type { EntityWithFiles };
