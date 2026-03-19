@@ -7,12 +7,7 @@ import { t } from '#app/I18N/index.js';
 
 import { loadMoreReferences } from '../../ConnectionsList/actions/actions.js';
 
-const LoadMoreRelationshipsButton = ({
-  totalHubs,
-  requestedHubs,
-  action,
-  loadMoreAmmount,
-}) => {
+const LoadMoreRelationshipsButton = ({ totalHubs, requestedHubs, action, loadMoreAmmount }) => {
   if (requestedHubs < totalHubs) {
     const actionFunction = () => {
       action(requestedHubs + loadMoreAmmount);
@@ -62,5 +57,8 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const LoadMoreRelationshipsButtonConnected = connect(mapStateToProps, mapDispatchToProps)(LoadMoreRelationshipsButton);
+const LoadMoreRelationshipsButtonConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LoadMoreRelationshipsButton);
 export { LoadMoreRelationshipsButtonConnected as LoadMoreRelationshipsButton };

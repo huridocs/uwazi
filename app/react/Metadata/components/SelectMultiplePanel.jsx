@@ -275,9 +275,10 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-const SelectMultiplePanelConnected = connect(mapStateToProps, mapDispatchToProps)(
-  withContext(SelectMultiplePanel)
-);
+const SelectMultiplePanelConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withContext(SelectMultiplePanel));
 export {
   SelectMultiplePanel as SelectMultiplePanelView,
   mapStateToProps,

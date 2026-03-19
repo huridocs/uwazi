@@ -82,10 +82,18 @@ window.console.error = (...args) => {
   }
   try {
     origConsoleError.apply(window.console, args);
-  } catch {
+  } catch (consoleError) {
+    const original =
+      args.find(arg => arg instanceof Error) ??
+      (typeof args[0] === 'string' ? new Error(args[0]) : undefined);
+    let errorToThrow = original ?? consoleError;
+
     try {
-      origConsoleError(...args);
-    } catch (_) {}
+      origConsoleError('console.error wrapper failed:', consoleError);
+    } catch (loggingError) {
+      errorToThrow = original ?? loggingError;
+    }
+    throw errorToThrow;
   }
 };
 

@@ -73,4 +73,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 const MetadataPanelMenuConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataPanelMenu);
-export { MetadataPanelMenu as MetadataPanelMenuView, MetadataPanelMenuConnected as MetadataPanelMenu };
+export {
+  MetadataPanelMenu as MetadataPanelMenuView,
+  MetadataPanelMenuConnected as MetadataPanelMenu,
+};
