@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import * as Sentry from '@sentry/node';
+import { init } from '@sentry/node-core/light';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 // eslint-disable-next-line node/no-restricted-import -- must not import app code so Sentry runs before other modules
 import { readFileSync } from 'fs';
@@ -11,7 +11,7 @@ const packagePath = join(__dirname, '..', 'package.json');
 const version = JSON.parse(readFileSync(packagePath, 'utf-8')).version;
 const dsn = process.env.SENTRY_API_DSN;
 if (dsn) {
-  Sentry.init({
+  init({
     release: version,
     dsn,
     environment: process.env.ENVIRONMENT || 'development',

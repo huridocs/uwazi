@@ -1,0 +1,13 @@
+diff --git a/node_modules/pirates/lib/index.js b/node_modules/pirates/lib/index.js
+index 0000000..1111111 100644
+--- a/node_modules/pirates/lib/index.js
++++ b/node_modules/pirates/lib/index.js
+@@ -28,7 +28,7 @@ function shouldCompile(filename, exts, matcher, ignoreNodeModules) {
+     return false;
+   }
+   const resolvedFilename = _path.default.resolve(filename);
+-  if (ignoreNodeModules && nodeModulesRegex.test(resolvedFilename)) {
++  if (nodeModulesRegex.test(resolvedFilename)) {
+     return false;
+   }
+   if (matcher && typeof matcher === 'function') {
