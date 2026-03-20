@@ -12,7 +12,7 @@ const getImmediateScrollableParent = (element: Element): Element | null => {
   let parent = element.parentElement;
   while (parent) {
     const style = window?.getComputedStyle(parent);
-    if (['auto', 'scroll'].includes(style.overflowY)) {
+    if (style && ['auto', 'scroll'].includes(style.overflowY)) {
       return parent;
     }
     parent = parent.parentElement;
@@ -20,6 +20,13 @@ const getImmediateScrollableParent = (element: Element): Element | null => {
   return null;
 };
 
+/**
+ *
+ * Scrolls target element into view via the first scrollable ancestor that has overflowY = 'auto' | 'scroll'.
+ * @param element target to scroll into view.
+ * @param options ScrollIntoViewOptions.
+ * @returns
+ */
 const scrollIntoView = (
   element: Element | null | undefined,
   options: ScrollIntoViewOptions = {}

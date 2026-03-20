@@ -284,13 +284,13 @@ export default defineConfig([
           selector:
             "CallExpression[callee.type='MemberExpression'][callee.property.name='scrollIntoView']",
           message:
-            "'scrollIntoView()' will scroll all scrollable elements if 'container' option is not available. Use 'app/react/V2/helpers/scrollIntoView.ts' instead",
+            "'scrollIntoView()' will scroll all scrollable elements if 'container' option is not available. Consider using '#V2/helpers/scrollIntoView.ts' to avoid potencial issues",
         },
         {
           selector:
             "OptionalCallExpression[callee.type='MemberExpression'][callee.property.name='scrollIntoView']",
           message:
-            "'scrollIntoView()' will scroll all scrollable elements if 'container' option is not available. Use 'app/react/V2/helpers/scrollIntoView.ts' instead",
+            "'scrollIntoView()' will scroll all scrollable elements if 'container' option is not available. Consider using '#V2/helpers/scrollIntoView.ts' to avoid potencial issues",
         },
       ],
     },
