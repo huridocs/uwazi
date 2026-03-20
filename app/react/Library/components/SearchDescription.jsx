@@ -57,4 +57,8 @@ function mapStateToProps({ templates }, { query }) {
 }
 
 const SearchDescriptionConnected = connect(mapStateToProps)(SearchDescription);
-export { SearchDescription as SearchDescriptionView, SearchDescriptionConnected as SearchDescription, mapStateToProps };
+export {
+  SearchDescription as SearchDescriptionView,
+  SearchDescriptionConnected as SearchDescription,
+  mapStateToProps,
+};

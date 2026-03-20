@@ -185,5 +185,5 @@ RechartsPie.propTypes = {
   data: PropTypes.array,
 };
 
-const RechartsPieConnected =  connect()(RechartsPie);
+const RechartsPieConnected = connect()(RechartsPie);
 export { RechartsPieConnected as RechartsPie };

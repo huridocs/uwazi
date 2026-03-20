@@ -220,7 +220,7 @@ const mapStateToProps = state => {
   return {
     selectedConnection: Boolean(
       (state.relationships.connection && state.relationships.connection.get('_id')) ||
-        entityBeingEdited
+      entityBeingEdited
     ),
     entity: connectionSelector(state),
     entityBeingEdited,

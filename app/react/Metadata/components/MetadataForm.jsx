@@ -275,7 +275,4 @@ export const mapStateToProps = (state, ownProps) => {
 };
 
 const MetadataFormConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
-export {
-  MetadataForm as MetadataFormView,
-  MetadataFormConnected as MetadataForm,
-};
+export { MetadataForm as MetadataFormView, MetadataFormConnected as MetadataForm };
