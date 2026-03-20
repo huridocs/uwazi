@@ -8,13 +8,14 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { createTestingZip } from '#api/csv/specs/helpers.js';
+import { createTestingZip } from '#api/csv.v2/specs/helpers/createTestingZip.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { CsvPreflightJobHandler } from '../CsvPreflightJobHandler.js';
+import { CsvCleanupImportFilesJobHandler } from '../CsvCleanupImportFilesJobHandler.js';
 import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler.js';
 import { CsvExtractUploadedZipJobFactory } from '../../factories/CsvExtractUploadedZipJobFactory.js';
@@ -174,7 +175,6 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const { csvImportsDS, fileStorage, job, jobsDispatcher } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('zip-error-last-retry');
-    const userId = f.idString('uploader-error');
     const destination = `csv-imports/${id}`;
     const zipFilename = 'upload.zip';
 
@@ -194,7 +194,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         id,
         templateId: 't1',
         file: { originalName: 'upload.zip', mimeType: 'application/zip', size: 10 },
-        createdBy: userId,
+        createdBy: f.idString('uploader-error'),
       }),
       `${destination}/${zipFilename}`
     );
@@ -215,6 +215,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         at: expect.any(Number),
       })
     );
-    expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
+    expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(CsvCleanupImportFilesJobHandler, {
+      tenantName: tenants.current().name,
+      userId: expect.any(String),
+      importId: id,
+    });
   });
 });

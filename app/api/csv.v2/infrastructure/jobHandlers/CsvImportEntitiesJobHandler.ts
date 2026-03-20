@@ -5,10 +5,15 @@ import {
 import {
   HeartbeatCallback,
   JobInfo,
+  Params as DispatchableParams,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
-import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob';
+import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob.js';
 import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
+import {
+  dispatchCleanupAfterCancelledStage,
+  handleTerminalFailureCleanup,
+} from './CsvCleanupDispatch.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -25,6 +30,32 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
     super();
   }
 
+  private static parseParams(params: DispatchableParams): Params {
+    const { importId, tenantName, userId } = params;
+    if (typeof importId !== 'string') {
+      throw new Error('CsvImportEntitiesJobHandler requires params.importId:string');
+    }
+    if (typeof tenantName !== 'string') {
+      throw new Error('CsvImportEntitiesJobHandler requires params.tenantName:string');
+    }
+    if (typeof userId !== 'string') {
+      throw new Error('CsvImportEntitiesJobHandler requires params.userId:string');
+    }
+    return { importId, tenantName, userId };
+  }
+
+  async handleDispatch(
+    heartbeat: HeartbeatCallback,
+    params: DispatchableParams,
+    jobInfo?: JobInfo
+  ): Promise<void> {
+    return super.handleDispatch(
+      heartbeat,
+      CsvImportEntitiesJobHandler.parseParams(params),
+      jobInfo
+    );
+  }
+
   async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
     const { tenantName } = this;
     let v1LoadedCount = 0;
@@ -32,6 +63,8 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
     try {
       await this.deps.useCase.execute({
         importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }) => {
             this.deps.v1Compat?.start(tenantName);
@@ -74,10 +107,21 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
           },
         },
       });
+      await dispatchCleanupAfterCancelledStage({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+      });
     } catch (error) {
-      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
-        await this.deps.useCase.markAsFailed(this.params.importId);
-      }
+      await handleTerminalFailureCleanup({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+        error,
+        jobInfo,
+      });
       throw error;
     }
   }

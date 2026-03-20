@@ -187,7 +187,7 @@ export class CsvThesauriPendingValuesBuilder {
               property: property.name,
               reason: 'Invalid thesaurus value format',
               value,
-              row: row.index,
+              row: row.rowIndex,
               type: 'parse',
             })
           );
@@ -229,7 +229,7 @@ export class CsvThesauriPendingValuesBuilder {
                   property: property.name,
                   reason: `Invalid format for language "${lang}"`,
                   value,
-                  row: row.index,
+                  row: row.rowIndex,
                   type: 'parse',
                 })
               );
@@ -242,7 +242,7 @@ export class CsvThesauriPendingValuesBuilder {
                   property: property.name,
                   reason: `Language "${lang}" value does not match default language cardinality`,
                   value: langValue,
-                  row: row.index,
+                  row: row.rowIndex,
                   type: 'translation',
                 });
                 return;
@@ -266,7 +266,7 @@ export class CsvThesauriPendingValuesBuilder {
                 property: property.name,
                 reason: `Language "${lang}" has fewer values (${parsed.labels.length}) than the default language (${labels.length}).`,
                 value: langValue,
-                row: row.index,
+                row: row.rowIndex,
                 type: 'translation',
               });
             }

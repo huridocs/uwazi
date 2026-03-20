@@ -37,12 +37,14 @@ import { CsvExtractUploadedZipJobFactory } from '#api/csv.v2/infrastructure/fact
 import { CsvImportEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvImportEntitiesJobFactory.js';
 import { CsvPreflightJobFactory } from '#api/csv.v2/infrastructure/factories/CsvPreflightJobFactory.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
+import { CsvCleanupImportFilesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCleanupImportFilesJobFactory.js';
 import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
 import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
 import { CsvImportEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler.js';
 import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { CsvCreateRelationshipEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
+import { CsvCleanupImportFilesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCleanupImportFilesJobHandler.js';
 import { CsvV1CompatEmitter } from '#api/csv.v2/infrastructure/services/CsvV1CompatEmitter.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { denormalizeRelated } from '#api/entities/denormalize.js';
@@ -261,6 +263,11 @@ export function registerJobs(
     const rowErrorsDS = CSVImportEntitiesFactories.CSVImportRowErrorsDSDefault(transactionManager);
     const v1Compat = new CsvV1CompatEmitter({ sockets, rowErrorsDS });
     return new CsvImportEntitiesJobHandler({ useCase, sockets, v1Compat });
+  });
+
+  register(CsvCleanupImportFilesJobHandler, async () => {
+    const useCase = CsvCleanupImportFilesJobFactory.default();
+    return new CsvCleanupImportFilesJobHandler({ useCase });
   });
 
   register(

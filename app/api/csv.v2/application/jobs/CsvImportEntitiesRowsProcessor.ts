@@ -42,6 +42,7 @@ const processImportRows = async (params: {
   processedRows: number;
   csvImport: CsvImport;
   shouldStop: boolean;
+  cancelled: boolean;
   stopReason?: string;
 }> => {
   const { context, callbacks, deps, batchSize, failurePolicy } = params;
@@ -60,6 +61,16 @@ const processImportRows = async (params: {
   let consecutiveFailures = 0;
 
   for (let offset = startOffset; offset < totalRows; offset += batchSize) {
+    // eslint-disable-next-line no-await-in-loop
+    if (await deps.csvImportsDS.isCancelled(context.csvImport.id)) {
+      return {
+        entitiesCreated,
+        processedRows,
+        csvImport: currentImport,
+        shouldStop: false,
+        cancelled: true,
+      };
+    }
     // eslint-disable-next-line no-await-in-loop
     const rows = await deps.rowsDS.getByImport(context.csvImport.id, offset, batchSize);
     if (!rows.length) {
@@ -91,14 +102,17 @@ const processImportRows = async (params: {
     currentImport = batchResult.csvImport;
     totalFailures += batchResult.rowErrorsCount;
     consecutiveFailures = batchResult.endConsecutiveFailures;
-    callbacks.onProgress({
-      importId: context.csvImport.id,
-      processedRows,
-      totalRows,
-      batchIndex,
-      batchCount,
-      entitiesCreatedInBatch: batchResult.entitiesCreated,
-    });
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.resolve(
+      callbacks.onProgress({
+        importId: context.csvImport.id,
+        processedRows,
+        totalRows,
+        batchIndex,
+        batchCount,
+        entitiesCreatedInBatch: batchResult.entitiesCreated,
+      })
+    );
 
     const stopDecision = evaluateStopPolicy({
       processedRows,
@@ -115,12 +129,19 @@ const processImportRows = async (params: {
         processedRows,
         csvImport: currentImport,
         shouldStop: true,
+        cancelled: false,
         stopReason: stopDecision.reason,
       };
     }
   }
 
-  return { entitiesCreated, processedRows, csvImport: currentImport, shouldStop: false };
+  return {
+    entitiesCreated,
+    processedRows,
+    csvImport: currentImport,
+    shouldStop: false,
+    cancelled: false,
+  };
 };
 
 export { processImportRows };

@@ -5,4 +5,5 @@ import { CsvImport } from '../../domain/CsvImport.js';
 export interface CsvImportEntitiesImportsDataSource {
   getAll(): Promise<CsvImport[]>;
   getById(importId: string): Promise<ResultType<CsvImport, CsvImportDoesNotExistError>>;
+  cancel(importId: string): Promise<void>;
 }

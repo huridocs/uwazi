@@ -10,6 +10,37 @@ while reviewing CSV v2 context docs, the v2 code, and v1 behavior. It is intende
 guide the next iteration and ensure the pipeline is complete before adding new logic.
 It is also a handoff guide: a new agent should be able to continue by reading this alone.
 
+### 1.2) Document mode (important)
+
+This file is maintained as an **agent-readable working baseline**, not as an exhaustive
+execution diary.
+
+- Keep content focused on:
+  - current system baseline,
+  - what is still missing,
+  - implementation constraints and conventions.
+- Avoid adding long chronological iteration reports unless a detail is still necessary for
+  active decisions.
+- When historical detail exists, treat it as **context only**, never as the normative source
+  for next actions.
+
+### 1.3) Current open-work snapshot (normative)
+
+Use this snapshot first; companion docs provide deeper implementation detail.
+
+1. **Frontend handoff first:** publish concise frontend implementation notes (feature flags, endpoints, sockets, V1 vs V2 expectations). Source of truth: `AI Contexts/CSV/csv-v2-front-end-notes.md`.
+2. Keep CSV v2 scoped inside `app/api/csv.v2/**` unless explicit approval is given for core edits.
+3. Continue row-error taxonomy stabilization for UX-facing diagnostics and API projections.
+4. Improve integration coverage (full chain + import batch/report/failure-threshold scenarios).
+5. Stabilize test infrastructure behavior for CI-like parallel execution.
+6. Publish user-facing import guidance (ReadTheDocs scope in section 19).
+
+### 1.1) Critical working rule (highest priority)
+
+- **DO NOT CHANGE CORE BEHAVIOR (queue, router, dispatcher, base controller, base result/error contracts, etc.) unless explicitly discussed in depth with the team/user first and approved.**
+- If a CSV v2 change appears to require core edits, stop and escalate with a written proposal and alternatives that stay inside `csv.v2`.
+- CSV v2 Jobs/Handlers must adhere to core queue typings and structures as-is.
+
 ### 2) Current v2 pipeline snapshot (code)
 
 - Register import (`CsvImportEntities`) → extraction + row staging (`CsvExtractUploadedZipJob`)
@@ -46,6 +77,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - TODO: Audit `csv.v2` internal imports and ensure they use **relative paths** (avoid `/api` syntax).
 - TODO: Ensure **all stages update `csv_imports.status`** (and stats) even when no work is done,
   so the UI can rely on status transitions instead of missing socket messages.
+- Dedicated dependency audit/handoff for this workstream:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
 
 #### 3.4 Tests and coverage gaps
 
@@ -69,11 +102,14 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 #### 3.7 Progress query endpoints
 
 - **Implemented (Feb 2026):** Added CSV entities-import read endpoints in `csv.v2`:
+  - `POST /api/csvImportEntities` (V2-only register/import enqueue endpoint).
   - `GET /api/csvImportEntities/imports` returns `{ rows: [...] }`.
   - `GET /api/csvImportEntities/imports/:id` returns the raw import object body.
   - List rows include `status` as a first-class field for UX list rendering.
 - **TODO (next iteration):**
   - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
+  - Add dedicated failed-rows report download endpoint for CSV v2
+    (for `rowErrors.reportPath`, admin-only, import-scoped authorization).
   - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
     collections performant and improve UX load times.
   - Include already-persisted extraction metadata in the detail response so UX can render
@@ -109,7 +145,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
    - Extracted helper logic into `CsvPreflightRelationshipsService`.
    - Removed ESLint/TS disables from the relationships job (now `CsvCreateRelationshipEntitiesJob`).
 
-### 6) What was completed in this iteration (Jan 2026)
+### 6) Legacy implementation history (archival, non-normative)
 
 1. **Relationships create stage implemented**
 
@@ -289,7 +325,8 @@ is confusing and inconsistent with thesauri preflight behavior.
 
 - New helper `CsvImportRowFilesResolver` reads extracted files via `FileStorage`
   (`csv-imports/{importId}/extracted`) and builds `InputFile[]` for documents
-  (`file` column, split by `|`) and attachments (`attachments` column, split by `|`).
+  (`file` single-value with `file__{defaultLanguage}` support, plus `files` multi-value via `|`)
+  and attachments (`attachments` column, split by `|`).
 - `CsvEntitiesImportMapper` now returns `PropertyAssignmentInput` (not domain assignments)
   and can map image/media values to `{ attachment: index }` when filenames match attachments.
   This avoids duplicating domain normalization logic; trimming/validation happens in the
@@ -382,6 +419,16 @@ is confusing and inconsistent with thesauri preflight behavior.
 - **Doc hygiene is mandatory:** Whenever a user gives new instructions or corrections,
   update the relevant CSV v2 context docs in the same iteration so the next agent can
   continue without extra guidance. These MDs are the source of truth.
+- **Indexes context companion:** For CSV v2 Mongo indexing decisions and migration notes,
+  read and maintain `AI Contexts/CSV/csv-v2-context-07-indexes.md` together with this file.
+- **Cleanup context companion:** For terminal artifact-cleanup job design and handoff notes,
+  read and maintain `AI Contexts/CSV/csv-v2-context-07-cleanup.md` together with this file.
+- **Error taxonomy companion:** For row-error codes/messages/details standardization and
+  implementation plan, read and maintain
+  `AI Contexts/CSV/csv-v2-context-07-error-taxonomy.md` together with this file.
+- **Queue test-pollution companion:** For queue isolation/cleanup hardening in CSV v2 specs,
+  read and maintain
+  `AI Contexts/CSV/csv-v2-context-07-queue-test-pollution.md` together with this file.
 - **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
   in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -406,12 +453,16 @@ is confusing and inconsistent with thesauri preflight behavior.
 Running CSV v2 tests leaves jobs in the queue collection even when tests pass. The queue uses the
 shared DB and default queue name; dispatched jobs are not auto-cleaned.
 
-**Mitigation options:**
+Scope clarification (Mar 2026):
 
-- **Test cleanup:** delete the queue collection in CSV v2 specs (`afterEach`/`afterAll`).
-- **Test queue namespace:** configure a test-only queue name to isolate/purge safely.
-- **Recording/Sync dispatcher:** use non-queue dispatchers in tests that don't need real workers.
-- **No worker during tests:** ensure the queue worker isn't running when tests enqueue jobs.
+- In `NODE_ENV=test`, shared DB resolves to `uwazi_shared_db_testing`, so this no longer pollutes
+  the main shared DB used outside tests.
+- Priority remains test quality/stability (cross-suite contamination/flakiness), but criticality is
+  lower than before this isolation change.
+
+Source of truth for this track:
+
+- `AI Contexts/CSV/csv-v2-context-07-queue-test-pollution.md`
 
 ### 10) TODO — Improve row-level error messaging
 
@@ -420,15 +471,35 @@ Row errors are currently low-signal for end users (e.g., an empty CSV line can s
 errors/warnings for common parsing issues (empty line, missing required columns, malformed rows),
 and avoid leaking internal exceptions directly to users.
 
-### 11) TODO — Define file column conventions (v1 parity + multi-file option)
+Policy clarification (agreed):
 
-We should formalize CSV file column semantics to avoid ambiguity and align with v1:
+- Preserve row index fidelity for analysis/import traceability.
+- Malformed rows are true failures and must remain visible in row errors and failed-rows CSV.
+- Empty source lines are the exception: they should not be surfaced as row errors and should not
+  produce blank entries in failed-rows CSV.
+
+Source of truth for this track:
+
+- `AI Contexts/CSV/csv-v2-context-07-error-taxonomy.md`
+
+### 11) File column conventions (v1 parity + multi-file option)
+
+Status (Mar 2026): **Implemented in code + unit specs**
+
+Formalized CSV file column semantics:
 
 - `file__XX` (language-specific): **one value per cell**.
 - `file` (default language): **one value per cell**.
 - `files` (new, multi-file): allows a single value or `|`‑separated list.
+- `files` is unsuffixed only (no `files__XX` support).
 
-Goal: keep v1 semantics intact while providing an explicit multi-file column.
+Compatibility objective met:
+
+- `file` reverted to v1-compatible single-value semantics.
+- `files` is the explicit opt-in multi-file column.
+- Added/updated specs:
+  - `CsvImportRowFilesResolver.spec.ts` covers `file`, `file__default`, and `files` behavior.
+  - `CsvHeaderAnalyzer.spec.ts` asserts `files__XX` is rejected.
 
 ### 12) TODO — Add cancel endpoint (cooperative stop, no cleanup)
 
@@ -486,6 +557,46 @@ Minimal guard pattern (recommended):
   - If import is already in terminal `completed`/`failed`, cancel endpoint should be a no-op
     response and must not rewrite terminal history.
   - Job handlers should treat cancellation exits as clean stop (not retryable error paths).
+
+### 12.1) Cancellation implementation caveat discovered (Mar 2026)
+
+This section records a rejected direction so it is not repeated.
+
+**Rejected approach (do not implement):**
+
+- Using a blanket `updateIfNotCancelled` / compare-and-set gate for all `csv_imports` writes.
+- Why rejected:
+  - It can suppress legitimate progress/stat updates from already completed work (for example, a finished batch) if cancellation happens between work completion and write.
+  - It violates expected UX semantics where completed work must remain reflected.
+
+**Desired flow (agreed):**
+
+1. Check cancellation at safe checkpoints:
+   - start of each job,
+   - start of each batch/chunk/loop unit.
+2. If cancelled at checkpoint:
+   - stop cleanly,
+   - do not dispatch downstream jobs.
+3. Persist completed work updates (progress/stats/errors/report metadata) normally.
+4. Ensure status monotonicity:
+   - once `status = cancelled`, subsequent writes must not revert status to `retrying`, `failed`, `*:done`, etc.
+   - this should be enforced in CSV v2 import-write logic, not by dropping all writes.
+5. No rollback/cleanup in cancel flow (as already agreed).
+
+### 12.2) Typing incident and TODO (Mar 2026)
+
+During cancel-flow implementation attempts, dispatch typing friction around CSV job handlers led to an incorrect attempt to modify core queue typing/contracts. That direction is explicitly rejected.
+
+**Do not do this again:**
+
+- Do not change core queue/router/dispatcher typing contracts to satisfy CSV v2 compile issues.
+- Do not use force casts (`as any`, `as unknown as`) as a final solution in CSV v2 production code.
+
+**TODO (typing discipline):**
+
+- Ensure CSV v2 Jobs and JobHandlers strictly conform to the existing core queue typing/contracts.
+- Fix CSV v2 compile issues by aligning CSV v2 code to core structures (not by introducing cast-based shortcuts).
+- Do not add local dispatch typing adapters/wrappers as an alternate contract layer.
 
 ### 13) TODO — ANY-template relationships with deterministic conflict handling
 
@@ -552,6 +663,40 @@ Required behavior (split by scenario):
 - Row-error messages now include property, token, reason, candidate count, and scope context.
 - No fallback behavior remains (`first/last match` resolution removed).
 
+### 15) Mongo indexes for CSV v2 collections
+
+**Status (Mar 2026): Implemented and verified**
+
+- Baseline CSV v2 indexes were added via migration:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/index.ts`
+- Migration spec exists and validates all baseline index names/keys/options:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+- Focused verification command:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+  - result: pass (7/7 tests).
+
+Follow-up maintenance rule:
+
+- Revisit and evolve indexes whenever new CSV v2 query paths are introduced (treat index review as part of done criteria for new read/write patterns).
+
+### 16) TODO — Cleanup extracted/original files after import reaches terminal state
+
+Source of truth for this track:
+
+- `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
+
+Problem:
+
+- CSV artifacts under `csv-imports/{importId}` are currently retained indefinitely.
+- We do not need to keep original/extracted import files in S3/disk after the import is done.
+
+Required behavior:
+
+- Implement final cleanup when import reaches terminal status (`completed`, `failed`, `cancelled`):
+  remove original upload + extracted assets (idempotent, retry-safe).
+- Apply cleanup consistently for success and stop/error terminal paths.
+- Keep entity-owned files untouched; cleanup scope is only CSV import staging artifacts.
+
 ### 8) Next agent checklist (quick start)
 
 1. Skim `csv-v2-context-07.md` and confirm the pipeline chain in code:
@@ -564,3 +709,578 @@ Required behavior (split by scenario):
 6. Update tests if you touch `CsvCreateThesauriValuesJob` input shape (it now requires
    `tenantName` and `userId`).
 7. Run ESLint/TS checks on touched files before handing off.
+
+### 17) Execution checklist to avoid regressions (mandatory)
+
+Use this as a strict gate before, during, and after implementation.
+
+#### 17.1 Before coding (alignment gate)
+
+- Re-state target behavior in 3 bullets and verify with user/team:
+  1. cancellation checks at safe checkpoints (job start + batch/chunk boundaries),
+  2. already-completed work remains reflected in persisted progress/stats/errors,
+  3. `status: cancelled` is monotonic and must never be reverted by stale writes.
+- Confirm file scope for the task:
+  - Allowed by default: `app/api/csv.v2/**` and CSV context docs.
+  - Forbidden without explicit approval: queue/router/dispatcher/controller/result/error **core contracts/behavior**.
+
+#### 17.2 Non-negotiable DO NOTs
+
+- Do **not** introduce `as any` / `as unknown as` in production CSV v2 code.
+- Do **not** change core queue typings/contracts to “fix” CSV v2 compile issues.
+- Do **not** ship cast-based or “temporary” typing hacks as final implementation.
+
+#### 17.3 Implementation order (discipline)
+
+1. Implement behavior in CSV v2.
+2. Run lint/type checks on touched files.
+3. Run focused tests for changed flows.
+4. If an error suggests a core change, stop and escalate with options; do not patch core by default.
+
+#### 17.4 Cancellation acceptance criteria (must all pass)
+
+- Start-of-job cancellation check exists for every stage.
+- Start-of-batch/chunk cancellation check exists for iterative stages.
+- Completed batch/chunk results persist (progress/stats/error counts/report metadata).
+- Downstream dispatch is skipped after cancellation detection.
+- `status` cannot be overwritten away from `cancelled` by stale snapshots.
+- Cancellation exits are clean stops (not retry/failure paths unless truly exceptional).
+
+#### 17.5 Known regression traps
+
+- Full-document stale `$set` can clobber `status: cancelled`.
+- “Block all writes when cancelled” hides already-completed work from users.
+- Emitting success after cancellation creates inconsistent UX state.
+- Fixing CSV typing by touching core contracts causes broad breakage/risk.
+
+#### 17.6 Verification baseline (required)
+
+- Lint/type-check all touched CSV v2 files.
+- Run focused specs for cancel-related paths and impacted jobs.
+- Run Jest in this repo with:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest path-or-string-to-file`
+- Include at least one scenario where cancellation happens between batch completion and finalization write, and verify:
+  - completed progress remains visible,
+  - status remains `cancelled`,
+  - no downstream stage is dispatched.
+
+#### 17.7 Escalation rule
+
+- If the only apparent fix is a core contract/behavior change:
+  - stop implementation,
+  - provide a short written proposal with alternatives and trade-offs,
+  - wait for explicit approval before touching core.
+
+### 18) Legacy historical log (non-normative)
+
+This section contains prior iteration history. It is retained for context, but it is not the
+primary source of truth for planning.
+
+When this file is updated, prefer keeping sections 1.x, active TODOs, and priority sections
+current instead of appending detailed chronological logs.
+
+#### 18.1 Test command convention (explicit)
+
+- Standard command to run focused Jest specs in this repo:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest path-or-string-to-file`
+- This is now the default command format for CSV v2 verification.
+- Environment note:
+  - In sandboxed agent environments, Jest/DB-backed specs can show false negatives
+    (timeouts, setup/connection issues) that do not reproduce locally.
+  - If this happens, rerun the same command outside sandbox restrictions before
+    concluding there is a code regression.
+
+#### 18.2 CSV v2 JobHandler typing alignment (core-safe)
+
+- Context: Type errors surfaced in CSV v2 job dispatch calls (e.g. dispatching `Csv*JobHandler` classes from jobs) due to strict `JobsDispatcher` generic constraints expecting `Dispatchable` signatures.
+- Decision: **Do not touch core queue/router/dispatcher contracts**.
+- Fix applied inside CSV v2 only:
+  - Updated all CSV v2 job handlers to explicitly implement a compatible `handleDispatch(...)` signature using core `Dispatchable` params.
+  - Added strict runtime param parsing per handler (`importId`, `tenantName`, `userId`) and delegated to `UserAwareDispatchable` via `super.handleDispatch(...)`.
+  - Kept handler `handle(...)` logic unchanged.
+- Handlers updated:
+  - `CsvExtractUploadedZipJobHandler`
+  - `CsvPreflightJobHandler`
+  - `CsvCreateThesauriValuesJobHandler`
+  - `CsvCreateRelationshipEntitiesJobHandler`
+  - `CsvImportEntitiesJobHandler`
+- Also normalized handler imports to explicit `.js` paths where needed.
+
+#### 18.3 Outcome achieved
+
+- CSV v2 dispatch typing errors in job dispatch sites were resolved without any core contract changes.
+- No force-cast shortcut was introduced as a final production solution in CSV v2.
+- Focused cancel use-case spec passes using the standardized command.
+
+#### 18.4 Cancel-flow implementation record (Mar 2026)
+
+This captures the concrete cancel-flow work completed in the same iteration so handoff is complete.
+
+- **Endpoint + use case (admin-only, idempotent/monotonic):**
+  - Added route: `POST /api/csvImportEntities/imports/:id/cancel`
+    - file: `app/api/csv.v2/infrastructure/http/routes.ts`
+  - Added controller:
+    - `app/api/csv.v2/infrastructure/http/CancelCsvImportEntitiesImportController.ts`
+  - Added use case:
+    - `app/api/csv.v2/application/useCases/CancelCsvImportEntitiesImportUseCase.ts`
+  - Added factory wiring:
+    - `app/api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.ts`
+  - Terminal no-op semantics are enforced (`import:entities:done`, `completed`, `failed`, `cancelled`).
+
+- **Data source contract + Mongo implementation:**
+  - Extended contracts:
+    - `CsvImportsDataSource`: added `cancel(importId)` and `isCancelled(importId)`
+    - `CsvImportEntitiesImportsDataSource`: added `cancel(importId)`
+  - Implemented in:
+    - `app/api/csv.v2/infrastructure/mongodb/MongoCsvImportsDataSource.ts`
+  - Monotonic status guard implemented in `update(...)`:
+    - if persisted status is already `cancelled`, subsequent updates keep `status=cancelled`
+    - other fields (stats/progress/errors/etc.) are still persisted
+    - this prevents stale snapshot writes from reverting cancellation.
+
+- **Cooperative stop checkpoints added (no rollback/cleanup):**
+  - Job-start cancel checks added in:
+    - `CsvExtractUploadedZipJob`
+    - `CsvPreflightJob`
+    - `CsvCreateThesauriValuesJob`
+    - `CsvCreateRelationshipEntitiesJob`
+    - `CsvImportEntitiesJob`
+  - Iterative checkpoint checks added at safe boundaries:
+    - preflight scan batch loop (`CsvPreflightJob`)
+    - thesauri pending-doc loop (`CsvCreateThesauriValuesJob`)
+    - relationship template/chunk loops (`CsvPreflightRelationshipsService` + `CsvCreateRelationshipEntitiesJob`)
+    - entities import batch loop (`CsvImportEntitiesRowsProcessor`)
+    - extract row staging batch insertion (`CsvExtractUploadedZipJob`)
+  - Downstream dispatch is skipped when cancellation is detected before dispatch/finalization.
+
+- **Completed-work visibility preserved:**
+  - Rejected blanket “drop writes if cancelled” behavior was not used.
+  - Progress/stats/errors/report metadata writes remain persisted.
+  - Only status regression away from `cancelled` is blocked.
+
+- **Additional support file added:**
+  - `app/api/csv.v2/application/services/CsvImportCancellation.ts`
+    - explicit cancelled error marker used for clean cooperative stop paths.
+
+- **Tests updated in this iteration:**
+  - Added:
+    - `app/api/csv.v2/application/useCases/specs/CancelCsvImportEntitiesImportUseCase.spec.ts`
+      - verifies idempotent cancel and terminal no-op semantics.
+  - Updated:
+    - `app/api/csv.v2/application/jobs/specs/CsvImportEntitiesJob.spec.ts`
+      - scenario: cancel between batch completion and finalization write
+      - verifies completed progress remains visible and status remains `cancelled`.
+
+- **Verification notes (current environment):**
+  - Focused cancel use-case spec passes using the mandated command format.
+  - CSV integration specs requiring Mongo may fail locally when Mongo is unavailable (`ECONNREFUSED 127.0.0.1:27017`); rerun in a test environment with DB available.
+
+#### 18.5 Follow-up test-fix update (Mar 2026)
+
+- New regressions detected during `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`:
+  - `CsvCreateThesauriValuesJob.spec.ts` and `CsvPreflightJobErrorHandling.spec.ts` failed with:
+    - `this.deps.csvImportsDS.isCancelled is not a function`
+- Root cause:
+  - unit-test local mocks for `csvImportsDS` were not updated after adding cooperative cancellation checks that call `isCancelled(...)`.
+- Fix applied:
+  - Updated both specs to provide `isCancelled: jest.fn().mockResolvedValue(false)` on mocked `csvImportsDS`.
+- Verification:
+  - command run:
+    - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts app/api/csv.v2/application/jobs/specs/CsvPreflightJobErrorHandling.spec.ts`
+  - result: both suites pass.
+
+- Remaining failures in the full `csv.v2` run are environment/infrastructure related:
+  - Elasticsearch connection errors (`socket hang up` to `127.0.0.1:9200`) in integration suites.
+  - These are not caused by the CSV cancel-flow typing/cancellation changes; rerun with Elasticsearch available.
+
+#### 18.6 Cancellation nuance correction (Mar 2026)
+
+Critical semantic clarification from review:
+
+- `cancel` means **"stop when safe"** (cooperative stop), not "discard integrity data".
+- If a real exception occurs after cancellation was requested, failure metadata should still be persisted for observability/integrity.
+- Only explicit cooperative-cancel exits should be treated as clean no-op stops.
+
+What was corrected in implementation:
+
+- Removed catch-path short-circuit logic that previously skipped failure persistence when `isCancelled(...) === true`.
+- Updated jobs:
+  - `CsvPreflightJob`
+  - `CsvCreateThesauriValuesJob`
+  - `CsvCreateRelationshipEntitiesJob`
+  - `CsvImportEntitiesJob`
+- Behavior now:
+  1. checkpoint cancellation exits still return cleanly (no downstream dispatch),
+  2. real exceptions still go through failure persistence + onError callbacks,
+  3. `status` monotonicity remains protected by the CSV import datasource guard (cancelled status is not reverted).
+
+Rationale:
+
+- preserves completed-work writes and error observability,
+- avoids silent data-loss of failure context,
+- keeps the agreed cooperative-stop model.
+
+#### 18.7 Extract-stage cooperative cancel refactor (Mar 2026)
+
+Additional refinement requested:
+
+- Remove throw-based cancellation control flow (`throwIfCancelled`) from extract stage.
+- Reason: cancellation is not an error; cooperative stop should use explicit early returns/checkpoints.
+
+What changed:
+
+- Refactored `CsvExtractUploadedZipJob` to remove:
+  - `throwIfCancelled(...)`,
+  - cancellation sentinel error usage.
+- Replaced with explicit checkpoint checks (`isCancelled(...)`) and clean returns at:
+  - start of extraction flow,
+  - after normalization,
+  - before/after row staging,
+  - before success callback emission.
+- Non-cancellation exceptions still persist failure metadata via `handleError(...)`.
+
+- Enhanced `CsvImportRowsStager` to support cooperative stop without throws:
+  - added optional `shouldContinue?: () => Promise<boolean>` to stage params,
+  - accumulator now stops staging and skips further batch writes once continuation returns `false`,
+  - no extra progress/writes after stop flag is reached.
+
+- Removed now-unused cancellation sentinel helper file:
+  - `app/api/csv.v2/application/services/CsvImportCancellation.ts`
+
+Outcome:
+
+- Cancellation in extract stage is now explicit “stop when safe” flow (no exception-driven cancellation path),
+- while preserving existing behavior for real errors and downstream-dispatch guards.
+
+#### 18.8 Checkpoint-density simplification policy (Mar 2026)
+
+Follow-up refinement applied to reduce cancellation-check noise and improve readability.
+
+Policy now used across CSV v2 jobs:
+
+1. Check at **job/stage start**.
+2. Check at **batch/chunk loop boundaries**.
+3. Check **before downstream dispatch**.
+4. Check **before success callback emission**.
+
+Avoid:
+
+- repeated micro-checks around short local blocks with no external side effects.
+
+Implementation simplifications performed:
+
+- Consolidated adjacent early-return guards in `CsvImportRowsStager` where semantics are equivalent.
+- Ensured `shouldContinue` is actually propagated from `stage(...)` into the accumulator.
+- Removed redundant pre-write cancellation guards that could hide completed-work persistence just before finalize writes in:
+  - `CsvPreflightJob` transaction finalize block,
+  - `CsvCreateThesauriValuesJob` finalize path,
+  - `CsvCreateRelationshipEntitiesJob` finalize path.
+- Kept mandatory guards at loop boundaries, pre-dispatch, and pre-success callback.
+
+#### 18.9 V1-dependency cleanup progress + migration spec polish (Mar 2026)
+
+- Added dedicated handoff/inventory doc for this workstream:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
+- Decoupled CSV v2 tests from v1 helper imports:
+  - Created `app/api/csv.v2/specs/helpers/createTestingZip.ts`.
+  - Updated CSV v2 extraction specs to import this v2-local helper instead of `#api/csv/specs/helpers.js`.
+- Typing cleanup for the new helper:
+  - Added dev dependency `@types/yazl`.
+  - Updated helper import to `import { ZipFile } from 'yazl'`.
+  - Removed temporary ambient declaration shim once real types were installed.
+- Migration spec output suppression aligned with repo convention:
+  - `app/api/migrations/migrations/185-csv_v2_indexes/specs/185-csv_v2_indexes.spec.ts`
+    now mocks `process.stdout.write` in `beforeAll` to avoid printing migration banners during tests.
+- Verification:
+  - CSV v2 focused extraction specs pass.
+  - `185-csv_v2_indexes` focused spec still passes after stdout-silencing update.
+
+#### 18.10 Thesauri v2 replacement pass (Mar 2026)
+
+- Removed CSV v2 dependency on legacy thesauri/translations modules:
+  - deleted:
+    - `app/api/csv.v2/infrastructure/services/LegacyThesauriRepository.ts`
+    - `app/api/csv.v2/infrastructure/services/LegacyTranslationsRepository.ts`
+  - added:
+    - `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
+    - `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
+  - updated factory wiring:
+    - `app/api/csv.v2/infrastructure/factories/CsvCreateThesauriValuesJobFactory.ts`
+- Replaced direct `normalizeThesaurusLabel` usage from v1 module:
+  - added `app/api/csv.v2/application/services/CsvThesaurusLabelNormalizer.ts`
+  - updated:
+    - `CsvThesauriValuesDiff`
+    - `PendingThesauriValuesApplier`
+    - `CsvEntitiesImportMapper`
+- `PendingThesauriValuesApplier` now passes context label to translations repository updates
+  (to preserve thesaurus context metadata when upserting translation keys).
+- Verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/services/specs/CsvEntitiesImportMapper.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
+  - result: pass (3 suites, 17 tests).
+- Remaining intentional compatibility bridges are tracked in:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
+
+#### 18.11 Review clarifications + next first priority (Mar 2026)
+
+- Clarified behavior: v1 thesaurus normalization lowercases labels for matching/dedup keys,
+  but does not force stored labels to lowercase; effective matching remains case-insensitive.
+- Fixed TS issue in `CsvThesauriRepository` ("transaction manager used before initialization")
+  by moving DS initialization into constructor.
+- **Explicit next-agent first priority (for boundary cleanup):**
+  - Collapse temporary CSV adapter repositories introduced in 18.10 and refactor thesauri-create
+    flow to consume v2-native contracts/services directly.
+  - Source of truth for this priority:
+    - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md` (section "Next-agent first priority — collapse temporary adapters").
+
+#### 18.12 Temporary thesauri adapter layer removed (Mar 2026)
+
+- Completed the follow-up from 18.11:
+  - deleted:
+    - `app/api/csv.v2/infrastructure/services/CsvThesauriRepository.ts`
+    - `app/api/csv.v2/infrastructure/services/CsvTranslationsRepository.ts`
+    - `app/api/csv.v2/application/contracts/ThesauriRepository.ts`
+    - `app/api/csv.v2/application/contracts/TranslationsRepository.ts`
+- `CsvCreateThesauriValuesJobFactory` now injects native dependencies directly:
+  - core `ThesauriDataSource` via `ThesauriDataSourceFactory.default(...)`
+  - `i18n.v2` `TranslationsDataSource` via `DefaultTranslationsDataSource(...)`
+- `PendingThesauriValuesApplier` now consumes those native contracts directly to:
+  - load/update thesauri values,
+  - upsert translations.
+- No CSV-local thesauri/translations repository wrappers remain in production code.
+- Follow-up maintainability pass:
+  - split `PendingThesauriValuesApplier` helper logic into focused service modules:
+    - `PendingThesauriThesaurusGateway`
+    - `PendingThesauriTranslationsGateway`
+    - `PendingThesauriAppliedValuesCollector`
+  - goal: keep applier orchestration readable while preserving behavior.
+- Test cleanup (integration-first):
+  - replaced fake/mocked DS/result-set coverage in:
+    - `CsvCreateThesauriValuesJob.spec.ts`
+    - `PendingThesauriValuesApplier.spec.ts`
+  - both specs now run against real Mongo-backed data sources and real result sets via
+    `testingEnvironment` + fixtures, aligned with the CSV v2/core v2 testing rule.
+- `CsvCreateThesauriValuesJobFactory` now lazily resolves a Mongo transaction manager only when DS defaults are needed, allowing typed non-Mongo transaction-manager doubles in tests without async-context failures.
+- Focused verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
+  - result: pass (2 suites, 4 tests).
+
+#### 18.13 Boundary-cleanup status checkpoint (Mar 2026, latest)
+
+- CSV-local thesauri/translations adapters are removed and covered by focused tests.
+- Remaining v1 compatibility bridges are identified and documented in:
+  - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
+- **Current decision:** bridge removal (`v1` fallback route + `CsvV1CompatEmitter`) is explicitly deferred for now and should not be executed in the next slice unless re-prioritized by user/team.
+- Handoff rule for next agent:
+  - use the current bridge-preserving baseline as the starting point,
+  - proceed with the next approved task, not compat bridge removal by default.
+
+#### 18.14 Cleanup workstream context split (Mar 2026)
+
+- Added dedicated cleanup handoff/source-of-truth document:
+  - `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
+- Cleanup scope and constraints are now tracked separately from the v1-boundary track:
+  - cleanup runs as a dedicated background job/handler,
+  - dispatch on terminal states (`completed`, `failed`, `cancelled`),
+  - no user-facing status/event changes (housekeeping only),
+  - internal cleanup-state field recommended on `csv_imports` (`fileCleanup` structured state).
+- This main context now references the cleanup companion in:
+  - section 7 (agent-specific companion docs),
+  - section 16 (cleanup TODO source-of-truth pointer).
+
+#### 18.15 Cleanup trigger clarification (Mar 2026)
+
+- Cleanup dispatch semantics were tightened after race-risk review:
+  - do **not** dispatch cleanup directly from cancel endpoint/use case,
+  - run cleanup only at terminal-safe stage boundaries.
+- Agreed trigger points:
+  - success: only after entities-import terminal success,
+  - cancel: after the currently running stage exits cleanly with `cancelled`,
+  - hard failures: non-retryable or retry-exhausted terminal failures.
+- Internal cleanup marker simplified to:
+  - `filesCleanup: 'pending' | 'done' | 'failed'`
+  - no additional attempts/retry/error payload on `csv_imports`.
+- Source of truth:
+  - `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
+
+#### 18.16 Cleanup stage implementation + dedup refactor (Mar 2026)
+
+- Implemented cleanup stage in CSV v2:
+  - `CsvCleanupImportFilesJob`
+  - `CsvCleanupImportFilesJobHandler`
+  - `CsvCleanupImportFilesJobFactory`
+  - queue registration in `queueRegistry`.
+- Import-level internal marker implemented as agreed:
+  - `filesCleanup: 'pending' | 'done' | 'failed'`
+  - no attempt/error payload expansion on `csv_imports`.
+- Cleanup scope finalized in code:
+  - delete original upload + extracted staging assets,
+  - preserve failed-rows report artifact (`csv-imports/{importId}/reports/failed_rows.csv`) for UX download flow.
+- Terminal cleanup dispatch is now active for:
+  - entities-import success (`import:entities:done`),
+  - cooperative-cancel exits at stage boundaries,
+  - terminal failures (non-retryable and retry-exhausted).
+- Design cleanup to remove repeated logic:
+  - job-level cleanup behavior centralized in:
+    - `app/api/csv.v2/application/jobs/CsvCleanupAwareJob.ts`
+  - handler-level terminal cleanup flow centralized in:
+    - `app/api/csv.v2/infrastructure/jobHandlers/CsvCleanupDispatch.ts`
+  - stage jobs/handlers now call shared helpers instead of duplicating the same blocks.
+- Verification:
+  - new integration spec added:
+    - `app/api/csv.v2/application/jobs/specs/CsvCleanupImportFilesJob.spec.ts`
+  - full CSV v2 suite passes:
+    - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
+    - result: pass (17 suites, 66 tests).
+
+#### 18.17 Cleanup follow-up stabilization + handoff target (Mar 2026)
+
+- Test-stability follow-up implemented:
+  - `CsvImportEntitiesJobFactory.build(...)` now allows optional `jobsDispatcher` injection.
+  - `CsvImportEntitiesJob.spec.ts` injects a mocked dispatcher to avoid queue/session flakiness
+    in full-suite execution (`Transaction ... has been committed`).
+  - Production wiring remains unchanged (default dispatcher path still used outside tests).
+- Cleanup workstream status:
+  - terminal artifact cleanup is implemented and verified,
+  - failed-rows report artifact is intentionally preserved.
+- Next handoff target (priority continuation):
+  - proceed to **file-column contract freeze** (`file__LANG`, `file`, `files`) as the next active
+    TODO after cleanup completion (**completed in 18.18**).
+
+#### 18.18 File-column contract freeze update (Mar 2026)
+
+- Implemented contract alignment for file columns in CSV v2 entities import:
+  - `file` / `file__{defaultLanguage}` is now single-value only (v1 parity),
+  - `files` is the new explicit multi-value document column (`|` separated),
+  - `attachments` remains multi-value (`|` separated).
+- `files` suffixes are intentionally unsupported:
+  - `files__{lang}` is now explicitly rejected by header analysis as unknown property.
+- Resolver behavior updated in:
+  - `app/api/csv.v2/application/services/CsvImportRowFilesResolver.ts`
+- Spec coverage added/updated:
+  - `app/api/csv.v2/application/services/specs/CsvImportRowFilesResolver.spec.ts`
+  - `app/api/csv.v2/application/services/specs/CsvHeaderAnalyzer.spec.ts`
+- Focused verification passed:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/CsvImportRowFilesResolver.spec.ts app/api/csv.v2/application/services/specs/CsvHeaderAnalyzer.spec.ts`
+
+#### 18.19 Error taxonomy write-path implementation (Mar 2026)
+
+- Implemented taxonomy persistence for entities-import row errors:
+  - `csv_import_row_errors` now stores `code` + optional structured context
+    (`property`, `rawValue`, `details`) with stable `message`.
+- Added application mapper:
+  - `CsvRowImportErrorFactory.fromException(...)` used in
+    `CsvImportEntitiesBatchProcessor` instead of persisting raw `error.message`.
+- Producer-side normalization added:
+  - `CsvImportRowFilesResolver` now throws typed file errors (`FILE_NOT_FOUND` mapping),
+  - relationship resolver paths now throw typed relationship errors
+    (`RELATIONSHIP_NOT_FOUND` / `RELATIONSHIP_AMBIGUOUS` mappings).
+- Unknown exceptions are sanitized to `INTERNAL_ERROR` with user-safe message.
+- Option A preserved explicitly:
+  - failed-rows report remains row-only CSV with original failed source rows (no error columns).
+
+#### 18.20 Parallel-test cancellation race stabilization (Mar 2026)
+
+- Resolved an intermittent integration failure in parallel suite runs:
+  - symptom: `MongoServerError: Transaction with { txnNumber: ... } has been committed`
+    in `CsvImportEntitiesJob.spec.ts` cancellation scenario.
+- Root cause:
+  - async cancellation triggered inside `onProgress` callback could race transaction/session
+    lifecycle because progress callback completion was not awaited by the rows processor.
+- Fix:
+  - `CsvImportEntitiesRowsProcessor` now awaits `callbacks.onProgress(...)` using
+    `await Promise.resolve(...)` (supports both sync and async callbacks).
+- Verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
+  - result: pass (19 suites, 76 tests).
+
+#### 18.21 Queue test-pollution hardening update (Mar 2026)
+
+- Scope clarification confirmed in code:
+  - test-mode shared DB is `uwazi_shared_db_testing` (not main shared DB),
+  - queue pollution risk is test contamination/flakiness, not production DB contamination.
+- Implemented queue hardening in CSV v2 specs:
+  - added helper:
+    - `app/api/csv.v2/specs/helpers/queueTestCleanup.ts`
+    - deletes queue docs by `{ queue: config.queueName, namespace: tenants.current().name }`
+      on shared DB.
+  - wired queue cleanup in integration-spec `afterEach`:
+    - `CsvExtractUploadedZipJob.spec.ts`
+    - `CsvPreflightJob.spec.ts`
+    - `CsvCreateThesauriValuesJob.spec.ts`
+    - `CsvCreateRelationshipEntitiesJob.spec.ts`
+    - `CsvImportEntitiesJob.spec.ts`
+  - replaced remaining implicit default-dispatcher usage with mocked `jobsDispatcher` in:
+    - `CsvCreateThesauriValuesJob.spec.ts`
+    - `CsvCreateRelationshipEntitiesJob.spec.ts`
+- Verification:
+  - focused job-spec run passes (5/5),
+  - full CSV v2 suite passes:
+    - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest csv.v2 -w=4`
+    - result: pass (19 suites, 76 tests).
+
+#### 18.22 Dedicated V2 register endpoint for frontend (Mar 2026)
+
+- Added a dedicated V2 import register route:
+  - `POST /api/csvImportEntities`
+  - auth: admin
+  - middleware: V2 `UploadMiddleware` (request-time instantiation)
+  - handler: `RegisterCsvImportController`
+- Compatibility route remains:
+  - `POST /api/import` still supports V1/V2 flag-based behavior for transition/testing.
+- Frontend handoff doc updated to make V2 endpoint primary:
+  - `AI Contexts/CSV/csv-v2-front-end-notes.md`
+- Verification:
+  - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/files/specs/uploadRoutes.spec.ts`
+  - result: pass (includes new `POST /api/csvImportEntities` test).
+
+### 19) TODO — Document ReadTheDocs import instructions
+
+We should create and maintain user-facing documentation in ReadTheDocs that explains
+how to run CSV imports end-to-end.
+
+Required scope:
+
+- Upload requirements and supported file formats (`CSV` and `ZIP` with `import.csv` at root).
+- Column conventions (`file`, `files`, `attachments`, language suffix rules, and relationship fields).
+- Preflight/import behavior, including row-error handling and failed-rows report usage.
+- Cancel semantics (cooperative stop, no rollback/cleanup of already-applied work).
+- Troubleshooting section for common import failures and recovery steps.
+
+### 20) Priority order (agreed, Mar 2026; updated after index migration completion)
+
+The following order is explicitly agreed and should drive upcoming iterations.
+
+#### 20.1 Primary priorities (fixed order)
+
+1. **Complete CSV v2 boundary cleanup from v1 dependencies**
+   - Remove remaining v1 architectural references/wrappers from `csv.v2` paths and replace them with v2-native contracts/data-source usage.
+   - Use `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md` as the source of truth for current inventory, allowed temporary bridges, and migration order.
+2. **Implement terminal artifact cleanup for imports**
+   - ✅ Implemented. See:
+     - `AI Contexts/CSV/csv-v2-context-07-cleanup.md`
+   - Current behavior: cleanup removes original upload + extracted staging assets, preserves failed-rows report artifact.
+3. **Freeze file-column contract for CSV inputs**
+   - ✅ Implemented in backend services/specs.
+   - Follow-up: propagate final wording to user-facing docs (ReadTheDocs scope in section 19).
+4. **Standardize row error taxonomy and reporting output**
+   - Finalize user-facing error naming/messages and reporting structure so diagnostics are clear, actionable, and stable for frontend/support usage.
+
+Index migration completion note:
+
+- Previous primary priority (**establish and ship CSV v2 index migrations**) is complete via migration delta `185` and its dedicated spec coverage.
+
+#### 20.2 Remaining work (recommended order after primary priorities)
+
+1. **Stabilize tests/infrastructure in CI-like environment**
+   - Ensure Mongo + Elasticsearch-backed CSV v2 suites are green and deterministic.
+   - Address queue test pollution with explicit isolation/cleanup strategy.
+2. **Close missing integration coverage**
+   - Full pipeline chain coverage.
+   - Files/attachments edge cases (`missing file`, `S3 vs disk` behavior).
+   - Batch/failure-threshold/report-path scenarios in entities import.
+   - User-priority override (Mar 2026): queue test-pollution hardening runs before this item.
+3. **Finalize API payloads for UX polling/recovery**
+   - Detail/list projections for row-errors summary/report path and extraction metadata.
+   - Add pagination for imports list endpoint if needed for scale.
+4. **Publish ReadTheDocs import guidance**
+   - Implement the documentation scope defined in section 19.
