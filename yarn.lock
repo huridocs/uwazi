@@ -7299,6 +7299,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/yazl@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@types/yazl@npm:3.3.0"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/6a8679d31c2274fb91677eeaa23c14912d614f627ced85b2c0e5af3a24eab49eb3d1570eae458eb1cebc070b8366fa1a944c871af28b70006c318bae4a9dcbe8
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/eslint-plugin@npm:^8.57.0":
   version: 8.57.0
   resolution: "@typescript-eslint/eslint-plugin@npm:8.57.0"
@@ -23933,6 +23942,7 @@ __metadata:
     "@types/webpack-env": "npm:^1.18.8"
     "@types/yargs-parser": "npm:^20.2.1"
     "@types/yauzl": "npm:^2.10.3"
+    "@types/yazl": "npm:^3.3.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.57.0"
     "@typescript-eslint/parser": "npm:^8.57.0"
     ajv: "npm:^8.18.0"

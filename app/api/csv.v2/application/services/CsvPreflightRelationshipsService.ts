@@ -32,12 +32,14 @@ type CreateMissingEntitiesParams = {
     pendingTitles: number;
   }) => void;
   createEntities: (params: { templateId: string; titles: string[] }) => Promise<number>;
+  shouldContinue?: () => Promise<boolean>;
 };
 type BuildAppliedValuesParams = {
   entitiesDS: MultiLanguageEntityDataSource;
   importId: string;
   titlesByTemplate: Map<string, Set<string>>;
   chunkSize: number;
+  shouldContinue?: () => Promise<boolean>;
 };
 const MULTI_VALUE_SEPARATOR = '|';
 const ANY_TEMPLATE_RELATIONSHIP_KEY = '';
@@ -188,6 +190,10 @@ const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParam
   let templateIndex = 0;
 
   for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
+    // eslint-disable-next-line no-await-in-loop
+    if (params.shouldContinue && !(await params.shouldContinue())) {
+      return createdEntities;
+    }
     if (templateId !== ANY_TEMPLATE_RELATIONSHIP_KEY) {
       const titles = Array.from(titlesSet);
       if (titles.length) {
@@ -200,6 +206,10 @@ const createMissingEntitiesForTitles = async (params: CreateMissingEntitiesParam
           chunkSize,
         });
         for (const chunk of chunks) {
+          // eslint-disable-next-line no-await-in-loop
+          if (params.shouldContinue && !(await params.shouldContinue())) {
+            return createdEntities;
+          }
           const missingTitles = buildMissingTitles(chunk, knownTitles);
           if (missingTitles.length) {
             onBatch?.({
@@ -227,11 +237,19 @@ const buildRelationshipAppliedValues = async (params: BuildAppliedValuesParams) 
   const docs: CsvImportRelationshipValues[] = [];
 
   for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
+    // eslint-disable-next-line no-await-in-loop
+    if (params.shouldContinue && !(await params.shouldContinue())) {
+      return docs;
+    }
     const titles = Array.from(titlesSet);
     if (titles.length) {
       const chunks = chunkList(titles, chunkSize);
       const matchesByLabel = new Map<string, Map<string, string>>();
       for (const chunk of chunks) {
+        // eslint-disable-next-line no-await-in-loop
+        if (params.shouldContinue && !(await params.shouldContinue())) {
+          return docs;
+        }
         // eslint-disable-next-line no-await-in-loop
         const existing = await fetchRelationshipMatches({ entitiesDS, templateId, chunk });
         existing.forEach(entry => {

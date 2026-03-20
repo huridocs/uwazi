@@ -1,11 +1,10 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
-import { ThesauriRepository } from '../../application/contracts/ThesauriRepository.js';
-import { TranslationsRepository } from '../../application/contracts/TranslationsRepository.js';
 import {
   CsvImport,
   CsvImportDomain,
@@ -20,6 +19,7 @@ import {
 import { CsvCreateRelationshipEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
 import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier.js';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type ThesauriCreationProgress = {
   importId: string;
@@ -43,8 +43,8 @@ type Input = {
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
-  thesauriRepo: ThesauriRepository;
-  translationsRepo: TranslationsRepository;
+  thesauriDS: ThesauriDataSource;
+  translationsDS: TranslationsDataSource;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
 };
@@ -54,14 +54,14 @@ type PendingValuesProcessingResult = {
   observed: number;
 };
 
-class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
+class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
   private pendingValuesApplier: PendingThesauriValuesApplier;
 
   constructor(deps: Deps) {
     super(deps);
     this.pendingValuesApplier = new PendingThesauriValuesApplier({
-      thesauriRepo: deps.thesauriRepo,
-      translationsRepo: deps.translationsRepo,
+      thesauriDS: deps.thesauriDS,
+      translationsDS: deps.translationsDS,
     });
   }
 
@@ -71,10 +71,6 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
       const updated = CsvImportDomain.withStatus(csvImport, status);
       await this.deps.csvImportsDS.update(updated);
     });
-  }
-
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
   private async getImport(importId: string) {
@@ -172,6 +168,9 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         thesauriTouched: totals.touched,
       };
       await this.deps.csvImportsDS.update(withStatus.withStats(updatedStats));
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return;
+      }
       await this.deps.jobsDispatcher.dispatch(CsvCreateRelationshipEntitiesJobHandler, {
         tenantName,
         userId,
@@ -199,13 +198,17 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const withCleanup = this.withCleanupPendingIfFailed(withStatus, withStatus.status);
+      await this.deps.csvImportsDS.update(withCleanup);
     });
   }
 
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<void> {
     const { importId, callbacks, tenantName, userId } = input;
+    if (await this.deps.csvImportsDS.isCancelled(importId)) {
+      return;
+    }
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightThesauriCreate);
@@ -218,6 +221,10 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
 
       let index = 0;
       for (const pendingDoc of pendingDocs) {
+        // eslint-disable-next-line no-await-in-loop
+        if (await this.deps.csvImportsDS.isCancelled(importId)) {
+          return;
+        }
         index += 1;
         // eslint-disable-next-line no-await-in-loop
         const { updatedDoc } = await this.applyPendingThesaurusValues({
@@ -236,6 +243,9 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         tenantName,
         userId,
       });
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return;
+      }
       callbacks.onSuccess({ importId });
     } catch (error) {
       await this.persistFailure(importId, error as Error);

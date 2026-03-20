@@ -50,7 +50,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Apple'],
       }),
@@ -83,7 +83,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Fruits::Apple'],
       }),
@@ -109,7 +109,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Invalid::'],
       }),
@@ -137,7 +137,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Apple', 'Manzana'],
       }),
@@ -162,7 +162,7 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
-        index: 0,
+        rowIndex: 0,
         headers,
         values: ['entity-1', 'Apple|Orange', 'Manzana'],
       }),

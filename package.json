@@ -341,6 +341,7 @@
     "@types/webpack-env": "^1.18.8",
     "@types/yargs-parser": "^20.2.1",
     "@types/yauzl": "^2.10.3",
+    "@types/yazl": "^3.3.0",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@typescript-eslint/parser": "^8.57.0",
     "assets-webpack-plugin": "7.1.1",
