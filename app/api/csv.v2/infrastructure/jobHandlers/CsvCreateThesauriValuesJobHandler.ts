@@ -5,6 +5,7 @@ import {
 import {
   HeartbeatCallback,
   JobInfo,
+  Params as DispatchableParams,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import {
@@ -12,6 +13,10 @@ import {
   ThesauriCreationProgress,
 } from '../../application/jobs/CsvCreateThesauriValuesJob.js';
 import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
+import {
+  dispatchCleanupAfterCancelledStage,
+  handleTerminalFailureCleanup,
+} from './CsvCleanupDispatch.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -26,6 +31,32 @@ type Deps = {
 export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Params> {
   constructor(private deps: Deps) {
     super();
+  }
+
+  private static parseParams(params: DispatchableParams): Params {
+    const { importId, tenantName, userId } = params;
+    if (typeof importId !== 'string') {
+      throw new Error('CsvCreateThesauriValuesJobHandler requires params.importId:string');
+    }
+    if (typeof tenantName !== 'string') {
+      throw new Error('CsvCreateThesauriValuesJobHandler requires params.tenantName:string');
+    }
+    if (typeof userId !== 'string') {
+      throw new Error('CsvCreateThesauriValuesJobHandler requires params.userId:string');
+    }
+    return { importId, tenantName, userId };
+  }
+
+  async handleDispatch(
+    heartbeat: HeartbeatCallback,
+    params: DispatchableParams,
+    jobInfo?: JobInfo
+  ): Promise<void> {
+    return super.handleDispatch(
+      heartbeat,
+      CsvCreateThesauriValuesJobHandler.parseParams(params),
+      jobInfo
+    );
   }
 
   async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
@@ -76,10 +107,21 @@ export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Par
           },
         },
       });
+      await dispatchCleanupAfterCancelledStage({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+      });
     } catch (error) {
-      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
-        await this.deps.useCase.markAsFailed(this.params.importId);
-      }
+      await handleTerminalFailureCleanup({
+        useCase: this.deps.useCase,
+        importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
+        error,
+        jobInfo,
+      });
       throw error;
     }
   }

@@ -1,0 +1,99 @@
+# CSV V2 Frontend Notes (Concise)
+
+Date: 2026-03-19  
+Audience: Frontend team  
+Scope: What UI needs to integrate CSV Import V2 now.
+
+## 1) Endpoints and responses
+
+### `POST /api/csvImportEntities` (admin, V2-only)
+
+- Request: multipart upload + `template` in body.
+- Response:
+  - `{ id: string, status: "queued", message: "Import registered and queued for processing." }`
+
+### `GET /api/csvImportEntities/imports` (admin)
+
+- Response:
+  - `{ rows: CsvImportListRow[] }`
+- Each row includes:
+  - `id`, `status`, `templateId`, `file`, `createdAt`, `updatedAt`
+  - optional: `progress`, `stats`, `extraction`, `failure`
+
+### `GET /api/csvImportEntities/imports/:id` (admin)
+
+- Response:
+  - raw import object (same model shape persisted in backend), including status/progress/stats/failure/extraction/rowErrors pointers when present.
+
+### `POST /api/csvImportEntities/imports/:id/cancel` (admin)
+
+- Response:
+  - `{ id: string, status: string, cancelled: boolean }`
+- Semantics:
+  - cooperative stop (no rollback),
+  - idempotent,
+  - terminal imports may return `cancelled: false` with unchanged terminal status.
+
+## 2) Socket events and payloads
+
+V2 emits to **tenant admins** (not per-session V1 pattern).
+
+### Extract stage
+
+- `csvImport:extract:start` -> `{ importId }`
+- `csvImport:extract:progress` ->
+  - files mode: `{ importId, stage: "files", processedFiles }`
+  - rows mode: `{ importId, stage: "rows", stagedRows }`
+- `csvImport:extract:success` -> `{ importId }`
+- `csvImport:extract:error` -> `{ importId, message }`
+
+### Preflight scan stage
+
+- `csvImport:preflight:scan:start` -> `{ importId }`
+- `csvImport:preflight:scan:progress` -> `{ importId, processedRows, totalRows }`
+- `csvImport:preflight:scan:success` -> `{ importId }`
+- `csvImport:preflight:scan:error` -> `{ importId, message }`
+
+### Thesauri create stage
+
+- `csvImport:preflight:thesauri:create:start` -> `{ importId }`
+- `csvImport:preflight:thesauri:create:progress` ->
+  `{ importId, thesaurusId, processedThesauri, totalThesauri, createdValues }`
+- `csvImport:preflight:thesauri:create:success` -> `{ importId }`
+- `csvImport:preflight:thesauri:create:error` -> `{ importId, message }`
+
+### Relationships create stage
+
+- `csvImport:preflight:relationships:create:start` -> `{ importId }`
+- `csvImport:preflight:relationships:create:progress` ->
+  `{ importId, processedTemplates, totalTemplates, createdEntities }`
+- `csvImport:preflight:relationships:create:success` -> `{ importId }`
+- `csvImport:preflight:relationships:create:error` -> `{ importId, message }`
+
+### Entities import stage
+
+- `csvImport:import:start` -> `{ importId }`
+- `csvImport:import:progress` ->
+  `{ importId, processedRows, totalRows, batchIndex, batchCount, entitiesCreatedInBatch }`
+- `csvImport:import:success` -> `{ importId }`
+- `csvImport:import:error` -> `{ importId, message }`
+
+### Legacy bridge events (not for new UI)
+
+- `IMPORT_CSV_START` (no payload)
+- `IMPORT_CSV_PROGRESS` (number)
+- `IMPORT_CSV_ROW_EXCEPTIONS` (legacy grouped payload)
+- `IMPORT_CSV_ERROR` (legacy error payload)
+- `IMPORT_CSV_END` (no payload)
+
+## 3) V1 vs V2 (expectation management)
+
+- New UI should use `POST /api/csvImportEntities` as the dedicated V2 import entrypoint.
+- `POST /api/import` remains compatibility/testing surface and should not be the primary new-UI contract.
+- V2 is a multi-stage background pipeline with explicit statuses (not a single monolithic flow).
+- V2 has dedicated read/cancel endpoints for polling/recovery (`/api/csvImportEntities/imports*`).
+- V2 socket events are stage-oriented (`csvImport:*`) and emitted to tenant admins.
+- V1-like socket contract exists for legacy compatibility only and must not drive new UI behavior.
+- Failed-rows CSV remains row-only export in current V2 scope (error taxonomy is in DB/API, not appended to report CSV).
+- Failed-rows artifact path may exist in import data (`rowErrors.reportPath`), but there is currently no dedicated CSV v2 download endpoint for that file.
+

@@ -10,7 +10,7 @@ import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStor
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { createTestingZip } from '#api/csv/specs/helpers.js';
+import { createTestingZip } from '#api/csv.v2/specs/helpers/createTestingZip.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
@@ -18,6 +18,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js';
 import { CsvExtractUploadedZipJobFactory } from '#api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory.js';
+import { cleanupCsvV2QueueJobsByImportIds } from '#api/csv.v2/specs/helpers/queueTestCleanup.js';
 import { Callbacks } from '../CsvExtractUploadedZipJob.js';
 
 const callbacks: Callbacks = {
@@ -37,6 +38,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
   });
 
   afterEach(async () => {
+    await cleanupCsvV2QueueJobsByImportIds(createdImportIds);
     const base = tenants.current().uploadedDocuments;
     // eslint-disable-next-line no-restricted-syntax
     for (const id of createdImportIds.splice(0)) {
@@ -169,7 +171,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const stagedRows = await rowsDS.getByImport(id);
     expect(stagedRows).toHaveLength(3);
     expect(stagedRows[1].values).toEqual(['', '']);
-    expect(stagedRows[1].index).toBe(1);
+    expect(stagedRows[1].rowIndex).toBe(1);
   });
 
   it('should stage rows in batches for large CSVs', async () => {
@@ -298,6 +300,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const { useCase, csvImportsDS } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('no-storage');
+    createdImportIds.push(id);
     const importDoc = CsvImportDomain.create({
       id,
       templateId: 't1',

@@ -11,6 +11,7 @@ import { ParsedQs } from 'qs';
 import { RegisterCsvImportController } from './RegisterCsvImportController.js';
 import { ListCsvImportEntitiesImportsController } from './ListCsvImportEntitiesImportsController.js';
 import { GetCsvImportEntitiesImportController } from './GetCsvImportEntitiesImportController.js';
+import { CancelCsvImportEntitiesImportController } from './CancelCsvImportEntitiesImportController.js';
 
 const csvImportRoutes = (app: Application) => {
   // eslint-disable-next-line max-statements
@@ -79,6 +80,15 @@ const csvImportRoutes = (app: Application) => {
     }
   );
 
+  app.post(
+    '/api/csvImportEntities',
+    needsAuthorization(['admin']),
+    async (req, res, next) => {
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload()(req, res, next);
+    },
+    RegisterCsvImportController.createHandler()
+  );
+
   app.get(
     '/api/csvImportEntities/imports',
     needsAuthorization(['admin']),
@@ -89,6 +99,12 @@ const csvImportRoutes = (app: Application) => {
     '/api/csvImportEntities/imports/:id',
     needsAuthorization(['admin']),
     GetCsvImportEntitiesImportController.createHandler()
+  );
+
+  app.post(
+    '/api/csvImportEntities/imports/:id/cancel',
+    needsAuthorization(['admin']),
+    CancelCsvImportEntitiesImportController.createHandler()
   );
 };
 
