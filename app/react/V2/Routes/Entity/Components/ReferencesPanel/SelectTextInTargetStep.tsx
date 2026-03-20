@@ -30,10 +30,10 @@ const SelectTextInTargetStep = ({
           color={selectedEntity?.template?.color}
         />
       </div>
-      <div className="flex-1 min-h-[200px] overflow-auto border border-gray-200 rounded-md">
+      <div className="flex-1 min-h-50 overflow-auto border border-gray-200 rounded-md">
         <PDF
           fileUrl={`/api/files/${selectedFile.filename}`}
-          size={{ height: '100%', width: '100%', overflow: 'auto' }}
+          size={{ height: '100%', width: '100%' }}
           onSelect={onTargetPdfSelect}
           onDeselect={onTargetPdfDeselect}
         />
