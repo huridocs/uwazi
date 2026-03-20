@@ -1,5 +1,4 @@
 import path from 'path';
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
@@ -14,6 +13,7 @@ import {
 import { CsvImportRowsStager } from '../services/CsvImportRowsStager.js';
 import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
+import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
@@ -39,7 +39,7 @@ type Input = {
   callbacks: Callbacks;
 };
 
-class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
+class CsvExtractUploadedZipJob extends CsvCleanupAwareJob<Input, void, Deps> {
   private static parseStoragePath(storagePath: string) {
     const filename = path.basename(storagePath);
     const destination = path.dirname(storagePath);
@@ -72,8 +72,8 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     return csvImport.storage.path;
   }
 
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
+  private async isCancelled(importId: string) {
+    return this.deps.csvImportsDS.isCancelled(importId);
   }
 
   private async dispatchPreflight(importId: string, tenantName: string, userId: string) {
@@ -127,6 +127,9 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
         CsvImportStatus.ExtractingFilesDone
       );
       await this.deps.csvImportsDS.update(updated);
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return;
+      }
       await this.dispatchPreflight(importId, context.tenantName, context.userId);
     });
   }
@@ -146,7 +149,8 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const withCleanup = this.withCleanupPendingIfFailed(withStatus, withStatus.status);
+      await this.deps.csvImportsDS.update(withCleanup);
     });
   }
 
@@ -160,18 +164,25 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     if (!rows.length) {
       return;
     }
+    if (await this.isCancelled(rows[0].importId)) {
+      return;
+    }
     await this.transactionManager.run(async () => {
       await this.deps.rowsDS.insertMany(rows);
     });
   }
 
   private async stageRows(importId: string, destination: string, callbacks: Callbacks) {
+    if (await this.isCancelled(importId)) {
+      return;
+    }
     await this.deps.rowsStager.stage({
       importId,
       destination,
       onRowProgress: info => callbacks.onProgress({ type: 'rows', ...info }),
       deleteRows: async () => this.deleteExistingRows(importId),
       insertBatch: async rows => this.insertRowsBatch(rows),
+      shouldContinue: async () => !(await this.isCancelled(importId)),
     });
   }
 
@@ -184,6 +195,9 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     userId: string;
   }) {
     try {
+      if (await this.isCancelled(params.importId)) {
+        return;
+      }
       const normalizeResult = await this.deps.fileNormalizer.normalize({
         importId: params.importId,
         destination: params.destination,
@@ -195,6 +209,9 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
             processedFiles: info.processedFiles,
           }),
       });
+      if (await this.isCancelled(params.importId)) {
+        return;
+      }
       await this.stageRows(params.importId, params.destination, params.callbacks);
       await this.handleExtractionSuccess(
         params.importId,
@@ -204,6 +221,9 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
         },
         normalizeResult
       );
+      if (await this.isCancelled(params.importId)) {
+        return;
+      }
       CsvExtractUploadedZipJob.emitSuccess(params.callbacks, params.importId);
     } catch (e) {
       await this.handleError(params.importId, params.callbacks, e as Error);
@@ -213,6 +233,9 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
 
   async execute(input: Input): Promise<void> {
     const { importId, callbacks, tenantName, userId } = input;
+    if (await this.isCancelled(importId)) {
+      return;
+    }
 
     CsvExtractUploadedZipJob.emitStart(callbacks, importId);
     await this.setStatus(importId, CsvImportStatus.ExtractingFiles);

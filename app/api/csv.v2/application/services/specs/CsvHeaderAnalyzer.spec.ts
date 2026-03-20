@@ -224,6 +224,30 @@ describe('CsvHeaderAnalyzer', () => {
       );
     });
 
+    it('should throw when files column uses language suffixes', () => {
+      const template = buildTemplate();
+      const headers = ['files__en', 'files__es'];
+
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'UnknownProperty',
+                property: 'files',
+              }),
+            ])
+          );
+        }
+      );
+    });
+
     it('should collect multiple issues in a single error', () => {
       const template = buildTemplate();
       const headers = [

@@ -2,10 +2,17 @@ import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { CsvImportDoesNotExistError } from '../../domain/csvImporErrors.js';
-import { CsvImport } from '../../domain/CsvImport.js';
+import { CsvImport, CsvImportStatus } from '../../domain/CsvImport.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
 import { CsvImportMapper } from './CsvImportMapper.js';
 import { CsvImportDBO } from '../schemas/CsvImportTypes.js';
+
+const TERMINAL_STATUSES_BLOCKING_CANCEL = [
+  CsvImportStatus.Cancelled,
+  CsvImportStatus.Completed,
+  CsvImportStatus.ImportEntitiesDone,
+  CsvImportStatus.Failed,
+];
 
 export class MongoCsvImportsDataSource
   extends MongoDataSource<CsvImportDBO>
@@ -20,7 +27,41 @@ export class MongoCsvImportsDataSource
 
   async update(doc: CsvImport) {
     const dbo: CsvImportDBO = CsvImportMapper.toDBO(doc);
-    await this.getCollection().updateOne({ _id: new ObjectId(doc.id) }, { $set: dbo });
+    const { status, ...rest } = dbo;
+    await this.getCollection().updateOne({ _id: new ObjectId(doc.id) }, [
+      {
+        $set: {
+          ...rest,
+          status: {
+            $cond: [{ $eq: ['$status', CsvImportStatus.Cancelled] }, '$status', status],
+          },
+        },
+      },
+    ]);
+  }
+
+  async cancel(importId: string) {
+    await this.getCollection().updateOne(
+      {
+        _id: new ObjectId(importId),
+        status: { $nin: TERMINAL_STATUSES_BLOCKING_CANCEL },
+      },
+      {
+        $set: {
+          status: CsvImportStatus.Cancelled,
+          filesCleanup: 'pending',
+          updatedAt: Date.now(),
+        },
+      }
+    );
+  }
+
+  async isCancelled(importId: string): Promise<boolean> {
+    const doc = await this.getCollection().findOne(
+      { _id: new ObjectId(importId) },
+      { projection: { status: 1 } }
+    );
+    return doc?.status === CsvImportStatus.Cancelled;
   }
 
   async getById(id: string): Promise<ResultType<CsvImport, CsvImportDoesNotExistError>> {

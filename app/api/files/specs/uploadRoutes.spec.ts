@@ -380,6 +380,24 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
     });
   });
 
+  describe('POST /api/csvImportEntities', () => {
+    it('should register a CSV v2 import and return queued response', async () => {
+      const response = await request(app)
+        .post('/api/csvImportEntities')
+        .field('template', importTemplate.toString())
+        .attach('file', `${__dirname}/testing_files/importcsv.csv`);
+
+      expect(response).toHaveStatus(200);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          status: 'queued',
+          message: 'Import registered and queued for processing.',
+        })
+      );
+    });
+  });
+
   describe('DELETE /files', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);

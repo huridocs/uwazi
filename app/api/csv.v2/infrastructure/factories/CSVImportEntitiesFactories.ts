@@ -12,6 +12,7 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { CsvImportEntities } from '../../CsvImportEntities.js';
 import { ListCsvImportEntitiesImportsUseCase } from '../../application/useCases/ListCsvImportEntitiesImportsUseCase.js';
 import { GetCsvImportEntitiesImportUseCase } from '../../application/useCases/GetCsvImportEntitiesImportUseCase.js';
+import { CancelCsvImportEntitiesImportUseCase } from '../../application/useCases/CancelCsvImportEntitiesImportUseCase.js';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
 import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource.js';
 import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource.js';
@@ -103,6 +104,15 @@ export class CSVImportEntitiesFactories {
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
 
     return new GetCsvImportEntitiesImportUseCase({
+      csvImportEntitiesImportsDS,
+    });
+  }
+
+  static cancelCsvImportEntitiesImportUseCaseDefault() {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
+
+    return new CancelCsvImportEntitiesImportUseCase({
       csvImportEntitiesImportsDS,
     });
   }
