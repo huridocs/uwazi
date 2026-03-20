@@ -1,1 +1,0 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"extractorId":{"$numberInt":"1"},"entitySharedId":{"$numberInt":"1"}},"name":"extractorId_1_entitySharedId_1"}],"uuid":"25d844f7461b40eba9c3345c7721f95e","collectionName":"px_entities_status","type":"collection"}
