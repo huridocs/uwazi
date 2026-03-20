@@ -23867,6 +23867,7 @@ __metadata:
     "@loadable/component": "npm:^5.16.7"
     "@popperjs/core": "npm:^2.11.8"
     "@sentry/node": "npm:^10.44.0"
+    "@sentry/node-core": "npm:10.44.0"
     "@sentry/profiling-node": "npm:^10.44.0"
     "@sentry/react": "npm:^10.43.0"
     "@simonsmith/cypress-image-snapshot": "npm:^10.0.3"

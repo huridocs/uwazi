@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import * as Sentry from '@sentry/node';
+import { getCurrentScope, captureException, close } from '@sentry/node-core/light';
 import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -65,11 +65,11 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](inspect(error), { job: context?.job });
   if (prettyError.logLevel === 'error') {
-    const scope = Sentry.getCurrentScope();
+    const scope = getCurrentScope();
     if (context?.job) {
       scope.setExtra('job', context.job);
     }
-    Sentry.captureException(error);
+    captureException(error);
   }
 };
 
@@ -124,7 +124,7 @@ export function setupQueueWorker(props?: Props) {
     })
     .catch(async e => {
       captureError(e);
-      await Sentry.close(2000);
+      await close(2000);
       process.exit(1);
     });
 }
