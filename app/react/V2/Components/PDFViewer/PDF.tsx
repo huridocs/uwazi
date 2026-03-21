@@ -6,6 +6,7 @@ import {
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
+import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
@@ -104,7 +105,7 @@ const PDF = ({
     );
     const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
     const elementToScroll = highlightRectangle || highlightWrapper;
-    elementToScroll?.scrollIntoView({ block: 'center' });
+    scrollIntoView(elementToScroll, { block: 'center' });
   }, []);
 
   const activateSnippet = useCallback((snippet: Snippet) => {
@@ -120,7 +121,7 @@ const PDF = ({
       return;
     }
 
-    pageContainer.scrollIntoView({ block: 'start' });
+    scrollIntoView(pageContainer, { block: 'start' });
 
     const observer = new MutationObserver(() => {
       if (tryHighlightAndScroll(pageContainer, snippet)) {
