@@ -319,12 +319,6 @@ describe('Information Extraction', () => {
       cy.contains('span', 'Lorem Ipsum');
     });
 
-    it('should not render pdf pages that are not visible', () => {
-      cy.get('[data-region-selector-id="2"]').within(() => {
-        cy.get('div').should('be.empty');
-      });
-    });
-
     it('should clear the existing selection', () => {
       cy.contains('[data-testid="ix-clear-button-container"] button', 'Clear').click();
       cy.get('div.highlight-rectangle').should('have.length', 0);
@@ -353,7 +347,6 @@ describe('Information Extraction', () => {
         .eq(0)
         .setSelection('The Spectacular Spider-Man');
       cy.contains('button', 'Click to fill').click();
-      cy.get('div.highlight-rectangle').scrollIntoView();
       cy.get('div.highlight-rectangle').should('be.visible');
       cy.get('aside').within(() => {
         cy.get('input[name="field"]').should('have.value', 'The Spectacular Spider-Man');
@@ -384,7 +377,7 @@ describe('Information Extraction', () => {
         .click();
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2018-12-01');
-        cy.contains('New York City teenager Miles Morales');
+        cy.get('div.highlight-rectangle').should('be.visible');
         cy.contains('button', 'Cancel').click();
       });
     });

@@ -102,7 +102,7 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
       </div>
 
       <div className="flex gap-4">
-        <div className="flex flex-col gap-2 basis-2/3 min-w-[480px]">
+        <div className="flex flex-col gap-2 basis-2/3 min-w-120">
           <p className="font-semibold">PDF Container:</p>
           <div className="p-4 h-[80vh] rounded-md border overflow-scroll">
             <PDF
@@ -119,7 +119,7 @@ const PdfStoryContent: React.FC<React.ComponentProps<typeof PDF>> = args => {
           <p>End of container</p>
         </div>
 
-        <div className="flex flex-col gap-2 basis-1/3 min-w-[260px] text-sm">
+        <div className="flex flex-col gap-2 basis-1/3 min-w-65 text-sm">
           <p className="font-semibold">Debug info</p>
           <div className="mt-2 space-y-1">
             <div>
