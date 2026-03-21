@@ -309,7 +309,6 @@ const PDF = ({
   const viewerStyle = {
     height: size?.height || '100%',
     width: size?.width || '100%',
-    overflow: 'auto',
     '--page-border': 'none',
     '--page-margin': '0',
   };
