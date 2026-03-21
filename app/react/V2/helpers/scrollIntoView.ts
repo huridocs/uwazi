@@ -1,5 +1,7 @@
 //Sourced from https://www.xjavascript.com/blog/javascript-scrollintoview-only-in-immediate-parent
 
+import { isClient } from '#app/utils/index.js';
+
 type ScrollBehavior = 'smooth' | 'instant' | 'auto';
 type ScrollBlock = 'start' | 'center' | 'end';
 
@@ -31,7 +33,7 @@ const scrollIntoView = (
   element: Element | null | undefined,
   options: ScrollIntoViewOptions = {}
 ): void => {
-  if (!element) return;
+  if (!element || !isClient) return;
 
   const { behavior = 'instant', block = 'start' } = options;
   const parent = getImmediateScrollableParent(element);

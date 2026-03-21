@@ -7,7 +7,7 @@ exports[`PDF should render the pdf file 1`] = `
   >
     <div
       id="pdf-container"
-      style="height: 100%; width: 100%; overflow: auto; padding-left: 0px; padding-right: 0px;"
+      style="height: 100%; width: 100%; padding-left: 0px; padding-right: 0px;"
     >
       <div
         id="page-1-container"
