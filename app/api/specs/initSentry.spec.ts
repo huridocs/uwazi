@@ -1,8 +1,8 @@
 const mockInit = jest.fn();
 const mockIsInitialized = jest.fn();
 
-jest.mock('@sentry/node', () => ({
-  ...jest.requireActual('@sentry/node'),
+jest.mock('@sentry/node-core/light', () => ({
+  ...jest.requireActual('@sentry/node-core/light'),
   init: (...args: unknown[]) => mockInit(...args),
   isInitialized: () => mockIsInitialized(),
 }));

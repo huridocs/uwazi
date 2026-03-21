@@ -5,7 +5,6 @@ import { PropertyName } from '#api/core/domain/template/PropertyName.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import url from 'url';
 import moment from 'moment';
-import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
 import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
@@ -14,6 +13,15 @@ import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer.js';
 import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource.js';
 import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource.js';
 import { ANY_TEMPLATE_RELATIONSHIP_KEY } from './CsvPreflightRelationshipsService.js';
+import { normalizeCsvThesaurusLabel } from './CsvThesaurusLabelNormalizer.js';
+import { CsvImportRelationshipResolutionError } from './CsvImportRowProcessingError.js';
+
+type RelationshipUnresolvedToken = {
+  token: string;
+  reason: 'not_found' | 'ambiguous';
+  candidates?: number;
+  scope: string;
+};
 
 type AppliedValueIndex = Map<
   string,
@@ -110,7 +118,7 @@ const resolveSelectionValue = (thesaurusId: string, raw: string, index: AppliedV
   const map = index.get(thesaurusId);
   if (!map) return undefined;
   const key =
-    normalizeThesaurusLabel(sanitizeThesaurusLabel(raw) || '') || raw.trim().toLowerCase();
+    normalizeCsvThesaurusLabel(sanitizeThesaurusLabel(raw) || '') || raw.trim().toLowerCase();
   return map.get(key);
 };
 
@@ -180,30 +188,40 @@ const buildRelationshipEntries = ({
   property: V1RelationshipProperty;
   value: string;
   relationshipIndex: RelationshipValueIndex;
-}) => {
+}): {
+  entries: Array<{ value: string }>;
+  unresolved: RelationshipUnresolvedToken[];
+} => {
   const titles = splitMultiValues(value).filter(
     (title, index, list) => list.indexOf(title) === index
   );
   if (!titles.length) {
-    return { entries: [], unresolved: [] as string[] };
+    return { entries: [], unresolved: [] };
   }
   const scope = property.content || ANY_TEMPLATE_RELATIONSHIP_KEY;
   const scopeLabel = property.content ? `template ${property.content}` : 'any-template';
   const map = relationshipIndex.get(scope);
 
   const entries: Array<{ value: string }> = [];
-  const unresolved: string[] = [];
+  const unresolved: RelationshipUnresolvedToken[] = [];
   titles.forEach(title => {
     const resolution = map?.get(title);
     const matches = resolution?.matches || [];
     if (!matches.length) {
-      unresolved.push(`"${title}" (not_found, scope: ${scopeLabel})`);
+      unresolved.push({
+        token: title,
+        reason: 'not_found',
+        scope: scopeLabel,
+      });
       return;
     }
     if (matches.length > 1) {
-      unresolved.push(
-        `"${title}" (ambiguous, candidates: ${matches.length}, scope: ${scopeLabel})`
-      );
+      unresolved.push({
+        token: title,
+        reason: 'ambiguous',
+        candidates: matches.length,
+        scope: scopeLabel,
+      });
       return;
     }
     entries.push({ value: matches[0].sharedId });
@@ -225,9 +243,10 @@ const buildRelationshipAssignments = ({
 }): MappedAssignment[] => {
   const { entries, unresolved } = buildRelationshipEntries({ property, value, relationshipIndex });
   if (unresolved.length) {
-    throw new Error(
-      `Unresolvable relationship value(s) for property "${property.name}": ${unresolved.join('; ')}`
-    );
+    throw new CsvImportRelationshipResolutionError({
+      property: property.name,
+      unresolved,
+    });
   }
   if (!entries.length) {
     return [];
@@ -621,7 +640,7 @@ class CsvEntitiesImportMapper {
     const index: AppliedValueIndex = new Map();
 
     const normalize = (label: string) =>
-      normalizeThesaurusLabel(sanitizeThesaurusLabel(label) || '') || label.trim().toLowerCase();
+      normalizeCsvThesaurusLabel(sanitizeThesaurusLabel(label) || '') || label.trim().toLowerCase();
 
     for (const doc of docs) {
       index.set(doc.thesaurusId, CsvEntitiesImportMapper.mapDocAppliedValues(doc, normalize));
