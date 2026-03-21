@@ -1,3 +1,4 @@
+import { waitForPDF } from '../helpers/files.js';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 
 describe('attachments', () => {
@@ -8,7 +9,7 @@ describe('attachments', () => {
   });
 
   describe('main documents', () => {
-    it('should view an entity with main a document', () => {
+    it('should navigate to an entity with main a document', () => {
       cy.contains(
         'h2.item-name',
         'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
@@ -16,6 +17,10 @@ describe('attachments', () => {
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'View').click();
       });
+    });
+
+    it('should contain the expected document', () => {
+      waitForPDF();
       cy.contains('Uwazi Heroes Investigation');
     });
 
@@ -78,6 +83,8 @@ describe('attachments', () => {
         });
       });
 
+      waitForPDF();
+
       cy.contains('REINTEGRO AL FONDO DE ASISTENCIA LEGAL DE VÍCTIMAS');
 
       cy.get('.side-panel.is-active').within(() => {
@@ -112,6 +119,8 @@ describe('attachments', () => {
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'Ver').click();
       });
+
+      waitForPDF();
 
       cy.contains('REINTEGRO AL FONDO DE ASISTENCIA LEGAL DE VÍCTIMAS');
     });
