@@ -20,6 +20,10 @@ describe('attachments', () => {
     });
 
     it('should contain the expected document', () => {
+      cy.contains(
+        'h1.item-name',
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
+      );
       waitForPDF();
       cy.contains('Uwazi Heroes Investigation');
     });

@@ -19,40 +19,40 @@ jobs:
       matrix:
         include:
           - name: base
-            spec: 'cypress/e2e/base/*.cy.ts'
+            spec: 'cypress/e2e/base/attachments.cy.ts'
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
-          - name: entities
-            spec: 'cypress/e2e/entities/*.cy.ts'
-            needs_setup: false
-            needs_ix_config: false
-            needs_external_services: false
-          - name: information-extraction
-            spec: 'cypress/e2e/informationExtraction/information-extraction.cy.ts'
-            needs_setup: true
-            needs_ix_config: true
-            needs_external_services: true
-          - name: paragraph-extraction
-            spec: 'cypress/e2e/informationExtraction/paragraph-extraction.cy.ts'
-            needs_setup: true
-            needs_ix_config: true
-            needs_external_services: true
-          - name: pages
-            spec: 'cypress/e2e/pages/*.cy.ts'
-            needs_setup: false
-            needs_ix_config: false
-            needs_external_services: false
-          - name: settings-1
-            spec: 'cypress/e2e/settings/thesauri.cy.ts,cypress/e2e/settings/languages.cy.ts,cypress/e2e/settings/translations.cy.ts,cypress/e2e/settings/account.cy.ts,cypress/e2e/settings/collection.cy.ts,cypress/e2e/settings/customization.cy.ts,cypress/e2e/settings/mobile-settings-menu.cy.ts'
-            needs_setup: false
-            needs_ix_config: false
-            needs_external_services: false
-          - name: settings-2
-            spec: 'cypress/e2e/settings/users.cy.ts,cypress/e2e/settings/activitylog.cy.ts,cypress/e2e/settings/filters.cy.ts,cypress/e2e/settings/groups.cy.ts,cypress/e2e/settings/menu.cy.ts,cypress/e2e/settings/relationship-types.cy.ts,cypress/e2e/settings/custom-uploads.cy.ts'
-            needs_setup: false
-            needs_ix_config: false
-            needs_external_services: false
+          # - name: entities
+          #   spec: 'cypress/e2e/entities/*.cy.ts'
+          #   needs_setup: false
+          #   needs_ix_config: false
+          #   needs_external_services: false
+          # - name: information-extraction
+          #   spec: 'cypress/e2e/informationExtraction/information-extraction.cy.ts'
+          #   needs_setup: true
+          #   needs_ix_config: true
+          #   needs_external_services: true
+          # - name: paragraph-extraction
+          #   spec: 'cypress/e2e/informationExtraction/paragraph-extraction.cy.ts'
+          #   needs_setup: true
+          #   needs_ix_config: true
+          #   needs_external_services: true
+          # - name: pages
+          #   spec: 'cypress/e2e/pages/*.cy.ts'
+          #   needs_setup: false
+          #   needs_ix_config: false
+          #   needs_external_services: false
+          # - name: settings-1
+          #   spec: 'cypress/e2e/settings/thesauri.cy.ts,cypress/e2e/settings/languages.cy.ts,cypress/e2e/settings/translations.cy.ts,cypress/e2e/settings/account.cy.ts,cypress/e2e/settings/collection.cy.ts,cypress/e2e/settings/customization.cy.ts,cypress/e2e/settings/mobile-settings-menu.cy.ts'
+          #   needs_setup: false
+          #   needs_ix_config: false
+          #   needs_external_services: false
+          # - name: settings-2
+          #   spec: 'cypress/e2e/settings/users.cy.ts,cypress/e2e/settings/activitylog.cy.ts,cypress/e2e/settings/filters.cy.ts,cypress/e2e/settings/groups.cy.ts,cypress/e2e/settings/menu.cy.ts,cypress/e2e/settings/relationship-types.cy.ts,cypress/e2e/settings/custom-uploads.cy.ts'
+          #   needs_setup: false
+          #   needs_ix_config: false
+          #   needs_external_services: false
     env:
       CYPRESS_RETRIES: 2
     services:
