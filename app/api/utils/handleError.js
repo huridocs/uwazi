@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import * as Sentry from '@sentry/node';
+import { captureException } from '@sentry/node-core/light';
 import Ajv from 'ajv';
 import { ZodError } from 'zod';
 import util, { inspect } from 'node:util';
@@ -235,7 +235,7 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
   result = simplifyError(result, error);
 
   if (config.sentry.dsn && result.logLevel === 'error') {
-    Sentry.captureException(error);
+    captureException(error);
   }
 
   if (result.code >= 500) {

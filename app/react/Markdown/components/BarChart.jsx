@@ -151,4 +151,8 @@ const mapStateToProps = (state, props) => ({
 });
 
 const BarChartConnected = connect(mapStateToProps)(BarChartComponent);
-export { BarChartComponent as BarChartView, BarChartConnected as BarChartComponent, mapStateToProps };
+export {
+  BarChartComponent as BarChartView,
+  BarChartConnected as BarChartComponent,
+  mapStateToProps,
+};

@@ -4,6 +4,7 @@
 import React from 'react';
 import { render, act, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
+import * as scroller from '#V2/helpers/scrollIntoView.js';
 import { PDF, PDFProps, PDFHandle } from '../PDF.js';
 import * as helpers from '../functions/helpers.js';
 import * as snippetFuncs from '../functions/handleSnippets.js';
@@ -270,6 +271,8 @@ describe('PDF', () => {
     });
 
     it('should scroll to highlight when ref.scrollToHighlight is called', async () => {
+      jest.spyOn(scroller, 'scrollIntoView');
+
       await act(() => {
         renderComponet();
       });
@@ -277,24 +280,21 @@ describe('PDF', () => {
       const { container, getAllByTestId } = renderResult;
       const page2 = getAllByTestId('pdf-page')[1];
 
-      await act(async () => {
-        oberserverMock.enterNode(page2);
-      });
-
       const highlightWrapper = container.querySelector('[data-highlight-key="2"]') as HTMLElement;
 
       const highlightRectangle = highlightWrapper?.querySelector(
         '.highlight-rectangle'
       ) as HTMLElement;
-      const scrollIntoViewMock = jest.fn();
-      if (highlightRectangle) highlightRectangle.scrollIntoView = scrollIntoViewMock;
+
+      await act(async () => {
+        oberserverMock.enterNode(page2);
+      });
 
       act(() => {
         pdfRef.current?.scrollToHighlight('2');
       });
 
-      expect(scrollIntoViewMock).toHaveBeenCalledWith({
-        behavior: 'smooth',
+      expect(scroller.scrollIntoView).toHaveBeenCalledWith(highlightRectangle, {
         block: 'center',
       });
     });

@@ -1,9 +1,13 @@
-import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues.js';
 import { CsvThesauriPendingChild } from '../../domain/CsvThesauriPendingValues.js';
-import { ThesaurusValueInput } from '../contracts/ThesauriRepository.js';
+import { normalizeCsvThesaurusLabel } from './CsvThesaurusLabelNormalizer.js';
+
+export type ThesaurusValueInput = {
+  label: string;
+  values?: Array<{ label: string }>;
+};
 
 type AggregatedChild = {
   label: string;
@@ -37,7 +41,7 @@ type DiffState = {
 };
 
 const normalizeLabel = (label: string) =>
-  normalizeThesaurusLabel(sanitizeThesaurusLabel(label) || '');
+  normalizeCsvThesaurusLabel(sanitizeThesaurusLabel(label) || '');
 
 const aggregatePendingEntries = (pendingDoc: CsvImportThesauriValues) => {
   const roots = new Map<string, AggregatedRoot>();

@@ -1,1 +1,0 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"bb663c83639e4d2890d709aa53603cc8","collectionName":"ocr_records","type":"collection"}

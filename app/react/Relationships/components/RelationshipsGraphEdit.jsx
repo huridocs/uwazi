@@ -86,7 +86,10 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const RelationshipsGraphEditConnected = connect(mapStateToProps, mapDispatchToProps)(RelationshipsGraphEdit);
+const RelationshipsGraphEditConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(RelationshipsGraphEdit);
 export {
   RelationshipsGraphEdit as RelationshipsGraphEditView,
   RelationshipsGraphEditConnected as RelationshipsGraphEdit,

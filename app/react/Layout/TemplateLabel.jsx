@@ -57,4 +57,8 @@ const mapStateToProps = (state, props) => {
 };
 
 const TemplateLabelConnected = connect(mapStateToProps)(TemplateLabel);
-export { TemplateLabel as TemplateLabelView, TemplateLabelConnected as TemplateLabel, mapStateToProps };
+export {
+  TemplateLabel as TemplateLabelView,
+  TemplateLabelConnected as TemplateLabel,
+  mapStateToProps,
+};

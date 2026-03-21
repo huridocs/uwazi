@@ -5,9 +5,12 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain } from '../../../domain/CsvImport.js';
 import { CsvImportRelationshipPendingValues } from '../../../domain/CsvImportRelationshipPendingValues.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '../../../infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
+import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -39,6 +42,7 @@ const createCallbacks = () => ({
 describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
   const importTemplateId = fixtures.templates[0]._id.toString();
   const relatedTemplateId = fixtures.templates[1]._id.toString();
+  const createdImportIds: string[] = [];
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv-create-relationship-entities-job');
@@ -47,6 +51,7 @@ describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await testingEnvironment.setFixtures(fixtures);
+    await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
     await Promise.all(
       [
         'csv_imports',
@@ -68,9 +73,14 @@ describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
   });
 
   it('creates relationship entities with all UI languages', async () => {
+    const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
+      dispatch: jest.fn().mockResolvedValue(undefined),
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
+    }) as jest.Mocked<JobsDispatcher>;
     const { useCase, csvImportsDS, relationshipPendingValuesDS, entitiesDS } =
-      CsvCreateRelationshipEntitiesJobFactory.build();
+      CsvCreateRelationshipEntitiesJobFactory.build({ jobsDispatcher });
     const importId = fixturesFactory.idString('relationship-import');
+    createdImportIds.push(importId);
     const user = fixtures.users[0];
     if (!user._id) {
       throw new Error('Test user id is missing');
