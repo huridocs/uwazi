@@ -19,6 +19,7 @@ import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { scrollIntoView } from '#app/V2/helpers/scrollIntoView.js';
 
 type Snippet = { text: string; page: number; filename?: string };
 
@@ -48,7 +49,7 @@ interface PDFProps {
   onPageChange?: (pageNumber: number) => void;
   /** Called when PDF and container are ready (e.g. to scroll to initial highlight) */
   onPdfReady?: () => void;
-  size?: { height?: string; width?: string; overflow?: string };
+  size?: { height?: string; width?: string };
 }
 
 const getPDFFile = async (fileUrl: string) =>
@@ -95,14 +96,14 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
           );
           const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
           const elementToScroll = highlightRectangle || highlightWrapper;
-          elementToScroll?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          scrollIntoView(elementToScroll, { block: 'center' });
         },
         activateSnippet(snippet: Snippet) {
           const pageContainer = pageRefsMap.current[snippet.page.toString()];
           if (pageContainer) {
             highlightSnippetInPage(pageContainer, snippet);
             const firstMark = pageContainer.querySelector('mark');
-            firstMark?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scrollIntoView(firstMark, { block: 'center' });
           }
         },
         deactivateSnippet() {
@@ -134,7 +135,6 @@ const PDF = forwardRef<PDFHandle, PDFProps>(
     const containerStyles = {
       height: size?.height || '100%',
       width: size?.width || '100%',
-      overflow: size?.overflow || 'auto',
       paddingLeft: `${padding}px`,
       paddingRight: `${padding}px`,
     };

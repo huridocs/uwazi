@@ -175,7 +175,6 @@ const PDFSidepanel = ({
     handleClose();
   };
 
-  // eslint-disable-next-line max-statements
   const handleClickToFill = async () => {
     if (selectedText) {
       if (selectedText.selectionRectangles) {
