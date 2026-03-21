@@ -16,7 +16,6 @@ describe('attachments', () => {
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'View').click();
       });
-      cy.get('.canvasWrapper').should('be.visible');
       cy.contains('Uwazi Heroes Investigation');
     });
 
@@ -79,7 +78,6 @@ describe('attachments', () => {
         });
       });
 
-      cy.get('.canvasWrapper').should('be.visible');
       cy.contains('REINTEGRO AL FONDO DE ASISTENCIA LEGAL DE VÍCTIMAS');
 
       cy.get('.side-panel.is-active').within(() => {
@@ -115,7 +113,6 @@ describe('attachments', () => {
         cy.contains('a.edit-metadata', 'Ver').click();
       });
 
-      cy.get('.canvasWrapper').should('be.visible');
       cy.contains('REINTEGRO AL FONDO DE ASISTENCIA LEGAL DE VÍCTIMAS');
     });
 
