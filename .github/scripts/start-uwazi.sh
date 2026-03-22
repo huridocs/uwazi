@@ -40,6 +40,9 @@ timeout 60s bash -c "
   exit 1
 }
 
+
+echo
+echo "NODE_ENV=$NODE_ENV"
 echo
 echo "✅ Uwazi is up!"
 exit 0
