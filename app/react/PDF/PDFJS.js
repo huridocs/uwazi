@@ -6,8 +6,11 @@ let pdfjsLib = {};
 
 const pdfjsLoader = async () => {
   if (isClient) {
-    PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
     pdfjsLib = await import('pdfjs-dist/webpack.mjs');
+
+    globalThis.pdfjsLib = pdfjsLib;
+
+    PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
   }
 };
 
