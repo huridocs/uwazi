@@ -5,7 +5,7 @@ import type { PDFDocumentProxy } from 'pdfjs-dist';
 let pdfjs = pdfJsDist;
 const PDFJSViewer = viewer;
 const { EventBus: PDFJSEventBus } = viewer;
-const CMAP_URL = 'legacy_character_maps/';
+const CMAP_URL = '/legacy_character_maps/';
 
 const pdfjsLoader = async () => {
   if (process.env.NODE_ENV === 'development') {
