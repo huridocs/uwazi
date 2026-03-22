@@ -29,7 +29,7 @@ module.exports = production => {
   return {
     context: rootPath,
     devtool: 'eval-source-map',
-    mode: 'development',
+    mode: production ? 'production' : 'development',
     cache: {
       type: 'filesystem',
       buildDependencies: {

@@ -137,7 +137,7 @@ class PDFPage extends Component {
           id: this.props.page,
           scale,
           defaultViewport,
-          textLayerMode: 1,
+          annotationMode: 0,
           eventBus: new EventBus(),
         });
 

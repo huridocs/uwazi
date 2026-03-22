@@ -9,14 +9,14 @@ const pdfjsLoader = async () => {
   if (isClient) {
     PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'production') {
+      pdfjsLib = await import('pdfjs-dist/webpack.mjs');
+    } else {
       pdfjsLib = pdfjs;
       pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
         'pdfjs-dist/build/pdf.worker.min.mjs',
         import.meta.url
       ).toString();
-    } else {
-      pdfjsLib = await import('pdfjs-dist/webpack.mjs');
     }
   }
 };
