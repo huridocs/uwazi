@@ -134,6 +134,8 @@ module.exports = production => {
           ],
         },
         {
+          // This rule is mandatory for pdfjs-dist. The library has bad css selectors
+          // that will leak and affect our styles without this rule.
           test: /pdf_viewer\.css$/,
           include: [path.resolve(__dirname, '../node_modules/pdfjs-dist/web')],
           use: [

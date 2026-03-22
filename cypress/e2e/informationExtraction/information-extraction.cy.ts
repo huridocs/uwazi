@@ -33,7 +33,6 @@ describe('Information Extraction', () => {
   });
 
   describe('labeling entities', () => {
-    // eslint-disable-next-line max-statements
     it('should label the title property for the first six entities', () => {
       labelEntityTitle(0, 'Lorem Ipsum');
       cy.get('a[aria-label="Library"]').click();
@@ -339,16 +338,18 @@ describe('Information Extraction', () => {
       });
       cy.get('aside').within(() => {
         cy.contains('h1', 'The Spectacular Spider-Man');
+        cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man');
+        cy.get('div.highlight-rectangle').should('be.visible');
         cy.get('input[name="field"]').clear();
         cy.get('input[name="field"]').should('have.value', '');
-      });
-      cy.contains('button', 'Clear').click();
-      cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
-        .eq(0)
-        .setSelection('The Spectacular Spider-Man');
-      cy.contains('button', 'Click to fill').click();
-      cy.get('div.highlight-rectangle').should('be.visible');
-      cy.get('aside').within(() => {
+        cy.contains('button', 'Clear').click();
+
+        cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
+          .eq(0)
+          .setSelection('The Spectacular Spider-Man');
+        cy.contains('button', 'Click to fill').click();
+        cy.get('div.highlight-rectangle').should('be.visible');
+
         cy.get('input[name="field"]').should('have.value', 'The Spectacular Spider-Man');
       });
     });
