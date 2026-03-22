@@ -13,10 +13,15 @@ const pdfjsLoader = async () => {
       pdfjsLib = await import('pdfjs-dist/webpack.mjs');
     } else {
       pdfjsLib = pdfjs;
+    }
+
+    try {
       pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
         'pdfjs-dist/build/pdf.worker.min.mjs',
         import.meta.url
       ).toString();
+    } catch (e) {
+      // ignore if setting workerSrc is not supported in this environment
     }
   }
 };

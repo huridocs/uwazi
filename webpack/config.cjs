@@ -42,7 +42,6 @@ module.exports = production => {
     entry: {
       main: path.join(rootPath, 'app/react/entry-client'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
-      'pdf.worker': 'pdfjs-dist/build/pdf.worker.mjs',
     },
     output: {
       path: outputPath,
