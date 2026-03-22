@@ -339,6 +339,9 @@ describe('Information Extraction', () => {
       cy.get('aside').within(() => {
         cy.contains('h1', 'The Spectacular Spider-Man');
         cy.get('.page').eq(0).should('have.attr', 'data-loaded', 'true');
+        // this is to make sure all rendering of the pdf is done
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(1000);
         cy.get('input[name="field"]').should('have.value', 'The Spectacular Spider-Man');
 
         cy.contains('span[role="presentation"]', 'Magazine (1968)')
