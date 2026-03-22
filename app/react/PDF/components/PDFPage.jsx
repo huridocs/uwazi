@@ -4,7 +4,7 @@ import { isClient } from '#app/utils/index.js';
 import { PageReferences } from '#app/Viewer/components/PageReferences.js';
 import { PageSelections } from '#app/Viewer/components/PageSelections.js';
 import { calculateScaling } from '#V2/Components/PDFViewer/index.js';
-import { PDFJS, EventBus } from '../PDFJS.js';
+import { PDFJS } from '../PDFJS.js';
 
 class PDFPage extends Component {
   constructor(props) {
@@ -138,7 +138,7 @@ class PDFPage extends Component {
           scale,
           defaultViewport,
           annotationMode: 0,
-          eventBus: new EventBus(),
+          eventBus: new PDFJS.EventBus(),
         });
 
         this.pdfPageView.setPdfPage(page);

@@ -24,7 +24,7 @@ class PDF extends Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { pdf: { numPages: 0 }, filename: props.filename, scale: 1, error: undefined };
+    this.state = { pdf: { numPages: 0 }, filename: props.filename, scale: 1 };
     this.pagesLoaded = {};
     this.loadDocument(props.file);
     this.currentPage = '1';
@@ -108,15 +108,11 @@ class PDF extends Component {
         cMapUrl,
         cMapPacked,
         isEvalSupported: false,
-      })
-        .promise.then(pdf => {
-          if (this._isMounted) {
-            this.setState({ pdf });
-          }
-        })
-        .catch(e => {
-          this.setState({ error: JSON.stringify(e) });
-        });
+      }).promise.then(pdf => {
+        if (this._isMounted) {
+          this.setState({ pdf });
+        }
+      });
     }
   }
 
