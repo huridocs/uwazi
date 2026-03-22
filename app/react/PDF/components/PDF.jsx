@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { PDFPage } from '#app/PDF/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { isClient } from '../../utils/index.js';
 import { PDFJS } from '../PDFJS.js';
@@ -20,10 +21,17 @@ class PDF extends Component {
     return null;
   }
 
+  // eslint-disable-next-line max-statements
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { pdf: { numPages: 0 }, filename: props.filename, scale: 1 };
+    this.state = {
+      pdf: { numPages: 0 },
+      filename: props.filename,
+      scale: 1,
+      error: undefined,
+      loading: true,
+    };
     this.pagesLoaded = {};
     this.loadDocument(props.file);
     this.currentPage = '1';
@@ -107,11 +115,15 @@ class PDF extends Component {
         cMapUrl,
         cMapPacked,
         isEvalSupported: false,
-      }).promise.then(pdf => {
-        if (this._isMounted) {
-          this.setState({ pdf });
-        }
-      });
+      })
+        .promise.then(pdf => {
+          if (this._isMounted) {
+            this.setState({ pdf, loading: false });
+          }
+        })
+        .catch(e => {
+          this.setState({ error: JSON.stringify(e) });
+        });
     }
   }
 
@@ -178,6 +190,8 @@ class PDF extends Component {
           id="pdf-container"
           className="pdfViewer"
         >
+          {this.state.loading ?? <Translate>Loading</Translate>}
+          {this.state.error ?? <p>{this.state.error}</p>}
           {(() => {
             const pages = [];
             for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
