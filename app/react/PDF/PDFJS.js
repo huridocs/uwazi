@@ -9,7 +9,10 @@ const pdfjsLoader = async () => {
   if (isClient) {
     PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
 
-    if (process.env.NODE_ENV === 'production') {
+    if (window.Cypress) {
+      pdfjsLib = await import('pdfjs-dist/webpack.mjs');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = null;
+    } else if (process.env.NODE_ENV === 'production') {
       pdfjsLib = await import('pdfjs-dist/webpack.mjs');
     } else {
       pdfjsLib = pdfjs;
