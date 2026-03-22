@@ -290,6 +290,9 @@ jobs:
           REDIS_PORT: 6379
         run: .github/scripts/start-uwazi.sh
 
+      - name: Print NODE_ENV
+        run: echo "NODE_ENV=$NODE_ENV"
+
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
