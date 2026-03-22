@@ -1,4 +1,3 @@
-import * as pdfjs from 'pdfjs-dist';
 import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { isClient } from '#app/utils/index.js';
 
@@ -8,8 +7,7 @@ let pdfjsLib = {};
 const pdfjsLoader = async () => {
   if (isClient) {
     PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
-    pdfjsLib = pdfjs;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
+    pdfjsLib = await import('pdfjs-dist/webpack.mjs');
   }
 };
 
