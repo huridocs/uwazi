@@ -139,6 +139,7 @@ class PDFPage extends Component {
           defaultViewport,
           annotationMode: 0,
           eventBus: new EventBus(),
+          enableDetailCanvas: false,
         });
 
         this.pdfPageView.setPdfPage(page);

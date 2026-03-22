@@ -12,7 +12,7 @@ const legacyCharacterMapUrl = '/legacy_character_maps/';
 jest.mock('#V2/Components/PDFViewer/pdfjs.js', () => ({
   PDFJS: { getDocument: jest.fn() },
   EventBus: function () {},
-  cMapUrl: '/legacy_character_maps/',
+  CMAP_URL: '/legacy_character_maps/',
 }));
 
 // eslint-disable-next-line max-statements

@@ -4,7 +4,7 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { PDFPage } from '#app/PDF/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
-import { PDFJS, cMapUrl } from '#V2/Components/PDFViewer/pdfjs.js';
+import { PDFJS, CMAP_URL } from '#V2/Components/PDFViewer/pdfjs.js';
 import { isClient } from '../../utils/index.js';
 import 'pdfjs-dist/web/pdf_viewer.css';
 
@@ -104,7 +104,7 @@ class PDF extends Component {
     if (isClient) {
       PDFJS.getDocument({
         url: file,
-        cMapUrl,
+        cMapUrl: CMAP_URL,
         cMapPacked,
         isEvalSupported: false,
       }).promise.then(pdf => {

@@ -55,6 +55,7 @@ const PDFPage = ({
             defaultViewport,
             annotationMode: 0,
             eventBus,
+            enableDetailCanvas: false,
           });
 
           pageViewer.setPdfPage(pdfPage);

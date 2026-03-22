@@ -151,6 +151,9 @@ module.exports = production => {
                         if (selector.startsWith('.pdfViewer')) {
                           return selector;
                         }
+                        if (selector.startsWith('.hiddenCanvasElement')) {
+                          return selector;
+                        }
                         if (selector === ':root') {
                           return prefix;
                         }
