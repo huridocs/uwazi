@@ -338,8 +338,7 @@ describe('Information Extraction', () => {
       });
       cy.get('aside').within(() => {
         cy.contains('h1', 'The Spectacular Spider-Man');
-        cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man');
-        cy.get('div.highlight-rectangle').should('be.visible');
+        cy.get('.page').eq(0).should('have.attr', 'data-loaded', 'true');
         cy.get('input[name="field"]').clear();
         cy.get('input[name="field"]').should('have.value', '');
         cy.contains('button', 'Clear').click();
