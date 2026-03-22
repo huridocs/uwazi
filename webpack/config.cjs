@@ -249,7 +249,6 @@ module.exports = production => {
           { from: 'node_modules/leaflet/dist/images/', to: 'CSS/images' },
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps/' },
-          { from: 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs', to: 'pdf.worker.js' },
         ],
       }),
 

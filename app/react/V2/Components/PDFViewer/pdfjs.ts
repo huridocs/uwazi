@@ -8,15 +8,15 @@ const { EventBus: PDFJSEventBus } = viewer;
 const CMAP_URL = 'legacy_character_maps/';
 
 const pdfjsLoader = async () => {
-  if (process.env.NODE_ENV === 'production') {
-    //@ts-ignore
-    //webpack bundled version for production, types are not needed.
-    pdfjs = await import('pdfjs-dist/webpack.mjs');
-  } else {
+  if (process.env.NODE_ENV === 'development') {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.mjs',
       import.meta.url
     ).toString();
+  } else {
+    //@ts-ignore
+    //webpack bundled version for production, types are not needed.
+    pdfjs = await import('pdfjs-dist/webpack.mjs');
   }
 };
 

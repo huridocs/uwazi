@@ -4,7 +4,7 @@ import { isClient } from '#app/utils/index.js';
 import { PageReferences } from '#app/Viewer/components/PageReferences.js';
 import { PageSelections } from '#app/Viewer/components/PageSelections.js';
 import { calculateScaling } from '#V2/Components/PDFViewer/index.js';
-import { PDFJS, EventBus } from '../PDFJS.js';
+import { PDFJS, PDFJSViewer, EventBus } from '#V2/Components/PDFViewer/pdfjs.js';
 
 class PDFPage extends Component {
   constructor(props) {
@@ -132,7 +132,7 @@ class PDFPage extends Component {
           this.props.onScaleChange(scale);
         }
 
-        this.pdfPageView = new PDFJS.PDFPageView({
+        this.pdfPageView = new PDFJSViewer.PDFPageView({
           container: this.pageContainer,
           id: this.props.page,
           scale,

@@ -4,8 +4,8 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { PDFPage } from '#app/PDF/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { PDFJS } from '#V2/Components/PDFViewer/pdfjs.js';
 import { isClient } from '../../utils/index.js';
-import { PDFJS } from '../PDFJS.js';
 import 'pdfjs-dist/web/pdf_viewer.css';
 
 const cMapUrl = 'legacy_character_maps/';
