@@ -139,7 +139,6 @@ class PDFPage extends Component {
           defaultViewport,
           annotationMode: 0,
           eventBus: new EventBus(),
-          enableHWA: false, // missing from types but valid at runtime
         });
 
         this.pdfPageView.setPdfPage(page);

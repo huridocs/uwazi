@@ -23,6 +23,7 @@ const determineAssets = (assets, languageData) => {
   const rtlIndex = languageData?.rtl ? 1 : 0;
   const vendorCss = assets.vendor?.css;
   const mainCss = assets.main?.css;
+  const emptyKeyCss = assets['']?.css;
   const cssArray = [];
   if (vendorCss) {
     if (Array.isArray(vendorCss)) {
@@ -38,7 +39,18 @@ const determineAssets = (assets, languageData) => {
       cssArray.push(mainCss);
     }
   }
-
+  if (emptyKeyCss && Array.isArray(emptyKeyCss)) {
+    emptyKeyCss.forEach(cssFile => {
+      if (
+        cssFile &&
+        typeof cssFile === 'string' &&
+        cssFile.endsWith('.css') &&
+        !cssFile.includes('rtl-')
+      ) {
+        cssArray.push(cssFile);
+      }
+    });
+  }
   return {
     JS: [assets.nprogress?.js, assets.vendor?.js, assets.main?.js].filter(Boolean),
     CSS: cssArray.filter(Boolean),

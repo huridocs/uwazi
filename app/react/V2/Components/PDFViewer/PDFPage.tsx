@@ -55,8 +55,6 @@ const PDFPage = ({
             defaultViewport,
             annotationMode: 0,
             eventBus,
-            // @ts-ignore missing from types but valid at runtime
-            enableHWA: false,
           });
 
           pageViewer.setPdfPage(pdfPage);
