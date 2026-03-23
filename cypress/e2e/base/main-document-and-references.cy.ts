@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   clearCookiesAndLogin,
   clickOnCreateEntity,
@@ -212,23 +213,22 @@ describe('Entity with main documents', () => {
     cy.contains('a', 'Library').click();
     cy.contains('.item-document', 'Entity with main documents').contains('View').click();
     cy.contains('span', 'La Sentencia de fondo').should('be.visible');
-    cy.contains('span', 'La Sentencia de fondo').realClick({ clickCount: 3 });
-    cy.get('.fa-file', { timeout: 5000 }).then(() => {
-      cy.get('.fa-file').realClick();
-    });
+    cy.contains('span[role="presentation"]', 'La Sentencia de fondo').setSelection(
+      'La Sentencia de fondo'
+    );
+    cy.get('.fa-file').should('be.visible');
+    cy.get('.fa-file').realClick();
     cy.contains('.create-reference', 'Relacionado a').should('be.visible');
     cy.contains('li.multiselectItem', 'Relacionado a').realClick();
-    cy.get('aside.create-reference input').type('Patrick Robinson', { timeout: 5000 });
-    cy.contains('Tracy Robinson', { timeout: 5000 });
-    cy.contains('.item-name', 'Patrick Robinson', { timeout: 5000 }).realClick();
-    cy.contains('aside.create-reference .btn-success', 'Save', { timeout: 5000 }).click({
-      timeout: 5000,
-    });
+    cy.get('aside.create-reference input').type('Patrick Robinson');
+    cy.contains('.item-name', 'Tracy Robinson');
+    cy.contains('.item-name', 'Patrick Robinson').realClick();
+    cy.contains('aside.create-reference .btn-success', 'Save').click();
     cy.contains('Saved successfully.');
-    cy.get('#p3R_mc0').scrollIntoView();
     cy.get('.row').matchImageSnapshot();
   });
 
+  // eslint-disable-next-line max-statements
   it('should edit the entity and the documents', () => {
     cy.contains('a', 'Library').click();
     cy.contains('.item-document', 'Entity with main documents').click();

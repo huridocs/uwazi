@@ -226,4 +226,14 @@ const highlightSnippetInPage = (container: HTMLElement | null, snippet: Snippet)
   performHighlighting(textLayer, snippet, searchTerms);
 };
 
-export { clearSnippets, highlightSnippetInPage };
+const tryHighlightAndScroll = (container: HTMLDivElement, snippet: Snippet) => {
+  highlightSnippetInPage(container, snippet);
+  const highlight = container.querySelector('.snippet-context') || container.querySelector('mark');
+  if (highlight) {
+    highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return true;
+  }
+  return false;
+};
+
+export { clearSnippets, highlightSnippetInPage, tryHighlightAndScroll };
