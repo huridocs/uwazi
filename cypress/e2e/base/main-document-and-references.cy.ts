@@ -216,18 +216,15 @@ describe('Entity with main documents', () => {
     cy.contains('span[role="presentation"]', 'La Sentencia de fondo').setSelection(
       'La Sentencia de fondo'
     );
-    cy.get('.fa-file', { timeout: 5000 }).should('be.visible');
+    cy.get('.fa-file').should('be.visible');
     cy.get('.fa-file').realClick();
     cy.contains('.create-reference', 'Relacionado a').should('be.visible');
     cy.contains('li.multiselectItem', 'Relacionado a').realClick();
     cy.get('aside.create-reference input').type('Patrick Robinson');
     cy.contains('.item-name', 'Tracy Robinson');
     cy.contains('.item-name', 'Patrick Robinson').realClick();
-    cy.contains('aside.create-reference .btn-success', 'Save', { timeout: 5000 }).click({
-      timeout: 5000,
-    });
+    cy.contains('aside.create-reference .btn-success', 'Save').click();
     cy.contains('Saved successfully.');
-    cy.get('#p3R_mc0').scrollIntoView();
     cy.get('.row').matchImageSnapshot();
   });
 
