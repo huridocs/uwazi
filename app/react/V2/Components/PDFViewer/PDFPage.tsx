@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { PDFDocumentProxy, PixelsPerInch } from 'pdfjs-dist';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { TextHighlight } from './types.js';
 import { calculateScaling } from './functions/calculateScaling.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
-import { EventBus, PDFJSViewer } from './pdfjs.js';
+import { PDFJSViewer, PixelsPerInch } from './pdfjs.js';
+import type { EventBusType } from './pdfjs.js';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
-  eventBus: typeof EventBus.prototype;
+  eventBus: EventBusType;
   intersectionObserver: IntersectionObserver | null | undefined;
   highlights?: TextHighlight[];
   containerWidth?: number;
@@ -110,7 +111,7 @@ const PDFPage = ({
     }
 
     return () => {
-      if (containerRef) {
+      if (containerRef && ready) {
         intersectionObserver?.unobserve(containerRef);
       }
     };

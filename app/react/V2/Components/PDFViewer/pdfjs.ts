@@ -5,7 +5,6 @@ import type { PDFDocumentProxy } from 'pdfjs-dist';
 let pdfjs = pdfJsDist;
 const PDFJSViewer = viewer;
 const { EventBus: PDFJSEventBus } = viewer;
-const CMAP_URL = '/legacy_character_maps/';
 
 const pdfjsLoader = async () => {
   if (process.env.NODE_ENV === 'development') {
@@ -21,8 +20,6 @@ const pdfjsLoader = async () => {
 };
 
 await pdfjsLoader();
-
-const PDFJS = pdfjs;
 
 type PDFEventMap = {
   pageready: { pageNumber: number };
@@ -45,5 +42,10 @@ class EventBus extends PDFJSEventBus {
   }
 }
 
-export type { PDFDocumentProxy, PDFEventMap };
-export { PDFJS, PDFJSViewer, EventBus, CMAP_URL };
+type EventBusType = typeof EventBus.prototype;
+const PDFJS = pdfjs;
+const { PixelsPerInch } = pdfjs;
+const CMAP_URL = '/legacy_character_maps/';
+
+export type { PDFDocumentProxy, PDFEventMap, EventBusType };
+export { PDFJS, PDFJSViewer, EventBus, CMAP_URL, PixelsPerInch };
