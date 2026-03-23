@@ -27,7 +27,7 @@ global.ResizeObserver = ResizeObserverMock as any;
 
 const TestComp = () => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const width = useContainerWidth(ref, { borderWidth: 1, safetyBuffer: 2, debounceMs: 150 });
+  const width = useContainerWidth(ref, { borderWidth: 1, safetyBuffer: 2, debounce: 150 });
 
   return (
     <div>
