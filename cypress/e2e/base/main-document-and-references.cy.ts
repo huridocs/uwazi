@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   clearCookiesAndLogin,
   clickOnCreateEntity,
@@ -212,7 +213,9 @@ describe('Entity with main documents', () => {
     cy.contains('a', 'Library').click();
     cy.contains('.item-document', 'Entity with main documents').contains('View').click();
     cy.contains('span', 'La Sentencia de fondo').should('be.visible');
-    cy.contains('span', 'La Sentencia de fondo').realClick({ clickCount: 3 });
+    cy.contains('span[role="presentation"]', 'La Sentencia de fondo').setSelection(
+      'La Sentencia de fondo'
+    );
     cy.get('.fa-file', { timeout: 5000 }).should('be.visible');
     cy.get('.fa-file').realClick();
     cy.contains('.create-reference', 'Relacionado a').should('be.visible');
@@ -228,6 +231,7 @@ describe('Entity with main documents', () => {
     cy.get('.row').matchImageSnapshot();
   });
 
+  // eslint-disable-next-line max-statements
   it('should edit the entity and the documents', () => {
     cy.contains('a', 'Library').click();
     cy.contains('.item-document', 'Entity with main documents').click();
