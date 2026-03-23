@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
-import { highlights } from './fixtures.js';
+import { mockEventBus, highlights } from './fixtures.js';
 import { PDFPage } from '../PDFPage';
 import { EventBus } from '../pdfjs.js';
 
@@ -35,25 +35,8 @@ jest.mock('../pdfjs.ts', () => {
     return inst;
   });
 
-  class EventBusMock {
-    listeners: Record<string, Function[]> = {};
-
-    on(eventName: string, listener: Function) {
-      this.listeners[eventName] = this.listeners[eventName] || [];
-      this.listeners[eventName].push(listener);
-    }
-
-    off(eventName: string, listener: Function) {
-      this.listeners[eventName] = (this.listeners[eventName] || []).filter(l => l !== listener);
-    }
-
-    dispatch(eventName: string, data: any) {
-      (this.listeners[eventName] || []).forEach(l => l(data));
-    }
-  }
-
   return {
-    EventBus: EventBusMock,
+    EventBus: mockEventBus,
     PDFJSViewer: { PDFPageView, RenderingStates },
     PixelsPerInch: { PDF_TO_CSS_UNITS: 1 },
   };

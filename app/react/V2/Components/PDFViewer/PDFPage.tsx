@@ -83,6 +83,7 @@ const PDFPage = ({
         setPageHeight(nextPageHeight);
         setPdfScale(newScale);
         onScaleChange?.(newScale);
+
         pageViewer.update({ scale: newScale });
 
         if (shouldRedraw) {

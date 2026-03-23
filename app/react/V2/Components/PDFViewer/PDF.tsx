@@ -12,9 +12,10 @@ import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
+import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { ProgressBar } from '../UI/index.js';
+import 'pdfjs-dist/web/pdf_viewer.css';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
 const BORDER_WIDTH: number = 1;
@@ -55,15 +56,16 @@ const PDF = ({
   const animationFrameIdRef = useRef<number>(0);
   const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
-  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasCalledOnReadyRef = useRef(false);
   const intersectionObserverRef = useRef<IntersectionObserver | null>();
   const [currentScale, setCurrentScale] = useState(1);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
-  const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+  const containerWidth = useContainerWidth(pdfContainerRef, {
+    borderWidth: BORDER_WIDTH,
+    safetyBuffer: WIDTH_SAFETY_BUFFER,
+  });
   const [pdfEventBus] = useState(new EventBus());
-  const [pdfContainerElement, setPdfContainerElement] = useState<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState<{ progress: number; isLoading: boolean }>({
     isLoading: true,
     progress: 0,
@@ -72,7 +74,6 @@ const PDF = ({
 
   const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
     pdfContainerRef.current = element;
-    setPdfContainerElement(element);
   }, []);
 
   const handleScaleChange = useCallback(
@@ -205,45 +206,6 @@ const PDF = ({
   }, [fileUrl]);
 
   useEffect(() => {
-    const container = pdfContainerElement;
-
-    if (!container) {
-      return undefined;
-    }
-
-    const getAvailableWidth = () =>
-      Math.max(0, Math.floor(container.clientWidth - BORDER_WIDTH * 2 - WIDTH_SAFETY_BUFFER));
-
-    const initialWidth = getAvailableWidth();
-
-    setContainerWidth(initialWidth);
-
-    const resizeObserver = new ResizeObserver(entries => {
-      const [entry] = entries;
-      if (entry && entry.contentRect) {
-        if (resizeTimeoutRef.current) {
-          clearTimeout(resizeTimeoutRef.current);
-        }
-
-        resizeTimeoutRef.current = setTimeout(() => {
-          const newWidth = getAvailableWidth();
-          setContainerWidth(newWidth);
-        }, 150);
-      }
-    });
-
-    resizeObserver.observe(container);
-
-    return () => {
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
-        resizeTimeoutRef.current = null;
-      }
-      resizeObserver.disconnect();
-    };
-  }, [pdfContainerElement]);
-
-  useEffect(() => {
     const observerHandler: IntersectionObserverCallback = entries => {
       entries.forEach(entry => {
         const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
@@ -311,7 +273,7 @@ const PDF = ({
     width: size?.width || '100%',
     '--page-border': 'none',
     '--page-margin': '0',
-  };
+  } as React.CSSProperties;
 
   if (error) {
     return (

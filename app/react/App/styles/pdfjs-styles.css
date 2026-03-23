@@ -1,4 +1,4 @@
 #pdf-container .textLayer,
 #pdf-container .textLayer * {
-  font-family: serif !important;
+  font-family: unset !important;
 }
