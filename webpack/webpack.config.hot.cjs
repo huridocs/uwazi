@@ -12,8 +12,8 @@ config['infrastructureLogging'] = {
   level: 'error',
 };
 
-config.plugins = config.plugins.filter(plugin =>
-  !(plugin instanceof RtlCssPlugin) && !(plugin instanceof MiniCssExtractPlugin)
+config.plugins = config.plugins.filter(
+  plugin => !(plugin instanceof RtlCssPlugin) && !(plugin instanceof MiniCssExtractPlugin)
 );
 config.plugins.push(
   new MiniCssExtractPlugin({

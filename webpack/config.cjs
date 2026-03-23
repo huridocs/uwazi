@@ -29,7 +29,7 @@ module.exports = production => {
   return {
     context: rootPath,
     devtool: 'eval-source-map',
-    mode: 'development',
+    mode: production ? 'production' : 'development',
     cache: {
       type: 'filesystem',
       buildDependencies: {
@@ -117,6 +117,7 @@ module.exports = production => {
           exclude: [
             path.resolve(__dirname, '../node_modules/flowbite/dist'),
             path.resolve(__dirname, '../node_modules/monaco-editor/'),
+            path.resolve(__dirname, '../node_modules/pdfjs-dist/web/pdf_viewer.css'),
             /flowbite\.min\.css$/,
           ],
           use: [
@@ -127,6 +128,41 @@ module.exports = production => {
               options: {
                 postcssOptions: {
                   config: path.resolve(__dirname, '../postcss.config.cjs'),
+                },
+              },
+            },
+          ],
+        },
+        {
+          // This rule is mandatory for pdfjs-dist. The library has bad css selectors
+          // that will leak and affect our styles without this rule.
+          test: /pdf_viewer\.css$/,
+          include: [path.resolve(__dirname, '../node_modules/pdfjs-dist/web')],
+          use: [
+            MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { url: false, sourceMap: true } },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  config: false,
+                  plugins: {
+                    'postcss-prefix-selector': {
+                      prefix: '.pdfViewer',
+                      transform(prefix, selector, prefixedSelector) {
+                        if (selector.startsWith('.pdfViewer')) {
+                          return selector;
+                        }
+                        if (selector.startsWith('.hiddenCanvasElement')) {
+                          return selector;
+                        }
+                        if (selector === ':root') {
+                          return prefix;
+                        }
+                        return prefixedSelector;
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -215,11 +251,12 @@ module.exports = production => {
           { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
           { from: 'node_modules/flag-icons/flags/4x3/', to: 'flags/4x3/' },
           { from: 'node_modules/flag-icons/flags/1x1/', to: 'flags/1x1/' },
-          { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
           { from: 'node_modules/leaflet/dist/images/', to: 'CSS/images' },
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
+          { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps/' },
         ],
       }),
+
       new MonacoWebpackPlugin({
         languages: ['typescript', 'html', 'css'],
       }),

@@ -3,6 +3,7 @@ const tailwindcss = require('@tailwindcss/postcss');
 const prefixWrap = require('postcss-prefixwrap');
 const postcssNesting = require('postcss-nesting');
 const legacyOverrides = require('./app/react/App/styles/legacyOverrides.cjs');
+const globalFontOverride = require('./app/react/App/styles/globalFontOverride.cjs');
 
 module.exports = ctx => {
   const filePath = ctx?.file?.dirname
@@ -33,11 +34,11 @@ module.exports = ctx => {
   });
   unwrapTailwindLayers.postcss = true;
 
-  const injectLegacyOverrides = () => ({
+  const injectOverrides = () => ({
     postcssPlugin: 'uwazi-legacy-overrides',
     Once(root) {
       if (!legacyOverrides) return;
-      const rules = Object.entries(legacyOverrides)
+      const overrideRules = Object.entries(legacyOverrides)
         .map(([selector, declarations]) => {
           const body = Object.entries(declarations)
             .map(([property, value]) => `  ${property}: ${value};`)
@@ -45,10 +46,20 @@ module.exports = ctx => {
           return `${selector} {\n${body}\n}`;
         })
         .join('\n');
-      root.append(postcss.parse(rules));
+      root.append(postcss.parse(overrideRules));
+      if (!globalFontOverride) return;
+      const fontRules = Object.entries(globalFontOverride)
+        .map(([selector, declarations]) => {
+          const body = Object.entries(declarations)
+            .map(([property, value]) => `  ${property}: ${value};`)
+            .join('\n');
+          return `${selector} {\n${body}\n}`;
+        })
+        .join('\n');
+      root.append(postcss.parse(fontRules));
     },
   });
-  injectLegacyOverrides.postcss = true;
+  injectOverrides.postcss = true;
 
   const stripDarkMediaQueries = () => ({
     postcssPlugin: 'uwazi-strip-dark-media',
@@ -79,7 +90,7 @@ module.exports = ctx => {
     );
 
     plugins.push(stripDarkMediaQueries());
-    plugins.push(injectLegacyOverrides());
+    plugins.push(injectOverrides());
   }
 
   return { plugins };
