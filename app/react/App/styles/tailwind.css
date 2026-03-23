@@ -2,7 +2,6 @@
 @source '../../../../app/react/**/*.{js,jsx,ts,tsx}';
 
 @import 'tailwindcss';
-@import './pdfjs-styles.css';
 
 @layer utilities;
 
