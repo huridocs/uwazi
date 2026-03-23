@@ -19,7 +19,7 @@ jobs:
       matrix:
         include:
           - name: base
-            spec: 'cypress/e2e/base/attachments.cy.ts'
+            spec: 'cypress/e2e/base/*.cy.ts'
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
