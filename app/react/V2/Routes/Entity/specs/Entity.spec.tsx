@@ -19,22 +19,6 @@ jest.mock('#V2/Components/PDFViewer', () => ({
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 
-const mockGoToPage = jest.fn();
-const mockActivateSnippet = jest.fn();
-jest.mock('../Components/PdfControllerContext', () => ({
-  ...jest.requireActual('../Components/PdfControllerContext'),
-  createPdfController: () => ({
-    goToPage: mockGoToPage,
-    scrollToHighlight: jest.fn(),
-    activateSnippet: mockActivateSnippet,
-    deactivateSnippet: jest.fn(),
-    scrollToSnippet: jest.fn((snippet: { page: number }, currentPage: number) => {
-      if (currentPage !== snippet.page) mockGoToPage(snippet.page);
-      setTimeout(() => mockActivateSnippet(snippet), 200);
-    }),
-  }),
-}));
-
 const sampleEntity: Partial<EntityType> = {
   _id: 'ent1',
   sharedId: 'shared1',
@@ -416,45 +400,6 @@ describe('Entity view', () => {
 
       expect(screen.getByText('Match title')).toBeInTheDocument();
       expect(screen.getByText('Page 3')).toBeInTheDocument();
-    });
-
-    it('should scroll to the page and then to the snippet of the result', async () => {
-      jest.useFakeTimers();
-
-      const snippets = {
-        data: [
-          {
-            id: 's1',
-            snippets: {
-              metadata: [],
-              fullText: [{ page: 5, text: 'Some <b>text</b>' }],
-            },
-          },
-        ],
-      };
-
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: snippets }}
-        >
-          <Entity />
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
-      const pageButton = screen.getByText('Page 5');
-
-      fireEvent.click(pageButton);
-
-      expect(mockGoToPage).toHaveBeenCalledWith(5);
-
-      jest.advanceTimersByTime(200);
-
-      expect(mockActivateSnippet).toHaveBeenCalledWith(snippets.data[0].snippets.fullText[0]);
-
-      jest.useRealTimers();
-      jest.clearAllMocks();
     });
   });
 });

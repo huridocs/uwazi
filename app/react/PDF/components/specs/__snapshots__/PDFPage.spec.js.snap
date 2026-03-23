@@ -7,6 +7,7 @@ exports[`PDFPage render should pass pass proper height when state.height 1`] = `
   style={
     Object {
       "height": 25,
+      "position": "relative",
     }
   }
 />
@@ -19,6 +20,7 @@ exports[`PDFPage render should render a div as pageContainer 1`] = `
   style={
     Object {
       "height": 1100,
+      "position": "relative",
     }
   }
 />

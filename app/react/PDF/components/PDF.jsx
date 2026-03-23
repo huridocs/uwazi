@@ -4,10 +4,10 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { PDFPage } from '#app/PDF/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { PDFJS, CMAP_URL } from '#V2/Components/PDFViewer/pdfjs.js';
 import { isClient } from '../../utils/index.js';
-import { PDFJS } from '../PDFJS.js';
+import 'pdfjs-dist/web/pdf_viewer.css';
 
-const cMapUrl = '/legacy_character_maps/';
 const cMapPacked = true;
 
 class PDF extends Component {
@@ -19,6 +19,7 @@ class PDF extends Component {
     return null;
   }
 
+  // eslint-disable-next-line max-statements
   constructor(props) {
     super(props);
     this._isMounted = false;
@@ -103,7 +104,7 @@ class PDF extends Component {
     if (isClient) {
       PDFJS.getDocument({
         url: file,
-        cMapUrl,
+        cMapUrl: CMAP_URL,
         cMapPacked,
         isEvalSupported: false,
       }).promise.then(pdf => {
@@ -162,14 +163,20 @@ class PDF extends Component {
       const normalized = selectionHandlers.adjustSelectionsToScale(selection, scale, true);
       this.props.onTextSelection(normalized);
     };
+    const viewerStyle = {
+      ...this.props.style,
+      '--page-border': 'none',
+      '--page-margin': '0',
+    };
     return (
       <HandleTextSelection onSelect={handleSelect} onDeselect={this.props.onTextDeselection}>
         <div
           ref={ref => {
             this.pdfContainer = ref;
           }}
-          style={this.props.style}
+          style={viewerStyle}
           id="pdf-container"
+          className="pdfViewer"
         >
           {(() => {
             const pages = [];
