@@ -45,7 +45,7 @@ const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
 const fieldModel = (file: ClientFile, type: string, index: number) => {
   if (type === 'attachment') return `.attachments.${index}.originalname`;
   if (file._id) return `.documents.${index}.originalname`;
-  return `.documents.${index}.originalFile.name`;
+  return `.documents.${index}.originalName`;
 };
 
 type EntityFilesProps = {
