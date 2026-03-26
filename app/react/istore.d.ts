@@ -128,6 +128,7 @@ export interface ClientFile extends FileType {
 export interface ClientBlobFile extends FileType {
   data: string;
   originalFile: File;
+  originalName?: string;
 }
 
 export interface ClientEntitySchema extends EntitySchema {
