@@ -1,8 +1,4 @@
-import entitiesUtil from '#app/Entities/utils/filterBaseProperties.js';
-import { Select as SimpleSelect } from '#app/Forms/index.js';
-import { I18NLink, t, Translate } from '#app/I18N/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
-import { FormGroup } from '#app/ReactReduxForms/index.js';
+/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -10,6 +6,11 @@ import { connect } from 'react-redux';
 import { Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
+import entitiesUtil from '#app/Entities/utils/filterBaseProperties.js';
+import { Select as SimpleSelect } from '#app/Forms/index.js';
+import { I18NLink, t, Translate } from '#app/I18N/index.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { FormGroup } from '#app/ReactReduxForms/index.js';
 import { Icon } from '#UI/Icon/Icon.js';
 import { wrapEntityMetadata } from '#app/Metadata/index.js';
 import defaultTemplate from '../helpers/defaultTemplate.js';
@@ -253,7 +254,8 @@ MetadataForm.propTypes = {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify: notificationActions.notify }, dispatch);
 }
-export const mapStateToProps = (state, ownProps) => {
+
+const mapStateToProps = (state, ownProps) => {
   const entityModel = ownProps.model.split('.').reduce((o, i) => o[i], state);
   const { attachments, sharedId } = entityModel;
   let progress = state.attachments.progress.get('NEW_ENTITY');
@@ -275,4 +277,4 @@ export const mapStateToProps = (state, ownProps) => {
 };
 
 const MetadataFormConnected = connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
-export { MetadataForm as MetadataFormView, MetadataFormConnected as MetadataForm };
+export { MetadataForm as MetadataFormView, MetadataFormConnected as MetadataForm, mapStateToProps };
