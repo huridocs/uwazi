@@ -18,7 +18,12 @@ const handlePDFUpload =
     if (files && files.length > 0) {
       Array.from(files).forEach(file => {
         const data = { data: URL.createObjectURL(file), originalFile: file };
-        dispatch(actions.push(`${model}.documents`, data));
+        dispatch(
+          actions.push(`${model}.documents`, {
+            ...data,
+            originalName: data.originalFile.name,
+          })
+        );
       });
     }
   };
