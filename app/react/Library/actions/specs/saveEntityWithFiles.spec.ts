@@ -7,6 +7,7 @@ import fetchMock from 'fetch-mock';
 import { APIURL } from '#app/config.js';
 import { readFileAsBase64, saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 import { contentForFiles } from './fixtures.js';
+import { ClientEntitySchema } from '#app/istore.js';
 
 describe('saveEntityWithFiles', () => {
   const dispatch = jasmine.createSpy('dispatch');
@@ -21,7 +22,6 @@ describe('saveEntityWithFiles', () => {
   });
 
   describe('success saving', () => {
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
     const mockSuperAgent = (url = `${APIURL}entities`) => {
       const mockUpload = superagent.post(url);
       spyOn(mockUpload, 'field').and.returnValue(mockUpload);
@@ -115,34 +115,67 @@ describe('saveEntityWithFiles', () => {
       expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
     });
 
-    it('should save the entity with added documents', async () => {
+    describe('Entity with main documents', () => {
       const file = new File([Buffer.from('pdf').toString('base64')], 'document.pdf', {
         type: 'application/pdf',
       });
 
-      const entity = {
-        _id: 'entity1',
-        sharedId: 'entity1',
-        title: 'entity1',
-        attachments: [],
-        documents: [{ data: 'blob:http://localhost:3000/blob/file_id', originalFile: file }],
-      };
+      let entity: ClientEntitySchema;
 
-      const expectedEntityJson = JSON.stringify({
-        _id: 'entity1',
-        sharedId: 'entity1',
-        title: 'entity1',
-        attachments: [],
-        documents: [],
+      beforeEach(() => {
+        entity = {
+          _id: 'entity1',
+          sharedId: 'entity1',
+          title: 'entity1',
+          attachments: [],
+          documents: [{ data: 'blob:http://localhost:3000/blob/file_id', originalFile: file }],
+        };
       });
 
-      const mockUpload = mockSuperAgent();
-      fetchMock.mock('blob:http://localhost:3000/blob/file_id', { blob: {} });
-      const updatedEntity = await saveEntityWithFiles(entity, dispatch);
-      expect(mockUpload.attach).toHaveBeenCalledWith('documents[0]', file);
-      expect(mockUpload.field).toHaveBeenCalledWith('entity', expectedEntityJson);
-      expect(mockUpload.field).toHaveBeenCalledWith('documents_originalname[0]', file.name);
-      expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
+      beforeAll(() => {
+        fetchMock.mock('blob:http://localhost:3000/blob/file_id', { blob: {} });
+      });
+
+      it('should save the entity with added documents', async () => {
+        const expectedEntityJson = JSON.stringify({
+          _id: 'entity1',
+          sharedId: 'entity1',
+          title: 'entity1',
+          attachments: [],
+          documents: [],
+        });
+
+        const mockUpload = mockSuperAgent();
+
+        const updatedEntity = await saveEntityWithFiles(entity, dispatch);
+        expect(mockUpload.attach).toHaveBeenCalledWith('documents[0]', file);
+        expect(mockUpload.field).toHaveBeenCalledWith('entity', expectedEntityJson);
+        expect(mockUpload.field).toHaveBeenCalledWith('documents_originalname[0]', file.name);
+        expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
+      });
+
+      it('should update the file names if the user changed it', async () => {
+        entity.documents![0] = {
+          data: 'blob:http://localhost:3000/blob/file_id',
+          originalFile: file,
+          originalName: 'Edited.pdf',
+        };
+
+        const expectedEntityJson = JSON.stringify({
+          _id: 'entity1',
+          sharedId: 'entity1',
+          title: 'entity1',
+          attachments: [],
+          documents: [],
+        });
+
+        const mockUpload = mockSuperAgent();
+        const updatedEntity = await saveEntityWithFiles(entity, dispatch);
+        expect(mockUpload.attach).toHaveBeenCalledWith('documents[0]', file);
+        expect(mockUpload.field).toHaveBeenCalledWith('entity', expectedEntityJson);
+        expect(mockUpload.field).toHaveBeenCalledWith('documents_originalname[0]', 'Edited.pdf');
+        expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
+      });
     });
   });
 

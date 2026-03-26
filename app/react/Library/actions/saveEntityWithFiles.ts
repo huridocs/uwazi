@@ -45,7 +45,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
   const addedDocuments = (newDocuments as ClientBlobFile[]).map(file => {
     const { originalFile } = file;
 
-    if (file.originalName) {
+    if (file.originalName && file.originalName !== originalFile.name) {
       const type = originalFile.type || undefined;
       return new File([originalFile], file.originalName, { type });
     }
