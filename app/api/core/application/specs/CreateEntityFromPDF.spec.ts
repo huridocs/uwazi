@@ -6,25 +6,17 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
 import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
-import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { UseCaseContext } from '#api/core/libs/UseCase.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { tenants } from '#api/tenants/index.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { FilesService } from '../FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { CreateEntityFromPDFUseCase } from '../CreateEntityFromPDF.js';
 
@@ -55,31 +47,15 @@ type CreateSutProps = {
 const createSut = (props: CreateSutProps = {}) => {
   const { context } = props;
   const transactionManager = TransactionManagerFactory.default();
-  const idGenerator = IdGeneratorFactory.default();
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
   const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
-  const filesDS = FilesDataSourceFactory.default(transactionManager);
-
-  const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-  const fileService = new FilesService({
-    pathManager: new PathManager({ tenant: tenants.current() }),
-    idGenerator,
-    fileStorage,
-    filesDS,
-    jobsDispatcher,
-    filesIO: new FileContentsIO(),
-    pdfService: new PDFService(),
-    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-    transactionManager,
-    eventBus: applicationEventsBus,
-  });
 
   const entitiesService = EntitiesServiceFactory.default({
     entitiesDS,
@@ -96,21 +72,16 @@ const createSut = (props: CreateSutProps = {}) => {
     translationsDS,
   });
 
-  jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
-  jest.spyOn(fileService, 'insert').mockResolvedValue();
-
   const sut = new CreateEntityFromPDFUseCase(
     {
       transactionManager,
-      idGenerator,
       entitiesService,
-      eventBus,
       propertyAssignmentCreatorServiceStrategy,
     },
     context
   );
 
-  return { sut, fileService, eventBus };
+  return { sut };
 };
 
 describe('CreateEntityFromPDFUseCase', () => {
