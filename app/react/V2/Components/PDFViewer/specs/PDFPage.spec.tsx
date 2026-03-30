@@ -209,7 +209,7 @@ describe('PDFPage', () => {
       expect(mockPageDraw).not.toHaveBeenCalled();
     });
 
-    it('should unmount the page on unmountpage event if the page is draw', async () => {
+    it('should unmount the page on unmountpage event if the page is drawn', async () => {
       await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
       expect(mockPageDraw).not.toHaveBeenCalled();
       expect(mockPageDestroy).not.toHaveBeenCalled();
