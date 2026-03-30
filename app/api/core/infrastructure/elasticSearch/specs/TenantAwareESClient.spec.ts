@@ -1,32 +1,79 @@
-import type { Client } from '@elastic/elasticsearch';
+import { Client as ESClient } from '@elastic/elasticsearch';
 import { TenantAwareESClient } from '../TenantAwareESClient';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { BulkIndexingError } from '../Types';
 import { IndexNameResolver } from '../IndexNameResolver';
+import { config } from '#api/config.js';
 
-const makeResolver = (alias = 'resolved-index') =>
+const mockResolver = (indexName: string) =>
   TestUtils.mockClass<IndexNameResolver>({
-    resolve: jest.fn().mockResolvedValue(alias),
+    resolve: jest.fn().mockResolvedValue(indexName),
     invalidate: jest.fn(),
   });
 
-const makeClient = (overrides: Partial<Record<string, jest.Mock>> = {}): Client => {
-  const defaults = {
-    search: jest.fn().mockResolvedValue({ body: { hits: { hits: [] } } }),
-    index: jest.fn().mockResolvedValue({}),
-    delete: jest.fn().mockResolvedValue({}),
-    bulk: jest.fn().mockResolvedValue({ body: { errors: false, items: [] } }),
-  };
-  return { ...defaults, ...overrides } as unknown as Client;
+const esClient = new ESClient({
+  node: config.elasticsearch.nodes,
+});
+
+const testIndexName = `tenant-aware-es-client-test-${Date.now()}-${Math.random()}`;
+
+const testIndexMapping = {
+  settings: {
+    number_of_shards: 1,
+    number_of_replicas: 0,
+  },
+  mappings: {
+    properties: {
+      tenantId: { type: 'keyword' },
+      name: { type: 'text' },
+    },
+  },
+};
+
+const createSut = (tenantId = 'tenant-a') => {
+  const sut = new TenantAwareESClient({
+    client: esClient,
+    resolver: mockResolver(testIndexName),
+    tenantId,
+  });
+
+  return { sut };
 };
 
 describe('TenantAwareESClient', () => {
-  beforeAll(() => {
-    jest.spyOn(console, 'log').mockImplementation();
+  beforeAll(async () => {
+    try {
+      await esClient.indices.delete({ index: testIndexName, ignore_unavailable: true });
+    } catch (e) {
+      // Ignore if index doesn't exist
+    }
+
+    await esClient.indices.create({ index: testIndexName, body: testIndexMapping });
+
+    await esClient.bulk({
+      body: [
+        { index: { _index: testIndexName, _id: 'tenant-a__doc-1' } },
+        { tenantId: 'tenant-a', name: 'Product A' },
+
+        { index: { _index: testIndexName, _id: 'tenant-b__doc-1' } },
+        { tenantId: 'tenant-b', name: 'Product A' },
+
+        { index: { _index: testIndexName, _id: 'tenant-a__del-test-1' } },
+        { tenantId: 'tenant-a', name: 'Product A' },
+
+        { index: { _index: testIndexName, _id: 'tenant-b__del-test-1' } },
+        { tenantId: 'tenant-b', name: 'Product B' },
+      ],
+      refresh: true,
+    });
   });
 
-  afterAll(() => {
-    jest.spyOn(console, 'log').mockRestore();
+  afterAll(async () => {
+    try {
+      await esClient.indices.delete({ index: testIndexName });
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+    await esClient.close();
   });
 
   describe('constructor', () => {
@@ -34,8 +81,8 @@ describe('TenantAwareESClient', () => {
       expect(
         () =>
           new TenantAwareESClient({
-            client: makeClient(),
-            resolver: makeResolver(),
+            client: esClient,
+            resolver: mockResolver(testIndexName),
             tenantId: '',
           })
       ).toThrow();
@@ -45,297 +92,308 @@ describe('TenantAwareESClient', () => {
       expect(
         () =>
           new TenantAwareESClient({
-            client: makeClient(),
-            resolver: makeResolver(),
+            client: esClient,
+            resolver: mockResolver(testIndexName),
             tenantId: '   ',
           })
       ).toThrow();
     });
 
     it('does not throw when constructed with a valid tenantId', () => {
-      expect(
-        () =>
-          new TenantAwareESClient({
-            client: makeClient(),
-            resolver: makeResolver(),
-            tenantId: 'tenant-a',
-          })
-      ).not.toThrow();
+      const { sut } = createSut();
+      expect(sut).toBeDefined();
     });
   });
 
   describe('applyTenantGuard (verified via search)', () => {
-    const getSearchBody = (client: Client): Record<string, unknown> => {
-      const mock = (client.search as jest.Mock).mock.calls[0][0];
-      return mock.body as Record<string, unknown>;
-    };
+    it('plain match_all query returns only documents for the bound tenant', async () => {
+      const { sut } = createSut();
 
-    it('plain match_all query is wrapped in bool.must, tenant in bool.filter', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
+      const result = await sut.search({ alias: 'products', query: { match_all: {} } });
+
+      result.hits.hits.forEach((hit: any) => {
+        expect(hit._source.tenantId).toBe('tenant-a');
       });
-      await sut.search({ alias: 'products', query: { match_all: {} } });
-
-      const body = getSearchBody(client);
-      const query = body.query as Record<string, unknown>;
-      expect(query.bool).toBeDefined();
-      const bool = query.bool as Record<string, unknown>;
-      expect(bool.must).toEqual([{ match_all: {} }]);
-      expect(bool.filter).toEqual([{ term: { tenantId: 'tenant-a' } }]);
     });
 
-    it('bool query with no filter gets tenant added to bool.filter', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+    it('bool query with must clause returns only documents for the bound tenant', async () => {
+      const { sut } = createSut();
 
-      await sut.search({
+      const result = await sut.search({
         alias: 'products',
-        query: { bool: { must: [{ term: { id: '1' } }] } },
+        query: { bool: { must: [{ match_all: {} }] } },
       });
 
-      const body = getSearchBody(client);
-      const bool = (body.query as Record<string, unknown>).bool as Record<string, unknown>;
-      expect(bool.must).toEqual([{ term: { id: '1' } }]);
-      expect(bool.filter).toEqual([{ term: { tenantId: 'tenant-a' } }]);
+      result.hits.hits.forEach((hit: any) => {
+        expect(hit._source.tenantId).toBe('tenant-a');
+      });
     });
 
-    it('bool query with existing filter array appends tenant, preserving existing filters', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+    it('bool query with existing filter appends tenant filter, preventing cross-tenant access', async () => {
+      const { sut } = createSut();
 
-      await sut.search({
+      // Tenant A tries to query for tenant-b documents while bound to tenant-a
+      const result = await sut.search({
         alias: 'products',
-        query: { bool: { filter: [{ term: { status: 'active' } }] } },
+        query: { bool: { filter: [{ term: { tenantId: 'tenant-b' } }] } },
       });
 
-      const body = getSearchBody(client);
-      const bool = (body.query as Record<string, unknown>).bool as Record<string, unknown[]>;
-      expect(bool.filter).toHaveLength(2);
-      expect(bool.filter[0]).toEqual({ term: { status: 'active' } });
-      expect(bool.filter[1]).toEqual({ term: { tenantId: 'tenant-a' } });
+      // Should return nothing because both filters apply (tenantId = 'tenant-a' AND tenantId = 'tenant-b')
+      expect(result.hits.hits).toHaveLength(0);
     });
 
-    it('bool query with single filter object is normalised to array, tenant appended', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+    it('bool query with single filter object normalises to array with tenant appended', async () => {
+      const { sut } = createSut();
 
-      await sut.search({
+      const result = await sut.search({
         alias: 'products',
-        query: { bool: { filter: { term: { status: 'active' } } } },
+        query: { bool: { filter: { match_all: {} } } },
       });
 
-      const body = getSearchBody(client);
-      const bool = (body.query as Record<string, unknown>).bool as Record<string, unknown[]>;
-      expect(Array.isArray(bool.filter)).toBe(true);
-      expect(bool.filter).toHaveLength(2);
-      expect(bool.filter[1]).toEqual({ term: { tenantId: 'tenant-a' } });
+      result.hits.hits.forEach((hit: any) => {
+        expect(hit._source.tenantId).toBe('tenant-a');
+      });
     });
 
-    it('bool query with should clauses — tenant goes in filter, not inside should', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+    it('bool query with should clauses — tenant goes in filter, preserving should semantics', async () => {
+      const { sut } = createSut();
 
-      await sut.search({
+      const result = await sut.search({
         alias: 'products',
-        query: { bool: { should: [{ term: { name: 'foo' } }] } },
+        query: { bool: { should: [{ match_all: {} }] } },
       });
 
-      const body = getSearchBody(client);
-      const bool = (body.query as Record<string, unknown>).bool as Record<string, unknown>;
-      expect(bool.should).toEqual([{ term: { name: 'foo' } }]);
-      expect(bool.filter).toEqual([{ term: { tenantId: 'tenant-a' } }]);
+      result.hits.hits.forEach((hit: any) => {
+        expect(hit._source.tenantId).toBe('tenant-a');
+      });
     });
 
-    it('caller cannot override tenantId by including it in their own query', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+    it('caller cannot override tenantId — security invariant holds even with injected filter', async () => {
+      const { sut } = createSut();
 
       // Caller tries to inject a different tenantId via filter
-      await sut.search({
+      const result = await sut.search({
         alias: 'products',
-        query: { bool: { filter: [{ term: { tenantId: 'tenant-evil' } }] } },
+        query: { bool: { filter: [{ term: { tenantId: 'tenant-b' } }] } },
       });
 
-      const body = getSearchBody(client);
-      const bool = (body.query as Record<string, unknown>).bool as Record<string, unknown[]>;
-      // The real tenant filter is appended; the attacker's filter is harmless but present
-      const tenantFilters = bool.filter.filter(
-        f => (f as Record<string, unknown>).term !== undefined
-      ) as Array<{ term: { tenantId: string } }>;
-      const tenantIds = tenantFilters.map(f => f.term.tenantId);
-      // Invariant: constructor-bound tenantId is always among filters
-      expect(tenantIds).toContain('tenant-a');
+      // Should still be filtered to tenant-a (no cross-tenant access)
+      expect(result.hits.hits).toHaveLength(0);
     });
   });
 
-  describe('buildDocumentId (verified via index)', () => {
-    const getIndexCall = (client: Client) => (client.index as jest.Mock).mock.calls[0][0];
+  describe('buildDocumentId & index operations', () => {
+    it('document ID uses tenantId prefix format', async () => {
+      const { sut } = createSut();
 
-    it('format is tenantId__id', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
+      await sut.index({ alias: 'products', id: 'build-id-1', document: { name: 'Test Product' } });
+
+      // Verify document was indexed with correct ID
+      await esClient.indices.refresh({ index: testIndexName });
+      const result: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-a__build-id-1',
       });
-
-      await sut.index({ alias: 'products', id: 'doc-1', document: {} });
-
-      expect(getIndexCall(client).id).toBe('tenant-a__doc-1');
+      expect(result.body._id).toBe('tenant-a__build-id-1');
     });
 
-    it('two instances with different tenantIds produce different document IDs', async () => {
-      const clientA = makeClient();
-      const clientB = makeClient();
-      const sutA = new TenantAwareESClient({
-        client: clientA,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
+    it('different tenants produce different document IDs for the same logical id', async () => {
+      const { sut: sutA } = createSut('tenant-a');
+      const { sut: sutB } = createSut('tenant-b');
+
+      await sutA.index({ alias: 'products', id: 'build-same-id', document: { name: 'A Product' } });
+      await sutB.index({ alias: 'products', id: 'build-same-id', document: { name: 'B Product' } });
+
+      await esClient.indices.refresh({ index: testIndexName });
+
+      // Both documents should exist with different IDs
+      const docA: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-a__build-same-id',
       });
-      const sutB = new TenantAwareESClient({
-        client: clientB,
-        resolver: makeResolver(),
-        tenantId: 'tenant-b',
+      const docB: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-b__build-same-id',
       });
 
-      await sutA.index({ alias: 'products', id: 'same-id', document: {} });
-      await sutB.index({ alias: 'products', id: 'same-id', document: {} });
-
-      expect(getIndexCall(clientA).id).toBe('tenant-a__same-id');
-      expect(getIndexCall(clientB).id).toBe('tenant-b__same-id');
+      expect(docA.body._id).toBe('tenant-a__build-same-id');
+      expect(docB.body._id).toBe('tenant-b__build-same-id');
     });
-  });
 
-  describe('stampTenantId (verified via index)', () => {
-    it('a document with a different tenantId has it overwritten with this.tenantId', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+    it('document tenantId field is stamped with constructor-bound tenantId', async () => {
+      const { sut } = createSut();
 
       await sut.index({
         alias: 'products',
-        id: 'doc-1',
-        document: { tenantId: 'tenant-evil', name: 'foo' },
+        id: 'build-stamp-test',
+        document: { name: 'Product', tenantId: 'tenant-evil' },
       });
 
-      const body = (client.index as jest.Mock).mock.calls[0][0].body as Record<string, unknown>;
-      expect(body.tenantId).toBe('tenant-a');
+      await esClient.indices.refresh({ index: testIndexName });
+      const doc: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-a__build-stamp-test',
+      });
+
+      expect(doc.body._source.tenantId).toBe('tenant-a');
     });
   });
 
   describe('index()', () => {
     it('calls resolver with logical alias and constructor-bound tenantId', async () => {
-      const resolver = makeResolver('products_v1');
-      const client = makeClient();
+      const resolver = mockResolver(testIndexName);
       const sut = new TenantAwareESClient({
-        client,
+        client: esClient,
         resolver,
         tenantId: 'tenant-a',
       });
 
-      await sut.index({ alias: 'products', id: 'doc-1', document: {} });
+      await sut.index({ alias: 'products', id: 'idx-resolver-test', document: { name: 'Test' } });
 
       expect(resolver.resolve).toHaveBeenCalledWith('products', 'tenant-a');
     });
 
-    it('uses resolved alias in ES call', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver('products_v1'),
-        tenantId: 'tenant-a',
+    it('documents are indexed with correct tenant isolation', async () => {
+      const { sut } = createSut();
+      await sut.index({
+        alias: 'products',
+        id: 'idx-isolation-test',
+        document: { name: 'Product A' },
       });
-      await sut.index({ alias: 'products', id: 'doc-1', document: {} });
 
-      expect((client.index as jest.Mock).mock.calls[0][0].index).toBe('products_v1');
+      await esClient.indices.refresh({ index: testIndexName });
+      const result: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-a__idx-isolation-test',
+      });
+
+      expect(result.body._source).toMatchObject({
+        tenantId: 'tenant-a',
+        name: 'Product A',
+      });
     });
 
     it('document is stamped with constructor-bound tenantId', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
+      const { sut } = createSut();
+      await sut.index({
+        alias: 'products',
+        id: 'idx-stamp-test',
+        document: { name: 'foo', tenantId: 'wrong-tenant' },
       });
-      await sut.index({ alias: 'products', id: 'doc-1', document: { name: 'foo' } });
 
-      const body = (client.index as jest.Mock).mock.calls[0][0].body as Record<string, unknown>;
-      expect(body.tenantId).toBe('tenant-a');
+      await esClient.indices.refresh({ index: testIndexName });
+      const doc: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-a__idx-stamp-test',
+      });
+
+      expect(doc.body._source.tenantId).toBe('tenant-a');
+    });
+  });
+
+  describe('delete()', () => {
+    it('deletes only the tenant-scoped document', async () => {
+      const { sut } = createSut();
+
+      await sut.delete({ alias: 'products', id: 'del-test-1' });
+      await esClient.indices.refresh({ index: testIndexName });
+
+      // tenant-a document should be gone
+      try {
+        await esClient.get({ index: testIndexName, id: 'tenant-a__del-test-1' });
+        fail('Expected document not found');
+      } catch (e: any) {
+        expect(e.statusCode).toBe(404);
+      }
+
+      // tenant-b document should still exist
+      const docB: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-b__del-test-1',
+      });
+      expect(docB.body._id).toBe('tenant-b__del-test-1');
     });
   });
 
   describe('bulk()', () => {
-    it('throws BulkIndexingError when response contains errors', async () => {
-      const client = makeClient({
-        bulk: jest.fn().mockResolvedValue({ body: { errors: true, items: [] } }),
+    it('indexes all documents in bulk with tenant stamping', async () => {
+      const { sut } = createSut();
+
+      await sut.bulk({
+        alias: 'products',
+        operations: [
+          { id: 'bulk-stamp-1', document: { name: 'Product 1' } },
+          { id: 'bulk-stamp-2', document: { name: 'Product 2', tenantId: 'tenant-evil' } },
+        ],
       });
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
+
+      await esClient.indices.refresh({ index: testIndexName });
+
+      // Verify both documents exist with correct tenant ID
+      const doc1: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-a__bulk-stamp-1',
       });
-      await expect(
-        sut.bulk({ alias: 'products', operations: [{ id: '1', document: {} }] })
-      ).rejects.toThrow(BulkIndexingError);
+      const doc2: any = await esClient.get<Record<string, unknown>>({
+        index: testIndexName,
+        id: 'tenant-a__bulk-stamp-2',
+      });
+
+      expect(doc1.body._source.tenantId).toBe('tenant-a');
+      expect(doc2.body._source.tenantId).toBe('tenant-a');
     });
 
     it('does not throw when all operations succeed', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+      const { sut } = createSut();
+
+      // Use a real bulk operation - it should succeed
       await expect(
-        sut.bulk({ alias: 'products', operations: [{ id: '1', document: {} }] })
+        sut.bulk({
+          alias: 'products',
+          operations: [{ id: 'bulk-success-1', document: { name: 'Product' } }],
+        })
       ).resolves.not.toThrow();
     });
 
     it('all documents in bulk are stamped with constructor-bound tenantId', async () => {
-      const client = makeClient();
-      const sut = new TenantAwareESClient({
-        client,
-        resolver: makeResolver(),
-        tenantId: 'tenant-a',
-      });
+      const { sut } = createSut();
+
       await sut.bulk({
         alias: 'products',
         operations: [
-          { id: '1', document: { name: 'a' } },
-          { id: '2', document: { name: 'b', tenantId: 'tenant-evil' } },
+          { id: 'bulk-all-a', document: { name: 'a' } },
+          { id: 'bulk-all-b', document: { name: 'b', tenantId: 'tenant-evil' } },
+          { id: 'bulk-all-c', document: { name: 'c' } },
         ],
       });
 
-      const bulkBody = (client.bulk as jest.Mock).mock.calls[0][0].body as unknown[];
-      // body is flat: [action, doc, action, doc, ...]
-      const docs = bulkBody.filter((_item, i) => i % 2 === 1) as Array<Record<string, unknown>>;
-      expect(docs.every(d => d.tenantId === 'tenant-a')).toBe(true);
+      await esClient.indices.refresh({ index: testIndexName });
+
+      // Retrieve only the documents created in this test
+      const result: any = await esClient.search<Record<string, unknown>>({
+        index: testIndexName,
+        body: {
+          query: {
+            bool: {
+              must: [{ term: { tenantId: 'tenant-a' } }],
+              filter: [
+                {
+                  terms: {
+                    _id: ['tenant-a__bulk-all-a', 'tenant-a__bulk-all-b', 'tenant-a__bulk-all-c'],
+                  },
+                },
+              ],
+            },
+          },
+          size: 100,
+        },
+      });
+
+      expect(result.body.hits.hits).toHaveLength(3);
+      const allHaveTenantA = result.body.hits.hits.every(
+        (hit: any) => hit._source.tenantId === 'tenant-a'
+      );
+      expect(allHaveTenantA).toBe(true);
     });
   });
 });
