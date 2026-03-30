@@ -11,7 +11,7 @@ class MongoSlotsBootstrapper {
 
   constructor(private deps: Deps) {}
 
-  async execute() {
+  async executeAll() {
     await this.createSlots();
     await this.createIndexes();
   }
@@ -20,7 +20,7 @@ class MongoSlotsBootstrapper {
     return this.deps.database.collection(MongoSlotsBootstrapper.collectionName);
   }
 
-  private async createSlots() {
+  async createSlots() {
     try {
       const slotsToCreate = SlotsMapper.slotList().flatMap(slotType =>
         Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
@@ -49,7 +49,7 @@ class MongoSlotsBootstrapper {
     }
   }
 
-  private async createIndexes() {
+  async createIndexes() {
     await this.collection.createIndex({ slotName: 1 }, { unique: true });
     await this.collection.createIndex(
       { assignedTo: 1 },

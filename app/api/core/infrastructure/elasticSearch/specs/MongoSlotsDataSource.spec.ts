@@ -3,6 +3,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoSlotsDataSource } from '../entities/MongoSlotsDataSource.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
 const createSut = () => {
   const sut = new MongoSlotsDataSource(getConnection(), TransactionManagerFactory.default());
@@ -10,23 +11,19 @@ const createSut = () => {
   return { sut };
 };
 
-const { collectionName } = MongoSlotsDataSource;
-
-const getSlotsCollection = () => getConnection().collection(collectionName);
+const slotsCollection = () =>
+  testingEnvironment.db.getCollection(MongoSlotsDataSource.collectionName)!;
 
 describe('MongoSlotsDataSource', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
 
-    await getSlotsCollection().createIndex({ slotName: 1 }, { unique: true });
-    await getSlotsCollection().createIndex(
-      { assignedTo: 1 },
-      { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
-    );
+    const bootstrapper = new MongoSlotsBootstrapper({ database: getConnection() });
+    await bootstrapper.createIndexes();
   });
 
   beforeEach(async () => {
-    await getSlotsCollection().deleteMany({});
+    await testingEnvironment.setFixtures({ [MongoSlotsDataSource.collectionName]: [] });
   });
 
   afterAll(async () => {
@@ -37,14 +34,14 @@ describe('MongoSlotsDataSource', () => {
     it('assigns an available slot for the requested property type', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertMany([
+      await slotsCollection().insertMany([
         { type: 'text', slotName: 'text_01', assignedTo: null },
         { type: 'text', slotName: 'text_02', assignedTo: null },
       ]);
 
       await sut.assignSlot({ propertyName: 'title', type: 'text' });
 
-      const slots = await getSlotsCollection().find({}).toArray();
+      const slots = await slotsCollection().find({}).toArray();
 
       expect(slots).toEqual([
         { _id: expect.any(ObjectId), type: 'text', slotName: 'text_01', assignedTo: 'title' },
@@ -55,7 +52,7 @@ describe('MongoSlotsDataSource', () => {
     it('throws when there are no available slots for the requested type', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertOne({
+      await slotsCollection().insertOne({
         type: 'text',
         slotName: 'text_01',
         assignedTo: 'already_used',
@@ -77,7 +74,7 @@ describe('MongoSlotsDataSource', () => {
     it('throws when property is already assigned (duplicate key)', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertMany([
+      await slotsCollection().insertMany([
         { type: 'text', slotName: 'text_01', assignedTo: 'title' },
         { type: 'text', slotName: 'text_02', assignedTo: null },
       ]);
@@ -92,7 +89,7 @@ describe('MongoSlotsDataSource', () => {
     it('sets assignedTo to null for the matching property', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertOne({
+      await slotsCollection().insertOne({
         type: 'text',
         slotName: 'text_01',
         assignedTo: 'title',
@@ -100,7 +97,7 @@ describe('MongoSlotsDataSource', () => {
 
       await sut.unassignSlot('title');
 
-      const slot = await getSlotsCollection().findOne({ slotName: 'text_01' });
+      const slot = await slotsCollection().findOne({ slotName: 'text_01' });
       expect(slot?.assignedTo).toBeNull();
     });
 
@@ -114,7 +111,7 @@ describe('MongoSlotsDataSource', () => {
     it('renames an existing slot', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertOne({
+      await slotsCollection().insertOne({
         type: 'text',
         slotName: 'text_01',
         assignedTo: 'title',
@@ -122,8 +119,8 @@ describe('MongoSlotsDataSource', () => {
 
       await sut.updatePropertyName({ oldName: 'text_01', newName: 'text_03' });
 
-      const updated = await getSlotsCollection().findOne({ slotName: 'text_03' });
-      const old = await getSlotsCollection().findOne({ slotName: 'text_01' });
+      const updated = await slotsCollection().findOne({ slotName: 'text_03' });
+      const old = await slotsCollection().findOne({ slotName: 'text_01' });
 
       expect(updated).toEqual(
         expect.objectContaining({
@@ -145,7 +142,7 @@ describe('MongoSlotsDataSource', () => {
     it('propagates duplicate key errors when target slot name already exists', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertMany([
+      await slotsCollection().insertMany([
         { type: 'text', slotName: 'text_01', assignedTo: null },
         { type: 'text', slotName: 'text_02', assignedTo: null },
       ]);
@@ -160,7 +157,7 @@ describe('MongoSlotsDataSource', () => {
     it('returns only slots with assignedTo different from null', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertMany([
+      await slotsCollection().insertMany([
         { type: 'text', slotName: 'text_01', assignedTo: 'title' },
         { type: 'text', slotName: 'text_02', assignedTo: null },
         { type: 'date', slotName: 'date_01', assignedTo: 'createdAt' },
@@ -176,7 +173,7 @@ describe('MongoSlotsDataSource', () => {
     it('returns an empty array when no slot is assigned', async () => {
       const { sut } = createSut();
 
-      await getSlotsCollection().insertMany([
+      await slotsCollection().insertMany([
         { type: 'text', slotName: 'text_01', assignedTo: null },
         { type: 'date', slotName: 'date_01', assignedTo: null },
       ]);
