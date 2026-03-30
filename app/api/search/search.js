@@ -643,6 +643,9 @@ const processResponse = async (response, templates, dictionaries, language, filt
     return result;
   });
 
+  const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
+  await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
+
   const aggregationsAll = response.body.aggregations?.all || {};
   const sanitizedAggregations = await _sanitizeAggregations(
     aggregationsAll,
