@@ -141,7 +141,7 @@ describe('AuthorizedElasticEntityClient', () => {
           query: {
             bool: {
               must: [{ term: { published: true } }],
-              must_not: [{ term: { title: 'Admin Only' } }],
+              must_not: [{ term: { title: 'Admin Only Entity' } }],
             },
           },
           size: 100,

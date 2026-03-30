@@ -89,6 +89,8 @@ const EntityIndexMappingDefinition: IndexDefinition = {
       user: { type: 'keyword' },
       published: { type: 'keyword' },
 
+      permissionRefIds: { type: 'keyword' },
+
       permissions: {
         type: 'nested',
         properties: {
