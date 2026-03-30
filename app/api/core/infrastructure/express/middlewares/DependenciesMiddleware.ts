@@ -7,6 +7,7 @@ import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import { ElasticSearchClientFactory } from '../../elasticSearch/ElasticSearchClientFactory';
+import { UserSchema } from '#shared/types/userType.js';
 
 const dependenciesContextMiddleware = (
   request: Request,
@@ -27,6 +28,13 @@ const dependenciesContextMiddleware = (
 
   const elasticClient = ElasticSearchClientFactory.tenantAware(tenant.name);
 
+  const actor = request.user as UserSchema | null;
+
+  const authorizedEntityESClient = ElasticSearchClientFactory.authorizedEntityClient(
+    tenant.name,
+    actor
+  );
+
   return DependenciesContext.run(
     {
       transactionManager,
@@ -35,6 +43,7 @@ const dependenciesContextMiddleware = (
       jobsDispatcher,
       logger,
       elasticClient,
+      authorizedEntityESClient,
     },
     next
   );

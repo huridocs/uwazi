@@ -5,6 +5,7 @@ import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 import { Logger } from './logger/contracts/Logger.js';
 import { TenantAwareESClient } from '../infrastructure/elasticSearch/TenantAwareESClient.js';
+import { AuthorizedEntityESClient } from '../infrastructure/elasticSearch/entities/AuthorizedElasticEntityClient.js';
 
 type Dependencies = {
   eventEmitter: EventEmitter;
@@ -13,6 +14,7 @@ type Dependencies = {
   idGenerator: IdGenerator;
   logger: Logger;
   elasticClient: TenantAwareESClient;
+  authorizedEntityESClient: AuthorizedEntityESClient;
 };
 
 class DependenciesContext extends AsyncLocalStorage<Dependencies> {
@@ -30,6 +32,14 @@ class DependenciesContext extends AsyncLocalStorage<Dependencies> {
     }
 
     return this.getStore()!.elasticClient;
+  }
+
+  get authorizedEntityESClient() {
+    if (!this.getStore()?.authorizedEntityESClient) {
+      throw new Error('AuthorizedEntityESClient is not set');
+    }
+
+    return this.getStore()!.authorizedEntityESClient;
   }
 
   get logger() {
