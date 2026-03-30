@@ -12,15 +12,6 @@ const createSut = () => {
 
 const { collectionName } = MongoSlotsDataSource;
 
-const dropSlotsCollection = async () => {
-  await getConnection()
-    .collection(collectionName)
-    .drop()
-    .catch(() => {
-      /* collection does not exist yet */
-    });
-};
-
 const getSlotsCollection = () => getConnection().collection(collectionName);
 
 const expectedSlots: Omit<SlotDocument, '_id'>[] = SlotsMapper.slotList().flatMap(slotType =>
@@ -40,7 +31,7 @@ describe('MongoSlotsBootstrapper', () => {
   });
 
   beforeEach(async () => {
-    await dropSlotsCollection();
+    await testingEnvironment.setFixtures({ [MongoSlotsDataSource.collectionName]: [] });
   });
 
   afterAll(async () => {
