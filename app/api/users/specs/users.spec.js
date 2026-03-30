@@ -352,14 +352,35 @@ describe('Users', () => {
       }
     });
 
-    it('after locking account, it should send user and email with the unlock link', async () => {
-      testUser.failedLogins = 5;
-      try {
-        await createUserAndTestLogin('someuser1', 'incorrect');
-        fail('should throw error');
-      } catch (e) {
-        expect(mailer.send.mock.calls[0]).toMatchSnapshot();
-      }
+    describe('after locking account', () => {
+      it('should send user and email with the unlock link', async () => {
+        testUser.failedLogins = 5;
+        try {
+          await createUserAndTestLogin('someuser1', 'incorrect');
+          fail('should throw error');
+        } catch (e) {
+          expect(mailer.send.mock.calls[0]).toMatchSnapshot();
+        }
+      });
+
+      it('should validate domain url before blocking the user', async () => {
+        testUser.failedLogins = 5;
+        try {
+          await usersModel.save(testUser);
+          await users.login(
+            { username: 'someuser1', password: 'incorrect' },
+            'http://host.domain\">http://host.domain</a></p><h1>injected html</h1>'
+          );
+          fail('should throw error');
+        } catch (e) {
+          expect(e.message).toBe('Invalid URL');
+        }
+
+        const dbUser = (await testingEnvironment.db.getAllFrom('users')).find(
+          u => u.username === testUser.username
+        );
+        expect(dbUser.failedLogins).toBe(5);
+      });
     });
 
     it('should prevent login if account is locked when credentials are correct', async () => {
