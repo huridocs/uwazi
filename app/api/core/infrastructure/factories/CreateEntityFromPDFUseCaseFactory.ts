@@ -33,7 +33,7 @@ class CreateEntityFromPDFUseCaseFactory {
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =
-      PropertyAssignmentCreatorServiceStrategy.createWithRequired({
+      PropertyAssignmentCreatorServiceStrategy.create({
         entitiesDS,
         settingsDS,
         thesauriDS,
