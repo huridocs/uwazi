@@ -6,8 +6,11 @@ import {
   ElasticSearchBootstrapper,
   ElasticSearchBootstrapperDeps,
 } from '../provision/ElasticSearchBootstrapper.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { config } from '#api/config.js';
 
-const client = new Client({ node: 'http://localhost:9200' });
+const client = new Client({ node: config.elasticsearch.nodes });
 
 const runId = Date.now();
 let counter = 0;
@@ -42,8 +45,12 @@ const deletePipeline = async (pipelineId: string) => {
   });
 };
 
-const createSut = (deps: Omit<ElasticSearchBootstrapperDeps, 'client'>) => {
-  const sut = new ElasticSearchBootstrapper({ ...deps, client });
+const createSut = (deps: Omit<ElasticSearchBootstrapperDeps, 'client' | 'logger'>) => {
+  const sut = new ElasticSearchBootstrapper({
+    ...deps,
+    client,
+    logger: TestUtils.mockClass<Logger>({ info: jest.fn() }),
+  });
   return { sut };
 };
 

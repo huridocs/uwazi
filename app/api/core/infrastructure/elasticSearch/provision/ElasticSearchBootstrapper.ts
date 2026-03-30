@@ -2,11 +2,13 @@
 import { Client, errors } from '@elastic/elasticsearch';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IndexDefinition, IngestPipelineDefinition } from '../Types';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
 type Deps = {
   client: Client;
   registry: Record<string, IndexDefinition>;
   pipelineRegistry: Record<string, IngestPipelineDefinition>;
+  logger: Logger;
 };
 
 class ElasticSearchBootstrapper {
@@ -27,7 +29,7 @@ class ElasticSearchBootstrapper {
   private async bootstrapPipeline(definition: IngestPipelineDefinition): Promise<void> {
     try {
       await this.deps.client.ingest.getPipeline({ id: definition.id });
-      console.log(
+      this.deps.logger.info(
         `[ElasticSearchBootstrapper] Ingest pipeline "${definition.id}" already exists — skipping creation.`
       );
       return;
@@ -47,7 +49,7 @@ class ElasticSearchBootstrapper {
         err instanceof errors.ResponseError &&
         err.meta.body?.error?.type === 'version_conflict_engine_exception'
       ) {
-        console.log(
+        this.deps.logger.info(
           `[ElasticSearchBootstrapper] Ingest pipeline "${definition.id}" already created by a concurrent instance — skipping.`
         );
         return;
@@ -69,7 +71,7 @@ class ElasticSearchBootstrapper {
     const exists = await this.deps.client.indices.existsAlias({ name: alias });
 
     if (exists.body) {
-      console.log(
+      this.deps.logger.info(
         `[ElasticSearchBootstrapper] Alias "${alias}" already exists — skipping creation.`
       );
       return;
@@ -89,7 +91,7 @@ class ElasticSearchBootstrapper {
         err instanceof errors.ResponseError &&
         err.meta.body?.error?.type === 'resource_already_exists_exception'
       ) {
-        console.log(
+        this.deps.logger.info(
           `[ElasticSearchBootstrapper] Physical index "${physicalIndex}" already exists (race condition) — skipping.`
         );
         return;

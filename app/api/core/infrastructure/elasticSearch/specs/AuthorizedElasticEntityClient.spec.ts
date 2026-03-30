@@ -17,13 +17,14 @@ import {
   elasticTestIndex,
   tenantId,
 } from './AuthorizedElasticEntityClientFixtures.js';
+import { config } from '#api/config.js';
 
 type CreateSutDeps = {
   actor: UserSchema | null;
   tenantId?: string;
 };
 
-const esClient = new Client({ node: 'http://localhost:9200' });
+const esClient = new Client({ node: config.elasticsearch.nodes });
 
 const createSut = ({ actor }: CreateSutDeps) => {
   const tenantRoutingDataSource = TestUtils.mockClass<MongoTenantRoutingDataSource>({
