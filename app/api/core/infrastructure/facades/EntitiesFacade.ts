@@ -25,7 +25,7 @@ export class EntityFacade {
 
       let entity: Entity;
 
-      if (Object.keys(parsed).length === 1 && parsed.title!!) {
+      if (Object.keys(parsed).length === 1 && parsed.title) {
         const useCase = CreateEntityFromPDFUseCaseFactory.default(targetLanguage);
 
         entity = await useCase.execute(input);
