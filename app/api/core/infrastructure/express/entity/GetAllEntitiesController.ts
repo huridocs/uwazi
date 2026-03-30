@@ -6,7 +6,9 @@ type Request = void;
 
 class GetAllEntitiesController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
-    const service = new EntitySearchService({ elasticClient: DependenciesContext.elasticClient });
+    const service = new EntitySearchService({
+      elasticClient: DependenciesContext.authorizedEntityESClient,
+    });
 
     const entities = await service.getAll();
 
