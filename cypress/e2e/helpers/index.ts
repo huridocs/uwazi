@@ -11,3 +11,4 @@ export {
 } from './entities';
 export { editPropertyForExtractor } from './information-extraction';
 export { waitForLegacyNotifications } from './notifications';
+export { createTemplate } from './templates';
