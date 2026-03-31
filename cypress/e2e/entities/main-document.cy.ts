@@ -70,6 +70,9 @@ describe('Entity with main document', () => {
 
     it('should display the PDF', () => {
       cy.contains('div[class="page"]', 'RESOLUCIÓN DE LA PRESIDENTA DE LA').should('be.visible');
+      // wait for pdf to render
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(500);
       cy.get('div[id="root"]').matchImageSnapshot('Verify correct rendering of pdf and panels');
     });
 
@@ -138,7 +141,7 @@ describe('Entity with main document', () => {
       cy.visit(`/en/entityv2/${entitySharedId}?page=2`);
       //wait for page to render
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(1000);
+      cy.wait(500);
       cy.get('div[id="root"]').matchImageSnapshot('PDF on mobile view');
     });
   });
