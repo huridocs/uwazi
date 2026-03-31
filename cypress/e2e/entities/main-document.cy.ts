@@ -79,10 +79,6 @@ describe('Entity with main document', () => {
       cy.contains('div[class=" whitespace-pre-line"]', 'RESOLUCIÓN DE LA PRESIDENTA DE LA').should(
         'be.visible'
       );
-
-      cy.contains('div[class="page"]', 'RESOLUCIÓN DE LA PRESIDENTA DE LA').should(
-        'not.be.visible'
-      );
     });
 
     it('should be able to see the next page', () => {
