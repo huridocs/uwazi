@@ -1,5 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
-import { IndexDefinition, MigrationAlreadyOnVersionError, MigrationValidationError } from './Types';
+import {
+  IndexDefinition,
+  MigrationAlreadyOnVersionError,
+  MigrationValidationError,
+} from './Types.js';
 
 interface MigrationOptions {
   indexName: string;

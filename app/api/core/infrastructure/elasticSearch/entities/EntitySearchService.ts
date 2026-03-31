@@ -1,5 +1,5 @@
-import { AuthorizedEntityESClient } from './AuthorizedElasticEntityClient';
-import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition';
+import { AuthorizedEntityESClient } from './AuthorizedElasticEntityClient.js';
+import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition.js';
 
 type Deps = {
   elasticClient: AuthorizedEntityESClient;

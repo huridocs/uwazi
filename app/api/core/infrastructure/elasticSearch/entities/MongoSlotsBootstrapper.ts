@@ -1,6 +1,6 @@
 import { Db, MongoServerError } from 'mongodb';
-import { MongoSlotsDataSource, SlotDocument } from './MongoSlotsDataSource';
-import { AmountPerSlotType, SlotsMapper } from './SlotDefinition';
+import { MongoSlotsDataSource, SlotDocument } from './MongoSlotsDataSource.js';
+import { AmountPerSlotType, SlotsMapper } from './SlotDefinition.js';
 
 type Deps = {
   database: Db;

@@ -8,8 +8,8 @@ import {
   type DeleteOptions,
   type BulkOptions,
   BulkIndexingError,
-} from './Types';
-import { IndexNameResolver } from './IndexNameResolver';
+} from './Types.js';
+import { IndexNameResolver } from './IndexNameResolver.js';
 
 const tenantFilter = (tenantId: string): QueryDslQueryContainer => ({
   term: { tenantId },

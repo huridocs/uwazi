@@ -1,6 +1,6 @@
 import { QueryDslQueryContainer } from '@elastic/elasticsearch/api/types';
-import { TenantAwareESClient } from '../TenantAwareESClient';
-import { SearchOptions, SearchResponse } from '../Types';
+import { TenantAwareESClient } from '../TenantAwareESClient.js';
+import { SearchOptions, SearchResponse } from '../Types.js';
 import { UserSchema } from '#shared/types/userType.js';
 
 type Deps = {

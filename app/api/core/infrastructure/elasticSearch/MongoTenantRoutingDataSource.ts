@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { MongoDataSource } from '../mongodb/common/MongoDataSource';
-import { TenantRouting, TenantRoutingDataSource } from './TenantRoutingDataSource';
+import { MongoDataSource } from '../mongodb/common/MongoDataSource.js';
+import { TenantRouting, TenantRoutingDataSource } from './TenantRoutingDataSource.js';
 
 type TenantRoutingDocument = { _id: ObjectId } & TenantRouting;
 

@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
-import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { ElasticSearchClientFactory } from '../../elasticSearch/ElasticSearchClientFactory';
 import { UserSchema } from '#shared/types/userType.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
+import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { ElasticSearchClientFactory } from '../../elasticSearch/ElasticSearchClientFactory.js';
 
 const dependenciesContextMiddleware = (
   request: Request,

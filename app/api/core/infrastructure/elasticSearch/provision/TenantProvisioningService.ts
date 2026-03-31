@@ -1,14 +1,14 @@
 import { Client } from '@elastic/elasticsearch';
-import { IndexNameResolver } from '../IndexNameResolver';
+import { IndexNameResolver } from '../IndexNameResolver.js';
 import {
   ProvisioningResult,
   GroupAlreadyExistsError,
   GroupNotFoundError,
   TenantAlreadyInGroupError,
   IndexDefinition,
-} from '../Types';
-import { GroupAliasNameBuilder } from './GroupAliasNameBuilder';
-import { TenantRoutingDataSource } from '../TenantRoutingDataSource';
+} from '../Types.js';
+import { GroupAliasNameBuilder } from './GroupAliasNameBuilder.js';
+import { TenantRoutingDataSource } from '../TenantRoutingDataSource.js';
 
 type Deps = {
   esClient: Client;

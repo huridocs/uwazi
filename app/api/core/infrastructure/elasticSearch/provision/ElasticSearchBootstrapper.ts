@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { Client, errors } from '@elastic/elasticsearch';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { IndexDefinition, IngestPipelineDefinition } from '../Types';
+import { IndexDefinition, IngestPipelineDefinition } from '../Types.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
 type Deps = {

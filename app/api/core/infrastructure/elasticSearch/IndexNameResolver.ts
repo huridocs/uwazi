@@ -1,4 +1,4 @@
-import { TenantRoutingDataSource } from './TenantRoutingDataSource';
+import { TenantRoutingDataSource } from './TenantRoutingDataSource.js';
 
 class IndexNameResolver {
   constructor(private readonly repository: TenantRoutingDataSource) {}

@@ -1,5 +1,5 @@
-import { IndexDefinition } from '../Types';
-import { createEntityMetadataMapping } from './EntityMetadataMapping';
+import { IndexDefinition } from '../Types.js';
+import { createEntityMetadataMapping } from './EntityMetadataMapping.js';
 
 const EntityIndexMappingDefinition: IndexDefinition = {
   alias: 'entities',

@@ -1,12 +1,12 @@
 import { Client } from '@elastic/elasticsearch';
-import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
-import { getSharedConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoTenantRoutingDataSource } from './MongoTenantRoutingDataSource';
-import { TenantAwareESClient } from './TenantAwareESClient';
-import { IndexNameResolver } from './IndexNameResolver';
+import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
+import { getSharedConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTenantRoutingDataSource } from './MongoTenantRoutingDataSource.js';
+import { TenantAwareESClient } from './TenantAwareESClient.js';
+import { IndexNameResolver } from './IndexNameResolver.js';
 import { config } from '#api/config.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { AuthorizedEntityESClient } from './entities/AuthorizedElasticEntityClient';
+import { AuthorizedEntityESClient } from './entities/AuthorizedElasticEntityClient.js';
 
 class ElasticSearchClientFactory {
   private static instance: Client;

@@ -1,5 +1,5 @@
 import { MongoServerError, ObjectId } from 'mongodb';
-import { MongoDataSource } from '../../mongodb/common/MongoDataSource';
+import { MongoDataSource } from '../../mongodb/common/MongoDataSource.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 type SlotDocument = {

@@ -1,5 +1,5 @@
 import { MappingProperty } from '@elastic/elasticsearch/api/types';
-import { AmountPerSlotType, SlotsMapper, type SlotType } from './SlotDefinition';
+import { AmountPerSlotType, SlotsMapper, type SlotType } from './SlotDefinition.js';
 
 const slotMappingRegistry: Record<SlotType, MappingProperty> = {
   txt: {

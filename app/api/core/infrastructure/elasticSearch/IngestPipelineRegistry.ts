@@ -1,4 +1,4 @@
-import { IngestPipelineDefinition } from './Types';
+import { IngestPipelineDefinition } from './Types.js';
 
 const IngestPipelineRegistry: Record<string, IngestPipelineDefinition> = {
   documentTimestamps: {
