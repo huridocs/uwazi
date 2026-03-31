@@ -11,20 +11,19 @@ import { Entity } from '#V2/domain/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal } from '#V2/Components/UI/index.js';
-import type { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { Reference } from './Reference.js';
 import { BlankState } from '../BlankState.js';
 import { useReferences, useReferencesActions } from './referencesAtom.js';
+import { pdfController } from '../atoms.js';
 
 type ReferencesPanelProps = {
-  mainPdfController: PDFControls | null;
   references?: EntityReference[];
   entity?: Entity;
 };
 
-const ReferencesPanel = ({ mainPdfController, references = [], entity }: ReferencesPanelProps) => {
+const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
   const [referenceToDelete, setReferenceToDelete] = useState<EntityReference | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -32,6 +31,7 @@ const ReferencesPanel = ({ mainPdfController, references = [], entity }: Referen
   const { createReferenceSelection, createReferenceMode } = useReferences();
   const { setCreateReferenceSelection } = useReferencesActions();
   const revalidator = useRevalidator();
+  const mainPdfController = useAtomValue(pdfController);
 
   const lookup = useCallback(
     async (searchString: string): Promise<Entity[]> =>

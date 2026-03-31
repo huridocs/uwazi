@@ -9,11 +9,10 @@ import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import type { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { SEARCH_PARAM } from '../urlParams.js';
-import { searchHintsModalAtom } from './atoms.js';
+import { pdfController, searchHintsModalAtom } from './atoms.js';
 import { LoaderResponse } from '../types.js';
 import { NoSearch, NoResults } from './BlankState.js';
 
@@ -61,12 +60,13 @@ const parseSnippetToNodes = (html?: string) => {
   return document.children.map((node, i) => createNode(node as ChildNode, i));
 };
 
-const SearchResults = ({ mainPdfController }: { mainPdfController: PDFControls | null }) => {
+const SearchResults = () => {
   const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
   const templates = useAtomValue(templatesAtom);
+  const mainPdfController = useAtomValue(pdfController);
 
   const template = useMemo(
     () => templates.find(temp => temp._id === entity?.template?._id),
