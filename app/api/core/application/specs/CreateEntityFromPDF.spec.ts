@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -123,11 +124,15 @@ describe('CreateEntityFromPDFUseCase', () => {
       .toArray();
 
     expect(entities).toHaveLength(2); // One per language (en, es)
-    expect(entities![0]).toMatchObject({
-      template: factory.id('PDF Document'),
+
+    const commonProperties = {
       sharedId: expect.any(String),
+      template: factory.id('PDF Document'),
       title: 'PDF Entity Title',
-      published: false,
+      user: factory.id('user1'),
+      creationDate: expect.any(Number),
+      editDate: expect.any(Number),
+      icon: { _id: null, type: 'Empty' },
       permissions: [
         {
           refId: factory.id('user1').toHexString(),
@@ -135,11 +140,25 @@ describe('CreateEntityFromPDFUseCase', () => {
           level: AccessLevel.Write,
         },
       ],
-      user: factory.id('user1'),
       metadata: expect.objectContaining({
         description: [{ value: 'A description extracted from PDF' }],
       }),
-    });
+      published: false,
+      obsoleteMetadata: [],
+    };
+
+    expect(entities).toEqual([
+      {
+        _id: expect.any(ObjectId),
+        language: 'en',
+        ...commonProperties,
+      },
+      {
+        _id: expect.any(ObjectId),
+        language: 'es',
+        ...commonProperties,
+      },
+    ]);
   });
 
   it('should NOT validate required properties', async () => {
