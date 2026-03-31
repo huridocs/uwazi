@@ -1478,10 +1478,6 @@ describe('search', () => {
   });
 
   describe('relationship permissions (v2GetEntity feature flag)', () => {
-    afterEach(() => {
-      testingTenants.restoreCurrentFn();
-    });
-
     it('should not call applyRelationshipPermissions when the flag is disabled', async () => {
       const mockService = { applyRelationshipPermissions: jest.fn() };
       jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
@@ -1492,19 +1488,25 @@ describe('search', () => {
     });
 
     it('should call applyRelationshipPermissions when the v2GetEntity flag is enabled', async () => {
-      const editorUser = userFactory.mockEditorUser();
+      const user = userFactory.mockEditorUser();
 
       testingTenants.mockCurrentTenant({ featureFlags: { v2GetEntity: true } });
 
-      const mockService = { applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined) };
-      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+      try {
+        const mockService = {
+          applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined),
+        };
+        jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
 
-      const { rows } = await search.search({ ids: [ids.batmanFinishes] }, 'en');
+        const { rows } = await search.search({ ids: [ids.batmanFinishes] }, 'en');
 
-      expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
-        rows,
-        User.createFrom(editorUser)
-      );
+        expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
+          rows,
+          User.createFrom(user)
+        );
+      } finally {
+        testingTenants.restoreCurrentFn();
+      }
     });
   });
 
@@ -1518,8 +1520,8 @@ describe('search', () => {
         },
       });
 
-    beforeEach(async () => {
-      await testingEnvironment.setFixtures(elasticFixtures);
+    beforeAll(async () => {
+      await testingEnvironment.setUp(elasticFixtures, true);
     });
 
     it('should delete all entities with the given sharedIds', async () => {
