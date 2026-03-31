@@ -63,16 +63,16 @@ describe('Entity with main document', () => {
     });
   });
 
-  describe('document and text layer', () => {
+  describe('document and text layer', { viewportWidth: 1138, viewportHeight: 640 }, () => {
     it('should visit the entity ', () => {
       cy.visit(`/en/entityv2/${entitySharedId}`);
     });
 
     it('should display the PDF', () => {
-      cy.contains('div[class="page"]', 'RESOLUCIÓN DE LA PRESIDENTA DE LA').should('be.visible');
       // wait for pdf to render
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(500);
+      cy.contains('div[class="page"]', 'RESOLUCIÓN DE LA PRESIDENTA DE LA').should('be.visible');
       cy.get('div[id="root"]').matchImageSnapshot('Verify correct rendering of pdf and panels');
     });
 
