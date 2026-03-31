@@ -4,16 +4,18 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { PDFPage } from '#app/PDF/index.js';
-import { PDFJS } from '../../PDFJS.js';
+import { PDFJS } from '#V2/Components/PDFViewer/pdfjs.js';
 import { PDF } from '../PDF.js';
 
 const legacyCharacterMapUrl = '/legacy_character_maps/';
 
-jest.mock('../../PDFJS.js', () => ({
+jest.mock('#V2/Components/PDFViewer/pdfjs.js', () => ({
   PDFJS: { getDocument: jest.fn() },
   EventBus: function () {},
+  CMAP_URL: '/legacy_character_maps/',
 }));
 
+// eslint-disable-next-line max-statements
 describe('PDF', () => {
   let component;
   let instance;
@@ -39,9 +41,7 @@ describe('PDF', () => {
     component = shallow(<PDF {...props} />);
     instance = component.instance();
     const originalSetState = instance.setState.bind(instance);
-    jest.spyOn(instance, 'setState').mockImplementation(function (state) {
-      return originalSetState(state);
-    });
+    jest.spyOn(instance, 'setState').mockImplementation(state => originalSetState(state));
   };
 
   describe('on instance', () => {
@@ -102,6 +102,7 @@ describe('PDF', () => {
       expect(props.onPageChange).toHaveBeenCalledWith(2);
     });
 
+    // eslint-disable-next-line max-statements
     it('should call pageChange when visibility is the highest and the page is diferent from before', () => {
       props.onPageChange = jest.fn();
 
@@ -127,6 +128,7 @@ describe('PDF', () => {
     });
 
     describe('in case of equal visibility', () => {
+      // eslint-disable-next-line max-statements
       it('should use the smallest one', () => {
         props.onPageChange = jest.fn();
         render();

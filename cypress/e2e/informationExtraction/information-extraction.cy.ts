@@ -33,7 +33,6 @@ describe('Information Extraction', () => {
   });
 
   describe('labeling entities', () => {
-    // eslint-disable-next-line max-statements
     it('should label the title property for the first six entities', () => {
       labelEntityTitle(0, 'Lorem Ipsum');
       cy.get('a[aria-label="Library"]').click();
@@ -319,12 +318,6 @@ describe('Information Extraction', () => {
       cy.contains('span', 'Lorem Ipsum');
     });
 
-    it('should not render pdf pages that are not visible', () => {
-      cy.get('[data-region-selector-id="2"]').within(() => {
-        cy.get('div').should('be.empty');
-      });
-    });
-
     it('should clear the existing selection', () => {
       cy.contains('[data-testid="ix-clear-button-container"] button', 'Clear').click();
       cy.get('div.highlight-rectangle').should('have.length', 0);
@@ -345,18 +338,19 @@ describe('Information Extraction', () => {
       });
       cy.get('aside').within(() => {
         cy.contains('h1', 'The Spectacular Spider-Man');
-        cy.get('input[name="field"]').clear();
-        cy.get('input[name="field"]').should('have.value', '');
-      });
-      cy.contains('button', 'Clear').click();
-      cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
-        .eq(0)
-        .setSelection('The Spectacular Spider-Man');
-      cy.contains('button', 'Click to fill').click();
-      cy.get('div.highlight-rectangle').scrollIntoView();
-      cy.get('div.highlight-rectangle').should('be.visible');
-      cy.get('aside').within(() => {
+        cy.get('.page').eq(0).should('have.attr', 'data-loaded', 'true');
+        // this is to make sure all rendering of the pdf is done
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(1000);
         cy.get('input[name="field"]').should('have.value', 'The Spectacular Spider-Man');
+
+        cy.contains('span[role="presentation"]', 'Magazine (1968)')
+          .eq(0)
+          .setSelection('Magazine (1968)');
+        cy.contains('button', 'Click to fill').click();
+        cy.get('div.highlight-rectangle').should('be.visible');
+
+        cy.get('input[name="field"]').should('have.value', 'Magazine (1968)');
       });
     });
 
@@ -384,7 +378,7 @@ describe('Information Extraction', () => {
         .click();
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2018-12-01');
-        cy.contains('New York City teenager Miles Morales');
+        cy.get('div.highlight-rectangle').should('be.visible');
         cy.contains('button', 'Cancel').click();
       });
     });

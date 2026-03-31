@@ -10,7 +10,7 @@ Object {
 }
 `;
 
-exports[`Users login after locking account, it should send user and email with the unlock link 1`] = `
+exports[`Users login after locking account should send user and email with the unlock link 1`] = `
 Array [
   Object {
     "from": "\\"Uwazi instance\\" <no-reply@uwazi.io>",

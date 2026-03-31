@@ -19,6 +19,10 @@ import { PUBLIC_USER_ID } from './publicUser.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 
+function validateURL(input) {
+  return new URL(input);
+}
+
 function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
   if (!options.newUser) {
@@ -55,7 +59,8 @@ function conformRecoverText(options, _settings, domain, key, user) {
 }
 
 const sendAccountLockedEmail = async (user, domain) => {
-  const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
+  const url = new URL(domain);
+  url.pathname += `unlockaccount/${user.username}/${user.accountUnlockCode}`;
   const htmlLink = `<a href="${url}">${url}</a>`;
   const text =
     'Hello,\n\n' +
@@ -263,6 +268,7 @@ export default {
       { username },
       '+password +accountLocked +failedLogins +accountUnlockCode'
     );
+    validateURL(domain);
     const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
     const user = dbuser || dummy;
 

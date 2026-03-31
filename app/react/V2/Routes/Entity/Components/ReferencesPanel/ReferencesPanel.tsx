@@ -11,15 +11,15 @@ import { Entity } from '#V2/domain/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal } from '#V2/Components/UI/index.js';
+import type { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { Reference } from './Reference.js';
 import { BlankState } from '../BlankState.js';
 import { useReferences, useReferencesActions } from './referencesAtom.js';
-import { PdfControllerApi } from '../PdfControllerContext.js';
 
 type ReferencesPanelProps = {
-  mainPdfController: PdfControllerApi;
+  mainPdfController: PDFControls | null;
   references?: EntityReference[];
   entity?: Entity;
 };
@@ -52,7 +52,7 @@ const ReferencesPanel = ({ mainPdfController, references = [], entity }: Referen
         const rect = selectionRectangles.find(r => r.page);
         if (rect?.page) {
           const pageNumber = Number.parseInt(rect.page, 10);
-          mainPdfController.goToPage(pageNumber);
+          mainPdfController?.goToPage(pageNumber);
         }
       }
     },
