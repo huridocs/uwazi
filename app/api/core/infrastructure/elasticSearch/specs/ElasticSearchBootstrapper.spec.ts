@@ -46,25 +46,20 @@ const deletePipeline = async (pipelineId: string) => {
 };
 
 const createSut = (deps: Omit<ElasticSearchBootstrapperDeps, 'client' | 'logger'>) => {
+  const logger = TestUtils.mockClass<Logger>({ info: jest.fn() });
+
   const sut = new ElasticSearchBootstrapper({
     ...deps,
     client,
-    logger: TestUtils.mockClass<Logger>({ info: jest.fn() }),
+    logger,
   });
-  return { sut };
+  return { sut, logger };
 };
 
 describe('ElasticSearchBootstrapper', () => {
-  let logSpy: jest.SpyInstance;
   const createdIndexes: string[] = [];
   const createdPipelines: string[] = [];
-
-  beforeEach(() => {
-    logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
-  });
-
   afterEach(async () => {
-    logSpy.mockRestore();
     while (createdIndexes.length) {
       // eslint-disable-next-line no-await-in-loop
       await deletePhysicalIndex(`${createdIndexes.pop()}_v1`);
@@ -131,7 +126,7 @@ describe('ElasticSearchBootstrapper', () => {
     it('logs a skip message when alias already exists', async () => {
       const alias = uniqueAlias();
       createdIndexes.push(alias);
-      const { sut } = createSut({
+      const { sut, logger } = createSut({
         registry: { [alias]: makeDefinition(alias) },
         pipelineRegistry: {},
       });
@@ -139,7 +134,7 @@ describe('ElasticSearchBootstrapper', () => {
       await sut.execute();
       await sut.execute();
 
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(alias));
+      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining(alias));
     });
 
     describe('race condition: resource_already_exists_exception', () => {
