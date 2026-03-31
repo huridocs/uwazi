@@ -1,9 +1,12 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { elastic } from '#api/search/index.js';
 import { search } from '#api/search/search.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import * as searchLimitsConfig from '#shared/config.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import elasticResult from './elasticResult.js';
@@ -1471,6 +1474,37 @@ describe('search', () => {
       expect(aggregationKeys).not.toContain('relationship');
       expect(aggregationKeys).not.toContain('date');
       expect(aggregationKeys).not.toContain('text');
+    });
+  });
+
+  describe('relationship permissions (v2GetEntity feature flag)', () => {
+    afterEach(() => {
+      testingTenants.restoreCurrentFn();
+    });
+
+    it('should not call applyRelationshipPermissions when the flag is disabled', async () => {
+      const mockService = { applyRelationshipPermissions: jest.fn() };
+      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+
+      await search.search({ ids: [ids.batmanFinishes] }, 'en');
+
+      expect(mockService.applyRelationshipPermissions).not.toHaveBeenCalled();
+    });
+
+    it('should call applyRelationshipPermissions when the v2GetEntity flag is enabled', async () => {
+      const editorUser = userFactory.mockEditorUser();
+
+      testingTenants.mockCurrentTenant({ featureFlags: { v2GetEntity: true } });
+
+      const mockService = { applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined) };
+      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+
+      const { rows } = await search.search({ ids: [ids.batmanFinishes] }, 'en');
+
+      expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
+        rows,
+        User.createFrom(editorUser)
+      );
     });
   });
 
