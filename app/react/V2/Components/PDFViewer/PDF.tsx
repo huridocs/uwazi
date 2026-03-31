@@ -56,7 +56,7 @@ const PDF = ({
   const animationFrameIdRef = useRef<number>(0);
   const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
-  const hasCalledOnReadyRef = useRef(false);
+  const isReady = useRef(false);
   const intersectionObserverRef = useRef<IntersectionObserver | null>();
   const [currentScale, setCurrentScale] = useState(1);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
@@ -145,20 +145,23 @@ const PDF = ({
   }, []);
 
   const pdfReadyCallback = useCallback(() => {
-    if (!onPdfReady || hasCalledOnReadyRef.current) {
+    if (isReady.current) {
       return;
     }
 
-    onPdfReady(
-      {
-        goToPage,
-        scrollToHighlight,
-        activateSnippet,
-        deactivateSnippet,
-      },
-      pdf?.numPages || 0
-    );
-    hasCalledOnReadyRef.current = true;
+    if (onPdfReady) {
+      onPdfReady(
+        {
+          goToPage,
+          scrollToHighlight,
+          activateSnippet,
+          deactivateSnippet,
+        },
+        pdf?.numPages || 0
+      );
+    }
+
+    isReady.current = true;
   }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet, pdf]);
 
   useEffect(() => {
@@ -202,7 +205,11 @@ const PDF = ({
         }
       });
 
-    hasCalledOnReadyRef.current = false;
+    isReady.current = false;
+
+    return () => {
+      isReady.current = false;
+    };
   }, [fileUrl]);
 
   useEffect(() => {
@@ -210,7 +217,7 @@ const PDF = ({
       entries.forEach(entry => {
         const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
 
-        if (entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
+        if (isReady.current && entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
           onPageChangeRef.current?.(pageNumber);
         }
 
