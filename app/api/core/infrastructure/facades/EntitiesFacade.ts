@@ -1,10 +1,12 @@
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { randomUUID } from 'node:crypto';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas.js';
 import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory.js';
 import { LoggerFactory } from '../factories/LoggerFactory.js';
 import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { CreateEntityFromPDFUseCaseFactory } from '../factories/CreateEntityFromPDFUseCaseFactory.js';
 
 export class EntityFacade {
   static async create(
@@ -17,13 +19,21 @@ export class EntityFacade {
     const requestId = randomUUID();
 
     try {
-      const useCase = CreateEntityUseCaseFactory.default(targetLanguage);
-
       const parsed = CreateEntitySchema.parse(dto);
 
       const input = ExpressEntityMapper.toEntityCreateInput({ dto: parsed, inputFiles });
 
-      const entity = await useCase.execute(input);
+      let entity: Entity;
+
+      if (Object.keys(parsed).length === 1 && parsed.title) {
+        const useCase = CreateEntityFromPDFUseCaseFactory.default(targetLanguage);
+
+        entity = await useCase.execute(input);
+      } else {
+        const useCase = CreateEntityUseCaseFactory.default(targetLanguage);
+
+        entity = await useCase.execute(input);
+      }
 
       const duration = Date.now() - startTime;
 
