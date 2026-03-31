@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
-import * as Sentry from '@sentry/node';
+import { captureException } from '@sentry/node-core/light';
 import Ajv from 'ajv';
 import { ZodError } from 'zod';
-import util from 'node:util';
+import util, { inspect } from 'node:util';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
@@ -235,12 +235,15 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
   result = simplifyError(result, error);
 
   if (config.sentry.dsn && result.logLevel === 'error') {
-    Sentry.captureException(error);
+    captureException(error);
   }
 
   if (result.code >= 500) {
     result.prettyMessage = 'A server side error has occurred';
     result.error = 'A server side error has occurred';
+    if (config.ENVIRONMENT !== 'production') {
+      result.originalError = inspect(error);
+    }
   }
 
   return result;

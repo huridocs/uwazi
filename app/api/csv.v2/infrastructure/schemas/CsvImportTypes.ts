@@ -55,4 +55,5 @@ export interface CsvImportDBO {
       compressedSizeBytes?: number;
     }>;
   };
+  filesCleanup?: 'pending' | 'done' | 'failed';
 }

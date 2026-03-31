@@ -146,4 +146,7 @@ export function mapStateToProps(state, props) {
   };
 }
 const LibraryModeToggleButtonsConnected = connect(mapStateToProps)(LibraryModeToggleButtons);
-export { LibraryModeToggleButtons as LibraryModeToggleButtonsView, LibraryModeToggleButtonsConnected as LibraryModeToggleButtons };
+export {
+  LibraryModeToggleButtons as LibraryModeToggleButtonsView,
+  LibraryModeToggleButtonsConnected as LibraryModeToggleButtons,
+};

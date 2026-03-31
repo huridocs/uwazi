@@ -80,7 +80,21 @@ window.console.error = (...args) => {
   if (isSilentWarning(args[0])) {
     return;
   }
-  origConsoleError.apply(window.console, args);
+  try {
+    origConsoleError.apply(window.console, args);
+  } catch (consoleError) {
+    const original =
+      args.find(arg => arg instanceof Error) ??
+      (typeof args[0] === 'string' ? new Error(args[0]) : undefined);
+    let errorToThrow = original ?? consoleError;
+
+    try {
+      origConsoleError('console.error wrapper failed:', consoleError);
+    } catch (loggingError) {
+      errorToThrow = original ?? loggingError;
+    }
+    throw errorToThrow;
+  }
 };
 
 export { root };

@@ -95,4 +95,4 @@ export function mapDispatchToProps(dispatch) {
 }
 
 const UploadAttachmentConnected = connect(mapStateToProps, mapDispatchToProps)(UploadAttachment);
-export {UploadAttachment as UploadAttachmentView, UploadAttachmentConnected as UploadAttachment };
+export { UploadAttachment as UploadAttachmentView, UploadAttachmentConnected as UploadAttachment };

@@ -1,7 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable max-statements */
+
+import * as scroller from '#app/V2/helpers/scrollIntoView.js';
 import { triggerScroll } from '../helpers.js';
 
 describe('triggerScroll', () => {
@@ -12,10 +13,11 @@ describe('triggerScroll', () => {
   jest.useFakeTimers();
 
   beforeEach(() => {
+    jest.spyOn(scroller, 'scrollIntoView');
+
     mockRef = {
       current: {
         clientHeight: 100,
-        scrollIntoView: jest.fn(),
       },
     };
 
@@ -33,20 +35,20 @@ describe('triggerScroll', () => {
 
   it('should call scrollIntoView if clientHeight is greater than 0 and return the animation id', () => {
     const frameId = triggerScroll(mockRef, 20);
-    expect(mockRef.current!.scrollIntoView).toHaveBeenCalledWith({ behavior: 'instant' });
+    expect(scroller.scrollIntoView).toHaveBeenCalledWith(mockRef.current);
     expect(frameId).toBe(20);
   });
 
   it('should call scrollIntoView if clientHeight changes from 0 to a positive value after a failed attempt', () => {
     mockRef.current!.clientHeight = 0;
     const frameId = triggerScroll(mockRef, 0);
-    expect(mockRef.current!.scrollIntoView).not.toHaveBeenCalledWith();
+    expect(scroller.scrollIntoView).not.toHaveBeenCalled();
     expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(1);
     jest.advanceTimersByTime(0.5);
     expect(requestAnimationFrameSpy).toHaveBeenCalledTimes(2);
     mockRef.current!.clientHeight = 200;
     jest.advanceTimersByTime(1);
-    expect(mockRef.current!.scrollIntoView).toHaveBeenCalledWith({ behavior: 'instant' });
+    expect(scroller.scrollIntoView).toHaveBeenCalledWith(mockRef.current);
     expect(frameId).toBe(1);
   });
 });

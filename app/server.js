@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-import * as Sentry from '@sentry/node';
+import { close } from '@sentry/node-core/light';
 
 import { registerEventListeners } from '#api/eventListeners.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -115,7 +115,7 @@ const gracefullShutdown = () => {
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
-  Sentry.close(2000).then(() => {
+  close(2000).then(() => {
     gracefullShutdown();
   });
 };

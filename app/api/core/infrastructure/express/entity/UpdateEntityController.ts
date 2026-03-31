@@ -16,7 +16,8 @@ class UpdateEntityController extends AbstractController<Request> {
       const useCase = UpdateEntityUseCaseFactory.default();
       const entityDAO = new MongoEntityDAO(
         getConnection(),
-        DependenciesContext.transactionManager as MongoTransactionManager
+        DependenciesContext.transactionManager as MongoTransactionManager,
+        this.user
       );
 
       let parsed: UpdateEntityRequest;
@@ -35,7 +36,7 @@ class UpdateEntityController extends AbstractController<Request> {
       const output = await useCase.execute(mapped);
 
       const entityWithFiles = await entityDAO
-        .getWithFile({
+        .getWithFiles({
           sharedId: output.sharedId,
           language: this.language,
         })

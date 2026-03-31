@@ -209,10 +209,7 @@ describe('PDF display', () => {
         cy.get('#page-2-container .page').should('not.be.empty');
         cy.get('#page-4-container .page').should('be.empty');
 
-        cy.get('#page-7-container').then($page7 => {
-          const page7Top = $page7[0].offsetTop;
-          cy.get('#pdf-container').parent().parent().scrollTo(0, page7Top);
-        });
+        cy.get('#page-7-container').scrollIntoView();
 
         cy.get('#page-7-container').should('exist');
         cy.get('#page-7-container .page').should('not.be.empty');
