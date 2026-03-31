@@ -2,7 +2,7 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
 import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
@@ -17,20 +17,21 @@ import { OCRButton } from './OCRButton.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
 import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom.js';
 import { useReferencesActions } from './ReferencesPanel/referencesAtom.js';
+import { pdfController } from './atoms.js';
 
 type PDFViewProps = {
-  onMount: (controller: PDFControls) => void;
   entity: Entity;
   pagePlaintext?: string;
 };
 
-const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
+const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
   const [hydrated, setHydrated] = useState(false);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
   const pdfControls = useRef<PDFControls | null>(null);
+  const setPDFControlsAtom = useSetAtom(pdfController);
 
   useEffect(() => {
     setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
@@ -194,7 +195,7 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
               <h2 className="font-bold text-gray-900 mt-2 text-lg">{originalname}</h2>
             </Truncate>
           </div>
-          <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'hidden' : 'block'}`}>
+          <div className={`flex-1 min-h-0 ${isRaw ? 'hidden' : 'block'}`}>
             <PDF
               fileUrl={`/api/files/${filename}`}
               size={{ height: '100%', width: '90%' }}
@@ -204,7 +205,7 @@ const PDFView = ({ onMount, entity, pagePlaintext }: PDFViewProps) => {
               onPdfReady={controls => {
                 const targetPage = initialPage.current || 1;
                 pdfControls.current = controls;
-                onMount?.(controls);
+                setPDFControlsAtom(controls);
                 if (targetPage !== 1) {
                   controls.goToPage(targetPage);
                 }
