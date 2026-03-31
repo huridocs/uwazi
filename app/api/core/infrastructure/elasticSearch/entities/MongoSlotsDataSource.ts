@@ -22,7 +22,7 @@ type UpdatePropertyNameInput = {
 class MongoSlotsDataSource extends MongoDataSource<SlotDocument> {
   static collectionName = 'elasticSlots';
 
-  protected collectionName = 'elasticSlots';
+  protected collectionName = MongoSlotsDataSource.collectionName;
 
   async assignSlot({ propertyName, type }: AssignSlotInput) {
     let result;
