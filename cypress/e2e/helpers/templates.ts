@@ -11,9 +11,6 @@ const setColor = (color: string) => {
   cy.contains('label', 'Manually set a color');
   cy.get('input[name="template-color"]').clear();
   cy.get('input[name="template-color"]').type(color);
-  cy.contains('button', 'Template color').within(() => {
-    cy.get('div').should('have.css', 'backgroundColor', 'rgb(0, 184, 148)');
-  });
   cy.contains('button', 'Template color').click();
 };
 

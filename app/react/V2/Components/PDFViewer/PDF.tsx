@@ -214,24 +214,19 @@ const PDF = ({
 
   useEffect(() => {
     const observerHandler: IntersectionObserverCallback = entries => {
-      if (isReady.current) {
-        entries.forEach(entry => {
-          const pageNumber = Number.parseInt(
-            entry.target.getAttribute('data-pagenumber') || '0',
-            10
-          );
+      entries.forEach(entry => {
+        const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
 
-          if (entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
-            onPageChangeRef.current?.(pageNumber);
-          }
+        if (isReady.current && entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
+          onPageChangeRef.current?.(pageNumber);
+        }
 
-          if (entry.isIntersecting) {
-            pdfEventBus.dispatch('renderpage', { pageNumber });
-          } else {
-            pdfEventBus.dispatch('unmountpage', { pageNumber });
-          }
-        });
-      }
+        if (entry.isIntersecting) {
+          pdfEventBus.dispatch('renderpage', { pageNumber });
+        } else {
+          pdfEventBus.dispatch('unmountpage', { pageNumber });
+        }
+      });
     };
 
     intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
