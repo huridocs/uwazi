@@ -1,9 +1,12 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { elastic } from '#api/search/index.js';
 import { search } from '#api/search/search.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import * as searchLimitsConfig from '#shared/config.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import elasticResult from './elasticResult.js';
@@ -1474,6 +1477,39 @@ describe('search', () => {
     });
   });
 
+  describe('relationship permissions (v2GetEntity feature flag)', () => {
+    it('should not call applyRelationshipPermissions when the flag is disabled', async () => {
+      const mockService = { applyRelationshipPermissions: jest.fn() };
+      jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+
+      await search.search({ ids: [ids.batmanFinishes] }, 'en');
+
+      expect(mockService.applyRelationshipPermissions).not.toHaveBeenCalled();
+    });
+
+    it('should call applyRelationshipPermissions when the v2GetEntity flag is enabled', async () => {
+      const user = userFactory.mockEditorUser();
+
+      testingTenants.mockCurrentTenant({ featureFlags: { v2GetEntity: true } });
+
+      try {
+        const mockService = {
+          applyRelationshipPermissions: jest.fn().mockResolvedValue(undefined),
+        };
+        jest.spyOn(EntitiesQueryServiceFactory, 'default').mockReturnValue(mockService);
+
+        const { rows } = await search.search({ ids: [ids.batmanFinishes] }, 'en');
+
+        expect(mockService.applyRelationshipPermissions).toHaveBeenCalledWith(
+          rows,
+          User.createFrom(user)
+        );
+      } finally {
+        testingTenants.restoreCurrentFn();
+      }
+    });
+  });
+
   describe('bulkDeleteBySharedId()', () => {
     const getBySharedIds = sharedIds =>
       elastic.search({
@@ -1484,8 +1520,8 @@ describe('search', () => {
         },
       });
 
-    beforeEach(async () => {
-      await testingEnvironment.setFixtures(elasticFixtures);
+    beforeAll(async () => {
+      await testingEnvironment.setUp(elasticFixtures, true);
     });
 
     it('should delete all entities with the given sharedIds', async () => {
