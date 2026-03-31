@@ -146,7 +146,10 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
 
   const handlePageChange = useCallback(
     (newPageNumber: number) => {
-      updatePageParam(newPageNumber);
+      if (newPageNumber !== initialPage.current) {
+        initialPage.current = newPageNumber;
+        updatePageParam(newPageNumber);
+      }
     },
     [updatePageParam]
   );

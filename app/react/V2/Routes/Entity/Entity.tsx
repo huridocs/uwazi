@@ -208,6 +208,16 @@ const Entity = () => {
     return availableTabs[0]?.id;
   }, [searchParams, activeMainTab, sideTabsByMain]);
 
+  const sideTabElements = useMemo(
+    () =>
+      sideTabsByMain[activeMainTab]?.map(tab => (
+        <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
+          {tab.content}
+        </Tabs.Tab>
+      )),
+    [sideTabsByMain, activeMainTab]
+  );
+
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
       const next = new URLSearchParams(searchParams.toString());
@@ -236,16 +246,6 @@ const Entity = () => {
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
     [activeMainTab, searchParams, setSearchParams]
-  );
-
-  const sideTabElements = useMemo(
-    () =>
-      sideTabsByMain[activeMainTab]?.map(tab => (
-        <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
-          {tab.content}
-        </Tabs.Tab>
-      )),
-    [sideTabsByMain, activeMainTab]
   );
 
   if (!entity) {
