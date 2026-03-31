@@ -38,13 +38,7 @@ import { multitenantMiddleware } from './api/utils/multitenantMiddleware.js';
 import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
-
-import '#api/core/infrastructure/listeners/Listeners.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { IndexMappingRegistry } from '#api/core/infrastructure/elasticSearch/IndexMappingRegistry.js';
-import { ElasticSearchBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/ElasticSearchBootstrapper.js';
-import { IngestPipelineRegistry } from '#api/core/infrastructure/elasticSearch/IngestPipelineRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -179,15 +173,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
   const port = config.PORT;
-
-  // Setup of ES indexes
-  const elasticSearchBootstrapper = new ElasticSearchBootstrapper({
-    client: ElasticSearchClientFactory.getInstance(),
-    registry: IndexMappingRegistry,
-    pipelineRegistry: IngestPipelineRegistry,
-  });
-
-  await elasticSearchBootstrapper.execute();
 
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
