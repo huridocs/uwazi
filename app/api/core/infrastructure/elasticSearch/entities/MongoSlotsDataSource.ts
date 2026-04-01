@@ -66,11 +66,11 @@ class MongoSlotsDataSource extends MongoDataSource<SlotDocument> {
   async updatePropertyName({ oldName, newName }: UpdatePropertyNameInput) {
     const result = await this.getCollection().updateOne(
       {
-        slotName: oldName,
+        assignedTo: oldName,
       },
       {
         $set: {
-          slotName: newName,
+          assignedTo: newName,
         },
       }
     );

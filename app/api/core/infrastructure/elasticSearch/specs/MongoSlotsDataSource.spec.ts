@@ -117,38 +117,36 @@ describe('MongoSlotsDataSource', () => {
         assignedTo: 'title',
       });
 
-      await sut.updatePropertyName({ oldName: 'text_01', newName: 'text_03' });
+      await sut.updatePropertyName({ oldName: 'title', newName: 'title_changed' });
 
-      const updated = await slotsCollection().findOne({ slotName: 'text_03' });
-      const old = await slotsCollection().findOne({ slotName: 'text_01' });
+      const updated = await slotsCollection().findOne({ slotName: 'text_01' });
 
-      expect(updated).toEqual(
-        expect.objectContaining({
-          type: 'text',
-          assignedTo: 'title',
-        })
-      );
-      expect(old).toBeNull();
+      expect(updated).toEqual({
+        _id: expect.any(ObjectId),
+        type: 'text',
+        slotName: 'text_01',
+        assignedTo: 'title_changed',
+      });
     });
 
     it('throws when old slot name does not exist', async () => {
       const { sut } = createSut();
 
       await expect(
-        sut.updatePropertyName({ oldName: 'text_99', newName: 'text_01' })
-      ).rejects.toThrow('No slot found with property name text_99');
+        sut.updatePropertyName({ oldName: 'not_existing', newName: 'not_existing_changed' })
+      ).rejects.toThrow('No slot found with property name not_existing');
     });
 
     it('propagates duplicate key errors when target slot name already exists', async () => {
       const { sut } = createSut();
 
       await slotsCollection().insertMany([
-        { type: 'text', slotName: 'text_01', assignedTo: null },
-        { type: 'text', slotName: 'text_02', assignedTo: null },
+        { type: 'text', slotName: 'text_01', assignedTo: 'title' },
+        { type: 'text', slotName: 'text_02', assignedTo: 'title_changed' },
       ]);
 
       await expect(
-        sut.updatePropertyName({ oldName: 'text_01', newName: 'text_02' })
+        sut.updatePropertyName({ oldName: 'title', newName: 'title_changed' })
       ).rejects.toThrow();
     });
   });
