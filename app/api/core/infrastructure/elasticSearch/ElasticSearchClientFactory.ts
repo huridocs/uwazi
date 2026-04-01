@@ -5,8 +5,8 @@ import { MongoTenantRoutingDataSource } from './MongoTenantRoutingDataSource.js'
 import { TenantAwareESClient } from './TenantAwareESClient.js';
 import { IndexNameResolver } from './IndexNameResolver.js';
 import { config } from '#api/config.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { AuthorizedEntityESClient } from './entities/AuthorizedElasticEntityClient.js';
+import { User } from '#api/users.v2/model/User.js';
 
 class ElasticSearchClientFactory {
   private static instance: Client;
@@ -40,10 +40,7 @@ class ElasticSearchClientFactory {
     });
   }
 
-  static authorizedEntityClient(
-    tenantId: string,
-    actor: UserSchema | null
-  ): AuthorizedEntityESClient {
+  static authorizedEntityClient(tenantId: string, actor: User | null): AuthorizedEntityESClient {
     const mongoTenantRoutingDataSource = new MongoTenantRoutingDataSource(
       getSharedConnection(),
       TransactionManagerFactory.createForSharedDataBase()

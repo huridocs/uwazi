@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
@@ -8,6 +7,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { ElasticSearchClientFactory } from '../../elasticSearch/ElasticSearchClientFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const dependenciesContextMiddleware = (
   request: Request,
@@ -19,7 +19,6 @@ const dependenciesContextMiddleware = (
   }
 
   const tenant = tenants.current();
-  const actor = request.user as UserSchema | null;
 
   return DependenciesContext.run(
     {
@@ -32,7 +31,10 @@ const dependenciesContextMiddleware = (
         logger: LoggerFactory.default,
         elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),
         authorizedEntityESClient: () =>
-          ElasticSearchClientFactory.authorizedEntityClient(tenant.name, actor),
+          ElasticSearchClientFactory.authorizedEntityClient(
+            tenant.name,
+            User.createFrom(request.user)
+          ),
       },
     },
     next

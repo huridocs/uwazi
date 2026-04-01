@@ -1,10 +1,10 @@
 import { QueryDslQueryContainer } from '@elastic/elasticsearch/api/types';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { SearchOptions, SearchResponse } from '../Types.js';
-import { UserSchema } from '#shared/types/userType.js';
+import { User } from '#api/users.v2/model/User.js';
 
 type Deps = {
-  actor: UserSchema | null;
+  actor: User | null;
   elasticClient: TenantAwareESClient;
 };
 
@@ -34,10 +34,7 @@ class AuthorizedEntityESClient {
               { term: { published: true } },
               {
                 terms: {
-                  permissionRefIds: [
-                    this.deps.actor?._id?.toString()!,
-                    ...(this.deps.actor?.groups?.map(g => g._id?.toString()) ?? []),
-                  ],
+                  permissionRefIds: [this.deps.actor._id, ...this.deps.actor.groups],
                 },
               },
             ],

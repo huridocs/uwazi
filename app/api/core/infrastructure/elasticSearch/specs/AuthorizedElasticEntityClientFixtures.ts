@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
+import { User } from '#api/users.v2/model/User.js';
 
 export const factory = getFixturesFactory();
 
@@ -67,5 +68,8 @@ export const elasticEntities = [
   },
 ];
 
-export const getUserById = (userId: ObjectId): UserSchema | null =>
-  users.find(u => u._id?.toString() === userId.toString()) || null;
+export const getUserById = (userId: ObjectId): User | null => {
+  const user = users.find(u => u._id?.toString() === userId.toString()) || null;
+
+  return user ? User.createFrom(user) : null;
+};

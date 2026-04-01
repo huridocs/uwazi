@@ -3,7 +3,6 @@ import { AuthorizedEntityESClient } from '../entities/AuthorizedElasticEntityCli
 import { IndexNameResolver } from '../IndexNameResolver';
 import { MongoTenantRoutingDataSource } from '../MongoTenantRoutingDataSource';
 import { TenantAwareESClient } from '../TenantAwareESClient';
-import { UserSchema } from '#shared/types/userType.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import {
   factory,
@@ -18,9 +17,10 @@ import {
   tenantId,
 } from './AuthorizedElasticEntityClientFixtures.js';
 import { config } from '#api/config.js';
+import { User } from '#api/users.v2/model/User.js';
 
 type CreateSutDeps = {
-  actor: UserSchema | null;
+  actor: User | null;
   tenantId?: string;
 };
 
