@@ -1,7 +1,10 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoSlotsDataSource, SlotDocument } from '../entities/MongoSlotsDataSource.js';
-import { AmountPerSlotType, SlotsMapper } from '../entities/SlotDefinition.js';
+import {
+  AmountPerSlotType,
+  SlotBootstrapDefinitions,
+} from '../entities/SlotBootstrapDefinitions.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
 const createSut = () => {
@@ -13,12 +16,13 @@ const createSut = () => {
 const slotsCollection = () =>
   testingEnvironment.db.getCollection(MongoSlotsDataSource.collectionName)!;
 
-const expectedSlots: Omit<SlotDocument, '_id'>[] = SlotsMapper.slotList().flatMap(slotType =>
-  Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-    type: SlotsMapper.toPropertyType(slotType)!,
-    slotName: SlotsMapper.createSlotName(slotType, index + 1),
-    assignedTo: null,
-  }))
+const expectedSlots: Omit<SlotDocument, '_id'>[] = SlotBootstrapDefinitions.slotList().flatMap(
+  slotType =>
+    Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
+      type: SlotBootstrapDefinitions.toPropertyType(slotType)!,
+      slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
+      assignedTo: null,
+    }))
 );
 
 const expectedSlotCount = expectedSlots.length;
@@ -88,14 +92,14 @@ describe('MongoSlotsBootstrapper', () => {
       await slotsCollection().createIndex({ slotName: 1 }, { unique: true });
       await slotsCollection().insertOne({
         type: 'text',
-        slotName: SlotsMapper.createSlotName('txt', 1),
+        slotName: SlotBootstrapDefinitions.createSlotName('txt', 1),
         assignedTo: 'existing_property',
       });
 
       await sut.executeAll();
 
       const existingSlot = await slotsCollection().findOne({
-        slotName: SlotsMapper.createSlotName('txt', 1),
+        slotName: SlotBootstrapDefinitions.createSlotName('txt', 1),
       });
 
       expect(existingSlot?.assignedTo).toBe('existing_property');

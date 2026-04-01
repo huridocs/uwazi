@@ -1,19 +1,5 @@
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
-
-type SlotType =
-  | 'txt'
-  | 'date'
-  | 'num'
-  | 'range'
-  | 'select'
-  | 'relationship'
-  | 'geolocation'
-  | 'relationship_txt'
-  | 'relationship_num'
-  | 'relationship_date'
-  | 'relationship_range'
-  | 'relationship_select'
-  | 'relationship_geolocation';
+import type { SlotType } from './SlotType.js';
 
 const AmountPerSlotType: Record<SlotType, number> = {
   txt: 100,

@@ -1,6 +1,6 @@
 import { Db, MongoServerError } from 'mongodb';
 import { MongoSlotsDataSource, SlotDocument } from './MongoSlotsDataSource.js';
-import { AmountPerSlotType, SlotsMapper } from './SlotDefinition.js';
+import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
 
 type Deps = {
   database: Db;
@@ -22,10 +22,10 @@ class MongoSlotsBootstrapper {
 
   async createSlots() {
     try {
-      const slotsToCreate = SlotsMapper.slotList().flatMap(slotType =>
+      const slotsToCreate = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
         Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-          type: SlotsMapper.toPropertyType(slotType),
-          slotName: SlotsMapper.createSlotName(slotType, index + 1),
+          type: SlotBootstrapDefinitions.toPropertyType(slotType),
+          slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
           assignedTo: null,
         }))
       ) as Omit<SlotDocument, '_id'>[];

@@ -1,5 +1,6 @@
 import { MappingProperty } from '@elastic/elasticsearch/api/types';
-import { AmountPerSlotType, SlotsMapper, type SlotType } from './SlotDefinition.js';
+import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
+import type { SlotType } from './SlotType.js';
 
 const slotMappingRegistry: Record<SlotType, MappingProperty> = {
   txt: {
@@ -127,7 +128,7 @@ const slotMapping = (slotType: SlotType): MappingProperty => slotMappingRegistry
 export const createEntityMetadataMapping = () => {
   const metadata: Record<string, MappingProperty> = {};
 
-  SlotsMapper.slotList().forEach(slotType => {
+  SlotBootstrapDefinitions.slotList().forEach(slotType => {
     const slotAmount = AmountPerSlotType[slotType];
     if (!slotAmount) throw new Error(`No slot amount defined for prefix: ${slotType}`);
 
