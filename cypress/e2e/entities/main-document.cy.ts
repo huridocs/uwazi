@@ -2,7 +2,6 @@ import {
   clearCookiesAndLogin,
   saveEntity,
   createTemplate,
-  waitForLegacyNotifications,
 } from '../helpers';
 
 describe('Entity with main document', () => {
@@ -46,7 +45,6 @@ describe('Entity with main document', () => {
         .selectFile('./cypress/test_files/anotherPDF.pdf', { force: true });
 
       saveEntity();
-      waitForLegacyNotifications();
     });
 
     it('should check the entity was created and get the link for it', () => {

@@ -181,7 +181,9 @@ const Playground = () => {
               <ActionButton
                 label="Register Task"
                 variant="info"
-                onClick={() => registerTask(TASK_ID, 'Uploading document batch...', 0)}
+                onClick={() =>
+                  registerTask(TASK_ID, 'Uploading document batch...', undefined, 0)
+                }
               />
               <ActionButton
                 label="Update → 25%"

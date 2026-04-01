@@ -15,7 +15,7 @@ import {
   Truncate,
   VerticalDrawer,
 } from '#V2/Components/UI/index.js';
-import { PDF, PDFHandle, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { PDF, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
 import {
   coerceValue,
