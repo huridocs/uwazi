@@ -217,4 +217,103 @@ describe('PDF', () => {
 
     dispatchSpy.mockRestore();
   });
+
+  it('does not call onPageChange and calls onPdfReady only after PDF is rendered', async () => {
+    const pdfReadySpy = jest.fn();
+    const onPageChange = jest.fn();
+
+    let resolveDoc: (value: PDFDocumentProxy) => void;
+
+    const loadingTask: Partial<PDFDocumentLoadingTask> = {
+      promise: new Promise<PDFDocumentProxy>(res => {
+        resolveDoc = res;
+      }),
+      onProgress: jest.fn() as PDFDocumentLoadingTask['onProgress'],
+    };
+
+    mockGetDocument.mockReturnValueOnce(loadingTask);
+
+    await act(async () => {
+      await render(
+        <PDF
+          fileUrl="/file.pdf"
+          highlights={{}}
+          onPageChange={onPageChange}
+          onPdfReady={pdfReadySpy}
+        />
+      );
+    });
+
+    expect(pdfReadySpy).not.toHaveBeenCalled();
+    expect(onPageChange).not.toHaveBeenCalled();
+
+    await act(async () => {
+      resolveDoc({
+        numPages: 4,
+        getPage: jest
+          .fn()
+          .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
+      } as unknown as PDFDocumentProxy);
+      loadingTask.onProgress?.({ percent: 100 });
+    });
+
+    await waitFor(() => expect(pdfReadySpy).toHaveBeenCalled());
+    expect(onPageChange).not.toHaveBeenCalled();
+  });
+
+  it('does not call onPageChange when intersection happens before PDF is ready', async () => {
+    const onPageChange = jest.fn();
+
+    let resolveDoc: (value: PDFDocumentProxy) => void;
+
+    const loadingTask: Partial<PDFDocumentLoadingTask> = {
+      promise: new Promise<PDFDocumentProxy>(res => {
+        resolveDoc = res;
+      }),
+      onProgress: jest.fn() as PDFDocumentLoadingTask['onProgress'],
+    };
+
+    mockGetDocument.mockReturnValueOnce(loadingTask);
+
+    await act(async () => {
+      await render(<PDF fileUrl="/file.pdf" onPageChange={onPageChange} />);
+    });
+
+    // Prepare a fake target for page 3 and call the last registered observer
+    const target = document.createElement('div');
+    target.setAttribute('data-pagenumber', '3');
+
+    const observerCallback = observers[observers.length - 1];
+
+    // Simulate intersection before PDF is resolved
+    act(() => {
+      observerCallback(
+        [{ target, intersectionRatio: 0.6, isIntersecting: true }] as any,
+        {} as any
+      );
+    });
+
+    await waitFor(() => expect(onPageChange).not.toHaveBeenCalled());
+
+    // Make PDF ready
+    await act(async () => {
+      resolveDoc({
+        numPages: 4,
+        getPage: jest
+          .fn()
+          .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
+      } as unknown as PDFDocumentProxy);
+      loadingTask.onProgress?.({ percent: 100 });
+    });
+
+    // After PDF is ready, the same intersection should trigger onPageChange
+    act(() => {
+      observerCallback(
+        [{ target, intersectionRatio: 0.6, isIntersecting: true }] as any,
+        {} as any
+      );
+    });
+
+    await waitFor(() => expect(onPageChange).toHaveBeenCalledWith(3));
+  });
 });

@@ -486,6 +486,7 @@ Longitude,Γεωγραφικό μήκος
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
+Manually set a color,Manually set a color
 Map,Χάρτης
 Map api key,Κλειδί API χάρτη
 Map API key,Κλειδί API χάρτη

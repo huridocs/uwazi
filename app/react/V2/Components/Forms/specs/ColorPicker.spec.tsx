@@ -32,8 +32,8 @@ describe('ColorPicker', () => {
   });
 
   it('should set the color manually', () => {
-    const textInput = screen.getByRole('textbox');
-    fireEvent.change(textInput, { target: { value: 'FFFFFF' } });
+    const input = screen.getByLabelText('Manually set a color');
+    fireEvent.change(input, { target: { value: 'FFFFFF' } });
     expect(screen.getByText('The selected color is: #FFFFFF')).toBeInTheDocument();
   });
 
