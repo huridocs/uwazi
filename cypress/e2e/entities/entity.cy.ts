@@ -37,7 +37,7 @@ const addVideo = (action: string, local: boolean = true) => {
       });
   } else {
     cy.get('input[name="urlForm.url"]').type(
-      'https://raw.githubusercontent.com/RedEye-Developers/Test-Assets/main/videos/money-haist-status.mp4',
+      'https://raw.githubusercontent.com/shotstack/test-media/main/orientation/h1080_w1920_f30_a16-9_r0.mp4',
       { delay: 0 }
     );
     cy.contains('button', 'Add from URL').click();
@@ -109,7 +109,7 @@ const checkExternalMedia = () => {
   cy.get('video').should(
     'have.attr',
     'src',
-    'https://raw.githubusercontent.com/RedEye-Developers/Test-Assets/main/videos/money-haist-status.mp4'
+    'https://raw.githubusercontent.com/shotstack/test-media/main/orientation/h1080_w1920_f30_a16-9_r0.mp4'
   );
 };
 
