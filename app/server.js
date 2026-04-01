@@ -8,9 +8,8 @@ import promBundle from 'express-prom-bundle';
 import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
-import path from 'path';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
 import { close } from '@sentry/node-core/light';
 
@@ -39,11 +38,10 @@ import { multitenantMiddleware } from './api/utils/multitenantMiddleware.js';
 import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-import '#api/core/infrastructure/listeners/Listeners.js';
 
 mongoose.Promise = Promise;
 
@@ -134,6 +132,7 @@ app.use(appContextMiddleware);
 
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
+app.use(dependenciesContextMiddleware);
 app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
@@ -168,7 +167,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
         process.exit(1);
       }
     });
-    // eslint-disable-next-line global-require
+
     setupQueueWorker({ standAloneProcess: false });
   }
 
