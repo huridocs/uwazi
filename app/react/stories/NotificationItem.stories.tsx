@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import { NotificationItem } from '#V2/Components/UI/Notifications/NotificationItem.js';
 import { StatusNotification } from '#V2/atoms/requestStatusAtom.js';
 

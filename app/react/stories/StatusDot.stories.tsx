@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { StatusDot } from '#V2/Components/UI/Notifications/StatusDot.js';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 
 const meta: Meta<typeof StatusDot> = {
   title: 'Components/Notifications/StatusDot',

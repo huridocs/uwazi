@@ -1,6 +1,5 @@
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import 'cypress-axe';
-import { clearNotifications } from '../helpers/notifications';
 
 const stringToTranslate = "*please keep this key secret and don't share it.";
 
@@ -18,10 +17,10 @@ const addLanguages = () => {
       cy.contains('label', '(2)').click();
       cy.contains('span', '* French (fr)').should('be.visible');
       cy.contains('span', '* Spanish (es)').should('be.visible');
-    });
+   });
   cy.get('[data-testid=modal]').within(() => {
     cy.contains('button', 'Install (2)').realClick();
-  });
+ });
   cy.get('[data-testid=modal]').should('not.exist');
 };
 
@@ -32,7 +31,7 @@ describe('Languages', () => {
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.injectAxe();
     cy.contains('span', 'Languages').click();
-  });
+ });
 
   describe('Languages List', () => {
     it('should open the install language modal', () => {
@@ -41,8 +40,8 @@ describe('Languages', () => {
       cy.checkA11y();
       cy.get('[data-testid=modal]').within(() => {
         cy.contains('button', 'Cancel').click();
-      });
-    });
+     });
+   });
 
     it('should install new languages', () => {
       const BACKEND_LANGUAGE_INSTALL_DELAY = 25000;
@@ -51,12 +50,10 @@ describe('Languages', () => {
       addLanguages();
 
       cy.wait('@addLanguage');
-      clearNotifications();
-
       cy.contains('tr', 'Spanish', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('tr', 'French', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('Languages installed successfully').click();
-    });
+   });
 
     it('should render the list of installed languages', () => {
       cy.get('[data-testid=settings-languages]').matchImageSnapshot();
@@ -64,8 +61,8 @@ describe('Languages', () => {
       cy.contains('tr', 'Spanish');
       cy.contains('tr', 'French');
       cy.checkA11y();
-    });
-  });
+   });
+ });
 
   describe('Cancel an action', () => {
     it('should allow to cancel an action', () => {
@@ -74,8 +71,8 @@ describe('Languages', () => {
       cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'No, cancel').click();
       cy.contains('Spanish').should('exist');
-    });
-  });
+   });
+ });
 
   describe('Uninstall Language', () => {
     it('should uninstall the language and remove it from the list', () => {
@@ -85,12 +82,10 @@ describe('Languages', () => {
       cy.contains('[data-testid=modal] button', 'Uninstall').click();
 
       cy.wait('@deleteLanguage');
-      clearNotifications();
-
       cy.contains('Language uninstalled successfully').click();
       cy.contains('French').should('not.exist');
-    });
-  });
+   });
+ });
 
   describe('Set as default', () => {
     it('should set the language as default', () => {
@@ -98,9 +93,7 @@ describe('Languages', () => {
       cy.contains('tr', 'Spanish').contains('button', 'Default').click();
       cy.wait('@setDefault');
       cy.contains('tr', 'Spanish').contains('Uninstall').should('not.exist');
-      clearNotifications();
-
-    });
+   });
     it('should use the default language if there is not specified locale', () => {
       cy.clearAllCookies();
       cy.visit('http://localhost:3000/login');
@@ -111,17 +104,17 @@ describe('Languages', () => {
       cy.contains('button', 'Acceder').click();
       cy.wait('@login');
       cy.contains('ordenado por');
-    });
+   });
     it('should change to other language different than default', () => {
       cy.contains('button', 'Español').click();
       cy.contains('a', 'English').click();
       cy.on('uncaught:exception', (err, _runnable) => {
         err.message.includes('Hydration failed');
         return false;
-      });
+     });
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-    });
-  });
+   });
+ });
 
   describe('Reset Language', () => {
     it('should change a spanish translation', () => {
@@ -135,7 +128,7 @@ describe('Languages', () => {
         .type('test', { delay: 0 });
       cy.contains('button', 'Save').click();
       cy.contains('Translations saved');
-    });
+   });
 
     it('should reset the spanish language', () => {
       cy.intercept('POST', 'api/translations/populate').as('resetLanguage');
@@ -144,7 +137,7 @@ describe('Languages', () => {
       cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'Reset').click();
       cy.wait('@resetLanguage');
-    });
+   });
 
     it('should reset the spanish translation', () => {
       cy.contains('span', 'Translations').click();
@@ -153,6 +146,6 @@ describe('Languages', () => {
         .contains('tr', 'Español')
         .find('input')
         .should('have.value', stringToTranslate);
-    });
-  });
+   });
+ });
 });

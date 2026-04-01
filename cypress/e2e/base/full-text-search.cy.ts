@@ -17,7 +17,7 @@ describe('full text search', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
-  });
+ });
 
   it('should show text snippets when performing a text search', () => {
     cy.get('input[aria-label="Type something in the search box to get some results."]').clear();
@@ -31,16 +31,16 @@ describe('full text search', () => {
 
     mainSearchResults.forEach(result => {
       cy.contains('.item-snippet', result);
-    });
-  });
+   });
+ });
 
   it('should open the snippets tab on the sidePanel', () => {
     cy.contains('div', 'Artavia Murillo y otros').click();
     cy.get('#tabpanel-text-search').within(() => {
       cy.contains('.snippet-list-item-header', 'Title');
       cy.contains('.snippet-list-item', 'Artavia Murillo y otros');
-    });
-  });
+   });
+ });
 
   it('should enter a document via the search results', () => {
     cy.contains(
@@ -60,10 +60,10 @@ describe('full text search', () => {
     cy.get('#tabpanel-text-search').within(() => {
       cy.get('.snippet-list-item').should('have.length', 3);
       cy.get('.snippet-list-item').eq(0).click();
-    });
+   });
 
     cy.contains('Uwazi Heroes Investigation');
-  });
+ });
 
   it('should perform another search', () => {
     cy.get('#tab-text-search').click();
@@ -72,5 +72,5 @@ describe('full text search', () => {
       { delay: 0 }
     );
     cy.contains('.snippet-text', 'Uwazi Heroes Investigation');
-  });
+ });
 });

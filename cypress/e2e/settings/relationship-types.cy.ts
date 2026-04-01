@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
-import { clearNotifications } from '../helpers/notifications';
 
 describe('Relationship Types configuration', () => {
   before(() => {
@@ -10,16 +9,16 @@ describe('Relationship Types configuration', () => {
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.injectAxe();
     cy.contains('span', 'Relationship types').click();
-  });
+ });
 
   it('should have no detectable accessibility violations on load', () => {
     cy.checkA11y();
-  });
+ });
 
   beforeEach(() => {
     cy.intercept('GET', 'api/relationtypes').as('fetchTypes');
     cy.intercept('GET', 'api/templates').as('fetchtemplates');
-  });
+ });
 
   it('tests add types', () => {
     cy.getByTestId('relationship-types-add').click();
@@ -29,18 +28,13 @@ describe('Relationship Types configuration', () => {
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    clearNotifications();
-
-
     cy.getByTestId('relationship-types-add').click();
     cy.get('#relationship-type-name').click();
     cy.get('#relationship-type-name').type('Son');
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    clearNotifications();
-
-  });
+ });
 
   it('tests Edit', () => {
     cy.get('tbody tr:nth-of-type(1)').contains('Edit').click();
@@ -49,9 +43,7 @@ describe('Relationship Types configuration', () => {
     cy.getByTestId('relationship-type-form-submit').click();
 
     cy.wait('@fetchTypes');
-    clearNotifications();
-
-  });
+ });
 
   it('tests delete', () => {
     cy.get('tbody tr:nth-of-type(1) input').click();
@@ -63,9 +55,7 @@ describe('Relationship Types configuration', () => {
     cy.getByTestId('relationship-types-delete').click();
     cy.getByTestId('accept-button').click();
     cy.wait('@fetchTypes');
-    clearNotifications();
-
-  });
+ });
 
   it('test cant delete when in use', () => {
     cy.contains('span', 'Templates').click();
@@ -84,5 +74,5 @@ describe('Relationship Types configuration', () => {
     cy.contains('span', 'Relationship types').click();
 
     cy.get('tbody tr:nth-of-type(1) input').should('be.disabled');
-  });
+ });
 });

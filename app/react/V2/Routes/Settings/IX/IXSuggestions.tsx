@@ -40,9 +40,7 @@ import { PropertySidepanel } from './components/sidepanel/PropertySidepanel.js';
 import { TrainModelModal } from './components/TrainModelModal.js';
 import { ProcessExtractorModal } from './components/ProcessExtractorModal.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
-import { socket } from '#app/socket.js';
-import { ModelEvents } from './events.js';
-import type { IXModelStatusCallback, IXErrorTrainingModelCallback } from './events.js';
+import { createIXTaskListenerSetup, initialTaskLabel } from './taskProgress.js';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
@@ -144,39 +142,20 @@ const IXSuggestions = () => {
     if (status.status === ixStatus.ready) {
       if (extractor._id) {
         const extractorId = extractor._id;
+        const labels = {
+          trainingModel: t('System', 'Training model', null, false),
+          findingSuggestions: t('System', 'Finding suggestions', null, false),
+          acceptingSuggestions: t('System', 'Accepting suggestions', null, false),
+        };
         registerTask(
           extractorId,
-          `${t('System', 'Training model', null, false)}: ${extractor.name}`,
-          (update, complete, fail) => {
-            const handleStatus: IXModelStatusCallback = (evtId, modelStatus, _message, data) => {
-              if (evtId !== extractorId) return;
-              if (modelStatus === ixStatus.processing_model) {
-                update({ label: `${t('System', 'Training model', null, false)}: ${extractor.name}` });
-              } else if (modelStatus === ixStatus.processing_suggestions) {
-                const pct = data?.total ? Math.round((data.processed / data.total) * 100) : 0;
-                update({
-                  label: `${t('System', 'Finding suggestions', null, false)}: ${extractor.name}`,
-                  progress: pct,
-                });
-              } else if (modelStatus === ixStatus.processing_auto_accept) {
-                const pct =
-                  data?.total ? Math.round((data.processed / data.total) * 100) : undefined;
-                update({
-                  label: `${t('System', 'Accepting suggestions', null, false)}: ${extractor.name}`,
-                  ...(pct !== undefined && { progress: pct }),
-                });
-              } else if (modelStatus === ixStatus.ready) {
-                complete();
-              }
-            };
-            const handleError: IXErrorTrainingModelCallback = ({ message }) => fail(message);
-            socket.on(ModelEvents.MODEL_STATUS, handleStatus);
-            socket.on(ModelEvents.MODEL_ERROR, handleError);
-            return () => {
-              socket.off(ModelEvents.MODEL_STATUS, handleStatus);
-              socket.off(ModelEvents.MODEL_ERROR, handleError);
-            };
-          }
+          initialTaskLabel({ taskType: 'train', extractorName: extractor.name, labels }),
+          createIXTaskListenerSetup({
+            extractorId,
+            extractorName: extractor.name,
+            taskType: 'train',
+            labels,
+          })
         );
         try {
           await suggestionsAPI.findSuggestions({
@@ -212,39 +191,20 @@ const IXSuggestions = () => {
   const processExtractor = async (data: Omit<suggestionsAPI.ProcessParameters, 'extractorId'>) => {
     if (extractor._id) {
       const extractorId = extractor._id;
+      const labels = {
+        trainingModel: t('System', 'Training model', null, false),
+        findingSuggestions: t('System', 'Finding suggestions', null, false),
+        acceptingSuggestions: t('System', 'Accepting suggestions', null, false),
+      };
       registerTask(
         extractorId,
-        `${t('System', 'Finding suggestions', null, false)}: ${extractor.name}`,
-        (update, complete, fail) => {
-          const handleStatus: IXModelStatusCallback = (evtId, modelStatus, _message, evtData) => {
-            if (evtId !== extractorId) return;
-            if (modelStatus === ixStatus.processing_suggestions) {
-              const pct = evtData?.total
-                ? Math.round((evtData.processed / evtData.total) * 100)
-                : 0;
-              update({
-                label: `${t('System', 'Finding suggestions', null, false)}: ${extractor.name}`,
-                progress: pct,
-              });
-            } else if (modelStatus === ixStatus.processing_auto_accept) {
-              const pct =
-                evtData?.total ? Math.round((evtData.processed / evtData.total) * 100) : undefined;
-              update({
-                label: `${t('System', 'Accepting suggestions', null, false)}: ${extractor.name}`,
-                ...(pct !== undefined && { progress: pct }),
-              });
-            } else if (modelStatus === ixStatus.ready) {
-              complete();
-            }
-          };
-          const handleError: IXErrorTrainingModelCallback = ({ message }) => fail(message);
-          socket.on(ModelEvents.MODEL_STATUS, handleStatus);
-          socket.on(ModelEvents.MODEL_ERROR, handleError);
-          return () => {
-            socket.off(ModelEvents.MODEL_STATUS, handleStatus);
-            socket.off(ModelEvents.MODEL_ERROR, handleError);
-          };
-        }
+        initialTaskLabel({ taskType: 'process', extractorName: extractor.name, labels }),
+        createIXTaskListenerSetup({
+          extractorId,
+          extractorName: extractor.name,
+          taskType: 'process',
+          labels,
+        })
       );
       try {
         const params = { ...data, extractorId };

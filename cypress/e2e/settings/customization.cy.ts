@@ -3,7 +3,6 @@ import 'cypress-axe';
 import { SinonSpy } from 'cypress/types/sinon';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
-import { clearNotifications } from '../helpers/notifications';
 
 let spy: Cypress.Agent<SinonSpy<any[], any>>;
 Cypress.on('window:before:load', win => {
@@ -16,7 +15,7 @@ describe('customization', () => {
     clearCookiesAndLogin('admin', 'change this password now');
     cy.contains('a', 'Settings').click();
     cy.injectAxe();
-  });
+ });
 
   it('should add custom CSS', () => {
     cy.contains('a', 'Global CSS').click();
@@ -26,21 +25,19 @@ describe('customization', () => {
       .realClick()
       .realType('header {{}background-color: red;}');
     cy.contains('button', 'Save').should('not.be.disabled');
-  });
+ });
 
   it('should block navigation', () => {
     cy.contains('a', 'Account').click();
     cy.contains('Discard changes?');
     cy.contains('button', 'Cancel').click();
-  });
+ });
 
   it('should save the custom CSS', () => {
     cy.contains('button', 'Save').click();
     cy.contains('Saved successfully.');
-    clearNotifications();
-
     cy.contains('button', 'Save').should('be.disabled');
-  });
+ });
 
   it('should enabled global javascript', () => {
     cy.contains('a', 'Collection').click();
@@ -49,13 +46,11 @@ describe('customization', () => {
         .parent()
         .within(() => {
           cy.contains('label', 'Activate').click();
-        });
-    });
+       });
+   });
     cy.contains('button', 'Save').click();
     cy.contains('Settings updated.');
-    clearNotifications();
-
-  });
+ });
 
   it('should add custom javascript', () => {
     cy.contains('a', 'Global CSS & JS').click();
@@ -67,11 +62,11 @@ describe('customization', () => {
     cy.contains('button', 'Save').should('not.be.disabled');
     cy.contains('button', 'Save').click();
     cy.contains('Saved successfully.');
-  });
+ });
 
   it('should check the customizations', () => {
     cy.reload();
     cy.get('header').should('have.css', 'backgroundColor', 'rgb(255, 0, 0)');
     cy.wrap({}).should(() => expect(spy).to.be.calledWith('My custom js log'));
-  });
+ });
 });

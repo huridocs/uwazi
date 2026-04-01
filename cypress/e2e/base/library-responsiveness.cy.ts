@@ -15,14 +15,14 @@ describe('Library responsive view', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin('admin', 'admin');
-  });
+ });
 
   describe('Toolbar', viewport, () => {
     it('should open the toolbar', () => {
       cy.contains('button', 'Show toolbar').realTouch();
       cy.get('div.search-list').should('be.visible');
       cy.get('#root').matchImageSnapshot();
-    });
+   });
 
     it('show sould the filters sidepanel', () => {
       cy.contains('button', 'Show filters').realTouch();
@@ -30,14 +30,14 @@ describe('Library responsive view', () => {
       cy.get('#root').matchImageSnapshot();
       cy.get('.closeSidepanel.only-mobile').realTouch();
       cy.contains('button', 'Hide toolbar').realTouch();
-    });
+   });
 
     it('should open the actions bar', () => {
       cy.contains('button', 'Show actions').realTouch();
       cy.get('#root').matchImageSnapshot();
       cy.contains('button', 'Hide actions').realTouch();
-    });
-  });
+   });
+ });
 
   describe('Entity view', viewport, () => {
     it('should navigate to the first entity and see the sidepanel', () => {
@@ -50,7 +50,7 @@ describe('Library responsive view', () => {
 
       cy.get('.side-panel.metadata-sidepanel.is-active').should('be.visible');
       cy.get('#root').matchImageSnapshot();
-    });
+   });
 
     it('should check some of the metadata', () => {
       cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
@@ -62,7 +62,7 @@ describe('Library responsive view', () => {
         cy.contains('dl', 'Firmantes').contains('a', 'Eduardo Vio Grossi');
         cy.get('.filelist').scrollIntoView();
         cy.contains('div', 'SamplePDF.pdf').should('be.visible');
-      });
-    });
-  });
+     });
+   });
+ });
 });

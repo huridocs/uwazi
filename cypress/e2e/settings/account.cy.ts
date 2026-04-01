@@ -2,7 +2,6 @@ import { authenticator } from 'otplib';
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
-import { clearNotifications } from '../helpers/notifications';
 
 describe('Account', () => {
   before(() => {
@@ -17,15 +16,15 @@ describe('Account', () => {
         params: {
           permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
           origin: window.location.origin,
-        },
-      })
+       },
+     })
     );
-  });
+ });
 
   it('should have no detectable accessibility violations on load', () => {
     cy.contains('Account');
     cy.checkA11y(undefined, undefined, logA11yViolations);
-  });
+ });
 
   describe('Update user', () => {
     it('should validate user has email', () => {
@@ -35,7 +34,7 @@ describe('Account', () => {
       cy.contains('A valid email is required');
       cy.get('input[name=email]').clear();
       cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
-    });
+   });
 
     it('should validate passwords match', () => {
       cy.get('input[name=password]').type('1234', { delay: 0 });
@@ -43,7 +42,7 @@ describe('Account', () => {
       cy.contains('button', 'Update').click();
       cy.contains('Passwords do not match');
       cy.get('input[name=passwordConfirm]').type('4');
-    });
+   });
 
     it('should save the changes', () => {
       cy.intercept('POST', '/api/users').as('updateUser');
@@ -53,15 +52,14 @@ describe('Account', () => {
         cy.contains('Confirm');
         cy.get('input').type('change this password now');
         cy.contains('button', 'Accept').click();
-      });
+     });
 
       cy.wait('@updateUser');
-      clearNotifications();
-
       cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io');
-    });
+   });
 
     it('should not save changes when the password is wrong', () => {
+      cy.intercept('POST', '/api/users').as('updateUserWrongPassword');
       cy.get('input[name=password]').type('12345', { delay: 0 });
       cy.get('input[name=passwordConfirm]').type('12345', { delay: 0 });
       cy.get('input[name=email]').clear();
@@ -72,23 +70,15 @@ describe('Account', () => {
         cy.contains('Confirm');
         cy.get('input').type('wrong pass');
         cy.contains('button', 'Accept').click();
-      });
+     });
 
+      cy.wait('@updateUserWrongPassword').its('response.statusCode').should('eq', 403);
+      cy.get('[data-testid="notification-flash"]').should('be.visible');
+      cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
       cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io.com');
       cy.get('input[name=password]').should('not.contain.value');
       cy.get('input[name=passwordConfirm]').should('not.contain.value');
-    });
-
-    it('should check the error and dismiss the notification', () => {
-      cy.get('[data-testid="status-dot"]').click();
-      cy.get('[data-testid="notifications-panel"]').within(() => {
-        cy.contains('An error occurred');
-        cy.contains('button', 'Show details').click();
-        cy.contains('Request failed with status code 403');
-        cy.contains('button', 'Clear').click();
-      });
-      cy.get('[data-testid="close-sidepanel"]').click();
-    });
+   });
 
     it('should login with the new password', () => {
       cy.getByTestId('account-logout').click();
@@ -97,8 +87,8 @@ describe('Account', () => {
       cy.contains('button', 'Login').click();
       cy.get('.only-desktop a[aria-label="Settings"]').click();
       cy.injectAxe();
-    });
-  });
+   });
+ });
 
   describe('Enable 2FA', () => {
     let secret: string;
@@ -106,10 +96,10 @@ describe('Account', () => {
     it('pass accessibility tests', () => {
       cy.get('#account-form').within(() => {
         cy.contains('button', 'Enable').click({ force: true });
-      });
+     });
       cy.contains('Using Authenticator');
       cy.checkA11y(undefined, undefined, logA11yViolations);
-    });
+   });
 
     it('should enable 2FA', () => {
       cy.getByTestId('copy-value-button').focus({ timeout: 5000 });
@@ -122,10 +112,8 @@ describe('Account', () => {
           cy.get('input[name=token]').type(token);
           cy.contains('aside button', 'Enable').click();
           cy.contains('Activated');
-          clearNotifications();
-
-        });
-    });
+       });
+   });
 
     it('should login with 2FA', () => {
       cy.getByTestId('account-logout').click();
@@ -134,6 +122,6 @@ describe('Account', () => {
       cy.contains('button', 'Login').click();
       cy.get('input[name=token]').type(authenticator.generate(secret));
       cy.contains('button', 'Verify').click();
-    });
-  });
+   });
+ });
 });

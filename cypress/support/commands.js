@@ -233,12 +233,6 @@ Cypress.Commands.add('realDrag', (subject, distanceX, distanceY) => {
   });
 });
 
-Cypress.Commands.add('waitForLegacyNotifications', () => {
-  cy.get('.alert-wrapper').each(element => {
-    cy.wrap(element).should('be.empty');
-  });
-});
-
 addMatchImageSnapshotCommand({
   comparisonMethod: 'ssim',
   failureThreshold: 0.08,

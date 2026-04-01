@@ -1,7 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
-import { clearNotifications } from '../helpers/notifications';
 
 describe('customization', () => {
   before(() => {
@@ -9,12 +8,12 @@ describe('customization', () => {
     clearCookiesAndLogin('admin', 'change this password now');
     cy.injectAxe();
     cy.contains('a', 'Settings').click();
-  });
+ });
 
   it('should navigate to the custom uploads page', () => {
     cy.contains('a', 'Uploads').click();
     cy.contains('Custom Uploads');
-  });
+ });
 
   it('should upload some files', () => {
     cy.contains('Import asset').click();
@@ -27,11 +26,11 @@ describe('customization', () => {
       ],
       {
         force: true,
-      }
+     }
     );
     cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.contains('button', 'Add').click();
-  });
+ });
 
   it('should check the uploaded files', () => {
     cy.checkA11y(undefined, undefined, logA11yViolations);
@@ -39,10 +38,8 @@ describe('customization', () => {
       cy.contains('batman.jpg');
       cy.contains('sample.pdf');
       cy.contains('short-video.mp4');
-    });
-    clearNotifications();
-
-  });
+   });
+ });
 
   it('should show progress and number of files left', () => {
     cy.contains('Import asset').click();
@@ -51,13 +48,11 @@ describe('customization', () => {
       ['./cypress/test_files/valid.pdf', './cypress/test_files/short-video-thumbnail.jpg'],
       {
         force: true,
-      }
+     }
     );
     cy.contains('button', 'Add').click();
     cy.contains(/Uploading\.\.\. valid.pdf \d+% \d remaining files/gm);
-    clearNotifications();
-
-  });
+ });
 
   it('should rename a file', () => {
     cy.contains('td', 'batman.jpg').parent().contains('button', 'Edit').click();
@@ -67,35 +62,31 @@ describe('customization', () => {
       cy.get('#filename').clear();
       cy.get('#filename').type('Batman - superhero pic', { delay: 0 });
       cy.contains('button', 'Save').click();
-    });
+   });
     cy.contains('td', 'Batman - superhero pic.jpg');
-  });
+ });
 
   it('should delete a file', () => {
     cy.contains('td', 'short-video.mp4').parent().contains('button', 'Delete').click();
     cy.contains('li', 'short-video.mp4');
     cy.contains('button', 'Accept').click();
-    clearNotifications();
-
     cy.contains('short-video.mp4').should('not.exist');
-  });
+ });
 
   it('should delete multiple files', () => {
     cy.contains('span', 'Select all')
       .parent()
       .within(() => {
         cy.get('input').click();
-      });
+     });
     cy.get('[data-testid="settings-content-footer"]').within(() => {
       cy.contains('button', 'Delete').click();
-    });
+   });
     cy.contains('li', 'Batman - superhero pic.jpg');
     cy.contains('li', 'sample.pdf');
     cy.contains('li', 'valid.pdf');
     cy.contains('li', 'short-video-thumbnail.jpg');
     cy.contains('button', 'Accept').click();
-    clearNotifications();
-
     cy.get('tbody').children().contains('NO DATA AVAILABLE');
-  });
+ });
 });

@@ -65,6 +65,7 @@ const Playground = () => {
   } = useRequestStatus();
 
   const [isRTL, setIsRTL] = useState(false);
+  const [barColor, setBarColor] = useState('#12486B');
 
   const ago = (ms: number) => new Date(Date.now() - ms);
   const SEC = 1000;
@@ -96,9 +97,19 @@ const Playground = () => {
       <div className="max-w-3xl mx-auto h-full overflow-y-auto flex flex-col gap-6">
 
         {/* Header: dot lives here */}
-        <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-3 shadow-sm">
-          <span className="text-sm font-semibold text-gray-600">RequestStatus Playground</span>
+        <div
+          className="flex items-center justify-between rounded-xl px-5 py-3 shadow-sm"
+          style={{ backgroundColor: barColor }}
+        >
+          <span className="text-sm font-semibold text-white/70">RequestStatus Playground</span>
           <div className="flex items-center gap-3">
+            <input
+              type="color"
+              value={barColor}
+              onChange={e => setBarColor(e.target.value)}
+              title="Bar background color"
+              className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent"
+            />
             <button
               type="button"
               onClick={() => setIsRTL(r => !r)}

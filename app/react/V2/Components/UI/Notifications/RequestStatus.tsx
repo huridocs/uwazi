@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { NotificationType, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useContrastColor } from '#V2/CustomHooks/useContrastColor.js';
 import { StatusDot } from './StatusDot.js';
 import { NotificationsPanel } from './NotificationsPanel.js';
 import { NotificationFlash } from './NotificationFlash.js';
@@ -7,7 +8,7 @@ import { NotificationFlash } from './NotificationFlash.js';
 interface FlashState {
   id: string;
   title: string;
-  type: 'error' | 'warning';
+  type: NotificationType;
   phase: 'showing' | 'leaving';
 }
 
@@ -25,6 +26,9 @@ const RequestStatus = () => {
     clearAll,
   } = useRequestStatus();
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contrastColor = useContrastColor(containerRef);
+
   const [flash, setFlash] = useState<FlashState | null>(null);
   const lastFlashId = useRef<string | null>(null);
   // Timers are stored in refs so they are only cleared when a new flash starts,
@@ -35,7 +39,7 @@ const RequestStatus = () => {
   const [popKey, setPopKey] = useState(0);
   const lastPopId = useRef<string | null>(null);
 
-  const startFlash = useCallback((id: string, title: string, type: 'error' | 'warning') => {
+  const startFlash = useCallback((id: string, title: string, type: NotificationType) => {
     if (leaveTimerRef.current !== null) {
       clearTimeout(leaveTimerRef.current);
       leaveTimerRef.current = null;
@@ -69,8 +73,7 @@ const RequestStatus = () => {
 
   useEffect(() => {
     const latest = notifications[notifications.length - 1];
-    if (!latest || (latest.type !== 'error' && latest.type !== 'warning')) return;
-    if (latest.id === lastFlashId.current) return;
+    if (!latest || latest.id === lastFlashId.current) return;
     lastFlashId.current = latest.id;
     startFlash(latest.id, latest.title, latest.type);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,13 +90,14 @@ const RequestStatus = () => {
 
   return (
     <>
-      <div className="flex items-center bg-warning-50 p-1 rounded-xl gap-1.5">
+      <div ref={containerRef} className="flex items-center p-1 rounded-xl gap-1.5">
         {flash && (
           <NotificationFlash
             key={flash.id}
             title={flash.title}
             type={flash.type}
             phase={flash.phase}
+            color={contrastColor}
           />
         )}
         <StatusDot
@@ -102,6 +106,7 @@ const RequestStatus = () => {
           hasRunningTasks={hasRunningTasks}
           onClick={togglePanel}
           popKey={popKey}
+          color={contrastColor}
         />
       </div>
       <NotificationsPanel

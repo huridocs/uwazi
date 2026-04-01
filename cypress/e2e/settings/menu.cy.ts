@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
-import { clearNotifications } from '../helpers/notifications';
 
 describe('Menu configuration', () => {
   before(() => {
@@ -10,11 +9,11 @@ describe('Menu configuration', () => {
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.injectAxe();
     cy.contains('span', 'Menu').click();
-  });
+ });
 
   beforeEach(() => {
     cy.intercept('GET', 'api/settings/links').as('fetchLinks');
-  });
+ });
 
   it('should add links', () => {
     cy.getByTestId('menu-add-link').click();
@@ -38,29 +37,27 @@ describe('Menu configuration', () => {
     cy.get('#link-title').type('Link 3', { delay: 0 });
     cy.get('#link-url').type('www.exmple.com', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
-  });
+ });
 
   it('should alert users of unsaved changes', () => {
     cy.contains('a', 'Account').click();
     cy.get('[data-testid="modal"]').within(() => {
       cy.contains('You have unsaved changes. Do you want to continue?');
       cy.contains('button', 'Cancel').click();
-    });
-  });
+   });
+ });
 
   it('should save', () => {
     cy.getByTestId('menu-save').click();
-    clearNotifications();
-
     cy.wait('@fetchLinks');
     cy.getByTestId('menu-save').should('be.disabled');
-  });
+ });
 
   it('should not show the unsaved changes alert', () => {
     cy.contains('a', 'Account').click();
     cy.contains('a', 'Menu').click();
     cy.contains('Menu');
-  });
+ });
 
   it('it should add groups', () => {
     cy.getByTestId('menu-add-group').click();
@@ -72,10 +69,8 @@ describe('Menu configuration', () => {
     cy.get('#link-title').type('Group 2', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
     cy.getByTestId('menu-save').click();
-    clearNotifications();
-
     cy.wait('@fetchLinks');
-  });
+ });
 
   it('should edit items and put them into groups', () => {
     cy.get('tbody tr:nth-of-type(1)').contains('Edit').click();
@@ -86,23 +81,21 @@ describe('Menu configuration', () => {
     cy.get('#link-title').type(' edited', { delay: 0 });
     cy.get('#link-group').select('Group 2');
     cy.getByTestId('menu-form-submit').click();
-  });
+ });
 
   it('should alert users of unsaved changes after editing', () => {
     cy.contains('a', 'Account').click();
     cy.get('[data-testid="modal"]').within(() => {
       cy.contains('You have unsaved changes. Do you want to continue?');
       cy.contains('button', 'Cancel').click();
-    });
-  });
+   });
+ });
 
   it('should save the edited links', () => {
     cy.getByTestId('menu-save').click();
-    clearNotifications();
-
     cy.wait('@fetchLinks');
     cy.getByTestId('menu-save').should('be.disabled');
-  });
+ });
 
   it('should swich items from groups', () => {
     cy.get('tbody tr:nth-of-type(3)').contains('button', 'Group').click();
@@ -117,10 +110,8 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-save').click();
-    clearNotifications();
-
     cy.wait('@fetchLinks');
-  });
+ });
 
   it('should edit a child item', () => {
     cy.contains('tr', 'Link 1 edited').contains('button', 'Edit').click();
@@ -128,12 +119,10 @@ describe('Menu configuration', () => {
       cy.get('#link-title').clear();
       cy.get('#link-title').type('Link A', { delay: 0 });
       cy.contains('button', 'Update').click();
-    });
+   });
     cy.getByTestId('menu-save').click();
-    clearNotifications();
-
     cy.wait('@fetchLinks');
-  });
+ });
 
   it('should update the navigation bar with the changes', () => {
     cy.get('.menuItems > .menuNav-list > .menuNav-item')
@@ -143,7 +132,7 @@ describe('Menu configuration', () => {
 
     cy.get('.menuItems > .menuNav-list > .menuNav-item').eq(2).click();
     cy.get('.dropdown-menu.expanded').contains('Link A');
-  });
+ });
 
   it('tests delete', () => {
     cy.get('tbody tr:nth-of-type(1) input').click();
@@ -152,14 +141,12 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-delete-link').click();
 
     cy.getByTestId('menu-save').click();
-    clearNotifications();
-
     cy.wait('@fetchLinks');
-  });
+ });
 
   it('should have no detectable accessibility violations on load', () => {
     cy.checkA11y();
-  });
+ });
 
   it('should verify the changes impacted on the navigation bar', () => {
     cy.get('.menuItems > .menuNav-list').within(() => {
@@ -168,9 +155,9 @@ describe('Menu configuration', () => {
       cy.contains('Group 2').click();
       cy.get('.dropdown-menu.expanded').within(() => {
         cy.contains('Link A');
-      });
-    });
-  });
+     });
+   });
+ });
 
   it('should add a single child', () => {
     cy.contains('button', 'Add link').click();
@@ -180,5 +167,5 @@ describe('Menu configuration', () => {
     cy.get('#link-group').select('Group 1');
     cy.getByTestId('menu-form-submit').click();
     cy.contains('button', 'Save').click();
-  });
+ });
 });

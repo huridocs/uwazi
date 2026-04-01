@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { changeLanguage, clickOnEditEntity, saveEntity } from '../helpers/index.js';
-import { clearNotifications } from '../helpers/notifications';
 
 const entityTitle = 'Entity with all props';
 const textWithHtml = `<h1>The title</h1>
@@ -28,28 +27,28 @@ const clickMediaAction = (field: string, action: string) => {
 const addVideo = (action: string, local: boolean = true) => {
   if (action) {
     clickMediaAction('Media', action);
-  }
+ }
   cy.contains('Select from computer');
   if (local) {
     cy.get('.upload-button input[type=file]')
       .last()
       .selectFile('./cypress/test_files/short-video.mp4', {
         force: true,
-      });
-  } else {
+     });
+ } else {
     cy.get('input[name="urlForm.url"]').type(
       'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
       { delay: 0 }
     );
     cy.contains('button', 'Add from URL').click();
-  }
+ }
 
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(2000);
   cy.contains('.form-group.media', 'Media').scrollIntoView();
   cy.contains('.form-group.media', 'Media').within(() => {
     cy.get('video').should('be.visible');
-  });
+ });
 };
 
 const addImage = () => {
@@ -57,14 +56,14 @@ const addImage = () => {
   cy.contains('button', 'Select from computer');
   cy.get('.upload-button input[type=file]').first().selectFile('./cypress/test_files/batman.jpg', {
     force: true,
-  });
+ });
   // wait for image
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(200);
   cy.contains('.form-group.image', 'Image').scrollIntoView();
   cy.contains('.form-group.image', 'Image').within(() => {
     cy.get('img').should('be.visible');
-  });
+ });
 };
 
 const addInvalidVideoFile = (field: string) => {
@@ -72,7 +71,7 @@ const addInvalidVideoFile = (field: string) => {
   cy.contains('button', 'Select from computer');
   cy.get('.upload-button input[type=file]').first().selectFile('./cypress/test_files/sample.pdf', {
     force: true,
-  });
+ });
   cy.contains(field)
     .parentsUntil('.form-group')
     .contains('This file type is not supported on media fields')
@@ -88,7 +87,7 @@ const addInvalidImageFile = (field: string) => {
   cy.contains('button', 'Select from computer');
   cy.get('.upload-button input[type=file]').first().selectFile('./cypress/test_files/sample.pdf', {
     force: true,
-  });
+ });
   cy.contains(field)
     .parentsUntil('.form-group')
     .contains('Error loading your image')
@@ -103,7 +102,7 @@ const checkMediaSnapshots = (selector: string, options = {}) => {
   cy.get(selector).scrollIntoView({ offset: { top: -30, left: 0 } });
   cy.get(selector).matchImageSnapshot({
     ...options,
-  });
+ });
 };
 
 const checkExternalMedia = () => {
@@ -120,19 +119,19 @@ describe('Entities', () => {
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.intercept('GET', 'api/files/*').as('getFile');
-  });
+ });
 
   describe('Template Medatada', () => {
     it('should log in as admin then click the settings nav button.', () => {
       cy.contains('a', 'Settings').click();
       cy.url().should('include', '/en/settings/account');
-    });
+   });
 
     it('should test number of available properties.', () => {
       cy.get('a').contains('Templates').click();
       cy.get('a').contains('Add template').click();
       cy.contains('button', 'Add property').should('exist');
-    });
+   });
 
     it('should create a template with all the properties', () => {
       cy.get('a').contains('Templates').click();
@@ -166,26 +165,24 @@ describe('Entities', () => {
 
         if (propertyType === 'Select' || propertyType === 'Multiple select') {
           cy.get('select[name="content"]').select(3);
-        }
+       }
 
         if (propertyType === 'Relationship') {
           cy.get('select[name="relationType"]').select(2);
           cy.get('select[name="content"]').select(5);
-        } else if (propertyType === 'Media') {
+       } else if (propertyType === 'Media') {
           cy.get('input[name="showInCard"]').check();
-        }
+       }
 
         cy.contains('aside button', 'Add property').click();
-      });
+     });
 
       cy.intercept('POST', 'api/templates').as('postTemplate');
       cy.contains('button', 'Save').click();
       cy.wait('@postTemplate');
       cy.contains('success').should('exist');
-      clearNotifications();
-
-    });
-  });
+   });
+ });
 
   describe('Entity Metadata', () => {
     it('should create an entity filling all the props.', () => {
@@ -201,15 +198,15 @@ describe('Entities', () => {
 
       cy.contains('.form-group.select', 'Select').within(() => {
         cy.get('select').select('Activo');
-      });
+     });
 
       cy.contains('.form-group.relationship', 'Relationship').within(() => {
         cy.contains('19 Comerciantes').click();
-      });
+     });
 
       cy.contains('.form-group.date', 'Date').within(() => {
         cy.get('input').type('08/09/1966', { delay: 0 });
-      });
+     });
 
       addImage();
       addVideo('Add file');
@@ -220,17 +217,17 @@ describe('Entities', () => {
 
       cy.contains('.form-group.multiselect', 'Multiselect').within(() => {
         cy.contains('Activo').click();
-      });
+     });
 
       cy.get('.form-group.daterange div.DatePicker__From input').type('23/11/1963', { delay: 0 });
       cy.get('.form-group.daterange div.DatePicker__To input').type('12/09/1964', { delay: 0 });
       cy.get('.form-group.multidate button.btn.add').click();
       cy.get('.form-group.multidate .multidate-item:first-of-type input').type('23/11/1963', {
         delay: 0,
-      });
+     });
       cy.get('.form-group.multidate .multidate-item:nth-of-type(2) input').type('12/09/1964', {
         delay: 0,
-      });
+     });
       cy.get('.form-group.multidaterange button.btn.add').click();
       cy.get('.form-group.link #label').type('Huridocs', { delay: 0 });
       cy.get('.form-group.link #url').scrollIntoView();
@@ -249,8 +246,7 @@ describe('Entities', () => {
       ).type('12/09/1964', { delay: 0 });
       cy.get('.form-group.markdown textarea').type(textWithHtml, { delay: 0 });
       saveEntity();
-      cy.clearNotifications();
-    });
+   });
 
     it('should have all the values correctly saved.', () => {
       cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
@@ -270,14 +266,14 @@ describe('Entities', () => {
       checkMediaSnapshots('#tabpanel-metadata .metadata-type-multimedia.metadata-name-media');
       cy.get('.leaflet-container').scrollIntoView();
       cy.get('.leaflet-marker-icon').should('have.length', 1);
-    });
+   });
 
     it('should check that the HTML is show as expected', () => {
       cy.contains('h1', 'The title').should('exist');
       cy.contains('a', 'I am a link to an external site').should('exist');
       cy.contains('.someClass > li:nth-child(1)', 'List item 1').should('exist');
       cy.contains('.someClass > li:nth-child(2)', 'List item 2').should('exist');
-    });
+   });
 
     it('should check the media properties', () => {
       cy.get('.metadata-name-image > dd > img')
@@ -288,19 +284,19 @@ describe('Entities', () => {
         cy.get('video')
           .should('have.prop', 'src')
           .and('match', /^blob:http:\/\/localhost:3000\/[\w-]+$/);
-      });
+     });
       const expectedNewEntityFiles = ['batman.jpg', 'short-video.mp4'];
       cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
         const content = element.text();
         cy.wrap(content).should('eq', expectedNewEntityFiles[index]);
-      });
-    });
+     });
+   });
 
     it('should navigate to an entity via the rich text field link', () => {
       cy.contains('a', 'I am a link to the Tracy Robinson entity').click();
       cy.contains('.content-header-title > h1:nth-child(1)', 'Tracy Robinson').should('exist');
-    });
-  });
+   });
+ });
 
   describe('Media properties', () => {
     it('should allow add timelinks to an existing entity media property', () => {
@@ -314,13 +310,12 @@ describe('Entities', () => {
       cy.contains('.form-group.media', 'Media').within(() => {
         cy.get('.video-container', { timeout: 12000 }).should('exist');
         cy.get('video, .react-player', { timeout: 12000 }).should('exist');
-      });
+     });
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1000);
       cy.addTimeLink(1000, 'Control point', 1, 12, 0);
       saveEntity('Entity updated');
-      cy.clearNotifications();
       checkMediaSnapshots('#tabpanel-metadata .video-container > div:nth-child(2)');
-    });
+   });
 
     it('should render the player for internal media on library card and entity view', () => {
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
@@ -329,8 +324,8 @@ describe('Entities', () => {
       cy.contains('h1', 'Entity with all props');
       cy.get('.react-player').within(() => {
         cy.get('video', { timeout: 1000 });
-      });
-    });
+     });
+   });
 
     it('should allow set an external link from a media property', () => {
       cy.contains('a', 'Library').click();
@@ -343,11 +338,11 @@ describe('Entities', () => {
       // Wait for media elements to load in the edit form
       cy.contains('.form-group.image', 'Image').within(() => {
         cy.get('img').should('exist');
-      });
+     });
       cy.contains('.form-group.media', 'Media').within(() => {
         cy.get('.video-container', { timeout: 12000 }).should('exist');
         cy.get('video, .react-player', { timeout: 12000 }).should('exist');
-      });
+     });
       clickMediaAction('Media', 'Update');
       addVideo('', false);
       cy.contains('button', 'Add timelink').click();
@@ -356,7 +351,7 @@ describe('Entities', () => {
       cy.clearAndType('input[name="timelines.0.label"]', 'Dragon', { delay: 0 });
       saveEntity('Entity updated');
       checkExternalMedia();
-    });
+   });
 
     it('should show the external player on library card and entity view', () => {
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').scrollIntoView();
@@ -364,7 +359,7 @@ describe('Entities', () => {
       cy.contains('.item-document:nth-child(1)', 'Entity with all props').contains('View').click();
       cy.contains('h1', 'Entity with all props');
       checkExternalMedia();
-    });
+   });
 
     it('should show an error for an invalid property and allow to replace it for a valid one', () => {
       cy.contains('a', 'Library').click();
@@ -389,17 +384,16 @@ describe('Entities', () => {
         cy.get('video')
           .should('have.prop', 'src')
           .and('match', /^blob:http:\/\/localhost:3000\/[\w-]+$/);
-      });
-    });
+     });
+   });
 
     it('should allow unlink the value of a media property', () => {
       clickOnEditEntity();
       clickMediaAction('Image', 'Unlink');
       clickMediaAction('Media', 'Unlink');
       saveEntity('Entity updated');
-      cy.clearNotifications();
-    });
-  });
+   });
+ });
 
   describe('Thesauri values shortcut', () => {
     it('should add a thesauri value on a single select field and select it', () => {
@@ -417,11 +411,10 @@ describe('Entities', () => {
       cy.get('input[name=value]#newThesauriValue').focus();
       cy.get('input[name=value]#newThesauriValue').type('New Single Value', {
         delay: 0,
-      });
+     });
       cy.contains('.confirm-button', 'Save').click();
       cy.contains('Thesaurus saved');
-      cy.clearNotifications();
-    });
+   });
 
     it('should add a thesauri value on a multiselect field and select it', () => {
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1300);
@@ -432,15 +425,14 @@ describe('Entities', () => {
       cy.contains('.modal-content', 'Add thesaurus value');
       cy.get('input[name=value]#newThesauriValue').type('New Value', {
         delay: 0,
-      });
+     });
       cy.contains('.confirm-button', 'Save').click();
       cy.contains('Thesaurus saved');
-      cy.clearNotifications();
       saveEntity('Entity updated');
       cy.get('.metadata-type-select').should('contain.text', 'New Single Value');
       cy.get('.metadata-type-multiselect').should('contain.text', 'MultiselectActivoNew Value');
-    });
-  });
+   });
+ });
 
   describe('Entity Translations', () => {
     it('should change the entity in Spanish', () => {
@@ -453,7 +445,7 @@ describe('Entities', () => {
         'Entidad con todas las propiedades',
         {
           delay: 0,
-        }
+       }
       );
       cy.get('input[name="library.sidepanel.metadata.metadata.text"]').click();
       cy.clearAndType(
@@ -462,13 +454,13 @@ describe('Entities', () => {
         { delay: 0 }
       );
       cy.contains('button', 'Guardar').click();
-    });
+   });
 
     it('should check the values for the entity in Spanish', () => {
       cy.contains('.item-document', 'Entidad con todas las propiedades').click();
       cy.contains('h1.item-name', 'Entidad con todas las propiedades').should('exist');
       cy.get('.metadata-type-text').should('contain.text', 'Texto de prueba en Español');
-    });
+   });
 
     it('should edit the text field in English', () => {
       changeLanguage('English');
@@ -481,11 +473,10 @@ describe('Entities', () => {
         { delay: 0 }
       );
       saveEntity('Entity updated');
-      cy.clearNotifications();
       cy.contains('.item-document', 'Entity with all props').click();
       cy.contains('h1.item-name', 'Entity with all props').should('exist');
       cy.get('.metadata-type-text').should('contain.text', 'Demo text in english');
-    });
+   });
 
     it('should not affect the text field in Spanish', () => {
       cy.intercept('GET', 'es/library/*').as('getLibrary');
@@ -494,8 +485,8 @@ describe('Entities', () => {
       cy.contains('Configuración de filtros');
       cy.contains('.item-document:nth-child(1) span', 'Entidad con todas las propiedades').click();
       cy.contains('.metadata-type-text > dd', 'Texto de prueba en Español').should('exist');
-    });
-  });
+   });
+ });
 
   describe('Empty properties', () => {
     it('should be able to remove all the values from properties.', () => {
@@ -528,11 +519,11 @@ describe('Entities', () => {
       cy.get('.form-group #lon').clear();
 
       saveEntity('Entity updated');
-    });
+   });
 
     it('should not have metadata.', () => {
       cy.get('div.metadata.tab-content-visible div.view > dl > div').should('have.length', 0);
-    });
+   });
 
     it("should change an entity's template", () => {
       clickOnEditEntity();
@@ -540,13 +531,12 @@ describe('Entities', () => {
       cy.get('select:first-of-type').select('Causa');
       cy.contains('Changing the type will erase all relationships to this entity');
       saveEntity('Entity updated');
-      cy.clearNotifications();
-    });
+   });
 
     it('should show only the filtered entities', () => {
       cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
       cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Causa').click();
       cy.get('.item-document').should('have.length', 13);
-    });
-  });
+   });
+ });
 });

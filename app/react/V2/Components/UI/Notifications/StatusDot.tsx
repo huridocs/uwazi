@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowPathIcon, LinkSlashIcon } from '@heroicons/react/24/outline';
 import { OverallStatus } from '#V2/atoms/requestStatusAtom.js';
+import { ContrastColor } from '#V2/CustomHooks/useContrastColor.js';
 
 interface StatusDotProps {
   overallStatus: OverallStatus;
@@ -8,6 +9,7 @@ interface StatusDotProps {
   hasRunningTasks: boolean;
   onClick: () => void;
   popKey?: number;
+  color?: ContrastColor;
 }
 
 const dotColorMap: Record<Exclude<OverallStatus, 'loading'>, string> = {
@@ -40,22 +42,22 @@ const DOT_KEYFRAMES = `
 
 const DOT_SIZE = 'w-2 h-2';
 
-const LoadingDots = () => (
+const LoadingDots = ({ color }: { color: string }) => (
   <span className="flex items-center gap-1" aria-hidden="true">
       <span style={{ animation: 'dotSpreadLeft 0.25s ease-out forwards' }}>
         <span
-          className={`block ${DOT_SIZE} rounded-full bg-gray-700`}
-          style={{ animation: 'dotPulse 1.8s ease-in-out 0ms infinite backwards' }}
+          className={`block ${DOT_SIZE} rounded-full`}
+          style={{ backgroundColor: color, animation: 'dotPulse 1.8s ease-in-out 0ms infinite backwards' }}
         />
       </span>
       <span
-        className={`block ${DOT_SIZE} rounded-full bg-gray-700`}
-        style={{ animation: 'dotPulse 1.8s ease-in-out 300ms infinite backwards' }}
+        className={`block ${DOT_SIZE} rounded-full`}
+        style={{ backgroundColor: color, animation: 'dotPulse 1.8s ease-in-out 300ms infinite backwards' }}
       />
       <span style={{ animation: 'dotSpreadRight 0.25s ease-out forwards' }}>
         <span
-          className={`block ${DOT_SIZE} rounded-full bg-gray-700`}
-          style={{ animation: 'dotPulse 1.8s ease-in-out 600ms infinite backwards' }}
+          className={`block ${DOT_SIZE} rounded-full`}
+          style={{ backgroundColor: color, animation: 'dotPulse 1.8s ease-in-out 600ms infinite backwards' }}
         />
       </span>
     </span>
@@ -101,7 +103,7 @@ const buildAriaLabel = (
   return `Notifications — ${parts.join(', ')}`;
 };
 
-const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick, popKey }: StatusDotProps) => (
+const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick, popKey, color = 'black' }: StatusDotProps) => (
   <>
     {/* eslint-disable-next-line react/no-danger */}
     <style dangerouslySetInnerHTML={{ __html: DOT_KEYFRAMES }} />
@@ -116,7 +118,7 @@ const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick, popKe
         className="flex items-center gap-1.5 p-1 rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300"
       >
         {overallStatus === 'loading' ? (
-          <LoadingDots />
+          <LoadingDots color={color} />
         ) : (
           <span
             key={popKey}
@@ -127,7 +129,7 @@ const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick, popKe
         )}
 
         {hasRunningTasks && (
-          <ArrowPathIcon className="w-4 h-4 text-gray-900 animate-spin" aria-hidden="true" />
+          <ArrowPathIcon className="w-4 h-4 animate-spin" style={{ color }} aria-hidden="true" />
         )}
       </button>
     </div>

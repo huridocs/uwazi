@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import { changeLanguage, clearCookiesAndLogin } from '../helpers/index.js';
 import 'cypress-axe';
-import { clearNotifications, expectNotification } from '../helpers/notifications';
 
 describe('Translations', () => {
   before(() => {
@@ -10,32 +9,32 @@ describe('Translations', () => {
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Translations').click();
-  });
+ });
 
   beforeEach(() => {
     cy.injectAxe();
-  });
+ });
 
   describe('translations list', () => {
     it('should be accessible', () => {
       cy.contains('User Interface');
       cy.checkA11y();
-    });
-  });
+   });
+ });
 
   describe('translation form', () => {
     it('should be accessible', () => {
       // cy.contains('[data-testid=content] button', 'Translate').click();
       cy.contains('td', 'Causa').siblings().contains('Translate').click();
       cy.checkA11y();
-    });
+   });
 
     it('should sort the tables', () => {
       const checkOrder = (items: string[]) => {
         items.forEach(item => {
           cy.contains('caption', item).scrollIntoView();
-        });
-      };
+       });
+     };
 
       checkOrder([
         'Articulos no violados',
@@ -50,12 +49,12 @@ describe('Translations', () => {
         'Resumen',
         'Title',
       ]);
-    });
+   });
 
     it('should have breadcrumb navigation', () => {
       cy.contains('li a > .translation', 'Translations').click();
       cy.contains('System translations');
-    });
+   });
 
     it('Should edit a translation', () => {
       cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
@@ -73,15 +72,18 @@ describe('Translations', () => {
       cy.contains('Informe de admisibilidad');
       cy.get('input[name="formValues.0.values.0.value"]').should('have.value', 'Date');
       cy.get('input[name="formValues.2.values.0.value"]').should('have.value', 'تاريخ');
-    });
+   });
 
-    it('should disable the form and buttons, and emit a notification when saving', () => {
+    it('should disable the form and buttons while saving', () => {
+      cy.intercept('POST', '/api/translations').as('saveTranslations');
       cy.contains('button', 'Save').click();
       cy.contains('button', 'Save').should('be.disabled');
       cy.contains('button', 'Cancel').should('be.disabled');
       cy.get('input[type=text]').should('be.disabled');
-      expectNotification('Translations saved');
-    });
+      cy.wait('@saveTranslations')
+        .its('response.statusCode')
+        .should('be.oneOf', [200, 201]);
+   });
 
     it('Should filter translations that have no untranslated terms', () => {
       cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
@@ -90,33 +92,34 @@ describe('Translations', () => {
       cy.contains('label', 'Untranslated Terms').click();
       cy.contains('Informe de admisibilidad');
       cy.get('input[type=text]').eq(0).should('have.value', 'Informe de admisibilidad');
-    });
+   });
 
     it('should notify the user if there is an error', () => {
       cy.intercept('POST', 'api/translations', {
         statusCode: 400,
-      }).as('api/translations');
+     }).as('api/translations');
       cy.contains('button', 'Save').click();
       cy.wait('@api/translations').then(() => {
-        expectNotification('An error occurred');
-        clearNotifications();
-
-      });
-    });
+        cy.get('[data-testid="notification-flash"]').should('be.visible');
+        cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
+        cy.get('input[type=text]').should('not.be.disabled');
+        cy.contains('button', 'Save').should('not.be.disabled');
+     });
+   });
 
     describe('discard changes', () => {
       it('should unfilter the from and clear the first field', () => {
         cy.get('div[data-testid=settings-translations-edit]').scrollTo('top');
         cy.get('[type="checkbox"]').check();
         cy.get('input[type=text]').eq(0).siblings('button').click();
-      });
+     });
 
       it('should alert about unsaved changes when navigating', () => {
         cy.contains('a', 'Account').click();
         cy.contains('h1', 'Discard changes?');
         cy.checkA11y();
         cy.get('button[aria-label="Close modal"]').click();
-      });
+     });
 
       it('Should discard changes', () => {
         cy.contains('a', 'Settings').click();
@@ -132,15 +135,15 @@ describe('Translations', () => {
         cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
         cy.get('form').should('be.visible');
         cy.get('input[type=text]').eq(0).should('have.value', 'Date');
-      });
-    });
-  });
+     });
+   });
+ });
 
   describe('Live translations', () => {
     it('should enable live translate', () => {
       cy.contains('button', 'English').click();
       cy.contains('button', 'Live translate').click();
-    });
+   });
 
     it('should check for accessibilty', () => {
       cy.contains('span', 'Account').click();
@@ -148,18 +151,18 @@ describe('Translations', () => {
       cy.checkA11y();
       cy.get('#translationsFormModal').within(() => {
         cy.contains('button', 'Cancel').click();
-      });
-    });
+     });
+   });
 
     it('should disable live translate', () => {
       cy.get('button.singleItem[aria-label="Turn off inline translation"]').click();
-    });
+   });
 
     it('Should navigate to library and active live translate', () => {
       cy.contains('a', 'Library').click();
       cy.contains('button', 'English').click();
       cy.contains('button', 'Live translate').click();
-    });
+   });
 
     it('should translate a text', () => {
       cy.contains('span', 'Filters').click();
@@ -169,15 +172,15 @@ describe('Translations', () => {
         cy.get('input[name="data.0.value"]').clear();
         cy.get('input[name="data.0.value"]').type('Filtering', { delay: 0 });
         cy.contains('button', 'Save').click();
-      });
+     });
       cy.get('#translationsFormModal').should('not.exist');
-    });
+   });
 
     it('should deactive the live translate and check the translatations in english and spanish', () => {
       cy.get('button[aria-label="Turn off inline translation"]').click();
       cy.contains('span', 'Filtering');
       changeLanguage('Español');
       cy.contains('span', 'Filtros');
-    });
-  });
+   });
+ });
 });

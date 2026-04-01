@@ -1,18 +1,17 @@
 import { selectRestrictedEntities } from '../helpers/index.js';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 import { dismissModalIfVisible, typeInEditor } from '../helpers/pageEditor.js';
-import { clearNotifications } from '../helpers/notifications';
 
 describe('Public Form', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
-  });
+ });
 
   beforeEach(() => {
     cy.cleanupUnexpectedUi();
-  });
+ });
 
   describe('whitelist templates', () => {
     it('should navigate to collection settings', () => {
@@ -20,7 +19,7 @@ describe('Public Form', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
       cy.get('select[name="defaultLibraryView"]').select('Cards');
-    });
+   });
 
     it('should whitelist Mecanismo and Reporte', () => {
       cy.get('[data-testid="settings-collection"]').scrollTo('center');
@@ -30,13 +29,11 @@ describe('Public Form', () => {
           cy.get('button').eq(0).click();
           cy.contains('[data-testid="multiselect-popover"] li', 'Mecanismo').click();
           cy.contains('[data-testid="multiselect-popover"] li', 'Reporte').click();
-        });
+       });
 
       cy.contains('button', 'Save').click();
-      clearNotifications();
-
-    });
-  });
+   });
+ });
 
   describe('create a page', () => {
     it('should create a page with a public form and add it to the navbar', () => {
@@ -61,8 +58,6 @@ describe('Public Form', () => {
       cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
-      clearNotifications();
-
       cy.get('[data-testid=modal]').should('not.exist');
       cy.contains('Basic').click();
 
@@ -78,12 +73,10 @@ describe('Public Form', () => {
         cy.getByTestId('menu-form-submit').click();
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
-        clearNotifications();
-
         cy.get('[data-testid=modal]').should('not.exist');
         cy.wait('@fetchLinks');
-      });
-    });
+     });
+   });
 
     it('should visit the page and do a submit for the first template', () => {
       dismissModalIfVisible();
@@ -102,7 +95,7 @@ describe('Public Form', () => {
       cy.get('input[name="publicform.title"]').type('Test public submit entity', {
         force: true,
         delay: 0,
-      });
+     });
       cy.get('input[name="publicform.metadata.resumen"]').type(
         'This was submited via public form',
         { force: true }
@@ -111,8 +104,8 @@ describe('Public Form', () => {
       cy.get('.captcha input').type('42hf');
       cy.contains('button', 'Submit').click();
       cy.get('.alert.alert-success').click();
-    });
-  });
+   });
+ });
 
   describe('public form with image and media files', () => {
     it('should go back a use the other template for the form', () => {
@@ -123,7 +116,7 @@ describe('Public Form', () => {
         .parent()
         .within(() => {
           cy.contains('button', 'Edit').click();
-        });
+       });
       cy.contains('Markdown').click();
       typeInEditor(
         'html',
@@ -137,11 +130,9 @@ describe('Public Form', () => {
       cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
-      clearNotifications();
-
       cy.get('[data-testid=modal]').should('not.exist');
       cy.wait('@fetchPage');
-    });
+   });
 
     it('should revisit the page and fill the text, select and date fields', () => {
       dismissModalIfVisible();
@@ -156,12 +147,12 @@ describe('Public Form', () => {
       cy.get('input[name="publicform.title"]').type('Entity with image and media fields', {
         force: true,
         delay: 0,
-      });
+     });
       cy.contains('label', 'Descriptor', { timeout: 12000 });
       cy.get('select').first().select('505e38c8-210f-45b1-a81f-aa34d933cbae', { force: true });
       cy.get('.react-datepicker-wrapper input').type('2022/02/10', { delay: 0 });
       cy.get('textarea').type('A description for the report', { delay: 0 });
-    });
+   });
 
     it('should fill the Fotografía field', () => {
       cy.contains('.image button[type=button]', 'Add file').eq(0).click();
@@ -170,7 +161,7 @@ describe('Public Form', () => {
         { force: true }
       );
       cy.get('img').should('be.visible');
-    });
+   });
 
     it('should fill the Video field', () => {
       cy.get('.media button[type=button]').click();
@@ -178,18 +169,18 @@ describe('Public Form', () => {
         './cypress/test_files/short-video.mp4',
         {
           force: true,
-        }
+       }
       );
       cy.get('video', { timeout: 2000 }).then(async $video => {
         $video[0].pause();
         $video[0].currentTime = 0;
         $video[0].removeAttribute('controls');
-      });
+     });
       cy.get('video').should('be.visible');
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.addTimeLink(2000, 'Control point');
-    });
+   });
 
     it('should fill the Imagen adicional field', () => {
       cy.contains('.image button[type=button]', 'Add file').click();
@@ -198,7 +189,7 @@ describe('Public Form', () => {
         { force: true }
       );
       cy.get('.form-group.image').should('have.length', 2);
-    });
+   });
 
     it('should fill the captcha and save', () => {
       cy.get('.captcha input').type('42hf');
@@ -207,8 +198,8 @@ describe('Public Form', () => {
       cy.wait('@publish');
       cy.contains('Success').as('successMessage');
       cy.get('@successMessage').should('not.exist');
-    });
-  });
+   });
+ });
 
   describe('check created entities', () => {
     it('should check the first entity', () => {
@@ -217,14 +208,14 @@ describe('Public Form', () => {
       selectRestrictedEntities();
       cy.contains('h2', 'Test public submit entity').click();
       cy.contains('Test public submit entity');
-    });
+   });
 
     it('should check the second entity', () => {
       cy.get('.library-viewer').scrollTo('top');
       cy.contains('h2', 'Entity with image and media fields').click();
       cy.contains('aside.is-active a', 'View').click();
       cy.contains('Entity with image and media fields');
-    });
+   });
 
     it('should check the second entity with files', () => {
       cy.get('a[aria-label="Library"]').click();
@@ -237,9 +228,9 @@ describe('Public Form', () => {
       cy.get('.attachment-name span:first-of-type').then($spans => {
         const names = $spans.toArray().map(span => span.textContent);
         expect(names).to.deep.equal(['batman.jpg', 'batman.jpg', 'short-video.mp4']);
-      });
-    });
-  });
+     });
+   });
+ });
 
   describe('error handling', () => {
     // eslint-disable-next-line max-statements
@@ -267,8 +258,8 @@ describe('Public Form', () => {
         cy.on('uncaught:exception', (_err, _runnable) => {
           cy.contains('Well, this is awkward');
           return false;
-        });
-      });
-    });
-  });
+       });
+     });
+   });
+ });
 });

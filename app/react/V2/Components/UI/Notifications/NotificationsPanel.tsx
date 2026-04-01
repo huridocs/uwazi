@@ -1,5 +1,4 @@
 import React from 'react';
-import { TrashIcon } from '@heroicons/react/20/solid';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
@@ -86,8 +85,7 @@ const NotificationsPanel = ({
           <Sidepanel.Footer className="p-4 border-t border-gray-100">
             <Button styling="light" color="primary" onClick={onClear} className="w-full">
               <span className="flex items-center justify-center gap-1.5">
-                <TrashIcon className="w-3.5 h-3.5" aria-hidden="true" />
-                <Translate>Empty</Translate>
+                <Translate>Clear all</Translate>
               </span>
             </Button>
           </Sidepanel.Footer>

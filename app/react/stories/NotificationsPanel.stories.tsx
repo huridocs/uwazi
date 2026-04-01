@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
 
@@ -95,6 +95,10 @@ const PanelContainer = ({
     action('clear-all')();
   };
 
+  const handleRemoveTask = (id: string) => {
+    action('remove-task')(id);
+  };
+
   return (
     <div className="tw-content">
       <div className="p-4">
@@ -111,6 +115,7 @@ const PanelContainer = ({
           tasks={tasks}
           onClose={() => setIsOpen(false)}
           onDismissNotification={handleDismiss}
+          onRemoveTask={handleRemoveTask}
           onClear={handleClear}
         />
       </div>
