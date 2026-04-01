@@ -51,7 +51,12 @@ const Account = () => {
 
     if (response instanceof FetchResponseError) {
       const message = response.json?.prettyMessage ? response.json.prettyMessage : response.message;
-      notify('error', t('System', 'An error occurred', null, false), undefined, message || undefined);
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        message || undefined
+      );
     } else {
       notify('success', t('System', 'Account updated', null, false));
       await revalidator.revalidate();

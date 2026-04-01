@@ -1,11 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import {
-  resolveBackgroundColor,
-  getLuminance,
-  getContrastColor,
-} from '../contrastColor.js';
+import { resolveBackgroundColor, getLuminance, getContrastColor } from '../contrastColor.js';
 
 // ---------------------------------------------------------------------------
 // Helpers: build a detached DOM subtree with controlled computed styles
@@ -25,7 +21,7 @@ const makeEl = (bg: string | null): HTMLElement => {
 const buildTree = (...bgs: Array<string | null>): HTMLElement => {
   // bgs[0] = outermost ancestor … bgs[last] = the target element
   const els = bgs.map(bg => makeEl(bg));
-  for (let i = 0; i < els.length - 1; i++) {
+  for (let i = 0; i < els.length - 1; i += 1) {
     els[i].appendChild(els[i + 1]);
   }
   document.body.appendChild(els[0]);

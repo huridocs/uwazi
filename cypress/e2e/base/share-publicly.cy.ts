@@ -13,7 +13,7 @@ describe('Permisions system', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
- });
+  });
 
   it('should share an entity with the collaborator', () => {
     cy.contains('Ordenes del presidente');
@@ -22,7 +22,7 @@ describe('Permisions system', () => {
     cy.contains('button', 'Share').click();
     shareSearchTerm('colla');
     grantPermission(4, 'Can see', 'write');
- });
+  });
 
   describe('make entities private', () => {
     it('should unshare entities publicly', () => {
@@ -31,14 +31,14 @@ describe('Permisions system', () => {
       grantPermission(2, 'Can see', 'delete');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
-   });
+    });
 
     it('should display the entitiy as restricted', () => {
       selectPublishedEntities();
       selectRestrictedEntities();
       cy.contains('h2', entityTitle).should('exist');
-   });
- });
+    });
+  });
 
   describe('make entities public', () => {
     it('should share the entity', () => {
@@ -52,14 +52,14 @@ describe('Permisions system', () => {
       cy.contains('Update success');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
-   });
+    });
 
     it('should display the entity as public', () => {
       selectRestrictedEntities();
       selectPublishedEntities();
       cy.contains('h2', entityTitle);
-   });
- });
+    });
+  });
 
   describe('as a collaborator', () => {
     it('should not have a select to remove the public share', () => {
@@ -70,7 +70,7 @@ describe('Permisions system', () => {
       cy.contains('td', 'Public').siblings().should('be.empty');
       cy.contains('button', 'Close').click();
       cy.get('aside button[aria-label="Close side panel"]').eq(1).click();
-   });
+    });
 
     it('should create an entity and check it is saved', () => {
       cy.intercept('POST', 'api/entities').as('entitySave');
@@ -80,7 +80,7 @@ describe('Permisions system', () => {
       cy.wait('@entitySave');
       cy.get('aside.metadata-sidepanel.is-active').matchImageSnapshot();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
-   });
+    });
 
     it('should not be able to share the entity', () => {
       cy.contains('h2', 'Test title').click();
@@ -89,8 +89,8 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal] select').should('have.length', 2);
       cy.contains('[data-testid=modal] button', 'Close').click();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
-   });
- });
+    });
+  });
 
   describe('mixed permissions', () => {
     it('should login as admin and perform a search', () => {
@@ -98,7 +98,7 @@ describe('Permisions system', () => {
       cy.get('.search-box input').type('test 2016', { delay: 0 });
       cy.get('[aria-label="Search button"]').click();
       cy.get('.item-document').should('have.length.at.least', 9).should('have.length.at.most', 10);
-   });
+    });
 
     it('should show mixed access', () => {
       cy.contains('button', 'Select all').click();
@@ -106,7 +106,7 @@ describe('Permisions system', () => {
       cy.get('aside button.share-btn').eq(1).click();
       cy.contains('[data-testid=modal] button', 'Close').click();
       cy.get('[data-testid=modal]').should('not.exist');
-   });
+    });
 
     it('should keep publishing status with mixed access', () => {
       cy.contains('button', 'Select all').click();
@@ -119,6 +119,6 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.item-document').should('have.length.at.least', 9).should('have.length.at.most', 10);
       cy.get('.item-document').eq(0).matchImageSnapshot();
-   });
- });
+    });
+  });
 });

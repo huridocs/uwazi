@@ -250,7 +250,9 @@ const TemplatesEditor = () => {
 
   const handleSave = async (ignoreEntityCount = false) => {
     const isDuplicateName = templates.some(
-      t => t.name.toLowerCase() === template.name.toLowerCase() && t._id !== template._id
+      templateItem =>
+        templateItem.name.toLowerCase() === template.name.toLowerCase() &&
+        templateItem._id !== template._id
     );
     setNameError(!template.name || isDuplicateName);
     if (!template.name || isDuplicateName) {

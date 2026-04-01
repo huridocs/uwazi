@@ -1,8 +1,4 @@
-import {
-  clearCookiesAndLogin,
-  saveEntity,
-  createTemplate,
-} from '../helpers';
+import { clearCookiesAndLogin, saveEntity, createTemplate } from '../helpers';
 
 describe('Entity with main document', () => {
   let entitySharedId: string;

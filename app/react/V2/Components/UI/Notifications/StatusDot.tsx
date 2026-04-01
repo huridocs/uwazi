@@ -44,23 +44,32 @@ const DOT_SIZE = 'w-2 h-2';
 
 const LoadingDots = ({ color }: { color: string }) => (
   <span className="flex items-center gap-1" aria-hidden="true">
-      <span style={{ animation: 'dotSpreadLeft 0.25s ease-out forwards' }}>
-        <span
-          className={`block ${DOT_SIZE} rounded-full`}
-          style={{ backgroundColor: color, animation: 'dotPulse 1.8s ease-in-out 0ms infinite backwards' }}
-        />
-      </span>
+    <span style={{ animation: 'dotSpreadLeft 0.25s ease-out forwards' }}>
       <span
         className={`block ${DOT_SIZE} rounded-full`}
-        style={{ backgroundColor: color, animation: 'dotPulse 1.8s ease-in-out 300ms infinite backwards' }}
+        style={{
+          backgroundColor: color,
+          animation: 'dotPulse 1.8s ease-in-out 0ms infinite backwards',
+        }}
       />
-      <span style={{ animation: 'dotSpreadRight 0.25s ease-out forwards' }}>
-        <span
-          className={`block ${DOT_SIZE} rounded-full`}
-          style={{ backgroundColor: color, animation: 'dotPulse 1.8s ease-in-out 600ms infinite backwards' }}
-        />
-      </span>
     </span>
+    <span
+      className={`block ${DOT_SIZE} rounded-full`}
+      style={{
+        backgroundColor: color,
+        animation: 'dotPulse 1.8s ease-in-out 300ms infinite backwards',
+      }}
+    />
+    <span style={{ animation: 'dotSpreadRight 0.25s ease-out forwards' }}>
+      <span
+        className={`block ${DOT_SIZE} rounded-full`}
+        style={{
+          backgroundColor: color,
+          animation: 'dotPulse 1.8s ease-in-out 600ms infinite backwards',
+        }}
+      />
+    </span>
+  </span>
 );
 
 const TOOLTIP_ID = 'disconnect-tooltip';
@@ -68,7 +77,6 @@ const TOOLTIP_ID = 'disconnect-tooltip';
 const DisconnectWarning = () => (
   <span
     className="relative inline-flex group"
-    tabIndex={0}
     aria-label="Server disconnected"
     aria-describedby={TOOLTIP_ID}
   >
@@ -103,7 +111,14 @@ const buildAriaLabel = (
   return `Notifications — ${parts.join(', ')}`;
 };
 
-const StatusDot = ({ overallStatus, isConnected, hasRunningTasks, onClick, popKey, color = 'black' }: StatusDotProps) => (
+const StatusDot = ({
+  overallStatus,
+  isConnected,
+  hasRunningTasks,
+  onClick,
+  popKey,
+  color = 'black',
+}: StatusDotProps) => (
   <>
     {/* eslint-disable-next-line react/no-danger */}
     <style dangerouslySetInnerHTML={{ __html: DOT_KEYFRAMES }} />

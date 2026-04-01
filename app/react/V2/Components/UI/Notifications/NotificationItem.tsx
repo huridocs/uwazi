@@ -60,10 +60,14 @@ const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) =>
       {iconMap[notification.type]}
 
       <div className="flex-1 min-w-0 overflow-hidden">
-        <p className="text-sm font-medium text-gray-800 break-words whitespace-normal">{notification.title}</p>
+        <p className="text-sm font-medium text-gray-800 break-words whitespace-normal">
+          {notification.title}
+        </p>
 
         {notification.message && (
-          <p className="mt-1 text-xs text-gray-600 break-words whitespace-normal">{notification.message}</p>
+          <p className="mt-1 text-xs text-gray-600 break-words whitespace-normal">
+            {notification.message}
+          </p>
         )}
 
         {notification.details && (
@@ -90,7 +94,9 @@ const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) =>
           </div>
         )}
 
-        <p className="mt-1 text-xs text-gray-400 whitespace-normal">{formatTimestamp(notification.timestamp)}</p>
+        <p className="mt-1 text-xs text-gray-400 whitespace-normal">
+          {formatTimestamp(notification.timestamp)}
+        </p>
       </div>
 
       <button

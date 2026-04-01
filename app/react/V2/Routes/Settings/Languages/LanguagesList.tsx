@@ -115,20 +115,16 @@ const LanguagesList = () => {
   };
 
   const uninstallModal = (row: Row<LanguageSchema>) => {
-    confirmAction(
-      'You are about to uninstall a language.',
-      'Uninstall',
-      async () => {
-        setShowModal(false);
-        const language = row.original as LanguageSchema;
-        const response = await I18NApi.deleteLanguage(new RequestParams({ key: language.key }));
-        if (response instanceof FetchResponseError) {
-          bridgeNotify(t('System', 'An error occurred', null, false), 'error', response.message);
-        } else {
-          registerTask('language-uninstall', t('System', 'Uninstalling language', null, false));
-        }
+    confirmAction('You are about to uninstall a language.', 'Uninstall', async () => {
+      setShowModal(false);
+      const language = row.original as LanguageSchema;
+      const response = await I18NApi.deleteLanguage(new RequestParams({ key: language.key }));
+      if (response instanceof FetchResponseError) {
+        bridgeNotify(t('System', 'An error occurred', null, false), 'error', response.message);
+      } else {
+        registerTask('language-uninstall', t('System', 'Uninstalling language', null, false));
       }
-    );
+    });
   };
 
   const columns = [

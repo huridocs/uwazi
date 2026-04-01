@@ -6,7 +6,7 @@ describe('Activity log', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin('editor', 'editor');
- });
+  });
 
   it('should register entity creation in activity log', () => {
     cy.contains('a', 'Library').click();
@@ -16,7 +16,7 @@ describe('Activity log', () => {
     cy.get('textarea[name="library.sidepanel.metadata.title"]:not([disabled])').type('AL Report');
     cy.contains('aside.side-panel.metadata-sidepanel.is-active .btn-success', 'Save').click();
     cy.contains('Entity created');
- });
+  });
 
   it('should register entity edition in activity log', () => {
     cy.contains('div.item-document', 'AL Report').click();
@@ -29,14 +29,14 @@ describe('Activity log', () => {
     );
     cy.contains('.metadata-sidepanel.is-active .btn-success', 'Save').click();
     cy.contains('Entity updated');
- });
+  });
 
   it('should register entity deletion in activity log', () => {
     cy.contains('div.item-document', 'Report AL', { timeout: 200 }).click();
     cy.contains('.metadata-sidepanel.is-active .btn-danger', 'Delete').click();
     cy.contains('.confirm-button', 'Accept').click();
     cy.contains('Entity deleted');
- });
+  });
 
   it('should register account edition in activity log', () => {
     cy.get('.only-desktop a[aria-label="Settings"]').click();
@@ -48,8 +48,8 @@ describe('Activity log', () => {
     cy.get('[data-testid="modal"]').within(() => {
       cy.get('input').type('editor');
       cy.contains('button', 'Accept').click();
-   });
- });
+    });
+  });
 
   it('should pass accessibility check', () => {
     clearCookiesAndLogin();
@@ -58,18 +58,18 @@ describe('Activity log', () => {
     cy.contains('editor');
     cy.injectAxe();
     cy.checkA11y();
- });
+  });
 
   it('should list the last activity log entries', () => {
     cy.get('tr').should('have.length.at.least', 6);
- });
+  });
 
   const applyFilters = () => {
     cy.intercept('GET', 'api/activityLog*').as('getActivityLog');
     cy.contains('button', 'Apply').click();
     cy.wait('@getActivityLog');
     cy.contains('button', 'Apply').should('not.exist');
- };
+  };
 
   it('should filter by user', () => {
     cy.contains('button', 'Filters').click();
@@ -78,7 +78,7 @@ describe('Activity log', () => {
     applyFilters();
     cy.contains('Updated user');
     cy.get('tr').should('have.length.at.most', 6);
- });
+  });
 
   it('should show a tooltip with the detail of an activity entry', () => {
     cy.contains('button', 'Filters').click();
@@ -87,10 +87,10 @@ describe('Activity log', () => {
     cy.contains('RAW').should('not.exist');
     cy.get('tr:nth-child(1) td:nth-child(3)').within(() => {
       cy.contains('Updated user').invoke('show').trigger('mouseenter');
-   });
+    });
     cy.get('tr:nth-child(1) td:nth-child(3)').within(() => {
       cy.contains('Updated user').invoke('show').trigger('mouseenter');
-   });
+    });
     cy.contains('Body');
     cy.get('tr:nth-child(1) td:nth-child(3) [data-testid=flowbite-tooltip]')
       .should('be.visible')
@@ -98,15 +98,15 @@ describe('Activity log', () => {
       .should('match', /Query{}Body{.+"username":"editor".+"email":"editor@uwazi.com"}/);
     cy.get('tr:nth-child(1) td:nth-child(3)').within(() => {
       cy.contains('Updated user').trigger('mouseleave');
-   });
- });
+    });
+  });
 
   it('should update the list when filters are cleaned', () => {
     cy.contains('button', 'Filters').click();
     cy.contains('button', 'Clear all').click();
     applyFilters();
     cy.get('tr').should('have.length.at.least', 6);
- });
+  });
 
   it('should open the detail of an entry', () => {
     cy.contains('Updated user');
@@ -114,7 +114,7 @@ describe('Activity log', () => {
     cy.contains('Query', { timeout: 200 });
     cy.get('aside.h-full').matchImageSnapshot();
     cy.get('[data-testid=close-sidepanel]').click();
- });
+  });
 
   const selectMethod = (option: number) => {
     cy.getByTestId('multiselect').within(() => {
@@ -123,9 +123,9 @@ describe('Activity log', () => {
         .eq(option)
         .within(() => {
           cy.get('input').eq(0).click();
-       });
-   });
- };
+        });
+    });
+  };
 
   it('should filter by method', () => {
     cy.contains('button', 'Filters').click();
@@ -133,7 +133,7 @@ describe('Activity log', () => {
     applyFilters();
     cy.contains('editor');
     cy.get('tr').should('have.length.at.most', 3);
- });
+  });
 
   it('should filter by dates', () => {
     cy.contains('button', 'Filters').click();
@@ -146,7 +146,7 @@ describe('Activity log', () => {
     cy.get('#to').realPress('Tab');
     applyFilters();
     cy.get('tr').should('have.length.at.most', 5);
- });
+  });
 
   // eslint-disable-next-line max-statements
   it('should do a composed filter with search', () => {
@@ -161,7 +161,7 @@ describe('Activity log', () => {
     applyFilters();
     cy.get('tr').should('have.length', 2);
     cy.contains('Deleted entity');
- });
+  });
 
   // eslint-disable-next-line max-statements
   it('should do a composed filter with today', () => {
@@ -176,5 +176,5 @@ describe('Activity log', () => {
     cy.get('tr').should('have.length', 3);
     cy.get('table > tbody > tr:nth-child(2) > td:nth-child(3)').contains('Created entity:');
     cy.get('table > tbody > tr:nth-child(2) > td:nth-child(3)').contains('AL Report');
- });
+  });
 });

@@ -61,7 +61,7 @@ const PDFSidepanel = ({
   const setSelections = useSetAtom(selectionsAtom);
 
   const templateId = suggestion?.entityTemplateId;
-  const template = templates.find(t => t._id.toString() === templateId);
+  const template = templates.find(templateItem => templateItem._id.toString() === templateId);
 
   const handleClose = () => {
     setPdfFile(undefined);

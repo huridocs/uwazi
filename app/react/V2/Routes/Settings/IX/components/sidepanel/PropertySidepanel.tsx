@@ -49,7 +49,7 @@ const PropertySidepanel = ({
   const { notify } = useRequestStatus();
 
   const templateId = suggestion?.entityTemplateId;
-  const template = templates.find(t => t._id.toString() === templateId);
+  const template = templates.find(templateItem => templateItem._id.toString() === templateId);
 
   const handleClose = () => {
     setEntity(undefined);

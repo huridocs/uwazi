@@ -42,11 +42,24 @@ const PXEntityDashboard = () => {
 
     try {
       if (!extractor) {
-        notify('error', t('System', 'An error occurred', null, false), undefined, t('System', 'Cannot find extractor', null, false));
+        notify(
+          'error',
+          t('System', 'An error occurred', null, false),
+          undefined,
+          t('System', 'Cannot find extractor', null, false)
+        );
       } else {
         await entitiesAPI.extractParagraphs(extractor?._id);
         await revalidator.revalidate();
-        notify('success', t('System', 'The process of extracting the paragraphs has successfully started. Check the Status column for updates on the process.', null, false));
+        notify(
+          'success',
+          t(
+            'System',
+            'The process of extracting the paragraphs has successfully started. Check the Status column for updates on the process.',
+            null,
+            false
+          )
+        );
         await revalidator.revalidate();
       }
     } catch (error) {

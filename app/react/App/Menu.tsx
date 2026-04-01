@@ -130,7 +130,10 @@ const MenuComponent = ({
       <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
       </li>
-      <li className="menuNav-item only-desktop" style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+      <li
+        className="menuNav-item only-desktop"
+        style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}
+      >
         <div className="tw-content">
           <RequestStatus />
         </div>

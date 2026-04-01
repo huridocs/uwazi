@@ -230,7 +230,12 @@ const EditTranslations = () => {
   useEffect(() => {
     switch (true) {
       case fetcher.data instanceof FetchResponseError:
-        notify('error', t('System', 'An error occurred', null, false), undefined, fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined);
+        notify(
+          'error',
+          t('System', 'An error occurred', null, false),
+          undefined,
+          fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined
+        );
         break;
 
       case fetcher.formData?.get('intent') === 'form-submit':
@@ -244,7 +249,7 @@ const EditTranslations = () => {
       default:
         break;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.data, fetcher.formData]);
 
   useEffect(() => {

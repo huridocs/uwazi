@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
@@ -74,28 +74,69 @@ const Playground = () => {
   const DAY = 24 * HR;
 
   const loadDemoNotifications = () => {
-    notify('success', 'Entity saved successfully.', 'All fields were valid.', undefined, ago(10 * SEC));
+    notify(
+      'success',
+      'Entity saved successfully.',
+      'All fields were valid.',
+      undefined,
+      ago(10 * SEC)
+    );
     notify('info', 'A new version of Uwazi is available.', undefined, undefined, ago(3 * MIN));
-    notify('warning', 'Some fields could not be validated.', 'Check highlighted fields and try again.', undefined, ago(20 * MIN));
-    notify('error', 'Failed to save entity.', 'A network timeout occurred. Please retry.', 'Error: ETIMEDOUT\n  at Socket.connect (net.js:1141:14)', ago(2 * HR));
-    notify('success', 'Batch import completed.', '120 documents imported.', undefined, ago(25 * HR));
+    notify(
+      'warning',
+      'Some fields could not be validated.',
+      'Check highlighted fields and try again.',
+      undefined,
+      ago(20 * MIN)
+    );
+    notify(
+      'error',
+      'Failed to save entity.',
+      'A network timeout occurred. Please retry.',
+      'Error: ETIMEDOUT\n  at Socket.connect (net.js:1141:14)',
+      ago(2 * HR)
+    );
+    notify(
+      'success',
+      'Batch import completed.',
+      '120 documents imported.',
+      undefined,
+      ago(25 * HR)
+    );
     notify('warning', 'Storage usage above 80%.', undefined, undefined, ago(3 * DAY));
-    notify('error', 'Scheduled export failed.', 'Disk quota exceeded.', 'ENOSPC: no space left on device, write\n  at WriteStream.write (fs.js:812:3)', ago(10 * DAY));
+    notify(
+      'error',
+      'Scheduled export failed.',
+      'Disk quota exceeded.',
+      'ENOSPC: no space left on device, write\n  at WriteStream.write (fs.js:812:3)',
+      ago(10 * DAY)
+    );
   };
 
   const loadArabicNotifications = () => {
     notify('success', 'تم حفظ الكيان بنجاح.', 'جميع الحقول كانت صالحة.');
-    notify('warning', 'تعذّر التحقق من بعض الحقول.', 'يرجى مراجعة الحقول المُعلَّمة والمحاولة مجدداً.');
-    notify('error', 'فشل حفظ الكيان.', 'انتهت مهلة الشبكة. يرجى المحاولة مرة أخرى.', 'خطأ: ETIMEDOUT\n  في Socket.connect (net.js:1141:14)');
+    notify(
+      'warning',
+      'تعذّر التحقق من بعض الحقول.',
+      'يرجى مراجعة الحقول المُعلَّمة والمحاولة مجدداً.'
+    );
+    notify(
+      'error',
+      'فشل حفظ الكيان.',
+      'انتهت مهلة الشبكة. يرجى المحاولة مرة أخرى.',
+      'خطأ: ETIMEDOUT\n  في Socket.connect (net.js:1141:14)'
+    );
     notify('info', 'يتوفر إصدار جديد من أوازي.');
   };
 
   const TASK_ID = 'story-task';
 
   return (
-    <div className="tw-content h-[700px] overflow-hidden bg-gray-50 p-6" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div
+      className="tw-content h-[700px] overflow-hidden bg-gray-50 p-6"
+      dir={isRTL ? 'rtl' : 'ltr'}
+    >
       <div className="max-w-3xl mx-auto h-full overflow-y-auto flex flex-col gap-6">
-
         {/* Header: dot lives here */}
         <div
           className="flex items-center justify-between rounded-xl px-5 py-3 shadow-sm"
@@ -127,7 +168,6 @@ const Playground = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
           {/* Notifications */}
           <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
@@ -137,17 +177,32 @@ const Playground = () => {
               <ActionButton
                 label="Add Success"
                 variant="success"
-                onClick={() => notify('success', 'Entity saved successfully.', 'All fields were valid.')}
+                onClick={() =>
+                  notify('success', 'Entity saved successfully.', 'All fields were valid.')
+                }
               />
               <ActionButton
                 label="Add Warning"
                 variant="warning"
-                onClick={() => notify('warning', 'Some fields could not be validated.', 'Check highlighted fields and try again.')}
+                onClick={() =>
+                  notify(
+                    'warning',
+                    'Some fields could not be validated.',
+                    'Check highlighted fields and try again.'
+                  )
+                }
               />
               <ActionButton
                 label="Add Error"
                 variant="error"
-                onClick={() => notify('error', 'Failed to save entity.', 'A network timeout occurred. Please retry.', 'Error: ETIMEDOUT\n  at Socket.connect (net.js:1141:14)\n  at TCPConnectWrap.afterConnect (net.js:1138:16)')}
+                onClick={() =>
+                  notify(
+                    'error',
+                    'Failed to save entity.',
+                    'A network timeout occurred. Please retry.',
+                    'Error: ETIMEDOUT\n  at Socket.connect (net.js:1141:14)\n  at TCPConnectWrap.afterConnect (net.js:1138:16)'
+                  )
+                }
               />
               <ActionButton
                 label="Add Info"
@@ -164,26 +219,18 @@ const Playground = () => {
                 variant="info"
                 onClick={loadArabicNotifications}
               />
-              <ActionButton
-                label="Clear All"
-                variant="danger"
-                onClick={clearAll}
-              />
+              <ActionButton label="Clear All" variant="danger" onClick={clearAll} />
             </div>
           </div>
 
           {/* Tasks */}
           <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-              Tasks
-            </h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">Tasks</h2>
             <div className="flex flex-wrap gap-2">
               <ActionButton
                 label="Register Task"
                 variant="info"
-                onClick={() =>
-                  registerTask(TASK_ID, 'Uploading document batch...', undefined, 0)
-                }
+                onClick={() => registerTask(TASK_ID, 'Uploading document batch...', undefined, 0)}
               />
               <ActionButton
                 label="Update → 25%"
@@ -219,16 +266,8 @@ const Playground = () => {
               Triggers the animated 3-dot state. Independent from tasks.
             </p>
             <div className="flex gap-2">
-              <ActionButton
-                label="Start Loading"
-                variant="info"
-                onClick={startLoading}
-              />
-              <ActionButton
-                label="End Loading"
-                variant="default"
-                onClick={endLoading}
-              />
+              <ActionButton label="Start Loading" variant="info" onClick={startLoading} />
+              <ActionButton label="End Loading" variant="default" onClick={endLoading} />
             </div>
           </div>
 
@@ -258,22 +297,30 @@ const Playground = () => {
             </h2>
             <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
               <dt className="text-gray-500">overallStatus</dt>
-              <dd className={`font-mono font-semibold ${statusColors[overallStatus] ?? 'text-gray-700'}`}>
+              <dd
+                className={`font-mono font-semibold ${statusColors[overallStatus] ?? 'text-gray-700'}`}
+              >
                 {overallStatus}
               </dd>
 
               <dt className="text-gray-500">isLoading</dt>
-              <dd className={`font-mono font-semibold ${isLoading ? 'text-indigo-600' : 'text-gray-400'}`}>
+              <dd
+                className={`font-mono font-semibold ${isLoading ? 'text-indigo-600' : 'text-gray-400'}`}
+              >
                 {String(isLoading)}
               </dd>
 
               <dt className="text-gray-500">isConnected</dt>
-              <dd className={`font-mono font-semibold ${isConnected ? 'text-green-600' : 'text-pink-600'}`}>
+              <dd
+                className={`font-mono font-semibold ${isConnected ? 'text-green-600' : 'text-pink-600'}`}
+              >
                 {String(isConnected)}
               </dd>
 
               <dt className="text-gray-500">hasRunningTasks</dt>
-              <dd className={`font-mono font-semibold ${hasRunningTasks ? 'text-indigo-600' : 'text-gray-400'}`}>
+              <dd
+                className={`font-mono font-semibold ${hasRunningTasks ? 'text-indigo-600' : 'text-gray-400'}`}
+              >
                 {String(hasRunningTasks)}
               </dd>
 
@@ -284,7 +331,6 @@ const Playground = () => {
               <dd className="font-mono font-semibold text-gray-700">{tasks.length}</dd>
             </dl>
           </div>
-
         </div>
 
         {/* Instructions */}

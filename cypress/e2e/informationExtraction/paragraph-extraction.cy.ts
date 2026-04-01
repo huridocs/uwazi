@@ -9,7 +9,7 @@ describe('Paragraph Extraction', () => {
       DATABASE_NAME: 'uwazi_e2e',
       INDEX_NAME: 'uwazi_e2e',
       FEATURE_FLAG_PARAGRAPH_EXTRACTION: 'true',
-   };
+    };
     cy.exec('yarn e2e-fixtures', { env });
     cy.exec('yarn ix-config', { env });
     clearCookiesAndLogin();
@@ -18,8 +18,8 @@ describe('Paragraph Extraction', () => {
       (
         win as typeof window & { __featureFlags__?: { paragraphExtraction: boolean } }
       ).__featureFlags__ = { paragraphExtraction: true };
-   });
- });
+    });
+  });
 
   describe('Extractor Dashboard', () => {
     it('should verify PX dummy service is reachable', () => {
@@ -27,30 +27,30 @@ describe('Paragraph Extraction', () => {
         const url = pxUrl || 'http://127.0.0.1:5051';
         cy.log(`Checking PX service at ${url}`);
         cy.request({ url, failOnStatusCode: false }).its('status').should('be.gte', 100);
-     });
-   });
+      });
+    });
 
     it('should navigate to the PX dashboard', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Paragraph Extraction').click();
       cy.contains('Extractors');
-   });
+    });
 
     it('should check for a11y violations', () => {
       cy.checkA11y();
-   });
+    });
 
     it('should open the create extractor dialog', () => {
       cy.contains('button', 'Add extractor').click();
       cy.contains('h1', 'Target template');
       cy.contains('button', 'Next').should('be.disabled');
-   });
+    });
 
     it('should select the target template', () => {
       cy.contains('button', 'Causa').contains('Select').click();
       cy.contains('button', 'Causa').contains('Selected');
       cy.contains('button', 'Next').click();
-   });
+    });
 
     it('should select source template', () => {
       cy.contains('h1', 'Source template');
@@ -59,7 +59,7 @@ describe('Paragraph Extraction', () => {
       cy.contains('li button', 'Ordenes del presidente').click();
       cy.contains('li button', 'Ordenes del presidente').contains('Selected');
       cy.contains('button', 'Next').click();
-   });
+    });
 
     it('should configure extraction', () => {
       cy.contains('h1', 'Extraction configuration');
@@ -69,11 +69,11 @@ describe('Paragraph Extraction', () => {
       cy.get('#target-relationship-type').select('Relacionado a');
       cy.get('#source-relationship-type').select('Descriptores');
       cy.contains('button', 'Create').click();
-   });
+    });
 
     it('should show a success notification', () => {
       cy.contains('Paragraph Extractor added');
-   });
+    });
 
     it('should contain the extractor created', () => {
       cy.get('thead tr th:nth-child(2)').contains('Source Template');
@@ -83,8 +83,8 @@ describe('Paragraph Extraction', () => {
       cy.get('tbody tr td:nth-child(2)').contains('Ordenes del presidente');
       cy.get('tbody tr td:nth-child(3)').contains('Causa');
       cy.get('tbody tr td:nth-child(4) span:nth-child(1)').contains('0');
-   });
- });
+    });
+  });
 
   describe('Entities Dashboard', () => {
     const checkCells = (
@@ -99,12 +99,12 @@ describe('Paragraph Extraction', () => {
       cy.get(`tr:nth-child(${row}) > td:nth-child(3) span`).contains(language);
       cy.get(`tr:nth-child(${row}) > td:nth-child(4) > span`).contains(count);
       cy.get(`tr:nth-child(${row}) > td:nth-child(5) span`).contains(status);
-   };
+    };
 
     it('should navigate to the PX Entities List', () => {
       cy.contains('tbody tr', 'Ordenes del presidente').contains('button', 'View').click();
       cy.contains('Paragraphs');
-   });
+    });
 
     it('should whait until the first entity shows and check the result', () => {
       cy.contains(
@@ -112,7 +112,7 @@ describe('Paragraph Extraction', () => {
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
         { timeout: 40000 }
       );
-   });
+    });
 
     it('should check the results', () => {
       cy.get('tbody tr').should('have.length', 3);
@@ -123,7 +123,7 @@ describe('Paragraph Extraction', () => {
         '0',
         'New'
       );
-   });
+    });
 
     it('should extract the paragraphs and disable the bulk extraction button', () => {
       cy.contains('button', 'Extract new paragraphs').click();
@@ -131,7 +131,7 @@ describe('Paragraph Extraction', () => {
         'successMessage'
       );
       cy.contains('button', 'Extract new paragraphs').should('be.disabled');
-   });
+    });
 
     it('should change the status to processing', () => {
       cy.contains('tbody tr', 'New').should('not.exist');
@@ -142,7 +142,7 @@ describe('Paragraph Extraction', () => {
         '0',
         'Processing'
       );
-   });
+    });
 
     let firstEntityProcessed = '';
 
@@ -156,16 +156,16 @@ describe('Paragraph Extraction', () => {
             .invoke('text')
             .then(text => {
               firstEntityProcessed = text.trim();
-           });
-       });
-   });
+            });
+        });
+    });
 
     it('should check for a11y violations', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(500); // wait for page to settle
       cy.injectAxe();
       cy.checkA11y();
-   });
+    });
 
     it('should change an entity by uploading another file to generate an obsolete extraction', () => {
       cy.contains('a', 'Library').click();
@@ -178,10 +178,10 @@ describe('Paragraph Extraction', () => {
         cy.contains('h1', firstEntityProcessed);
         cy.get('#upload-button-input').selectFile('./cypress/test_files/single_page.pdf', {
           force: true,
-       });
+        });
         cy.contains('Success, Upload another?');
-     });
-   });
+      });
+    });
 
     it('should return to the extractor and check the UI state', () => {
       cy.contains('a', 'Settings').click();
@@ -191,12 +191,12 @@ describe('Paragraph Extraction', () => {
         cy.contains('td', '3');
         cy.contains('span', '1 New').should('not.exist');
         cy.contains('button', 'View').click();
-     });
-   });
+      });
+    });
 
     it('should contain an obsolete extraction', () => {
       cy.contains('Obsolete', { timeout: 40000 });
-   });
+    });
 
     it('should check filtering and that the bulk extract button remains disabled', () => {
       cy.contains('button', 'Filters').click();
@@ -209,12 +209,12 @@ describe('Paragraph Extraction', () => {
       cy.contains('label', 'Processed').find('input[type="checkbox"]').check();
       cy.contains('button', 'Apply').click();
       cy.contains('button', 'Extract new paragraphs').should('be.disabled');
-   });
+    });
 
     it('should extract paragraphs for the obsolete entity and not loose filters', () => {
       cy.contains('tr', 'Obsolete').within(() => {
         cy.get('input[type="checkbox"]').click();
-     });
+      });
       cy.contains('Extract paragraphs').click();
       cy.contains('h1', 'Are you sure?');
       cy.contains('button', 'Continue').click();
@@ -226,8 +226,8 @@ describe('Paragraph Extraction', () => {
       cy.contains('label', 'Obsolete').find('input[type="checkbox"]').should('not.be.checked');
       cy.contains('label', 'Processed').find('input[type="checkbox"]').should('not.be.checked');
       cy.contains('button', 'Apply').click();
-   });
- });
+    });
+  });
 
   let firstEntityProcessed = '';
 
@@ -241,23 +241,23 @@ describe('Paragraph Extraction', () => {
             .invoke('text')
             .then(text => {
               firstEntityProcessed = text.trim();
-           });
+            });
           cy.contains('button', 'View').click();
-       });
+        });
       cy.url().should('include', '/settings/paragraph-extraction/');
-   });
+    });
 
     it('should check for a11y violations', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(500); // wait for page to settle
       cy.injectAxe();
       cy.checkA11y();
-   });
+    });
 
     it('should view the extracted paragraphs', () => {
       cy.contains('For e2e paragraph 0 in en');
       cy.get('tbody tr').should('have.length.at.least', 3);
-   });
+    });
 
     it('should open the PDF side panel', () => {
       cy.get('[data-testid="settings-paragraph-extractor"]').first().scrollIntoView();
@@ -267,10 +267,10 @@ describe('Paragraph Extraction', () => {
         .should('be.visible')
         .within(() => {
           cy.contains(firstEntityProcessed);
-       });
+        });
       cy.get('[data-testid="pdf-page"]').should('have.length.at.least', 2);
       cy.contains('aside button', 'Close').click();
-   });
+    });
 
     it('should open the entity in the specific language', () => {
       cy.contains('tbody tr', 'For e2e paragraph 0 in en').scrollIntoView();
@@ -288,7 +288,7 @@ describe('Paragraph Extraction', () => {
           cy.contains(firstEntityProcessed);
           cy.contains('Español');
           cy.contains('For e2e paragraph 0 in en');
-       });
-   });
- });
+        });
+    });
+  });
 });

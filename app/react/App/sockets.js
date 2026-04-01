@@ -1,7 +1,6 @@
 import { actions } from '#app/BasicReducer/index.js';
 import { getStore } from '#shared/atomStore/index.js';
 import { t } from '#app/I18N/index.js';
-import { notificationActions } from '#app/Notifications/index.js';
 import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
 import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
 import { setConnected, endTask, notify as bridgeNotify } from '#V2/utils/notifyBridge.js';

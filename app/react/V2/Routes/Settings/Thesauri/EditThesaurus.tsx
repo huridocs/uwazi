@@ -52,8 +52,8 @@ const EditThesaurus = () => {
   useMemo(() => {
     const currentThesaurus = thesaurus || { values: [] };
     setWarnAboutUse(
-      templates.find(t =>
-        (t.properties || []).some(
+      templates.find(templateItem =>
+        (templateItem.properties || []).some(
           (property: PropertySchema) => property.content === currentThesaurus._id
         )
       ) !== undefined

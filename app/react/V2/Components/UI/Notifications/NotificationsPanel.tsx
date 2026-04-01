@@ -53,7 +53,7 @@ const NotificationsPanel = ({
               <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
                 Tasks
               </h2>
-              <ul className="flex flex-col gap-2" role="list">
+              <ul className="flex flex-col gap-2">
                 {tasks.map(task => (
                   <li key={task.id}>
                     <TaskItem task={task} onRemove={onRemoveTask} />
@@ -68,7 +68,7 @@ const NotificationsPanel = ({
               <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
                 Notifications
               </h2>
-              <ul className="flex flex-col gap-2" role="list">
+              <ul className="flex flex-col gap-2">
                 {[...notifications].reverse().map(notification => (
                   <li key={notification.id}>
                     <NotificationItem

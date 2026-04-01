@@ -33,7 +33,7 @@ const visitPage = () => {
     const href = a.attr('href') || '';
     cy.visit(href);
     cy.get('body', { timeout: 20000 }).should('be.visible');
- });
+  });
 };
 
 const newPage = () => {
@@ -49,8 +49,8 @@ const takeSnapshot = () => {
   cy.get('body', { timeout: 30000 }).then($body => {
     if (!$body.find('.markdown-viewer').length) {
       cy.reload();
-   }
- });
+    }
+  });
   cy.get('.markdown-viewer', { timeout: 30000 }).should('be.visible');
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.get('.markdown-viewer').wait(2000).matchImageSnapshot();
@@ -69,31 +69,31 @@ describe('Graphs in Page ', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
- });
+  });
 
   it('should insert Bar chart graph in created page', () => {
     testChart(graphs.barChart, 'Bar chart graph');
- });
+  });
 
   it('should insert Pie chart graph in created page', () => {
     testChart(graphs.pieChart, 'Pie chart graph');
- });
+  });
 
   it('should insert List chart graph in created page', () => {
     testChart(graphs.listChart, 'List chart graph');
- });
+  });
 
   it('should insert Bar chart with nested graph in created page', () => {
     testChart(graphs.barChartScatter, 'Bar chart with nested graph');
- });
+  });
 
   it('should insert Pie chart with nested graph in created page', () => {
     testChart(graphs.pieChartScatter, 'Pie chart with nested graph');
- });
+  });
 
   it('should insert List chart with nested graph in created page', () => {
     testChart(graphs.listChartScatter, 'List chart with nested graph');
- });
+  });
 
   describe('dataset updates', () => {
     it('should update a graph via the page script using the updated function', () => {
@@ -110,6 +110,6 @@ describe('Graphs in Page ', () => {
       savePage();
       visitPage();
       takeSnapshot();
-   });
- });
+    });
+  });
 });

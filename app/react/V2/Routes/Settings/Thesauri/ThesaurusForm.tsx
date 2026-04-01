@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { Row } from '@tanstack/react-table';
-import { t, Translate } from '#app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import * as thesauriAPI from '#V2/api/thesauri/index.js';
 import { Table } from '#V2/Components/UI/index.js';

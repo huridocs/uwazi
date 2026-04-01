@@ -4,11 +4,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Modal } from '#V2/Components/UI/index.js';
-import {
-  settingsAtom,
-  translationsAtom,
-  inlineEditAtom,
-} from '#V2/atoms/index.js';
+import { settingsAtom, translationsAtom, inlineEditAtom } from '#V2/atoms/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 import { InputField } from '#V2/Components/Forms/index.js';

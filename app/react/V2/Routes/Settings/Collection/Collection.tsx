@@ -98,7 +98,12 @@ const Collection = () => {
     data.private = !data.private;
     const response = await SettingsAPI.save(data);
     if (response instanceof FetchResponseError) {
-      notify('error', t('System', 'An error occurred', null, false), undefined, response.message || undefined);
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        response.message || undefined
+      );
     } else {
       setSettings(response);
       notify('success', t('System', 'Settings updated', null, false));

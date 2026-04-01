@@ -21,11 +21,7 @@ function channelLuminance(c: number): number {
 /** WCAG relative luminance of an rgb(...) or rgba(...) string (0 = black, 1 = white). */
 function getLuminance(rgbString: string): number {
   const [r, g, b] = (rgbString.match(/\d+/g) ?? ['255', '255', '255']).map(Number);
-  return (
-    0.2126 * channelLuminance(r) +
-    0.7152 * channelLuminance(g) +
-    0.0722 * channelLuminance(b)
-  );
+  return 0.2126 * channelLuminance(r) + 0.7152 * channelLuminance(g) + 0.0722 * channelLuminance(b);
 }
 
 /**

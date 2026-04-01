@@ -28,7 +28,6 @@ const pagesListLoader =
   async () =>
     (await pagesAPI.get(headers)).map(page => ({ ...page, rowId: page._id }));
 
-
 const columnHelper = createColumnHelper<TablePage>();
 
 const PagesList = () => {

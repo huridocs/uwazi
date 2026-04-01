@@ -1,7 +1,11 @@
 import { socket } from '#app/socket.js';
 import { TaskListenerSetup } from '#V2/atoms/requestStatusAtom.js';
 import { ModelEvents } from './events.js';
-import type { IXModelStatusCallback, IXErrorTrainingModelCallback, IXModelStatusData } from './events.js';
+import type {
+  IXModelStatusCallback,
+  IXErrorTrainingModelCallback,
+  IXModelStatusData,
+} from './events.js';
 import { ixStatus } from './types.js';
 
 type IXTaskLabels = {
@@ -33,12 +37,13 @@ const initialTaskLabel = ({
   return `${prefix}: ${extractorName}`;
 };
 
-const createIXTaskListenerSetup = ({
-  extractorId,
-  extractorName,
-  taskType,
-  labels,
-}: CreateIXTaskListenerSetupParams): TaskListenerSetup =>
+const createIXTaskListenerSetup =
+  ({
+    extractorId,
+    extractorName,
+    taskType,
+    labels,
+  }: CreateIXTaskListenerSetupParams): TaskListenerSetup =>
   (update, complete, fail) => {
     const handleStatus: IXModelStatusCallback = (evtId, modelStatus, _message, data) => {
       if (evtId !== extractorId) return;

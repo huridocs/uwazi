@@ -6,18 +6,18 @@ describe('Private instance', () => {
   before(() => {
     cy.blankState();
     cy.clearAllCookies();
- });
+  });
 
   it('should be redirected to the login screen by default', () => {
     cy.visit('http://localhost:3000');
     cy.contains('Login');
     cy.location('pathname').should('eq', '/login');
- });
+  });
 
   it('should login an be able to see the library', () => {
     clearCookiesAndLogin('admin', 'change this password now');
     cy.contains('.blank-state', 'Welcome to Uwazi');
- });
+  });
 
   it('should navigate to the settings and make the instance public', () => {
     cy.contains('a', 'Settings').realClick();
@@ -25,10 +25,10 @@ describe('Private instance', () => {
     cy.contains('div', 'Public instance').within(() => {
       cy.get('input[type="checkbox"]').check({ force: true });
       cy.contains('div', 'Disable');
-   });
+    });
     cy.contains('button', 'Save').realClick();
     cy.contains('div', 'Settings updated.');
- });
+  });
 
   it('should logout and still be able to see the library', () => {
     // UWAZI homepage has some errors on the console when there are not entities.
@@ -38,8 +38,8 @@ describe('Private instance', () => {
     cy.contains('a', 'Account').click();
     cy.get('[data-testid="settings-account"]').within(() => {
       cy.contains('a', 'Logout').realClick();
-   });
+    });
     cy.contains('.blank-state', 'Welcome to Uwazi').should('exist');
     cy.contains('div.sidepanel-title', 'Filters').should('exist');
- });
+  });
 });

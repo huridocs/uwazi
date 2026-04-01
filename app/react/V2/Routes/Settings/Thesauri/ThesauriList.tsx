@@ -30,13 +30,13 @@ const ThesauriList = () => {
     setCurrentThesauri(
       thesauri.map(thesaurus => {
         const templatesUsingIt = templates
-          .map(t => {
-            const usingIt = t.properties?.some(
+          .map(templateItem => {
+            const usingIt = templateItem.properties?.some(
               (property: any) => property.content === thesaurus._id
             );
-            return usingIt ? t : null;
+            return usingIt ? templateItem : null;
           })
-          .filter(t => t) as Template[];
+          .filter(templateItem => templateItem) as Template[];
         return {
           ...thesaurus,
           rowId: thesaurus._id,

@@ -21,8 +21,7 @@ const useApiCaller = () => {
   };
 
   const handleError = async (e: unknown) => {
-    const details =
-      e instanceof Error ? (e as any).json?.prettyMessage || undefined : undefined;
+    const details = e instanceof Error ? (e as any).json?.prettyMessage || undefined : undefined;
     notify('error', t('System', 'An error occurred', null, false), undefined, details);
     return e instanceof Error ? e.message : String(e);
   };

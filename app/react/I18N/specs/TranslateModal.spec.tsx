@@ -4,11 +4,7 @@
 import React, { act } from 'react';
 import { fireEvent, render, RenderResult } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
-import {
-  settingsAtom,
-  translationsAtom,
-  inlineEditAtom,
-} from '#V2/atoms/index.js';
+import { settingsAtom, translationsAtom, inlineEditAtom } from '#V2/atoms/index.js';
 import * as translationsAPI from '#V2/api/translations/index.js';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { TranslateModal } from '../TranslateModal.js';

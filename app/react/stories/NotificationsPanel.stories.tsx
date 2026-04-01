@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
 import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
@@ -43,7 +43,8 @@ const sampleNotifications: StatusNotification[] = [
     type: 'error',
     title: 'Failed to save entity.',
     message: 'A network timeout occurred. Please try again.',
-    details: 'Error: ETIMEDOUT\n  at Socket.connect (net.js:1141:14)\n  at TCPConnectWrap.afterConnect (net.js:1138:16)',
+    details:
+      'Error: ETIMEDOUT\n  at Socket.connect (net.js:1141:14)\n  at TCPConnectWrap.afterConnect (net.js:1138:16)',
     timestamp: ago(2 * HR), // → "2 hours ago"
   },
   {
@@ -125,10 +126,7 @@ const PanelContainer = ({
 
 const Primary: Story = {
   render: args => (
-    <PanelContainer
-      notifications={args.notifications ?? []}
-      tasks={args.tasks ?? []}
-    />
+    <PanelContainer notifications={args.notifications ?? []} tasks={args.tasks ?? []} />
   ),
 };
 

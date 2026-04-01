@@ -11,7 +11,6 @@ import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
-import type { PDFControls } from '#V2/Components/PDFViewer/PDF.js';
 import { BlankState } from '../BlankState.js';
 import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';

@@ -30,7 +30,7 @@ type TaskListenerSetup = (
 ) => () => void;
 
 /** Stores cleanup functions (socket unsubscribes) keyed by task ID, outside the atom. */
-const taskCleanups = new Map<string, () => void>();
+const taskCleanups: Map<string, () => void> = new Map();
 
 interface RequestStatusState {
   notifications: StatusNotification[];
@@ -117,6 +117,31 @@ const useRequestStatus = () => {
     }));
   };
 
+  const updateTask = (
+    id: string,
+    updates: Partial<Pick<StatusTask, 'label' | 'progress' | 'status'>>
+  ) => {
+    setState(prev => ({
+      ...prev,
+      tasks: prev.tasks.map(task => (task.id === id ? { ...task, ...updates } : task)),
+    }));
+  };
+
+  const endTask = (id: string, finalStatus: 'completed' | 'failed' = 'completed') => {
+    setState(prev => ({
+      ...prev,
+      tasks: prev.tasks.map(task =>
+        task.id === id
+          ? {
+              ...task,
+              status: finalStatus,
+              progress: finalStatus === 'completed' ? 100 : task.progress,
+            }
+          : task
+      ),
+    }));
+  };
+
   const registerTask = (
     id: string,
     label: string,
@@ -154,27 +179,6 @@ const useRequestStatus = () => {
       taskCleanups.delete(id);
     }
     setState(prev => ({ ...prev, tasks: prev.tasks.filter(t => t.id !== id) }));
-  };
-
-  const updateTask = (
-    id: string,
-    updates: Partial<Pick<StatusTask, 'label' | 'progress' | 'status'>>
-  ) => {
-    setState(prev => ({
-      ...prev,
-      tasks: prev.tasks.map(task => (task.id === id ? { ...task, ...updates } : task)),
-    }));
-  };
-
-  const endTask = (id: string, finalStatus: 'completed' | 'failed' = 'completed') => {
-    setState(prev => ({
-      ...prev,
-      tasks: prev.tasks.map(task =>
-        task.id === id
-          ? { ...task, status: finalStatus, progress: finalStatus === 'completed' ? 100 : task.progress }
-          : task
-      ),
-    }));
   };
 
   const clearNotifications = () => {
@@ -259,5 +263,13 @@ const useRequestStatus = () => {
   };
 };
 
-export type { NotificationType, TaskStatus, OverallStatus, StatusNotification, StatusTask, RequestStatusState, TaskListenerSetup };
+export type {
+  NotificationType,
+  TaskStatus,
+  OverallStatus,
+  StatusNotification,
+  StatusTask,
+  RequestStatusState,
+  TaskListenerSetup,
+};
 export { requestStatusAtom, useRequestStatus, startLoading, endLoading, MIN_LOADING_MS };

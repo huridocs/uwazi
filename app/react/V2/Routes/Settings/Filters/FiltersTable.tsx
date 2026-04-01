@@ -105,7 +105,12 @@ const FiltersTable = () => {
     const filtersToSave = sanitizeFilters(currentFilters.current);
     const response = await settingsAPI.save({ filters: filtersToSave });
     if (response instanceof FetchResponseError) {
-      notify('error', t('System', 'An error occurred', null, false), undefined, response.message || undefined);
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        response.message || undefined
+      );
       return;
     }
     setSettings(response);

@@ -74,7 +74,12 @@ const PageEditor = () => {
   const handleSaveNotification = (response: Page | FetchResponseError) => {
     const hasErrors = response instanceof FetchResponseError;
     if (hasErrors) {
-      notify('error', t('System', 'An error occurred', null, false), undefined, (response as FetchResponseError).message);
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        (response as FetchResponseError).message
+      );
     } else {
       notify('success', t('System', 'Saved successfully.', null, false));
     }

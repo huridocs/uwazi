@@ -5,14 +5,14 @@ import {
   clickOnEditEntity,
   saveEntity,
   selectRestrictedEntities,
- } from '../helpers';
+} from '../helpers';
 
 describe('text references', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
- });
+  });
 
   it('should navigate to a document', () => {
     cy.contains(
@@ -22,7 +22,7 @@ describe('text references', () => {
       .contains('View')
       .click();
     cy.contains('Previous');
- });
+  });
 
   it('should select the title and create a reference to another paragraph', () => {
     cy.contains('span[role="presentation"]', 'The Amazing Spider-Man').setSelection(
@@ -41,14 +41,14 @@ describe('text references', () => {
         'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
       ).click();
       cy.get('.btn-success').click();
-   });
+    });
 
     cy.contains('span[role="presentation"]', 'What is Lorem Ipsum?').setSelection(
       'What is Lorem Ipsum?'
     );
 
     cy.get('.ContextMenu > .btn').click();
- });
+  });
 
   it('should verify the reference and navigate to the connected paragraph', () => {
     cy.get('.metadata-sidepanel.is-active').within(() => {
@@ -57,10 +57,10 @@ describe('text references', () => {
       ).click();
 
       cy.get('.item-shortcut.btn-default').eq(1).click();
-   });
+    });
 
     cy.contains('Lorem Ipsum');
- });
+  });
 
   it('should create a reference to another entity', () => {
     cy.contains('span[role="presentation"]', 'Why do we use it?').setSelection('Why do we use it?');
@@ -72,8 +72,8 @@ describe('text references', () => {
       cy.get('input').type('Chile\u000d', { delay: 0 });
       cy.contains('Chile').click();
       cy.contains('button', 'Save').click();
-   });
- });
+    });
+  });
 
   it('should verify the reference to an entity', () => {
     cy.get('.metadata-sidepanel.is-active').within(() => {
@@ -81,8 +81,8 @@ describe('text references', () => {
         'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
       );
       cy.contains('Chile');
-   });
- });
+    });
+  });
 
   it('should display relationships on the sidepanel', () => {
     cy.contains('a', 'Library').click();
@@ -99,15 +99,15 @@ describe('text references', () => {
       cy.get('#tab-relationships').should($tab => {
         const isActive = $tab.attr('aria-selected') === 'true' || $tab.hasClass('selected');
         expect(isActive).to.equal(true);
-     });
+      });
       cy.contains(
         '#tabpanel-relationships .sidepanel-relationship-right-entity',
         'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
       );
       cy.contains('#tabpanel-relationships .sidepanel-relationship-right-entity', 'Chile');
-   });
+    });
     cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
- });
+  });
 
   it('should verify the reference in the entity relationships page', () => {
     cy.contains(
@@ -122,7 +122,7 @@ describe('text references', () => {
       'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
     );
     cy.contains('div.relationshipsHub:nth-child(5)', 'Chile');
- });
+  });
 
   it('should verify the reference on the sidepanel references tab', () => {
     cy.get('#tab-references').click();
@@ -131,23 +131,23 @@ describe('text references', () => {
       'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012'
     ).should('be.visible');
     cy.contains('aside.side-panel', 'Chile').should('be.visible');
- });
+  });
 
   it('should delete the reference to the entity', () => {
     cy.contains('aside.side-panel', 'Chile').click();
     cy.contains('.relationship-active', 'Chile').within(() => {
       cy.get('.btn.delete').click();
-   });
+    });
 
     cy.contains('Confirm delete connection');
     cy.get('[data-testid=modal]').within(() => {
       cy.contains('Accept').click();
-   });
+    });
     cy.get('.metadata-sidepanel.is-active').within(() => {
       cy.contains('Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016');
       cy.contains('Chile').should('not.exist');
-   });
- });
+    });
+  });
 });
 
 describe('Entity with main documents', () => {
@@ -155,24 +155,24 @@ describe('Entity with main documents', () => {
     cy.get('body').then($body => {
       if ($body.find('.metadata-sidepanel.is-active .closeSidepanel').length) {
         cy.get('.metadata-sidepanel.is-active .closeSidepanel').first().click();
-     }
+      }
       if ($body.find('[data-testid="modal"] button:contains("Discard changes")').length) {
         cy.contains('[data-testid="modal"] button', 'Discard changes').click();
-     }
-   });
+      }
+    });
     cy.contains('a', 'Library').click();
     cy.contains('Filters', { timeout: 20000 });
     selectRestrictedEntities();
     cy.get('.item-document').should('have.length', 6);
- });
+  });
 
   it('should create an entity by uploading a pdf with the default template', () => {
     cy.get('label[for="pdf-upload-button"]').click();
     cy.get('#pdf-upload-button').first().selectFile('./cypress/test_files/valid.pdf', {
       force: true,
-   });
+    });
     cy.contains('.item-info', 'Mecanismo');
- });
+  });
 
   it('should change the language of the document', () => {
     cy.contains('.item-document:nth-child(1) span', 'Valid').click();
@@ -184,14 +184,14 @@ describe('Entity with main documents', () => {
     cy.contains('button', 'Save').click();
     cy.contains('div.alert', 'File updated').should('be.visible');
     cy.get('.is-active .closeSidepanel').click();
- });
+  });
 
   it('Should create a new entity with a main documents', () => {
     clickOnCreateEntity();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Entity with main documents', {
       delay: 0,
-   });
+    });
     cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
     cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type(
       'An entity with main documents',
@@ -199,9 +199,9 @@ describe('Entity with main documents', () => {
     );
     cy.get('.document-list-parent > input').first().selectFile('./cypress/test_files/valid.pdf', {
       force: true,
-   });
+    });
     saveEntity();
- });
+  });
 
   // eslint-disable-next-line max-statements
   it('should create a reference from main document', () => {
@@ -221,7 +221,7 @@ describe('Entity with main documents', () => {
     cy.contains('aside.create-reference .btn-success', 'Save').click();
     cy.contains('Saved successfully.');
     cy.get('.row').matchImageSnapshot();
- });
+  });
 
   // eslint-disable-next-line max-statements
   it('should edit the entity and the documents', () => {
@@ -237,13 +237,13 @@ describe('Entity with main documents', () => {
     );
     cy.get('.document-list-parent > input').first().selectFile('./cypress/test_files/invalid.pdf', {
       force: true,
-   });
+    });
     saveEntity('Entity updated');
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('Conversion failed');
     cy.contains('.file-originalname', 'invalid.pdf').should('exist');
- });
+  });
 
   it('should delete the invalid document', () => {
     clickOnEditEntity();
@@ -253,7 +253,7 @@ describe('Entity with main documents', () => {
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');
- });
+  });
 
   it('should keep searched text between tabs', () => {
     cy.clearAndType(
@@ -269,8 +269,8 @@ describe('Entity with main documents', () => {
     cy.get('#tab-metadata').click();
     cy.get('.entity-sidepanel-tab-link').then(element => {
       expect(element.attr('href')).to.contain('searchTerm=%224%20de%20julio%20de%202006%22');
-   });
+    });
     cy.contains('a', 'Library').click();
     cy.get('svg[aria-label="Reset Search input"]').click();
- });
+  });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { TaskItem } from '#V2/Components/UI/Notifications/TaskItem.js';
 import { StatusTask } from '#V2/atoms/requestStatusAtom.js';
 
@@ -11,11 +11,7 @@ export default meta;
 
 type Story = StoryObj<typeof TaskItem>;
 
-const makeTask = (
-  status: StatusTask['status'],
-  label: string,
-  progress?: number
-): StatusTask => ({
+const makeTask = (status: StatusTask['status'], label: string, progress?: number): StatusTask => ({
   id: '1',
   status,
   label,

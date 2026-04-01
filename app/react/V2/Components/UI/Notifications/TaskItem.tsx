@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  ArrowPathIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  XMarkIcon,
-} from '@heroicons/react/20/solid';
+import { ArrowPathIcon, CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { ProgressBar } from '#V2/Components/UI/ProgressBar.js';
 import { StatusTask, TaskStatus } from '#V2/atoms/requestStatusAtom.js';
 

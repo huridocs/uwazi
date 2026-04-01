@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
 import { NotificationItem } from '#V2/Components/UI/Notifications/NotificationItem.js';
 import { StatusNotification } from '#V2/atoms/requestStatusAtom.js';
@@ -39,7 +39,11 @@ const Primary: Story = {
 const SuccessNotification: Story = {
   ...Primary,
   args: {
-    notification: makeNotification('success', 'Entity saved successfully.', 'All fields were valid.'),
+    notification: makeNotification(
+      'success',
+      'Entity saved successfully.',
+      'All fields were valid.'
+    ),
   },
 };
 
@@ -87,4 +91,10 @@ const InfoNotification: Story = {
   },
 };
 
-export { SuccessNotification, WarningNotification, ErrorNotification, ErrorWithDetails, InfoNotification };
+export {
+  SuccessNotification,
+  WarningNotification,
+  ErrorNotification,
+  ErrorWithDetails,
+  InfoNotification,
+};
