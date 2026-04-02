@@ -270,7 +270,7 @@ class Template {
       props.commonProperties || this.commonProperties,
       props.color || this.color,
       props.default ?? this.isDefault,
-      props.entityViewPage || this.entityViewPage
+      props.entityViewPage ?? this.entityViewPage
     );
 
     template.processing = this.processing;
