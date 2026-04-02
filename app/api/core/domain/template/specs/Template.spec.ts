@@ -679,6 +679,11 @@ it('should update correctly with partial changes', () => {
     isDefault: false,
   });
 
+  expect(template.update({ entityViewPage: '' })).toEqual({
+    ...template,
+    entityViewPage: '',
+  });
+
   expect(template.update({ entityViewPage: 'any' })).toEqual({
     ...template,
     entityViewPage: 'any',
