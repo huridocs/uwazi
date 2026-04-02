@@ -75,7 +75,7 @@ const ActivityLog = () => {
     >
       <SettingsContent>
         <SettingsContent.Header title="Activity Log" />
-        <SettingsContent.Body className="gap-y-3">
+        <SettingsContent.Body className="flex flex-col gap-y-3 overflow-y-auto">
           <div className="flex justify-end">
             <Button
               type="button"
