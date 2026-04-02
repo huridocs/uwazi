@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowPathIcon, LinkSlashIcon } from '@heroicons/react/24/outline';
 import { OverallStatus } from '#V2/atoms/requestStatusAtom.js';
-import { ContrastColor } from '#V2/CustomHooks/useContrastColor.js';
 
 interface StatusDotProps {
   overallStatus: OverallStatus;
