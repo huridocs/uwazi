@@ -36,10 +36,7 @@ const addVideo = (action: string, local: boolean = true) => {
         force: true,
       });
   } else {
-    cy.get('input[name="urlForm.url"]').type(
-      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-      { delay: 0 }
-    );
+    cy.get('input[name="urlForm.url"]').type('https://www.dummyvideo.com/1234.mp4', { delay: 0 });
     cy.contains('button', 'Add from URL').click();
   }
 
@@ -105,12 +102,21 @@ const checkMediaSnapshots = (selector: string, options = {}) => {
   });
 };
 
+const externalMediaMock = () => {
+  cy.readFile('cypress/test_files/short-video.mp4', 'base64').then(videoBase64 => {
+    cy.intercept('GET', 'https://www.dummyvideo.com/1234.mp4', req => {
+      req.reply({
+        statusCode: 200,
+        headers: { 'content-type': 'video/mp4' },
+        body: videoBase64,
+        encoding: 'base64',
+      });
+    });
+  });
+};
+
 const checkExternalMedia = () => {
-  cy.get('video').should(
-    'have.attr',
-    'src',
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
-  );
+  cy.get('video').should('have.attr', 'src', 'https://www.dummyvideo.com/1234.mp4');
 };
 
 describe('Entities', () => {
@@ -119,6 +125,7 @@ describe('Entities', () => {
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.intercept('GET', 'api/files/*').as('getFile');
+    externalMediaMock();
   });
 
   describe('Template Medatada', () => {
