@@ -144,12 +144,13 @@ const Playground = () => {
         >
           <span className="text-sm font-semibold text-white/70">RequestStatus Playground</span>
           <div className="flex items-center gap-3">
+            <span className="text-white/70">Bar color:</span>
             <input
               type="color"
               value={barColor}
               onChange={e => setBarColor(e.target.value)}
               title="Bar background color"
-              className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent"
+              className="w-6 h-6 rounded cursor-pointer border-1 p-0 bg-transparent"
             />
             <button
               type="button"

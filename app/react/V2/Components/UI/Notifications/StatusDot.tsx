@@ -9,7 +9,7 @@ interface StatusDotProps {
   hasRunningTasks: boolean;
   onClick: () => void;
   popKey?: number;
-  color?: ContrastColor;
+  color?: string;
 }
 
 const dotColorMap: Record<Exclude<OverallStatus, 'loading'>, string> = {
@@ -74,13 +74,13 @@ const LoadingDots = ({ color }: { color: string }) => (
 
 const TOOLTIP_ID = 'disconnect-tooltip';
 
-const DisconnectWarning = () => (
+const DisconnectWarning = ({ color }: { color: string }) => (
   <span
     className="relative inline-flex group"
     aria-label="Server disconnected"
     aria-describedby={TOOLTIP_ID}
   >
-    <LinkSlashIcon className="w-4 h-4 text-error-500 cursor-help" aria-hidden="true" />
+    <LinkSlashIcon className="w-4 h-4 cursor-help" style={{ color }} aria-hidden="true" />
     <span
       id={TOOLTIP_ID}
       role="tooltip"
@@ -123,7 +123,7 @@ const StatusDot = ({
     {/* eslint-disable-next-line react/no-danger */}
     <style dangerouslySetInnerHTML={{ __html: DOT_KEYFRAMES }} />
     <div className="flex items-center gap-1.5">
-      {!isConnected && <DisconnectWarning />}
+      {!isConnected && <DisconnectWarning color={color} />}
 
       <button
         type="button"
