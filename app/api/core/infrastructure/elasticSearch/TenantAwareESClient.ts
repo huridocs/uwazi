@@ -27,7 +27,7 @@ type Deps = {
 };
 
 class TenantAwareESClient {
-  private readonly tenantId: string;
+  readonly tenantId: string;
 
   constructor(private deps: Deps) {
     const parsed = Schema.parse({ tenantId: this.deps.tenantId });

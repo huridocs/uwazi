@@ -7,7 +7,6 @@ import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition.js'
 type EntityIndexerServiceDeps = {
   esClient: TenantAwareESClient;
   slotsDAO: MongoSlotsDAO;
-  tenantId: string;
 };
 
 class EntityIndexerService {
@@ -20,7 +19,7 @@ class EntityIndexerService {
       return;
     }
 
-    const slotMap = await this.deps.slotsDAO.getSlotMap(this.deps.tenantId);
+    const slotMap = await this.deps.slotsDAO.getSlotMap(this.deps.esClient.tenantId);
     const documents = EntityElasticDocumentMapper.toDocuments(entities, slotMap);
 
     if (documents.length === 0) {
@@ -35,7 +34,7 @@ class EntityIndexerService {
     await this.deps.esClient.bulk({
       alias: this.alias,
       operations,
-      routing: this.deps.tenantId,
+      routing: this.deps.esClient.tenantId,
       refresh,
     });
   }
@@ -47,7 +46,7 @@ class EntityIndexerService {
 
     await this.deps.esClient.deleteByQuery({
       alias: this.alias,
-      routing: this.deps.tenantId,
+      routing: this.deps.esClient.tenantId,
       query: {
         terms: {
           sharedId: sharedIds,

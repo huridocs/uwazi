@@ -79,7 +79,6 @@ const createSut = (tenantId = 'tenant-a') => {
   const sut = new EntityIndexerService({
     esClient: tenantClient,
     slotsDAO,
-    tenantId,
   });
 
   return { sut, slotsDAO, tenantClient };
