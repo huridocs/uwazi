@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -21,7 +22,6 @@ import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStor
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { tenants } from '#api/tenants/index.js';
-import { ObjectId } from 'mongodb';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';

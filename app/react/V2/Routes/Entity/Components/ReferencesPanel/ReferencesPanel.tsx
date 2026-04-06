@@ -16,15 +16,14 @@ import { CreateReference } from './CreateReference.js';
 import { Reference } from './Reference.js';
 import { BlankState } from '../BlankState.js';
 import { useReferences, useReferencesActions } from './referencesAtom.js';
-import { PdfControllerApi } from '../PdfControllerContext.js';
+import { pdfController } from '../atoms.js';
 
 type ReferencesPanelProps = {
-  mainPdfController: PdfControllerApi;
   references?: EntityReference[];
   entity?: Entity;
 };
 
-const ReferencesPanel = ({ mainPdfController, references = [], entity }: ReferencesPanelProps) => {
+const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
   const [referenceToDelete, setReferenceToDelete] = useState<EntityReference | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -32,6 +31,7 @@ const ReferencesPanel = ({ mainPdfController, references = [], entity }: Referen
   const { createReferenceSelection, createReferenceMode } = useReferences();
   const { setCreateReferenceSelection } = useReferencesActions();
   const revalidator = useRevalidator();
+  const mainPdfController = useAtomValue(pdfController);
 
   const lookup = useCallback(
     async (searchString: string): Promise<Entity[]> =>
@@ -52,7 +52,7 @@ const ReferencesPanel = ({ mainPdfController, references = [], entity }: Referen
         const rect = selectionRectangles.find(r => r.page);
         if (rect?.page) {
           const pageNumber = Number.parseInt(rect.page, 10);
-          mainPdfController.goToPage(pageNumber);
+          mainPdfController?.goToPage(pageNumber);
         }
       }
     },

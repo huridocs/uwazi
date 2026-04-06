@@ -42,12 +42,9 @@ class Specification {
 }
 
 interface EntityPermissionChecker {
-  filterEntities(
-    sharedIds: string[],
-    specification: Specification
-  ): Promise<ResultType<string[], Error>>;
-  checkReadPermission(sharedId: string, user?: User): Promise<ResultType<boolean, Error>>;
-  checkWritePermission(file: BaseFile, user?: User): Promise<ResultType<boolean, Error>>;
+  filterEntities(sharedIds: string[], specification: Specification): Promise<string[]>;
+  checkReadPermission(sharedId: string, user: User): Promise<ResultType<boolean, Error>>;
+  checkWritePermission(file: BaseFile, user: User): Promise<ResultType<boolean, Error>>;
 }
 
 export { Specification };

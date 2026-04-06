@@ -41,7 +41,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 const ResetSearchConnected = connect(mapStateToProps, mapDispatchToProps)(ResetSearchView);
-export {
-  ResetSearchView,
-  ResetSearchConnected as ResetSearch,
-};
+export { ResetSearchView, ResetSearchConnected as ResetSearch };

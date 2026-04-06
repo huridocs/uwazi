@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
 import mongoose, { Model, Document } from 'mongoose';
+import { ChangeStream, MongoError } from 'mongodb';
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/DB.js';
 import { handleError } from '#api/utils/index.js';
-import { ChangeStream, MongoError } from 'mongodb';
 
 import type { Tenant } from './tenantContext.js';
 
@@ -38,6 +38,7 @@ const mongoSchema = new mongoose.Schema({
     fileCacheHeaders: Boolean,
     v2UpdateThesaurus: Boolean,
     themeCustomization: Boolean,
+    v2GetEntity: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

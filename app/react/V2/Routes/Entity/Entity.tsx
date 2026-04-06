@@ -14,7 +14,6 @@ import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
 import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
 import { Tabs } from '#V2/Components/UI/index.js';
-import { PDFHandle } from '#V2/Components/PDFViewer/index.js';
 import {
   TabLabel,
   PDFView,
@@ -27,7 +26,6 @@ import {
   FileList,
 } from './Components/index.js';
 import { LoaderResponse } from './types.js';
-import { createPdfController } from './Components/PdfControllerContext.js';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -60,8 +58,6 @@ const Entity = () => {
   const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
-  const mainPdfRef = useRef<PDFHandle>(null);
-  const mainPdfController = useMemo(() => createPdfController(mainPdfRef), [mainPdfRef]);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -73,12 +69,7 @@ const Entity = () => {
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView
-            ref={mainPdfRef}
-            mainPdfController={mainPdfController}
-            entity={entity}
-            pagePlaintext={pagePlaintext}
-          />
+          <PDFView entity={entity} pagePlaintext={pagePlaintext} />
         </Tabs.Tab>
       );
     }
@@ -135,7 +126,6 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
-              mainPdfController={mainPdfController}
               toc={entity?.mainDocument?.[0].toc}
               generatedToc={entity?.mainDocument?.[0].generatedToc}
               file={entity?.mainDocument?.[0]}
@@ -145,13 +135,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.REFERENCES,
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: (
-            <ReferencesPanel
-              mainPdfController={mainPdfController}
-              references={entity?.references}
-              entity={entity}
-            />
-          ),
+          content: <ReferencesPanel references={entity?.references} entity={entity} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -166,7 +150,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.SEARCH,
           label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults mainPdfController={mainPdfController} />,
+          content: <SearchResults />,
         },
       ],
       [MAIN_TABS.METADATA]: [
@@ -183,7 +167,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.SEARCH,
           label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
-          content: <SearchResults mainPdfController={mainPdfController} />,
+          content: <SearchResults />,
         },
       ],
       [MAIN_TABS.RELATIONSHIPS]: [
@@ -195,7 +179,7 @@ const Entity = () => {
       ],
       [MAIN_TABS.FILES]: [],
     }),
-    [entity, mainPdfController]
+    [entity]
   );
 
   const activeMainTab = useMemo<MainTabId>(() => {
@@ -223,6 +207,16 @@ const Entity = () => {
 
     return availableTabs[0]?.id;
   }, [searchParams, activeMainTab, sideTabsByMain]);
+
+  const sideTabElements = useMemo(
+    () =>
+      sideTabsByMain[activeMainTab]?.map(tab => (
+        <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
+          {tab.content}
+        </Tabs.Tab>
+      )),
+    [sideTabsByMain, activeMainTab]
+  );
 
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
@@ -254,16 +248,6 @@ const Entity = () => {
     [activeMainTab, searchParams, setSearchParams]
   );
 
-  const sideTabElements = useMemo(
-    () =>
-      sideTabsByMain[activeMainTab]?.map(tab => (
-        <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
-          {tab.content}
-        </Tabs.Tab>
-      )),
-    [sideTabsByMain, activeMainTab]
-  );
-
   if (!entity) {
     return <Translate>Loading</Translate>;
   }
@@ -278,7 +262,7 @@ const Entity = () => {
         </PaneLayout.Pane>
         <PaneLayout.Pane className="h-full">
           <Tabs
-            className="min-w-[300px] overflow-x-auto"
+            className="min-w-75 overflow-x-auto"
             unmountTabs={false}
             initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}

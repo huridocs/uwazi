@@ -12,8 +12,8 @@ config['infrastructureLogging'] = {
   level: 'error',
 };
 
-config.plugins = config.plugins.filter(plugin =>
-  !(plugin instanceof RtlCssPlugin) && !(plugin instanceof MiniCssExtractPlugin)
+config.plugins = config.plugins.filter(
+  plugin => !(plugin instanceof RtlCssPlugin) && !(plugin instanceof MiniCssExtractPlugin)
 );
 config.plugins.push(
   new MiniCssExtractPlugin({
@@ -43,7 +43,14 @@ config.entry.main = [
 ];
 
 config.watchOptions = {
-  ignored: '**/node_modules/*',
+  ignored: [
+    '**/node_modules/*',
+    path.join(rootPath, 'log'),
+    path.join(rootPath, 'uploaded_documents'),
+    path.join(rootPath, 'custom_uploads'),
+    path.join(rootPath, 'dist'),
+    path.join(rootPath, 'cypress'),
+  ],
 };
 
 module.exports = config;

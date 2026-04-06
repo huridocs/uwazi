@@ -486,6 +486,7 @@ Longitude,Γεωγραφικό μήκος
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
+Manually set a color,Manually set a color
 Map,Χάρτης
 Map api key,Κλειδί API χάρτη
 Map API key,Κλειδί API χάρτη
@@ -922,6 +923,9 @@ This content is automatically generated,Αυτό το περιεχόμενο δ�
 "This entity has no document, you probably want to see the metadata","Αυτή η οντότητα δεν έχει έγγραφο, πιθανώς θέλετε να δείτε τα μεταδεδομένα"
 This entity is restricted from public view.,Αυτή η οντότητα δεν είναι ορατή στο κοινό.
 This field is required,Αυτό το πεδίο είναι υποχρεωτικό
+This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
+This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,Αυτός ο τύπος αρχείου δεν υποστηρίζεται σε πεδία πολυμέσων
 This group is empty,Αυτή η ομάδα είναι κενή
 This label already exists in this template,Αυτή η ετικέτα υπάρχει ήδη σε αυτό το πρότυπο

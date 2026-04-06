@@ -484,6 +484,7 @@ Longitude,Longitude
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,Bas
 Manage site settings and configuration,Gérer la configuration et les paramètres du site
+Manually set a color,Manually set a color
 Map,Map
 Map api key,Map api key
 Map API key,Map API key
@@ -920,6 +921,9 @@ This content is automatically generated,Ce contenu est généré automatiquement
 "This entity has no document, you probably want to see the metadata","Cette entité n'a pas de document, vous voulez probablement voir les métadonnées."
 This entity is restricted from public view.,Cette entité n'est pas accessible au public.
 This field is required,This field is required
+This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
+This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This label already exists in this template,This label already exists in this template

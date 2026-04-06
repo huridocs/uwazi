@@ -487,6 +487,7 @@ Longitude,Довгота
 Lost connection to the server. Your changes may be lost,Втрачено зв'язок з сервером. Ваші зміни можуть бути втрачені
 low,низький
 Manage site settings and configuration,Керування сайтом і конфігурація
+Manually set a color,Manually set a color
 Map,Карта
 Map api key,Ключ API карти
 Map API key,Ключ API карти
@@ -923,6 +924,9 @@ This content is automatically generated,Цей контент генеруєть
 "This entity has no document, you probably want to see the metadata","Цей об'єкт не має документів, ви, певно, хочете переглянути метадані"
 This entity is restricted from public view.,Цей об'єкт обмежений для загальнодоступного перегляду.
 This field is required,Це поле обов'язкове для заповнення
+This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
+This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,Цей тип файлів не підтримується на медіа-полях
 This group is empty,Ця група порожня
 This label already exists in this template,Ця мітка вже існує в цьому шаблоні

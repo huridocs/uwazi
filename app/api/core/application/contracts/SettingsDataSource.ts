@@ -5,6 +5,7 @@ export interface SettingsDataSource {
   getLanguageKeys(): Promise<LanguageISO6391[]>;
   getDefaultLanguageKey(): Promise<LanguageISO6391>;
   readNewRelationshipsAllowed(): Promise<boolean>;
+  readFilterUnauthorizedRelated(): Promise<boolean>;
   getInstalledLanguages(): Promise<LanguagesListSchema>;
   get(): Promise<SettingsType>;
   getNewRelationshipsConfiguration(): Promise<

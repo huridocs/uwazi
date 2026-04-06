@@ -777,6 +777,8 @@ DocumentSidePanel.propTypes = {
   closePanel: PropTypes.func.isRequired,
   deleteDocument: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
+  loadInReduxForm: PropTypes.func,
+  clearMetadataSelections: PropTypes.func,
   connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
   references: PropTypes.instanceOf(Immutable.List),
   relationships: PropTypes.instanceOf(Immutable.List),
@@ -809,6 +811,10 @@ DocumentSidePanel.propTypes = {
   }).isRequired,
   navigate: PropTypes.func.isRequired,
   selectedDocument: PropTypes.instanceOf(Immutable.Map),
+  snippets: PropTypes.shape({ get: PropTypes.func }),
+  selectSnippet: PropTypes.func,
+  searchParams: PropTypes.instanceOf(Object),
+  selectedSnippet: PropTypes.shape({ get: PropTypes.func }),
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
 };

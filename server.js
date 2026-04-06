@@ -33,6 +33,8 @@ process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
   } else {
     const { default: babelRegister } = await import('@babel/register');
     babelRegister({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
+    // Load mongoose before app/server (tsx+babel+mquery); keep initSentryEarly.js backend-free
+    await import('mongoose');
     await import('./app/server.js');
   }
 })();

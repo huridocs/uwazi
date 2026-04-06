@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
@@ -17,15 +17,13 @@ import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { useToc, useTocActions } from './tocAtom.js';
 import { getPageNumber } from './utils.js';
-import { PdfControllerApi } from '../PdfControllerContext.js';
+import { pdfController } from '../atoms.js';
 
 const ToCPanel = ({
-  mainPdfController,
   toc,
   generatedToc,
   file,
 }: {
-  mainPdfController: PdfControllerApi;
   toc?: TocSchema[];
   generatedToc?: boolean;
   file?: FileType;
@@ -47,6 +45,7 @@ const ToCPanel = ({
   const [isAllExpanded, setIsAllExpanded] = useState(false);
   const [isAllCollapsed, setIsAllCollapsed] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const mainPdfController = useAtomValue(pdfController);
 
   // Initialize atom with prop data on mount and when toc prop changes
   useEffect(() => {
@@ -70,7 +69,7 @@ const ToCPanel = ({
     (entry: ProcessedTocEntry) => {
       const pageNumber = getPageNumber(entry.entry);
       if (pageNumber !== null) {
-        mainPdfController.goToPage(pageNumber);
+        mainPdfController?.goToPage(pageNumber);
       }
     },
     [mainPdfController]

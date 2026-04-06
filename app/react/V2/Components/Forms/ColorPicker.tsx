@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
 import { Popover } from '@headlessui/react';
-import { InputField } from '#app/V2/Components/Forms/index.js';
 import { usePopper } from 'react-popper';
-import { Translate } from '#app/I18N/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 type ColorPickerProps = {
   name: string;
@@ -84,7 +84,7 @@ const ColorPicker = ({
           <>
             <Popover.Button
               ref={setReferenceElement}
-              className="w-[42px] h-[42px] border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-md transition hover:border-gray-300 bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+              className="w-10.5 h-10.5 border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-md transition hover:border-gray-300 bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
             >
               <div
                 data-testid="colorpicker-button"
@@ -135,6 +135,8 @@ const ColorPicker = ({
                 />
               </label>
               <InputField
+                label={t('System', 'Manually set a color', null, false)}
+                hideLabel
                 id={name}
                 type="text"
                 name={name}

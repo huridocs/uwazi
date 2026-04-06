@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
-import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
 import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
@@ -25,6 +25,7 @@ import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues.js
 import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
 import { collectRelationshipTitlesFromRows } from '../services/CsvPreflightRelationshipsService.js';
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
+import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
 type ThesauriWritePort = {
   appendRootLabelsIfMissing(thesaurusId: string, labels: string[]): Promise<void>;
@@ -54,6 +55,7 @@ type Deps = {
   thesauriDS: ThesauriWritePort;
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
   relationshipPendingValuesDS: CsvImportRelationshipPendingValuesDataSource;
+  transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
 };
 
@@ -69,7 +71,7 @@ type Callbacks = BaseCallbacks & {
 
 const DEFAULT_SCAN_BATCH_SIZE = 1000;
 
-export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
+export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
   private static groupPendingEntries(
     importId: string,
     entries: CsvThesauriPendingEntry[],
@@ -96,10 +98,6 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     const updated = CsvImportDomain.withStatus(csvImport, status);
     await this.deps.csvImportsDS.update(updated);
-  }
-
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
   private async getImport(importId: string) {
@@ -133,7 +131,13 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
     const { importId, totalRows, callbacks } = params;
     const rows: CsvImportRow[] = [];
     let processedRows = 0;
+    let cancelled = false;
     for (let offset = 0; offset < totalRows; offset += DEFAULT_SCAN_BATCH_SIZE) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        cancelled = true;
+        break;
+      }
       // eslint-disable-next-line no-await-in-loop
       const batch = await this.deps.rowsDS.getByImport(importId, offset, DEFAULT_SCAN_BATCH_SIZE);
       if (!batch.length) {
@@ -149,7 +153,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         offset,
       });
     }
-    return { rows, totalRows, processedRows };
+    return { rows, totalRows, processedRows, cancelled };
   }
 
   private static appendScanBatch(params: {
@@ -198,7 +202,9 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
               issues: error.issues,
             }
           );
-          await this.deps.csvImportsDS.update(failed);
+          await this.deps.csvImportsDS.update(
+            this.withCleanupPendingIfFailed(failed, failed.status)
+          );
         });
         throw new NonRetryableJobError(new Error('Header validation failed'));
       }
@@ -230,13 +236,17 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
       );
-      await this.deps.csvImportsDS.update(withStatus);
+      const withCleanup = this.withCleanupPendingIfFailed(withStatus, withStatus.status);
+      await this.deps.csvImportsDS.update(withCleanup);
     });
   }
 
   // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<Output> {
     const { importId, callbacks, tenantName, userId } = input;
+    if (await this.deps.csvImportsDS.isCancelled(importId)) {
+      return { importId, status: CsvImportStatus.Cancelled };
+    }
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightScan);
@@ -246,7 +256,10 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
 
     try {
       csvImport = await this.getImport(importId);
-      const { rows: stagedRows } = await this.getStagedRows(importId, callbacks);
+      const { rows: stagedRows, cancelled } = await this.getStagedRows(importId, callbacks);
+      if (cancelled || (await this.deps.csvImportsDS.isCancelled(importId))) {
+        return { importId, status: CsvImportStatus.Cancelled };
+      }
       const template = await this.getTemplate(csvImport.templateId);
       const [availableLanguages, defaultLanguage, settings] = await Promise.all([
         this.deps.settingsDS.getLanguageKeys(),
@@ -295,7 +308,9 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
               })),
             }
           );
-          await this.deps.csvImportsDS.update(failed);
+          await this.deps.csvImportsDS.update(
+            this.withCleanupPendingIfFailed(failed, failed.status)
+          );
         });
         failureRecorded = true;
         throw new NonRetryableJobError(new Error('Thesauri values contain errors'));
@@ -322,6 +337,10 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         relationshipPendingDocs
       );
 
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return { importId, status: CsvImportStatus.Cancelled };
+      }
+
       await this.transactionManager.run(async () => {
         const clearedFailure = CsvImportDomain.clearFailure(csvImport!);
         const updated = CsvImportDomain.withStatus(
@@ -329,6 +348,9 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
           CsvImportStatus.PreflightScanDone
         );
         await this.deps.csvImportsDS.update(updated);
+        if (await this.deps.csvImportsDS.isCancelled(importId)) {
+          return;
+        }
         await this.jobsDispatcher.dispatch(CsvCreateThesauriValuesJobHandler, {
           tenantName,
           userId,
@@ -336,6 +358,9 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         });
       });
 
+      if (await this.deps.csvImportsDS.isCancelled(importId)) {
+        return { importId, status: CsvImportStatus.Cancelled };
+      }
       callbacks.onSuccess({ importId });
       return { importId, status: CsvImportStatus.PreflightScanDone };
     } catch (error) {

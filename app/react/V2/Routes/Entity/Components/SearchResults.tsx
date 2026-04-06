@@ -12,10 +12,9 @@ import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { SEARCH_PARAM } from '../urlParams.js';
-import { searchHintsModalAtom } from './atoms.js';
+import { pdfController, searchHintsModalAtom } from './atoms.js';
 import { LoaderResponse } from '../types.js';
 import { NoSearch, NoResults } from './BlankState.js';
-import { PdfControllerApi } from './PdfControllerContext.js';
 
 type FormValues = {
   search: string;
@@ -61,13 +60,13 @@ const parseSnippetToNodes = (html?: string) => {
   return document.children.map((node, i) => createNode(node as ChildNode, i));
 };
 
-const SearchResults = ({ mainPdfController }: { mainPdfController: PdfControllerApi }) => {
+const SearchResults = () => {
   const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
-  const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const templates = useAtomValue(templatesAtom);
+  const mainPdfController = useAtomValue(pdfController);
 
   const template = useMemo(
     () => templates.find(temp => temp._id === entity?.template?._id),
@@ -185,10 +184,10 @@ const SearchResults = ({ mainPdfController }: { mainPdfController: PdfController
                                   setActiveSnippet(newActive);
 
                                   if (newActive) {
-                                    mainPdfController.scrollToSnippet(
-                                      { text: pageText.text, page: pageText.page },
-                                      currentPage
-                                    );
+                                    mainPdfController?.activateSnippet({
+                                      text: pageText.text,
+                                      page: pageText.page,
+                                    });
                                   }
                                 }}
                                 onKeyDown={e => {
@@ -199,10 +198,10 @@ const SearchResults = ({ mainPdfController }: { mainPdfController: PdfController
                                     setActiveSnippet(newActive);
 
                                     if (newActive) {
-                                      mainPdfController.scrollToSnippet(
-                                        { text: pageText.text, page: pageText.page },
-                                        currentPage
-                                      );
+                                      mainPdfController?.activateSnippet({
+                                        text: pageText.text,
+                                        page: pageText.page,
+                                      });
                                     }
                                   }
                                 }}

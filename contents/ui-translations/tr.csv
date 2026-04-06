@@ -485,6 +485,7 @@ Longitude,Boylam
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,düşük
 Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
+Manually set a color,Manually set a color
 Map,Harita
 Map api key,Map api key
 Map API key,Map API key
@@ -921,6 +922,9 @@ This content is automatically generated,Bu içerik otomatik olarak oluşturulur
 "This entity has no document, you probably want to see the metadata","Bu varlığın belgesi yok, muhtemelen meta verileri görmek isteyebilirsiniz"
 This entity is restricted from public view.,Bu varlığın genel görünümü kısıtlanmıştır.
 This field is required,This field is required
+This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
+This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This label already exists in this template,This label already exists in this template

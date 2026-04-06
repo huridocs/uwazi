@@ -2,6 +2,7 @@ import { Readable } from 'stream';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer.js';
+import { CsvImportFileNotFoundError } from './CsvImportRowProcessingError.js';
 
 type RowFiles = {
   attachments: InputFile[];
@@ -42,14 +43,17 @@ const getFileHeaderValue = (params: {
   return getValueFromHeader(sanitizedHeaders, rowValues, 'file');
 };
 
+const getSingleFileValue = (rawValue: string) => rawValue.trim();
+
 const resolveInputFile = async (params: {
   fileStorage: FileStorage;
   destination: string;
   filename: string;
   type: 'attachment' | 'document';
   importId: string;
+  column: 'file' | 'files' | 'attachments';
 }) => {
-  const { fileStorage, destination, filename, type, importId } = params;
+  const { fileStorage, destination, filename, type, importId, column } = params;
   try {
     const fileContents = fileStorage.getFile({
       type: 'customPath',
@@ -63,7 +67,12 @@ const resolveInputFile = async (params: {
       type,
     });
   } catch (error) {
-    throw new Error(`CSV import missing file "${filename}" for import ${importId}`);
+    throw new CsvImportFileNotFoundError({
+      importId,
+      filename,
+      column,
+      cause: error,
+    });
   }
 };
 
@@ -77,17 +86,23 @@ class CsvImportRowFilesResolver {
   }): Promise<RowFiles> {
     const { importId, rowValues, sanitizedHeaders, headerAnalysis, fileStorage } = params;
     const destination = `csv-imports/${importId}/extracted`;
-    const fileValue = getFileHeaderValue({ headerAnalysis, sanitizedHeaders, rowValues });
+    const fileValue = getSingleFileValue(
+      getFileHeaderValue({ headerAnalysis, sanitizedHeaders, rowValues })
+    );
+    const filesValue = getValueFromHeader(sanitizedHeaders, rowValues, 'files');
     const attachmentsValue = getValueFromHeader(sanitizedHeaders, rowValues, 'attachments');
 
+    const documentFilenames = [...(fileValue ? [fileValue] : []), ...splitFileValues(filesValue)];
+
     const documents = await Promise.all(
-      splitFileValues(fileValue).map(async filename =>
+      documentFilenames.map(async filename =>
         resolveInputFile({
           fileStorage,
           destination,
           filename,
           type: 'document',
           importId,
+          column: fileValue === filename ? 'file' : 'files',
         })
       )
     );
@@ -100,6 +115,7 @@ class CsvImportRowFilesResolver {
           filename,
           type: 'attachment',
           importId,
+          column: 'attachments',
         })
       )
     );

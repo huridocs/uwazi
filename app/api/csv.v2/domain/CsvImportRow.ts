@@ -1,6 +1,6 @@
 type CsvImportRowProps = {
   importId: string;
-  index: number;
+  rowIndex: number;
   headers: string[];
   values: string[];
 };
@@ -8,7 +8,7 @@ type CsvImportRowProps = {
 class CsvImportRow {
   readonly importId: string;
 
-  readonly index: number;
+  readonly rowIndex: number;
 
   readonly headers: string[];
 
@@ -16,7 +16,7 @@ class CsvImportRow {
 
   private constructor(props: CsvImportRowProps) {
     this.importId = props.importId;
-    this.index = props.index;
+    this.rowIndex = props.rowIndex;
     this.headers = props.headers;
     this.values = props.values;
   }
@@ -32,7 +32,7 @@ class CsvImportRow {
   toObject() {
     return {
       importId: this.importId,
-      index: this.index,
+      rowIndex: this.rowIndex,
       headers: this.headers,
       values: this.values,
     };

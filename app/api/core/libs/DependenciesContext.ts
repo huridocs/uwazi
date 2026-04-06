@@ -4,6 +4,12 @@ import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js'
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 import { Logger } from './logger/contracts/Logger.js';
+import { TenantAwareESClient } from '../infrastructure/elasticSearch/TenantAwareESClient.js';
+import { AuthorizedEntityESClient } from '../infrastructure/elasticSearch/entities/AuthorizedElasticEntityClient.js';
+
+type DependencyFactories = {
+  [K in keyof Dependencies]: () => Dependencies[K];
+};
 
 type Dependencies = {
   eventEmitter: EventEmitter;
@@ -11,50 +17,62 @@ type Dependencies = {
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
   logger: Logger;
+  elasticClient: TenantAwareESClient;
+  authorizedEntityESClient: AuthorizedEntityESClient;
 };
 
-class DependenciesContext extends AsyncLocalStorage<Dependencies> {
-  get transactionManager(): TransactionManager {
-    if (!this.getStore()?.transactionManager) {
-      throw new Error('TransactionManager is not set');
+type Context = {
+  factories: DependencyFactories;
+  instances?: Dependencies;
+};
+
+class DependenciesContext extends AsyncLocalStorage<Context> {
+  private getOrInitialize<K extends keyof DependencyFactories>(key: K): Dependencies[K] {
+    const store = this.getStore();
+    if (!store) {
+      throw new Error('DependenciesContext is not initialized');
     }
 
-    return this.getStore()!.transactionManager;
+    if (typeof store.instances === 'undefined') {
+      store.instances = {} as Dependencies;
+    }
+
+    if (!store.instances?.[key]) {
+      store.instances[key] = store.factories[key]();
+    }
+
+    return store.instances[key]!;
+  }
+
+  get transactionManager(): TransactionManager {
+    return this.getOrInitialize('transactionManager');
+  }
+
+  get elasticClient() {
+    return this.getOrInitialize('elasticClient');
+  }
+
+  get authorizedEntityESClient() {
+    return this.getOrInitialize('authorizedEntityESClient');
   }
 
   get logger() {
-    if (!this.getStore()?.logger) {
-      throw new Error('Logger is not set');
-    }
-
-    return this.getStore()!.logger;
+    return this.getOrInitialize('logger');
   }
 
   get idGenerator(): IdGenerator {
-    if (!this.getStore()?.idGenerator) {
-      throw new Error('IdGenerator is not set');
-    }
-
-    return this.getStore()!.idGenerator;
+    return this.getOrInitialize('idGenerator');
   }
 
   get jobsDispatcher(): JobsDispatcher {
-    if (!this.getStore()?.jobsDispatcher) {
-      throw new Error('JobsDispatcher is not set');
-    }
-
-    return this.getStore()!.jobsDispatcher;
+    return this.getOrInitialize('jobsDispatcher');
   }
 
   get eventEmitter(): EventEmitter {
-    if (!this.getStore()?.eventEmitter) {
-      throw new Error('EventEmitter is not set');
-    }
-
-    return this.getStore()!.eventEmitter;
+    return this.getOrInitialize('eventEmitter');
   }
 
-  attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Dependencies): void {
+  attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {
     const originalMethod = (anInstance[method] as any).bind(anInstance);
 
     // eslint-disable-next-line no-param-reassign

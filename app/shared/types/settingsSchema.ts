@@ -350,6 +350,7 @@ const settingsSchema = {
     mapLayers: { type: 'array', minItems: 1, items: { type: 'string' } },
     newNameGeneration: { type: 'boolean', enum: [true] },
     ocrServiceEnabled: { type: 'boolean' },
+    filterUnauthorizedRelated: { type: 'boolean' },
 
     sync: { type: 'array', items: settingsSyncSchema },
 

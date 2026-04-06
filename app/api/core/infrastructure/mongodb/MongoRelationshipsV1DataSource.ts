@@ -6,6 +6,7 @@ import relationships from '#api/relationships/relationships.js';
 import { withConnectedData } from '#api/relationships/relationshipsHelpers.js';
 import settings from '#api/settings/index.js';
 import { Relation } from '../../../relationships/RelationsV1Collection.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -40,6 +41,29 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     }, {});
 
     return withConnectedData(dbRelationships, connectedDocuments) as Relation[];
+  }
+
+  /**
+   * Get relationships for a specific entity by its sharedId
+   *
+   * @param sharedId - The shared ID of the entity
+   * @param language - The language to fetch relationships in
+   * @param includeUnpublished - Whether to include unpublished related entities
+   * @returns Array of relationship objects with connected entity data
+   */
+  async getByEntity(
+    sharedId: string,
+    language: LanguageISO6391,
+    includeUnpublished: boolean
+  ): Promise<Relation[]> {
+    return relationships.getByDocument(
+      sharedId,
+      language,
+      includeUnpublished, // Maps to V1's 'unpublished' parameter
+      undefined, // file - not filtering by file
+      false, // onlyTextReferences - include all relationships
+      false // unrestricted - use restricted mode to respect permissions
+    );
   }
 
   async deleteByFiles(files: FileWithContents[]) {

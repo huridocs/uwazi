@@ -484,6 +484,7 @@ Longitude,خط الطول
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,منخفض/ أدنى/ قليل/ صغير
 Manage site settings and configuration,إدارة إعدادات الموقع
+Manually set a color,Manually set a color
 Map,خريطة
 Map api key,Map api key
 Map API key,Map API key
@@ -920,6 +921,9 @@ This content is automatically generated,أنشئ هذا المحتوى تلقا�
 "This entity has no document, you probably want to see the metadata",لا يتوافر مستند لهذا الكيان (الإدخال)، ربما ترغب في رؤية البيانات الوصفية
 This entity is restricted from public view.,هذا الكيان (الإدخال) ممنوع من المعاينة العامة
 This field is required,This field is required
+This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
+This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This label already exists in this template,This label already exists in this template
