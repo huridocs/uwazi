@@ -73,8 +73,9 @@ const EntityIndexMappingDefinition: IndexDefinition = {
       language: { type: 'keyword' },
       sharedId: { type: 'keyword' },
       user: { type: 'keyword' },
-      published: { type: 'keyword' },
       permissionRefIds: { type: 'keyword' },
+
+      published: { type: 'boolean' },
 
       creationDate: { type: 'date', format: 'epoch_millis' },
       editDate: { type: 'date', format: 'epoch_millis' },
