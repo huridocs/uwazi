@@ -172,7 +172,7 @@ class EntityElasticDocumentMapper {
     return {
       sharedId: entity.sharedId,
       language: entity.language,
-      template: entity.template?.toString(),
+      template: entity.template.toString(),
       title: entity.title,
       rawEntity: entity as unknown as Serialize<EntityDBO>,
       metadata: this.buildSlottedMetadata((entity.metadata as MetadataSchema) || {}, slotMap),
