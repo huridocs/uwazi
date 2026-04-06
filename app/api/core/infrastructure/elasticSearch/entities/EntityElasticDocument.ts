@@ -66,6 +66,18 @@ type EntityElasticDocument = {
 
   created_at: number;
   updated_at: number;
+
+  fullText: {
+    name: 'entity';
+  };
 };
 
-export type { EntityElasticDocument };
+export type {
+  EntityElasticDocument,
+  SlotValueByPrefix,
+  SlottedMetadata,
+  DateRange,
+  SelectValue,
+  RelationshipValue,
+  GeoPointValue,
+};

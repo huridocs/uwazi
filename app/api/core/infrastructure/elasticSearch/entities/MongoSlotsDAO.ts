@@ -21,7 +21,7 @@ type UpdatePropertyNameInput = {
   tenantId?: string;
 };
 
-type SlotMap = Map<string, string>;
+type SlotMap = Map<string, SlotDocument>;
 
 const slotsCache = new Map<string, SlotMap>();
 
@@ -119,7 +119,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
 
     assignedSlots.forEach(slot => {
       if (slot.assignedTo !== null) {
-        slotMap.set(slot.assignedTo, slot.slotName);
+        slotMap.set(slot.assignedTo, slot);
       }
     });
 
@@ -128,6 +128,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
     return slotMap;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   invalidateCache(tenantId: string) {
     slotsCache.delete(tenantId);
   }

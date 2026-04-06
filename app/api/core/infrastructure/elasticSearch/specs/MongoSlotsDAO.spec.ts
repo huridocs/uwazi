@@ -192,8 +192,8 @@ describe('MongoSlotsDAO', () => {
 
       const slotMap = await sut.getSlotMap('tenant-a');
 
-      expect(slotMap.get('title')).toBe('txt_01');
-      expect(slotMap.get('createdAt')).toBe('date_01');
+      expect(slotMap.get('title')?.slotName).toBe('txt_01');
+      expect(slotMap.get('createdAt')?.slotName).toBe('date_01');
       expect(slotMap.has('missing')).toBe(false);
     });
 
@@ -267,7 +267,7 @@ describe('MongoSlotsDAO', () => {
       const slotMap = await sut.getSlotMap('tenant-a');
 
       expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
-      expect(slotMap.get('title_changed')).toBe('txt_01');
+      expect(slotMap.get('title_changed')?.slotName).toBe('txt_01');
       expect(slotMap.has('title')).toBe(false);
     });
   });
