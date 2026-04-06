@@ -22,8 +22,8 @@ type SlottedMetadata = {
 };
 
 type DateRange = {
-  gte: number;
-  lte: number;
+  gte?: number;
+  lte?: number;
 };
 
 type SelectValue = {

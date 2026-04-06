@@ -26,27 +26,19 @@ const toNumberValue = (value: unknown): number | null => {
   return Number.isFinite(num) ? num : null;
 };
 
-const assignNumericField = (target: DateRange, key: keyof DateRange, value: unknown): DateRange => {
-  const parsed = toNumberValue(value);
-  return parsed !== null ? { ...target, [key]: parsed } : target;
-};
-
-const assignNumericBoundary = (
-  target: DateRange,
-  source: Record<string, unknown>,
-  key: keyof DateRange,
-  fallbackKey?: string
-): DateRange =>
-  assignNumericField(target, key, source[key] ?? (fallbackKey ? source[fallbackKey] : undefined));
-
 const toDateRangeValue = (value: unknown): DateRange | null => {
   if (!isRecord(value)) {
     return null;
   }
 
-  let result: DateRange = {};
-  result = assignNumericBoundary(result, value, 'gte', 'from');
-  result = assignNumericBoundary(result, value, 'lte', 'to');
+  const result: DateRange = {};
+  if (value.from) {
+    result.gte = value.from as number;
+  }
+
+  if (value.to) {
+    result.lte = value.to as number;
+  }
 
   return Object.keys(result).length > 0 ? result : null;
 };
