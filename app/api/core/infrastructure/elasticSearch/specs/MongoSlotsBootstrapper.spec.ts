@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSlotsDataSource, SlotDocument } from '../entities/MongoSlotsDataSource.js';
+import { MongoSlotsDAO, SlotDocument } from '../entities/MongoSlotsDAO.js';
 import {
   AmountPerSlotType,
   SlotBootstrapDefinitions,
@@ -13,8 +13,7 @@ const createSut = () => {
   return { sut };
 };
 
-const slotsCollection = () =>
-  testingEnvironment.db.getCollection(MongoSlotsDataSource.collectionName)!;
+const slotsCollection = () => testingEnvironment.db.getCollection(MongoSlotsDAO.collectionName)!;
 
 const expectedSlots: Omit<SlotDocument, '_id'>[] = SlotBootstrapDefinitions.slotList().flatMap(
   slotType =>
@@ -34,7 +33,7 @@ describe('MongoSlotsBootstrapper', () => {
   });
 
   beforeEach(async () => {
-    await testingEnvironment.setFixtures({ [MongoSlotsDataSource.collectionName]: [] });
+    await testingEnvironment.setFixtures({ [MongoSlotsDAO.collectionName]: [] });
   });
 
   afterAll(async () => {

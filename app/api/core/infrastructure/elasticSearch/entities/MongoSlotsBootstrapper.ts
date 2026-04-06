@@ -1,5 +1,5 @@
 import { Db, MongoServerError } from 'mongodb';
-import { MongoSlotsDataSource, SlotDocument } from './MongoSlotsDataSource.js';
+import { MongoSlotsDAO, SlotDocument } from './MongoSlotsDAO.js';
 import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
 
 type Deps = {
@@ -7,7 +7,7 @@ type Deps = {
 };
 
 class MongoSlotsBootstrapper {
-  private static collectionName = MongoSlotsDataSource.collectionName;
+  private static collectionName = MongoSlotsDAO.collectionName;
 
   constructor(private deps: Deps) {}
 

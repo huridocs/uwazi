@@ -1,20 +1,19 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSlotsDataSource } from '../entities/MongoSlotsDataSource.js';
+import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
 const createSut = () => {
-  const sut = new MongoSlotsDataSource(getConnection(), TransactionManagerFactory.default());
+  const sut = new MongoSlotsDAO(getConnection(), TransactionManagerFactory.default());
 
   return { sut };
 };
 
-const slotsCollection = () =>
-  testingEnvironment.db.getCollection(MongoSlotsDataSource.collectionName)!;
+const slotsCollection = () => testingEnvironment.db.getCollection(MongoSlotsDAO.collectionName)!;
 
-describe('MongoSlotsDataSource', () => {
+describe('MongoSlotsDAO', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
 
@@ -23,7 +22,8 @@ describe('MongoSlotsDataSource', () => {
   });
 
   beforeEach(async () => {
-    await testingEnvironment.setFixtures({ [MongoSlotsDataSource.collectionName]: [] });
+    await testingEnvironment.setFixtures({ [MongoSlotsDAO.collectionName]: [] });
+    MongoSlotsDAO.clearCache();
   });
 
   afterAll(async () => {
@@ -177,6 +177,98 @@ describe('MongoSlotsDataSource', () => {
       ]);
 
       await expect(sut.getAssignedSlots()).resolves.toEqual([]);
+    });
+  });
+
+  describe('getSlotMap()', () => {
+    it('returns a propertyName -> slotName map', async () => {
+      const { sut } = createSut();
+
+      await slotsCollection().insertMany([
+        { type: 'text', slotName: 'txt_01', assignedTo: 'title' },
+        { type: 'date', slotName: 'date_01', assignedTo: 'createdAt' },
+        { type: 'text', slotName: 'txt_02', assignedTo: null },
+      ]);
+
+      const slotMap = await sut.getSlotMap('tenant-a');
+
+      expect(slotMap.get('title')).toBe('txt_01');
+      expect(slotMap.get('createdAt')).toBe('date_01');
+      expect(slotMap.has('missing')).toBe(false);
+    });
+
+    it('uses module-level cache on the second call for the same tenant', async () => {
+      const { sut } = createSut();
+      const getAssignedSlotsSpy = jest.spyOn(sut, 'getAssignedSlots');
+
+      await slotsCollection().insertMany([
+        { type: 'text', slotName: 'txt_01', assignedTo: 'title' },
+        { type: 'date', slotName: 'date_01', assignedTo: 'createdAt' },
+      ]);
+
+      await sut.getSlotMap('tenant-a');
+      await sut.getSlotMap('tenant-a');
+
+      expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('cache invalidation on mutations', () => {
+    it('invalidates cache after assignSlot()', async () => {
+      const { sut } = createSut();
+      const getAssignedSlotsSpy = jest.spyOn(sut, 'getAssignedSlots');
+
+      await slotsCollection().insertMany([
+        { type: 'text', slotName: 'txt_01', assignedTo: 'title' },
+        { type: 'text', slotName: 'txt_02', assignedTo: null },
+      ]);
+
+      await sut.getSlotMap('tenant-a');
+      await sut.assignSlot({ propertyName: 'summary', type: 'text', tenantId: 'tenant-a' });
+      await sut.getSlotMap('tenant-a');
+
+      expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('invalidates cache after unassignSlot()', async () => {
+      const { sut } = createSut();
+      const getAssignedSlotsSpy = jest.spyOn(sut, 'getAssignedSlots');
+
+      await slotsCollection().insertOne({
+        type: 'text',
+        slotName: 'txt_01',
+        assignedTo: 'title',
+      });
+
+      await sut.getSlotMap('tenant-a');
+      await sut.unassignSlot('title', 'tenant-a');
+      const slotMap = await sut.getSlotMap('tenant-a');
+
+      expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
+      expect(slotMap.has('title')).toBe(false);
+    });
+
+    it('invalidates cache after updatePropertyName()', async () => {
+      const { sut } = createSut();
+      const getAssignedSlotsSpy = jest.spyOn(sut, 'getAssignedSlots');
+
+      await slotsCollection().insertOne({
+        type: 'text',
+        slotName: 'txt_01',
+        assignedTo: 'title',
+      });
+
+      await sut.getSlotMap('tenant-a');
+      await sut.updatePropertyName({
+        oldName: 'title',
+        newName: 'title_changed',
+        tenantId: 'tenant-a',
+      });
+      const slotMap = await sut.getSlotMap('tenant-a');
+
+      expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
+      expect(slotMap.get('title_changed')).toBe('txt_01');
+      expect(slotMap.has('title')).toBe(false);
     });
   });
 });
