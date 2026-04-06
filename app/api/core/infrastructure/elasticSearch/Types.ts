@@ -52,11 +52,13 @@ export interface IndexOptions {
   alias: string;
   id: string;
   document: Record<string, unknown>;
+  routing?: string;
 }
 
 export interface DeleteOptions {
   alias: string;
   id: string;
+  routing?: string;
 }
 
 export interface BulkOperation {
@@ -67,6 +69,13 @@ export interface BulkOperation {
 export interface BulkOptions {
   alias: string;
   operations: BulkOperation[];
+  routing?: string;
+}
+
+export interface DeleteByQueryOptions {
+  alias: string;
+  query: QueryDslQueryContainer;
+  routing?: string;
 }
 
 export interface ProvisioningResult {
