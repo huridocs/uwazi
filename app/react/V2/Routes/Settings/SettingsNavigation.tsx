@@ -124,6 +124,9 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/custom-uploads', <Translate>Uploads</Translate>)}</li>
             </>
           </NeedAuthorization>
+          <NeedAuthorization roles={['admin', 'editor']}>
+            {renderLink('/settings/csv', <Translate>Import CSV</Translate>)}
+          </NeedAuthorization>
           <li>
             <a
               href="https://uwazi.io/page/9852italrtk/support"
