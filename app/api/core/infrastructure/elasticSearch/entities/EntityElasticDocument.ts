@@ -40,7 +40,7 @@ type SelectValue = {
 type RelationshipValue = {
   label: string;
   value: string;
-  inheritedValue: string[] | number[] | DateRange[] | SelectValue[] | RelationshipValue[];
+  inheritedValue?: string[] | number[] | DateRange[] | SelectValue[] | RelationshipValue[];
 };
 
 type GeoPointValue = { lat: number; lon: number };
