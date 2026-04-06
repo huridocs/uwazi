@@ -56,19 +56,30 @@ const EntityIndexMappingDefinition: IndexDefinition = {
     _routing: { required: true },
 
     properties: {
+      // Used on all ES documents on this Index
       tenantId: { type: 'keyword' },
+      // ==================================
 
+      // Used on all fullText ES documents
+      filename: { type: 'keyword' },
       fullText: {
         type: 'join',
         relations: { entity: 'fullText' },
       },
+      // ==============================
 
+      // Used on all ES Entity documents
       template: { type: 'keyword' },
       language: { type: 'keyword' },
       sharedId: { type: 'keyword' },
+      user: { type: 'keyword' },
+      published: { type: 'keyword' },
+      permissionRefIds: { type: 'keyword' },
 
-      documents: { type: 'object', enabled: false },
-      attachments: { type: 'object', enabled: false },
+      creationDate: { type: 'date', format: 'epoch_millis' },
+      editDate: { type: 'date', format: 'epoch_millis' },
+
+      rawEntity: { type: 'object', enabled: false },
 
       title: {
         type: 'text',
@@ -83,31 +94,10 @@ const EntityIndexMappingDefinition: IndexDefinition = {
         },
       },
 
-      creationDate: { type: 'date', format: 'epoch_millis' },
-      editDate: { type: 'date', format: 'epoch_millis' },
-
-      user: { type: 'keyword' },
-      published: { type: 'keyword' },
-
-      permissionRefIds: { type: 'keyword' },
-
-      permissions: {
-        type: 'nested',
-        properties: {
-          refId: { type: 'keyword' },
-          level: { type: 'keyword' },
-          type: { type: 'keyword' },
-        },
-      },
-
-      type: { type: 'keyword' },
-      generatedToc: { type: 'boolean' },
-
       metadata: {
         properties: { ...createEntityMetadataMapping() },
       },
-
-      rawEntity: { type: 'object', enabled: false },
+      // ===============================
     },
   },
 };
