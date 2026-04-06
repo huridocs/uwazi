@@ -70,12 +70,14 @@ export interface BulkOptions {
   alias: string;
   operations: BulkOperation[];
   routing?: string;
+  refresh?: boolean;
 }
 
 export interface DeleteByQueryOptions {
   alias: string;
   query: QueryDslQueryContainer;
   routing?: string;
+  refresh?: boolean;
 }
 
 export interface ProvisioningResult {

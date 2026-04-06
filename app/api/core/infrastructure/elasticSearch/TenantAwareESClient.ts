@@ -104,7 +104,11 @@ class TenantAwareESClient {
       this.stampTenantId(op.document),
     ]);
 
-    const response = await this.deps.client.bulk({ body, routing: options.routing });
+    const response = await this.deps.client.bulk({
+      body,
+      routing: options.routing,
+      refresh: options.refresh,
+    });
 
     if (response.body.errors) {
       // Todo: Inject logger here.
@@ -124,6 +128,7 @@ class TenantAwareESClient {
       index,
       body: { query: guardedQuery },
       routing: options.routing,
+      refresh: options.refresh,
     });
   }
 }
