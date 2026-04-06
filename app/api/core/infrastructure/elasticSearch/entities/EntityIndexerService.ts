@@ -19,7 +19,7 @@ class EntityIndexerService {
       return;
     }
 
-    const slotMap = await this.deps.slotsDAO.getSlotMap(this.deps.esClient.tenantId);
+    const slotMap = await this.deps.slotsDAO.getSlotMap();
     const documents = EntityElasticDocumentMapper.toDocuments(entities, slotMap);
 
     if (documents.length === 0) {

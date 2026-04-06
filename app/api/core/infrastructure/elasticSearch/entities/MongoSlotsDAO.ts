@@ -1,6 +1,7 @@
-import { MongoServerError, ObjectId } from 'mongodb';
+import { Db, MongoServerError, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../../mongodb/common/MongoDataSource.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 
 type SlotDocument = {
   _id: ObjectId;
@@ -12,13 +13,11 @@ type SlotDocument = {
 type AssignSlotInput = {
   propertyName: string;
   type: PropertyType;
-  tenantId?: string;
 };
 
 type UpdatePropertyNameInput = {
   oldName: string;
   newName: string;
-  tenantId?: string;
 };
 
 type SlotMap = Map<string, SlotDocument>;
@@ -28,13 +27,20 @@ const slotsCache = new Map<string, SlotMap>();
 class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
   static collectionName = 'elasticSlots';
 
+  private readonly tenantId: string;
+
   protected collectionName = MongoSlotsDAO.collectionName;
+
+  constructor(db: Db, transactionManager: MongoTransactionManager, tenantId: string) {
+    super(db, transactionManager);
+    this.tenantId = tenantId;
+  }
 
   static clearCache() {
     slotsCache.clear();
   }
 
-  async assignSlot({ propertyName, type, tenantId }: AssignSlotInput) {
+  async assignSlot({ propertyName, type }: AssignSlotInput) {
     let result;
     try {
       result = await this.getCollection().updateOne(
@@ -59,12 +65,10 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
       throw new Error(`No available slots for type ${type}`);
     }
 
-    if (tenantId) {
-      this.invalidateCache(tenantId);
-    }
+    this.invalidateCache();
   }
 
-  async unassignSlot(propertyName: string, tenantId?: string) {
+  async unassignSlot(propertyName: string) {
     await this.getCollection().updateOne(
       {
         assignedTo: propertyName,
@@ -76,12 +80,10 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
       }
     );
 
-    if (tenantId) {
-      this.invalidateCache(tenantId);
-    }
+    this.invalidateCache();
   }
 
-  async updatePropertyName({ oldName, newName, tenantId }: UpdatePropertyNameInput) {
+  async updatePropertyName({ oldName, newName }: UpdatePropertyNameInput) {
     const result = await this.getCollection().updateOne(
       {
         assignedTo: oldName,
@@ -97,9 +99,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
       throw new Error(`No slot found with property name ${oldName}`);
     }
 
-    if (tenantId) {
-      this.invalidateCache(tenantId);
-    }
+    this.invalidateCache();
   }
 
   async getAssignedSlots() {
@@ -108,8 +108,8 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
       .toArray();
   }
 
-  async getSlotMap(tenantId: string): Promise<SlotMap> {
-    const cached = slotsCache.get(tenantId);
+  async getSlotMap(): Promise<SlotMap> {
+    const cached = slotsCache.get(this.tenantId);
     if (cached) {
       return cached;
     }
@@ -123,14 +123,13 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
       }
     });
 
-    slotsCache.set(tenantId, slotMap);
+    slotsCache.set(this.tenantId, slotMap);
 
     return slotMap;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  invalidateCache(tenantId: string) {
-    slotsCache.delete(tenantId);
+  invalidateCache() {
+    slotsCache.delete(this.tenantId);
   }
 }
 

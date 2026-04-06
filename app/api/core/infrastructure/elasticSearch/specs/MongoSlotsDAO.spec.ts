@@ -6,7 +6,7 @@ import { TransactionManagerFactory } from '../../factories/TransactionManagerFac
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
 const createSut = () => {
-  const sut = new MongoSlotsDAO(getConnection(), TransactionManagerFactory.default());
+  const sut = new MongoSlotsDAO(getConnection(), TransactionManagerFactory.default(), 'tenant-a');
 
   return { sut };
 };
@@ -190,7 +190,7 @@ describe('MongoSlotsDAO', () => {
         { type: 'text', slotName: 'txt_02', assignedTo: null },
       ]);
 
-      const slotMap = await sut.getSlotMap('tenant-a');
+      const slotMap = await sut.getSlotMap();
 
       expect(slotMap.get('title')?.slotName).toBe('txt_01');
       expect(slotMap.get('createdAt')?.slotName).toBe('date_01');
@@ -206,8 +206,8 @@ describe('MongoSlotsDAO', () => {
         { type: 'date', slotName: 'date_01', assignedTo: 'createdAt' },
       ]);
 
-      await sut.getSlotMap('tenant-a');
-      await sut.getSlotMap('tenant-a');
+      await sut.getSlotMap();
+      await sut.getSlotMap();
 
       expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(1);
     });
@@ -223,9 +223,9 @@ describe('MongoSlotsDAO', () => {
         { type: 'text', slotName: 'txt_02', assignedTo: null },
       ]);
 
-      await sut.getSlotMap('tenant-a');
-      await sut.assignSlot({ propertyName: 'summary', type: 'text', tenantId: 'tenant-a' });
-      await sut.getSlotMap('tenant-a');
+      await sut.getSlotMap();
+      await sut.assignSlot({ propertyName: 'summary', type: 'text' });
+      await sut.getSlotMap();
 
       expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
     });
@@ -240,9 +240,9 @@ describe('MongoSlotsDAO', () => {
         assignedTo: 'title',
       });
 
-      await sut.getSlotMap('tenant-a');
-      await sut.unassignSlot('title', 'tenant-a');
-      const slotMap = await sut.getSlotMap('tenant-a');
+      await sut.getSlotMap();
+      await sut.unassignSlot('title');
+      const slotMap = await sut.getSlotMap();
 
       expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
       expect(slotMap.has('title')).toBe(false);
@@ -258,13 +258,12 @@ describe('MongoSlotsDAO', () => {
         assignedTo: 'title',
       });
 
-      await sut.getSlotMap('tenant-a');
+      await sut.getSlotMap();
       await sut.updatePropertyName({
         oldName: 'title',
         newName: 'title_changed',
-        tenantId: 'tenant-a',
       });
-      const slotMap = await sut.getSlotMap('tenant-a');
+      const slotMap = await sut.getSlotMap();
 
       expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
       expect(slotMap.get('title_changed')?.slotName).toBe('txt_01');
