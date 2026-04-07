@@ -1,18 +1,49 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useMemo } from 'react';
-import { useLoaderData } from 'react-router';
+import { Link, useLoaderData } from 'react-router';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import { DateTime } from 'luxon';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
-import { ProgressBar, Table } from '#V2/Components/UI/index.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { ProgressBar, Table, ProgressBarProps, Button } from '#V2/Components/UI/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { CsvImportStatus } from '#V2/api/csv/index.js';
 import type { CsvImportListRow } from '#V2/api/csv/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import type { csvLoaderResponse } from '../Loaders/csvListLoader';
 
 type TableData = CsvImportListRow & { rowId: string; templateName: string };
+
+const statusMessages = {
+  [CsvImportStatus.Queued]: t('System', 'Queued', null, false),
+  [CsvImportStatus.Validating]: t('System', 'Validating', null, false),
+  [CsvImportStatus.ExtractingFiles]: t('System', 'Extracting files', null, false),
+  [CsvImportStatus.ExtractingFilesDone]: t('System', 'Done extracting files', null, false),
+  [CsvImportStatus.PreflightScan]: t('System', 'Scanning', null, false),
+  [CsvImportStatus.PreflightScanDone]: t('System', 'Done scanning', null, false),
+  [CsvImportStatus.PreflightThesauriCreate]: t('System', 'Creating thesauri', null, false),
+  [CsvImportStatus.PreflightThesauriCreateDone]: t('System', 'Done creating thesauri', null, false),
+  [CsvImportStatus.PreflightRelationshipsCreate]: t(
+    'System',
+    'Creating relationships',
+    null,
+    false
+  ),
+  [CsvImportStatus.PreflightRelationshipsCreateDone]: t(
+    'System',
+    'Done creating relationships',
+    null,
+    false
+  ),
+  [CsvImportStatus.ImportEntities]: t('System', 'Creatin entities', null, false),
+  [CsvImportStatus.ImportEntitiesDone]: t('System', 'Done creating entities', null, false),
+  [CsvImportStatus.Retrying]: t('System', 'Retrying', null, false),
+  [CsvImportStatus.Processing]: t('System', 'Processing', null, false),
+  [CsvImportStatus.Completed]: t('System', 'Completed', null, false),
+  [CsvImportStatus.Failed]: t('System', 'Failed', null, false),
+  [CsvImportStatus.Cancelled]: t('System', 'Cancelled', null, false),
+};
 
 const columnHelper = createColumnHelper<TableData>();
 
@@ -27,7 +58,7 @@ const ActionHeader = () => <Translate>Action</Translate>;
 
 const StatusCell = ({ cell }: CellContext<TableData, TableData['status']>) => {
   const status = cell.getValue();
-  return <span className="uppercase">{status}</span>;
+  return <span>{statusMessages[status]}</span>;
 };
 
 const FileCell = ({ cell }: CellContext<TableData, TableData['file']>) =>
@@ -39,20 +70,27 @@ const ProgressCell = ({ cell }: CellContext<TableData, TableData['progress']>) =
     processedRows: 0,
   };
 
-  const progress = useMemo(() => {
+  const { progress, color } = useMemo(() => {
     const calculated = (totalRows / processedRows) * 100;
-    if (Number.isNaN(calculated)) {
-      return 0;
+    let colorByStatus: ProgressBarProps['color'] = 'primary';
+
+    if (totalRows === processedRows) {
+      colorByStatus = 'success';
     }
-    return calculated;
-  }, [processedRows, totalRows]);
+
+    if (cell.row.original.stats?.rowsFailed) {
+      colorByStatus = 'error';
+    }
+
+    return { progress: Number.isNaN(calculated) ? 0 : calculated, color: colorByStatus };
+  }, [cell, processedRows, totalRows]);
 
   return (
     <>
       <span className="sr-only">
         {totalRows}&frasl;{processedRows}
       </span>
-      <ProgressBar progress={progress} />
+      <ProgressBar progress={progress} color={color} />
     </>
   );
 };
@@ -72,6 +110,18 @@ const DateCell = ({ cell }: CellContext<TableData, TableData['createdAt']>) => {
   return luxonInstance.toLocaleString(DateTime.DATE_MED);
 };
 
+const ActionCell = ({ cell }: CellContext<TableData, TableData['id']>) => (
+  <Link to={cell.getValue()}>
+    <Button styling="light">
+      <Translate>View</Translate>
+    </Button>
+  </Link>
+);
+
+const TemplateCell = ({ cell }: CellContext<TableData, TableData['templateName']>) => (
+  <Translate context={cell.row.original.templateId}>{cell.getValue()}</Translate>
+);
+
 const columns = [
   columnHelper.accessor('status', {
     header: StatusHeader,
@@ -84,6 +134,7 @@ const columns = [
   }),
   columnHelper.accessor('templateName', {
     header: TemplateHeader,
+    cell: TemplateCell,
   }),
   columnHelper.accessor('progress', {
     header: ProgressHeader,
@@ -104,7 +155,7 @@ const columns = [
     header: DateHeader,
     cell: DateCell,
   }),
-  columnHelper.accessor('id', { enableSorting: false, header: ActionHeader }),
+  columnHelper.accessor('id', { enableSorting: false, header: ActionHeader, cell: ActionCell }),
 ];
 
 const ImportsTable = () => {

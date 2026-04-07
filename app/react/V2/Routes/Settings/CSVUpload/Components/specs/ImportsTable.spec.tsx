@@ -4,10 +4,10 @@
 import React from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
-import { templatesAtom, localeAtom } from '#V2/atoms/index.js';
+import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
 import { ImportsTable } from '../ImportsTable.js';
-import { csvImportsList, templates } from './fixtures.js';
+import { csvImportsList, templates, translations } from './fixtures.js';
 
 describe('CSV imports list table', () => {
   let locale: 'en' | 'ar' = 'en';
@@ -20,6 +20,7 @@ describe('CSV imports list table', () => {
             initialValues={[
               [templatesAtom, templates],
               [localeAtom, locale],
+              [translationsAtom, translations],
             ]}
           >
             <ImportsTable />
@@ -33,7 +34,7 @@ describe('CSV imports list table', () => {
     await renderComponent();
 
     const expectStatistic = (label: string, value: string) => {
-      const labelNode = screen.getByText(label);
+      const labelNode = within(screen.getByTestId('table-header')).getByText(label);
       const statContainer = labelNode.parentElement;
 
       expect(statContainer).not.toBeNull();
@@ -51,10 +52,10 @@ describe('CSV imports list table', () => {
     await renderComponent();
 
     const expectedRows = [
-      ['queued', 'people.csv', 'People', '0⁄0', '', '', 'Apr 7, 2024', 'csv-import-1'],
-      ['processing', 'cases.zip', 'Cases', '120⁄48', '44', '1', 'Apr 8, 2024', 'csv-import-2'],
-      ['completed', 'events.csv', 'Events', '86⁄86', '84', '0', 'Apr 9, 2024', 'csv-import-3'],
-      ['failed', 'documents.csv', 'Documents', '60⁄17', '15', '2', 'Apr 10, 2024', 'csv-import-4'],
+      ['Queued', 'people.csv', 'People', '0⁄0', '', '', 'Apr 7, 2024'],
+      ['Processing', 'cases.zip', 'Cases', '120⁄48', '44', '1', 'Apr 8, 2024'],
+      ['Completed', 'events.csv', 'Events', '86⁄86', '84', '0', 'Apr 9, 2024'],
+      ['Failed', 'documents.csv', 'Documents', '60⁄17', '15', '2', 'Apr 10, 2024'],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);
@@ -72,5 +73,11 @@ describe('CSV imports list table', () => {
     locale = 'ar';
     await renderComponent();
     expect(screen.getByText('7 أبريل 2024')).toBeInTheDocument();
+  });
+
+  it('should translate template names', async () => {
+    await renderComponent();
+    expect(screen.queryByText('People')).not.toBeInTheDocument();
+    expect(screen.getByText('الناس')).toBeInTheDocument();
   });
 });

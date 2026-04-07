@@ -1,4 +1,5 @@
 import type { Template } from '#app/apiResponseTypes.js';
+import { ClientTranslationSchema } from '#app/istore.js';
 import { CsvImportStatus } from '#V2/api/csv/index.js';
 import type { CsvImportListRow } from '#V2/api/csv/index.js';
 
@@ -155,4 +156,25 @@ const templates: Template[] = [
   },
 ];
 
-export { csvImportsList, templates };
+const translations: ClientTranslationSchema[] = [
+  {
+    locale: 'en',
+    contexts: [
+      { id: 'template-people', values: { People: 'People' } },
+      { id: 'template-cases', values: { Cases: 'Cases' } },
+      { id: 'template-events', values: { Events: 'Events' } },
+      { id: 'template-documents', values: { Documents: 'Documents' } },
+    ],
+  },
+  {
+    locale: 'ar',
+    contexts: [
+      { id: 'template-people', values: { People: 'الناس' } },
+      { id: 'template-cases', values: { Cases: 'القضايا' } },
+      { id: 'template-events', values: { Events: 'الأحداث' } },
+      { id: 'template-documents', values: { Documents: 'المستندات' } },
+    ],
+  },
+];
+
+export { csvImportsList, templates, translations };

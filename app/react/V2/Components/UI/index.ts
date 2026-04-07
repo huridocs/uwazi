@@ -23,3 +23,4 @@ export { BlankState } from './BlankState.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';
+export type { ProgressBarProps } from './ProgressBar.js';
