@@ -62,7 +62,11 @@ const ThemePickerWithPreview = ({ themeCustomization }: ThemePickerWithPreviewPr
         <h3 className="text-sm font-medium text-gray-700 mb-2">Preview</h3>
         <ReduxProvider store={createReduxStore()}>
           <Provider store={store}>
-            <div className="tw-content rounded border border-gray-200" data-theme-custom style={style}>
+            <div
+              className="tw-content rounded border border-gray-200"
+              data-theme-custom
+              style={style}
+            >
               <Header />
               <p
                 className="px-4 py-2 text-xs border-t"

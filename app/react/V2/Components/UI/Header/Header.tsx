@@ -39,16 +39,22 @@ const Header = () => {
         <MenuLinks />
         <div className="flex items-center gap-2">
           <LanguageDropdown />
-          <div className="h-8 w-px" aria-hidden="true" />
+          <div className="header-bar-separator h-8 w-px shrink-0" aria-hidden="true" />
           <div className="flex items-center gap-2 p-1">
             {shouldShowLibrary && (
-              <I18NLink to={libraryUrl} className="header-bar-action rounded-md p-3 transition-colors">
+              <I18NLink
+                to={libraryUrl}
+                className="header-bar-action rounded-md p-3 transition-colors"
+              >
                 <BookOpenIcon className="h-6 w-6" />
                 <Translate className="sr-only">Library</Translate>
               </I18NLink>
             )}
             {authenticatedUser && (
-              <I18NLink to="/settings/account" className="header-bar-action rounded-md p-3 transition-colors">
+              <I18NLink
+                to="/settings/account"
+                className="header-bar-action rounded-md p-3 transition-colors"
+              >
                 <Cog6ToothIcon className="h-6 w-6" />
                 <Translate className="sr-only">Settings</Translate>
               </I18NLink>

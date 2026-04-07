@@ -49,8 +49,7 @@ export default (app: Application) => {
     settings
       .get({}, select)
       .then(response => {
-        const themeCustomization =
-          tenants.current().featureFlags?.themeCustomization ?? false;
+        const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
         const payload =
           req.user?.role === 'admin'
             ? { ...response, themeCustomization }

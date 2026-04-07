@@ -6,7 +6,7 @@ import { createStore, Provider } from 'jotai';
 import { LEGACY_createStore as createReduxStore } from '#V2/testing/index.js';
 import { Header } from '#V2/Components/UI/Header/Header.js';
 import { userAtom, settingsAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
-import { getDerivedThemeVars } from '#V2/theme/ThemeProvider.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import {
   ACCENT_PRIMARY_KEY,
   appliedTheme,
@@ -41,39 +41,24 @@ const THEME_NONE = 'none';
 const themeSelectOptions = [THEME_NONE, ...THEME_PALETTE.map(p => p.id)];
 const themeSelectMapping: Record<string, Record<string, string>> = {
   [THEME_NONE]: {},
-  ...Object.fromEntries(
-    THEME_PALETTE.map(p => [p.id, { [ACCENT_PRIMARY_KEY]: p.hex }])
-  ),
+  ...Object.fromEntries(THEME_PALETTE.map(p => [p.id, { [ACCENT_PRIMARY_KEY]: p.hex }])),
 };
 const themeSelectLabels: Record<string, string> = {
   [THEME_NONE]: 'None',
   ...Object.fromEntries(THEME_PALETTE.map(p => [p.id, SEMANTIC_VAR_LABELS[p.semanticKey]])),
 };
 
-const ThemeStoryWrapper = ({
-  themeVars,
-  children,
-}: {
-  themeVars: Record<string, string>;
-  children: React.ReactNode;
-}) => {
+const ThemeContrastHint = ({ themeVars }: { themeVars: Record<string, string> }) => {
   const resolved = appliedTheme(themeVars);
   const accent = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
-  const style: React.CSSProperties & Record<string, string> = {
-    ...resolved,
-    ...getDerivedThemeVars(accent),
-  };
   const fg = getContrastTextColor(accent);
   const contrast = checkContrast(accent, fg);
   return (
-    <div className="tw-content" data-theme-custom style={style}>
-      {children}
-      <p className="px-4 py-2 text-xs text-gray-500 border-t border-gray-100" aria-live="polite">
-        Contrast {contrast.ratio.toFixed(1)}:1
-        {contrast.passesAA && ' ✓ AA'}
-        {contrast.passesAAA && ' ✓ AAA'}
-      </p>
-    </div>
+    <p className="px-4 py-2 text-xs text-gray-500 border-t border-gray-100" aria-live="polite">
+      Contrast {contrast.ratio.toFixed(1)}:1
+      {contrast.passesAA && ' ✓ AA'}
+      {contrast.passesAAA && ' ✓ AAA'}
+    </p>
   );
 };
 
@@ -92,16 +77,23 @@ const HeaderWithTheme = ({
 }: HeaderWithThemeProps) => {
   const themeVars = themeVarsProp ?? themeSelectMapping[themeVarsKey] ?? {};
   const store = React.useMemo(
-    () => createStoreWithTheme(Object.keys(themeVars).length > 0 ? themeVars : undefined, authenticated),
+    () =>
+      createStoreWithTheme(
+        Object.keys(themeVars).length > 0 ? themeVars : undefined,
+        authenticated
+      ),
     [themeVars, authenticated]
   );
   return (
     <ReduxProvider store={reduxStore}>
       <Provider store={store}>
         {Object.keys(themeVars).length > 0 ? (
-          <ThemeStoryWrapper themeVars={themeVars}>
-            <Header />
-          </ThemeStoryWrapper>
+          <>
+            <ThemeProvider>
+              <Header />
+            </ThemeProvider>
+            <ThemeContrastHint themeVars={themeVars} />
+          </>
         ) : (
           <Header />
         )}
@@ -147,9 +139,7 @@ const Unauthenticated: Story = {
 };
 
 const WithNamedTheme: Story = {
-  render: () => (
-    <HeaderWithTheme themeVars={getPresetVars('light')} authenticated={true} />
-  ),
+  render: () => <HeaderWithTheme themeVars={getPresetVars('light')} authenticated={true} />,
 };
 
 export { Default, WithThemeSelector, Unauthenticated, WithNamedTheme };

@@ -11,10 +11,10 @@ import {
   SEMANTIC_VAR_LABELS,
 } from '#V2/theme/themes.js';
 
-export interface ThemeSelectorProps {
+type ThemeSelectorProps = {
   value: Record<string, string>;
   onChange: (value: Record<string, string>) => void;
-}
+};
 
 export const ThemeSelector = ({ value, onChange }: ThemeSelectorProps) => {
   const themeVars = value ?? {};

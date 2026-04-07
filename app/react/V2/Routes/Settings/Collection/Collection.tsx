@@ -22,14 +22,20 @@ import * as tips from './collectionSettingsTips.js';
 import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 
+type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
+
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const settings = await SettingsAPI.get(headers);
+    const raw = await SettingsAPI.get(headers);
+    const { themeCustomization: themeCustomizationFlag, ...settings } =
+      raw as SettingsWithThemeFlag;
     const templates = await TemplatesAPI.get(headers);
-    const themeCustomization =
-      (settings as ClientSettings & { themeCustomization?: boolean }).themeCustomization ?? false;
-    return { settings, templates, themeCustomization };
+    return {
+      settings,
+      templates,
+      themeCustomization: themeCustomizationFlag ?? false,
+    };
   };
 
 const dateOptions = () => {
@@ -103,10 +109,8 @@ const Collection = () => {
       delete data.newNameGeneration;
     }
     data.private = !data.private;
-    delete (data as Record<string, unknown>)['themeColor'];
-    delete (data as Record<string, unknown>)['themeId'];
-    delete (data as Record<string, unknown>)['themeOverrides'];
-    const response = await SettingsAPI.save(data);
+    const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
+    const response = await SettingsAPI.save(rest);
     if (response instanceof FetchResponseError) {
       setNotifications({
         type: 'error',

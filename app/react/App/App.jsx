@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default */
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router';
@@ -67,27 +66,25 @@ const App = ({ customParams }) => {
     <div id="app" className={appClassName}>
       <Notifications />
       <Cookiepopup />
-      <ThemeProvider>
-        <div className="content">
-          {shouldShowNewHeader ? (
-            <div className="tw-content">
-              <Header />
-            </div>
-          ) : (
-            <LegacyHeader />
-          )}
-          <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
-            <AppMainContext.Provider value={appContext}>
-              {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-              <Confirm {...confirmOptions} />
-              <Outlet />
-              <GoogleAnalytics />
-              <Matomo />
-              <CleanInsights />
-            </AppMainContext.Provider>
-          </main>
-        </div>
-      </ThemeProvider>
+      <div className="content">
+        {shouldShowNewHeader ? (
+          <ThemeProvider>
+            <Header />
+          </ThemeProvider>
+        ) : (
+          <LegacyHeader />
+        )}
+        <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
+          <AppMainContext.Provider value={appContext}>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            <Confirm {...confirmOptions} />
+            <Outlet />
+            <GoogleAnalytics />
+            <Matomo />
+            <CleanInsights />
+          </AppMainContext.Provider>
+        </main>
+      </div>
       <NotificationsContainer />
       {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
     </div>

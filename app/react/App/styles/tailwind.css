@@ -347,6 +347,13 @@
   .tw-content .dnd-hover-shadow {
     box-shadow: inset 0 -4px 0px #3949ab;
   }
+
+  .tw-content svg.svg-inline--fa {
+    display: inline-block;
+    font-size: inherit;
+    height: 1em;
+    vertical-align: -0.125em;
+  }
 }
 
 /* Custom CSS to fix sidebar visibility */
@@ -363,7 +370,7 @@
   --color-primary-800: var(--color-theme);
 }
 
-/* Header bar: single semantic layer. Bar background = --color-theme; text/icons/separator = --color-theme-foreground. */
+/* Header bar: background = --color-theme (lines 374–376). Do not use [aria-hidden] for the divider — Heroicon svgs are aria-hidden too. */
 .tw-content .header-bar[data-uwazi-header],
 [data-theme-custom] .header-bar[data-uwazi-header] {
   background-color: var(--color-theme, #ffffff) !important;
@@ -400,6 +407,7 @@
 .tw-content .header-bar[data-uwazi-header] button.header-bar-action svg,
 [data-theme-custom] .header-bar[data-uwazi-header] a.header-bar-action svg,
 [data-theme-custom] .header-bar[data-uwazi-header] button.header-bar-action svg {
+  fill: none;
   color: var(--color-theme-foreground, #111827);
   stroke: currentColor;
 }
@@ -449,9 +457,9 @@
   background-color: var(--color-theme-hover-bg, #f3f4f6);
   color: var(--color-theme-hover-fg, #111827);
 }
-.tw-content .header-bar[data-uwazi-header] [aria-hidden='true'],
-[data-theme-custom] .header-bar[data-uwazi-header] [aria-hidden='true'] {
-  background-color: var(--color-theme-separator, #e5e7eb);
+.tw-content .header-bar[data-uwazi-header] .header-bar-separator,
+[data-theme-custom] .header-bar[data-uwazi-header] .header-bar-separator {
+  background-color: color-mix(in srgb, var(--color-theme-foreground, #111827) 35%, transparent);
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-skip,
 [data-theme-custom] .header-bar[data-uwazi-header] .header-bar-skip {

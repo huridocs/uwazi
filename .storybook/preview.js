@@ -2,6 +2,13 @@ import React from 'react';
 import { configureActions } from 'storybook/actions';
 import '../app/react/App/styles/tailwind.css';
 
+if (typeof window !== 'undefined') {
+  window.__featureFlags__ = {
+    ...(window.__featureFlags__ || {}),
+    themeCustomization: true,
+  };
+}
+
 configureActions({
   depth: 100,
   limit: 20,

@@ -17,12 +17,7 @@ const createDropdownItems = (link: any): DropdownItem[] => {
   }));
 };
 
-const linkContainerClasses = [
-  'header-bar-nav-item',
-  'py-2',
-  'flex',
-  'items-center',
-].join(' ');
+const linkContainerClasses = ['header-bar-nav-item', 'py-2', 'flex', 'items-center'].join(' ');
 
 const linkInnerClasses = [
   'p-2',

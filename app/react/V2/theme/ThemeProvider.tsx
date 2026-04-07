@@ -12,7 +12,12 @@ const THEME_HOVER_FG = '--color-theme-hover-fg';
 const THEME_ACTIVE_BG = '--color-theme-active-bg';
 const THEME_ACTIVE_FG = '--color-theme-active-fg';
 
-export const getDerivedThemeVars = (topbar: string): Record<string, string> => {
+type ThemeProviderProps = React.PropsWithChildren<{
+  className?: string;
+  style?: React.CSSProperties & Record<string, string>;
+}>;
+
+const getDerivedThemeVars = (topbar: string): Record<string, string> => {
   const hoverBg = mixHex(topbar, '#000000', 0.12);
   const activeBg = mixHex(topbar, '#000000', 0.2);
   const fg = getContrastTextColor(topbar);
@@ -27,28 +32,23 @@ export const getDerivedThemeVars = (topbar: string): Record<string, string> => {
   };
 };
 
-type ThemeProviderProps = { children: React.ReactNode };
-
-export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+const ThemeProvider = ({ children, className, style }: ThemeProviderProps) => {
   const settings = useAtomValue(settingsAtom);
-  const themeVars = settings.themeVars;
-  const enabled =
-    typeof window !== 'undefined' && window.__featureFlags__?.themeCustomization;
-
-  if (!enabled) {
-    return <>{children}</>;
-  }
-
-  const resolved = appliedTheme(themeVars ?? undefined);
+  const enabled = typeof window !== 'undefined' && window.__featureFlags__?.themeCustomization;
+  const resolved = appliedTheme(settings.themeVars ?? undefined);
   const topbar = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
-  const style: React.CSSProperties & Record<string, string> = {
-    ...resolved,
-    ...getDerivedThemeVars(topbar),
-  };
-
+  const themeVarsStyle: (React.CSSProperties & Record<string, string>) | undefined = enabled
+    ? { ...resolved, ...getDerivedThemeVars(topbar) }
+    : undefined;
   return (
-    <div className="tw-content" data-theme-custom style={style}>
+    <div
+      className={['tw-content', className].filter(Boolean).join(' ')}
+      data-theme-custom={enabled ? true : undefined}
+      style={{ ...themeVarsStyle, ...style }}
+    >
       {children}
     </div>
   );
 };
+
+export { ThemeProvider, getDerivedThemeVars };
