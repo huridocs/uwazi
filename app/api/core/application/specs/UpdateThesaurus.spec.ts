@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -13,7 +14,6 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
-import { ObjectId } from 'mongodb';
 import { UserSchema } from '#shared/types/userType.js';
 import {
   ThesaurusNotFoundError,
@@ -115,6 +115,7 @@ describe('UpdateThesaurusUseCase', () => {
           label: 'Europe Updated',
           values: [before.values[2].values![0], { label: 'France Created' }],
         },
+        { id: 'created_on_the_client', label: 'Created on the client' },
       ],
     });
 
@@ -136,6 +137,7 @@ describe('UpdateThesaurusUseCase', () => {
             { id: expect.any(String), label: 'France Created' },
           ],
         },
+        { id: 'created_on_the_client', label: 'Created on the client' },
       ],
     });
 
@@ -252,6 +254,17 @@ describe('UpdateThesaurusUseCase', () => {
       },
       {
         _id: expect.any(ObjectId),
+        key: 'Created on the client',
+        value: 'Created on the client',
+        language: 'en',
+        context: {
+          type: 'Thesaurus',
+          label: 'Updated Countries',
+          id: before._id.toString(),
+        },
+      },
+      {
+        _id: expect.any(ObjectId),
         key: 'Brazil Created',
         value: 'Brazil Created',
         language: 'es',
@@ -265,6 +278,18 @@ describe('UpdateThesaurusUseCase', () => {
         _id: expect.any(ObjectId),
         key: 'France Created',
         value: 'France Created',
+        language: 'es',
+        context: {
+          type: 'Thesaurus',
+          label: 'Updated Countries',
+          id: before._id.toString(),
+        },
+      },
+
+      {
+        _id: expect.any(ObjectId),
+        key: 'Created on the client',
+        value: 'Created on the client',
         language: 'es',
         context: {
           type: 'Thesaurus',
