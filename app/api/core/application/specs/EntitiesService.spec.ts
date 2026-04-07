@@ -5,20 +5,22 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
+import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
 import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { tenants } from '#api/tenants/index.js';
 import { ObjectId } from 'mongodb';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 
@@ -93,6 +95,11 @@ const createEntitySample = () => {
   ]);
 
   return entity;
+};
+
+const loadEntities = async (sharedIds: string[]) => {
+  const ds = EntitiesDataSourceFactory.default(TransactionManagerFactory.default());
+  return (await ds.getEntitiesBySharedIds(sharedIds)).all();
 };
 
 describe('EntitiesService', () => {
@@ -376,7 +383,7 @@ describe('EntitiesService', () => {
       });
 
       await transactionManager.run(async () =>
-        sut.upsert(entity, { actorId: 'actorId', targetLanguage: 'en' })
+        sut.update(entity, { actorId: 'actorId', targetLanguage: 'en' })
       );
 
       expect(entitiesDS.update).not.toHaveBeenCalled();
@@ -385,11 +392,247 @@ describe('EntitiesService', () => {
       entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
 
       await transactionManager.run(async () =>
-        sut.upsert(entity, { actorId: 'actorId', targetLanguage: 'en' })
+        sut.update(entity, { actorId: 'actorId', targetLanguage: 'en' })
       );
 
       expect(entitiesDS.update).toHaveBeenCalled();
       expect(eventEmitter.emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('when updating multiple entities', () => {
+    const updateMultipleFixtures: DBFixture = {
+      ...fixtures,
+      entities: [
+        ...factory.entityInMultipleLanguages(
+          ['en', 'es'],
+          'entity-1',
+          'Document',
+          { text: [{ value: 'Entity 1 original text' }], numeric: [{ value: 10 }] },
+          {
+            title: 'Entity 1 original title',
+            icon: { _id: 'icon-original-1', type: 'image', label: 'Original Icon 1' },
+            obsoleteMetadata: [],
+          }
+        ),
+        ...factory.entityInMultipleLanguages(
+          ['en', 'es'],
+          'entity-2',
+          'Document',
+          { text: [{ value: 'Entity 2 original text' }], numeric: [{ value: 20 }] },
+          {
+            title: 'Entity 2 original title',
+            icon: { _id: 'icon-original-2', type: 'image', label: 'Original Icon 2' },
+            obsoleteMetadata: [],
+          }
+        ),
+      ],
+    };
+
+    beforeEach(async () => testingEnvironment.setFixtures(updateMultipleFixtures));
+
+    it('should persist changes for all changed entities in the database', async () => {
+      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+      const { sut, transactionManager } = createSut({ eventEmitter });
+      const template = await getTemplate(factory.id('Document'));
+
+      const entities = await loadEntities(['entity-1', 'entity-2']);
+      const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
+      const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
+
+      entity1.update({ icon: { id: 'icon-updated-1', type: 'image', label: 'Updated Icon 1' } });
+      entity1.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', {
+          value: [{ value: 'Entity 1 updated title' }],
+        }),
+        template.createPropertyAssignment('text', { value: [{ value: 'Entity 1 updated text' }] }),
+        template.createPropertyAssignment('numeric', { value: [{ value: 11 }] }),
+      ]);
+
+      entity2.update({ icon: { id: 'icon-updated-2', type: 'image', label: 'Updated Icon 2' } });
+      entity2.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', {
+          value: [{ value: 'Entity 2 updated title' }],
+        }),
+        template.createPropertyAssignment('text', { value: [{ value: 'Entity 2 updated text' }] }),
+        template.createPropertyAssignment('numeric', { value: [{ value: 22 }] }),
+      ]);
+
+      await transactionManager.run(async () => {
+        await sut.updateMultiple([entity1, entity2], { actorId: 'actorId', targetLanguage: 'en' });
+      });
+
+      const allDocs = await testingEnvironment.db.getAllFrom('entities');
+
+      expect(allDocs.filter(d => d.sharedId === 'entity-1')).toHaveLength(2);
+      allDocs
+        .filter(d => d.sharedId === 'entity-1')
+        .forEach(doc => {
+          expect(doc.icon).toMatchObject({
+            _id: 'icon-updated-1',
+            type: 'image',
+            label: 'Updated Icon 1',
+          });
+          expect(doc.title).toBe('Entity 1 updated title');
+          expect(doc.metadata.text).toEqual([{ value: 'Entity 1 updated text' }]);
+          expect(doc.metadata.numeric).toEqual([{ value: 11 }]);
+        });
+
+      expect(allDocs.filter(d => d.sharedId === 'entity-2')).toHaveLength(2);
+      allDocs
+        .filter(d => d.sharedId === 'entity-2')
+        .forEach(doc => {
+          expect(doc.icon).toMatchObject({
+            _id: 'icon-updated-2',
+            type: 'image',
+            label: 'Updated Icon 2',
+          });
+          expect(doc.title).toBe('Entity 2 updated title');
+          expect(doc.metadata.text).toEqual([{ value: 'Entity 2 updated text' }]);
+          expect(doc.metadata.numeric).toEqual([{ value: 22 }]);
+        });
+    });
+
+    it('should skip entities that have not changed and only update the changed ones', async () => {
+      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+      const { sut, transactionManager } = createSut({ eventEmitter });
+      const template = await getTemplate(factory.id('Document'));
+
+      const entities = await loadEntities(['entity-1', 'entity-2']);
+      const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
+      const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
+
+      // Only mutate entity-1; entity-2 is loaded fresh and has hasChanged === false
+      entity1.update({ icon: { id: 'icon-updated-1', type: 'image', label: 'Updated Icon 1' } });
+      entity1.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', {
+          value: [{ value: 'Entity 1 updated title' }],
+        }),
+        template.createPropertyAssignment('text', { value: [{ value: 'Entity 1 updated text' }] }),
+        template.createPropertyAssignment('numeric', { value: [{ value: 99 }] }),
+      ]);
+
+      await transactionManager.run(async () => {
+        await sut.updateMultiple([entity1, entity2], { actorId: 'actorId', targetLanguage: 'en' });
+      });
+
+      const allDocs = await testingEnvironment.db.getAllFrom('entities');
+
+      allDocs
+        .filter(d => d.sharedId === 'entity-1')
+        .forEach(doc => {
+          expect(doc.icon).toMatchObject({ _id: 'icon-updated-1' });
+          expect(doc.title).toBe('Entity 1 updated title');
+          expect(doc.metadata.text).toEqual([{ value: 'Entity 1 updated text' }]);
+          expect(doc.metadata.numeric).toEqual([{ value: 99 }]);
+        });
+
+      allDocs
+        .filter(d => d.sharedId === 'entity-2')
+        .forEach(doc => {
+          expect(doc.icon).toMatchObject({ _id: 'icon-original-2' });
+          expect(doc.title).toBe('Entity 2 original title');
+          expect(doc.metadata.text).toEqual([{ value: 'Entity 2 original text' }]);
+          expect(doc.metadata.numeric).toEqual([{ value: 20 }]);
+        });
+    });
+
+    it('should emit an EntityUpdatedEvent with correct before/after payload for each changed entity', async () => {
+      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+      const { sut, transactionManager } = createSut({ eventEmitter });
+      const template = await getTemplate(factory.id('Document'));
+
+      const entities = await loadEntities(['entity-1', 'entity-2']);
+      const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
+      const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
+
+      entity1.update({ icon: { id: 'icon-after-1', type: 'image', label: 'After Icon 1' } });
+      entity1.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Title after 1' }] }),
+        template.createPropertyAssignment('text', { value: [{ value: 'Text after 1' }] }),
+        template.createPropertyAssignment('numeric', { value: [{ value: 11 }] }),
+      ]);
+
+      entity2.update({ icon: { id: 'icon-after-2', type: 'image', label: 'After Icon 2' } });
+      entity2.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Title after 2' }] }),
+        template.createPropertyAssignment('text', { value: [{ value: 'Text after 2' }] }),
+        template.createPropertyAssignment('numeric', { value: [{ value: 22 }] }),
+      ]);
+
+      const expectedEvent1 = EntityUpdatedEvent.create({
+        entity: entity1,
+        userId: 'actorId',
+        targetLanguage: 'en',
+      });
+      const expectedEvent2 = EntityUpdatedEvent.create({
+        entity: entity2,
+        userId: 'actorId',
+        targetLanguage: 'en',
+      });
+
+      await transactionManager.run(async () => {
+        await sut.updateMultiple([entity1, entity2], { actorId: 'actorId', targetLanguage: 'en' });
+      });
+
+      expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
+      expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent1);
+      expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent2);
+    });
+
+    it('should not update the database or emit events when no entity has changed', async () => {
+      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+      const { sut, transactionManager } = createSut({ eventEmitter });
+
+      const entities = await loadEntities(['entity-1', 'entity-2']);
+
+      await transactionManager.run(async () => {
+        await sut.updateMultiple(entities, { actorId: 'actorId', targetLanguage: 'en' });
+      });
+
+      const allDocs = await testingEnvironment.db.getAllFrom('entities');
+
+      allDocs
+        .filter(d => d.sharedId === 'entity-1')
+        .forEach(doc => {
+          expect(doc.icon).toMatchObject({ _id: 'icon-original-1' });
+          expect(doc.title).toBe('Entity 1 original title');
+          expect(doc.metadata.text).toEqual([{ value: 'Entity 1 original text' }]);
+          expect(doc.metadata.numeric).toEqual([{ value: 10 }]);
+        });
+
+      allDocs
+        .filter(d => d.sharedId === 'entity-2')
+        .forEach(doc => {
+          expect(doc.icon).toMatchObject({ _id: 'icon-original-2' });
+          expect(doc.title).toBe('Entity 2 original title');
+          expect(doc.metadata.text).toEqual([{ value: 'Entity 2 original text' }]);
+          expect(doc.metadata.numeric).toEqual([{ value: 20 }]);
+        });
+
+      expect(eventEmitter.emit).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing when passed an empty array', async () => {
+      const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+      const { sut, transactionManager } = createSut({ eventEmitter });
+
+      await transactionManager.run(async () => {
+        await sut.updateMultiple([], { actorId: 'actorId', targetLanguage: 'en' });
+      });
+
+      const allDocs = await testingEnvironment.db.getAllFrom('entities');
+      expect(allDocs.filter(d => d.sharedId === 'entity-1')).toHaveLength(2);
+      expect(allDocs.filter(d => d.sharedId === 'entity-2')).toHaveLength(2);
+      expect(eventEmitter.emit).not.toHaveBeenCalled();
+    });
+
+    it('should throw when called outside a transaction', async () => {
+      const { sut } = createSut();
+
+      await expect(
+        sut.updateMultiple([], { actorId: 'actorId', targetLanguage: 'en' })
+      ).rejects.toThrow('This operation must be called within a transaction');
     });
   });
 });
