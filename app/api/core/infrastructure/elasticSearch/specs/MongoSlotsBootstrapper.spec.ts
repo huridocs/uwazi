@@ -44,7 +44,7 @@ describe('MongoSlotsBootstrapper', () => {
     it('creates startup slots in a fresh environment', async () => {
       const { sut } = createSut();
 
-      await sut.executeAll();
+      await sut.execute();
 
       const slots = await slotsCollection().find({}).toArray();
       const slotNames = slots.map(slot => slot.slotName).sort();
@@ -62,10 +62,10 @@ describe('MongoSlotsBootstrapper', () => {
     it('is idempotent when executed more than once in an old environment', async () => {
       const { sut } = createSut();
 
-      await sut.executeAll();
+      await sut.execute();
       const firstCount = await slotsCollection().countDocuments();
 
-      await expect(sut.executeAll()).resolves.not.toThrow();
+      await expect(sut.execute()).resolves.not.toThrow();
       const secondCount = await slotsCollection().countDocuments();
 
       expect(secondCount).toBe(firstCount);
@@ -77,7 +77,7 @@ describe('MongoSlotsBootstrapper', () => {
       await slotsCollection().createIndex({ slotName: 1 }, { unique: true });
       await slotsCollection().insertMany(expectedSlots);
 
-      await expect(sut.executeAll()).resolves.not.toThrow();
+      await expect(sut.execute()).resolves.not.toThrow();
       const slots = await slotsCollection().find({}).toArray();
       const slotNames = slots.map(slot => slot.slotName).sort();
 
@@ -95,7 +95,7 @@ describe('MongoSlotsBootstrapper', () => {
         assignedTo: 'existing_property',
       });
 
-      await sut.executeAll();
+      await sut.execute();
 
       const existingSlot = await slotsCollection().findOne({
         slotName: SlotBootstrapDefinitions.createSlotName('txt', 1),
@@ -109,7 +109,7 @@ describe('MongoSlotsBootstrapper', () => {
     it('creates slot indexes required for uniqueness constraints', async () => {
       const { sut } = createSut();
 
-      await sut.executeAll();
+      await sut.execute();
 
       const indexes = await slotsCollection().indexes();
       const byName = Object.fromEntries(indexes.map(index => [index.name, index]));
@@ -124,8 +124,8 @@ describe('MongoSlotsBootstrapper', () => {
     it('is idempotent when indexes already exist', async () => {
       const { sut } = createSut();
 
-      await sut.executeAll();
-      await expect(sut.executeAll()).resolves.not.toThrow();
+      await sut.execute();
+      await expect(sut.execute()).resolves.not.toThrow();
 
       const indexes = await slotsCollection().indexes();
       const names = indexes.map(index => index.name);
@@ -143,7 +143,7 @@ describe('MongoSlotsBootstrapper', () => {
         { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
       );
 
-      await expect(sut.executeAll()).resolves.not.toThrow();
+      await expect(sut.execute()).resolves.not.toThrow();
     });
   });
 });

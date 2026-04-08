@@ -8,6 +8,7 @@ const EntityIndexMappingDefinition: IndexDefinition = {
   settings: {
     number_of_shards: 6,
     number_of_replicas: 1,
+    'index.mapping.total_fields.limit': 4500,
 
     analysis: {
       normalizer: {
@@ -54,7 +55,6 @@ const EntityIndexMappingDefinition: IndexDefinition = {
   mappings: {
     dynamic: false,
     _routing: { required: true },
-
     properties: {
       // Used on all ES documents on this Index
       tenantId: { type: 'keyword' },

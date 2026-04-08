@@ -11,7 +11,7 @@ class MongoSlotsBootstrapper {
 
   constructor(private deps: Deps) {}
 
-  async executeAll() {
+  async execute() {
     await this.createSlots();
     await this.createIndexes();
   }
