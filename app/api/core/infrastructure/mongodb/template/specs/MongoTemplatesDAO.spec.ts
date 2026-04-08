@@ -16,21 +16,26 @@ const fixtures = {
   ],
 };
 
-beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
-});
+const createSut = () => {
+  const transactionManager = TransactionManagerFactory.default();
+  const sut = new MongoTemplatesDAO({ db: getConnection(), transactionManager });
 
-afterAll(async () => {
-  await testingEnvironment.tearDown();
-});
+  return { sut, transactionManager };
+};
 
 describe('MongoTemplatesDAO', () => {
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
   describe('getAllProperties()', () => {
     it('returns all properties from all templates as a flat list', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dao = new MongoTemplatesDAO(getConnection(), transactionManager);
-
-      const result = await dao.getAllProperties();
+      const { sut } = createSut();
+      const result = await sut.getAllProperties();
 
       expect(result).toContainEqual({ name: 'text_prop', type: 'text' });
       expect(result).toContainEqual({ name: 'date_prop', type: 'date' });
@@ -38,10 +43,9 @@ describe('MongoTemplatesDAO', () => {
     });
 
     it('excludes commonProperties', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dao = new MongoTemplatesDAO(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const result = await dao.getAllProperties();
+      const result = await sut.getAllProperties();
 
       const names = result.map(p => p.name);
       expect(names).not.toContain('title');
@@ -51,28 +55,25 @@ describe('MongoTemplatesDAO', () => {
 
     it('returns an empty array when no templates exist', async () => {
       await testingEnvironment.setUp({ templates: [] });
-      const transactionManager = TransactionManagerFactory.default();
-      const dao = new MongoTemplatesDAO(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const result = await dao.getAllProperties();
+      const result = await sut.getAllProperties();
 
       expect(result).toEqual([]);
     });
 
     it('returns an empty array when templates have no properties', async () => {
       await testingEnvironment.setUp({ templates: [factory.template('empty_template', [])] });
-      const transactionManager = TransactionManagerFactory.default();
-      const dao = new MongoTemplatesDAO(getConnection(), transactionManager);
+      const { sut } = createSut();
 
-      const result = await dao.getAllProperties();
+      const result = await sut.getAllProperties();
 
       expect(result).toEqual([]);
     });
 
     it('reads through the active transaction session', async () => {
       await testingEnvironment.setUp({ templates: [] });
-      const transactionManager = TransactionManagerFactory.default();
-      const dao = new MongoTemplatesDAO(getConnection(), transactionManager);
+      const { sut, transactionManager } = createSut();
 
       await transactionManager.run(async () => {
         const session = transactionManager.getSession()!;
@@ -82,7 +83,7 @@ describe('MongoTemplatesDAO', () => {
             session,
           });
 
-        const result = await dao.getAllProperties();
+        const result = await sut.getAllProperties();
         expect(result).toContainEqual({ name: 'tx_prop', type: 'text' });
       });
     });

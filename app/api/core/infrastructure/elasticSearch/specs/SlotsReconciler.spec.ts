@@ -14,7 +14,7 @@ const createSut = () => {
   const tenantName = 'tenant-a';
   const transactionManager = TransactionManagerFactory.default();
 
-  const templatesDAO = new MongoTemplatesDAO(db, transactionManager);
+  const templatesDAO = new MongoTemplatesDAO({ db, transactionManager });
   const slotsDAO = new MongoSlotsDAO({ db, tenantName, transactionManager });
 
   const sut = new SlotsReconciler({ slotsDAO, templatesDAO });

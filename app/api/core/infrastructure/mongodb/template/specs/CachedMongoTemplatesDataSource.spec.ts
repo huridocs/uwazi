@@ -1,5 +1,7 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -27,7 +29,11 @@ describe('CachedMongoTemplatesDataSource', () => {
   describe('getById()', () => {
     it('should cache the result on first call and return same instance on second call', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const result1 = await dataSource.getById(template1._id.toString());
       const result2 = await dataSource.getById(template1._id.toString());
@@ -39,7 +45,11 @@ describe('CachedMongoTemplatesDataSource', () => {
 
     it('should cache different templates separately', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const result1 = await dataSource.getById(template1._id.toString());
       const result2 = await dataSource.getById(template2._id.toString());
@@ -54,7 +64,11 @@ describe('CachedMongoTemplatesDataSource', () => {
 
     it('should clear cache after transaction commit', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const result1 = await dataSource.getById(template1._id.toString());
 
@@ -74,7 +88,11 @@ describe('CachedMongoTemplatesDataSource', () => {
 
     it('should not cache errors for non-existent templates', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const nonExistentId = factory.id('nonexistent').toString();
 
@@ -91,7 +109,11 @@ describe('CachedMongoTemplatesDataSource', () => {
   describe('getDefaultTemplate()', () => {
     it('should cache default template on first call', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const result1 = await dataSource.getDefaultTemplate();
       const result2 = await dataSource.getDefaultTemplate();
@@ -103,7 +125,11 @@ describe('CachedMongoTemplatesDataSource', () => {
 
     it('should clear default template cache after transaction commit', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const result1 = await dataSource.getDefaultTemplate();
 
@@ -123,7 +149,11 @@ describe('CachedMongoTemplatesDataSource', () => {
 
     it('should cache default template separately from regular templates', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const defaultResult = await dataSource.getDefaultTemplate();
       const byIdResult = await dataSource.getById(defaultTemplate._id.toString());
@@ -140,7 +170,11 @@ describe('CachedMongoTemplatesDataSource', () => {
       });
 
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoTemplatesDataSource(getConnection(), transactionManager);
+      const dataSource = new CachedMongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
 
       const result1 = await dataSource.getDefaultTemplate();
       expect(result1.isError()).toBe(true);

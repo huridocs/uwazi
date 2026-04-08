@@ -6,11 +6,16 @@ import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 type PropertyDescriptor = { name: string; type: PropertyType };
 
+type Deps = {
+  db: Db;
+  transactionManager: MongoTransactionManager;
+};
+
 class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
   protected collectionName = 'templates';
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
-    super(db, transactionManager);
+  constructor(deps: Deps) {
+    super(deps.db, deps.transactionManager);
   }
 
   async getAllProperties(): Promise<PropertyDescriptor[]> {

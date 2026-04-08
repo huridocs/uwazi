@@ -9,7 +9,6 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener.js';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig.js';
 import { ATExternalAPI } from './infrastructure/ATExternalAPI.js';
@@ -34,10 +33,9 @@ const AutomaticTranslationFactory = {
 
   defaultGenerateATConfig() {
     const transactionManager = TransactionManagerFactory.default();
-    const db = getConnection();
     return new GenerateAutomaticTranslationsCofig(
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
-      new MongoTemplatesDataSource(db, TransactionManagerFactory.default()),
+      TemplatesDataSourceFactory.default(transactionManager),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
   },
