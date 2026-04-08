@@ -1,6 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
+import superagent, { MultipartValueSingle } from 'superagent';
 import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
+import { APIURL } from '#app/config.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
 enum CsvImportStatus {
   Queued = 'queued',
@@ -83,14 +86,102 @@ type CsvImportsList = {
   rows: CsvImportListRow[];
 };
 
-const get = async (headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams(undefined, headers);
-  const response = (await api.get('csvImportEntities/imports', requestParams)) as {
-    json: CsvImportsList;
-  };
-
-  return response.json.rows;
+type RegisterCsvImportResponse = {
+  id: string;
+  status: 'queued';
+  message: string;
 };
 
-export type { CsvImportListRow };
-export { CsvImportStatus, get };
+type CsvImportCreateError = {
+  error: true;
+};
+
+type CancelCsvImportResponse = {
+  id: string;
+  status: string;
+  cancelled: boolean;
+};
+
+type CsvImportDetails = CsvImportListRow & Record<string, unknown>;
+
+const create = async (
+  file: File,
+  template: string,
+  onProgressCallback?: (completed: number, total: number) => void
+): Promise<RegisterCsvImportResponse | CsvImportCreateError> => {
+  try {
+    const request = superagent
+      .post(`${APIURL}csvImportEntities`)
+      .set('Accept', 'application/json')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .field('template', template)
+      .attach('file', file as MultipartValueSingle)
+      .on('progress', event => {
+        if (onProgressCallback && event.percent) {
+          onProgressCallback(Math.floor(event.percent), event.total);
+        }
+      });
+
+    return (await request).body;
+  } catch (_e) {
+    return {
+      error: true,
+    };
+  }
+};
+
+const get = async (
+  headers?: IncomingHttpHeaders
+): Promise<CsvImportListRow[] | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams(undefined, headers);
+    const response = (await api.get('csvImportEntities/imports', requestParams)) as {
+      json: CsvImportsList;
+    };
+
+    return response.json.rows;
+  } catch (e) {
+    return e;
+  }
+};
+
+const getById = async (
+  id: string,
+  headers?: IncomingHttpHeaders
+): Promise<CsvImportDetails | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams(undefined, headers);
+    const response = (await api.get(`csvImportEntities/imports/${id}`, requestParams)) as {
+      json: CsvImportDetails;
+    };
+
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+const cancel = async (
+  id: string,
+  headers?: IncomingHttpHeaders
+): Promise<CancelCsvImportResponse | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams(undefined, headers);
+    const response = (await api.post(`csvImportEntities/imports/${id}/cancel`, requestParams)) as {
+      json: CancelCsvImportResponse;
+    };
+
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+export type {
+  CsvImportListRow,
+  CsvImportDetails,
+  CancelCsvImportResponse,
+  RegisterCsvImportResponse,
+  CsvImportCreateError,
+};
+export { CsvImportStatus, create, get, getById, cancel };

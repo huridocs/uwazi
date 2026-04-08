@@ -118,9 +118,8 @@ const ActionCell = ({ cell }: CellContext<TableData, TableData['id']>) => (
   </Link>
 );
 
-const TemplateCell = ({ cell }: CellContext<TableData, TableData['templateName']>) => (
-  <Translate context={cell.row.original.templateId}>{cell.getValue()}</Translate>
-);
+const TemplateCell = ({ cell }: CellContext<TableData, TableData['templateName']>) =>
+  t(cell.row.original.templateId, cell.getValue(), null, false);
 
 const columns = [
   columnHelper.accessor('status', {
@@ -215,14 +214,17 @@ const ImportsTable = () => {
               <span className="font-semibold text-lg text-black">{csvUploads.length}</span>
               <Translate>Total imports</Translate>
             </div>
+            <span className="min-h-5 border-l" />
             <div className="flex flex-row gap-2 items-center">
               <span className="font-semibold text-lg text-indigo-500">{processing}</span>
               <Translate>Processing</Translate>
             </div>
+            <span className="min-h-5 border-l" />
             <div className="flex flex-row gap-2 items-center">
               <span className="font-semibold text-lg text-black">{completed}</span>
               <Translate>Completed</Translate>
             </div>
+            <span className="min-h-5 border-l" />
             <div className="flex flex-row gap-2 items-center">
               <span className="font-semibold text-lg text-red-600">{failed}</span>
               <Translate>Failed jobs</Translate>

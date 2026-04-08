@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { DocumentIcon, PlusIcon } from '@heroicons/react/24/solid';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { BlankState, Button } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { ImportsTable } from './Components/ImportsTable';
-import type { csvLoaderResponse } from './Loaders/csvListLoader';
+import { ImportsTable } from './Components/ImportsTable.js';
+import { UploadFileModal } from './Components/UploadFileModal.js';
+import type { csvLoaderResponse } from './Loaders/csvListLoader.js';
 
 const CSVList = () => {
   const { list: csvUploads } = useLoaderData() as csvLoaderResponse;
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
 
   return (
     <div className="w-full h-full overflow-y-auto">
@@ -33,12 +39,17 @@ const CSVList = () => {
           )}
         </SettingsContent.Body>
         <SettingsContent.Footer>
-          <Button type="button" className="float-right flex flex-row gap-2 items-center">
+          <Button
+            onClick={() => setModalOpen(true)}
+            type="button"
+            className="float-right flex flex-row gap-2 items-center"
+          >
             <PlusIcon className="w-4 h-4" />
             <Translate>Import CSV</Translate>
           </Button>
         </SettingsContent.Footer>
       </SettingsContent>
+      <UploadFileModal isOpen={modalOpen} onClose={closeModal} />
     </div>
   );
 };
