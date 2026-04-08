@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import uuid from 'node-uuid';
 import { Id } from '#api/core/libs/Id.js';
-import { InvalidThesaurusValueIdsError } from './errors.js';
 import { ThesaurusDiff } from './ThesaurusDiff.js';
 
 type ThesaurusValue = {
@@ -194,16 +193,6 @@ class Thesaurus {
   }
 
   update({ name, values }: UpdateProps): Thesaurus {
-    if (values) {
-      const unknownIds = values
-        .filter(v => 'id' in v && !this.hashedValuesById.has(v.id))
-        .map(v => (v as ThesaurusValue).id);
-
-      if (unknownIds.length > 0) {
-        throw new InvalidThesaurusValueIdsError(unknownIds);
-      }
-    }
-
     const updated = values?.map(value => this.processValue(value));
 
     return this.clone({ name, values: updated });
