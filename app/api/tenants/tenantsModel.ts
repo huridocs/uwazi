@@ -38,6 +38,7 @@ const mongoSchema = new mongoose.Schema({
     fileCacheHeaders: Boolean,
     v2UpdateThesaurus: Boolean,
     v2GetEntity: Boolean,
+    v2MultipleUpdateEntity: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
