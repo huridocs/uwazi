@@ -8,7 +8,7 @@ import { fileDBO } from '../files/schemas/filesTypes.js';
 
 type GetWithFilesMatch = {
   language?: LanguageISO6391;
-  sharedId?: string;
+  sharedId?: string | { $in: string[] };
   published?: boolean;
 };
 
@@ -81,6 +81,7 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
           },
         },
       },
+
       {
         $unset: 'files',
       },

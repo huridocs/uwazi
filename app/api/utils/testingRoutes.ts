@@ -7,6 +7,7 @@ import languageMiddleware from '#api/utils/languageMiddleware.js';
 import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
 import { appContext } from './AppContext.js';
 import { extendSupertest } from './supertestExtensions.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 
 extendSupertest();
 
@@ -48,6 +49,7 @@ const setUpApp = (
       .catch(next);
   });
   app.use(languageMiddleware);
+  app.use(dependenciesContextMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
 
   route(app);
