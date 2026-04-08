@@ -29,7 +29,9 @@ const expectedSlotNames = expectedSlots.map(slot => slot.slotName).sort();
 
 describe('MongoSlotsBootstrapper', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({});
+    await testingEnvironment.setUp({
+      [MongoSlotsDAO.collectionName]: [],
+    });
   });
 
   beforeEach(async () => {
@@ -46,7 +48,9 @@ describe('MongoSlotsBootstrapper', () => {
 
       await sut.execute();
 
-      const slots = await slotsCollection().find({}).toArray();
+      const slots = await slotsCollection()
+        .find({ _id: { $ne: MongoSlotsDAO.sentinelId as any } })
+        .toArray();
       const slotNames = slots.map(slot => slot.slotName).sort();
       const normalizedSlots = slots.map(slot => ({
         type: slot.type,
@@ -78,7 +82,9 @@ describe('MongoSlotsBootstrapper', () => {
       await slotsCollection().insertMany(expectedSlots);
 
       await expect(sut.execute()).resolves.not.toThrow();
-      const slots = await slotsCollection().find({}).toArray();
+      const slots = await slotsCollection()
+        .find({ _id: { $ne: MongoSlotsDAO.sentinelId as any } })
+        .toArray();
       const slotNames = slots.map(slot => slot.slotName).sort();
 
       expect(slots).toHaveLength(expectedSlotCount);
@@ -144,6 +150,29 @@ describe('MongoSlotsBootstrapper', () => {
       );
 
       await expect(sut.execute()).resolves.not.toThrow();
+    });
+  });
+
+  describe('Sentinel creation', () => {
+    it('creates the sentinel document on bootstrap', async () => {
+      const { sut } = createSut();
+
+      await sut.execute();
+
+      const sentinel = await slotsCollection().findOne({ _id: MongoSlotsDAO.sentinelId as any });
+      expect(sentinel).toBeDefined();
+      expect(sentinel?.version).toBe(0);
+    });
+
+    it('does not overwrite an existing sentinel', async () => {
+      const { sut } = createSut();
+
+      await slotsCollection().insertOne({ _id: MongoSlotsDAO.sentinelId as any, version: 42 });
+
+      await sut.execute();
+
+      const sentinel = await slotsCollection().findOne({ _id: MongoSlotsDAO.sentinelId as any });
+      expect(sentinel?.version).toBe(42);
     });
   });
 });

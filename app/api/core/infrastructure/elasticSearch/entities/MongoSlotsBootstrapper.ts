@@ -14,6 +14,7 @@ class MongoSlotsBootstrapper {
   async execute() {
     await this.createSlots();
     await this.createIndexes();
+    await this.createSentinel();
   }
 
   private get collection() {
@@ -54,6 +55,14 @@ class MongoSlotsBootstrapper {
     await this.collection.createIndex(
       { assignedTo: 1 },
       { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
+    );
+  }
+
+  async createSentinel() {
+    await this.collection.updateOne(
+      { _id: MongoSlotsDAO.sentinelId as any },
+      { $setOnInsert: { version: 0 } },
+      { upsert: true }
     );
   }
 }

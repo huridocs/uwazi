@@ -6,7 +6,11 @@ import { TransactionManagerFactory } from '../../factories/TransactionManagerFac
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
 const createSut = () => {
-  const sut = new MongoSlotsDAO(getConnection(), TransactionManagerFactory.default(), 'tenant-a');
+  const sut = new MongoSlotsDAO({
+    db: getConnection(),
+    transactionManager: TransactionManagerFactory.default(),
+    tenantName: 'tenant-a',
+  });
 
   return { sut };
 };
@@ -71,7 +75,7 @@ describe('MongoSlotsDAO', () => {
       );
     });
 
-    it('throws when property is already assigned (duplicate key)', async () => {
+    it('is a no-op when the property is already assigned to a slot', async () => {
       const { sut } = createSut();
 
       await slotsCollection().insertMany([
@@ -79,9 +83,11 @@ describe('MongoSlotsDAO', () => {
         { type: 'text', slotName: 'text_02', assignedTo: null },
       ]);
 
-      await expect(sut.assignSlot({ propertyName: 'title', type: 'text' })).rejects.toThrow(
-        'Property "title" is already assigned to a slot'
-      );
+      await expect(sut.assignSlot({ propertyName: 'title', type: 'text' })).resolves.not.toThrow();
+
+      // Slot assignment is unchanged
+      const slot = await slotsCollection().findOne({ slotName: 'text_01' });
+      expect(slot?.assignedTo).toBe('title');
     });
   });
 
@@ -104,50 +110,6 @@ describe('MongoSlotsDAO', () => {
     it('does not throw when property does not exist', async () => {
       const { sut } = createSut();
       await expect(sut.unassignSlot('missing_property')).resolves.not.toThrow();
-    });
-  });
-
-  describe('updatePropertyName()', () => {
-    it('renames an existing slot', async () => {
-      const { sut } = createSut();
-
-      await slotsCollection().insertOne({
-        type: 'text',
-        slotName: 'text_01',
-        assignedTo: 'title',
-      });
-
-      await sut.updatePropertyName({ oldName: 'title', newName: 'title_changed' });
-
-      const updated = await slotsCollection().findOne({ slotName: 'text_01' });
-
-      expect(updated).toEqual({
-        _id: expect.any(ObjectId),
-        type: 'text',
-        slotName: 'text_01',
-        assignedTo: 'title_changed',
-      });
-    });
-
-    it('throws when old slot name does not exist', async () => {
-      const { sut } = createSut();
-
-      await expect(
-        sut.updatePropertyName({ oldName: 'not_existing', newName: 'not_existing_changed' })
-      ).rejects.toThrow('No slot found with property name not_existing');
-    });
-
-    it('propagates duplicate key errors when target slot name already exists', async () => {
-      const { sut } = createSut();
-
-      await slotsCollection().insertMany([
-        { type: 'text', slotName: 'text_01', assignedTo: 'title' },
-        { type: 'text', slotName: 'text_02', assignedTo: 'title_changed' },
-      ]);
-
-      await expect(
-        sut.updatePropertyName({ oldName: 'title', newName: 'title_changed' })
-      ).rejects.toThrow();
     });
   });
 
@@ -247,27 +209,28 @@ describe('MongoSlotsDAO', () => {
       expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
       expect(slotMap.has('title')).toBe(false);
     });
+  });
 
-    it('invalidates cache after updatePropertyName()', async () => {
+  describe('touchSentinel()', () => {
+    it('increments the sentinel version', async () => {
       const { sut } = createSut();
-      const getAssignedSlotsSpy = jest.spyOn(sut, 'getAssignedSlots');
 
-      await slotsCollection().insertOne({
-        type: 'text',
-        slotName: 'txt_01',
-        assignedTo: 'title',
-      });
+      await slotsCollection().insertOne({ _id: MongoSlotsDAO.sentinelId as any, version: 0 });
 
-      await sut.getSlotMap();
-      await sut.updatePropertyName({
-        oldName: 'title',
-        newName: 'title_changed',
-      });
-      const slotMap = await sut.getSlotMap();
+      await sut.touchSentinel();
 
-      expect(getAssignedSlotsSpy).toHaveBeenCalledTimes(2);
-      expect(slotMap.get('title_changed')?.slotName).toBe('txt_01');
-      expect(slotMap.has('title')).toBe(false);
+      const sentinel = await slotsCollection().findOne({ _id: MongoSlotsDAO.sentinelId as any });
+      expect(sentinel?.version).toBe(1);
+    });
+
+    it('creates the sentinel if it does not exist (upsert)', async () => {
+      const { sut } = createSut();
+
+      await sut.touchSentinel();
+
+      const sentinel = await slotsCollection().findOne({ _id: MongoSlotsDAO.sentinelId as any });
+      expect(sentinel).toBeDefined();
+      expect(sentinel?.version).toBe(1);
     });
   });
 });
