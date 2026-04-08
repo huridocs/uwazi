@@ -163,7 +163,8 @@ describe.each([
   });
 
   describe('empty ids', () => {
-    it('should return an empty array when no ids are provided', async () => {
+    it('should return an empty array when no ids are provided (V1 only)', async () => {
+      if (featureFlags.v2MultipleUpdateEntity) return;
       const body = {
         ids: [],
         values: { metadata: { numeric: [{ value: 1 }] } },
@@ -208,5 +209,19 @@ describe('POST /api/entities/multipleupdate - V2 only behaviours', () => {
     expect(result[0].icon).toMatchObject({ _id: 'icon-original-1' });
     // published should remain false as set in fixture
     expect(result[0].published).toBe(false);
+  });
+
+  it('should return 422 when ids is empty', async () => {
+    await multipleUpdate(
+      { ids: [], values: { metadata: { numeric: [{ value: 1 }] } } },
+      { expectStatus: 422 }
+    );
+  });
+
+  it('should return 422 when ids exceeds 1000 entries', async () => {
+    await multipleUpdate(
+      { ids: Array.from({ length: 1001 }, (_, i) => `id-${i}`), values: {} },
+      { expectStatus: 422 }
+    );
   });
 });

@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -16,7 +17,6 @@ import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentC
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { MultiUpdateEntity, MultiUpdateEntityDeps } from '../MultiUpdateEntity.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { ObjectId } from 'mongodb';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -82,11 +82,15 @@ const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) =
   );
 
   DependenciesContext.attachContext(sut, 'execute', {
-    transactionManager,
-    eventEmitter,
-    idGenerator,
-    jobsDispatcher,
-    logger: TestUtils.mockClass<Logger>({}),
+    factories: {
+      transactionManager: () => transactionManager,
+      eventEmitter: () => eventEmitter,
+      idGenerator: () => idGenerator,
+      jobsDispatcher: () => jobsDispatcher,
+      logger: () => TestUtils.mockClass<Logger>({}),
+      authorizedEntityESClient: () => TestUtils.mockClass({}),
+      elasticClient: () => TestUtils.mockClass({}),
+    },
   });
 
   return { sut };
@@ -335,11 +339,13 @@ describe('MultiUpdateEntity', () => {
         });
 
         const allIds = ['entity_write', 'entity_read', 'entity_group_write', 'entity_no_perm'];
-        for (const id of allIds) {
-          const docs = await getAllDocs(id);
-          const enDoc = docs.find(d => d.language === 'en')!;
-          expect(enDoc.title).toBe('Admin updated');
-        }
+        await Promise.all(
+          allIds.map(async id => {
+            const docs = await getAllDocs(id);
+            const enDoc = docs.find(d => d.language === 'en')!;
+            expect(enDoc.title).toBe('Admin updated');
+          })
+        );
       });
     });
 
@@ -364,11 +370,13 @@ describe('MultiUpdateEntity', () => {
         });
 
         const allIds = ['entity_write', 'entity_read', 'entity_group_write', 'entity_no_perm'];
-        for (const id of allIds) {
-          const docs = await getAllDocs(id);
-          const enDoc = docs.find(d => d.language === 'en')!;
-          expect(enDoc.title).toBe('Editor updated');
-        }
+        await Promise.all(
+          allIds.map(async id => {
+            const docs = await getAllDocs(id);
+            const enDoc = docs.find(d => d.language === 'en')!;
+            expect(enDoc.title).toBe('Editor updated');
+          })
+        );
       });
     });
 

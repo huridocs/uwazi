@@ -1,5 +1,6 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
 import { MultiUpdateEntityUseCaseFactory } from '../../factories/MultiUpdateEntityUseCaseFactory.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
@@ -17,10 +18,12 @@ type RequestDto = {
 class MultiUpdateEntityController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
     const startTime = Date.now();
+
     try {
       const useCase = MultiUpdateEntityUseCaseFactory.default();
 
-      const { ids = [], values = {} } = this.request.body;
+      const parsed = MultiUpdateEntity.InputSchema.parse({ ids: this.request.body?.ids || [] });
+      const { values = {} } = this.request.body;
       const targetLanguage = this.language;
 
       const propertyAssignments: PropertyAssignmentInput[] | undefined = values.metadata
@@ -31,7 +34,7 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
         : undefined;
 
       const output = await useCase.execute({
-        ids,
+        ids: parsed.ids,
         targetLanguage,
         values: {
           propertyAssignments,

@@ -38,6 +38,8 @@ type Deps = {
 };
 
 class MultiUpdateEntity extends AbstractUseCase<Input, Output, Deps> {
+  static InputSchema = InputSchema;
+
   async execute(input: Input): Promise<Output> {
     const { ids, targetLanguage, values } = input;
 
