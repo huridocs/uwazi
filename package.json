@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.228.255",
+  "version": "1.228.260",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -85,7 +85,9 @@
     "build-storybook": "storybook build",
     "cypress": "cypress open",
     "cy-components": "cypress run --component --config video=false --browser chrome",
-    "cy-e2e": "cypress run --browser chrome"
+    "cy-e2e": "cypress run --browser chrome",
+    "es:list": "tsx scripts/elasticSearch/ListIndexes.js",
+    "es:migrate": "tsx scripts/elasticSearch/MigrateIndex.js"
   },
   "jest": {
     "projects": [

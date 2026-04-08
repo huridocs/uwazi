@@ -1,13 +1,13 @@
 /* eslint-disable class-methods-use-this */
-/* eslint-disable max-statements */
+
 /* eslint-disable max-classes-per-file */
+import { Collection } from 'mongodb';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { tenants } from '#api/tenants/index.js';
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { Collection } from 'mongodb';
 import { DependenciesContext } from '../../DependenciesContext.js';
 import { JobInfo } from '../../queue/application/contracts/Dispatchable.js';
 import { AsyncEventEmitter } from '../AsyncEventEmitter.js';
@@ -15,24 +15,25 @@ import { Event } from '../Event.js';
 import { Listener } from '../Listener.js';
 import { DefaultDispatcher } from '../../queue/configuration/factories.js';
 import { EventEmitter } from '../EventEmitter.js';
+import { Logger } from '../../logger/contracts/Logger.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-
-  const idGenerator = TestUtils.mockClass<IdGenerator>({});
-  const eventEmitter = TestUtils.mockClass<EventEmitter>({});
 
   const sut = new AsyncEventEmitter();
 
   const runInContext = async (callback: () => Promise<void>, transactional = true) =>
     DependenciesContext.run(
       {
-        transactionManager,
-        jobsDispatcher,
-        eventEmitter,
-        idGenerator,
-        logger: TestUtils.mockClass({}),
+        factories: {
+          transactionManager: () => transactionManager,
+          jobsDispatcher: () => DefaultDispatcher(tenants.current().name, transactionManager),
+          eventEmitter: () => TestUtils.mockClass<EventEmitter>({}),
+          idGenerator: () => TestUtils.mockClass<IdGenerator>({}),
+          logger: () => TestUtils.mockClass<Logger>({}),
+          authorizedEntityESClient: () => TestUtils.mockClass({}),
+          elasticClient: () => TestUtils.mockClass({}),
+        },
       },
       async () => (transactional ? transactionManager.run(callback) : callback())
     );

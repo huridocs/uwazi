@@ -84,7 +84,6 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
       : appliedFilters;
   const { from, to, ...rest } = appliedFilters;
 
-  // Convert string timestamps from URL to numbers for DateRangePicker
   const dateRange = {
     from: from ? Number(from) : null,
     to: to ? Number(to) : null,
@@ -177,10 +176,7 @@ const updateSearch = (
     setSearchParams((prev: URLSearchParams) => {
       prev.delete('page');
       plainFilters.forEach(([key, value]) => {
-        if (
-          value !== undefined &&
-          ((isArray(value) && value.length > 0) || (!isArray(value) && value !== ''))
-        ) {
+        if (value && ((isArray(value) && value.length > 0) || (!isArray(value) && value !== ''))) {
           setSearchValue(prev, key, value);
         } else {
           prev.delete(key);

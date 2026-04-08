@@ -81,11 +81,15 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   );
 
   DependenciesContext.attachContext(sut, 'execute', {
-    transactionManager,
-    idGenerator,
-    eventEmitter,
-    jobsDispatcher,
-    logger: TestUtils.mockClass({}),
+    factories: {
+      transactionManager: () => transactionManager,
+      idGenerator: () => idGenerator,
+      eventEmitter: () => eventEmitter,
+      jobsDispatcher: () => jobsDispatcher,
+      logger: () => TestUtils.mockClass({}),
+      authorizedEntityESClient: () => TestUtils.mockClass({}),
+      elasticClient: () => TestUtils.mockClass({}),
+    },
   });
 
   return { sut, fileService };
