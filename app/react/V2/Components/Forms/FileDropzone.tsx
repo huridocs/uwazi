@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState, useId } from 'react';
 import Dropzone, { DropzoneOptions } from 'react-dropzone-esm';
-import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { XMarkIcon } from '@heroicons/react/24/solid';
+import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { formatBytes } from '#V2/shared/formatHelpers.js';
 
@@ -9,9 +10,21 @@ type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];
   onChange?: (files: File[]) => void;
   className?: string;
+  acceptedFiles?: DropzoneOptions['accept'];
+  multiple?: boolean;
+  message?: React.ReactNode;
+  maxSize?: number;
 };
 
-const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
+const FileDropzone = ({
+  className,
+  onDrop,
+  onChange,
+  acceptedFiles,
+  message,
+  multiple = true,
+  maxSize = undefined,
+}: FileDropzoneProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [totalSize, setTotalSize] = useState<number>(0);
   const inputId = useId();
@@ -28,15 +41,19 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
     if (onChange) {
       onChange(files);
     }
-  }, [files]);
+  }, [files, onChange]);
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_file, i) => i !== index));
   };
 
-  const handleOnDrop: DropzoneOptions['onDrop'] = (acceptedFiles, fileRejections, event) => {
-    if (acceptedFiles) {
-      setFiles([...files, ...acceptedFiles]);
+  const handleOnDrop: DropzoneOptions['onDrop'] = (newFiles, fileRejections, event) => {
+    if (newFiles) {
+      if (multiple) {
+        setFiles([...files, ...newFiles]);
+      } else {
+        setFiles(newFiles);
+      }
     }
     if (onDrop) {
       onDrop(files, fileRejections, event);
@@ -44,7 +61,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   };
 
   return (
-    <Dropzone onDrop={handleOnDrop}>
+    <Dropzone onDrop={handleOnDrop} multiple={multiple} accept={acceptedFiles} maxSize={maxSize}>
       {({ getRootProps, getInputProps }) => (
         <section
           className={`p-4 bg-gray-50 rounded-sm border border-gray-300 border-dashed ${className}`}
@@ -55,8 +72,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
             </label>
             <input {...getInputProps()} id={inputId} />
             <div className="flex flex-col gap-4">
-              <ArrowUpTrayIcon className="m-auto w-auto text-gray-200 max-w-20" />
-
+              <CloudArrowUpIcon className="m-auto w-auto text-gray-900 max-w-14" />
               <div className="leading-6 text-center">
                 <Translate className="font-semibold border-b-2 border-black cursor-pointer">
                   Browse files to upload
@@ -64,6 +80,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
                 &nbsp;
                 <Translate>or drop your files here.</Translate>
               </div>
+              <div className="text-center">{message}</div>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 my-4">
