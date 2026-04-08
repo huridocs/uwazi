@@ -27,13 +27,13 @@ const slotsCache = new Map<string, SlotMap>();
 class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
   static collectionName = 'elasticSlots';
 
-  private readonly tenantId: string;
+  private readonly tenantName: string;
 
   protected collectionName = MongoSlotsDAO.collectionName;
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, tenantId: string) {
+  constructor(db: Db, transactionManager: MongoTransactionManager, tenantName: string) {
     super(db, transactionManager);
-    this.tenantId = tenantId;
+    this.tenantName = tenantName;
   }
 
   static clearCache() {
@@ -109,7 +109,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
   }
 
   async getSlotMap(): Promise<SlotMap> {
-    const cached = slotsCache.get(this.tenantId);
+    const cached = slotsCache.get(this.tenantName);
     if (cached) {
       return cached;
     }
@@ -123,13 +123,13 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
       }
     });
 
-    slotsCache.set(this.tenantId, slotMap);
+    slotsCache.set(this.tenantName, slotMap);
 
     return slotMap;
   }
 
   invalidateCache() {
-    slotsCache.delete(this.tenantId);
+    slotsCache.delete(this.tenantName);
   }
 }
 
