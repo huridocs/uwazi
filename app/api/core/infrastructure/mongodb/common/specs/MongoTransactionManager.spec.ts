@@ -1,11 +1,12 @@
 /* eslint-disable max-classes-per-file */
+import { MongoClient, MongoError } from 'mongodb';
 import { getIdMapper } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB from '#api/utils/testing_db.js';
-import { MongoClient, MongoError } from 'mongodb';
 import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { getClient, getTenant } from '../getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '../MongoTransactionManager.js';
+import { OptimisticLockError } from '../OptimisticLockError.js';
 
 const ids = getIdMapper();
 
@@ -412,5 +413,67 @@ describe('when the commit operation throws a UnknownTransactionCommitResult', ()
 
     expect(checkpoints).toEqual([1, 2]);
     expect(commitTransactionMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('when the operation throws a OptimisticLockError', () => {
+  const makeWriteConflictError = () => {
+    const error = new OptimisticLockError({
+      resourceName: 'Test',
+      expectedVersion: 1,
+      resourceId: 'testId',
+    });
+
+    return error;
+  };
+
+  it('retries on OptimisticLockError and succeeds on the second attempt', async () => {
+    const transactionManager = createTransactionManager();
+
+    let throwed = false;
+    const checkpoints: number[] = [];
+    await transactionManager.run(async () => {
+      checkpoints.push(1);
+      if (!throwed) {
+        throwed = true;
+        throw makeWriteConflictError();
+      }
+    });
+
+    expect(checkpoints).toEqual([1, 1]);
+  });
+
+  it('re-throws after MAX_RETRIES consecutive WriteConflicts', async () => {
+    const transactionManager = createTransactionManager();
+    const errors: Error[] = [];
+
+    try {
+      await transactionManager.run(async () => {
+        const error = makeWriteConflictError();
+        errors.push(error);
+        throw error;
+      });
+    } catch (e) {
+      expect(e).toBe(errors[errors.length - 1]);
+      expect(errors.length).toBe(4); // 1 initial + 3 retries
+    }
+  });
+
+  it('does not retry on MongoErrors with other codes', async () => {
+    const transactionManager = createTransactionManager();
+    let callCount = 0;
+    const otherError = new MongoError('SomeOtherError');
+    (otherError as any).code = 999;
+
+    try {
+      await transactionManager.run(async () => {
+        // eslint-disable-next-line no-plusplus
+        callCount++;
+        throw otherError;
+      });
+    } catch (e) {
+      expect(e).toBe(otherError);
+      expect(callCount).toBe(1);
+    }
   });
 });

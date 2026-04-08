@@ -1,6 +1,7 @@
 import { MongoClient, ClientSession } from 'mongodb';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
+import { OptimisticLockError } from './OptimisticLockError.js';
 
 export class MongoTransactionManager implements TransactionManager {
   private mongoClient: MongoClient;
@@ -72,11 +73,20 @@ export class MongoTransactionManager implements TransactionManager {
     }
   }
 
+  private isWriteConflict(error: unknown): boolean {
+    return error instanceof OptimisticLockError;
+  }
+
   private async runWithRetry<T>(callback: () => Promise<T>, retries = 3): Promise<T> {
     try {
       return await this.runInTransaction(callback);
     } catch (error) {
       if (retries > 0 && error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
+        this.logger.debug(error);
+        return this.runWithRetry(callback, retries - 1);
+      }
+
+      if (retries > 0 && this.isWriteConflict(error)) {
         this.logger.debug(error);
         return this.runWithRetry(callback, retries - 1);
       }
