@@ -86,12 +86,12 @@ const ProgressCell = ({ cell }: CellContext<TableData, TableData['progress']>) =
   }, [cell, processedRows, totalRows]);
 
   return (
-    <>
-      <span className="sr-only">
-        {totalRows}&frasl;{processedRows}
-      </span>
+    <div className="flex flex-row gap-2 items-center">
       <ProgressBar progress={progress} color={color} />
-    </>
+      <span className="text-gray-500">
+        {processedRows}/{totalRows}
+      </span>
+    </div>
   );
 };
 
@@ -200,31 +200,31 @@ const ImportsTable = () => {
   return (
     <Table
       header={
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-4">
           <div>
-            <span className="float-left" no-translate>
+            <span className="float-left text-xl font-semibold" no-translate>
               CSVs
             </span>
-            <div className="flex flex-row items-baseline gap-2 float-right">
+            <div className="flex flex-row items-center gap-2 float-right text-gray-400 text-sm">
               <ArrowPathIcon className="w-4 h-4" />
               <Translate>Auto-refreshing</Translate>
             </div>
           </div>
-          <div className="flex flex-row gap-8">
-            <div>
-              <span>{csvUploads.length}</span>
+          <div className="flex flex-row gap-8 items-center">
+            <div className="flex flex-row gap-2 items-center">
+              <span className="font-semibold text-lg text-black">{csvUploads.length}</span>
               <Translate>Total imports</Translate>
             </div>
-            <div>
-              <span>{processing}</span>
+            <div className="flex flex-row gap-2 items-center">
+              <span className="font-semibold text-lg text-indigo-500">{processing}</span>
               <Translate>Processing</Translate>
             </div>
-            <div>
-              <span>{completed}</span>
+            <div className="flex flex-row gap-2 items-center">
+              <span className="font-semibold text-lg text-black">{completed}</span>
               <Translate>Completed</Translate>
             </div>
-            <div>
-              <span>{failed}</span>
+            <div className="flex flex-row gap-2 items-center">
+              <span className="font-semibold text-lg text-red-600">{failed}</span>
               <Translate>Failed jobs</Translate>
             </div>
           </div>

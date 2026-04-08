@@ -52,10 +52,10 @@ describe('CSV imports list table', () => {
     await renderComponent();
 
     const expectedRows = [
-      ['Queued', 'people.csv', 'People', '0⁄0', '', '', 'Apr 7, 2024'],
-      ['Processing', 'cases.zip', 'Cases', '120⁄48', '44', '1', 'Apr 8, 2024'],
-      ['Completed', 'events.csv', 'Events', '86⁄86', '84', '0', 'Apr 9, 2024'],
-      ['Failed', 'documents.csv', 'Documents', '60⁄17', '15', '2', 'Apr 10, 2024'],
+      ['Queued', 'people.csv', 'People', '0/0', '', '', 'Apr 7, 2024'],
+      ['Processing', 'cases.zip', 'Cases', '48/120', '44', '1', 'Apr 8, 2024'],
+      ['Completed', 'events.csv', 'Events', '86/86', '84', '0', 'Apr 9, 2024'],
+      ['Failed', 'documents.csv', 'Documents', '17/60', '15', '2', 'Apr 10, 2024'],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);
