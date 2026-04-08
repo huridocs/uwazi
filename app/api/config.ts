@@ -123,7 +123,7 @@ export const config = {
       v2UpdateThesaurus: false,
       v1CSVImportCompat: false,
       v2GetEntity: false,
-      v2MultipleUpdateEntity: true,
+      v2MultipleUpdateEntity: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

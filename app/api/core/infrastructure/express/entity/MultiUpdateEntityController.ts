@@ -50,11 +50,9 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
         this.user
       );
 
-      const updatedEntities = await Promise.all(
-        sharedIds.map(async sharedId =>
-          entityDAO.getWithFiles({ sharedId, language: targetLanguage }).next()
-        )
-      );
+      const updatedEntities = await entityDAO
+        .getWithFiles({ sharedId: { $in: sharedIds }, language: targetLanguage })
+        .toArray();
 
       DependenciesContext.logger.info('MultiUpdateEntity executed successfully', {
         namespace: 'MultiUpdate_Entity',

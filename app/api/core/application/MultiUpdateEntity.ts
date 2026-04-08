@@ -54,6 +54,8 @@ class MultiUpdateEntity extends AbstractUseCase<Input, Output, Deps> {
 
     const entities = await (await this.deps.entitiesDS.getEntitiesBySharedIds(grantedIds)).all();
 
+    if (entities.length === 0) return [];
+
     const newTemplate = values.templateId
       ? (await this.deps.templatesDS.getById(values.templateId)).getDataOrThrow()
       : undefined;
