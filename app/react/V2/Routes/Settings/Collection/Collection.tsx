@@ -8,6 +8,7 @@ import { useSetAtom } from 'jotai';
 import isUndefined from 'lodash/isUndefined.js';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import * as FilesAPI from '#V2/api/files/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
@@ -21,6 +22,8 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
+import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
+import { FileType } from '#shared/types/fileType.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -30,11 +33,16 @@ const collectionLoader =
     const raw = await SettingsAPI.get(headers);
     const { themeCustomization: themeCustomizationFlag, ...settings } =
       raw as SettingsWithThemeFlag;
-    const templates = await TemplatesAPI.get(headers);
+    const [templates, customFilesRaw] = await Promise.all([
+      TemplatesAPI.get(headers),
+      FilesAPI.getByType('custom', headers),
+    ]);
+    const customUploadFiles = Array.isArray(customFilesRaw) ? customFilesRaw : [];
     return {
       settings,
       templates,
       themeCustomization: themeCustomizationFlag ?? false,
+      customUploadFiles,
     };
   };
 
@@ -77,10 +85,11 @@ const dateOptions = () => {
 };
 
 const Collection = () => {
-  const { settings, templates, themeCustomization } = useLoaderData() as {
+  const { settings, templates, themeCustomization, customUploadFiles } = useLoaderData() as {
     settings: ClientSettings;
     templates: Template[];
     themeCustomization: boolean;
+    customUploadFiles: FileType[];
   };
   const { links, custom, ...formData } = settings;
 
@@ -178,21 +187,37 @@ const Collection = () => {
                     {...register('site_name', { required: true })}
                   />
                 </div>
-                <div className="sm:col-span-1">
-                  <InputField
-                    id="favicon"
-                    type="text"
-                    label={<Translate>Custom Favicon</Translate>}
-                    {...register('favicon')}
-                  />
-                </div>
+                <CustomUploadImagePicker
+                  id="favicon"
+                  label={labelWithTip(<Translate>Custom Favicon</Translate>, tips.customFavIcon)}
+                  registerProps={register('favicon')}
+                  value={watch('favicon')}
+                  onChange={v => setValue('favicon', v, { shouldDirty: true })}
+                  files={customUploadFiles}
+                  selectButtonTitle={<Translate>Select favicon image</Translate>}
+                  previewImgClassName="max-h-16 max-w-16 rounded border border-gray-200 object-contain bg-gray-50 p-1"
+                />
                 {themeCustomization && (
-                  <div className="sm:col-span-2">
-                    <ThemeSelector
-                      value={watch('themeVars') ?? {}}
-                      onChange={v => setValue('themeVars', v)}
+                  <>
+                    <div className="sm:col-span-2">
+                      <ThemeSelector
+                        value={watch('themeVars') ?? {}}
+                        onChange={v => setValue('themeVars', v)}
+                      />
+                    </div>
+                    <CustomUploadImagePicker
+                      id="site-logo"
+                      label={labelWithTip(
+                        <Translate>Custom site logo</Translate>,
+                        tips.customSiteLogo
+                      )}
+                      registerProps={register('site_logo')}
+                      value={watch('site_logo')}
+                      onChange={v => setValue('site_logo', v, { shouldDirty: true })}
+                      files={customUploadFiles}
+                      selectButtonTitle={<Translate>Select site logo image</Translate>}
                     />
-                  </div>
+                  </>
                 )}
                 <div className="sm:col-span-1">
                   <Select

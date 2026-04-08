@@ -216,6 +216,7 @@ Custom CSS,CSS personalizado
 Custom Favicon,Custom Favicon
 Custom JS,JS Personalizado
 Custom landing page,Custom landing page
+Custom site logo,Logotipo personalizado del sitio
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
 Custom Uploads,Subidas personalizadas
 Dark,Dark
@@ -336,10 +337,14 @@ Extractors,Extractors
 Failed to save table of contents,Failed to save table of contents
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
 
-1. Sube tu ícono en Subidas personalizadas.
-2. Copia su URL.
-3. Activa ""Definir favicon"" y pega el URL en el campo indicado.
-4. Recarga la página para ver tu favicon en acción."
+1. Sube tu ícono en Subidas personalizadas si hace falta.
+2. Haz clic en ""Seleccionar imagen del favicon"" y elige un archivo (solo imágenes de Subidas personalizadas).
+3. Recarga la página para ver tu favicon en acción."
+Site logo description,"El logotipo aparece en la barra superior junto al nombre de tu colección (unos 200×32 píxeles).
+
+1. Sube imágenes en Subidas personalizadas si hace falta.
+2. Haz clic en ""Seleccionar imagen del logotipo del sitio"" y elige un archivo; solo se listan imágenes de Subidas personalizadas."
+Site logo no images hint,"Aún no hay archivos de imagen en Subidas personalizadas. Añade primero imágenes PNG, SVG o JPEG allí."
 FEATURED,DESTACADO
 File,Archivo
 File deleted,Archivo eliminado
@@ -780,10 +785,12 @@ Security,Security
 Select,Seleccionar
 Select & Search,Select & Search
 Select all,Seleccionar todo
+Select favicon image,Seleccionar imagen del favicon
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select relationship type,Seleccionar tipo de relación
 Select target paragraph,Seleccionar párrafo de destino
+Select site logo image,Seleccionar imagen del logotipo del sitio
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Seleccionar

@@ -135,7 +135,7 @@ const getPresetVars = (themeId: ThemeId): Record<SemanticVarKey, string> => {
 const SEMANTIC_VAR_SET = new Set<string>(SEMANTIC_VAR_KEYS);
 
 const appliedTheme = (
-  themeVars: Record<string, string> | undefined
+  themeVars: Record<string, string | undefined> | undefined
 ): Record<SemanticVarKey, string> => {
   const base = { ...SEMANTIC_THEME_VARS };
   if (themeVars && typeof themeVars === 'object') {

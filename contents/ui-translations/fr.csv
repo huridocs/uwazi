@@ -217,6 +217,7 @@ Custom CSS,CSS personnalisé
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 Custom landing page,Custom landing page
+Custom site logo,Logo du site personnalisé
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Téléchargements personnalisés
 Dark,Dark
@@ -335,12 +336,16 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed to save table of contents,Failed to save table of contents
-Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
+Favicon description,"Un favicon est une petite icône qui représente votre collection dans les onglets et les favoris du navigateur. Le favicon par défaut est le logo Uwazi. Pour utiliser le vôtre :
 
-1. Upload your icon in Custom Uploads.
-2. Copy its URL.
-3. Choose ""Custom Icon"" and paste the URL in the indicated field.
-4. Reload the page to see your favicon in action."
+1. Téléchargez votre icône dans Téléchargements personnalisés si nécessaire.
+2. Cliquez sur ""Sélectionner l'image du favicon"" et choisissez un fichier (images des Téléchargements personnalisés uniquement).
+3. Rechargez la page pour voir votre favicon."
+Site logo description,"Le logo apparaît dans la barre supérieure à côté du nom de votre collection (environ 200×32 pixels).
+
+1. Téléchargez des images dans Téléchargements personnalisés si nécessaire.
+2. Cliquez sur ""Sélectionner l'image du logo du site"" et choisissez un fichier ; seules les images des Téléchargements personnalisés sont listées."
+Site logo no images hint,"Aucun fichier image dans Téléchargements personnalisés pour l'instant. Ajoutez d'abord des images PNG, SVG ou JPEG."
 FEATURED,FEATURED
 File,Fichier
 File deleted,File deleted
@@ -781,10 +786,12 @@ Security,Security
 Select,Select
 Select & Search,Select & Search
 Select all,Tout sélectionner
+Select favicon image,Sélectionner l'image du favicon
 Select files on your device,Sélectionnez les fichiers sur votre appareil
 Select from computer,Select from computer
 Select relationship type,Sélectionner le type de relation
 Select target paragraph,Sélectionner le paragraphe cible
+Select site logo image,Sélectionner l'image du logo du site
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Sélectionner...

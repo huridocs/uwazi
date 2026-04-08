@@ -218,6 +218,7 @@ Custom CSS,စိတ်ကြိုက် CSS
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 Custom landing page,Custom landing page
+Custom site logo,Custom site logo
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
 Dark,Dark
@@ -338,10 +339,14 @@ Extractors,Extractors
 Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
-1. Upload your icon in Custom Uploads.
-2. Copy its URL.
-3. Choose ""Custom Icon"" and paste the URL in the indicated field.
-4. Reload the page to see your favicon in action."
+1. Upload your icon in Custom Uploads if needed.
+2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
+3. Reload the page to see your favicon in action."
+Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
+Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 FEATURED,FEATURED
 File,ဖိုင်
 File deleted,File deleted
@@ -782,10 +787,12 @@ Security,Security
 Select,Select
 Select & Search,Select & Search
 Select all,အားလုံးကို ရွေးရန်
+Select favicon image,Select favicon image
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
 Select from computer,Select from computer
 Select relationship type,ဆက်နွှယ်မှု အမျိုးအစား ရွေးချယ်ရန်
 Select target paragraph,ပစ်မှတ်ထား စာပိုဒ်ကို ရွေးချယ်ရန်
+Select site logo image,Select site logo image
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,ရွေးချယ်ရန်...

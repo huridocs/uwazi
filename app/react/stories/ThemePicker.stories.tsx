@@ -23,7 +23,7 @@ const baseSettings: ClientSettings = {
 type ThemePickerWithPreviewProps = { themeCustomization: boolean };
 
 const ThemePickerWithPreview = ({ themeCustomization }: ThemePickerWithPreviewProps) => {
-  const [themeVars, setThemeVars] = useState<Record<string, string>>({});
+  const [themeVars, setThemeVars] = useState<Record<string, string | undefined>>({});
   const resolved = appliedTheme(themeVars);
   const accent = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
   const style: React.CSSProperties & Record<string, string> = {

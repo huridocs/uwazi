@@ -81,6 +81,7 @@ export interface ClientSettings extends Omit<
     paragraphExtraction?: boolean;
     [k: string]: unknown | undefined;
   };
+  themeCustomization?: boolean;
 }
 
 export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id | values'> {

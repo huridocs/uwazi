@@ -142,4 +142,28 @@ const WithNamedTheme: Story = {
   render: () => <HeaderWithTheme themeVars={getPresetVars('light')} authenticated={true} />,
 };
 
-export { Default, WithThemeSelector, Unauthenticated, WithNamedTheme };
+const WithSiteLogo: Story = {
+  render: () => {
+    const store = createStore();
+    const user: ClientUserSchema = { _id: '1', username: 'admin', role: 'admin', email: 'a@b.c' };
+    store.set(userAtom, user);
+    store.set(settingsAtom, {
+      ...baseSettings,
+      themeCustomization: true,
+      site_logo: 'https://via.placeholder.com/120x32',
+    });
+    store.set(localeAtom, 'en');
+    store.set(translationsAtom, []);
+    return (
+      <ReduxProvider store={reduxStore}>
+        <Provider store={store}>
+          <ThemeProvider>
+            <Header />
+          </ThemeProvider>
+        </Provider>
+      </ReduxProvider>
+    );
+  },
+};
+
+export { Default, WithThemeSelector, Unauthenticated, WithNamedTheme, WithSiteLogo };

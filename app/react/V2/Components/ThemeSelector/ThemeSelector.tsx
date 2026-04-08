@@ -12,8 +12,8 @@ import {
 } from '#V2/theme/themes.js';
 
 type ThemeSelectorProps = {
-  value: Record<string, string>;
-  onChange: (value: Record<string, string>) => void;
+  value: Record<string, string | undefined>;
+  onChange: (value: Record<string, string | undefined>) => void;
 };
 
 export const ThemeSelector = ({ value, onChange }: ThemeSelectorProps) => {

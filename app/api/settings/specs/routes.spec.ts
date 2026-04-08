@@ -56,6 +56,7 @@ describe('Settings routes', () => {
           site_name: 'Uwazi',
           mapApiKey: 'testMapApiKey123',
           allowedPublicTemplates: ['id1', 'id2'],
+          site_logo: 'http://localhost:3000/assets/test-logo.png',
         });
 
         expect(response.body.mailerConfig).toBeUndefined();
@@ -77,6 +78,7 @@ describe('Settings routes', () => {
           contactEmail: 'admin@uwazi.com',
           senderEmail: 'noreply@uwazi.com',
           publicFormDestination: 'http://example.com/submit',
+          site_logo: 'http://localhost:3000/assets/test-logo.png',
           features: expect.objectContaining({
             'metadata-extraction': true,
             metadataExtraction: { url: 'http:someurl' },

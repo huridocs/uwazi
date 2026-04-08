@@ -325,6 +325,7 @@ const settingsSchema = {
     project: { type: 'string' },
     site_name: { type: 'string' },
     favicon: { type: 'string' },
+    site_logo: { type: 'string' },
     themeVars: { type: 'object', additionalProperties: { type: 'string' } },
     contactEmail: { type: 'string' },
     senderEmail: { type: 'string' },

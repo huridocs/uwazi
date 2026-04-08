@@ -1,6 +1,6 @@
+import type { Application } from 'express';
 import settings from '#api/settings/settings.js';
 import { tenants } from '#api/tenants/index.js';
-import type { Application } from 'express';
 import type { Settings } from '#shared/types/settingsType.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 
@@ -10,6 +10,7 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   'project',
   'site_name',
   'favicon',
+  'site_logo',
   'home_page',
   'defaultLibraryView',
   'private',
