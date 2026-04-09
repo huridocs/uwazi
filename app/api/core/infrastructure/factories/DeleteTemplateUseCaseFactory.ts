@@ -7,7 +7,6 @@ import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
@@ -16,24 +15,21 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 
 class DeleteTemplateUseCaseFactory {
   static async create() {
+    const tenant = tenants.current();
     const eventBus = applicationEventsBus;
     const transactionManager = TransactionManagerFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-    const multiLanguageEntitiesDS = new MongoMultiLanguageEntityDataSource(
-      getConnection(),
-      transactionManager
-    );
+    const db = getConnection();
+    const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default(transactionManager);
     const filesDS = FilesDataSourceFactory.default(transactionManager);
-    const relationshipsV1DS = new MongoRelationshipsV1DataSource(
-      getConnection(),
-      transactionManager
-    );
+    const relationshipsV1DS = new MongoRelationshipsV1DataSource(db, transactionManager);
     let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
       TemplatePostProcessEntitiesJob: async () =>
         new TemplatePostProcessEntitiesJob({
@@ -49,7 +45,7 @@ class DeleteTemplateUseCaseFactory {
     });
 
     if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+      jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     }
 
     const useCase = new DeleteTemplateUseCase(
@@ -63,7 +59,7 @@ class DeleteTemplateUseCaseFactory {
         multiLanguageEntitiesDS,
         jobsDispatcher,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+      { actor: permissionsContext.getUserInContext()!, tenant }
     );
 
     return useCase;
