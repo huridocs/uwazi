@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSlotsDAO, SlotDocument } from '../entities/MongoSlotsDAO.js';
+import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import {
   AmountPerSlotType,
   SlotBootstrapDefinitions,
@@ -15,13 +15,12 @@ const createSut = () => {
 
 const slotsCollection = () => testingEnvironment.db.getCollection(MongoSlotsDAO.collectionName)!;
 
-const expectedSlots: Omit<SlotDocument, '_id'>[] = SlotBootstrapDefinitions.slotList().flatMap(
-  slotType =>
-    Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-      type: SlotBootstrapDefinitions.toPropertyType(slotType)!,
-      slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
-      assignedTo: null,
-    }))
+const expectedSlots = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
+  Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
+    type: slotType,
+    slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
+    assignedTo: null,
+  }))
 );
 
 const expectedSlotCount = expectedSlots.length;

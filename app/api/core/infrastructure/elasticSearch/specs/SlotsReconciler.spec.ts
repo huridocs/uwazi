@@ -111,7 +111,7 @@ describe('SlotsReconciler', () => {
 
   it('releases a slot when the property is no longer present in any template', async () => {
     await slotsCollection().updateOne(
-      { type: 'text', assignedTo: null },
+      { type: 'txt', assignedTo: null },
       { $set: { assignedTo: 'obsolete_prop' } }
     );
     const { sut } = createSut();
@@ -122,7 +122,7 @@ describe('SlotsReconciler', () => {
 
   it('assigns new properties and releases old ones in a single run', async () => {
     await slotsCollection().updateOne(
-      { type: 'text', assignedTo: null },
+      { type: 'txt', assignedTo: null },
       { $set: { assignedTo: 'old_prop' } }
     );
     await templatesCollection().insertMany([
@@ -132,6 +132,20 @@ describe('SlotsReconciler', () => {
     await sut.execute();
 
     expect(await getAssignedPropertyNames()).toEqual(['new_prop']);
+  });
+
+  it('does not assign a slot for properties with an unsupported type', async () => {
+    await templatesCollection().insertMany([
+      factory.template('template1', [
+        factory.property('image_prop', 'image'),
+        factory.property('media_prop', 'media'),
+      ]),
+    ]);
+    const { sut } = createSut();
+
+    await expect(sut.execute()).resolves.not.toThrow();
+
+    expect(await getAssignedPropertyNames()).toEqual([]);
   });
 
   it('always increments the sentinel version, even when nothing changes', async () => {

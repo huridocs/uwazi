@@ -4,7 +4,7 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
-type PropertyDescriptor = { name: string; type: PropertyType };
+type PropertyDescriptor = { name: string; type: PropertyType; inheritedType?: PropertyType };
 
 type Deps = {
   db: Db;
@@ -22,7 +22,14 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     return this.getCollection()
       .aggregate<PropertyDescriptor>([
         { $unwind: '$properties' },
-        { $project: { _id: 0, name: '$properties.name', type: '$properties.type' } },
+        {
+          $project: {
+            _id: 0,
+            name: '$properties.name',
+            type: '$properties.type',
+            inheritedType: '$properties.inheritedType',
+          },
+        },
       ])
       .toArray();
   }

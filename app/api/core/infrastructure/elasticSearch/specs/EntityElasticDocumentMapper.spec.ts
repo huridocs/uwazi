@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+import { SlotType } from '../entities/SlotType.js';
 import { EntityElasticDocumentMapper } from '../entities/EntityElasticDocumentMapper.js';
 import { SlotMap } from '../entities/MongoSlotsDAO.js';
 
@@ -39,7 +39,7 @@ const expectMappedScalarFields = (document: any, entity: EntityDBO, userId: Obje
 };
 
 const createSlotMap = (
-  entries: Array<{ assignedTo: string; slotName: string; type: PropertyType }>
+  entries: Array<{ assignedTo: string; slotName: string; type: SlotType }>
 ): SlotMap =>
   new Map(
     entries.map(entry => [
@@ -182,57 +182,57 @@ describe('EntityElasticDocumentMapper', () => {
     const entity = createEntity({ metadata });
 
     const slotMap = createSlotMap([
-      { assignedTo: 'textProp', slotName: 'txt_01', type: 'text' },
-      { assignedTo: 'markdownProp', slotName: 'txt_02', type: 'markdown' },
-      { assignedTo: 'generatedIdProp', slotName: 'txt_03', type: 'generatedid' },
-      { assignedTo: 'linkProp', slotName: 'txt_04', type: 'link' },
+      { assignedTo: 'textProp', slotName: 'txt_01', type: 'txt' },
+      { assignedTo: 'markdownProp', slotName: 'txt_02', type: 'txt' },
+      { assignedTo: 'generatedIdProp', slotName: 'txt_03', type: 'txt' },
+      { assignedTo: 'linkProp', slotName: 'txt_04', type: 'txt' },
 
       { assignedTo: 'dateProp', slotName: 'date_01', type: 'date' },
-      { assignedTo: 'multidateProp', slotName: 'date_02', type: 'multidate' },
+      { assignedTo: 'multidateProp', slotName: 'date_02', type: 'date' },
 
-      { assignedTo: 'numericProp', slotName: 'num_01', type: 'numeric' },
+      { assignedTo: 'numericProp', slotName: 'num_01', type: 'num' },
 
-      { assignedTo: 'dateRangeProp', slotName: 'range_01', type: 'daterange' },
-      { assignedTo: 'multidateRangeProp', slotName: 'range_02', type: 'multidaterange' },
+      { assignedTo: 'dateRangeProp', slotName: 'range_01', type: 'range' },
+      { assignedTo: 'multidateRangeProp', slotName: 'range_02', type: 'range' },
 
       { assignedTo: 'selectProp', slotName: 'select_01', type: 'select' },
-      { assignedTo: 'multiselectProp', slotName: 'select_02', type: 'multiselect' },
+      { assignedTo: 'multiselectProp', slotName: 'select_02', type: 'select' },
 
       { assignedTo: 'relationshipProp', slotName: 'relationship_01', type: 'relationship' },
       {
         assignedTo: 'relationshipTextProp',
         slotName: 'relationship_txt_01',
-        type: 'relationship',
+        type: 'relationship_txt',
       },
       {
         assignedTo: 'relationshipLinkProp',
         slotName: 'relationship_txt_02',
-        type: 'relationship',
+        type: 'relationship_txt',
       },
       {
         assignedTo: 'relationshipNumericProp',
         slotName: 'relationship_num_01',
-        type: 'relationship',
+        type: 'relationship_num',
       },
       {
         assignedTo: 'relationshipDateProp',
         slotName: 'relationship_date_01',
-        type: 'relationship',
+        type: 'relationship_date',
       },
       {
         assignedTo: 'relationshipRangeProp',
         slotName: 'relationship_range_01',
-        type: 'relationship',
+        type: 'relationship_range',
       },
       {
         assignedTo: 'relationshipSelectProp',
         slotName: 'relationship_select_01',
-        type: 'relationship',
+        type: 'relationship_select',
       },
       {
         assignedTo: 'relationshipGeolocationProp',
         slotName: 'relationship_geolocation_01',
-        type: 'relationship',
+        type: 'relationship_geolocation',
       },
 
       { assignedTo: 'geolocationProp', slotName: 'geolocation_01', type: 'geolocation' },
@@ -337,7 +337,7 @@ describe('EntityElasticDocumentMapper', () => {
       },
     });
 
-    const slotMap = createSlotMap([{ assignedTo: 'withSlot', slotName: 'txt_01', type: 'text' }]);
+    const slotMap = createSlotMap([{ assignedTo: 'withSlot', slotName: 'txt_01', type: 'txt' }]);
 
     const [document] = EntityElasticDocumentMapper.toDocuments([entity], slotMap);
 

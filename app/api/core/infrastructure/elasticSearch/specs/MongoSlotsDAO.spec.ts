@@ -42,17 +42,17 @@ describe('MongoSlotsDAO', () => {
       const { sut } = createSut();
 
       await slotsCollection().insertMany([
-        { type: 'text', slotName: 'text_01', assignedTo: null },
-        { type: 'text', slotName: 'text_02', assignedTo: null },
+        { type: 'txt', slotName: 'txt_01', assignedTo: null },
+        { type: 'txt', slotName: 'txt_02', assignedTo: null },
       ]);
 
-      await sut.assignSlot({ propertyName: 'title', type: 'text' });
+      await sut.assignSlot({ propertyName: 'title', propertyType: 'text' });
 
       const slots = await slotsCollection().find({}).toArray();
 
       expect(slots).toEqual([
-        { _id: expect.any(ObjectId), type: 'text', slotName: 'text_01', assignedTo: 'title' },
-        { _id: expect.any(ObjectId), type: 'text', slotName: 'text_02', assignedTo: null },
+        { _id: expect.any(ObjectId), type: 'txt', slotName: 'txt_01', assignedTo: 'title' },
+        { _id: expect.any(ObjectId), type: 'txt', slotName: 'txt_02', assignedTo: null },
       ]);
     });
 
@@ -60,35 +60,42 @@ describe('MongoSlotsDAO', () => {
       const { sut } = createSut();
 
       await slotsCollection().insertOne({
-        type: 'text',
-        slotName: 'text_01',
+        type: 'txt',
+        slotName: 'txt_01',
         assignedTo: 'already_used',
       });
 
-      await expect(sut.assignSlot({ propertyName: 'title', type: 'text' })).rejects.toThrow(
-        'No available slots for type text'
+      await expect(sut.assignSlot({ propertyName: 'title', propertyType: 'text' })).rejects.toThrow(
+        'No available slots for type txt'
       );
     });
 
-    it('throws when there are no available slots for a different type', async () => {
+    it('is a no-op when the property type is unsupported', async () => {
       const { sut } = createSut();
 
-      await expect(sut.assignSlot({ propertyName: 'thumbnail', type: 'image' })).rejects.toThrow(
-        'No available slots for type image'
-      );
+      await expect(
+        sut.assignSlot({ propertyName: 'thumbnail', propertyType: 'image' })
+      ).resolves.not.toThrow();
+
+      const assigned = await slotsCollection()
+        .find({ assignedTo: { $ne: null } })
+        .toArray();
+      expect(assigned).toHaveLength(0);
     });
 
     it('is a no-op when the property is already assigned to a slot', async () => {
       const { sut } = createSut();
 
       await slotsCollection().insertMany([
-        { type: 'text', slotName: 'text_01', assignedTo: 'title' },
-        { type: 'text', slotName: 'text_02', assignedTo: null },
+        { type: 'txt', slotName: 'txt_01', assignedTo: 'title' },
+        { type: 'txt', slotName: 'txt_02', assignedTo: null },
       ]);
 
-      await expect(sut.assignSlot({ propertyName: 'title', type: 'text' })).resolves.not.toThrow();
+      await expect(
+        sut.assignSlot({ propertyName: 'title', propertyType: 'text' })
+      ).resolves.not.toThrow();
 
-      const slot = await slotsCollection().findOne({ slotName: 'text_01' });
+      const slot = await slotsCollection().findOne({ slotName: 'txt_01' });
       expect(slot?.assignedTo).toBe('title');
     });
   });
@@ -98,14 +105,14 @@ describe('MongoSlotsDAO', () => {
       const { sut } = createSut();
 
       await slotsCollection().insertOne({
-        type: 'text',
-        slotName: 'text_01',
+        type: 'txt',
+        slotName: 'txt_01',
         assignedTo: 'title',
       });
 
       await sut.unassignSlot('title');
 
-      const slot = await slotsCollection().findOne({ slotName: 'text_01' });
+      const slot = await slotsCollection().findOne({ slotName: 'txt_01' });
       expect(slot?.assignedTo).toBeNull();
     });
 
@@ -120,9 +127,9 @@ describe('MongoSlotsDAO', () => {
       const { sut } = createSut();
 
       await slotsCollection().insertMany([
-        { type: 'text', slotName: 'txt_01', assignedTo: 'title' },
+        { type: 'txt', slotName: 'txt_01', assignedTo: 'title' },
         { type: 'date', slotName: 'date_01', assignedTo: 'createdAt' },
-        { type: 'text', slotName: 'txt_02', assignedTo: null },
+        { type: 'txt', slotName: 'txt_02', assignedTo: null },
       ]);
 
       const slotMap = await sut.getSlotMap();

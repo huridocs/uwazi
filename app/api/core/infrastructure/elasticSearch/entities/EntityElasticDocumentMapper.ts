@@ -190,32 +190,30 @@ class EntityElasticDocumentMapper {
       const { slotName, type } = slot;
 
       switch (type) {
-        case 'text':
-        case 'markdown':
-        case 'generatedid':
-          slottedMetadata[slotName] = entries.map(entry => toStringValue(entry.value));
-          break;
-        case 'link':
+        case 'txt':
           slottedMetadata[slotName] = entries.map(entry => toLinkValue(entry.value));
           break;
         case 'date':
-        case 'multidate':
-        case 'numeric':
+        case 'num':
           slottedMetadata[slotName] = entries
             .map(entry => toNumberValue(entry.value))
             .filter((value): value is number => value !== null);
           break;
-        case 'daterange':
-        case 'multidaterange':
+        case 'range':
           slottedMetadata[slotName] = entries
             .map(entry => toDateRangeValue(entry.value))
             .filter((value): value is DateRange => value !== null);
           break;
         case 'select':
-        case 'multiselect':
           slottedMetadata[slotName] = entries.map(toSelectValue);
           break;
         case 'relationship':
+        case 'relationship_txt':
+        case 'relationship_num':
+        case 'relationship_date':
+        case 'relationship_range':
+        case 'relationship_select':
+        case 'relationship_geolocation':
           slottedMetadata[slotName] = entries.map(entry => toRelationshipBySlot(slotName, entry));
           break;
         case 'geolocation':

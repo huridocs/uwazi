@@ -5,62 +5,6 @@ import {
 } from '../entities/SlotBootstrapDefinitions.js';
 
 describe('SlotBootstrapDefinitions', () => {
-  describe('toPropertyType()', () => {
-    it('maps txt to text', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('txt')).toBe('text');
-    });
-
-    it('maps date to date', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('date')).toBe('date');
-    });
-
-    it('maps num to numeric', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('num')).toBe('numeric');
-    });
-
-    it('maps range to daterange', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('range')).toBe('daterange');
-    });
-
-    it('maps select to select', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('select')).toBe('select');
-    });
-
-    it('maps relationship to relationship', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('relationship')).toBe('relationship');
-    });
-
-    it('maps geolocation to geolocation', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('geolocation')).toBe('geolocation');
-    });
-
-    it('maps relationship_txt to relationship', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('relationship_txt')).toBe('relationship');
-    });
-
-    it('maps relationship_num to relationship', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('relationship_num')).toBe('relationship');
-    });
-
-    it('maps relationship_date to relationship', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('relationship_date')).toBe('relationship');
-    });
-
-    it('maps relationship_range to relationship', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('relationship_range')).toBe('relationship');
-    });
-
-    it('maps relationship_select to relationship', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('relationship_select')).toBe('relationship');
-    });
-
-    it('maps relationship_geolocation to relationship', () => {
-      expect(SlotBootstrapDefinitions.toPropertyType('relationship_geolocation')).toBe(
-        'relationship'
-      );
-    });
-  });
-
   describe('createSlotName()', () => {
     describe('basic formatting', () => {
       it('creates slot name with 2-digit padding for single digit index', () => {
@@ -145,20 +89,6 @@ describe('SlotBootstrapDefinitions', () => {
 
       expect(firstCall).toEqual(secondCall);
       expect(firstCall).not.toBe(secondCall); // Different array instances
-    });
-
-    it('slotList() is independent from toPropertyType() mappings', () => {
-      // This is a documentation test: the bootstrap list is explicit and not
-      // derived from the property type map. Changing the map would not affect slotList().
-      const beforeList = SlotBootstrapDefinitions.slotList();
-
-      // slotList() returns the allSlotTypes array explicitly defined in the class,
-      // not derived from slotTypePropertyTypeDictionary or any external source.
-      // The independence is structural and not mutable, so we validate the intent:
-      const allSlotTypesCount = 13;
-      expect(beforeList.length).toBe(allSlotTypesCount);
-
-      // This test documents that slotList() is not coupled to any indexing concerns.
     });
   });
 

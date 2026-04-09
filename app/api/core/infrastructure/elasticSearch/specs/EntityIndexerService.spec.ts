@@ -55,7 +55,7 @@ const createSlotMap = (): SlotMap =>
         _id: new ObjectId(),
         assignedTo: 'indexedText',
         slotName: 'txt_01',
-        type: 'text',
+        type: 'txt',
       },
     ],
   ]);

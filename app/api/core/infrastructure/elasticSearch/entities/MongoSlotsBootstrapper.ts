@@ -25,7 +25,7 @@ class MongoSlotsBootstrapper {
     try {
       const slotsToCreate = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
         Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-          type: SlotBootstrapDefinitions.toPropertyType(slotType),
+          type: slotType,
           slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
           assignedTo: null,
         }))

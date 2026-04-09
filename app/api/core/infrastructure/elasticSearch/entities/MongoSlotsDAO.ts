@@ -3,10 +3,12 @@ import { MongoDataSource } from '../../mongodb/common/MongoDataSource.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 import { OptimisticLockError } from '../../mongodb/common/OptimisticLockError.js';
+import { SlotTypeRegistry } from './SlotTypeRegistry.js';
+import type { SlotType } from './SlotType.js';
 
 type SlotDocument = {
   _id: ObjectId;
-  type: PropertyType;
+  type: SlotType;
   slotName: string;
   assignedTo: string | null;
 };
@@ -15,7 +17,8 @@ type AssignedSlotDocument = SlotDocument & { assignedTo: string };
 
 type AssignSlotInput = {
   propertyName: string;
-  type: PropertyType;
+  propertyType: PropertyType;
+  inheritedType?: PropertyType;
 };
 
 type Deps = {
@@ -53,14 +56,17 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
     MongoSlotsDAO.cache.delete(this.tenantName);
   }
 
-  async assignSlot({ propertyName, type }: AssignSlotInput) {
+  async assignSlot({ propertyName, propertyType, inheritedType }: AssignSlotInput) {
     const slots = await this.getSlotMap();
     if (slots.has(propertyName)) return;
+
+    const slotType = SlotTypeRegistry.toSlotType(propertyType, inheritedType);
+    if (slotType === undefined) return;
 
     const result = await this.getCollection().updateOne(
       {
         assignedTo: null,
-        type,
+        type: slotType,
       },
       {
         $set: {
@@ -70,7 +76,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
     );
 
     if (result.modifiedCount === 0) {
-      throw new Error(`No available slots for type ${type}`);
+      throw new Error(`No available slots for type ${slotType}`);
     }
   }
 
