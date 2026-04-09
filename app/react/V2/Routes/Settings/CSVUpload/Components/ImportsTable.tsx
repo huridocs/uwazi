@@ -5,7 +5,7 @@ import { Link, useLoaderData, useRevalidator } from 'react-router';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import { DateTime } from 'luxon';
-import { throttle } from 'lodash';
+import throttle from 'lodash/throttle';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
@@ -252,6 +252,7 @@ const ImportsTable = () => {
 
   return (
     <Table
+      defaultSorting={[{ id: 'createdAt', desc: true }]}
       header={
         <div className="flex flex-col gap-4">
           <div>

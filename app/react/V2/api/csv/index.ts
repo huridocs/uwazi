@@ -102,8 +102,6 @@ type CancelCsvImportResponse = {
   cancelled: boolean;
 };
 
-type CsvImportDetails = CsvImportListRow & Record<string, unknown>;
-
 const create = async (
   file: File,
   template: string,
@@ -148,11 +146,11 @@ const get = async (
 const getById = async (
   id: string,
   headers?: IncomingHttpHeaders
-): Promise<CsvImportDetails | FetchResponseError> => {
+): Promise<CsvImportListRow | FetchResponseError> => {
   try {
     const requestParams = new RequestParams(undefined, headers);
     const response = (await api.get(`csvImportEntities/imports/${id}`, requestParams)) as {
-      json: CsvImportDetails;
+      json: CsvImportListRow;
     };
 
     return response.json;
@@ -179,7 +177,6 @@ const cancel = async (
 
 export type {
   CsvImportListRow,
-  CsvImportDetails,
   CancelCsvImportResponse,
   RegisterCsvImportResponse,
   CsvImportCreateError,
