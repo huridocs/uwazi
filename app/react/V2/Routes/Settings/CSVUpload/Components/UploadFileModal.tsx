@@ -13,7 +13,6 @@ type DropzoneModalProps = {
 };
 
 const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
-  const revalidator = useRevalidator();
   const [fileToUpload, setFileToUpload] = useState<File | undefined>();
   const [progress, setProgress] = useState<number>(0);
   const [templateId, setTemplateId] = useState<string | undefined>();
@@ -39,7 +38,6 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       if ('error' in response) {
         console.log(response);
       } else {
-        await revalidator.revalidate();
         handleClose();
       }
     }
