@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLoaderData, useRevalidator } from 'react-router';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import { DateTime } from 'luxon';
 import throttle from 'lodash/throttle';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
@@ -13,42 +12,14 @@ import { ProgressBar, Table, ProgressBarProps, Button } from '#V2/Components/UI/
 import { csvImportEvents } from '#V2/api/csv/events.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { CsvImportStatus } from '#V2/api/csv/index.js';
-import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import type { CsvImportListRow } from '#V2/api/csv/index.js';
 import type { CsvImportEventPayloads } from '#V2/api/csv/events.js';
 import type { csvLoaderResponse } from '../Loaders/csvListLoader';
+import { statusMessages } from './statusMessages.js';
+import { DateDisplay } from './DateDisplay';
+import { Progress } from './Progress';
 
 type TableData = CsvImportListRow & { rowId: string; templateName: string };
-
-const statusMessages = {
-  [CsvImportStatus.Queued]: t('System', 'Queued', null, false),
-  [CsvImportStatus.Validating]: t('System', 'Validating', null, false),
-  [CsvImportStatus.ExtractingFiles]: t('System', 'Extracting files', null, false),
-  [CsvImportStatus.ExtractingFilesDone]: t('System', 'Done extracting files', null, false),
-  [CsvImportStatus.PreflightScan]: t('System', 'Scanning', null, false),
-  [CsvImportStatus.PreflightScanDone]: t('System', 'Done scanning', null, false),
-  [CsvImportStatus.PreflightThesauriCreate]: t('System', 'Creating thesauri', null, false),
-  [CsvImportStatus.PreflightThesauriCreateDone]: t('System', 'Done creating thesauri', null, false),
-  [CsvImportStatus.PreflightRelationshipsCreate]: t(
-    'System',
-    'Creating relationships',
-    null,
-    false
-  ),
-  [CsvImportStatus.PreflightRelationshipsCreateDone]: t(
-    'System',
-    'Done creating relationships',
-    null,
-    false
-  ),
-  [CsvImportStatus.ImportEntities]: t('System', 'Creatin entities', null, false),
-  [CsvImportStatus.ImportEntitiesDone]: t('System', 'Done creating entities', null, false),
-  [CsvImportStatus.Retrying]: t('System', 'Retrying', null, false),
-  [CsvImportStatus.Processing]: t('System', 'Processing', null, false),
-  [CsvImportStatus.Completed]: t('System', 'Completed', null, false),
-  [CsvImportStatus.Failed]: t('System', 'Failed', null, false),
-  [CsvImportStatus.Cancelled]: t('System', 'Cancelled', null, false),
-};
 
 const columnHelper = createColumnHelper<TableData>();
 
@@ -70,49 +41,24 @@ const FileCell = ({ cell }: CellContext<TableData, TableData['file']>) =>
   cell.getValue().originalName;
 
 const ProgressCell = ({ cell }: CellContext<TableData, TableData['progress']>) => {
-  const { totalRows = 0, processedRows = 1 } = cell.getValue() || {
+  const { totalRows, processedRows } = cell.getValue() || {
     totalRows: 0,
     processedRows: 0,
   };
 
-  const { progress, color } = useMemo(() => {
-    const calculated = (totalRows / processedRows) * 100;
-    let colorByStatus: ProgressBarProps['color'] = 'primary';
-
-    if (totalRows === processedRows) {
-      colorByStatus = 'success';
-    }
-
-    if (cell.row.original.stats?.rowsFailed) {
-      colorByStatus = 'error';
-    }
-
-    return { progress: Number.isNaN(calculated) ? 0 : calculated, color: colorByStatus };
-  }, [cell, processedRows, totalRows]);
-
   return (
-    <div className="flex flex-row gap-2 items-center">
-      <ProgressBar progress={progress} color={color} />
-      <span className="text-gray-500">
-        {processedRows}/{totalRows}
-      </span>
-    </div>
+    <Progress
+      current={processedRows}
+      total={totalRows}
+      failed={!!cell.row.original.stats?.rowsFailed}
+      canceled={cell.row.original.status === CsvImportStatus.Cancelled}
+    />
   );
 };
 
 const DateCell = ({ cell }: CellContext<TableData, TableData['createdAt']>) => {
   const createdAt = cell.getValue();
-  const locale = useAtomValue(localeAtom);
-
-  if (Number.isNaN(createdAt)) {
-    return '-';
-  }
-
-  let luxonInstance = DateTime.fromMillis(createdAt, { zone: 'utc' });
-
-  luxonInstance = luxonInstance.setLocale(locale || 'en');
-
-  return luxonInstance.toLocaleString(DateTime.DATE_MED);
+  return <DateDisplay value={createdAt} />;
 };
 
 const ActionCell = ({ cell }: CellContext<TableData, TableData['id']>) => (
