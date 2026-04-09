@@ -29,7 +29,7 @@ import {
 
 const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
-  const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
   const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);

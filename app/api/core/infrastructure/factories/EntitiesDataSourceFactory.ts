@@ -3,21 +3,16 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService';
-import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory';
 
 export class EntitiesDataSourceFactory {
   static default(transactionManager: MongoTransactionManager): MultiLanguageEntityDataSource {
     const db = getConnection();
 
     const esClient = DependenciesContext.elasticClient;
-    const slotsDAO = new MongoSlotsDAO({
-      db,
-      transactionManager,
-      tenantName: tenants.current().name,
-    });
+    const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
 
     const entityIndexerService = new EntityIndexerService({
       esClient,

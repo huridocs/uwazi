@@ -28,7 +28,7 @@ import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);

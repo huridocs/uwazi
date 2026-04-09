@@ -154,7 +154,7 @@ const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
 
-  const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
 
   const sut = new DenormalizeThesaurusEntitiesHandler({ jobsDispatcher, entitiesDS });
 
