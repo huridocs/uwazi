@@ -1,16 +1,20 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
-import React, { useMemo } from 'react';
-import { Link, useLoaderData } from 'react-router';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useLoaderData, useRevalidator } from 'react-router';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import { DateTime } from 'luxon';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
+import { socket } from '#app/socket.js';
 import { ProgressBar, Table, ProgressBarProps, Button } from '#V2/Components/UI/index.js';
+import { csvImportEvents } from '#V2/api/csv/events.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { CsvImportStatus } from '#V2/api/csv/index.js';
-import type { CsvImportListRow } from '#V2/api/csv/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
+import type { CsvImportListRow } from '#V2/api/csv/index.js';
+import type { CsvImportEventPayloads } from '#V2/api/csv/events.js';
 import type { csvLoaderResponse } from '../Loaders/csvListLoader';
 
 type TableData = CsvImportListRow & { rowId: string; templateName: string };
@@ -157,44 +161,86 @@ const columns = [
   columnHelper.accessor('id', { enableSorting: false, header: ActionHeader, cell: ActionCell }),
 ];
 
+const toTableRow = (entry: CsvImportListRow, templatesById: Map<string, string>): TableData => ({
+  ...entry,
+  rowId: entry.id,
+  templateName: templatesById.get(entry.templateId) || entry.templateId,
+});
+
 const ImportsTable = () => {
   const { list: csvUploads } = useLoaderData() as csvLoaderResponse;
   const templates = useAtomValue(templatesAtom);
+  const revalidator = useRevalidator();
+  const [tableData, setTableData] = useState<TableData[]>([]);
 
   const templatesById = useMemo(
     () => new Map(templates.map(template => [template._id as string, template.name])),
     [templates]
   );
 
-  const { tableData, completed, processing, failed } = useMemo(() => {
-    const dataForTable: TableData[] = [];
-    let entriesInProccessing: number = 0;
+  const { completed, processing, failed } = useMemo(() => {
+    let entriesInProccessing = 0;
     let entriesCompleted: number = 0;
     let entriesFailed: number = 0;
 
-    csvUploads.forEach(entry => {
-      dataForTable.push({
-        ...entry,
-        rowId: entry.id,
-        templateName: templatesById.get(entry.templateId) || entry.templateId,
-      });
-
-      if (entry.status === 'completed') {
+    tableData.forEach(entry => {
+      if (entry.status === CsvImportStatus.Completed) {
         entriesCompleted += 1;
-      } else if (entry.status === 'processing') {
+      } else if (entry.status === CsvImportStatus.Processing) {
         entriesInProccessing += 1;
-      } else if (entry.status === 'failed') {
+      } else if (entry.status === CsvImportStatus.Failed) {
         entriesFailed += 1;
       }
     });
 
     return {
-      tableData: dataForTable,
       completed: entriesCompleted,
       processing: entriesInProccessing,
       failed: entriesFailed,
     };
+  }, [tableData]);
+
+  useEffect(() => {
+    setTableData(csvUploads.map(entry => toTableRow(entry, templatesById)));
   }, [csvUploads, templatesById]);
+
+  useEffect(() => {
+    const doRevalidation = async () => {
+      await revalidator.revalidate();
+    };
+
+    const onImportProgress = (payload: CsvImportEventPayloads['csvImport:import:progress']) => {
+      setTableData(prev =>
+        prev.map(row => {
+          if (row.id !== payload.importId) {
+            return row;
+          }
+
+          return {
+            ...row,
+            progress: {
+              totalRows: payload.totalRows,
+              processedRows: payload.processedRows,
+              lastProcessedRow: row.progress?.lastProcessedRow ?? 0,
+              batchSize: row.progress?.batchSize ?? 0,
+            },
+          };
+        })
+      );
+    };
+
+    socket.on(csvImportEvents.importStart, doRevalidation);
+    socket.on(csvImportEvents.importProgress, onImportProgress);
+    socket.on(csvImportEvents.importSuccess, doRevalidation);
+    socket.on(csvImportEvents.importError, doRevalidation);
+
+    return () => {
+      socket.off(csvImportEvents.importStart, doRevalidation);
+      socket.off(csvImportEvents.importProgress, onImportProgress);
+      socket.off(csvImportEvents.importSuccess, doRevalidation);
+      socket.off(csvImportEvents.importError, doRevalidation);
+    };
+  }, [revalidator]);
 
   return (
     <Table
@@ -211,7 +257,7 @@ const ImportsTable = () => {
           </div>
           <div className="flex flex-row gap-8 items-center">
             <div className="flex flex-row gap-2 items-center">
-              <span className="font-semibold text-lg text-black">{csvUploads.length}</span>
+              <span className="font-semibold text-lg text-black">{tableData.length}</span>
               <Translate>Total imports</Translate>
             </div>
             <span className="min-h-5 border-l" />
