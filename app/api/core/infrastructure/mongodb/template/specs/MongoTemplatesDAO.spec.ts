@@ -11,6 +11,7 @@ const fixtures = {
     factory.template('template1', [
       factory.property('text_prop', 'text'),
       factory.property('date_prop', 'date'),
+      factory.property('relationship_to_text', 'relationship', { inherit: { type: 'text' } }),
     ]),
     factory.template('template2', [factory.property('numeric_prop', 'numeric')]),
   ],
@@ -40,6 +41,11 @@ describe('MongoTemplatesDAO', () => {
       expect(result).toContainEqual({ name: 'text_prop', type: 'text' });
       expect(result).toContainEqual({ name: 'date_prop', type: 'date' });
       expect(result).toContainEqual({ name: 'numeric_prop', type: 'numeric' });
+      expect(result).toContainEqual({
+        name: 'relationship_to_text',
+        type: 'relationship',
+        inheritedType: 'text',
+      });
     });
 
     it('excludes commonProperties', async () => {

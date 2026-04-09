@@ -27,7 +27,7 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
             _id: 0,
             name: '$properties.name',
             type: '$properties.type',
-            inheritedType: '$properties.inheritedType',
+            inheritedType: '$properties.inherit.type',
           },
         },
       ])
