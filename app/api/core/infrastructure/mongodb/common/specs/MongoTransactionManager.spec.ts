@@ -416,6 +416,90 @@ describe('when the commit operation throws a UnknownTransactionCommitResult', ()
   });
 });
 
+describe('when registering onRetry event handlers', () => {
+  it('should call the handler when a TransientTransactionError causes a retry', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    let throwed = false;
+    await transactionManager.run(async () => {
+      if (!throwed) {
+        const error = new MongoError('TransientTransactionError');
+        error.addErrorLabel('TransientTransactionError');
+        throwed = true;
+        throw error;
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call the handler when an OptimisticLockError causes a retry', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    let throwed = false;
+    await transactionManager.run(async () => {
+      if (!throwed) {
+        throwed = true;
+        throw new OptimisticLockError({
+          resourceName: 'Test',
+          expectedVersion: 1,
+          resourceId: 'id',
+        });
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call the handler when the transaction succeeds without retry', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    await transactionManager.run(async () => {});
+
+    expect(retryHandler).not.toHaveBeenCalled();
+  });
+
+  it('should call the handler multiple times when multiple retries occur', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onRetry(retryHandler);
+
+    let throwCount = 0;
+    await transactionManager.run(async () => {
+      if (throwCount < 2) {
+        // eslint-disable-next-line no-plusplus
+        throwCount++;
+        throw new OptimisticLockError({
+          resourceName: 'Test',
+          expectedVersion: 1,
+          resourceId: 'id',
+        });
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(2);
+  });
+
+  it('should manually trigger onRetry handlers via executeOnRetryHandlers()', async () => {
+    const transactionManager = createTransactionManager();
+    const checkpoints = [1];
+
+    transactionManager.onRetry(async () => {
+      checkpoints.push(2);
+    });
+
+    await transactionManager.executeOnRetryHandlers();
+
+    expect(checkpoints).toEqual([1, 2]);
+  });
+});
+
 describe('when the operation throws a OptimisticLockError', () => {
   const makeWriteConflictError = () => {
     const error = new OptimisticLockError({

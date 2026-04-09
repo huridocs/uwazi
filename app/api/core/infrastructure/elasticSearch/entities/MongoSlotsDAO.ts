@@ -42,6 +42,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
     this.tenantName = deps.tenantName;
 
     deps.transactionManager.onCommitted(async () => this.invalidateCache());
+    deps.transactionManager.onRetry(async () => this.invalidateCache());
   }
 
   static clearCache() {

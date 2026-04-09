@@ -145,6 +145,18 @@ describe('MongoSlotsDAO', () => {
     expect(invalidateCacheSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('invalidates cache when the transaction is retried', async () => {
+    const { sut, transactionManager } = createSut();
+
+    const invalidateCacheSpy = jest.spyOn(sut, 'invalidateCache');
+
+    expect(invalidateCacheSpy).toHaveBeenCalledTimes(0);
+
+    await transactionManager.executeOnRetryHandlers();
+
+    expect(invalidateCacheSpy).toHaveBeenCalledTimes(1);
+  });
+
   describe('getSentinelVersion()', () => {
     it('returns the current sentinel version', async () => {
       const { sut } = createSut();
