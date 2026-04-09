@@ -169,7 +169,7 @@ describe('CSV imports list table', () => {
     expect(screen.getByText('17/60')).toBeInTheDocument();
   });
 
-  it('should revalidate on import start, success and error events', async () => {
+  it('should revalidate on import start and throttle success and error events', async () => {
     await renderComponent();
 
     await act(async () => {
@@ -181,6 +181,6 @@ describe('CSV imports list table', () => {
       });
     });
 
-    expect(revalidateMock).toHaveBeenCalledTimes(3);
+    expect(revalidateMock).toHaveBeenCalledTimes(2);
   });
 });

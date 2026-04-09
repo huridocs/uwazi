@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import { FileDropzone, Select } from '#V2/Components/Forms/index.js';

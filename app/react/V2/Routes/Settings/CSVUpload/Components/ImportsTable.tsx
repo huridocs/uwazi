@@ -5,6 +5,7 @@ import { Link, useLoaderData, useRevalidator } from 'react-router';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import { DateTime } from 'luxon';
+import { throttle } from 'lodash';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
@@ -205,37 +206,44 @@ const ImportsTable = () => {
   }, [csvUploads, templatesById]);
 
   useEffect(() => {
-    const doRevalidation = async () => {
+    const onStart = async () => {
       await revalidator.revalidate();
     };
 
-    const onImportProgress = (payload: CsvImportEventPayloads['csvImport:import:progress']) => {
-      setTableData(prev =>
-        prev.map(row => {
-          if (row.id !== payload.importId) {
-            return row;
-          }
+    const doRevalidation = throttle(async () => {
+      await revalidator.revalidate();
+    }, 3000);
 
-          return {
-            ...row,
-            progress: {
-              totalRows: payload.totalRows,
-              processedRows: payload.processedRows,
-              lastProcessedRow: row.progress?.lastProcessedRow ?? 0,
-              batchSize: row.progress?.batchSize ?? 0,
-            },
-          };
-        })
-      );
-    };
+    const onImportProgress = throttle(
+      (payload: CsvImportEventPayloads['csvImport:import:progress']) => {
+        setTableData(prev =>
+          prev.map(row => {
+            if (row.id !== payload.importId) {
+              return row;
+            }
 
-    socket.on(csvImportEvents.importStart, doRevalidation);
+            return {
+              ...row,
+              progress: {
+                totalRows: payload.totalRows,
+                processedRows: payload.processedRows,
+                lastProcessedRow: row.progress?.lastProcessedRow ?? 0,
+                batchSize: row.progress?.batchSize ?? 0,
+              },
+            };
+          })
+        );
+      },
+      3000
+    );
+
+    socket.on(csvImportEvents.importStart, onStart);
     socket.on(csvImportEvents.importProgress, onImportProgress);
     socket.on(csvImportEvents.importSuccess, doRevalidation);
     socket.on(csvImportEvents.importError, doRevalidation);
 
     return () => {
-      socket.off(csvImportEvents.importStart, doRevalidation);
+      socket.off(csvImportEvents.importStart, onStart);
       socket.off(csvImportEvents.importProgress, onImportProgress);
       socket.off(csvImportEvents.importSuccess, doRevalidation);
       socket.off(csvImportEvents.importError, doRevalidation);
