@@ -17,7 +17,6 @@ import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
 import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { UseCaseContext } from '#api/core/libs/UseCase.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
@@ -29,6 +28,7 @@ import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/Entit
 import { CreateEntityUseCase } from '../CreateEntity.js';
 import { FilesService } from '../FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -209,7 +209,7 @@ const createSut = (props: CreateSutProps = {}) => {
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
 
   const filesDS = FilesDataSourceFactory.default(transactionManager);
 

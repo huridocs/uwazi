@@ -6,6 +6,7 @@ import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerSer
 import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { tenants } from '#api/tenants/index.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 export class EntitiesDataSourceFactory {
   static default(transactionManager: MongoTransactionManager): MultiLanguageEntityDataSource {
@@ -24,5 +25,13 @@ export class EntitiesDataSourceFactory {
     });
 
     return new MongoMultiLanguageEntityDataSource({ db, transactionManager, entityIndexerService });
+  }
+
+  static forTesting(transactionManager: MongoTransactionManager): MultiLanguageEntityDataSource {
+    return new MongoMultiLanguageEntityDataSource({
+      db: getConnection(),
+      transactionManager,
+      entityIndexerService: TestUtils.mockClass<EntityIndexerService>({ index: jest.fn() }),
+    });
   }
 }
