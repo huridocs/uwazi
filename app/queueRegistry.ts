@@ -68,6 +68,11 @@ import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlan
 import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
+type Register = <T extends Dispatchable>(
+  dispatchable: DispatchableClass<T>,
+  factory: (namespace: string) => Promise<T>
+) => void;
+
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -102,12 +107,7 @@ export class TestJob implements Dispatchable {
   }
 }
 
-export function registerJobs(
-  register: <T extends Dispatchable>(
-    dispatchable: DispatchableClass<T>,
-    factory: (namespace: string) => Promise<T>
-  ) => void
-) {
+export function registerJobs(register: Register) {
   register(TestJob, async () => new TestJob());
 
   register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
