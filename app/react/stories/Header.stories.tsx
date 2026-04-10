@@ -10,6 +10,7 @@ import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import {
   ACCENT_PRIMARY_KEY,
   appliedTheme,
+  getPresetPair,
   getPresetVars,
   SEMANTIC_VAR_LABELS,
   THEME_PALETTE,
@@ -31,7 +32,11 @@ const createStoreWithTheme = (themeVars?: Record<string, string>, authenticated 
     ? { _id: '1', username: 'admin', role: 'admin', email: 'admin@uwazi.io' }
     : undefined;
   store.set(userAtom, user);
-  store.set(settingsAtom, { ...baseSettings, themeVars: themeVars ?? {} });
+  store.set(settingsAtom, {
+    ...baseSettings,
+    themeCustomization: Object.keys(themeVars ?? {}).length > 0,
+    themeVars: themeVars ?? {},
+  });
   store.set(localeAtom, 'en');
   store.set(translationsAtom, []);
   return store;
@@ -49,7 +54,7 @@ const themeSelectLabels: Record<string, string> = {
 };
 
 const ThemeContrastHint = ({ themeVars }: { themeVars: Record<string, string> }) => {
-  const resolved = appliedTheme(themeVars);
+  const resolved = appliedTheme(themeVars, 'light');
   const accent = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
   const fg = getContrastTextColor(accent);
   const contrast = checkContrast(accent, fg);
@@ -139,7 +144,12 @@ const Unauthenticated: Story = {
 };
 
 const WithNamedTheme: Story = {
-  render: () => <HeaderWithTheme themeVars={getPresetVars('light')} authenticated={true} />,
+  render: () => (
+    <HeaderWithTheme
+      themeVars={{ ...getPresetVars('default'), ...getPresetPair('default').light }}
+      authenticated={true}
+    />
+  ),
 };
 
 const WithSiteLogo: Story = {

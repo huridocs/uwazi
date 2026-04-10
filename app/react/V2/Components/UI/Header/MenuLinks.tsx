@@ -1,86 +1,71 @@
 import React from 'react';
-import { useAtomValue } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
-import { SiteName } from '#app/App/SiteName.js';
-import { settingsAtom } from '../../../atoms/index.js';
-import { Dropdown, DropdownItem } from './Dropdown.js';
-import { MobileMenuDropdown } from './MobileMenuDropdown.js';
-import { useIsMobile } from '../../../CustomHooks/useIsMobile.js';
+import { Dropdown, type DropdownItem } from './Dropdown.js';
 
-const createDropdownItems = (link: any): DropdownItem[] => {
-  const sublinks = link.sublinks || [];
-  return sublinks.map((sublink: any) => ({
-    title: t('Menu', sublink.title),
-    url: sublink.url || '/',
-    isExternal: (sublink.url || '/').startsWith('http'),
-  }));
+type HeaderLink = {
+  _id?: string;
+  localId?: string;
+  title: string;
+  url?: string;
+  type: 'link' | 'group';
+  sublinks?: HeaderLink[];
 };
 
-const linkContainerClasses = ['header-bar-nav-item', 'py-2', 'flex', 'items-center'].join(' ');
+type MenuLinksProps = {
+  links?: HeaderLink[];
+  className?: string;
+};
 
-const linkInnerClasses = [
-  'p-2',
-  'text-base',
-  'font-medium',
-  'transition-colors',
-  'rounded-xs',
-].join(' ');
+const toDropdownItem = (sublink: HeaderLink): DropdownItem => {
+  const url = sublink.url || '/';
+  return {
+    title: t('Menu', sublink.title),
+    url,
+    isExternal: url.startsWith('http'),
+  };
+};
 
-const activeClasses = 'border-primary-600';
+const navButtonClasses =
+  'header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors';
 
-const createSimpleLink = (link: any, url: string) => {
+const activeClasses = 'header-bar-button-active';
+
+const renderLink = (link: HeaderLink) => {
+  const key = String(link._id ?? link.localId ?? link.title);
+  if (link.type === 'group') {
+    const items = (link.sublinks ?? []).map(toDropdownItem);
+    if (items.length === 0) return null;
+    return <Dropdown key={key} title={t('Menu', link.title)} items={items} />;
+  }
+
+  const url = link.url || '/';
   if (url.startsWith('http')) {
     return (
-      <div key={link._id} className={linkContainerClasses}>
-        <a href={url} className={linkInnerClasses} target="_blank" rel="noreferrer">
-          {t('Menu', link.title)}
-        </a>
-      </div>
+      <a key={key} href={url} className={navButtonClasses} target="_blank" rel="noreferrer">
+        {t('Menu', link.title)}
+      </a>
     );
   }
+
   return (
-    <div key={link._id} className={linkContainerClasses}>
-      <I18NLink to={url} className={linkInnerClasses} activeClassname={activeClasses}>
-        {t('Menu', link.title)}
-      </I18NLink>
-    </div>
+    <I18NLink key={key} to={url} className={navButtonClasses} activeClassname={activeClasses}>
+      {t('Menu', link.title)}
+    </I18NLink>
   );
 };
 
-const createNavLink = (link: any) => {
-  if (link === undefined) {
-    return null;
-  }
-  const type = link.type || 'link';
+const MenuLinks = ({ links = [], className = '' }: MenuLinksProps) => {
+  const navLinks = links.map(renderLink).filter(Boolean);
 
-  if (type === 'link') {
-    const url = link.url || '/';
-    return createSimpleLink(link, url);
-  }
-
-  const dropdownItems = createDropdownItems(link);
-  return (
-    <Dropdown key={`dropdown-${link._id}`} title={t('Menu', link.title)} items={dropdownItems} />
-  );
-};
-
-const MenuLinks = () => {
-  const { links } = useAtomValue(settingsAtom);
-  const navLinks = links?.map(createNavLink)?.filter((v: any) => v !== null);
-  const isMobile = useIsMobile();
+  if (!navLinks.length) return null;
 
   return (
-    <div className={`flex items-center ${isMobile ? 'gap-2' : 'gap-8'}`}>
-      {isMobile && <MobileMenuDropdown links={links} />}
-      <SiteName className="text-xl font-semibold p-2" />
-      {!isMobile && (
-        <nav className="flex items-center gap-1" aria-label="Primary">
-          {navLinks}
-        </nav>
-      )}
-    </div>
+    <nav className={['flex items-center gap-2', className].filter(Boolean).join(' ')} aria-label="Primary">
+      {navLinks}
+    </nav>
   );
 };
 
 export { MenuLinks };
+export type { MenuLinksProps };

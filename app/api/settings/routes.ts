@@ -11,6 +11,8 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   'site_name',
   'favicon',
   'site_logo',
+  'themeAssets',
+  'themeVars',
   'home_page',
   'defaultLibraryView',
   'private',

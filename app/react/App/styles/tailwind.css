@@ -11,13 +11,36 @@
 }
 
 @theme inline {
-  --color-theme: var(--color-theme);
-  --color-theme-foreground: var(--color-theme-foreground);
-  --color-theme-separator: var(--color-theme-separator);
-  --color-theme-hover-bg: var(--color-theme-hover-bg);
-  --color-theme-hover-fg: var(--color-theme-hover-fg);
-  --color-theme-active-bg: var(--color-theme-active-bg);
-  --color-theme-active-fg: var(--color-theme-active-fg);
+  --color-paper: var(--color-theme-bg-surface);
+  --color-parchment: var(--color-theme-bg-primary);
+  --color-warm: var(--color-theme-bg-warm);
+  --color-vellum: var(--color-theme-bg-muted);
+  --color-ink: var(--color-theme-text-primary);
+  --color-ink-secondary: var(--color-theme-text-secondary);
+  --color-ink-tertiary: var(--color-theme-text-tertiary);
+  --color-ink-muted: var(--color-theme-text-muted);
+  --color-border: var(--color-theme-border-primary);
+  --color-border-soft: var(--color-theme-border-soft);
+  --color-supporting: var(--color-theme-accent-supporting);
+  --color-emphasis: var(--color-theme-accent-emphasis);
+  --color-supporting-tint: var(--color-theme-accent-supporting-tint);
+  --color-emphasis-tint: var(--color-theme-accent-emphasis-tint);
+  --color-success: var(--color-theme-success);
+  --color-success-light: var(--color-theme-success-light);
+  --color-warning: var(--color-theme-warning);
+  --color-warning-light: var(--color-theme-warning-light);
+  --color-highlight: var(--color-theme-highlight-yellow);
+  --color-highlight-active: var(--color-theme-highlight-yellow-active);
+  --color-highlight-blue: var(--color-theme-highlight-blue);
+  --color-overlay: var(--color-theme-bg-overlay);
+  --color-selected: var(--color-theme-bg-selected);
+  --color-theme-brand-surface: var(--color-theme-brand-surface);
+  --color-theme-brand-surface-foreground: var(--color-theme-brand-surface-foreground);
+  --color-theme-brand-surface-separator: var(--color-theme-brand-surface-separator);
+  --color-theme-brand-surface-hover-bg: var(--color-theme-brand-surface-hover-bg);
+  --color-theme-brand-surface-hover-fg: var(--color-theme-brand-surface-hover-fg);
+  --color-theme-brand-surface-active-bg: var(--color-theme-brand-surface-active-bg);
+  --color-theme-brand-surface-active-fg: var(--color-theme-brand-surface-active-fg);
 }
 
 @theme {
@@ -365,103 +388,80 @@
 
 /* Theme customization: V2-wide when data-theme-custom is set on .tw-content */
 [data-theme-custom] {
-  --color-primary-600: var(--color-theme);
-  --color-primary-700: var(--color-theme);
-  --color-primary-800: var(--color-theme);
+  --color-primary-600: var(--color-theme-brand-surface);
+  --color-primary-700: var(--color-theme-brand-surface);
+  --color-primary-800: var(--color-theme-brand-surface);
 }
 
-/* Header bar: background = --color-theme (lines 374–376). Do not use [aria-hidden] for the divider — Heroicon svgs are aria-hidden too. */
-.tw-content .header-bar[data-uwazi-header],
-[data-theme-custom] .header-bar[data-uwazi-header] {
-  background-color: var(--color-theme, #ffffff) !important;
-  color: var(--color-theme-foreground, #111827);
-  border-bottom-width: 1px;
-  border-color: var(--color-theme-foreground, #e5e7eb);
+/* Header bar: uses header-scoped appearance vars rather than the tenant accent pipeline. */
+.tw-content .header-bar[data-uwazi-header] {
+  background-color: var(--color-theme-bg-surface, #ffffff);
+  color: var(--color-theme-text-primary, #1a1a1a);
+  border-bottom: 1px solid var(--color-theme-border-primary, #e5e7eb);
 }
 .tw-content .header-bar[data-uwazi-header] a,
-.tw-content .header-bar[data-uwazi-header] button,
-[data-theme-custom] .header-bar[data-uwazi-header] a,
-[data-theme-custom] .header-bar[data-uwazi-header] button {
-  background-color: transparent;
-  color: var(--color-theme-foreground, #111827);
-}
-.tw-content .header-bar[data-uwazi-header] a.header-bar-action,
-.tw-content .header-bar[data-uwazi-header] button.header-bar-action,
-[data-theme-custom] .header-bar[data-uwazi-header] a.header-bar-action,
-[data-theme-custom] .header-bar[data-uwazi-header] button.header-bar-action {
-  background-color: var(--color-theme, transparent) !important;
-  color: var(--color-theme-foreground, #111827);
-}
-.tw-content .header-bar[data-uwazi-header] a.header-bar-action:hover,
-.tw-content .header-bar[data-uwazi-header] a.header-bar-action:focus-visible,
-.tw-content .header-bar[data-uwazi-header] button.header-bar-action:hover,
-.tw-content .header-bar[data-uwazi-header] button.header-bar-action:focus-visible,
-[data-theme-custom] .header-bar[data-uwazi-header] a.header-bar-action:hover,
-[data-theme-custom] .header-bar[data-uwazi-header] a.header-bar-action:focus-visible,
-[data-theme-custom] .header-bar[data-uwazi-header] button.header-bar-action:hover,
-[data-theme-custom] .header-bar[data-uwazi-header] button.header-bar-action:focus-visible {
-  background-color: var(--color-theme-hover-bg, #f3f4f6) !important;
-  color: var(--color-theme-hover-fg, #111827);
-}
-.tw-content .header-bar[data-uwazi-header] a.header-bar-action svg,
-.tw-content .header-bar[data-uwazi-header] button.header-bar-action svg,
-[data-theme-custom] .header-bar[data-uwazi-header] a.header-bar-action svg,
-[data-theme-custom] .header-bar[data-uwazi-header] button.header-bar-action svg {
-  fill: none;
-  color: var(--color-theme-foreground, #111827);
-  stroke: currentColor;
+.tw-content .header-bar[data-uwazi-header] button {
+  color: inherit;
 }
 .tw-content .header-bar[data-uwazi-header] a svg,
-.tw-content .header-bar[data-uwazi-header] button svg,
-[data-theme-custom] .header-bar[data-uwazi-header] a svg,
-[data-theme-custom] .header-bar[data-uwazi-header] button svg {
+.tw-content .header-bar[data-uwazi-header] button svg {
   color: inherit;
   stroke: currentColor;
 }
-.tw-content .header-bar[data-uwazi-header] a:hover,
-.tw-content .header-bar[data-uwazi-header] a:focus-visible,
-.tw-content .header-bar[data-uwazi-header] button:hover,
-.tw-content .header-bar[data-uwazi-header] button:focus-visible,
-[data-theme-custom] .header-bar[data-uwazi-header] a:hover,
-[data-theme-custom] .header-bar[data-uwazi-header] a:focus-visible,
-[data-theme-custom] .header-bar[data-uwazi-header] button:hover,
-[data-theme-custom] .header-bar[data-uwazi-header] button:focus-visible {
-  background-color: var(--color-theme-hover-bg, #f3f4f6);
-  color: var(--color-theme-hover-fg, #111827);
+.tw-content .header-bar[data-uwazi-header] .header-bar-brand {
+  color: var(--color-theme-text-primary, #1a1a1a);
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-nav-item,
-[data-theme-custom] .header-bar[data-uwazi-header] .header-bar-nav-item {
-  border-bottom-width: 2px;
-  border-color: transparent;
+.tw-content .header-bar[data-uwazi-header] .header-bar-button,
+.tw-content .header-bar[data-uwazi-header] .header-bar-icon-button {
+  background-color: transparent;
+  color: var(--color-theme-text-secondary, #333333);
+  border-color: var(--color-theme-border-soft, #d1d5db);
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-nav-item:hover,
-[data-theme-custom] .header-bar[data-uwazi-header] .header-bar-nav-item:hover {
-  border-color: var(--color-theme, #4f46e5);
+.tw-content .header-bar[data-uwazi-header] .header-bar-button:hover,
+.tw-content .header-bar[data-uwazi-header] .header-bar-button:focus-visible,
+.tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:hover,
+.tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:focus-visible {
+  background-color: var(--color-theme-bg-warm, #f9fafb);
+  color: var(--color-theme-text-primary, #1a1a1a);
 }
-.tw-content .header-bar[data-uwazi-header] a.border-primary-600,
-.tw-content .header-bar[data-uwazi-header] button.border-primary-600,
-[data-theme-custom] .header-bar[data-uwazi-header] a.border-primary-600,
-[data-theme-custom] .header-bar[data-uwazi-header] button.border-primary-600 {
-  background-color: var(--color-theme-active-bg, #e5e7eb);
-  color: var(--color-theme-active-fg, #111827);
-  border-color: var(--color-theme-active-fg, #111827);
+.tw-content .header-bar[data-uwazi-header] .header-bar-button-active,
+.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item-active {
+  background-color: var(--color-theme-bg-muted, #f3f4f6);
+  color: var(--color-theme-text-primary, #1a1a1a);
+  border-color: var(--color-theme-border-primary, #e5e7eb);
 }
-.tw-content .header-bar[data-uwazi-header] a.border-primary-600:hover,
-.tw-content .header-bar[data-uwazi-header] a.border-primary-600:focus-visible,
-.tw-content .header-bar[data-uwazi-header] button.border-primary-600:hover,
-.tw-content .header-bar[data-uwazi-header] button.border-primary-600:focus-visible,
-[data-theme-custom] .header-bar[data-uwazi-header] a.border-primary-600:hover,
-[data-theme-custom] .header-bar[data-uwazi-header] a.border-primary-600:focus-visible,
-[data-theme-custom] .header-bar[data-uwazi-header] button.border-primary-600:hover,
-[data-theme-custom] .header-bar[data-uwazi-header] button.border-primary-600:focus-visible {
-  background-color: var(--color-theme-hover-bg, #f3f4f6);
-  color: var(--color-theme-hover-fg, #111827);
+.tw-content .header-bar[data-uwazi-header] .header-bar-separator {
+  background-color: var(--color-theme-border-primary, #e5e7eb);
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-separator,
-[data-theme-custom] .header-bar[data-uwazi-header] .header-bar-separator {
-  background-color: color-mix(in srgb, var(--color-theme-foreground, #111827) 35%, transparent);
+.tw-content .header-bar[data-uwazi-header] .header-bar-panel {
+  background-color: var(--color-theme-bg-surface, #ffffff);
+  border: 1px solid var(--color-theme-border-primary, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: var(--color-theme-shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.08));
+  color: var(--color-theme-text-secondary, #333333);
+  overflow: hidden;
 }
-.tw-content .header-bar[data-uwazi-header] .header-bar-skip,
-[data-theme-custom] .header-bar[data-uwazi-header] .header-bar-skip {
-  background-color: var(--color-theme, #ffffff);
+.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item {
+  color: var(--color-theme-text-secondary, #333333);
+}
+.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item:hover,
+.tw-content .header-bar[data-uwazi-header] .header-bar-panel-item:focus-visible {
+  background-color: var(--color-theme-bg-warm, #f9fafb);
+  color: var(--color-theme-text-primary, #1a1a1a);
+}
+.tw-content .header-bar[data-uwazi-header] .header-bar-panel-group {
+  background-color: var(--color-theme-bg-warm, #f9fafb);
+  color: var(--color-theme-text-tertiary, #6b7280);
+}
+.tw-content .header-bar[data-uwazi-header] .header-bar-skip {
+  background-color: var(--color-theme-bg-surface, #ffffff);
+  color: var(--color-theme-text-primary, #1a1a1a);
+}
+
+.tw-content.dark .logo-img {
+  filter: invert(1);
+}
+
+.tw-content.dark input[type='checkbox'] {
+  accent-color: var(--color-theme-text-tertiary);
 }

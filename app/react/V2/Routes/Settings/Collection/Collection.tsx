@@ -20,10 +20,16 @@ import { Translate, t } from '#app/I18N/index.js';
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
-import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
+import { ThemeSettingsSidepanel } from './ThemeSettingsSidepanel.js';
+import {
+  ACCENT_PRIMARY_KEY,
+  appliedTheme,
+  getPresetId,
+  NAMED_THEMES,
+} from '#V2/theme/themes.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -92,6 +98,7 @@ const Collection = () => {
     customUploadFiles: FileType[];
   };
   const { links, custom, ...formData } = settings;
+  const [showThemeSidepanel, setShowThemeSidepanel] = React.useState(false);
 
   const setNotifications = useSetAtom(notificationAtom);
   const setSettings = useSetAtom(settingsAtom);
@@ -108,6 +115,7 @@ const Collection = () => {
   } = useForm<ClientSettings>({
     defaultValues: {
       ...formData,
+      themeAssets: formData.themeAssets ?? {},
       themeVars: formData.themeVars ?? {},
     },
     mode: 'onSubmit',
@@ -116,6 +124,12 @@ const Collection = () => {
   const submit = async (data: ClientSettings) => {
     if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
       delete data.newNameGeneration;
+    }
+    if (themeCustomization) {
+      const lightLogo = data.themeAssets?.siteLogo?.light?.trim();
+      const lightFavicon = data.themeAssets?.favicon?.light?.trim();
+      if (lightLogo) data.site_logo = lightLogo;
+      if (lightFavicon) data.favicon = lightFavicon;
     }
     data.private = !data.private;
     const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
@@ -171,6 +185,14 @@ const Collection = () => {
     },
   ];
 
+  const watchedThemeVars = watch('themeVars') ?? {};
+  const selectedTheme = NAMED_THEMES.find(theme => theme.id === getPresetId(watchedThemeVars, true));
+  const hasThemeOverrides = Object.keys(watchedThemeVars).some(
+    key => key !== '__preset' && key !== '__assetPreset'
+  );
+  const lightAccent = appliedTheme(watchedThemeVars, 'light', true)[ACCENT_PRIMARY_KEY];
+  const darkAccent = appliedTheme(watchedThemeVars, 'dark', true)[ACCENT_PRIMARY_KEY];
+
   return (
     <div className="w-full h-full overflow-y-auto" data-testid="settings-collection">
       <SettingsContent>
@@ -187,35 +209,65 @@ const Collection = () => {
                     {...register('site_name', { required: true })}
                   />
                 </div>
-                <CustomUploadImagePicker
-                  id="favicon"
-                  label={labelWithTip(<Translate>Custom Favicon</Translate>, tips.customFavIcon)}
-                  registerProps={register('favicon')}
-                  value={watch('favicon')}
-                  onChange={v => setValue('favicon', v, { shouldDirty: true })}
-                  files={customUploadFiles}
-                  selectButtonTitle={<Translate>Select favicon image</Translate>}
-                  previewImgClassName="max-h-16 max-w-16 rounded border border-gray-200 object-contain bg-gray-50 p-1"
-                />
+                {!themeCustomization ? (
+                  <CustomUploadImagePicker
+                    id="favicon"
+                    label={labelWithTip(<Translate>Custom Favicon</Translate>, tips.customFavIcon)}
+                    registerProps={register('favicon')}
+                    value={watch('favicon')}
+                    onChange={v => setValue('favicon', v, { shouldDirty: true })}
+                    files={customUploadFiles}
+                    selectButtonTitle={<Translate>Select favicon image</Translate>}
+                    recommendedSize="64x64 px"
+                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2"
+                  />
+                ) : null}
                 {themeCustomization && (
                   <>
                     <div className="sm:col-span-2">
-                      <ThemeSelector
-                        value={watch('themeVars') ?? {}}
-                        onChange={v => setValue('themeVars', v)}
-                      />
+                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-gray-900">
+                              <Translate>Theme and branding</Translate>
+                            </p>
+                            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                              <span className="rounded-full bg-white px-2.5 py-1 font-medium text-gray-700 ring-1 ring-gray-200">
+                                {selectedTheme?.label}
+                              </span>
+                              {hasThemeOverrides ? (
+                                <span className="rounded-full bg-primary-50 px-2.5 py-1 font-medium text-primary-700 ring-1 ring-primary-200">
+                                  <Translate>Customized</Translate>
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-4">
+                            <div className="overflow-hidden rounded-lg border border-gray-200">
+                              <div className="flex">
+                                <span className="h-8 w-12" style={{ backgroundColor: lightAccent }} />
+                                <span className="h-8 w-12" style={{ backgroundColor: darkAccent }} />
+                              </div>
+                            </div>
+                            <Button type="button" styling="outline" onClick={() => setShowThemeSidepanel(true)}>
+                              <Translate>Edit theme</Translate>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <CustomUploadImagePicker
-                      id="site-logo"
-                      label={labelWithTip(
-                        <Translate>Custom site logo</Translate>,
-                        tips.customSiteLogo
-                      )}
-                      registerProps={register('site_logo')}
-                      value={watch('site_logo')}
-                      onChange={v => setValue('site_logo', v, { shouldDirty: true })}
-                      files={customUploadFiles}
-                      selectButtonTitle={<Translate>Select site logo image</Translate>}
+
+                    <ThemeSettingsSidepanel
+                      isOpen={showThemeSidepanel}
+                      onClose={() => setShowThemeSidepanel(false)}
+                      themeVars={watchedThemeVars}
+                      onThemeChange={v => setValue('themeVars', v, { shouldDirty: true })}
+                      themeAssets={watch('themeAssets') ?? {}}
+                      onThemeAssetsChange={v => setValue('themeAssets', v, { shouldDirty: true })}
+                      siteLogo={watch('site_logo')}
+                      favicon={watch('favicon')}
+                      customUploadFiles={customUploadFiles}
                     />
                   </>
                 )}

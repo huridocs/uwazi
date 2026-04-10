@@ -1,152 +1,288 @@
-type ThemeId = 'default' | 'light' | 'dark' | 'legacy';
+import {
+  ACCENT_PRIMARY_KEY,
+  NAMED_THEMES,
+  PRESET_DEFINITIONS,
+  SEMANTIC_VAR_KEYS,
+  SEMANTIC_VAR_LABELS,
+  THEME_MODES,
+  THEME_PALETTE,
+} from './tokens.js';
+import type {
+  EditableThemeVars,
+  ResolvedThemeVars,
+  SemanticVarKey,
+  ThemeMode,
+  ThemePresetId,
+} from './tokens.js';
 
-const SEMANTIC_VAR_KEYS = [
-  '--color-accent-primary',
-  '--color-accent-secondary',
-  '--color-accent-alert',
-  '--color-bg-primary',
-  '--color-bg-surface',
-  '--color-bg-muted',
-  '--color-text-primary',
-  '--color-text-secondary',
-  '--color-text-muted',
-  '--color-border-primary',
-] as const;
+const THEME_PRESET_KEY = '__preset' as const;
 
-type SemanticVarKey = (typeof SEMANTIC_VAR_KEYS)[number];
-
-const ACCENT_PRIMARY_KEY = '--color-accent-primary' as const;
-
-const SEMANTIC_VAR_LABELS: Record<SemanticVarKey, string> = {
-  '--color-accent-primary': 'Accent primary',
-  '--color-accent-secondary': 'Accent secondary',
-  '--color-accent-alert': 'Accent alert',
-  '--color-bg-primary': 'Background primary',
-  '--color-bg-surface': 'Background surface',
-  '--color-bg-muted': 'Background muted',
-  '--color-text-primary': 'Text primary',
-  '--color-text-secondary': 'Text secondary',
-  '--color-text-muted': 'Text muted',
-  '--color-border-primary': 'Border primary',
+type ThemeVarsInput = Record<string, string | undefined> | undefined;
+type ThemeAssetId = 'siteLogo' | 'favicon';
+type ThemeAssetPresetId = 'default' | 'legacy';
+type ThemeAssets = {
+  preset?: ThemeAssetPresetId;
+  siteLogo?: Partial<Record<ThemeMode, string>>;
+  favicon?: Partial<Record<ThemeMode, string>>;
 };
 
-interface ThemeDefinition {
-  id: ThemeId;
-  label: string;
-  semanticVars: Record<SemanticVarKey, string>;
-}
+type LegacySemanticVarKey =
+  | '--accent-primary'
+  | '--accent-supporting'
+  | '--accent-emphasis'
+  | '--bg-primary'
+  | '--bg-surface'
+  | '--bg-warm'
+  | '--bg-muted'
+  | '--text-primary'
+  | '--text-secondary'
+  | '--text-tertiary'
+  | '--text-muted'
+  | '--border-primary'
+  | '--border-soft'
+  | '--bg-overlay'
+  | '--bg-selected'
+  | '--border-primary-64'
+  | '--border-soft-64'
+  | '--accent-supporting-tint'
+  | '--accent-emphasis-tint'
+  | '--success'
+  | '--success-light'
+  | '--warning'
+  | '--warning-light'
+  | '--danger'
+  | '--danger-light'
+  | '--highlight-yellow'
+  | '--highlight-yellow-active'
+  | '--highlight-blue'
+  | '--shadow-sm'
+  | '--shadow-md'
+  | '--shadow-lg'
+  | '--shadow-xl';
 
-type ThemePaletteId =
-  | 'accent-primary'
-  | 'accent-secondary'
-  | 'accent-alert'
-  | 'bg-primary'
-  | 'bg-surface'
-  | 'bg-muted';
-
-interface ThemePaletteEntry {
-  id: ThemePaletteId;
-  semanticKey: SemanticVarKey;
-  hex: string;
-}
-
-const THEME_PALETTE: ThemePaletteEntry[] = [
-  { id: 'accent-primary', semanticKey: '--color-accent-primary', hex: '#1A1A1A' },
-  { id: 'accent-secondary', semanticKey: '--color-accent-secondary', hex: '#00B4F0' },
-  { id: 'accent-alert', semanticKey: '--color-accent-alert', hex: '#E8432A' },
-  { id: 'bg-muted', semanticKey: '--color-bg-muted', hex: '#F5EED7' },
-  { id: 'bg-primary', semanticKey: '--color-bg-primary', hex: '#F5F0E8' },
-  { id: 'bg-surface', semanticKey: '--color-bg-surface', hex: '#FFFFFF' },
-];
-
-const DEFAULT_EXTRAS: Partial<Record<SemanticVarKey, string>> = {
-  '--color-text-primary': '#1A1A1A',
-  '--color-text-secondary': '#333333',
-  '--color-text-muted': '#9A9A9A',
-  '--color-border-primary': '#E0D9C8',
-};
-
-const SEMANTIC_THEME_VARS: Record<SemanticVarKey, string> = {
-  ...Object.fromEntries(THEME_PALETTE.map(p => [p.semanticKey, p.hex])),
-  ...DEFAULT_EXTRAS,
-} as Record<SemanticVarKey, string>;
+type CompatibilityVarKey =
+  | '--color-accent-primary'
+  | '--color-accent-supporting'
+  | '--color-accent-emphasis'
+  | '--color-bg-primary'
+  | '--color-bg-surface'
+  | '--color-bg-muted'
+  | '--color-text-primary'
+  | '--color-text-secondary'
+  | '--color-text-muted'
+  | '--color-border-primary';
 
 const isValidHex = (s: string) => /^#([0-9a-fA-F]{6})$/.test(s);
 const normalizeHex = (s: string) => (s.startsWith('#') ? s : `#${s}`).slice(0, 7);
 
-const DEFAULT_THEME: Record<SemanticVarKey, string> = { ...SEMANTIC_THEME_VARS };
-
-const LIGHT: Record<SemanticVarKey, string> = {
-  '--color-accent-primary': '#5145CD',
-  '--color-accent-secondary': '#1A56DB',
-  '--color-accent-alert': '#DC2626',
-  '--color-bg-muted': '#FAFAFA',
-  '--color-bg-primary': '#FFFFFF',
-  '--color-bg-surface': '#F9FAFB',
-  '--color-text-primary': '#111928',
-  '--color-text-secondary': '#374151',
-  '--color-text-muted': '#9CA3AF',
-  '--color-border-primary': '#E5E7EB',
+const THEME_ASSET_PRESETS: Record<
+  ThemeAssetPresetId,
+  Record<ThemeMode, Record<ThemeAssetId, string>>
+> = {
+  legacy: {
+    light: {
+      siteLogo: '/public/logo.svg',
+      favicon: '/public/favicon.ico',
+    },
+    dark: {
+      siteLogo: '/public/logo.svg',
+      favicon: '/public/favicon.ico',
+    },
+  },
+  default: {
+    light: {
+      siteLogo: '/public/uwazi-design-logo.svg',
+      favicon: '/public/uwazi-design-icon-light.png',
+    },
+    dark: {
+      siteLogo: '/public/uwazi-design-logo.svg',
+      favicon: '/public/uwazi-design-icon-dark.png',
+    },
+  },
 };
 
-const DARK: Record<SemanticVarKey, string> = {
-  '--color-accent-primary': '#818CF8',
-  '--color-accent-secondary': '#60A5FA',
-  '--color-accent-alert': '#F87171',
-  '--color-bg-muted': '#0F172A',
-  '--color-bg-primary': '#1E293B',
-  '--color-bg-surface': '#334155',
-  '--color-text-primary': '#F8FAFC',
-  '--color-text-secondary': '#CBD5E1',
-  '--color-text-muted': '#94A3B8',
-  '--color-border-primary': '#475569',
+const themeStorageKey = (mode: ThemeMode, key: SemanticVarKey | CompatibilityVarKey) =>
+  `${mode}:${key}`;
+
+const LEGACY_THEME_KEY_MAP = {
+  '--color-theme-accent-blue': '--color-theme-accent-supporting',
+  '--color-theme-accent-seal': '--color-theme-accent-emphasis',
+  '--color-theme-accent-blue-tint': '--color-theme-accent-supporting-tint',
+  '--color-theme-accent-seal-tint': '--color-theme-accent-emphasis-tint',
+} as const satisfies Record<string, string>;
+
+const resolveLegacyKey = (key: string) => LEGACY_THEME_KEY_MAP[key as keyof typeof LEGACY_THEME_KEY_MAP];
+
+const getThemeValue = (themeVars: ThemeVarsInput, mode: ThemeMode, key: SemanticVarKey) => {
+  const modeValue = themeVars?.[themeStorageKey(mode, key)];
+  if (modeValue) return modeValue;
+
+  for (const [legacyKey, nextKey] of Object.entries(LEGACY_THEME_KEY_MAP)) {
+    if (nextKey !== key) continue;
+    const legacyModeValue = themeVars?.[themeStorageKey(mode, legacyKey as CompatibilityVarKey)];
+    if (legacyModeValue) return legacyModeValue;
+  }
+
+  if (mode !== 'light') return undefined;
+
+  const flatValue = themeVars?.[key];
+  if (flatValue) return flatValue;
+
+  for (const [legacyKey, nextKey] of Object.entries(LEGACY_THEME_KEY_MAP)) {
+    if (nextKey !== key) continue;
+    const legacyFlatValue = themeVars?.[legacyKey];
+    if (legacyFlatValue) return legacyFlatValue;
+  }
+
+  return undefined;
 };
 
-const LEGACY: Record<SemanticVarKey, string> = {
-  '--color-accent-primary': '#2b56c1',
-  '--color-accent-secondary': '#2196f3',
-  '--color-accent-alert': '#d9534f',
-  '--color-bg-muted': '#fcfcfc',
-  '--color-bg-primary': '#ffffff',
-  '--color-bg-surface': '#f9fafb',
-  '--color-text-primary': '#101828',
-  '--color-text-secondary': '#475467',
-  '--color-text-muted': '#6b7280',
-  '--color-border-primary': '#e5e7eb',
+const toCanonicalThemeVars = (themeVars: ThemeVarsInput): Record<string, string | undefined> => {
+  if (!themeVars) return {};
+
+  const next: Record<string, string | undefined> = {};
+
+  Object.entries(themeVars).forEach(([key, value]) => {
+    if (value === undefined) return;
+    const [mode, rawKey] =
+      key.startsWith('light:') || key.startsWith('dark:')
+        ? (key.split(/:(.+)/) as [ThemeMode, string])
+        : [undefined, key];
+    const canonicalKey = resolveLegacyKey(rawKey) ?? rawKey;
+    next[mode ? themeStorageKey(mode, canonicalKey as SemanticVarKey) : canonicalKey] = value;
+  });
+
+  return next;
 };
 
-const NAMED_THEMES: ThemeDefinition[] = [
-  { id: 'default', label: 'Default', semanticVars: DEFAULT_THEME },
-  { id: 'light', label: 'Light', semanticVars: LIGHT },
-  { id: 'dark', label: 'Dark', semanticVars: DARK },
-  { id: 'legacy', label: 'Legacy Uwazi', semanticVars: LEGACY },
-];
-
-const getThemeById = (id: ThemeId | string): ThemeDefinition | undefined => {
-  if (id === 'rebrand') return NAMED_THEMES[0];
-  return NAMED_THEMES.find(t => t.id === id);
+const getPresetId = (
+  themeVars: ThemeVarsInput,
+  themeCustomizationEnabled: boolean
+): ThemePresetId => {
+  const preset = themeVars?.[THEME_PRESET_KEY];
+  if (preset === 'default' || preset === 'legacy' || preset === 'custom') return preset;
+  return themeCustomizationEnabled ? 'default' : 'legacy';
 };
 
-const getPresetVars = (themeId: ThemeId): Record<SemanticVarKey, string> => {
-  const theme = getThemeById(themeId);
-  return theme ? { ...theme.semanticVars } : ({} as Record<SemanticVarKey, string>);
+const getThemeAssetPresetId = (
+  themeAssets: ThemeAssets | undefined,
+  themeVars: ThemeVarsInput,
+  themeCustomizationEnabled: boolean
+): ThemeAssetPresetId => {
+  if (themeAssets?.preset === 'default' || themeAssets?.preset === 'legacy') return themeAssets.preset;
+  const currentPreset = getPresetId(themeVars, themeCustomizationEnabled);
+  return currentPreset === 'legacy' ? 'legacy' : 'default';
 };
 
-const SEMANTIC_VAR_SET = new Set<string>(SEMANTIC_VAR_KEYS);
+const getThemeAsset = (
+  themeAssets: ThemeAssets | undefined,
+  themeVars: ThemeVarsInput,
+  mode: ThemeMode,
+  asset: ThemeAssetId,
+  fallback?: string,
+  themeCustomizationEnabled: boolean = true
+) =>
+  themeAssets?.[asset]?.[mode] ??
+  THEME_ASSET_PRESETS[getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)][mode][asset] ??
+  fallback ??
+  '';
+
+const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableThemeVars> => ({
+  light: Object.fromEntries(
+    SEMANTIC_VAR_KEYS.map(key => [key, PRESET_DEFINITIONS[presetId].modes.light[key]])
+  ) as EditableThemeVars,
+  dark: Object.fromEntries(
+    SEMANTIC_VAR_KEYS.map(key => [key, PRESET_DEFINITIONS[presetId].modes.dark[key]])
+  ) as EditableThemeVars,
+});
 
 const appliedTheme = (
-  themeVars: Record<string, string | undefined> | undefined
-): Record<SemanticVarKey, string> => {
-  const base = { ...SEMANTIC_THEME_VARS };
-  if (themeVars && typeof themeVars === 'object') {
-    for (const key of Object.keys(themeVars) as SemanticVarKey[]) {
-      if (SEMANTIC_VAR_SET.has(key) && themeVars[key]) base[key] = themeVars[key];
-    }
-  }
+  themeVars: ThemeVarsInput,
+  mode: ThemeMode,
+  themeCustomizationEnabled: boolean = true
+): ResolvedThemeVars => {
+  const presetId = getPresetId(themeVars, themeCustomizationEnabled);
+  const base = { ...PRESET_DEFINITIONS[presetId].modes[mode] };
+
+  SEMANTIC_VAR_KEYS.forEach(key => {
+    const value = getThemeValue(themeVars, mode, key);
+    if (value) base[key] = value;
+  });
+
   return base;
 };
 
+const getPresetVars = (presetId: ThemePresetId): Record<string, string> => ({
+  [THEME_PRESET_KEY]: presetId,
+});
+
+const getCustomThemeVars = (
+  themeVars: ThemeVarsInput,
+  themeCustomizationEnabled: boolean = true
+): Record<string, string> => {
+  const next: Record<string, string> = {
+    [THEME_PRESET_KEY]: 'custom',
+  };
+  THEME_MODES.forEach(mode => {
+    const resolved = appliedTheme(themeVars, mode, themeCustomizationEnabled);
+    SEMANTIC_VAR_KEYS.forEach(key => {
+      next[themeStorageKey(mode, key)] = resolved[key];
+    });
+  });
+  return next;
+};
+
+const toCompatibilityVars = (
+  resolved: ResolvedThemeVars
+): Record<LegacySemanticVarKey | CompatibilityVarKey, string> =>
+  ({
+    '--accent-primary': resolved['--color-theme-accent-primary'],
+    '--accent-supporting': resolved['--color-theme-accent-supporting'],
+    '--accent-emphasis': resolved['--color-theme-accent-emphasis'],
+    '--bg-primary': resolved['--color-theme-bg-primary'],
+    '--bg-surface': resolved['--color-theme-bg-surface'],
+    '--bg-warm': resolved['--color-theme-bg-warm'],
+    '--bg-muted': resolved['--color-theme-bg-muted'],
+    '--text-primary': resolved['--color-theme-text-primary'],
+    '--text-secondary': resolved['--color-theme-text-secondary'],
+    '--text-tertiary': resolved['--color-theme-text-tertiary'],
+    '--text-muted': resolved['--color-theme-text-muted'],
+    '--border-primary': resolved['--color-theme-border-primary'],
+    '--border-soft': resolved['--color-theme-border-soft'],
+    '--bg-overlay': resolved['--color-theme-bg-overlay'],
+    '--bg-selected': resolved['--color-theme-bg-selected'],
+    '--border-primary-64': resolved['--color-theme-border-primary-64'],
+    '--border-soft-64': resolved['--color-theme-border-soft-64'],
+    '--accent-supporting-tint': resolved['--color-theme-accent-supporting-tint'],
+    '--accent-emphasis-tint': resolved['--color-theme-accent-emphasis-tint'],
+    '--success': resolved['--color-theme-success'],
+    '--success-light': resolved['--color-theme-success-light'],
+    '--warning': resolved['--color-theme-warning'],
+    '--warning-light': resolved['--color-theme-warning-light'],
+    '--danger': resolved['--color-theme-danger'],
+    '--danger-light': resolved['--color-theme-danger-light'],
+    '--highlight-yellow': resolved['--color-theme-highlight-yellow'],
+    '--highlight-yellow-active': resolved['--color-theme-highlight-yellow-active'],
+    '--highlight-blue': resolved['--color-theme-highlight-blue'],
+    '--shadow-sm': resolved['--color-theme-shadow-sm'],
+    '--shadow-md': resolved['--color-theme-shadow-md'],
+    '--shadow-lg': resolved['--color-theme-shadow-lg'],
+    '--shadow-xl': resolved['--color-theme-shadow-xl'],
+    '--color-accent-primary': resolved['--color-theme-accent-primary'],
+    '--color-accent-supporting': resolved['--color-theme-accent-supporting'],
+    '--color-accent-emphasis': resolved['--color-theme-accent-emphasis'],
+    '--color-bg-primary': resolved['--color-theme-bg-primary'],
+    '--color-bg-surface': resolved['--color-theme-bg-surface'],
+    '--color-bg-muted': resolved['--color-theme-bg-muted'],
+    '--color-text-primary': resolved['--color-theme-text-primary'],
+    '--color-text-secondary': resolved['--color-theme-text-secondary'],
+    '--color-text-muted': resolved['--color-theme-text-muted'],
+    '--color-border-primary': resolved['--color-theme-border-primary'],
+  }) satisfies Record<LegacySemanticVarKey | CompatibilityVarKey, string>;
+
 export {
+  THEME_MODES,
+  THEME_PRESET_KEY,
   SEMANTIC_VAR_KEYS,
   ACCENT_PRIMARY_KEY,
   SEMANTIC_VAR_LABELS,
@@ -155,5 +291,22 @@ export {
   normalizeHex,
   NAMED_THEMES,
   appliedTheme,
+  getPresetPair,
   getPresetVars,
+  getCustomThemeVars,
+  getPresetId,
+  getThemeAssetPresetId,
+  getThemeAsset,
+  themeStorageKey,
+  toCanonicalThemeVars,
+  toCompatibilityVars,
+};
+export type {
+  ThemeMode,
+  ThemePresetId,
+  SemanticVarKey,
+  ResolvedThemeVars,
+  ThemeAssetId,
+  ThemeAssetPresetId,
+  ThemeAssets,
 };

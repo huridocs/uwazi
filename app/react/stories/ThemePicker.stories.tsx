@@ -24,7 +24,7 @@ type ThemePickerWithPreviewProps = { themeCustomization: boolean };
 
 const ThemePickerWithPreview = ({ themeCustomization }: ThemePickerWithPreviewProps) => {
   const [themeVars, setThemeVars] = useState<Record<string, string | undefined>>({});
-  const resolved = appliedTheme(themeVars);
+  const resolved = appliedTheme(themeVars, 'light', themeCustomization);
   const accent = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
   const style: React.CSSProperties & Record<string, string> = {
     ...resolved,
@@ -41,7 +41,7 @@ const ThemePickerWithPreview = ({ themeCustomization }: ThemePickerWithPreviewPr
       email: 'admin@uwazi.io',
     };
     s.set(userAtom, user);
-    s.set(settingsAtom, { ...baseSettings, themeVars });
+    s.set(settingsAtom, { ...baseSettings, themeCustomization, themeVars });
     s.set(localeAtom, 'en');
     s.set(translationsAtom, []);
     return s;
@@ -71,8 +71,8 @@ const ThemePickerWithPreview = ({ themeCustomization }: ThemePickerWithPreviewPr
               <p
                 className="px-4 py-2 text-xs border-t"
                 style={{
-                  borderColor: 'var(--color-theme-foreground)',
-                  color: 'var(--color-theme-foreground)',
+                  borderColor: 'var(--color-theme-brand-surface-foreground)',
+                  color: 'var(--color-theme-brand-surface-foreground)',
                   opacity: 0.9,
                 }}
                 aria-live="polite"

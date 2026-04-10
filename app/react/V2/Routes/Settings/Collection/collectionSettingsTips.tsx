@@ -22,7 +22,7 @@ export const customFavIcon = (
     {`A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads if needed.
-2. Click "Select favicon image" and pick a file (images from Custom Uploads only).
+2. Open the favicon picker and pick a file (images from Custom Uploads only).
 3. Reload the page to see your favicon in action.`}
   </Translate>
 );
@@ -32,7 +32,7 @@ export const customSiteLogo = (
     {`The logo appears in the top bar next to your collection name (about 200×32 pixels).
 
 1. Upload images in Custom Uploads if needed.
-2. Click "Select site logo image" and pick a file; only images from Custom Uploads are listed.`}
+2. Open the logo picker and pick a file; only images from Custom Uploads are listed.`}
   </Translate>
 );
 

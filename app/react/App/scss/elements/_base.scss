@@ -25,25 +25,25 @@ a {
 
 [data-theme-custom] .theme-surface {
   a {
-    color: var(--color-theme-foreground, #111827);
+    color: var(--color-theme-brand-surface-foreground, #111827);
     background-color: transparent;
 
     &:hover,
     &:focus,
     &:active {
-      color: var(--color-theme-hover-fg, #111827);
-      background-color: var(--color-theme-hover-bg, #f3f4f6);
+      color: var(--color-theme-brand-surface-hover-fg, #111827);
+      background-color: var(--color-theme-brand-surface-hover-bg, #f3f4f6);
     }
   }
 
   button {
-    color: var(--color-theme-foreground, #111827);
+    color: var(--color-theme-brand-surface-foreground, #111827);
     background-color: transparent;
 
     &:hover,
     &:focus {
-      color: var(--color-theme-hover-fg, #111827);
-      background-color: var(--color-theme-hover-bg, #f3f4f6);
+      color: var(--color-theme-brand-surface-hover-fg, #111827);
+      background-color: var(--color-theme-brand-surface-hover-bg, #f3f4f6);
     }
   }
 
