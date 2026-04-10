@@ -6,6 +6,7 @@ import { Icon } from '#app/UI/index.js';
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { isClient } from '#app/utils/index.js';
 
 const SettingsNavigation = () => {
   const settings = useAtomValue(settingsAtom);
@@ -124,7 +125,7 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/custom-uploads', <Translate>Uploads</Translate>)}</li>
             </>
           </NeedAuthorization>
-          {window.__featureFlags__?.v2CSVImport && (
+          {isClient && window.__featureFlags__?.v2CSVImport && (
             <NeedAuthorization roles={['admin', 'editor']}>
               {renderLink('/settings/csv', <Translate>Import CSV</Translate>)}
             </NeedAuthorization>
