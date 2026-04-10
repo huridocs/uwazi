@@ -1,22 +1,16 @@
 /* eslint-disable max-statements */
-import { inspect } from 'util';
 import { getCurrentScope, captureException, close } from '@sentry/node-core/light';
+import { inspect } from 'util';
 import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
-import {
-  RoundRobinQueueAdapter,
-  DefaultDispatcher,
-} from '#api/core/libs/queue/configuration/factories.js';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import {
   QueueWorker,
   QueueWorkerErrorHandler,
@@ -49,6 +43,24 @@ const logger = LoggerFactory.systemLogger(
   replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
 );
 
+function register<T extends Dispatchable>(
+  this: QueueWorker,
+  dispatchable: DispatchableClass<T>,
+  factory: (namespace: string) => Promise<T>
+) {
+  this.register(
+    dispatchable,
+    async namespace =>
+      new Promise((resolve, reject) => {
+        tenants
+          .run(async () => {
+            resolve(await factory(namespace));
+          }, namespace)
+          .catch(reject);
+      })
+  );
+}
+
 const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](inspect(error), { job: context?.job });
@@ -78,34 +90,12 @@ export function setupQueueWorker(props?: Props) {
       }
       logger.info('Connected to MongoDB');
       const adapter = RoundRobinQueueAdapter();
-      const queueWorker = new QueueWorker(config.queueName, adapter, logger, captureError, {
-        contextRunner: async (namespace, fn) =>
-          tenants.run(
-            async () =>
-              DependenciesContext.run(
-                {
-                  factories: {
-                    transactionManager: TransactionManagerFactory.default,
-                    jobsDispatcher: () =>
-                      DefaultDispatcher(namespace, DependenciesContext.transactionManager),
-                    eventEmitter: EventEmitterFactory.default,
-                    idGenerator: IdGeneratorFactory.default,
-                    logger: LoggerFactory.default,
-                    elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
-                    authorizedEntityESClient: () =>
-                      ElasticSearchClientFactory.authorizedEntityClient(namespace, null),
-                  },
-                },
-                fn
-              ),
-            namespace
-          ),
-      });
+      const queueWorker = new QueueWorker(config.queueName, adapter, logger, captureError);
 
       await tenants.setupTenants();
       logger.info('Set tenants up');
 
-      registerJobs(queueWorker.register.bind(queueWorker));
+      registerJobs(register.bind(queueWorker));
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
       if (standAloneProcess) {

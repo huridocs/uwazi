@@ -9,13 +9,9 @@ import { Job, QueueAdapter } from './QueueAdapter.js';
 
 interface WorkerOptions {
   waitTime?: number;
-  contextRunner?: (namespace: string, fn: () => Promise<void>) => Promise<void>;
 }
 
-type ResolvedWorkerOptions = Required<Omit<WorkerOptions, 'contextRunner'>> &
-  Pick<WorkerOptions, 'contextRunner'>;
-
-const optionsDefaults: ResolvedWorkerOptions = {
+const optionsDefaults: Required<WorkerOptions> = {
   waitTime: 1000,
 };
 
@@ -40,7 +36,7 @@ export class QueueWorker {
 
   private onError: QueueWorkerErrorHandler;
 
-  private options: ResolvedWorkerOptions;
+  private options: Required<WorkerOptions>;
 
   private stoppedCallback?: Function;
 
@@ -57,12 +53,11 @@ export class QueueWorker {
     adapter: QueueAdapter,
     logger: Logger,
 
-    onError?: QueueWorkerErrorHandler,
-    options?: WorkerOptions
+    onError?: QueueWorkerErrorHandler
   ) {
     this.queueName = queueName;
     this.adapter = adapter;
-    this.options = { ...optionsDefaults, ...options };
+    this.options = { ...optionsDefaults };
     this.logger = logger;
     this.onError =
       onError ??
@@ -127,29 +122,25 @@ export class QueueWorker {
     return this.adapter.deleteJob(job);
   }
 
-  private async runInContext(namespace: string, fn: () => Promise<void>): Promise<void> {
-    return this.options.contextRunner ? this.options.contextRunner(namespace, fn) : fn();
-  }
-
+  // eslint-disable-next-line max-statements
   private async processJob(job: Job) {
     const start = performance.now();
+    const dispatchable = await this.createDispatchable(job);
+
     try {
-      await this.runInContext(job.namespace, async () => {
-        const dispatchable = await this.createDispatchable(job);
-        const { params, ...loggableJob } = job;
-        this.logger.info('Processing job', { job: loggableJob });
-        const startTime = performance.now();
-        await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
-          namespace: job.namespace,
-          retryCount: job.retryCount,
-          maxRetries: job.options.maxRetries,
-        });
-        this.logger.info('Job processed', {
-          job: loggableJob,
-          processingTime: performance.now() - startTime,
-        });
-        await this.completeJob(job);
+      const { params, ...loggableJob } = job;
+      this.logger.info('Processing job', { job: loggableJob });
+      const startTime = performance.now();
+      await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
+        namespace: job.namespace,
+        retryCount: job.retryCount,
+        maxRetries: job.options.maxRetries,
       });
+      this.logger.info('Job processed', {
+        job: loggableJob,
+        processingTime: performance.now() - startTime,
+      });
+      await this.completeJob(job);
     } catch (e) {
       await this.catchFailedJob(job, e);
     } finally {
