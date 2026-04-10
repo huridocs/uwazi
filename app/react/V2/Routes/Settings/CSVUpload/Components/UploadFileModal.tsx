@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import { FileDropzone, Select } from '#V2/Components/Forms/index.js';
@@ -50,6 +50,10 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       })),
     [templates]
   );
+
+  useEffect(() => {
+    setTemplateId(options[0].value);
+  }, [options]);
 
   return isOpen ? (
     <Modal size="xl">
