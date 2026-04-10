@@ -1,26 +1,62 @@
-import React, { useMemo } from 'react';
-import { useLoaderData } from 'react-router';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import throttle from 'lodash/throttle.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Card } from '#V2/Components/UI/index.js';
 import { CsvImportListRow, CsvImportStatus } from '#V2/api/csv/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { socket } from '#app/socket.js';
 import { statusMessages } from './Components/statusMessages.js';
 import { DateDisplay } from './Components/DateDisplay.js';
 import { Progress } from './Components/Progress.js';
+import { csvImportEvents, type CsvImportEventPayloads } from '#app/V2/api/csv/events.js';
+import { CancelProcessModal } from './Components/CancelProcessModal.js';
 
 const UploadStatus = () => {
+  const revalidator = useRevalidator();
   const entry = useLoaderData() as CsvImportListRow | undefined;
   const templates = useAtomValue(templatesAtom);
+  const [cancelModal, setCancelModal] = useState(false);
+  const fileName = entry?.file.originalName || <Translate>Not Found</Translate>;
+  const canCancel = !(
+    entry?.status === CsvImportStatus.Cancelled ||
+    entry?.status === CsvImportStatus.Completed ||
+    entry?.status === CsvImportStatus.Failed
+  );
 
   const templateName = useMemo(
     () => templates.find(template => template._id === entry?.templateId)?.name || '',
     [entry, templates]
   );
 
-  const fileName = entry?.file.originalName || <Translate>Not Found</Translate>;
+  useEffect(() => {
+    const doRevalidation = throttle(
+      async (
+        payload:
+          | CsvImportEventPayloads['csvImport:import:progress']
+          | CsvImportEventPayloads['csvImport:import:success']
+          | CsvImportEventPayloads['csvImport:import:error']
+      ) => {
+        if (payload.importId === entry?.id) {
+          await revalidator.revalidate();
+        }
+      },
+      3000
+    );
+
+    socket.on(csvImportEvents.importProgress, doRevalidation);
+    socket.on(csvImportEvents.importSuccess, doRevalidation);
+    socket.on(csvImportEvents.importError, doRevalidation);
+
+    return () => {
+      socket.off(csvImportEvents.importProgress, doRevalidation);
+      socket.off(csvImportEvents.importSuccess, doRevalidation);
+      socket.off(csvImportEvents.importError, doRevalidation);
+    };
+  }, [entry, revalidator]);
 
   return (
     <div className="w-full h-full overflow-y-auto">
@@ -116,12 +152,25 @@ const UploadStatus = () => {
             type="button"
             color="error"
             className="float-right flex flex-row gap-2 items-center"
+            onClick={() => {
+              setCancelModal(true);
+            }}
+            disabled={!canCancel}
           >
             <XMarkIcon className="w-4 h-4" />
             <Translate>Cancel</Translate>
           </Button>
         </SettingsContent.Footer>
       </SettingsContent>
+      {entry && (
+        <CancelProcessModal
+          isOpen={cancelModal}
+          onClose={() => {
+            setCancelModal(false);
+          }}
+          entryId={entry.id}
+        />
+      )}
     </div>
   );
 };

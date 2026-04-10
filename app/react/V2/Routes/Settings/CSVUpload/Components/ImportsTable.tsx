@@ -8,7 +8,7 @@ import throttle from 'lodash/throttle';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
-import { ProgressBar, Table, ProgressBarProps, Button } from '#V2/Components/UI/index.js';
+import { Table, Button } from '#V2/Components/UI/index.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { CsvImportStatus } from '#V2/api/csv/index.js';

@@ -1,0 +1,137 @@
+/**
+ * @jest-environment jsdom
+ */
+import React from 'react';
+import { act, render, screen, within } from '@testing-library/react';
+import * as reactRouter from 'react-router';
+import { socket } from '#app/socket.js';
+import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
+import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
+import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
+import { csvImportsList, templates, translations } from './fixtures.js';
+import { UploadStatus } from '../../UploadStatus.js';
+import { CsvImportListRow } from '#app/V2/api/csv/index.js';
+import { csvImportEvents } from '#app/V2/api/csv/events.js';
+
+describe('CSV import status view', () => {
+  let locale: 'en' | 'ar' = 'en';
+  let revalidateMock: jest.Mock;
+  let listeners: Record<string, any>;
+
+  beforeEach(() => {
+    locale = 'en';
+    revalidateMock = jest.fn();
+    listeners = {};
+
+    jest.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
+      revalidate: revalidateMock,
+      state: 'idle',
+    });
+
+    jest.spyOn(socket, 'on').mockImplementation((event: string, callback: any) => {
+      listeners[event] = callback;
+      return socket;
+    });
+
+    jest.spyOn(socket, 'off').mockImplementation((event: string) => {
+      delete listeners[event];
+      return socket;
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const renderComponent = async (data?: CsvImportListRow) => {
+    await act(() => {
+      render(
+        <TestRouterContext loaderData={data}>
+          <TestAtomStoreProvider
+            initialValues={[
+              [templatesAtom, templates],
+              [localeAtom, locale],
+              [translationsAtom, translations],
+            ]}
+          >
+            <UploadStatus />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+    });
+  };
+
+  it('should not fail if the import is not found', async () => {
+    await renderComponent();
+    expect(screen.getAllByText('Not Found')[0]).toBeInTheDocument();
+  });
+
+  it('should display the current status', async () => {
+    await renderComponent(csvImportsList[1]);
+
+    const expectStatistic = (label: string, value: string) => {
+      const labelNode = screen.getByText(label);
+      const statContainer = labelNode.parentElement;
+
+      expect(statContainer).not.toBeNull();
+      expect(statContainer).toHaveTextContent(value);
+      expect(statContainer).toHaveTextContent(label);
+    };
+
+    expectStatistic('Entities created', '44');
+    expectStatistic('Rows processed', '48');
+    expectStatistic('Rows failed', '1');
+    expectStatistic('Thesauri touched', '-');
+    expectStatistic('Relationships', '-');
+  });
+
+  it('should revalidate once on different events', async () => {
+    await renderComponent(csvImportsList[1]);
+
+    await act(async () => {
+      listeners[csvImportEvents.importProgress]({ importId: 'csv-import-2' });
+      listeners[csvImportEvents.importSuccess]({ importId: 'csv-import-2' });
+      listeners[csvImportEvents.importError]({
+        importId: 'csv-import-2',
+        message: 'Boom',
+      });
+    });
+
+    expect(revalidateMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not revalidate for other uploads', async () => {
+    await renderComponent(csvImportsList[2]);
+
+    await act(async () => {
+      listeners[csvImportEvents.importProgress]({ importId: 'csv-import-2' });
+      listeners[csvImportEvents.importSuccess]({ importId: 'csv-import-2' });
+      listeners[csvImportEvents.importError]({
+        importId: 'csv-import-2',
+        message: 'Boom',
+      });
+    });
+
+    expect(revalidateMock).toHaveBeenCalledTimes(0);
+  });
+
+  it('should not allow canceling finished imports', async () => {
+    await renderComponent(csvImportsList[2]);
+    expect(screen.getByText('Cancel').parentElement).toBeDisabled();
+  });
+
+  it('should cancel a process', async () => {
+    await renderComponent(csvImportsList[1]);
+
+    await act(() => {
+      screen.getByText('Cancel').parentElement?.click();
+    });
+
+    await act(() => {
+      const modal = screen.getByTestId('modal');
+      within(modal).getByText('Cancel').click();
+    });
+
+    expect(revalidateMock).toHaveBeenCalledTimes(1);
+  });
+});
