@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
 import fixtures, {
@@ -14,14 +15,30 @@ import db from '#api/utils/testing_db.js';
 import documents from '#api/documents/index.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
-import { ObjectId } from 'mongodb';
 import { TemplateInUseError } from '#api/core/domain/template/errors.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 describe('DeleteTemplateUseCase', () => {
-  beforeEach(async () => {
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+  beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'delete_template_use_case');
+
+    const tenant = tenants.current();
+
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
+  });
+
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
   });
 
   afterAll(async () => {

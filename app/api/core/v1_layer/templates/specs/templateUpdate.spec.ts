@@ -1,8 +1,11 @@
 /* eslint-disable max-statements */
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ContextDependencies, DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { elasticClient } from '#api/search/elastic.js';
+import { tenants } from '#api/tenants/index.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
@@ -32,6 +35,14 @@ describe('templates', () => {
   describe('Update', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
+      const tenant = tenants.current();
+
+      jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+        instances: {
+          elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+        },
+        factories: {},
+      } as ContextDependencies);
     });
 
     afterEach(() => {

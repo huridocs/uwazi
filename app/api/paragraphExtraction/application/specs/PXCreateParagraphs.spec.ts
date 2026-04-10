@@ -18,6 +18,9 @@ import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
 import { PXCreateParagraphsInput } from '../PXCreateParagraphs.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
+import { tenants } from '#api/tenants/index.js';
 
 const factory = getFixturesFactory();
 
@@ -160,8 +163,20 @@ const createExpectedParagraph = (
 });
 
 describe('PXCreateParagraphs', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await testingEnvironment.setUp(createFixtures(), true);
+
+    const tenant = tenants.current();
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
+  });
+
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures(createFixtures());
   });
 
   afterAll(async () => {

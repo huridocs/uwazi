@@ -11,6 +11,8 @@ import { CsvImportDomain } from '../../../domain/CsvImport.js';
 import { CsvImportRelationshipPendingValues } from '../../../domain/CsvImportRelationshipPendingValues.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '../../../infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -46,6 +48,14 @@ describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv-create-relationship-entities-job');
+
+    const tenant = tenants.current();
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
 
   afterEach(async () => {

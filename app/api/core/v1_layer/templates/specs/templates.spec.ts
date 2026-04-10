@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 
@@ -18,10 +17,22 @@ import fixtures, {
   templateToBeInherited,
   thesauriId1,
 } from './fixtures/fixtures.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { ContextDependencies, DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 
 describe('templates', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, true);
+
+    const tenant = tenants.current();
+
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
   afterAll(async () => {
     await testingEnvironment.tearDown();

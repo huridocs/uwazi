@@ -7,6 +7,8 @@ import { rm, writeFile } from 'fs/promises';
 import bodyParser from 'body-parser';
 import _ from 'lodash';
 
+import express, { NextFunction, Request, RequestHandler, Response } from 'express';
+import { Db, ObjectId } from 'mongodb';
 import authRoutes from '#api/auth/routes.js';
 import entities from '#api/entities/index.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
@@ -33,14 +35,12 @@ import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import mailer from '#api/utils/mailer.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { Db, ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import * as utils from '#shared/tsUtils.js';
 import { syncWorker } from '../syncWorker.js';
@@ -57,6 +57,8 @@ import {
   template2,
   thesauri1Value2,
 } from './fixtures.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 async function runAllTenants() {
   try {
@@ -183,6 +185,13 @@ describe('syncWorker', () => {
     }, 'host1');
     server = app.listen(6667);
     server2 = app.listen(6668);
+
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware('default'),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
 
   afterAll(async () => {

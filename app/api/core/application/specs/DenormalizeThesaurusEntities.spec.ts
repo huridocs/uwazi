@@ -3,6 +3,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { factory, fixtures } from './DenormalizeThesaurusEntitiesFixtures.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
+import { tenants } from '#api/tenants/index.js';
 
 const createSut = () => {
   const sut = DenormalizeThesaurusEntitiesUseCaseFactory.default();
@@ -13,6 +16,15 @@ const createSut = () => {
 describe('DenormalizeThesaurusEntities', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
+
+    const tenant = tenants.current();
+
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
 
   beforeEach(async () => {

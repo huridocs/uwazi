@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { Collection, ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -6,7 +7,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import { elastic, search } from '#api/search/index.js';
-import { Collection, ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -14,6 +14,8 @@ import { UserSchema } from '#shared/types/userType.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 const factory = getFixturesFactory();
 
@@ -152,6 +154,15 @@ describe('BulkDeleteEntityUseCase', () => {
     await testingEnvironment.setUp(fixtures, 'bulk_delete_entity_use_case');
 
     jobsCollection = getSharedConnection().collection('jobs');
+
+    const tenant = tenants.current();
+
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
 
   beforeEach(async () => {
