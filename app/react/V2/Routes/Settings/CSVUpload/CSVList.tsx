@@ -29,7 +29,7 @@ const CSVList = () => {
                 icon={<DocumentIcon className="w-16 h-16" />}
                 title={<Translate>No CSVs yet</Translate>}
                 description={
-                  <Translate>
+                  <Translate translationKey="csv blank state message">
                     Import CSV or ZIP files to create entities in bulk. Click &quot;New Import&quot;
                     to get started.
                   </Translate>

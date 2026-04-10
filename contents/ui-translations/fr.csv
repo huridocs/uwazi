@@ -104,6 +104,7 @@ Authentication code,Code d'authentification
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,créé automatiquement
+Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Table des matières automatique
 Automatically generated,Généré automatiquement
 Available default translation,Available default translation
@@ -119,8 +120,10 @@ Can edit,Peut éditer
 Can see,Peut voir
 Can view,Peut voir
 Cancel,Annuler
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Canceling
 Canceling...,Canceling...
+Cancelled,Cancelled
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,Contournement du captcha
@@ -147,6 +150,7 @@ Click,Click
 Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
 Close,Fermer
+Code,Code
 Collaborator,Collaborateur
 Collaborators,Collaborators
 Collapse all,Collapse all
@@ -154,6 +158,7 @@ Collapse All,Collapse All
 Collection,Collection
 Collection Name,Collection Name
 Common sources,Common sources
+Completed,Completed
 Configuration,Configuration
 Configure filters,Configurer les filtres
 Configure templates,Configure templates
@@ -211,6 +216,11 @@ Created relationship,Created relationship
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Erreur de composant personnalisé
 Custom CSS,CSS personnalisé
@@ -221,6 +231,7 @@ custom page error warning,"There is an unexpected error on this custom page, it 
 Custom Uploads,Téléchargements personnalisés
 Dark,Dark
 Dashboard,Dashboard
+Date,Date
 Date added,Date ajoutée
 Date format,Format de date
 Date modified,Date de modification
@@ -274,6 +285,11 @@ Documentation,Documentation
 documents,Documents
 Documents,Documents
 documents.,Documents.
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,Télécharger
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Faites glisser et déposez le fichier dans cette fenêtre pour le télécharger
@@ -308,7 +324,9 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,Entités
 entities,Entités
 Entities across all languages,Entities across all languages
+Entities created,Entities created
 Entity,Entité
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
@@ -329,12 +347,17 @@ Exporting entities to CSV,Exporter des entités vers CSV
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed,Failed
+Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -344,6 +367,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Fichier
 File deleted,File deleted
+File extraction completed successfully.,File extraction completed successfully.
 File name,File name
 File updated,File updated
 Files,Files
@@ -409,7 +433,12 @@ Import,Importer
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
 Import instructions,Instructions d'importation
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,Importation de données en cours
@@ -559,6 +588,7 @@ No common filters,Pas de filtres communs
 No Connections,Pas de connexions
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
@@ -658,6 +688,9 @@ Please contact an admin for details.,Veuillez contacter un administrateur pour p
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,Veuillez saisir les lettres et les chiffres de l'image pour lancer l'exportation.
 Precision,Précision
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
@@ -673,7 +706,9 @@ Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
 Processed,Processed
+Processed rows,Processed rows
 Processing,Traitement
+Progress,Progress
 Properties,Propriétés
 Properties from other templates in the collection using the same label,Propriétés d'autres modèles de la collection utilisant la même étiquette
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -708,6 +743,7 @@ Publish,Publier
 Published,Publié
 QR Code,QR Code
 Query,Requête
+Queued,Queued
 RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Reception d'e-mail
@@ -740,6 +776,8 @@ Request id #,Numéro d'identification de la demande
 Request token,Request token
 Required,Required
 Required property,Propriété requise
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
@@ -747,12 +785,16 @@ Reset language,Reset language
 Reset Password,Réinitialiser le mot de passe
 Reset passwords,Reset passwords
 Restricted,Limité
+Retryable,Retryable
+Retrying,Retrying
 Return to login,Retourner à la connexion
 Review,Review
 Reviewed,Révisé
 Role,Rôle
 Route,Route
 Row,Row
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,Echantillon
 Satellite,Satellite
 Save,Sauvegarder
@@ -762,6 +804,8 @@ Save password,Sauvegarder le mot de passe
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,Recherche
 Search item,Recherche d'éléménts
 Search not found,Recherche non trouvée
@@ -842,6 +886,7 @@ Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
+Stage,Stage
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -909,6 +954,7 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
+Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
@@ -926,6 +972,7 @@ This file could not be opened. It may be corrupted or not a valid PDF.,This file
 This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,Cette option affichera une notification sur l'utilisation des cookies dans votre instance.
 This property can not be deleted,This property can not be deleted
@@ -955,6 +1002,7 @@ total entities,total entities
 Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+Total imports,Total imports
 total users,total users
 Train,Train
 Train model,Train model
@@ -1031,6 +1079,8 @@ Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi est développé par
 Uwazi UI,Interface utilisateur d'Uwazi
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
