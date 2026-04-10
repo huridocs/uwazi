@@ -10,6 +10,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { EntityRelationshipsUpdateService } from '../EntityRelationshipsUpdateService.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 const factory = getFixturesFactory();
 
@@ -144,6 +145,7 @@ function buildService() {
     db: getConnection(),
     transactionManager,
     slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+    entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
   });
   const entityDataSource = new MongoEntitiesDataSource(
     getConnection(),
