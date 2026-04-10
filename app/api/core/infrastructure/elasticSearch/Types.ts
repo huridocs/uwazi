@@ -29,7 +29,7 @@ export interface ExecutionContext extends TenantContextData {
 export interface IndexDefinition {
   alias: string;
   physicalPrefix: string;
-  settings: IndicesIndexSettings;
+  settings: IndicesIndexSettings & Record<string, unknown>;
   mappings: MappingTypeMapping;
 }
 
