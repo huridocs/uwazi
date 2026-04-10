@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import { useLoaderData } from 'react-router';
-import { DocumentIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { BlankState, Button } from '#V2/Components/UI/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { ImportsTable } from './Components/ImportsTable.js';
 import { UploadFileModal } from './Components/UploadFileModal.js';
-import type { csvLoaderResponse } from './Loaders/csvListLoader.js';
 
 const CSVList = () => {
-  const { list: csvUploads } = useLoaderData() as csvLoaderResponse;
   const [modalOpen, setModalOpen] = useState(false);
 
   const closeModal = () => {
@@ -21,22 +18,7 @@ const CSVList = () => {
       <SettingsContent>
         <SettingsContent.Header title="Import CSV" />
         <SettingsContent.Body className="flex flex-col overflow-y-auto">
-          {csvUploads.length ? (
-            <ImportsTable />
-          ) : (
-            <div className="max-w-80 max-h-80 self-center my-auto">
-              <BlankState
-                icon={<DocumentIcon className="w-16 h-16" />}
-                title={<Translate>No CSVs yet</Translate>}
-                description={
-                  <Translate translationKey="csv blank state message">
-                    Import CSV or ZIP files to create entities in bulk. Click &quot;New Import&quot;
-                    to get started.
-                  </Translate>
-                }
-              />
-            </div>
-          )}
+          <ImportsTable />
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <Button

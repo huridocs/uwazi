@@ -2,10 +2,11 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import { Provider } from 'jotai';
 import { act, render, screen, within } from '@testing-library/react';
 import * as reactRouter from 'react-router';
 import { socket } from '#app/socket.js';
-import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
+import { getStore } from '#shared/atomStore/index.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
 import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
@@ -13,7 +14,9 @@ import { ImportsTable } from '../ImportsTable.js';
 import { csvImportsList, templates, translations } from './fixtures.js';
 
 describe('CSV imports list table', () => {
-  let locale: 'en' | 'ar' = 'en';
+  const atomStore = getStore();
+
+  let locale: 'en' | 'es' = 'en';
   let revalidateMock: jest.Mock;
   let listeners: Record<string, any>;
 
@@ -21,6 +24,9 @@ describe('CSV imports list table', () => {
     locale = 'en';
     revalidateMock = jest.fn();
     listeners = {};
+
+    atomStore.set(templatesAtom, templates);
+    atomStore.set(translationsAtom, translations);
 
     jest.spyOn(reactRouter, 'useRevalidator').mockReturnValue({
       revalidate: revalidateMock,
@@ -43,22 +49,34 @@ describe('CSV imports list table', () => {
   });
 
   const renderComponent = async () => {
+    atomStore.set(localeAtom, locale);
+
     await act(() => {
       render(
         <TestRouterContext loaderData={{ list: csvImportsList }}>
-          <TestAtomStoreProvider
-            initialValues={[
-              [templatesAtom, templates],
-              [localeAtom, locale],
-              [translationsAtom, translations],
-            ]}
-          >
+          <Provider store={atomStore}>
             <ImportsTable />
-          </TestAtomStoreProvider>
+          </Provider>
         </TestRouterContext>
       );
     });
   };
+
+  it('should render a blank state message if not data', async () => {
+    await act(() => {
+      atomStore.set(localeAtom, locale);
+
+      render(
+        <TestRouterContext loaderData={{ list: [] }}>
+          <Provider store={atomStore}>
+            <ImportsTable />
+          </Provider>
+        </TestRouterContext>
+      );
+    });
+
+    expect(screen.getByText('No CSVs yet')).toBeInTheDocument();
+  });
 
   it('should display the general statistics', async () => {
     await renderComponent();
@@ -82,10 +100,10 @@ describe('CSV imports list table', () => {
     await renderComponent();
 
     const expectedRows = [
-      ['Failed', 'documents.csv', 'Documents', '17/60', '15', '2', 'Apr 10, 2024'],
-      ['Completed', 'events.csv', 'Events', '86/86', '84', '0', 'Apr 9, 2024'],
-      ['Processing', 'cases.zip', 'Cases', '48/120', '44', '1', 'Apr 8, 2024'],
-      ['Queued', 'people.csv', 'People', '0/0', '', '', 'Apr 7, 2024'],
+      ['Failed', 'documents.csv', 'Documents', '17/60', '15', '2', '4/10/2024, 1:20:00 PM'],
+      ['Completed', 'events.csv', 'Events', '86/86', '84', '0', '4/9/2024, 1:20:00 PM'],
+      ['Processing', 'cases.zip', 'Cases', '48/120', '44', '1', '4/8/2024, 1:20:00 PM'],
+      ['Queued', 'people.csv', 'People', '0/0', '', '', '4/7/2024, 1:20:00 PM'],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);
@@ -100,15 +118,15 @@ describe('CSV imports list table', () => {
   });
 
   it('should print date based on locale', async () => {
-    locale = 'ar';
+    locale = 'es';
     await renderComponent();
-    expect(screen.getByText('7 أبريل 2024')).toBeInTheDocument();
+    expect(screen.getByText('10/4/2024, 13:20:00')).toBeInTheDocument();
   });
 
   it('should render template names', async () => {
-    locale = 'ar';
+    locale = 'es';
     await renderComponent();
-    expect(screen.getByText('People')).toBeInTheDocument();
+    expect(screen.getByText('Personas')).toBeInTheDocument();
   });
 
   it('should subscribe and unsubscribe import event listeners', async () => {
@@ -117,17 +135,13 @@ describe('CSV imports list table', () => {
 
     let unmount: () => void;
     await act(() => {
+      atomStore.set(localeAtom, locale);
+
       const result = render(
         <TestRouterContext loaderData={{ list: csvImportsList }}>
-          <TestAtomStoreProvider
-            initialValues={[
-              [templatesAtom, templates],
-              [localeAtom, locale],
-              [translationsAtom, translations],
-            ]}
-          >
+          <Provider store={atomStore}>
             <ImportsTable />
-          </TestAtomStoreProvider>
+          </Provider>
         </TestRouterContext>
       );
       unmount = result.unmount;

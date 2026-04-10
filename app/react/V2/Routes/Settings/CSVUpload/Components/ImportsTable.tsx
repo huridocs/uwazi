@@ -1,13 +1,14 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLoaderData, useRevalidator } from 'react-router';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
 import throttle from 'lodash/throttle';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
-import { Table, Button } from '#V2/Components/UI/index.js';
+import { Table, Button, BlankState } from '#V2/Components/UI/index.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { CsvImportStatus } from '#V2/api/csv/index.js';
@@ -188,13 +189,34 @@ const ImportsTable = () => {
     };
   }, [revalidator]);
 
+  if (!tableData.length) {
+    return (
+      <div className="max-w-80 m-auto">
+        <BlankState
+          icon={
+            <div className="bg-[#F5EED7] border rounded-full p-4">
+              <DocumentIcon className="w-6 h-6 text-gray-900" />
+            </div>
+          }
+          title={<Translate>No CSVs yet</Translate>}
+          description={
+            <Translate translationKey="csv blank state message">
+              Import CSV or ZIP files to create entities in bulk. Click &quot;New Import&quot; to
+              get started.
+            </Translate>
+          }
+        />
+      </div>
+    );
+  }
+
   return (
     <Table
       defaultSorting={[{ id: 'createdAt', desc: true }]}
       header={
         <div className="flex flex-col gap-4">
           <div>
-            <span className="float-left text-xl font-semibold" no-translate>
+            <span className="float-left text-xl font-semibold" no-translate="true">
               CSVs
             </span>
             <div className="flex flex-row items-center gap-2 float-right text-gray-400 text-sm">

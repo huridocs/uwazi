@@ -167,12 +167,12 @@ const translations: ClientTranslationSchema[] = [
     ],
   },
   {
-    locale: 'ar',
+    locale: 'es',
     contexts: [
-      { id: 'template-people', values: { People: 'الناس' } },
-      { id: 'template-cases', values: { Cases: 'القضايا' } },
-      { id: 'template-events', values: { Events: 'الأحداث' } },
-      { id: 'template-documents', values: { Documents: 'المستندات' } },
+      { id: 'template-people', values: { People: 'Personas' } },
+      { id: 'template-cases', values: { Cases: 'Casos' } },
+      { id: 'template-events', values: { Events: 'Eventos' } },
+      { id: 'template-documents', values: { Documents: 'Documentos' } },
     ],
   },
 ];
