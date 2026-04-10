@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLoaderData, useRevalidator } from 'react-router';
@@ -34,7 +33,7 @@ const ActionHeader = () => <Translate>Action</Translate>;
 
 const StatusCell = ({ cell }: CellContext<TableData, TableData['status']>) => {
   const status = cell.getValue();
-  return <span>{statusMessages[status]}</span>;
+  return <span>{statusMessages[status].title}</span>;
 };
 
 const FileCell = ({ cell }: CellContext<TableData, TableData['file']>) =>

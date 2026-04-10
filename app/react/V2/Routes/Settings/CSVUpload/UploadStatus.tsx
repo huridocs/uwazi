@@ -32,6 +32,13 @@ const UploadStatus = () => {
     [entry, templates]
   );
 
+  const statusMessage = entry ? statusMessages[entry.status] : undefined;
+
+  const progressTotal = entry?.progress?.totalRows || 0;
+  const progressCurrent = entry?.progress?.processedRows || 0;
+  const completionPercent =
+    progressTotal > 0 ? Math.round((progressCurrent / progressTotal) * 100) : 0;
+
   useEffect(() => {
     const doRevalidation = throttle(
       async (
@@ -72,9 +79,10 @@ const UploadStatus = () => {
                 <div className="flex flex-row gap-2 items-baseline">
                   <span className="text-xl font-semibold">{fileName}</span>
                   <span className="px-1 border text-gray-500 rounded-md">
-                    {statusMessages[entry.status]}
+                    {statusMessage?.title}
                   </span>
                 </div>
+                <p className="text-gray-600">{statusMessage?.description}</p>
                 <div className="flex flex-row gap-10 items-center text-gray-500">
                   <div>
                     <Translate>Template</Translate>:{' '}
@@ -82,6 +90,9 @@ const UploadStatus = () => {
                   </div>
                   <div>
                     <Translate>Date</Translate>: <DateDisplay value={entry.createdAt} />
+                  </div>
+                  <div>
+                    <Translate>Last updated</Translate>: <DateDisplay value={entry.updatedAt} />
                   </div>
                 </div>
               </div>
@@ -127,13 +138,40 @@ const UploadStatus = () => {
                   </div>
                 </Card>
               </div>
+              {entry.failure && entry.status === CsvImportStatus.Failed ? (
+                <div className="pt-6">
+                  <Translate className="text-xl font-semibold pb-4 block">
+                    Failure details
+                  </Translate>
+                  <Card>
+                    <div className="flex flex-col gap-3">
+                      <div className="text-gray-900 font-medium">{entry.failure.message}</div>
+                      <div className="text-gray-600 text-sm flex flex-wrap gap-6">
+                        <div>
+                          <Translate>Stage</Translate>: {entry.failure.stage}
+                        </div>
+                        <div>
+                          <Translate>Code</Translate>: {entry.failure.code || '-'}
+                        </div>
+                        <div>
+                          <Translate>Retryable</Translate>:{' '}
+                          {entry.failure.retryable ? (
+                            <Translate>Yes</Translate>
+                          ) : (
+                            <Translate>No</Translate>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              ) : null}
               <div className="pt-6">
                 <Translate className="text-xl font-semibold pb-4 block">Progress</Translate>
-                <Progress
-                  current={entry.progress?.processedRows || 0}
-                  total={entry.progress?.totalRows || 0}
-                  status={entry.status}
-                />
+                <Progress current={progressCurrent} total={progressTotal} status={entry.status} />
+                <p className="text-sm text-gray-600 pt-2">
+                  <Translate>Processed rows</Translate>: {completionPercent}%
+                </p>
               </div>
             </>
           ) : (
