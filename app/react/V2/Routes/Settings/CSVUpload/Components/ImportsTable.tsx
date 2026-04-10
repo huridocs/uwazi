@@ -46,14 +46,7 @@ const ProgressCell = ({ cell }: CellContext<TableData, TableData['progress']>) =
     processedRows: 0,
   };
 
-  return (
-    <Progress
-      current={processedRows}
-      total={totalRows}
-      failed={!!cell.row.original.stats?.rowsFailed}
-      canceled={cell.row.original.status === CsvImportStatus.Cancelled}
-    />
-  );
+  return <Progress current={processedRows} total={totalRows} status={cell.row.original.status} />;
 };
 
 const DateCell = ({ cell }: CellContext<TableData, TableData['createdAt']>) => {

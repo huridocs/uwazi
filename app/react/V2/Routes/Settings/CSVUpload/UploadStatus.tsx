@@ -132,8 +132,7 @@ const UploadStatus = () => {
                 <Progress
                   current={entry.progress?.processedRows || 0}
                   total={entry.progress?.totalRows || 0}
-                  failed={!!entry.stats?.rowsFailed}
-                  canceled={entry.status === CsvImportStatus.Cancelled}
+                  status={entry.status}
                 />
               </div>
             </>
