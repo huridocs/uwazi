@@ -1,10 +1,10 @@
 import React from 'react';
+import { useAtomValue } from 'jotai';
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { Icon } from '#app/UI/index.js';
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
-import { useAtomValue } from 'jotai';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
 const SettingsNavigation = () => {
@@ -124,9 +124,11 @@ const SettingsNavigation = () => {
               <li>{renderLink('settings/custom-uploads', <Translate>Uploads</Translate>)}</li>
             </>
           </NeedAuthorization>
-          <NeedAuthorization roles={['admin', 'editor']}>
-            {renderLink('/settings/csv', <Translate>Import CSV</Translate>)}
-          </NeedAuthorization>
+          {window.__featureFlags__?.v2CSVImport && (
+            <NeedAuthorization roles={['admin', 'editor']}>
+              {renderLink('/settings/csv', <Translate>Import CSV</Translate>)}
+            </NeedAuthorization>
+          )}
           <li>
             <a
               href="https://uwazi.io/page/9852italrtk/support"
