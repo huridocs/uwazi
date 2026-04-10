@@ -80,6 +80,7 @@ const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const entityIndexerService = TestUtils.mockClass<EntityIndexerService>({
     index: jest.fn().mockResolvedValue(undefined),
+    deleteBySharedIds: jest.fn().mockResolvedValue(undefined),
   });
 
   const sut = new MongoMultiLanguageEntityDataSource({
@@ -512,6 +513,25 @@ describe('MongoMultiLanguageEntityDataSource', () => {
           expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
           expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
         ])
+      );
+    });
+
+    it('deletes indexed entities on bulk delete commit', async () => {
+      const template = createSampleTemplate();
+      const entity1 = createEntity(['en'], template);
+      const entity2 = createEntity(['en', 'es'], template);
+
+      const { sut: setupSut, transactionManager: setupTm } = createSut();
+      await setupSut.bulkInsert([entity1, entity2]);
+      await setupTm.executeOnCommitHandlers(undefined);
+
+      const { sut, entityIndexerService, transactionManager } = createSut();
+      await sut.bulkDelete([entity1.sharedId, entity2.sharedId]);
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledWith(
+        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });
   });

@@ -39,7 +39,7 @@ class EntityIndexerService {
     });
   }
 
-  async delete(sharedIds: string[], refresh = false): Promise<void> {
+  async deleteBySharedIds(sharedIds: string[], refresh = false): Promise<void> {
     if (sharedIds.length === 0) {
       return;
     }
@@ -50,6 +50,23 @@ class EntityIndexerService {
       query: {
         terms: {
           sharedId: sharedIds,
+        },
+      },
+      refresh,
+    });
+  }
+
+  async deleteByTemplateIds(templateIds: string[], refresh = false): Promise<void> {
+    if (templateIds.length === 0) {
+      return;
+    }
+
+    await this.deps.esClient.deleteByQuery({
+      alias: this.alias,
+      routing: this.deps.esClient.tenantId,
+      query: {
+        terms: {
+          template: templateIds,
         },
       },
       refresh,

@@ -36,17 +36,29 @@ export class MongoMultiLanguageEntityDataSource
 
   private mutatedEntities = new Map<string, EntityDBO>();
 
+  private deletedEntities = new Set<string>();
+
+  private entityIndexerService: EntityIndexerService;
+
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);
 
-    deps.transactionManager.onCommitted(async () => {
+    this.entityIndexerService = deps.entityIndexerService;
+
+    this.transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
     });
 
-    deps.transactionManager.onCommitted(async () => {
+    this.transactionManager.onCommitted(async () => {
       const entities = [...this.mutatedEntities.values()];
       this.mutatedEntities.clear();
-      return deps.entityIndexerService.index(entities);
+      return this.entityIndexerService.index(entities);
+    });
+
+    this.transactionManager.onCommitted(async () => {
+      const entities = [...this.deletedEntities.values()];
+      this.deletedEntities.clear();
+      return this.entityIndexerService.deleteBySharedIds(entities);
     });
   }
 
@@ -283,6 +295,8 @@ export class MongoMultiLanguageEntityDataSource
 
   async bulkDelete(sharedIds: string[]): Promise<void> {
     await this.getCollection().deleteMany({ sharedId: { $in: sharedIds } });
+
+    sharedIds.forEach(id => this.deletedEntities.add(id));
   }
 
   async getAllBySharedId(sharedIds: string[]): Promise<ResultType<Entity[], Error>> {

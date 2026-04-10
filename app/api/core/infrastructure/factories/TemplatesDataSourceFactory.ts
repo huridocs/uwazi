@@ -3,21 +3,40 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
 import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
+import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 
 export class TemplatesDataSourceFactory {
   static default(transactionManager: MongoTransactionManager) {
     const db = getConnection();
 
     const slotsReconciler = SlotsReconcilerFactory.default(transactionManager);
+    const esClient = DependenciesContext.elasticClient;
+    const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
+    const entityIndexerService = new EntityIndexerService({ esClient, slotsDAO });
 
-    return new MongoTemplatesDataSource({ db, transactionManager, slotsReconciler });
+    return new MongoTemplatesDataSource({
+      db,
+      transactionManager,
+      slotsReconciler,
+      entityIndexerService,
+    });
   }
 
   static cached(transactionManager: MongoTransactionManager) {
     const db = getConnection();
 
     const slotsReconciler = SlotsReconcilerFactory.default(transactionManager);
+    const esClient = DependenciesContext.elasticClient;
+    const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
+    const entityIndexerService = new EntityIndexerService({ esClient, slotsDAO });
 
-    return new CachedMongoTemplatesDataSource({ db, transactionManager, slotsReconciler });
+    return new CachedMongoTemplatesDataSource({
+      db,
+      transactionManager,
+      slotsReconciler,
+      entityIndexerService,
+    });
   }
 }

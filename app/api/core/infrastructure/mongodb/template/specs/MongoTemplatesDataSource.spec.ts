@@ -9,6 +9,7 @@ import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource.js';
 import { mapPropertyQuery } from '../QueryMapper.js';
 import { MongoTemplateMapper } from '../MongoTemplateMapper.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 const factory = getFixturesFactory();
@@ -84,9 +85,18 @@ const createSut = () => {
     execute: jest.fn().mockResolvedValue(undefined),
   });
 
-  const sut = new MongoTemplatesDataSource({ db, slotsReconciler, transactionManager });
+  const entityIndexerService = TestUtils.mockClass<EntityIndexerService>({
+    deleteByTemplateIds: jest.fn().mockResolvedValue(undefined),
+  });
 
-  return { sut, slotsReconciler };
+  const sut = new MongoTemplatesDataSource({
+    db,
+    slotsReconciler,
+    transactionManager,
+    entityIndexerService,
+  });
+
+  return { sut, slotsReconciler, entityIndexerService, transactionManager };
 };
 
 describe('getAllProperties()', () => {
@@ -268,5 +278,14 @@ describe('slotsReconciler', () => {
     const templates = fixtures.templates.slice(0, 2).map(MongoTemplateMapper.toDomain as any);
     await sut.bulkUpdate(templates as any);
     expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('entityIndexerService', () => {
+  it('deleteByTemplateIds is called with the template id after the transaction commits', async () => {
+    const { sut, entityIndexerService, transactionManager } = createSut();
+    const templateId = factory.id('template1').toHexString();
+    await transactionManager.run(async () => sut.delete(templateId));
+    expect(entityIndexerService.deleteByTemplateIds).toHaveBeenCalledWith([templateId]);
   });
 });

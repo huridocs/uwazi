@@ -24,11 +24,13 @@ import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper.js';
 import { mapPropertyQuery } from './QueryMapper.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
   slotsReconciler: SlotsReconciler;
+  entityIndexerService: EntityIndexerService;
   options?: MongoDSOptions;
 };
 
@@ -42,16 +44,31 @@ export class MongoTemplatesDataSource
 
   private templatesMutated = new Map<ObjectId, TemplateDBO>();
 
+  private templatesDeleted = new Set<string>();
+
   private slotsReconciler: SlotsReconciler;
+
+  private entityIndexerService: EntityIndexerService;
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);
     this.slotsReconciler = deps.slotsReconciler;
+    this.entityIndexerService = deps.entityIndexerService;
 
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
       this.templatesMutated.clear();
       await updateMapping(templates);
+
+      const deletedTemplateIds = [...this.templatesDeleted];
+      this.templatesDeleted.clear();
+      await this.entityIndexerService.deleteByTemplateIds(deletedTemplateIds);
+    });
+
+    this.transactionManager.onCommitted(async () => {
+      const deletedTemplateIds = [...this.templatesDeleted];
+      this.templatesDeleted.clear();
+      await this.entityIndexerService.deleteByTemplateIds(deletedTemplateIds);
     });
   }
 
@@ -399,6 +416,7 @@ export class MongoTemplatesDataSource
 
   async delete(templateId: string): Promise<void> {
     await this.getCollection().deleteOne({ _id: new ObjectId(templateId) });
+    this.templatesDeleted.add(templateId);
     await this.slotsReconciler.execute();
   }
 
