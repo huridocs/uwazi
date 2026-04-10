@@ -86,7 +86,50 @@ describe('CSV import status view', () => {
   });
 
   it('should revalidate once on different events', async () => {
-    await renderComponent(csvImportsList[1]);
+    const onSpy = jest.spyOn(socket, 'on');
+    const offSpy = jest.spyOn(socket, 'off');
+
+    let unmount: () => void;
+    await act(() => {
+      const result = render(
+        <TestRouterContext loaderData={csvImportsList[1]}>
+          <TestAtomStoreProvider
+            initialValues={[
+              [templatesAtom, templates],
+              [localeAtom, locale],
+              [translationsAtom, translations],
+            ]}
+          >
+            <UploadStatus />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+      unmount = result.unmount;
+    });
+
+    const trackedEvents = [
+      csvImportEvents.extractStart,
+      csvImportEvents.extractProgress,
+      csvImportEvents.extractSuccess,
+      csvImportEvents.extractError,
+      csvImportEvents.preflightScanStart,
+      csvImportEvents.preflightScanSuccess,
+      csvImportEvents.preflightScanError,
+      csvImportEvents.preflightThesauriCreateStart,
+      csvImportEvents.preflightThesauriCreateSuccess,
+      csvImportEvents.preflightThesauriCreateError,
+      csvImportEvents.preflightRelationshipsCreateStart,
+      csvImportEvents.preflightRelationshipsCreateSuccess,
+      csvImportEvents.preflightRelationshipsCreateError,
+      csvImportEvents.importStart,
+      csvImportEvents.importProgress,
+      csvImportEvents.importSuccess,
+      csvImportEvents.importError,
+    ];
+
+    trackedEvents.forEach(event => {
+      expect(onSpy).toHaveBeenCalledWith(event, expect.any(Function));
+    });
 
     await act(async () => {
       listeners[csvImportEvents.importProgress]({ importId: 'csv-import-2' });
@@ -98,6 +141,14 @@ describe('CSV import status view', () => {
     });
 
     expect(revalidateMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      unmount();
+    });
+
+    trackedEvents.forEach(event => {
+      expect(offSpy).toHaveBeenCalledWith(event, expect.any(Function));
+    });
   });
 
   it('should not revalidate for other uploads', async () => {

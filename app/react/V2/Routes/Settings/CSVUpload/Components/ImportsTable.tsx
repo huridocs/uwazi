@@ -176,16 +176,39 @@ const ImportsTable = () => {
       3000
     );
 
-    socket.on(csvImportEvents.importStart, onStart);
+    const startEvents = [csvImportEvents.importStart, csvImportEvents.extractStart] as const;
+
+    const terminalEvents = [
+      csvImportEvents.extractSuccess,
+      csvImportEvents.extractError,
+      csvImportEvents.preflightScanSuccess,
+      csvImportEvents.preflightScanError,
+      csvImportEvents.preflightThesauriCreateSuccess,
+      csvImportEvents.preflightThesauriCreateError,
+      csvImportEvents.preflightRelationshipsCreateSuccess,
+      csvImportEvents.preflightRelationshipsCreateError,
+      csvImportEvents.importSuccess,
+      csvImportEvents.importError,
+    ] as const;
+
+    startEvents.forEach(event => {
+      socket.on(event, onStart);
+    });
+
     socket.on(csvImportEvents.importProgress, onImportProgress);
-    socket.on(csvImportEvents.importSuccess, doRevalidation);
-    socket.on(csvImportEvents.importError, doRevalidation);
+
+    terminalEvents.forEach(event => {
+      socket.on(event, doRevalidation);
+    });
 
     return () => {
-      socket.off(csvImportEvents.importStart, onStart);
+      startEvents.forEach(event => {
+        socket.off(event, onStart);
+      });
       socket.off(csvImportEvents.importProgress, onImportProgress);
-      socket.off(csvImportEvents.importSuccess, doRevalidation);
-      socket.off(csvImportEvents.importError, doRevalidation);
+      terminalEvents.forEach(event => {
+        socket.off(event, doRevalidation);
+      });
     };
   }, [revalidator]);
 

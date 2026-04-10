@@ -129,7 +129,7 @@ describe('CSV imports list table', () => {
     expect(screen.getByText('Personas')).toBeInTheDocument();
   });
 
-  it('should subscribe and unsubscribe import event listeners', async () => {
+  it('should subscribe and unsubscribe csv stage event listeners', async () => {
     const onSpy = jest.spyOn(socket, 'on');
     const offSpy = jest.spyOn(socket, 'off');
 
@@ -147,19 +147,33 @@ describe('CSV imports list table', () => {
       unmount = result.unmount;
     });
 
-    expect(onSpy).toHaveBeenCalledWith(csvImportEvents.importStart, expect.any(Function));
-    expect(onSpy).toHaveBeenCalledWith(csvImportEvents.importProgress, expect.any(Function));
-    expect(onSpy).toHaveBeenCalledWith(csvImportEvents.importSuccess, expect.any(Function));
-    expect(onSpy).toHaveBeenCalledWith(csvImportEvents.importError, expect.any(Function));
+    const expectedEvents = [
+      csvImportEvents.importStart,
+      csvImportEvents.extractStart,
+      csvImportEvents.importProgress,
+      csvImportEvents.extractSuccess,
+      csvImportEvents.extractError,
+      csvImportEvents.preflightScanSuccess,
+      csvImportEvents.preflightScanError,
+      csvImportEvents.preflightThesauriCreateSuccess,
+      csvImportEvents.preflightThesauriCreateError,
+      csvImportEvents.preflightRelationshipsCreateSuccess,
+      csvImportEvents.preflightRelationshipsCreateError,
+      csvImportEvents.importSuccess,
+      csvImportEvents.importError,
+    ];
+
+    expectedEvents.forEach(event => {
+      expect(onSpy).toHaveBeenCalledWith(event, expect.any(Function));
+    });
 
     await act(async () => {
       unmount();
     });
 
-    expect(offSpy).toHaveBeenCalledWith(csvImportEvents.importStart, expect.any(Function));
-    expect(offSpy).toHaveBeenCalledWith(csvImportEvents.importProgress, expect.any(Function));
-    expect(offSpy).toHaveBeenCalledWith(csvImportEvents.importSuccess, expect.any(Function));
-    expect(offSpy).toHaveBeenCalledWith(csvImportEvents.importError, expect.any(Function));
+    expectedEvents.forEach(event => {
+      expect(offSpy).toHaveBeenCalledWith(event, expect.any(Function));
+    });
   });
 
   it('should update only the target row progress on import progress events', async () => {

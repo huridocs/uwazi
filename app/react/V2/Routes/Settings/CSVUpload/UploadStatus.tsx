@@ -40,28 +40,40 @@ const UploadStatus = () => {
     progressTotal > 0 ? Math.round((progressCurrent / progressTotal) * 100) : 0;
 
   useEffect(() => {
-    const doRevalidation = throttle(
-      async (
-        payload:
-          | CsvImportEventPayloads['csvImport:import:progress']
-          | CsvImportEventPayloads['csvImport:import:success']
-          | CsvImportEventPayloads['csvImport:import:error']
-      ) => {
-        if (payload.importId === entry?.id) {
-          await revalidator.revalidate();
-        }
-      },
-      3000
-    );
+    const doRevalidation = throttle(async (payload: { importId: string }) => {
+      if (payload.importId === entry?.id) {
+        await revalidator.revalidate();
+      }
+    }, 3000);
 
-    socket.on(csvImportEvents.importProgress, doRevalidation);
-    socket.on(csvImportEvents.importSuccess, doRevalidation);
-    socket.on(csvImportEvents.importError, doRevalidation);
+    const trackedEvents = [
+      csvImportEvents.extractStart,
+      csvImportEvents.extractProgress,
+      csvImportEvents.extractSuccess,
+      csvImportEvents.extractError,
+      csvImportEvents.preflightScanStart,
+      csvImportEvents.preflightScanSuccess,
+      csvImportEvents.preflightScanError,
+      csvImportEvents.preflightThesauriCreateStart,
+      csvImportEvents.preflightThesauriCreateSuccess,
+      csvImportEvents.preflightThesauriCreateError,
+      csvImportEvents.preflightRelationshipsCreateStart,
+      csvImportEvents.preflightRelationshipsCreateSuccess,
+      csvImportEvents.preflightRelationshipsCreateError,
+      csvImportEvents.importStart,
+      csvImportEvents.importProgress,
+      csvImportEvents.importSuccess,
+      csvImportEvents.importError,
+    ] as const;
+
+    trackedEvents.forEach(event => {
+      socket.on(event, doRevalidation);
+    });
 
     return () => {
-      socket.off(csvImportEvents.importProgress, doRevalidation);
-      socket.off(csvImportEvents.importSuccess, doRevalidation);
-      socket.off(csvImportEvents.importError, doRevalidation);
+      trackedEvents.forEach(event => {
+        socket.off(event, doRevalidation);
+      });
     };
   }, [entry, revalidator]);
 
