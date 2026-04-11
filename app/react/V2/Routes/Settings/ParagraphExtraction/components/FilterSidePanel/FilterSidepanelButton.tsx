@@ -13,7 +13,7 @@ const FilterSidepanelButton = () => {
   return (
     <Button
       className="flex items-center gap-2 leading-4 text-gray-800"
-      styling="light"
+      variant="ghost"
       onClick={() => setOpen(true)}
     >
       <FunnelIcon

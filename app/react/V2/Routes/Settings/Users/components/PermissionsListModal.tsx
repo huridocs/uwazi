@@ -204,7 +204,7 @@ const PermissionsListModal = ({ showModal, closeModal }: PermissionsListModalPro
         <Table data={permissionsByRole} columns={tableColumns} />
       </Modal.Body>
       <Modal.Footer>
-        <Button className="grow" styling="light" onClick={closeModal}>
+        <Button className="grow" variant="ghost" onClick={closeModal}>
           <Translate>Close</Translate>
         </Button>
       </Modal.Footer>

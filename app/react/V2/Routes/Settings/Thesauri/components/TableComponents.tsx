@@ -78,7 +78,7 @@ const EditButton = ({
   column,
 }: CellContext<ThesauriRow, string> | CellContext<ThesaurusRow, string>) => (
   <Button
-    styling="light"
+    variant="ghost"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >

@@ -113,6 +113,16 @@ const LEGACY_THEME_KEY_MAP = {
 
 const resolveLegacyKey = (key: string) => LEGACY_THEME_KEY_MAP[key as keyof typeof LEGACY_THEME_KEY_MAP];
 
+const getEffectiveThemeVars = (
+  themeVars: ThemeVarsInput,
+  themeCustomizationEnabled: boolean
+): ThemeVarsInput => (themeCustomizationEnabled ? themeVars : undefined);
+
+const getEffectiveThemeAssets = (
+  themeAssets: ThemeAssets | undefined,
+  themeCustomizationEnabled: boolean
+) => (themeCustomizationEnabled ? themeAssets : undefined);
+
 const getThemeValue = (themeVars: ThemeVarsInput, mode: ThemeMode, key: SemanticVarKey) => {
   const modeValue = themeVars?.[themeStorageKey(mode, key)];
   if (modeValue) return modeValue;
@@ -159,9 +169,10 @@ const getPresetId = (
   themeVars: ThemeVarsInput,
   themeCustomizationEnabled: boolean
 ): ThemePresetId => {
+  if (!themeCustomizationEnabled) return 'legacy';
   const preset = themeVars?.[THEME_PRESET_KEY];
   if (preset === 'default' || preset === 'legacy' || preset === 'custom') return preset;
-  return themeCustomizationEnabled ? 'default' : 'legacy';
+  return 'default';
 };
 
 const getThemeAssetPresetId = (
@@ -169,8 +180,13 @@ const getThemeAssetPresetId = (
   themeVars: ThemeVarsInput,
   themeCustomizationEnabled: boolean
 ): ThemeAssetPresetId => {
-  if (themeAssets?.preset === 'default' || themeAssets?.preset === 'legacy') return themeAssets.preset;
-  const currentPreset = getPresetId(themeVars, themeCustomizationEnabled);
+  const effectiveThemeAssets = getEffectiveThemeAssets(themeAssets, themeCustomizationEnabled);
+  const effectiveThemeVars = getEffectiveThemeVars(themeVars, themeCustomizationEnabled);
+
+  if (effectiveThemeAssets?.preset === 'default' || effectiveThemeAssets?.preset === 'legacy') {
+    return effectiveThemeAssets.preset;
+  }
+  const currentPreset = getPresetId(effectiveThemeVars, themeCustomizationEnabled);
   return currentPreset === 'legacy' ? 'legacy' : 'default';
 };
 
@@ -182,8 +198,10 @@ const getThemeAsset = (
   fallback?: string,
   themeCustomizationEnabled: boolean = true
 ) =>
-  themeAssets?.[asset]?.[mode] ??
-  THEME_ASSET_PRESETS[getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)][mode][asset] ??
+  getEffectiveThemeAssets(themeAssets, themeCustomizationEnabled)?.[asset]?.[mode] ??
+  THEME_ASSET_PRESETS[
+    getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)
+  ][mode][asset] ??
   fallback ??
   '';
 
@@ -201,11 +219,12 @@ const appliedTheme = (
   mode: ThemeMode,
   themeCustomizationEnabled: boolean = true
 ): ResolvedThemeVars => {
-  const presetId = getPresetId(themeVars, themeCustomizationEnabled);
+  const effectiveThemeVars = getEffectiveThemeVars(themeVars, themeCustomizationEnabled);
+  const presetId = getPresetId(effectiveThemeVars, themeCustomizationEnabled);
   const base = { ...PRESET_DEFINITIONS[presetId].modes[mode] };
 
   SEMANTIC_VAR_KEYS.forEach(key => {
-    const value = getThemeValue(themeVars, mode, key);
+    const value = getThemeValue(effectiveThemeVars, mode, key);
     if (value) base[key] = value;
   });
 

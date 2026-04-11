@@ -265,7 +265,7 @@ const ExtractorModal = ({
           <div className="flex gap-2">
             {step === 1 ? (
               <>
-                <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+                <Button variant="ghost" onClick={() => setShowModal(false)} className="grow">
                   <Translate>Cancel</Translate>
                 </Button>
                 <Button className="grow" onClick={() => setStep(2)} disabled={values.length === 0}>
@@ -277,10 +277,10 @@ const ExtractorModal = ({
               </>
             ) : (
               <>
-                <Button styling="light" onClick={() => setStep(1)} className="grow">
+                <Button variant="ghost" onClick={() => setStep(1)} className="grow">
                   <Translate>Back</Translate>
                 </Button>
-                <Button className="grow" onClick={() => handleSubmit()} color="success">
+                <Button className="grow" onClick={() => handleSubmit()} variant="success">
                   {extractor ? <Translate>Update</Translate> : <Translate>Create</Translate>}
                 </Button>
               </>

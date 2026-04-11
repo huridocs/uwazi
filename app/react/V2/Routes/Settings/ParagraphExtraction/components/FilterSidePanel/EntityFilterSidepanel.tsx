@@ -98,10 +98,10 @@ const EntityFilterSidepanel = () => {
             handleSubmit();
           }}
         >
-          <Button size="small" styling="outline" onClick={clearFilters}>
+          <Button size="small" variant="secondary" onClick={clearFilters}>
             <Translate>Clear All</Translate>
           </Button>
-          <Button size="small" type="submit" color="success">
+          <Button size="small" type="submit" variant="success">
             <Translate>Apply</Translate>
           </Button>
         </form>

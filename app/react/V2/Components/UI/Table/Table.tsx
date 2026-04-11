@@ -234,10 +234,10 @@ const Table = <T extends TableRow<T>>({
           <div className="flex gap-2">
             {hasGroups && (
               <>
-                <Button disabled={!canCollapse} styling="light" onClick={collapseAll}>
+                <Button disabled={!canCollapse} variant="ghost" onClick={collapseAll}>
                   <Translate>Collapse all</Translate>
                 </Button>
-                <Button disabled={!canExpand} styling="light" onClick={expandAll}>
+                <Button disabled={!canExpand} variant="ghost" onClick={expandAll}>
                   <Translate>Expand all</Translate>
                 </Button>
               </>

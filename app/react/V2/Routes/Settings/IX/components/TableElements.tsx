@@ -227,7 +227,7 @@ const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['nam
 
 const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
-    <Button className="leading-4" styling="outline">
+    <Button className="leading-4" variant="secondary">
       <Translate>Review</Translate>
     </Button>
   </Link>
@@ -244,7 +244,7 @@ const OpenSidepanelButton = ({
   return (
     <Button
       className="leading-4"
-      styling="light"
+      variant="ghost"
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >

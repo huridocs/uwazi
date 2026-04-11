@@ -158,7 +158,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3">
         <div className="flex w-full gap-2">
-          <Button styling="light" onClick={closePanel} className="grow">
+          <Button variant="ghost" onClick={closePanel} className="grow">
             <Translate>Cancel</Translate>
           </Button>
           <Button className="grow" disabled={!token} onClick={enable2fa}>

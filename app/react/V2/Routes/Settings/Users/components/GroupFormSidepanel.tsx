@@ -115,7 +115,7 @@ const GroupFormSidepanel = ({
             <div className="mb-5 rounded-md border border-gray-50 shadow-md">
               <MultiSelect
                 label={
-                  <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
+                  <Translate className="block w-full text-base font-semibold">
                     Members
                   </Translate>
                 }
@@ -137,7 +137,7 @@ const GroupFormSidepanel = ({
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
+            <Button className="grow" type="button" variant="secondary" onClick={closeSidepanel}>
               <Translate>Cancel</Translate>
             </Button>
             <Button className="grow" type="submit">

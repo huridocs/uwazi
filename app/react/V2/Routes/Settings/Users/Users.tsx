@@ -123,7 +123,7 @@ const Users = () => {
             {selectedUsers.length ? (
               <>
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset passwords',
@@ -137,7 +137,7 @@ const Users = () => {
                 </Button>
 
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset 2FA',
@@ -154,7 +154,7 @@ const Users = () => {
 
             {selectedUsers.length || selectedGroups.length ? (
               <Button
-                color="error"
+                variant="danger"
                 onClick={() => {
                   setConfirmationModalProps({
                     header: 'Delete',

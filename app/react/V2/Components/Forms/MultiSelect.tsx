@@ -88,14 +88,12 @@ const MultiSelect = ({
   return (
     <div data-testid="multiselect" className="rounded-lg shadow-md">
       <div
-        className={`flex items-center px-4 h-12 rounded-t-lg ${
-          hasErrors ? 'bg-error-50' : 'bg-gray-50'
-        }`}
+        className={`flex h-12 items-center rounded-t-lg px-4 ${hasErrors ? 'bg-error-50' : ''}`}
+        style={hasErrors ? undefined : { backgroundColor: 'var(--color-theme-section-header-bg)' }}
       >
         <span
-          className={`flex-1 font-semibold text-sm ${
-            hasErrors ? 'text-pink-800' : 'text-gray-700'
-          }`}
+          className={`flex-1 text-sm font-semibold ${hasErrors ? 'text-pink-800' : ''}`}
+          style={hasErrors ? undefined : { color: 'var(--color-theme-section-header-fg)' }}
         >
           {renderChild(label)}
         </span>

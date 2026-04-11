@@ -26,7 +26,7 @@ const SearchHintsModal = () => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button className="grow" styling="light" onClick={() => setShowModal(false)}>
+        <Button className="grow" variant="ghost" onClick={() => setShowModal(false)}>
           <Translate>Close</Translate>
         </Button>
       </Modal.Footer>

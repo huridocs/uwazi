@@ -135,7 +135,7 @@ const RelationshipTypes = () => {
               <Button
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
-                color="error"
+                variant="danger"
                 data-testid="relationship-types-delete"
               >
                 <Translate>Delete</Translate>

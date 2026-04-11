@@ -28,12 +28,22 @@ export const SiteName: React.FC<SiteNameProps> = ({
   const themeCustomizationEnabled = Boolean(themeCustomization);
   const fallbackLogoUrl = siteLogo?.trim() ?? '';
   const fallbackFaviconUrl = favicon?.trim() ?? '';
-  const logoUrl = themeCustomizationEnabled
-    ? getThemeAsset(themeAssets, themeVars, themeMode, 'siteLogo', fallbackLogoUrl, true)
-    : fallbackLogoUrl;
-  const faviconUrl = themeCustomizationEnabled
-    ? getThemeAsset(themeAssets, themeVars, themeMode, 'favicon', fallbackFaviconUrl, true)
-    : fallbackFaviconUrl;
+  const logoUrl = getThemeAsset(
+    themeAssets,
+    themeVars,
+    themeMode,
+    'siteLogo',
+    fallbackLogoUrl,
+    themeCustomizationEnabled
+  );
+  const faviconUrl = getThemeAsset(
+    themeAssets,
+    themeVars,
+    themeMode,
+    'favicon',
+    fallbackFaviconUrl,
+    themeCustomizationEnabled
+  );
   const showLogo = Boolean(themeCustomization && logoUrl);
   const showText = !hideTextWhenLogo || !showLogo;
   const linkClass = ['flex', 'items-center', 'gap-2', className].filter(Boolean).join(' ');

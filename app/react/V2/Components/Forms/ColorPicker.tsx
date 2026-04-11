@@ -84,7 +84,11 @@ const ColorPicker = ({
           <>
             <Popover.Button
               ref={setReferenceElement}
-              className="w-10.5 h-10.5 border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-md transition hover:border-gray-300 bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+              className="flex h-10.5 w-10.5 cursor-pointer items-center justify-center rounded-lg border shadow-md transition focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
+              style={{
+                borderColor: 'var(--color-theme-control-border)',
+                backgroundColor: 'var(--color-theme-control-bg)',
+              }}
             >
               <div
                 data-testid="colorpicker-button"
@@ -95,9 +99,14 @@ const ColorPicker = ({
             </Popover.Button>
             <Popover.Panel
               ref={setPopperElement}
-              style={styles.popper}
+              style={{
+                ...styles.popper,
+                borderColor: 'color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent)',
+                backgroundColor: 'var(--color-theme-bg-surface)',
+                color: 'var(--color-theme-text-primary)',
+              }}
               {...attributes.popper}
-              className="flex flex-col gap-2 p-2 bg-white rounded-xl shadow-lg w-56 z-20 border border-gray-100"
+              className="z-20 flex w-56 flex-col gap-2 rounded-xl border p-2 shadow-lg"
             >
               <ul
                 className="grid grid-cols-5 grid-rows-2 gap-2 p-2"
@@ -107,7 +116,7 @@ const ColorPicker = ({
                   <li key={color}>
                     <button
                       type="button"
-                      className="w-8 h-8 rounded-md flex items-center justify-center focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                      className="flex h-8 w-8 items-center justify-center rounded-md focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
                       onClick={() => {
                         changeColor(color);
                       }}
@@ -122,11 +131,14 @@ const ColorPicker = ({
                   </li>
                 ))}
               </ul>
-              <label className="flex flex-row gap-2 items-center cursor-pointer w-fit ">
+              <label
+                className="flex w-fit cursor-pointer flex-row items-center gap-2"
+                style={{ color: 'var(--color-theme-text-secondary)' }}
+              >
                 <Translate>Pick a color</Translate>
                 <input
                   type="color"
-                  className="rounded-md w-6 h-6 cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                  className="h-6 w-6 cursor-pointer rounded-md focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
                   data-testid="custom-colorpicker"
                   value={localValue}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,7 +157,7 @@ const ColorPicker = ({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   changeColor(`#${e.target.value}`);
                 }}
-                className="w-full text-center border border-gray-200 rounded-md focus:border-primary-400 focus:ring-1 focus:ring-primary-200"
+                className="w-full text-center"
                 hasErrors={hasErrors}
               />
             </Popover.Panel>

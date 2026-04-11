@@ -106,7 +106,7 @@ const TimeCell =
 
 const ViewCell = ({ cell, column }: CellContext<LogEntry, string>) => (
   <Button
-    styling="light"
+    variant="ghost"
     className="leading-4"
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
   >

@@ -34,7 +34,7 @@ const ImportButton = ({
   return (
     <Button
       disabled={disabled === true}
-      styling="outline"
+      variant="secondary"
       data-testid="thesaurus-import-items"
       onClick={e => {
         onClick(e);

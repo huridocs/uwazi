@@ -5,18 +5,24 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { createStore, Provider } from 'jotai';
 import { LEGACY_createStore as createReduxStore } from '#V2/testing/index.js';
 import { Header } from '#V2/Components/UI/Header/Header.js';
-import { userAtom, settingsAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
+import { userAtom, settingsAtom, localeAtom, themeModeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import {
   ACCENT_PRIMARY_KEY,
   appliedTheme,
   getPresetPair,
-  getPresetVars,
   SEMANTIC_VAR_LABELS,
   THEME_PALETTE,
 } from '#V2/theme/themes.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import type { ClientSettings, ClientUserSchema } from '#app/apiResponseTypes.js';
+import {
+  buildStorybookThemeVars,
+  normalizeStorybookThemeMode,
+  normalizeStorybookThemePreset,
+  type StorybookThemePreset,
+  type ThemeMode,
+} from './storybookTheme.js';
 
 const baseSettings: ClientSettings = {
   site_name: 'Uwazi',
@@ -26,7 +32,11 @@ const baseSettings: ClientSettings = {
   languages: [{ key: 'en', label: 'English', default: true }],
 };
 
-const createStoreWithTheme = (themeVars?: Record<string, string>, authenticated = true) => {
+const createStoreWithTheme = (
+  themeVars: Record<string, string>,
+  themeMode: ThemeMode,
+  authenticated = true
+) => {
   const store = createStore();
   const user: ClientUserSchema | undefined = authenticated
     ? { _id: '1', username: 'admin', role: 'admin', email: 'admin@uwazi.io' }
@@ -34,15 +44,16 @@ const createStoreWithTheme = (themeVars?: Record<string, string>, authenticated 
   store.set(userAtom, user);
   store.set(settingsAtom, {
     ...baseSettings,
-    themeCustomization: Object.keys(themeVars ?? {}).length > 0,
-    themeVars: themeVars ?? {},
+    themeCustomization: true,
+    themeVars,
   });
+  store.set(themeModeAtom, themeMode);
   store.set(localeAtom, 'en');
   store.set(translationsAtom, []);
   return store;
 };
 
-const THEME_NONE = 'none';
+const THEME_NONE = 'none' as const;
 const themeSelectOptions = [THEME_NONE, ...THEME_PALETTE.map(p => p.id)];
 const themeSelectMapping: Record<string, Record<string, string>> = {
   [THEME_NONE]: {},
@@ -73,35 +84,38 @@ type HeaderWithThemeProps = {
   themeVarsKey?: string;
   themeVars?: Record<string, string>;
   authenticated: boolean;
+  themeMode: ThemeMode;
+  themePreset: StorybookThemePreset;
 };
 
 const HeaderWithTheme = ({
   themeVarsKey = THEME_NONE,
   themeVars: themeVarsProp,
   authenticated,
+  themeMode,
+  themePreset,
 }: HeaderWithThemeProps) => {
-  const themeVars = themeVarsProp ?? themeSelectMapping[themeVarsKey] ?? {};
+  const themeVars = themeVarsProp ?? {
+    ...buildStorybookThemeVars(themePreset),
+    ...(themeSelectMapping[themeVarsKey] ?? {}),
+  };
   const store = React.useMemo(
-    () =>
-      createStoreWithTheme(
-        Object.keys(themeVars).length > 0 ? themeVars : undefined,
-        authenticated
-      ),
-    [themeVars, authenticated]
+    () => createStoreWithTheme(themeVars, themeMode, authenticated),
+    [authenticated, themeMode, themeVars]
   );
+  const accent = themeVars[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
+  const fg = getContrastTextColor(accent);
+  const contrast = checkContrast(accent, fg);
+
   return (
     <ReduxProvider store={reduxStore}>
       <Provider store={store}>
-        {Object.keys(themeVars).length > 0 ? (
-          <>
-            <ThemeProvider>
-              <Header />
-            </ThemeProvider>
-            <ThemeContrastHint themeVars={themeVars} />
-          </>
-        ) : (
-          <Header />
-        )}
+        <>
+          <ThemeProvider controlledMode={themeMode}>
+            <Header />
+          </ThemeProvider>
+          <ThemeContrastHint themeVars={themeVars} />
+        </>
       </Provider>
     </ReduxProvider>
   );
@@ -110,17 +124,31 @@ const HeaderWithTheme = ({
 const meta: Meta<typeof HeaderWithTheme> = {
   title: 'Components/UI/Header',
   component: HeaderWithTheme,
+  args: {
+    authenticated: true,
+    themeMode: 'light',
+    themePreset: 'default',
+    themeVarsKey: THEME_NONE,
+  },
   argTypes: {
     themeVarsKey: {
       options: themeSelectOptions,
       control: { type: 'select', labels: themeSelectLabels },
     },
+    themeMode: { control: false },
+    themePreset: { control: false },
   },
   decorators: [
-    Story => (
+    (Story, context) => (
       <BrowserRouter>
-        <div className="tw-content w-full">
-          <Story />
+        <div className="w-full">
+          <Story
+            args={{
+              ...context.args,
+              themeMode: normalizeStorybookThemeMode(context.globals.uwaziThemeMode),
+              themePreset: normalizeStorybookThemePreset(context.globals.uwaziThemePreset),
+            }}
+          />
         </div>
       </BrowserRouter>
     ),
@@ -144,10 +172,12 @@ const Unauthenticated: Story = {
 };
 
 const WithNamedTheme: Story = {
-  render: () => (
+  render: (_args, context) => (
     <HeaderWithTheme
-      themeVars={{ ...getPresetVars('default'), ...getPresetPair('default').light }}
+      themeVars={{ ...buildStorybookThemeVars('default'), ...getPresetPair('default').light }}
       authenticated={true}
+      themeMode={normalizeStorybookThemeMode(context.globals.uwaziThemeMode)}
+      themePreset={normalizeStorybookThemePreset(context.globals.uwaziThemePreset)}
     />
   ),
 };
@@ -160,14 +190,16 @@ const WithSiteLogo: Story = {
     store.set(settingsAtom, {
       ...baseSettings,
       themeCustomization: true,
+      themeVars: buildStorybookThemeVars('default'),
       site_logo: 'https://via.placeholder.com/120x32',
     });
+    store.set(themeModeAtom, 'light');
     store.set(localeAtom, 'en');
     store.set(translationsAtom, []);
     return (
       <ReduxProvider store={reduxStore}>
         <Provider store={store}>
-          <ThemeProvider>
+          <ThemeProvider controlledMode="light">
             <Header />
           </ThemeProvider>
         </Provider>

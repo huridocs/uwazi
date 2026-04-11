@@ -139,7 +139,7 @@ const MenuConfig = () => {
               <Button
                 type="button"
                 onClick={deleteSelected}
-                color="error"
+                variant="danger"
                 data-testid="menu-delete-link"
               >
                 <Translate>Delete</Translate>
@@ -166,7 +166,7 @@ const MenuConfig = () => {
                 <Button
                   type="button"
                   onClick={save}
-                  color="success"
+                  variant="success"
                   disabled={areEqual}
                   data-testid="menu-save"
                 >

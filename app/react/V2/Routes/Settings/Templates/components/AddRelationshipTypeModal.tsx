@@ -78,10 +78,10 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
             }
           />
           <div className="flex justify-end gap-2">
-            <Button styling="outline" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button color="success" onClick={handleSave} disabled={isSaving || !name.trim()}>
+            <Button variant="success" onClick={handleSave} disabled={isSaving || !name.trim()}>
               <Translate>Save</Translate>
             </Button>
           </div>

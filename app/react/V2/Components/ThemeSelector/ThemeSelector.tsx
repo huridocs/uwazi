@@ -1,7 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { ColorPicker } from '#V2/Components/Forms/ColorPicker.js';
-import { Button } from '#V2/Components/UI/index.js';
+import { Button, SectionHeading, SurfacePanel } from '#V2/Components/UI/index.js';
 import { getDerivedThemeVars } from '#V2/theme/ThemeProvider.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import {
@@ -45,7 +45,7 @@ type ThemePreviewProps = {
 const modeButtonClass = (selected: boolean) =>
   [
     'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
-    selected ? 'bg-primary-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+    selected ? 'bg-ink text-parchment' : 'bg-warm text-ink-secondary hover:bg-parchment',
   ].join(' ');
 
 const resolveAccessibleText = (background: string, preferred: string, fallback: string) =>
@@ -321,7 +321,7 @@ export const ThemeSelector = ({
   return (
     <div className="flex flex-col gap-6">
       <section>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-ink-secondary">
           <Translate>Theme presets</Translate>
         </label>
         <div className="grid gap-3 md:grid-cols-3">
@@ -369,10 +369,10 @@ export const ThemeSelector = ({
 
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-sm font-medium text-gray-700">
+          <SectionHeading>
             <Translate>Live preview</Translate>
-          </p>
-          <div className="flex items-center gap-2 rounded-lg bg-gray-100 p-1">
+          </SectionHeading>
+          <div className="flex items-center gap-2 rounded-lg bg-warm p-1">
             {THEME_MODES.map(mode => (
               <button
                 key={mode}
@@ -386,7 +386,7 @@ export const ThemeSelector = ({
           </div>
         </div>
         {failedChecks.length ? (
-          <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <SurfacePanel tone="warm" className="mb-3 border-warning-light bg-warning-light px-4 py-3 shadow-none">
             <p className="text-xs font-medium text-amber-800">
               <Translate>Accessibility checks need attention</Translate>
             </p>
@@ -400,7 +400,7 @@ export const ThemeSelector = ({
                 </span>
               ))}
             </div>
-          </div>
+          </SurfacePanel>
         ) : null}
         <ThemePreview
           mode={previewMode}
@@ -410,22 +410,22 @@ export const ThemeSelector = ({
         />
       </section>
 
-      <section className="rounded-xl border border-gray-200">
+      <SurfacePanel padding="none" className="rounded-xl">
         <button
           type="button"
           className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
           onClick={() => setShowAdvanced(current => !current)}
         >
-          <p className="text-sm font-medium text-gray-700">
+          <SectionHeading>
             <Translate>Advanced colors</Translate>
-          </p>
-          <span className="text-xs font-medium text-primary-700">
+          </SectionHeading>
+          <span className="text-xs font-medium text-supporting">
             {showAdvanced ? <Translate>Hide</Translate> : <Translate>Customize</Translate>}
           </span>
         </button>
 
         {showAdvanced ? (
-          <div className="border-t border-gray-200 px-4 py-4">
+          <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] px-4 py-4">
             <div className="space-y-3">
               {SEMANTIC_VAR_KEYS.map(key => {
                 const storageKey = themeStorageKey(previewMode, key);
@@ -434,15 +434,16 @@ export const ThemeSelector = ({
                 const displayValue = resolved[key] ?? '#000000';
 
                 return (
-                  <div
+                  <SurfacePanel
                     key={`${previewMode}-${key}`}
-                    className="flex items-center gap-3 rounded-xl border border-gray-200 p-3"
+                    padding="sm"
+                    className="flex items-center gap-3 rounded-xl shadow-none"
                   >
                     <div className="min-w-0 grow">
-                      <p className="truncate text-sm font-medium text-gray-800">
+                      <p className="truncate text-sm font-medium text-ink">
                         {SEMANTIC_VAR_LABELS[key] ?? key}
                       </p>
-                      <p className="text-xs text-gray-500">{displayValue}</p>
+                      <p className="text-xs text-ink-muted">{displayValue}</p>
                     </div>
 
                     <ColorPicker
@@ -455,19 +456,19 @@ export const ThemeSelector = ({
                     <Button
                       type="button"
                       size="small"
-                      styling="light"
+                      variant="ghost"
                       onClick={() => updateModeVar(previewMode, key, undefined)}
                       disabled={!override}
                     >
                       <Translate>Reset</Translate>
                     </Button>
-                  </div>
+                  </SurfacePanel>
                 );
               })}
             </div>
           </div>
         ) : null}
-      </section>
+      </SurfacePanel>
     </div>
   );
 };

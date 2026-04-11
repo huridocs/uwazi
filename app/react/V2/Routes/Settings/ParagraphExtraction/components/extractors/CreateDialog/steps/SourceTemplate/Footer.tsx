@@ -10,7 +10,7 @@ const Footer = () => {
 
   return (
     <>
-      <Button styling="light" onClick={() => setStep(1)} className="grow">
+      <Button variant="ghost" onClick={() => setStep(1)} className="grow">
         <Translate>Back</Translate>
       </Button>
       <Button

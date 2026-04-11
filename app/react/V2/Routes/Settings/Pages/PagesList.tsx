@@ -111,7 +111,7 @@ const PagesList = () => {
               <Button
                 type="button"
                 onClick={confirmDeletion}
-                color="error"
+                variant="danger"
                 data-testid="delete-page-btn"
               >
                 <Translate>Delete</Translate>
@@ -124,7 +124,7 @@ const PagesList = () => {
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
                 <I18NLink to="/settings/pages/new">
-                  <Button styling="solid" color="primary" type="button">
+                  <Button variant="primary" type="button">
                     <Translate>Add page</Translate>
                   </Button>
                 </I18NLink>

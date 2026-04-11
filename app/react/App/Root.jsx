@@ -58,16 +58,14 @@ const getFaviconURL = reduxData => {
   const themeAssets = reduxData.settings.collection.get('themeAssets');
   const themeVars = reduxData.settings.collection.get('themeVars');
   const themeCustomization = reduxData.settings.collection.get('themeCustomization');
-
-  if (themeCustomization) {
-    return getThemeAsset(themeAssets, themeVars, 'light', 'favicon', favicon || '', true);
-  }
-
-  if (!favicon || favicon === '') {
-    return '/public/favicon.ico';
-  }
-
-  return favicon;
+  return getThemeAsset(
+    themeAssets,
+    themeVars,
+    'light',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
 };
 
 const getFaviconLinks = reduxData => {
@@ -80,8 +78,22 @@ const getFaviconLinks = reduxData => {
     return [<link key="favicon-default" rel="shortcut icon" href={getFaviconURL(reduxData)} />];
   }
 
-  const lightFavicon = getThemeAsset(themeAssets, themeVars, 'light', 'favicon', favicon || '', true);
-  const darkFavicon = getThemeAsset(themeAssets, themeVars, 'dark', 'favicon', favicon || '', true);
+  const lightFavicon = getThemeAsset(
+    themeAssets,
+    themeVars,
+    'light',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
+  const darkFavicon = getThemeAsset(
+    themeAssets,
+    themeVars,
+    'dark',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
 
   return [
     <link

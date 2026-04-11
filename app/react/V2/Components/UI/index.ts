@@ -9,6 +9,7 @@ export { Tabs } from './Tabs.js';
 export { Sidepanel } from './Sidepanel.js';
 export { ConfirmationModal } from './ConfirmationModal.js';
 export { Card } from './Card.js';
+export { SurfacePanel, SectionHeading } from './SurfacePanel.js';
 export { CopyValueInput } from './CopyValueInput.js';
 export { Paginator } from './Paginator.js';
 export { PaginationState } from './PaginationState.js';

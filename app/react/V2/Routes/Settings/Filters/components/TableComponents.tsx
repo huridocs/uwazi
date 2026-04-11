@@ -23,8 +23,7 @@ const ActionCell = ({ cell, row }: CellContext<Filter, any>) => {
   if (row.originalSubRows) {
     return (
       <Button
-        styling="outline"
-        color="primary"
+        variant="secondary"
         className="leading-3"
         onClick={() => {
           if (action) {

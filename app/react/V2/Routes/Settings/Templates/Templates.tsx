@@ -116,14 +116,14 @@ const Templates = () => {
           <div className="flex justify-between w-full">
             {selected.length === 0 && (
               <I18NLink to="/settings/templates/new">
-                <Button color="primary">
+                <Button variant="primary">
                   <Translate>Add template</Translate>
                 </Button>
               </I18NLink>
             )}
             {selected.length > 0 && (
               <div className="flex items-center gap-2">
-                <Button color="error" onClick={handleDeleteClick}>
+                <Button variant="danger" onClick={handleDeleteClick}>
                   <Translate>Delete</Translate>
                 </Button>
                 <span className="text-gray-700">

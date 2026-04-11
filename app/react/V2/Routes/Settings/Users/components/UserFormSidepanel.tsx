@@ -264,7 +264,7 @@ const UserFormSidepanel = ({
                     <>
                       <Button
                         type="button"
-                        styling="light"
+                        variant="ghost"
                         onClick={async () => {
                           actionType.current = 'reset-password';
                           await onClickSubmit();
@@ -275,7 +275,7 @@ const UserFormSidepanel = ({
 
                       <Button
                         type="button"
-                        styling="light"
+                        variant="ghost"
                         onClick={() => {
                           actionType.current = 'reset-2fa';
                           setShowConfirmationModal(true);
@@ -289,8 +289,7 @@ const UserFormSidepanel = ({
                   {selectedUser?.accountLocked && (
                     <Button
                       type="button"
-                      styling="light"
-                      color="error"
+                      variant="dangerSubtle"
                       onClick={() => {
                         actionType.current = 'unlock-user';
                         setShowConfirmationModal(true);
@@ -305,7 +304,7 @@ const UserFormSidepanel = ({
               <div className="rounded-md border border-gray-50 shadow-md">
                 <MultiSelect
                   label={
-                    <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
+                    <Translate className="block w-full text-base font-semibold">
                       Groups
                     </Translate>
                   }
@@ -322,7 +321,7 @@ const UserFormSidepanel = ({
           </Sidepanel.Body>
           <Sidepanel.Footer className="px-4 py-3">
             <div className="flex gap-2">
-              <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
+              <Button className="grow" type="button" variant="secondary" onClick={closeSidepanel}>
                 <Translate>Cancel</Translate>
               </Button>
               <Button

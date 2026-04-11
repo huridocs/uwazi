@@ -318,7 +318,7 @@ const IXSuggestions = () => {
               <SuggestionsTitle property={extractor.property} templates={filteredTemplates()} />
             }
             actions={
-              <Button size="small" styling="light" onClick={() => setSidepanel('filters')}>
+              <Button size="small" variant="ghost" onClick={() => setSidepanel('filters')}>
                 <FunnelIcon
                   className={`inline w-4 mr-2 ${activeFilters > 0 ? 'text-primary-900' : 'text-gray-800'} `}
                 />
@@ -361,21 +361,21 @@ const IXSuggestions = () => {
               <Button
                 size="small"
                 type="button"
-                styling="solid"
+                variant="primary"
                 onClick={() => setModal('train')}
                 disabled={selected.length > 0}
               >
                 <Translate>Train model</Translate>
               </Button>
             ) : (
-              <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
+              <Button size="small" type="button" variant="secondary" onClick={cancelModelTrain}>
                 <Translate>Cancel</Translate>
               </Button>
             )}
             <Button
               size="small"
               type="button"
-              styling="solid"
+              variant="primary"
               onClick={() => setModal('process')}
               disabled={status.status !== ixStatus.ready}
             >

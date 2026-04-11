@@ -233,7 +233,7 @@ const FiltersSidepanel = ({
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="grow" type="button" styling="outline" onClick={clearFilters}>
+            <Button className="grow" type="button" variant="secondary" onClick={clearFilters}>
               <Translate>Clear all</Translate>
             </Button>
             <Button className="grow" type="submit">

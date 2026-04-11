@@ -48,7 +48,14 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         <Modal.CloseButton onClick={() => close()} />
       </Modal.Header>
       <Modal.Body>
-        <div className="text-primary-700 border-primary-300 bg-primary-100 p-4">
+        <div
+          className="border p-4"
+          style={{
+            backgroundColor: 'var(--color-theme-info-banner-bg)',
+            borderColor: 'var(--color-theme-info-banner-border)',
+            color: 'var(--color-theme-info-banner-fg)',
+          }}
+        >
           <Translate translationKey="Train model description">
             Training machine learning models may take from minutes up to a couple of hours depending
             on the amount of labeled data and the difficulty of the task.
@@ -151,7 +158,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         </form>
       </Modal.Body>
       <Modal.Footer className="flex justify-between gap-2">
-        <Button disabled={isSubmitting} onClick={() => close()} styling="outline" className="grow">
+        <Button disabled={isSubmitting} onClick={() => close()} variant="secondary" className="grow">
           <Translate>Cancel</Translate>
         </Button>
         <Button disabled={isSubmitting} type="submit" form="train-form" className="grow">

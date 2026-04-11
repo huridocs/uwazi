@@ -55,7 +55,7 @@ const ParagraphsTable = ({
       actions={
         <Button
           onClick={() => openPDFSidepanel(true)}
-          styling="light"
+          variant="ghost"
           className="flex items-center gap-2 leading-4 text-gray-800"
         >
           <Translate>Open PDF</Translate>

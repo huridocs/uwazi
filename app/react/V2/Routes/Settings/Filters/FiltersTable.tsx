@@ -138,7 +138,14 @@ const FiltersTable = () => {
       <SettingsContent>
         <SettingsContent.Header title="Filters" />
         <SettingsContent.Body>
-          <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-md bg-primary-100 text-primary-700">
+          <div
+            className="mb-4 rounded-md border p-4 shadow-md"
+            style={{
+              backgroundColor: 'var(--color-theme-info-banner-bg)',
+              borderColor: 'var(--color-theme-info-banner-border)',
+              color: 'var(--color-theme-info-banner-fg)',
+            }}
+          >
             <div className="flex gap-2 items-center w-full text-base font-semibold">
               <div className="w-5 h-5">
                 <CheckCircleIcon />
@@ -184,18 +191,17 @@ const FiltersTable = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
           {Object.keys(selectedFilters).length ? (
-            <Button styling="solid" color="error" onClick={() => handleDelete()}>
+            <Button variant="danger" onClick={() => handleDelete()}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
             <>
               <div className="flex gap-2 md:flex-wrap">
-                <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
                   <Translate className="text-nowrap">Add entity type</Translate>
                 </Button>
                 <Button
-                  styling="solid"
-                  color="primary"
+                  variant="primary"
                   onClick={() => {
                     setShowSidepanel(true);
                     setAtom(undefined);
@@ -205,20 +211,10 @@ const FiltersTable = () => {
                 </Button>
               </div>
               <div className="flex gap-2 md:flex-wrap">
-                <Button
-                  styling="outline"
-                  color="primary"
-                  onClick={() => cancel()}
-                  disabled={!hasChanges || disabled}
-                >
+                <Button variant="secondary" onClick={() => cancel()} disabled={!hasChanges || disabled}>
                   <Translate>Cancel</Translate>
                 </Button>
-                <Button
-                  styling="solid"
-                  color="success"
-                  onClick={async () => handleSave()}
-                  disabled={!hasChanges || disabled}
-                >
+                <Button variant="success" onClick={async () => handleSave()} disabled={!hasChanges || disabled}>
                   <Translate>Save</Translate>
                 </Button>
               </div>

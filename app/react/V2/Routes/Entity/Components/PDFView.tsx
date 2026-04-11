@@ -225,33 +225,17 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
         {selectedText && userIsAdminOrEditor ? (
           <NeedAuthorization roles={['admin', 'editor']}>
             <div className="flex flex-row gap-2 items-center w-full">
-              <Button
-                styling="outline"
-                color="primary"
-                onClick={() => handleConnectToParagraph(selectedText)}
-              >
+              <Button variant="secondary" onClick={() => handleConnectToParagraph(selectedText)}>
                 <Translate>Connect to paragraph</Translate>
               </Button>
-              <Button
-                styling="outline"
-                color="primary"
-                onClick={() => handleConnectToDocument(selectedText)}
-              >
+              <Button variant="secondary" onClick={() => handleConnectToDocument(selectedText)}>
                 <Translate>Connect to document</Translate>
               </Button>
-              <Button
-                styling="outline"
-                color="primary"
-                onClick={() => handleAddToToC(selectedText)}
-              >
+              <Button variant="secondary" onClick={() => handleAddToToC(selectedText)}>
                 <Translate>Add to ToC</Translate>
               </Button>
               <div className="ml-auto">
-                <Button
-                  styling="outline"
-                  color="primary"
-                  onClick={() => handleRemove(selectedText)}
-                >
+                <Button variant="secondary" onClick={() => handleRemove(selectedText)}>
                   <Translate>Remove</Translate>
                 </Button>
               </div>

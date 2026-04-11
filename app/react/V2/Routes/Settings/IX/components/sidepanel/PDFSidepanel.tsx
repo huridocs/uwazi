@@ -254,7 +254,7 @@ const PDFSidepanel = ({
                   <div className="sm:text-right" data-testid="ix-clear-button-container">
                     <Button
                       type="button"
-                      styling="outline"
+                      variant="secondary"
                       disabled={Boolean(!highlights) || isSubmitting}
                       onClick={() => {
                         setHighlights(undefined);
@@ -273,7 +273,7 @@ const PDFSidepanel = ({
               />
             </VerticalDrawer>
             <div className="flex justify-between gap-2 px-4 py-2 border-t border-gray-200">
-              <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
+              <Button type="button" variant="secondary" disabled={isSubmitting} onClick={handleClose}>
                 <Translate>Cancel</Translate>
               </Button>
               <div className="flex flex-row gap-2 items-center">
@@ -291,7 +291,7 @@ const PDFSidepanel = ({
                     />
                   )}
                 />
-                <Button type="submit" disabled={isSubmitting} color="success">
+                <Button type="submit" disabled={isSubmitting} variant="success">
                   <Translate>Accept</Translate>
                 </Button>
               </div>

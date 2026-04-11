@@ -150,7 +150,7 @@ const IXDashboard = () => {
           {selected?.length ? (
             <Button
               type="button"
-              color="error"
+              variant="danger"
               onClick={() => setConfirmModal(true)}
               disabled={isSaving}
             >

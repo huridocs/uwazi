@@ -139,7 +139,7 @@ const OCRButton = ({ file }: OCRButtonProps) => {
     // eslint-disable-next-line react/style-prop-object
     <Tooltip content={tip} style="light">
       <Button
-        styling="outline"
+        variant="secondary"
         disabled={ocrStatus.status !== OcrStatus.NONE}
         onClick={handleClick}
       >

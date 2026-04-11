@@ -1,7 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
-import { Button, Sidepanel } from '#V2/Components/UI/index.js';
+import { Button, SectionHeading, Sidepanel, SurfacePanel } from '#V2/Components/UI/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import type { ThemeAssets, ThemeMode } from '#V2/theme/themes.js';
 import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
@@ -53,15 +53,15 @@ const ThemeSettingsSidepanel = ({
             favicon={favicon}
           />
 
-          <div className="rounded-xl border border-gray-200 p-4">
+          <SurfacePanel>
             <div className="space-y-6">
               <div>
-                <p className="text-sm font-medium text-gray-800">
+                <SectionHeading>
                   <Translate>Theme logotype</Translate>
-                </p>
+                </SectionHeading>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {(['light', 'dark'] as const).map(mode => (
-                    <div key={`siteLogo-${mode}`} className="rounded-xl border border-gray-200 p-3">
+                    <SurfacePanel key={`siteLogo-${mode}`} padding="sm" className="shadow-none">
                       <CustomUploadImagePicker
                         id={`theme-assets-siteLogo-${mode}`}
                         label={modeTitle[mode]}
@@ -80,18 +80,18 @@ const ThemeSettingsSidepanel = ({
                         recommendedSize="200x32 px"
                         previewWrapperClassName="flex h-14 w-32 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2"
                       />
-                    </div>
+                    </SurfacePanel>
                   ))}
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-6">
-                <p className="text-sm font-medium text-gray-800">
+              <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] pt-6">
+                <SectionHeading>
                   <Translate>Theme favicon</Translate>
-                </p>
+                </SectionHeading>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {(['light', 'dark'] as const).map(mode => (
-                    <div key={`favicon-${mode}`} className="rounded-xl border border-gray-200 p-3">
+                    <SurfacePanel key={`favicon-${mode}`} padding="sm" className="shadow-none">
                       <CustomUploadImagePicker
                         id={`theme-assets-favicon-${mode}`}
                         label={modeTitle[mode]}
@@ -110,18 +110,18 @@ const ThemeSettingsSidepanel = ({
                         recommendedSize="64x64 px"
                         previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2"
                       />
-                    </div>
+                    </SurfacePanel>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </SurfacePanel>
         </div>
       </Sidepanel.Body>
 
       <Sidepanel.Footer className="border-t border-gray-200 px-4 py-3">
         <div className="flex justify-end">
-          <Button type="button" onClick={onClose}>
+          <Button type="button" variant="primary" onClick={onClose}>
             <Translate>Done</Translate>
           </Button>
         </div>

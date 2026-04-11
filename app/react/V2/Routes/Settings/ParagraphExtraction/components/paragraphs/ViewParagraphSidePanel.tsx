@@ -38,7 +38,7 @@ const ViewParagraphSidePanel = ({
           to={`/${paragraphOnView?.language}/entity/${paragraphOnView?.sharedId}`}
           target="_blank"
         >
-          <Button size="small" styling="outline">
+          <Button size="small" variant="secondary">
             <Translate>View entity</Translate>
           </Button>
         </Link>

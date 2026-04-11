@@ -250,7 +250,11 @@ const Collection = () => {
                                 <span className="h-8 w-12" style={{ backgroundColor: darkAccent }} />
                               </div>
                             </div>
-                            <Button type="button" styling="outline" onClick={() => setShowThemeSidepanel(true)}>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onClick={() => setShowThemeSidepanel(true)}
+                            >
                               <Translate>Edit theme</Translate>
                             </Button>
                           </div>

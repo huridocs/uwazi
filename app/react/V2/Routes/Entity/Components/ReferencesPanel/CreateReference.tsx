@@ -69,27 +69,21 @@ const CreateReference = ({
       <Panel.Footer>
         <div className="flex justify-end w-full gap-2">
           {state.step === 'selectTextInTarget' && (
-            <Button styling="outline" color="primary" onClick={state.handleBack}>
+            <Button variant="secondary" onClick={state.handleBack}>
               <Translate>Back</Translate>
             </Button>
           )}
-          <Button styling="outline" color="primary" onClick={onCancel}>
+          <Button variant="secondary" onClick={onCancel}>
             <Translate>Cancel</Translate>
           </Button>
           {state.showContinueButton && (
-            <Button
-              styling="solid"
-              color="primary"
-              onClick={state.handleContinue}
-              disabled={!state.canContinue}
-            >
+            <Button variant="primary" onClick={state.handleContinue} disabled={!state.canContinue}>
               <Translate>Continue</Translate>
             </Button>
           )}
           {state.showSaveButton && (
             <Button
-              styling="solid"
-              color="success"
+              variant="success"
               onClick={state.handleSave}
               disabled={
                 !state.selectedRelationshipType ||

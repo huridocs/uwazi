@@ -52,7 +52,7 @@ const DefaultButton =
   (handleSetDefault: (row: TemplateRow) => void) =>
   ({ cell }: CellContext<TemplateRow, boolean>) => (
     <Button
-      styling={cell.row.original.default ? 'solid' : 'light'}
+      variant={cell.row.original.default ? 'primary' : 'ghost'}
       onClick={() => handleSetDefault(cell.row.original)}
       className="leading-4 m-auto"
       disabled={cell.row.original.default || cell.row.original.synced}
@@ -70,7 +70,7 @@ const DefaultButton =
 
 const EditButton = ({ cell }: CellContext<TemplateRow, string>) => (
   <I18NLink to={`/settings/templates/edit/${cell.row.original._id}`} className="px-3 py-1">
-    <Button styling="light" disabled={cell.row.original.synced} className="leading-4">
+    <Button variant="ghost" disabled={cell.row.original.synced} className="leading-4">
       <Translate>Edit</Translate>
     </Button>
   </I18NLink>

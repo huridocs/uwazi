@@ -47,7 +47,7 @@ const DeleteDialog = ({
 
   return (
     <>
-      <Button color="error" type="button" onClick={() => setIsOpen(true)} disabled={disabled}>
+      <Button variant="danger" type="button" onClick={() => setIsOpen(true)} disabled={disabled}>
         <Translate>Delete</Translate>
       </Button>
       {isOpen && (

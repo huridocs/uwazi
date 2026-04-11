@@ -16,7 +16,7 @@ interface TextareaProps {
   className?: string;
   name?: string;
   ref?: React.Ref<HTMLTextAreaElement>;
-  clearFieldAction?: () => any;
+  clearFieldAction?: () => void;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   onSelect?: ChangeEventHandler<HTMLTextAreaElement>;
   onBlur?: ChangeEventHandler<HTMLTextAreaElement>;
@@ -43,18 +43,19 @@ const Textarea = ({
   resize = 'none',
   rows = 4,
 }: TextareaProps) => {
-  let fieldStyles = 'border-gray-300 border text-gray-900 focus:ring-primary-500 bg-gray-50';
-  let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
-
-  if (hasErrors || errorMessage) {
-    fieldStyles =
-      'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700';
-    clearFieldStyles = 'enabled:hover:text-error-700 text-error-900';
-  }
-
-  if (clearFieldAction) {
-    fieldStyles = `${fieldStyles} pr-10`;
-  }
+  const showError = Boolean(hasErrors || errorMessage);
+  const fieldStyle: CSSProperties = {
+    borderColor: showError
+      ? 'var(--color-theme-control-border-error)'
+      : 'var(--color-theme-control-border)',
+    backgroundColor: disabled
+      ? 'var(--color-theme-control-bg-disabled)'
+      : showError
+        ? 'var(--color-theme-control-bg-error)'
+        : 'var(--color-theme-control-bg)',
+    color: showError ? 'var(--color-theme-control-text-error)' : 'var(--color-theme-control-text)',
+    resize,
+  };
 
   return (
     <div className={className}>
@@ -75,10 +76,14 @@ const Textarea = ({
           ref={ref}
           disabled={disabled}
           value={value}
-          className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm rounded-sm`}
+          className={`block w-full flex-1 rounded-sm border text-sm placeholder:[color:var(--color-theme-control-placeholder)] focus:outline-hidden ${
+            showError
+              ? 'focus:[border-color:var(--color-theme-control-border-error)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+              : 'focus:[border-color:var(--color-theme-control-border-focus)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+          } ${clearFieldAction ? 'pr-10' : ''}`}
           rows={rows}
           placeholder={placeholder}
-          style={{ resize }}
+          style={fieldStyle}
         />
         {Boolean(clearFieldAction) && (
           <button
@@ -86,8 +91,12 @@ const Textarea = ({
             onClick={clearFieldAction}
             disabled={disabled}
             data-testid="clear-field-button"
-            className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-             focus:outline-hidden`}
+            className="absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:[color:var(--color-theme-control-clear-hover-fg)] disabled:[color:var(--color-theme-control-text-muted)]"
+            style={{
+              color: showError
+                ? 'var(--color-theme-control-text-error)'
+                : 'var(--color-theme-control-clear-fg)',
+            }}
           >
             <XMarkIcon className="w-5" />
             <Translate className="sr-only">Clear</Translate>

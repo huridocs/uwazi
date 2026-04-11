@@ -113,6 +113,52 @@ const getContrastTextColor = (backgroundHex: string): string => {
   return ratioOnBlack >= ratioOnWhite ? '#1A1A1A' : '#FFFFFF';
 };
 
+const getAccessibleColorPair = (backgroundHex: string) => {
+  const foreground = getContrastTextColor(backgroundHex);
+  const contrast = checkContrast(backgroundHex, foreground);
+  if (contrast.passesAA) {
+    return { background: backgroundHex, foreground, ratio: contrast.ratio };
+  }
+
+  const target = foreground === '#FFFFFF' ? '#000000' : '#FFFFFF';
+
+  for (let step = 1; step <= 20; step += 1) {
+    const background = mixHex(backgroundHex, target, step / 20);
+    const nextForeground = getContrastTextColor(background);
+    const nextContrast = checkContrast(background, nextForeground);
+    if (nextContrast.passesAA) {
+      return { background, foreground: nextForeground, ratio: nextContrast.ratio };
+    }
+  }
+
+  return { background: backgroundHex, foreground, ratio: contrast.ratio };
+};
+
+const getAccessibleForegroundOnBackground = (
+  backgroundHex: string,
+  preferredHex: string,
+  minimumRatio = WCAG_AA
+) => {
+  const contrast = checkContrast(backgroundHex, preferredHex);
+  if (contrast.ratio >= minimumRatio) {
+    return { foreground: preferredHex, ratio: contrast.ratio };
+  }
+
+  const blackContrast = checkContrast(backgroundHex, '#1A1A1A');
+  const whiteContrast = checkContrast(backgroundHex, '#FFFFFF');
+  const target = blackContrast.ratio >= whiteContrast.ratio ? '#1A1A1A' : '#FFFFFF';
+
+  for (let step = 1; step <= 20; step += 1) {
+    const foreground = mixHex(preferredHex, target, step / 20);
+    const nextContrast = checkContrast(backgroundHex, foreground);
+    if (nextContrast.ratio >= minimumRatio) {
+      return { foreground, ratio: nextContrast.ratio };
+    }
+  }
+
+  return { foreground: target, ratio: checkContrast(backgroundHex, target).ratio };
+};
+
 export {
   hexToRgb,
   rgbToHex,
@@ -123,4 +169,6 @@ export {
   resolveCssVarToHex,
   checkThemeContrast,
   getContrastTextColor,
+  getAccessibleColorPair,
+  getAccessibleForegroundOnBackground,
 };

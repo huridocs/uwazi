@@ -10,39 +10,6 @@
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
 }
 
-@theme inline {
-  --color-paper: var(--color-theme-bg-surface);
-  --color-parchment: var(--color-theme-bg-primary);
-  --color-warm: var(--color-theme-bg-warm);
-  --color-vellum: var(--color-theme-bg-muted);
-  --color-ink: var(--color-theme-text-primary);
-  --color-ink-secondary: var(--color-theme-text-secondary);
-  --color-ink-tertiary: var(--color-theme-text-tertiary);
-  --color-ink-muted: var(--color-theme-text-muted);
-  --color-border: var(--color-theme-border-primary);
-  --color-border-soft: var(--color-theme-border-soft);
-  --color-supporting: var(--color-theme-accent-supporting);
-  --color-emphasis: var(--color-theme-accent-emphasis);
-  --color-supporting-tint: var(--color-theme-accent-supporting-tint);
-  --color-emphasis-tint: var(--color-theme-accent-emphasis-tint);
-  --color-success: var(--color-theme-success);
-  --color-success-light: var(--color-theme-success-light);
-  --color-warning: var(--color-theme-warning);
-  --color-warning-light: var(--color-theme-warning-light);
-  --color-highlight: var(--color-theme-highlight-yellow);
-  --color-highlight-active: var(--color-theme-highlight-yellow-active);
-  --color-highlight-blue: var(--color-theme-highlight-blue);
-  --color-overlay: var(--color-theme-bg-overlay);
-  --color-selected: var(--color-theme-bg-selected);
-  --color-theme-brand-surface: var(--color-theme-brand-surface);
-  --color-theme-brand-surface-foreground: var(--color-theme-brand-surface-foreground);
-  --color-theme-brand-surface-separator: var(--color-theme-brand-surface-separator);
-  --color-theme-brand-surface-hover-bg: var(--color-theme-brand-surface-hover-bg);
-  --color-theme-brand-surface-hover-fg: var(--color-theme-brand-surface-hover-fg);
-  --color-theme-brand-surface-active-bg: var(--color-theme-brand-surface-active-bg);
-  --color-theme-brand-surface-active-fg: var(--color-theme-brand-surface-active-fg);
-}
-
 @theme {
   --font-*: initial;
   --font-sans:
@@ -234,6 +201,134 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 96rem;
+}
+
+@utility bg-paper {
+  background-color: var(--color-theme-bg-surface);
+}
+
+@utility bg-parchment {
+  background-color: var(--color-theme-bg-primary);
+}
+
+@utility bg-warm {
+  background-color: var(--color-theme-bg-warm);
+}
+
+@utility bg-vellum {
+  background-color: var(--color-theme-bg-muted);
+}
+
+@utility bg-ink {
+  background-color: var(--color-theme-text-primary);
+}
+
+@utility bg-highlight {
+  background-color: var(--color-theme-highlight-yellow);
+}
+
+@utility bg-highlight-active {
+  background-color: var(--color-theme-highlight-yellow-active);
+}
+
+@utility bg-highlight-blue {
+  background-color: var(--color-theme-highlight-blue);
+}
+
+@utility bg-overlay {
+  background-color: var(--color-theme-bg-overlay);
+}
+
+@utility bg-selected {
+  background-color: var(--color-theme-bg-selected);
+}
+
+@utility bg-emphasis-tint {
+  background-color: var(--color-theme-accent-emphasis-tint);
+}
+
+@utility bg-success {
+  background-color: var(--color-theme-success);
+}
+
+@utility bg-success-light {
+  background-color: var(--color-theme-success-light);
+}
+
+@utility bg-warning {
+  background-color: var(--color-theme-warning);
+}
+
+@utility bg-warning-light {
+  background-color: var(--color-theme-warning-light);
+}
+
+@utility bg-emphasis-solid {
+  background-color: var(--color-theme-accent-emphasis-solid);
+}
+
+@utility text-parchment {
+  color: var(--color-theme-bg-primary);
+}
+
+@utility text-ink {
+  color: var(--color-theme-text-primary);
+}
+
+@utility text-ink-secondary {
+  color: var(--color-theme-text-secondary);
+}
+
+@utility text-ink-tertiary {
+  color: var(--color-theme-text-tertiary);
+}
+
+@utility text-ink-muted {
+  color: var(--color-theme-text-muted);
+}
+
+@utility text-supporting {
+  color: var(--color-theme-accent-supporting);
+}
+
+@utility text-emphasis {
+  color: var(--color-theme-accent-emphasis);
+}
+
+@utility text-success {
+  color: var(--color-theme-success);
+}
+
+@utility text-emphasis-solid-foreground {
+  color: var(--color-theme-accent-emphasis-solid-foreground);
+}
+
+@utility border-ink {
+  border-color: var(--color-theme-text-primary);
+}
+
+@utility border-border {
+  border-color: var(--color-theme-border-primary);
+}
+
+@utility border-border-soft {
+  border-color: var(--color-theme-border-soft);
+}
+
+@utility border-emphasis {
+  border-color: var(--color-theme-accent-emphasis);
+}
+
+@utility border-warning-light {
+  border-color: var(--color-theme-warning-light);
+}
+
+@utility border-success {
+  border-color: var(--color-theme-success);
+}
+
+@utility border-emphasis-solid {
+  border-color: var(--color-theme-accent-emphasis-solid);
 }
 
 @layer base {

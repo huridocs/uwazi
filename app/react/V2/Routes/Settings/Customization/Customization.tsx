@@ -109,8 +109,7 @@ const Customisation = () => {
 
         <SettingsContent.Footer className="text-end">
           <Button
-            styling="solid"
-            color="success"
+            variant="success"
             disabled={!hasChanges}
             onClick={async () => handleSave()}
           >

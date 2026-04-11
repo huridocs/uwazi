@@ -108,7 +108,7 @@ const TranslateModal = () => {
               </Modal.Body>
               <Modal.Footer>
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={closeModal}
                   className="grow"
                   data-testid="cancel-button"
@@ -118,7 +118,7 @@ const TranslateModal = () => {
                 </Button>
                 <Button
                   type="submit"
-                  color="primary"
+                  variant="primary"
                   className="grow"
                   data-testid="save-button"
                   disabled={isSubmitting}

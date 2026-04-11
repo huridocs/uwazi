@@ -98,7 +98,7 @@ const ConfirmationModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          styling="light"
+          variant="ghost"
           onClick={onCancelClick}
           className="grow"
           data-testid="cancel-button"
@@ -109,7 +109,7 @@ const ConfirmationModal = ({
         <Button
           onClick={onAcceptClick ? () => onAcceptClick(inputValue || '') : undefined}
           disabled={!confirmed || disabled}
-          color={!warningText && !dangerStyle ? 'primary' : 'error'}
+          variant={!warningText && !dangerStyle ? 'primary' : 'danger'}
           className="grow"
           data-testid="accept-button"
         >

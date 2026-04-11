@@ -55,8 +55,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
 
       <div className="flex justify-end gap-2 mt-2">
         <Button
-          styling="outline"
-          color="primary"
+          variant="secondary"
           size="small"
           onClick={e => {
             e.stopPropagation();
@@ -66,8 +65,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
           <Translate>View</Translate>
         </Button>
         <Button
-          styling="outline"
-          color="primary"
+          variant="secondary"
           size="small"
           onClick={e => {
             e.stopPropagation();

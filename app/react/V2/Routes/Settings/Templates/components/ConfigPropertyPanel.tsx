@@ -299,10 +299,10 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
             </div>
           </Sidepanel.Body>
           <Sidepanel.Footer className="flex justify-end gap-2 p-4 border-t">
-            <Button type="button" styling="outline" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button type="submit" color="success" disabled={!validateMatchingProperties()}>
+            <Button type="submit" variant="success" disabled={!validateMatchingProperties()}>
               <Translate>{propertyToEdit ? 'Save' : 'Add property'}</Translate>
             </Button>
           </Sidepanel.Footer>

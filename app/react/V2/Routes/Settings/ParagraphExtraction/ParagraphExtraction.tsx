@@ -51,7 +51,7 @@ const ParagraphExtractorDashboard = () => {
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
           {selected?.length ? (
             <div className="flex items-center gap-2 ">
-              <Button color="error" type="button" onClick={() => setdeletedialogIsopen(true)}>
+              <Button variant="danger" type="button" onClick={() => setdeletedialogIsopen(true)}>
                 <Translate>Delete</Translate>
               </Button>
               <div className="text-gray-500">

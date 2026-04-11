@@ -239,22 +239,22 @@ const ToCPanel = ({
           {!tocState.isEditMode ? (
             <>
               <NeedAuthorization roles={['admin', 'editor']}>
-                <Button styling="outline" onClick={handleEdit}>
+                <Button variant="secondary" onClick={handleEdit}>
                   <Translate>Edit</Translate>
                 </Button>
               </NeedAuthorization>
               <NeedAuthorization roles={['admin', 'editor']}>
-                <Button styling="outline">
+                <Button variant="secondary">
                   <Translate>Mark as reviewed</Translate>
                 </Button>
               </NeedAuthorization>
             </>
           ) : (
             <>
-              <Button color="success" onClick={handleSave} disabled={isSaving}>
+              <Button variant="success" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? <Translate>Saving...</Translate> : <Translate>Save</Translate>}
               </Button>
-              <Button styling="outline" onClick={handleCancel}>
+              <Button variant="secondary" onClick={handleCancel}>
                 <Translate>Cancel</Translate>
               </Button>
             </>

@@ -400,7 +400,7 @@ const EditTranslations = () => {
               {contextId === 'System' && (
                 <>
                   <Button
-                    styling="light"
+                    variant="ghost"
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => fileInputRef.current?.click()}
@@ -418,7 +418,7 @@ const EditTranslations = () => {
               )}
             </div>
             <Link to="/settings/translations">
-              <Button styling="light" type="button" disabled={isSubmitting}>
+              <Button variant="ghost" type="button" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>
               </Button>
             </Link>

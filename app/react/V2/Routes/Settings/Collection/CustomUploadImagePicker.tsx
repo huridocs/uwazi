@@ -131,9 +131,8 @@ const CustomUploadImagePicker = ({
 
   const actionButton = (
     <Button
+      variant="secondary"
       type="button"
-      styling="outline"
-      color="primary"
       onClick={() => setOpen(true)}
       className="inline-flex items-center gap-1.5 px-2 py-1.5"
     >
@@ -166,9 +165,8 @@ const CustomUploadImagePicker = ({
             <div className="flex flex-wrap gap-2">
               {actionButton}
               <Button
+                variant="dangerSecondary"
                 type="button"
-                styling="outline"
-                color="error"
                 onClick={() => onChange('')}
                 className="inline-flex items-center gap-1.5 px-2 py-1.5"
               >
@@ -265,7 +263,7 @@ const CustomUploadImagePicker = ({
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="button" styling="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
               <Translate>Cancel</Translate>
             </Button>
           </Modal.Footer>

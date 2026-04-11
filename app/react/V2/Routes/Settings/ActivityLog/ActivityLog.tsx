@@ -79,7 +79,7 @@ const ActivityLog = () => {
           <div className="flex justify-end">
             <Button
               type="button"
-              styling="light"
+              variant="ghost"
               size="small"
               className="flex flex-row gap-4 items-center mr-0 align-middle"
               onClick={() => setShowFilters(true)}

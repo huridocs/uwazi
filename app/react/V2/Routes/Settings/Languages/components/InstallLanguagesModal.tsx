@@ -69,7 +69,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
             * <Translate>Available default translation</Translate>
           </p>
           <div className="flex gap-2">
-            <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+            <Button variant="ghost" onClick={() => setShowModal(false)} className="grow">
               <Translate>Cancel</Translate>
             </Button>
             <Button
