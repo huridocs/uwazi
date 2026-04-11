@@ -1,5 +1,5 @@
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
@@ -7,10 +7,21 @@ import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService.js';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
+import { tenants } from '#api/tenants/index.js';
 
 describe('SelectPropertyCreatorService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
+
+    const tenant = tenants.current();
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
 
   afterAll(async () => {

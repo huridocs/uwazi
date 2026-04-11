@@ -4,7 +4,6 @@ import entities from '#api/entities/index.js';
 import { legacyLogger } from '#api/log/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { LanguageUtils } from '#shared/language/index.js';

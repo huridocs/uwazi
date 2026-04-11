@@ -6,6 +6,8 @@ import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
 import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SlotsReconciler } from '../elasticSearch/entities/SlotsReconciler.js';
 
 export class TemplatesDataSourceFactory {
   static default(transactionManager: MongoTransactionManager) {
@@ -33,6 +35,25 @@ export class TemplatesDataSourceFactory {
     const entityIndexerService = new EntityIndexerService({ esClient, slotsDAO });
 
     return new CachedMongoTemplatesDataSource({
+      db,
+      transactionManager,
+      slotsReconciler,
+      entityIndexerService,
+    });
+  }
+
+  static forTesting(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+
+    const slotsReconciler = TestUtils.mockClass<SlotsReconciler>({});
+
+    const entityIndexerService = TestUtils.mockClass<EntityIndexerService>({
+      index: jest.fn(),
+      deleteBySharedIds: jest.fn(),
+      deleteByTemplateIds: jest.fn(),
+    });
+
+    return new MongoTemplatesDataSource({
       db,
       transactionManager,
       slotsReconciler,

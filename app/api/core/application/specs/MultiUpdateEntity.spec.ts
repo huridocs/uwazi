@@ -9,7 +9,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { tenants } from '#api/tenants/index.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ContextDependencies, DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
@@ -26,6 +26,7 @@ import {
   permissionsFixtures,
   SampleListener,
 } from './MultiUpdateEntityFixtures.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 
 const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -103,6 +104,13 @@ describe('MultiUpdateEntity', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
     EventEmitterFactory.default().listen(SampleListener);
+    const tenant = tenants.current();
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
 
   beforeEach(async () => {

@@ -26,7 +26,11 @@ export class EntitiesDataSourceFactory {
     return new MongoMultiLanguageEntityDataSource({
       db: getConnection(),
       transactionManager,
-      entityIndexerService: TestUtils.mockClass<EntityIndexerService>({ index: jest.fn() }),
+      entityIndexerService: TestUtils.mockClass<EntityIndexerService>({
+        index: jest.fn(),
+        deleteBySharedIds: jest.fn(),
+        deleteByTemplateIds: jest.fn(),
+      }),
     });
   }
 }

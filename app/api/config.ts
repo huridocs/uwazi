@@ -124,7 +124,7 @@ export const config = {
       v1CSVImportCompat: false,
       v2GetEntity: false,
       v2MultipleUpdateEntity: false,
-      v2ElasticSearch: false,
+      v2ElasticSearch: true,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

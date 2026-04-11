@@ -19,6 +19,8 @@ import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/Entit
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { CreateEntityFromPDFUseCase } from '../CreateEntityFromPDF.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 const factory = getFixturesFactory();
 
@@ -87,6 +89,14 @@ const createSut = (props: CreateSutProps = {}) => {
 describe('CreateEntityFromPDFUseCase', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
+
+    const tenant = tenants.current();
+    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
+      instances: {
+        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
+      },
+      factories: {},
+    } as ContextDependencies);
   });
 
   beforeEach(async () => testingEnvironment.setFixtures(fixtures));
