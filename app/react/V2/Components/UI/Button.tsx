@@ -92,7 +92,7 @@ const Button = ({
   const hoverClassByVariant: Record<ButtonVariant, string> = {
     primary: 'enabled:hover:opacity-90',
     secondary:
-      'enabled:hover:[background-color:var(--color-theme-bg-warm)] enabled:hover:[border-color:var(--color-theme-button-secondary-border)]',
+      'enabled:hover:[background-color:var(--color-theme-button-secondary-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-secondary-border)]',
     danger: 'enabled:hover:opacity-90',
     ghost: 'enabled:hover:[background-color:var(--color-theme-bg-warm)]',
     compact:
@@ -107,9 +107,15 @@ const Button = ({
   };
   const styleByVariant: Record<ButtonVariant, React.CSSProperties> = {
     primary: {
-      borderColor: 'var(--color-theme-button-primary-border)',
-      backgroundColor: 'var(--color-theme-button-primary-bg)',
-      color: 'var(--color-theme-button-primary-fg)',
+      borderColor: disabled
+        ? 'var(--color-theme-button-primary-disabled-border)'
+        : 'var(--color-theme-button-primary-border)',
+      backgroundColor: disabled
+        ? 'var(--color-theme-button-primary-disabled-bg)'
+        : 'var(--color-theme-button-primary-bg)',
+      color: disabled
+        ? 'var(--color-theme-button-primary-disabled-fg)'
+        : 'var(--color-theme-button-primary-fg)',
     },
     secondary: {
       borderColor: disabled

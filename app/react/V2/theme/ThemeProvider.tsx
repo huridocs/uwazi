@@ -29,9 +29,13 @@ const EMPHASIS_SOLID_FG = '--color-theme-accent-emphasis-solid-foreground';
 const BUTTON_PRIMARY_BORDER = '--color-theme-button-primary-border';
 const BUTTON_PRIMARY_BG = '--color-theme-button-primary-bg';
 const BUTTON_PRIMARY_FG = '--color-theme-button-primary-fg';
+const BUTTON_PRIMARY_DISABLED_BORDER = '--color-theme-button-primary-disabled-border';
+const BUTTON_PRIMARY_DISABLED_BG = '--color-theme-button-primary-disabled-bg';
+const BUTTON_PRIMARY_DISABLED_FG = '--color-theme-button-primary-disabled-fg';
 const BUTTON_SECONDARY_BORDER = '--color-theme-button-secondary-border';
 const BUTTON_SECONDARY_BG = '--color-theme-button-secondary-bg';
 const BUTTON_SECONDARY_FG = '--color-theme-button-secondary-fg';
+const BUTTON_SECONDARY_HOVER_BG = '--color-theme-button-secondary-hover-bg';
 const BUTTON_DANGER_BORDER = '--color-theme-button-danger-border';
 const BUTTON_DANGER_BG = '--color-theme-button-danger-bg';
 const BUTTON_DANGER_FG = '--color-theme-button-danger-fg';
@@ -154,16 +158,29 @@ const getButtonThemeVars = (
     primaryBackground,
     presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-primary']
   ).foreground;
+  const primaryDisabledBackground =
+    presetId === 'legacy'
+      ? '#A5B4FC'
+      : mixHex(primaryBackground, resolved['--color-theme-bg-surface'], 0.35);
+  const primaryDisabledForeground =
+    presetId === 'legacy'
+      ? '#FFFFFF'
+      : getAccessibleForegroundOnBackground(primaryDisabledBackground, primaryForeground).foreground;
   const secondaryBackground = presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-surface'];
-  const secondaryBorderOnSurface = getAccessibleForegroundOnBackground(
-    resolved['--color-theme-bg-surface'],
-    presetId === 'legacy' ? '#101828' : resolved['--color-theme-border-primary'],
-    3
-  ).foreground;
+  const secondaryBorderOnSurface =
+    presetId === 'legacy'
+      ? primaryBackground
+      : getAccessibleForegroundOnBackground(
+          resolved['--color-theme-bg-surface'],
+          resolved['--color-theme-border-primary'],
+          3
+        ).foreground;
   const secondaryTextOnButton = getAccessibleForegroundOnBackground(
     secondaryBackground,
-    presetId === 'legacy' ? '#101828' : resolved['--color-theme-text-secondary']
+    presetId === 'legacy' ? primaryBackground : resolved['--color-theme-text-secondary']
   ).foreground;
+  const secondaryHoverBackground =
+    presetId === 'legacy' ? '#EEF2FF' : resolved['--color-theme-bg-warm'];
   const ghostTextOnSurface = getAccessibleForegroundOnBackground(
     resolved['--color-theme-bg-surface'],
     presetId === 'legacy' ? '#101828' : resolved['--color-theme-text-tertiary']
@@ -221,9 +238,13 @@ const getButtonThemeVars = (
       [BUTTON_PRIMARY_BORDER]: primaryBackground,
       [BUTTON_PRIMARY_BG]: primaryBackground,
       [BUTTON_PRIMARY_FG]: primaryForeground,
+      [BUTTON_PRIMARY_DISABLED_BORDER]: primaryDisabledBackground,
+      [BUTTON_PRIMARY_DISABLED_BG]: primaryDisabledBackground,
+      [BUTTON_PRIMARY_DISABLED_FG]: primaryDisabledForeground,
       [BUTTON_SECONDARY_BORDER]: secondaryBorderOnSurface,
       [BUTTON_SECONDARY_BG]: secondaryBackground,
       [BUTTON_SECONDARY_FG]: secondaryTextOnButton,
+      [BUTTON_SECONDARY_HOVER_BG]: secondaryHoverBackground,
       [BUTTON_DANGER_BORDER]: dangerSolid.background,
       [BUTTON_DANGER_BG]: dangerSolid.background,
       [BUTTON_DANGER_FG]: dangerSolid.foreground,
@@ -283,9 +304,13 @@ const getButtonThemeVars = (
     [BUTTON_PRIMARY_BORDER]: primaryBackground,
     [BUTTON_PRIMARY_BG]: primaryBackground,
     [BUTTON_PRIMARY_FG]: primaryForeground,
+    [BUTTON_PRIMARY_DISABLED_BORDER]: primaryDisabledBackground,
+    [BUTTON_PRIMARY_DISABLED_BG]: primaryDisabledBackground,
+    [BUTTON_PRIMARY_DISABLED_FG]: primaryDisabledForeground,
     [BUTTON_SECONDARY_BORDER]: secondaryBorderOnSurface,
     [BUTTON_SECONDARY_BG]: 'transparent',
     [BUTTON_SECONDARY_FG]: secondaryTextOnButton,
+    [BUTTON_SECONDARY_HOVER_BG]: secondaryHoverBackground,
     [BUTTON_DANGER_BORDER]: dangerSolid.background,
     [BUTTON_DANGER_BG]: dangerSolid.background,
     [BUTTON_DANGER_FG]: dangerSolid.foreground,
@@ -369,8 +394,12 @@ const getCardThemeVars = (presetId: ThemePresetId, resolved: ResolvedThemeVars):
     presetId === 'legacy' ? resolved['--color-theme-accent-primary'] : resolved['--color-theme-text-primary'],
   [CARD_HEADER_BLACK_BG]: resolved['--color-theme-bg-warm'],
   [CARD_HEADER_BLACK_FG]: resolved['--color-theme-text-primary'],
-  [CARD_HEADER_YELLOW_BG]: resolved['--color-theme-highlight-yellow'],
-  [CARD_HEADER_YELLOW_FG]: resolved['--color-theme-text-primary'],
+  [CARD_HEADER_YELLOW_BG]:
+    presetId === 'legacy' ? '#FEF3C7' : resolved['--color-theme-highlight-yellow'],
+  [CARD_HEADER_YELLOW_FG]:
+    presetId === 'legacy'
+      ? getAccessibleForegroundOnBackground('#FEF3C7', '#92400E').foreground
+      : resolved['--color-theme-text-primary'],
 });
 
 const getBannerThemeVars = (
