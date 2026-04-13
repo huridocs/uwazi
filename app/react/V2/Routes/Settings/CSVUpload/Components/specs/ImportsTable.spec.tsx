@@ -103,7 +103,7 @@ describe('CSV imports list table', () => {
       ['Failed', 'documents.csv', 'Documents', '17/60', '15', '2', '4/10/2024, 1:20:00 PM'],
       ['Completed', 'events.csv', 'Events', '86/86', '84', '0', '4/9/2024, 1:20:00 PM'],
       ['Processing', 'cases.zip', 'Cases', '48/120', '44', '1', '4/8/2024, 1:20:00 PM'],
-      ['Queued', 'people.csv', 'People', '0/0', '', '', '4/7/2024, 1:20:00 PM'],
+      ['Queued', 'people.csv', 'People', '0/0', '0', '0', '4/7/2024, 1:20:00 PM'],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);

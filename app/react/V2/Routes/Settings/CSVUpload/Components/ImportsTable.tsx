@@ -112,7 +112,7 @@ const toTableRow = (entry: CsvImportListRow, templatesById: Map<string, string>)
 });
 
 const ImportsTable = () => {
-  const csvUploads = useLoaderData() as csvLoaderResponse;
+  const { list: csvUploads } = useLoaderData() as csvLoaderResponse;
   const templates = useAtomValue(templatesAtom);
   const revalidator = useRevalidator();
   const [tableData, setTableData] = useState<TableData[]>([]);
