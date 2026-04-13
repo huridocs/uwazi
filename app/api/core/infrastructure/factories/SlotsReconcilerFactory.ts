@@ -1,10 +1,10 @@
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoTemplatesDAO } from '../mongodb/template/MongoTemplatesDAO';
-import { SlotsReconciler } from '../elasticSearch/entities/SlotsReconciler';
+import { MongoTemplatesDAO } from '../mongodb/template/MongoTemplatesDAO.js';
+import { SlotsReconciler } from '../elasticSearch/entities/SlotsReconciler.js';
 import { tenants } from '#api/tenants/index.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 
 export class SlotsReconcilerFactory {
   static default(transactionManager: MongoTransactionManager): SlotsReconciler {

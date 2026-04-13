@@ -1,11 +1,11 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
-import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
-import { MongoSlotsDAO } from '../entities/MongoSlotsDAO';
-import { SlotsReconciler } from '../entities/SlotsReconciler';
+import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
+import { SlotsReconciler } from '../entities/SlotsReconciler.js';
 
 const factory = getFixturesFactory();
 

@@ -1,9 +1,9 @@
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO';
+import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO.js';
 import { tenants } from '#api/tenants/index.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory';
+import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 export class MongoSlotsDAOFactory {
   static default(transactionManager: MongoTransactionManager): MongoSlotsDAO {

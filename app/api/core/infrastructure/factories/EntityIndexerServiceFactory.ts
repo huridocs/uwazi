@@ -1,9 +1,9 @@
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService';
+import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 
 export class EntityIndexerServiceFactory {
   static default(transactionManager: MongoTransactionManager): EntityIndexerService {

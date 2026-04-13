@@ -2,9 +2,9 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService';
+import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory';
+import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 
 export class EntitiesDataSourceFactory {
   static default(transactionManager: MongoTransactionManager): MultiLanguageEntityDataSource {

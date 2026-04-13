@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
 import { Client as ESClient } from '@elastic/elasticsearch';
-import { TenantAwareESClient } from '../TenantAwareESClient';
+import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { IndexNameResolver } from '../IndexNameResolver';
+import { IndexNameResolver } from '../IndexNameResolver.js';
 import { config } from '#api/config.js';
 
 const mockResolver = (indexName: string) =>
