@@ -4,6 +4,8 @@ export class TestUtils {
   }
 
   static arrayIncludesObjects(items: Record<string, any>[]) {
-    return expect.arrayContaining(items.map(item => expect.objectContaining(item)));
+    return (expect as any).arrayContaining(
+      items.map((item: any) => (expect as any).objectContaining(item))
+    );
   }
 }

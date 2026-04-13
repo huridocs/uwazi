@@ -1,5 +1,5 @@
 import { Db, MongoServerError } from 'mongodb';
-import { MongoSlotsDataSource, SlotDocument } from './MongoSlotsDataSource.js';
+import { MongoSlotsDAO, SlotDocument } from './MongoSlotsDAO.js';
 import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
 
 type Deps = {
@@ -7,13 +7,14 @@ type Deps = {
 };
 
 class MongoSlotsBootstrapper {
-  private static collectionName = MongoSlotsDataSource.collectionName;
+  private static collectionName = MongoSlotsDAO.collectionName;
 
   constructor(private deps: Deps) {}
 
-  async executeAll() {
+  async execute() {
     await this.createSlots();
     await this.createIndexes();
+    await this.createSentinel();
   }
 
   private get collection() {
@@ -24,7 +25,7 @@ class MongoSlotsBootstrapper {
     try {
       const slotsToCreate = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
         Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-          type: SlotBootstrapDefinitions.toPropertyType(slotType),
+          type: slotType,
           slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
           assignedTo: null,
         }))
@@ -54,6 +55,14 @@ class MongoSlotsBootstrapper {
     await this.collection.createIndex(
       { assignedTo: 1 },
       { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
+    );
+  }
+
+  async createSentinel() {
+    await this.collection.updateOne(
+      { _id: MongoSlotsDAO.sentinelId as any },
+      { $setOnInsert: { version: 0 } },
+      { upsert: true }
     );
   }
 }

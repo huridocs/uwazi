@@ -18,7 +18,7 @@ import fixtures, {
   testGroup1Id,
   batmanFinishesId,
   docId1,
-} from './routesGetFixtures';
+} from './routesGetFixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

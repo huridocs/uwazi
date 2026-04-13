@@ -1,3 +1,4 @@
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { AsyncEventEmitter } from './AsyncEventEmitter.js';
 import { EventEmitter } from './EventEmitter.js';
 
@@ -10,6 +11,14 @@ class EventEmitterFactory {
     }
 
     return EventEmitterFactory.instance;
+  }
+
+  static forTesting() {
+    return TestUtils.mockClass<EventEmitter>({
+      emit: jest.fn(),
+      listen: jest.fn(),
+      reset: jest.fn(),
+    });
   }
 }
 

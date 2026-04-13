@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -19,7 +20,6 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { tenants } from '#api/tenants/index.js';
-import { ObjectId } from 'mongodb';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
@@ -98,7 +98,7 @@ const createEntitySample = () => {
 };
 
 const loadEntities = async (sharedIds: string[]) => {
-  const ds = EntitiesDataSourceFactory.default(TransactionManagerFactory.default());
+  const ds = EntitiesDataSourceFactory.forTesting(TransactionManagerFactory.default());
   return (await ds.getEntitiesBySharedIds(sharedIds)).all();
 };
 

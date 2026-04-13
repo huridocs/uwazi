@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */ /* eslint-disable max-statements */
-/* eslint-disable max-classes-per-file */
+
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
@@ -46,7 +46,6 @@ import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/C
 import { CsvCreateRelationshipEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
 import { CsvCleanupImportFilesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCleanupImportFilesJobHandler.js';
 import { CsvV1CompatEmitter } from '#api/csv.v2/infrastructure/services/CsvV1CompatEmitter.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { denormalizeRelated } from '#api/entities/denormalize.js';
 import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
@@ -67,6 +66,12 @@ import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/Accept
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+
+type Register = <T extends Dispatchable>(
+  dispatchable: DispatchableClass<T>,
+  factory: (namespace: string) => Promise<T>
+) => void;
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -102,13 +107,7 @@ export class TestJob implements Dispatchable {
   }
 }
 
-// eslint-disable-next-line max-statements
-export function registerJobs(
-  register: <T extends Dispatchable>(
-    dispatchable: DispatchableClass<T>,
-    factory: (namespace: string) => Promise<T>
-  ) => void
-) {
+export function registerJobs(register: Register) {
   register(TestJob, async () => new TestJob());
 
   register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
@@ -211,7 +210,7 @@ export function registerJobs(
     return new TemplatePostProcessEntitiesJob({
       templatesDS: TemplatesDataSourceFactory.default(transactionManager),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
         filesDS: FilesDataSourceFactory.default(transactionManager),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
         templatesDS: TemplatesDataSourceFactory.default(transactionManager),
@@ -289,7 +288,7 @@ export function registerJobs(
   register(DenormalizeThesaurusEntitiesHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
 
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
     const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
 
     return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });

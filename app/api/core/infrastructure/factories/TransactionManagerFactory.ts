@@ -1,3 +1,5 @@
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
 import { FakeMongoTransactionManager } from '../mongodb/common/FakeTransactionManager.js';
@@ -26,5 +28,17 @@ export class TransactionManagerFactory {
     const client = getClient();
     const logger = LoggerFactory.default();
     return new FakeMongoTransactionManager(client, logger);
+  }
+
+  static forTesting() {
+    return TestUtils.mockClass<TransactionManager>({
+      run: jest.fn().mockResolvedValue(undefined),
+      onCommitted: jest.fn().mockReturnThis(),
+      onRetry: jest.fn().mockReturnThis(),
+      runHandlingOnCommitted: jest.fn().mockReturnValue({
+        onCommitted: jest.fn().mockReturnThis(),
+      }),
+      isRunning: jest.fn().mockReturnValue(false),
+    });
   }
 }

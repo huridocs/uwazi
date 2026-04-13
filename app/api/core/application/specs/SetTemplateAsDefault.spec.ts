@@ -10,7 +10,7 @@ import {
 const factory = getFixturesFactory();
 
 describe('SetTemplateAsDefaultUseCase', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
   });
 
