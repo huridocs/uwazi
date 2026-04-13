@@ -1,17 +1,10 @@
 import type { CSSProperties } from 'react';
-import {
-  getActionThemeVars,
-  getBannerThemeVars,
-  getButtonThemeVars,
-  getCardThemeVars,
-  getDerivedThemeVars,
-} from '#V2/theme/ThemeProvider.js';
+import { getButtonThemeVars } from '#V2/theme/buttonThemeVars.js';
+import { getScopedThemeVars } from '#V2/theme/ThemeProvider.js';
 import { checkContrast } from '#shared/utils/contrast.js';
 import {
-  ACCENT_PRIMARY_KEY,
   appliedTheme,
   getPresetVars,
-  toCompatibilityVars,
   type ThemeMode,
   type ThemePresetId,
 } from '#V2/theme/themes.js';
@@ -33,20 +26,13 @@ const buildStorybookThemeVars = (preset: StorybookThemePreset): Record<string, s
 const getStorybookThemeFrame = (preset: StorybookThemePreset, mode: ThemeMode) => {
   const themeVars = buildStorybookThemeVars(preset);
   const resolved = appliedTheme(themeVars, mode, true);
-  const accent = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
 
   return {
     themeVars,
     className: ['tw-content', mode === 'dark' ? 'dark' : ''].filter(Boolean).join(' '),
     style: {
       colorScheme: mode,
-      ...resolved,
-      ...toCompatibilityVars(resolved),
-      ...getDerivedThemeVars(accent),
-      ...getActionThemeVars(resolved),
-      ...getBannerThemeVars(preset, resolved),
-      ...getButtonThemeVars(preset, resolved),
-      ...getCardThemeVars(preset, resolved),
+      ...getScopedThemeVars(preset, resolved),
     } as CSSProperties & Record<string, string>,
   };
 };

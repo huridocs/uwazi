@@ -1,0 +1,86 @@
+import type { ButtonThemeContext } from '#V2/theme/buttonThemeContext.js';
+import { LEGACY_BUTTON_VALUES } from '#V2/theme/buttonThemeContext.js';
+import {
+  EMBEDDED_BUTTON_GREEN_BG,
+  EMBEDDED_BUTTON_GREEN_BORDER,
+  EMBEDDED_BUTTON_GREEN_DISABLED_BG,
+  EMBEDDED_BUTTON_GREEN_DISABLED_BORDER,
+  EMBEDDED_BUTTON_GREEN_DISABLED_FG,
+  EMBEDDED_BUTTON_GREEN_FG,
+  EMBEDDED_BUTTON_INDIGO_BG,
+  EMBEDDED_BUTTON_INDIGO_BORDER,
+  EMBEDDED_BUTTON_INDIGO_DISABLED_BG,
+  EMBEDDED_BUTTON_INDIGO_DISABLED_BORDER,
+  EMBEDDED_BUTTON_INDIGO_DISABLED_FG,
+  EMBEDDED_BUTTON_INDIGO_FG,
+  EMBEDDED_BUTTON_ORANGE_BG,
+  EMBEDDED_BUTTON_ORANGE_BORDER,
+  EMBEDDED_BUTTON_ORANGE_FG,
+  EMBEDDED_BUTTON_RED_BG,
+  EMBEDDED_BUTTON_RED_BORDER,
+  EMBEDDED_BUTTON_RED_FG,
+  EMBEDDED_BUTTON_WHITE_BG,
+  EMBEDDED_BUTTON_WHITE_BORDER,
+  EMBEDDED_BUTTON_WHITE_DISABLED_BG,
+  EMBEDDED_BUTTON_WHITE_DISABLED_FG,
+  EMBEDDED_BUTTON_WHITE_FG,
+  TOGGLE_THUMB_BG,
+  TOGGLE_THUMB_BORDER,
+  TOGGLE_TRACK_ACTIVE_BG,
+  TOGGLE_TRACK_BG,
+  TOGGLE_TRACK_DISABLED_ACTIVE_BG,
+} from '#V2/theme/roleTokens.js';
+
+const getEmbeddedButtonThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+  [EMBEDDED_BUTTON_ORANGE_BORDER]: '#FED7AA',
+  [EMBEDDED_BUTTON_ORANGE_BG]: '#FFF7ED',
+  [EMBEDDED_BUTTON_ORANGE_FG]: '#9A3412',
+  [EMBEDDED_BUTTON_GREEN_BORDER]: '#BBF7D0',
+  [EMBEDDED_BUTTON_GREEN_BG]: '#DCFCE7',
+  [EMBEDDED_BUTTON_GREEN_FG]: '#4ADE80',
+  [EMBEDDED_BUTTON_GREEN_DISABLED_BORDER]: '#BBF7D0',
+  [EMBEDDED_BUTTON_GREEN_DISABLED_BG]: '#F0FDF4',
+  [EMBEDDED_BUTTON_GREEN_DISABLED_FG]: '#BBF7D0',
+  [EMBEDDED_BUTTON_RED_BORDER]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.border
+    : context.resolved['--color-theme-border-primary'],
+  [EMBEDDED_BUTTON_RED_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.surfaceWarm
+    : context.resolved['--color-theme-bg-warm'],
+  [EMBEDDED_BUTTON_RED_FG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.softBorder
+    : context.resolved['--color-theme-border-primary'],
+  [EMBEDDED_BUTTON_INDIGO_BORDER]: '#C7D2FE',
+  [EMBEDDED_BUTTON_INDIGO_BG]: '#E0E7FF',
+  [EMBEDDED_BUTTON_INDIGO_FG]: '#3730A3',
+  [EMBEDDED_BUTTON_INDIGO_DISABLED_BORDER]: '#C7D2FE',
+  [EMBEDDED_BUTTON_INDIGO_DISABLED_BG]: '#EEF2FF',
+  [EMBEDDED_BUTTON_INDIGO_DISABLED_FG]: '#C7D2FE',
+  [EMBEDDED_BUTTON_WHITE_BORDER]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.border
+    : context.resolved['--color-theme-border-primary'],
+  [EMBEDDED_BUTTON_WHITE_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.surface
+    : context.resolved['--color-theme-bg-surface'],
+  [EMBEDDED_BUTTON_WHITE_FG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.text
+    : context.resolved['--color-theme-text-primary'],
+  [EMBEDDED_BUTTON_WHITE_DISABLED_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.surfaceWarm
+    : context.resolved['--color-theme-bg-warm'],
+  [EMBEDDED_BUTTON_WHITE_DISABLED_FG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.softBorder
+    : context.resolved['--color-theme-border-primary'],
+});
+
+const getToggleThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+  [TOGGLE_TRACK_BG]: LEGACY_BUTTON_VALUES.border,
+  [TOGGLE_TRACK_ACTIVE_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.primary
+    : context.resolved['--color-theme-accent-primary'],
+  [TOGGLE_TRACK_DISABLED_ACTIVE_BG]: LEGACY_BUTTON_VALUES.primaryDisabled,
+  [TOGGLE_THUMB_BG]: LEGACY_BUTTON_VALUES.surface,
+  [TOGGLE_THUMB_BORDER]: LEGACY_BUTTON_VALUES.softBorder,
+});
+
+export { getEmbeddedButtonThemeVars, getToggleThemeVars };
