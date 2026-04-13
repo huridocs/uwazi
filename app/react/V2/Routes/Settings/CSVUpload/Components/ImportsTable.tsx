@@ -16,8 +16,8 @@ import type { CsvImportListRow } from '#V2/api/csv/index.js';
 import type { CsvImportEventPayloads } from '#V2/api/csv/events.js';
 import type { csvLoaderResponse } from '../Loaders/csvListLoader';
 import { statusMessages } from './statusMessages.js';
-import { DateDisplay } from './DateDisplay';
-import { Progress } from './Progress';
+import { DateDisplay } from './DateDisplay.js';
+import { Progress } from './Progress.js';
 
 type TableData = CsvImportListRow & { rowId: string; templateName: string };
 
