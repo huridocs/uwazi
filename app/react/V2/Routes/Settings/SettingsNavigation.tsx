@@ -126,8 +126,8 @@ const SettingsNavigation = () => {
             </>
           </NeedAuthorization>
           {isClient && window.__featureFlags__?.v2CSVImport && (
-            <NeedAuthorization roles={['admin', 'editor']}>
-              {renderLink('/settings/csv', <Translate>Import CSV</Translate>)}
+            <NeedAuthorization roles={['admin']}>
+              <li>{renderLink('/settings/csv', <Translate>Import CSV</Translate>)}</li>
             </NeedAuthorization>
           )}
           <li>

@@ -246,7 +246,7 @@ const ImportsTable = () => {
             <span className="float-left text-xl font-semibold" no-translate="true">
               CSVs
             </span>
-            <div className="flex flex-row items-center gap-2 float-right text-gray-400 text-sm">
+            <div className="flex flex-row items-center gap-2 float-right text-gray-500 text-sm">
               <ArrowPathIcon className="w-4 h-4" />
               <Translate>Auto-refreshing</Translate>
             </div>
