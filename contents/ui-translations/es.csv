@@ -104,6 +104,7 @@ Authentication code,Código de autenticación
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,autogenerado
+Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Tabla de contenidos automática.
 Automatically generated,Se genera automáticamente
 Available default translation,Traducción predeterminada disponible
@@ -119,8 +120,10 @@ Can edit,Puede editar
 Can see,Puede visualizar
 Can view,Puede visualizar
 Cancel,Cancelar
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Canceling
 Canceling...,Cancelando
+Cancelled,Cancelled
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
@@ -146,6 +149,7 @@ Click,Click
 Click here,Haz click aquí
 Click to fill,Click para completar
 Close,Cerrar
+Code,Code
 Collaborator,Colaboradora
 Collaborators,Collaborators
 Collapse all,Colapsar todo
@@ -153,6 +157,7 @@ Collapse All,Collapse All
 Collection,Colección
 Collection Name,Collection Name
 Common sources,Common sources
+Completed,Completed
 Configuration,Configuración
 Configure filters,Configurar filtros
 Configure templates,Configurar plantillas
@@ -210,6 +215,11 @@ Created relationship,Relación creada
 Created template,Plantilla creada
 Created thesaurus,Tesauro creado
 Created user group,Grupo de usuarios creado
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
@@ -220,6 +230,7 @@ custom page error warning,"Hay un error inesperado en esta página personalizada
 Custom Uploads,Subidas personalizadas
 Dark,Dark
 Dashboard,Tablero
+Date,Date
 Date added,Fecha de creación
 Date format,Formato de fecha
 Date modified,Fecha de la modificación
@@ -273,6 +284,11 @@ Documentation,Documentación
 documents,Documentos
 Documents,Documentos
 documents.,documentos.
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
@@ -307,7 +323,9 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,Entidades
 entities,Entidades
 Entities across all languages,Entidades en todos los idiomas
+Entities created,Entities created
 Entity,Entidad
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entidad eliminada
 Entity Page,Página entidad
 Entity saved,Entidad grabada
@@ -328,12 +346,17 @@ Exporting entities to CSV,Exportando entidades a CSV
 Extension Token,Token extensión
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed,Failed
+Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
 
 1. Sube tu ícono en Subidas personalizadas.
@@ -343,6 +366,7 @@ Favicon description,"Un favicon es un pequeño ícono que representa a tu colecc
 FEATURED,DESTACADO
 File,Archivo
 File deleted,Archivo eliminado
+File extraction completed successfully.,File extraction completed successfully.
 File name,File name
 File updated,Archivo actualizado
 Files,Archivos
@@ -408,7 +432,12 @@ Import,Importar
 Import asset,Import asset
 Import completed,Importación completada. Número de entidades creadas:
 Import CSV,Importar CSV
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
 Import instructions,Instrucciones de importación
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Entidades importadas desde el archivo
 Imported translations from file,Traducciones importadas desde el archivo
 Importing data in progress,Importación de datos en curso
@@ -558,6 +587,7 @@ No common filters,No existen filtros comunes
 No Connections,No existen relaciones
 No Connections description,Las conexiones son las relaciones directas entre este documento y otros documentos y entidades.
 No context,No context
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
@@ -657,6 +687,9 @@ Please contact an admin for details.,"Por favor, contacta con un administrador p
 Please type in,Por favor digite
 Please type in letters and numbers from the image to start the export.,"Por favor, teclea los caracteres de la imagen para iniciar la exportación."
 Precision,Precisión
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Preservar
 Preserve Extension,Extensión Preservar
 Preserve Setup Description,"Si conoces el URL y TOKEN de Uwazi, haz click en el enlace a continuación y completa la información requerida."
@@ -672,7 +705,9 @@ Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
 Processed,Processed
+Processed rows,Processed rows
 Processing,Procesando
+Progress,Progress
 Properties,Propiedades
 Properties from other templates in the collection using the same label,Propiedades de otras plantillas de la colección que utilizan la misma etiqueta.
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -707,6 +742,7 @@ Publish,Publicar
 Published,Publicado
 QR Code,QR Code
 Query,Consulta
+Queued,Queued
 RAW,SIN FORMATO
 Re-uploaded document,Documento recargado
 Receiving email,Correo electrónico de recepción
@@ -739,6 +775,8 @@ Request id #,Solicitar id #
 Request token,Solicitud de token
 Required,Required
 Required property,Propiedad requerida
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
 Reset default translation,Resetear traducción predeterminada
@@ -746,12 +784,16 @@ Reset language,Reset language
 Reset Password,Restablecer contraseña
 Reset passwords,Reset passwords
 Restricted,Restringido
+Retryable,Retryable
+Retrying,Retrying
 Return to login,Regresar al inicio de sesión
 Review,Revisar
 Reviewed,Revisados
 Role,Rol
 Route,Ruta
 Row,Row
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,Ejemplo
 Satellite,Satélite
 Save,Guardar
@@ -761,6 +803,8 @@ Save password,Guardar contraseña
 Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
 Saved successfully.,Guardado exitoso.
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,Buscar
 Search item,Buscar elemento
 Search not found,Búsqueda no encontrada
@@ -841,6 +885,7 @@ Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
+Stage,Stage
 State,Estado
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -907,6 +952,7 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Nombre del Tesauro
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
+Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
 Thesaurus,Tesauro
 Thesaurus created successfully.,Thesaurus created successfully.
@@ -924,6 +970,7 @@ This file could not be opened. It may be corrupted or not a valid PDF.,This file
 This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,Esta opción mostrará una notificación sobre el uso de cookies en la instancia.
 This property can not be deleted,This property can not be deleted
@@ -953,6 +1000,7 @@ total entities,total entities
 Total files,Total de archivos
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+Total imports,Total imports
 total users,total users
 Train,Train
 Train model,Train model
@@ -1029,6 +1077,8 @@ Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi es desarrollado por
 Uwazi UI,Uwazi UI
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,valor
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
