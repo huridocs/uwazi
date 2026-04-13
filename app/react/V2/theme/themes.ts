@@ -101,8 +101,7 @@ const THEME_ASSET_PRESETS: Record<
   },
 };
 
-const themeStorageKey = (mode: ThemeMode, key: SemanticVarKey | CompatibilityVarKey) =>
-  `${mode}:${key}`;
+const themeStorageKey = (mode: ThemeMode, key: string) => `${mode}:${key}`;
 
 const LEGACY_THEME_KEY_MAP = {
   '--color-theme-accent-blue': '--color-theme-accent-supporting',
@@ -111,7 +110,19 @@ const LEGACY_THEME_KEY_MAP = {
   '--color-theme-accent-seal-tint': '--color-theme-accent-emphasis-tint',
 } as const satisfies Record<string, string>;
 
-const resolveLegacyKey = (key: string) => LEGACY_THEME_KEY_MAP[key as keyof typeof LEGACY_THEME_KEY_MAP];
+const resolveLegacyKey = (key: string) =>
+  LEGACY_THEME_KEY_MAP[key as keyof typeof LEGACY_THEME_KEY_MAP];
+
+const getLegacyThemeKeys = (key: string) =>
+  Object.entries(LEGACY_THEME_KEY_MAP).flatMap(([legacyKey, canonicalKey]) =>
+    canonicalKey === key ? [legacyKey] : []
+  );
+
+const parseThemeStorageKey = (key: string): { mode?: ThemeMode; rawKey: string } => {
+  if (key.startsWith('light:')) return { mode: 'light', rawKey: key.slice('light:'.length) };
+  if (key.startsWith('dark:')) return { mode: 'dark', rawKey: key.slice('dark:'.length) };
+  return { rawKey: key };
+};
 
 const getEffectiveThemeVars = (
   themeVars: ThemeVarsInput,
@@ -124,23 +135,17 @@ const getEffectiveThemeAssets = (
 ) => (themeCustomizationEnabled ? themeAssets : undefined);
 
 const getThemeValue = (themeVars: ThemeVarsInput, mode: ThemeMode, key: SemanticVarKey) => {
-  const modeValue = themeVars?.[themeStorageKey(mode, key)];
-  if (modeValue) return modeValue;
-
-  for (const [legacyKey, nextKey] of Object.entries(LEGACY_THEME_KEY_MAP)) {
-    if (nextKey !== key) continue;
-    const legacyModeValue = themeVars?.[themeStorageKey(mode, legacyKey as CompatibilityVarKey)];
-    if (legacyModeValue) return legacyModeValue;
+  for (const storageKey of [key, ...getLegacyThemeKeys(key)].map(candidate =>
+    themeStorageKey(mode, candidate)
+  )) {
+    const modeValue = themeVars?.[storageKey];
+    if (modeValue) return modeValue;
   }
 
   if (mode !== 'light') return undefined;
 
-  const flatValue = themeVars?.[key];
-  if (flatValue) return flatValue;
-
-  for (const [legacyKey, nextKey] of Object.entries(LEGACY_THEME_KEY_MAP)) {
-    if (nextKey !== key) continue;
-    const legacyFlatValue = themeVars?.[legacyKey];
+  for (const storageKey of [key, ...getLegacyThemeKeys(key)]) {
+    const legacyFlatValue = themeVars?.[storageKey];
     if (legacyFlatValue) return legacyFlatValue;
   }
 
@@ -154,12 +159,9 @@ const toCanonicalThemeVars = (themeVars: ThemeVarsInput): Record<string, string 
 
   Object.entries(themeVars).forEach(([key, value]) => {
     if (value === undefined) return;
-    const [mode, rawKey] =
-      key.startsWith('light:') || key.startsWith('dark:')
-        ? (key.split(/:(.+)/) as [ThemeMode, string])
-        : [undefined, key];
+    const { mode, rawKey } = parseThemeStorageKey(key);
     const canonicalKey = resolveLegacyKey(rawKey) ?? rawKey;
-    next[mode ? themeStorageKey(mode, canonicalKey as SemanticVarKey) : canonicalKey] = value;
+    next[mode ? themeStorageKey(mode, canonicalKey) : canonicalKey] = value;
   });
 
   return next;
@@ -199,9 +201,9 @@ const getThemeAsset = (
   themeCustomizationEnabled: boolean = true
 ) =>
   getEffectiveThemeAssets(themeAssets, themeCustomizationEnabled)?.[asset]?.[mode] ??
-  THEME_ASSET_PRESETS[
-    getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)
-  ][mode][asset] ??
+  THEME_ASSET_PRESETS[getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)][
+    mode
+  ][asset] ??
   fallback ??
   '';
 
@@ -251,53 +253,57 @@ const getCustomThemeVars = (
   return next;
 };
 
-const toCompatibilityVars = (
-  resolved: ResolvedThemeVars
-): Record<LegacySemanticVarKey | CompatibilityVarKey, string> =>
-  ({
-    '--accent-primary': resolved['--color-theme-accent-primary'],
-    '--accent-supporting': resolved['--color-theme-accent-supporting'],
-    '--accent-emphasis': resolved['--color-theme-accent-emphasis'],
-    '--bg-primary': resolved['--color-theme-bg-primary'],
-    '--bg-surface': resolved['--color-theme-bg-surface'],
-    '--bg-warm': resolved['--color-theme-bg-warm'],
-    '--bg-muted': resolved['--color-theme-bg-muted'],
-    '--text-primary': resolved['--color-theme-text-primary'],
-    '--text-secondary': resolved['--color-theme-text-secondary'],
-    '--text-tertiary': resolved['--color-theme-text-tertiary'],
-    '--text-muted': resolved['--color-theme-text-muted'],
-    '--border-primary': resolved['--color-theme-border-primary'],
-    '--border-soft': resolved['--color-theme-border-soft'],
-    '--bg-overlay': resolved['--color-theme-bg-overlay'],
-    '--bg-selected': resolved['--color-theme-bg-selected'],
-    '--border-primary-64': resolved['--color-theme-border-primary-64'],
-    '--border-soft-64': resolved['--color-theme-border-soft-64'],
-    '--accent-supporting-tint': resolved['--color-theme-accent-supporting-tint'],
-    '--accent-emphasis-tint': resolved['--color-theme-accent-emphasis-tint'],
-    '--success': resolved['--color-theme-success'],
-    '--success-light': resolved['--color-theme-success-light'],
-    '--warning': resolved['--color-theme-warning'],
-    '--warning-light': resolved['--color-theme-warning-light'],
-    '--danger': resolved['--color-theme-danger'],
-    '--danger-light': resolved['--color-theme-danger-light'],
-    '--highlight-yellow': resolved['--color-theme-highlight-yellow'],
-    '--highlight-yellow-active': resolved['--color-theme-highlight-yellow-active'],
-    '--highlight-blue': resolved['--color-theme-highlight-blue'],
-    '--shadow-sm': resolved['--color-theme-shadow-sm'],
-    '--shadow-md': resolved['--color-theme-shadow-md'],
-    '--shadow-lg': resolved['--color-theme-shadow-lg'],
-    '--shadow-xl': resolved['--color-theme-shadow-xl'],
-    '--color-accent-primary': resolved['--color-theme-accent-primary'],
-    '--color-accent-supporting': resolved['--color-theme-accent-supporting'],
-    '--color-accent-emphasis': resolved['--color-theme-accent-emphasis'],
-    '--color-bg-primary': resolved['--color-theme-bg-primary'],
-    '--color-bg-surface': resolved['--color-theme-bg-surface'],
-    '--color-bg-muted': resolved['--color-theme-bg-muted'],
-    '--color-text-primary': resolved['--color-theme-text-primary'],
-    '--color-text-secondary': resolved['--color-theme-text-secondary'],
-    '--color-text-muted': resolved['--color-theme-text-muted'],
-    '--color-border-primary': resolved['--color-theme-border-primary'],
-  }) satisfies Record<LegacySemanticVarKey | CompatibilityVarKey, string>;
+const COMPATIBILITY_VAR_ENTRIES: Array<
+  [LegacySemanticVarKey | CompatibilityVarKey, keyof ResolvedThemeVars]
+> = [
+  ['--accent-primary', '--color-theme-accent-primary'],
+  ['--accent-supporting', '--color-theme-accent-supporting'],
+  ['--accent-emphasis', '--color-theme-accent-emphasis'],
+  ['--bg-primary', '--color-theme-bg-primary'],
+  ['--bg-surface', '--color-theme-bg-surface'],
+  ['--bg-warm', '--color-theme-bg-warm'],
+  ['--bg-muted', '--color-theme-bg-muted'],
+  ['--text-primary', '--color-theme-text-primary'],
+  ['--text-secondary', '--color-theme-text-secondary'],
+  ['--text-tertiary', '--color-theme-text-tertiary'],
+  ['--text-muted', '--color-theme-text-muted'],
+  ['--border-primary', '--color-theme-border-primary'],
+  ['--border-soft', '--color-theme-border-soft'],
+  ['--bg-overlay', '--color-theme-bg-overlay'],
+  ['--bg-selected', '--color-theme-bg-selected'],
+  ['--border-primary-64', '--color-theme-border-primary-64'],
+  ['--border-soft-64', '--color-theme-border-soft-64'],
+  ['--accent-supporting-tint', '--color-theme-accent-supporting-tint'],
+  ['--accent-emphasis-tint', '--color-theme-accent-emphasis-tint'],
+  ['--success', '--color-theme-success'],
+  ['--success-light', '--color-theme-success-light'],
+  ['--warning', '--color-theme-warning'],
+  ['--warning-light', '--color-theme-warning-light'],
+  ['--danger', '--color-theme-danger'],
+  ['--danger-light', '--color-theme-danger-light'],
+  ['--highlight-yellow', '--color-theme-highlight-yellow'],
+  ['--highlight-yellow-active', '--color-theme-highlight-yellow-active'],
+  ['--highlight-blue', '--color-theme-highlight-blue'],
+  ['--shadow-sm', '--color-theme-shadow-sm'],
+  ['--shadow-md', '--color-theme-shadow-md'],
+  ['--shadow-lg', '--color-theme-shadow-lg'],
+  ['--shadow-xl', '--color-theme-shadow-xl'],
+  ['--color-accent-primary', '--color-theme-accent-primary'],
+  ['--color-accent-supporting', '--color-theme-accent-supporting'],
+  ['--color-accent-emphasis', '--color-theme-accent-emphasis'],
+  ['--color-bg-primary', '--color-theme-bg-primary'],
+  ['--color-bg-surface', '--color-theme-bg-surface'],
+  ['--color-bg-muted', '--color-theme-bg-muted'],
+  ['--color-text-primary', '--color-theme-text-primary'],
+  ['--color-text-secondary', '--color-theme-text-secondary'],
+  ['--color-text-muted', '--color-theme-text-muted'],
+  ['--color-border-primary', '--color-theme-border-primary'],
+];
+
+const toCompatibilityVars = (resolved: ResolvedThemeVars): Record<string, string> =>
+  Object.fromEntries(
+    COMPATIBILITY_VAR_ENTRIES.map(([key, resolvedKey]) => [key, resolved[resolvedKey]])
+  );
 
 export {
   THEME_MODES,

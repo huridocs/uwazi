@@ -24,12 +24,7 @@ import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
 import { ThemeSettingsSidepanel } from './ThemeSettingsSidepanel.js';
-import {
-  ACCENT_PRIMARY_KEY,
-  appliedTheme,
-  getPresetId,
-  NAMED_THEMES,
-} from '#V2/theme/themes.js';
+import { ACCENT_PRIMARY_KEY, appliedTheme, getPresetId, NAMED_THEMES } from '#V2/theme/themes.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -186,7 +181,9 @@ const Collection = () => {
   ];
 
   const watchedThemeVars = watch('themeVars') ?? {};
-  const selectedTheme = NAMED_THEMES.find(theme => theme.id === getPresetId(watchedThemeVars, true));
+  const selectedTheme = NAMED_THEMES.find(
+    theme => theme.id === getPresetId(watchedThemeVars, true)
+  );
   const hasThemeOverrides = Object.keys(watchedThemeVars).some(
     key => key !== '__preset' && key !== '__assetPreset'
   );
@@ -246,8 +243,14 @@ const Collection = () => {
                           <div className="flex items-center gap-4">
                             <div className="overflow-hidden rounded-lg border border-gray-200">
                               <div className="flex">
-                                <span className="h-8 w-12" style={{ backgroundColor: lightAccent }} />
-                                <span className="h-8 w-12" style={{ backgroundColor: darkAccent }} />
+                                <span
+                                  className="h-8 w-12"
+                                  style={{ backgroundColor: lightAccent }}
+                                />
+                                <span
+                                  className="h-8 w-12"
+                                  style={{ backgroundColor: darkAccent }}
+                                />
                               </div>
                             </div>
                             <Button

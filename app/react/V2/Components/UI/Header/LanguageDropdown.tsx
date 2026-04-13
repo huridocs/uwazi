@@ -98,7 +98,11 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
           {isTablet ? selectedLanguage?.key : selectedLanguage?.localized_label}
         </span>
       )}
-      {dropdownOpen ? <ChevronUpIcon className="h-3.5 w-3.5" /> : <ChevronDownIcon className="h-3.5 w-3.5" />}
+      {dropdownOpen ? (
+        <ChevronUpIcon className="h-3.5 w-3.5" />
+      ) : (
+        <ChevronDownIcon className="h-3.5 w-3.5" />
+      )}
     </button>
   );
 
@@ -154,9 +158,10 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
           <li role="none">
             <button
               role="menuitem"
-              className={`header-bar-panel-item flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-left text-xs font-medium transition-colors ${
-                inlineEditState.inlineEdit ? 'header-bar-panel-item-active' : ''
-              }`}
+              className={[
+                'header-bar-panel-item flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-left text-xs font-medium transition-colors',
+                inlineEditState.inlineEdit ? 'header-bar-panel-item-active' : '',
+              ].join(' ')}
               type="button"
               onClick={handleLiveTranslateToggle}
               tabIndex={dropdownOpen ? 0 : -1}

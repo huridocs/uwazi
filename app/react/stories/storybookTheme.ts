@@ -51,7 +51,10 @@ const getStorybookThemeFrame = (preset: StorybookThemePreset, mode: ThemeMode) =
   };
 };
 
-const getStorybookContrastChecks = (preset: StorybookThemePreset, mode: ThemeMode): StorybookContrastCheck[] => {
+const getStorybookContrastChecks = (
+  preset: StorybookThemePreset,
+  mode: ThemeMode
+): StorybookContrastCheck[] => {
   const resolved = appliedTheme(buildStorybookThemeVars(preset), mode, true);
   const buttons = getButtonThemeVars(preset, resolved);
   const resolveButtonBackground = (value: string) =>
@@ -61,12 +64,18 @@ const getStorybookContrastChecks = (preset: StorybookThemePreset, mode: ThemeMod
     {
       id: 'surface-primary',
       label: 'Surface text',
-      ...checkContrast(resolved['--color-theme-bg-surface'], resolved['--color-theme-text-primary']),
+      ...checkContrast(
+        resolved['--color-theme-bg-surface'],
+        resolved['--color-theme-text-primary']
+      ),
     },
     {
       id: 'surface-secondary',
       label: 'Secondary text',
-      ...checkContrast(resolved['--color-theme-bg-surface'], resolved['--color-theme-text-secondary']),
+      ...checkContrast(
+        resolved['--color-theme-bg-surface'],
+        resolved['--color-theme-text-secondary']
+      ),
     },
     {
       id: 'primary-solid-button',
@@ -79,7 +88,10 @@ const getStorybookContrastChecks = (preset: StorybookThemePreset, mode: ThemeMod
     {
       id: 'error-solid-button',
       label: 'Error solid button',
-      ...checkContrast(buttons['--color-theme-button-danger-bg'], buttons['--color-theme-button-danger-fg']),
+      ...checkContrast(
+        buttons['--color-theme-button-danger-bg'],
+        buttons['--color-theme-button-danger-fg']
+      ),
     },
     {
       id: 'success-solid-button',
@@ -100,7 +112,10 @@ const getStorybookContrastChecks = (preset: StorybookThemePreset, mode: ThemeMod
     {
       id: 'compact-button-text',
       label: 'Compact button text',
-      ...checkContrast(buttons['--color-theme-button-compact-bg'], buttons['--color-theme-button-compact-fg']),
+      ...checkContrast(
+        buttons['--color-theme-button-compact-bg'],
+        buttons['--color-theme-button-compact-fg']
+      ),
     },
     {
       id: 'danger-secondary-button',
@@ -140,7 +155,8 @@ const getStorybookContrastChecks = (preset: StorybookThemePreset, mode: ThemeMod
 const normalizeStorybookThemePreset = (preset: unknown): StorybookThemePreset =>
   preset === 'legacy' ? 'legacy' : 'default';
 
-const normalizeStorybookThemeMode = (mode: unknown): ThemeMode => (mode === 'dark' ? 'dark' : 'light');
+const normalizeStorybookThemeMode = (mode: unknown): ThemeMode =>
+  mode === 'dark' ? 'dark' : 'light';
 
 export {
   STORYBOOK_THEME_PRESETS,

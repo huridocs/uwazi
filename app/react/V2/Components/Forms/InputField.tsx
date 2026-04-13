@@ -54,17 +54,23 @@ const InputField = React.forwardRef(
     const hasValue = value !== undefined && value !== null && value !== '';
     const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
     const showIcon = icon && (!clearFieldAction || !hasValue);
+    let backgroundColor = 'var(--color-theme-control-bg)';
+    let textColor = 'var(--color-theme-control-text)';
+
+    if (disabled) {
+      backgroundColor = 'var(--color-theme-control-bg-disabled)';
+      textColor = 'var(--color-theme-control-text-disabled)';
+    } else if (showError) {
+      backgroundColor = 'var(--color-theme-control-bg-error)';
+      textColor = 'var(--color-theme-control-text-error)';
+    }
 
     const fieldStyle: CSSProperties = {
       borderColor: showError
         ? 'var(--color-theme-control-border-error)'
         : 'var(--color-theme-control-border)',
-      backgroundColor: disabled
-        ? 'var(--color-theme-control-bg-disabled)'
-        : showError
-          ? 'var(--color-theme-control-bg-error)'
-          : 'var(--color-theme-control-bg)',
-      color: showError ? 'var(--color-theme-control-text-error)' : 'var(--color-theme-control-text)',
+      backgroundColor,
+      color: textColor,
     };
 
     const preTextStyle: CSSProperties = {

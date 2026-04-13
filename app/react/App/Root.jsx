@@ -102,12 +102,7 @@ const getFaviconLinks = reduxData => {
       href={lightFavicon}
       media="(prefers-color-scheme: light)"
     />,
-    <link
-      key="favicon-dark"
-      rel="icon"
-      href={darkFavicon}
-      media="(prefers-color-scheme: dark)"
-    />,
+    <link key="favicon-dark" rel="icon" href={darkFavicon} media="(prefers-color-scheme: dark)" />,
     <link key="favicon-shortcut" rel="shortcut icon" href={getFaviconURL(reduxData)} />,
   ];
 };

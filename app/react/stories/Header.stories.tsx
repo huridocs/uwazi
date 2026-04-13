@@ -5,7 +5,13 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { createStore, Provider } from 'jotai';
 import { LEGACY_createStore as createReduxStore } from '#V2/testing/index.js';
 import { Header } from '#V2/Components/UI/Header/Header.js';
-import { userAtom, settingsAtom, localeAtom, themeModeAtom, translationsAtom } from '#V2/atoms/index.js';
+import {
+  userAtom,
+  settingsAtom,
+  localeAtom,
+  themeModeAtom,
+  translationsAtom,
+} from '#V2/atoms/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import {
   ACCENT_PRIMARY_KEY,
@@ -103,9 +109,6 @@ const HeaderWithTheme = ({
     () => createStoreWithTheme(themeVars, themeMode, authenticated),
     [authenticated, themeMode, themeVars]
   );
-  const accent = themeVars[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
-  const fg = getContrastTextColor(accent);
-  const contrast = checkContrast(accent, fg);
 
   return (
     <ReduxProvider store={reduxStore}>

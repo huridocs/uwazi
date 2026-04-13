@@ -32,13 +32,17 @@ const Card = ({ title, children, className, color = 'default' }: CardProps) => {
   }
 
   return (
-    <SurfacePanel className={className} padding="none">
+    <SurfacePanel
+      className={className}
+      padding="none"
+      style={{ borderColor: 'var(--color-theme-card-border)' }}
+    >
       {title && (
         <div
           className="block w-full border-b p-4 text-base font-semibold"
           style={{
             ...headerStyle,
-            borderColor: 'color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent)',
+            borderColor: 'var(--color-theme-card-border)',
           }}
         >
           {title}

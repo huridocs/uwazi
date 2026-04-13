@@ -248,11 +248,7 @@ const PageEditor = () => {
               <Translate>Save & Preview</Translate>
             </Button>
 
-            <Button
-              variant="success"
-              onClick={handleSubmit(handleSave)}
-              disabled={isSubmitting}
-            >
+            <Button variant="success" onClick={handleSubmit(handleSave)} disabled={isSubmitting}>
               <Translate>Save</Translate>
             </Button>
           </div>

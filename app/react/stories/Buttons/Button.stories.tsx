@@ -43,11 +43,7 @@ type Story = StoryObj<typeof Button>;
 const Primary: Story = {
   render: args => (
     <div className="p-4" data-storybook-theme-checks>
-      <Button
-        variant={args.variant}
-        size={args.size}
-        disabled={args.disabled}
-      >
+      <Button variant={args.variant} size={args.size} disabled={args.disabled}>
         {args.children}
       </Button>
     </div>

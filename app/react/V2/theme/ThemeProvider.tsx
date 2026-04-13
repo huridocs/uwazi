@@ -16,108 +16,121 @@ import {
   type ThemeMode,
   type ThemePresetId,
 } from '#V2/theme/themes.js';
+import {
+  BUTTON_COMPACT_BG,
+  BUTTON_COMPACT_BORDER,
+  BUTTON_COMPACT_FG,
+  BUTTON_DANGER_BG,
+  BUTTON_DANGER_BORDER,
+  BUTTON_DANGER_FG,
+  BUTTON_DANGER_SECONDARY_BG,
+  BUTTON_DANGER_SECONDARY_BORDER,
+  BUTTON_DANGER_SECONDARY_FG,
+  BUTTON_DANGER_SUBTLE_BG,
+  BUTTON_DANGER_SUBTLE_BORDER,
+  BUTTON_DANGER_SUBTLE_FG,
+  BUTTON_GHOST_BG,
+  BUTTON_GHOST_BORDER,
+  BUTTON_GHOST_FG,
+  BUTTON_GHOST_HOVER_BG,
+  BUTTON_GHOST_HOVER_BORDER,
+  BUTTON_GHOST_HOVER_FG,
+  BUTTON_PRIMARY_BG,
+  BUTTON_PRIMARY_BORDER,
+  BUTTON_PRIMARY_DISABLED_BG,
+  BUTTON_PRIMARY_DISABLED_BORDER,
+  BUTTON_PRIMARY_DISABLED_FG,
+  BUTTON_PRIMARY_FG,
+  BUTTON_SECONDARY_BG,
+  BUTTON_SECONDARY_BORDER,
+  BUTTON_SECONDARY_FG,
+  BUTTON_SECONDARY_HOVER_BG,
+  BUTTON_SUCCESS_BG,
+  BUTTON_SUCCESS_BORDER,
+  BUTTON_SUCCESS_DISABLED_BG,
+  BUTTON_SUCCESS_DISABLED_BORDER,
+  BUTTON_SUCCESS_DISABLED_FG,
+  BUTTON_SUCCESS_FG,
+  BUTTON_SUCCESS_HOVER_BG,
+  BUTTON_SUCCESS_SECONDARY_BG,
+  BUTTON_SUCCESS_SECONDARY_BORDER,
+  BUTTON_SUCCESS_SECONDARY_FG,
+  BUTTON_SUCCESS_SUBTLE_BG,
+  BUTTON_SUCCESS_SUBTLE_BORDER,
+  BUTTON_SUCCESS_SUBTLE_FG,
+  CARD_BORDER,
+  CARD_HEADER_BLACK_BG,
+  CARD_HEADER_BLACK_FG,
+  CARD_HEADER_DEFAULT_BG,
+  CARD_HEADER_DEFAULT_FG,
+  CARD_HEADER_YELLOW_BG,
+  CARD_HEADER_YELLOW_FG,
+  CARD_RADIUS,
+  CARD_SHADOW,
+  CONTROL_BG,
+  CONTROL_BG_DISABLED,
+  CONTROL_BG_ERROR,
+  CONTROL_BORDER,
+  CONTROL_BORDER_ERROR,
+  CONTROL_BORDER_FOCUS,
+  CONTROL_CLEAR_FG,
+  CONTROL_CLEAR_HOVER_FG,
+  CONTROL_ERROR_RING,
+  CONTROL_PLACEHOLDER,
+  CONTROL_PRETEXT_BG,
+  CONTROL_PRETEXT_TEXT,
+  CONTROL_RING,
+  CONTROL_TEXT,
+  CONTROL_TEXT_DISABLED,
+  CONTROL_TEXT_ERROR,
+  CONTROL_TEXT_MUTED,
+  EMBEDDED_BUTTON_GREEN_BG,
+  EMBEDDED_BUTTON_GREEN_BORDER,
+  EMBEDDED_BUTTON_GREEN_DISABLED_BG,
+  EMBEDDED_BUTTON_GREEN_DISABLED_BORDER,
+  EMBEDDED_BUTTON_GREEN_DISABLED_FG,
+  EMBEDDED_BUTTON_GREEN_FG,
+  EMBEDDED_BUTTON_INDIGO_BG,
+  EMBEDDED_BUTTON_INDIGO_BORDER,
+  EMBEDDED_BUTTON_INDIGO_DISABLED_BG,
+  EMBEDDED_BUTTON_INDIGO_DISABLED_BORDER,
+  EMBEDDED_BUTTON_INDIGO_DISABLED_FG,
+  EMBEDDED_BUTTON_INDIGO_FG,
+  EMBEDDED_BUTTON_ORANGE_BG,
+  EMBEDDED_BUTTON_ORANGE_BORDER,
+  EMBEDDED_BUTTON_ORANGE_FG,
+  EMBEDDED_BUTTON_RED_BG,
+  EMBEDDED_BUTTON_RED_BORDER,
+  EMBEDDED_BUTTON_RED_FG,
+  EMBEDDED_BUTTON_WHITE_BG,
+  EMBEDDED_BUTTON_WHITE_BORDER,
+  EMBEDDED_BUTTON_WHITE_DISABLED_BG,
+  EMBEDDED_BUTTON_WHITE_DISABLED_FG,
+  EMBEDDED_BUTTON_WHITE_FG,
+  EMPHASIS_SOLID_BG,
+  EMPHASIS_SOLID_FG,
+  INFO_BANNER_BG,
+  INFO_BANNER_BORDER,
+  INFO_BANNER_FG,
+  SECTION_HEADER_BG,
+  SECTION_HEADER_FG,
+  THEME_ACTIVE_BG,
+  THEME_ACTIVE_FG,
+  THEME_FOREGROUND_VAR,
+  THEME_HOVER_BG,
+  THEME_HOVER_FG,
+  THEME_SEPARATOR_VAR,
+  THEME_VAR,
+  TOGGLE_THUMB_BG,
+  TOGGLE_THUMB_BORDER,
+  TOGGLE_TRACK_ACTIVE_BG,
+  TOGGLE_TRACK_BG,
+  TOGGLE_TRACK_DISABLED_ACTIVE_BG,
+  WARNING_BANNER_BG,
+  WARNING_BANNER_BORDER,
+  WARNING_BANNER_FG,
+} from '#V2/theme/roleTokens.js';
 
-const THEME_VAR = '--color-theme-brand-surface';
-const THEME_FOREGROUND_VAR = '--color-theme-brand-surface-foreground';
-const THEME_SEPARATOR_VAR = '--color-theme-brand-surface-separator';
-const THEME_HOVER_BG = '--color-theme-brand-surface-hover-bg';
-const THEME_HOVER_FG = '--color-theme-brand-surface-hover-fg';
-const THEME_ACTIVE_BG = '--color-theme-brand-surface-active-bg';
-const THEME_ACTIVE_FG = '--color-theme-brand-surface-active-fg';
-const EMPHASIS_SOLID_BG = '--color-theme-accent-emphasis-solid';
-const EMPHASIS_SOLID_FG = '--color-theme-accent-emphasis-solid-foreground';
-const BUTTON_PRIMARY_BORDER = '--color-theme-button-primary-border';
-const BUTTON_PRIMARY_BG = '--color-theme-button-primary-bg';
-const BUTTON_PRIMARY_FG = '--color-theme-button-primary-fg';
-const BUTTON_PRIMARY_DISABLED_BORDER = '--color-theme-button-primary-disabled-border';
-const BUTTON_PRIMARY_DISABLED_BG = '--color-theme-button-primary-disabled-bg';
-const BUTTON_PRIMARY_DISABLED_FG = '--color-theme-button-primary-disabled-fg';
-const BUTTON_SECONDARY_BORDER = '--color-theme-button-secondary-border';
-const BUTTON_SECONDARY_BG = '--color-theme-button-secondary-bg';
-const BUTTON_SECONDARY_FG = '--color-theme-button-secondary-fg';
-const BUTTON_SECONDARY_HOVER_BG = '--color-theme-button-secondary-hover-bg';
-const BUTTON_DANGER_BORDER = '--color-theme-button-danger-border';
-const BUTTON_DANGER_BG = '--color-theme-button-danger-bg';
-const BUTTON_DANGER_FG = '--color-theme-button-danger-fg';
-const BUTTON_GHOST_BORDER = '--color-theme-button-ghost-border';
-const BUTTON_GHOST_BG = '--color-theme-button-ghost-bg';
-const BUTTON_GHOST_FG = '--color-theme-button-ghost-fg';
-const BUTTON_COMPACT_BORDER = '--color-theme-button-compact-border';
-const BUTTON_COMPACT_BG = '--color-theme-button-compact-bg';
-const BUTTON_COMPACT_FG = '--color-theme-button-compact-fg';
-const BUTTON_SUCCESS_BORDER = '--color-theme-button-success-border';
-const BUTTON_SUCCESS_BG = '--color-theme-button-success-bg';
-const BUTTON_SUCCESS_FG = '--color-theme-button-success-fg';
-const BUTTON_DANGER_SECONDARY_BORDER = '--color-theme-button-danger-secondary-border';
-const BUTTON_DANGER_SECONDARY_BG = '--color-theme-button-danger-secondary-bg';
-const BUTTON_DANGER_SECONDARY_FG = '--color-theme-button-danger-secondary-fg';
-const BUTTON_SUCCESS_SECONDARY_BORDER = '--color-theme-button-success-secondary-border';
-const BUTTON_SUCCESS_SECONDARY_BG = '--color-theme-button-success-secondary-bg';
-const BUTTON_SUCCESS_SECONDARY_FG = '--color-theme-button-success-secondary-fg';
-const BUTTON_DANGER_SUBTLE_BORDER = '--color-theme-button-danger-subtle-border';
-const BUTTON_DANGER_SUBTLE_BG = '--color-theme-button-danger-subtle-bg';
-const BUTTON_DANGER_SUBTLE_FG = '--color-theme-button-danger-subtle-fg';
-const BUTTON_SUCCESS_SUBTLE_BORDER = '--color-theme-button-success-subtle-border';
-const BUTTON_SUCCESS_SUBTLE_BG = '--color-theme-button-success-subtle-bg';
-const BUTTON_SUCCESS_SUBTLE_FG = '--color-theme-button-success-subtle-fg';
-const EMBEDDED_BUTTON_ORANGE_BORDER = '--color-theme-button-embedded-orange-border';
-const EMBEDDED_BUTTON_ORANGE_BG = '--color-theme-button-embedded-orange-bg';
-const EMBEDDED_BUTTON_ORANGE_FG = '--color-theme-button-embedded-orange-fg';
-const EMBEDDED_BUTTON_GREEN_BORDER = '--color-theme-button-embedded-green-border';
-const EMBEDDED_BUTTON_GREEN_BG = '--color-theme-button-embedded-green-bg';
-const EMBEDDED_BUTTON_GREEN_FG = '--color-theme-button-embedded-green-fg';
-const EMBEDDED_BUTTON_GREEN_DISABLED_BORDER = '--color-theme-button-embedded-green-disabled-border';
-const EMBEDDED_BUTTON_GREEN_DISABLED_BG = '--color-theme-button-embedded-green-disabled-bg';
-const EMBEDDED_BUTTON_GREEN_DISABLED_FG = '--color-theme-button-embedded-green-disabled-fg';
-const EMBEDDED_BUTTON_RED_BORDER = '--color-theme-button-embedded-red-border';
-const EMBEDDED_BUTTON_RED_BG = '--color-theme-button-embedded-red-bg';
-const EMBEDDED_BUTTON_RED_FG = '--color-theme-button-embedded-red-fg';
-const EMBEDDED_BUTTON_INDIGO_BORDER = '--color-theme-button-embedded-indigo-border';
-const EMBEDDED_BUTTON_INDIGO_BG = '--color-theme-button-embedded-indigo-bg';
-const EMBEDDED_BUTTON_INDIGO_FG = '--color-theme-button-embedded-indigo-fg';
-const EMBEDDED_BUTTON_INDIGO_DISABLED_BORDER = '--color-theme-button-embedded-indigo-disabled-border';
-const EMBEDDED_BUTTON_INDIGO_DISABLED_BG = '--color-theme-button-embedded-indigo-disabled-bg';
-const EMBEDDED_BUTTON_INDIGO_DISABLED_FG = '--color-theme-button-embedded-indigo-disabled-fg';
-const EMBEDDED_BUTTON_WHITE_BORDER = '--color-theme-button-embedded-white-border';
-const EMBEDDED_BUTTON_WHITE_BG = '--color-theme-button-embedded-white-bg';
-const EMBEDDED_BUTTON_WHITE_FG = '--color-theme-button-embedded-white-fg';
-const EMBEDDED_BUTTON_WHITE_DISABLED_BG = '--color-theme-button-embedded-white-disabled-bg';
-const EMBEDDED_BUTTON_WHITE_DISABLED_FG = '--color-theme-button-embedded-white-disabled-fg';
-const TOGGLE_TRACK_BG = '--color-theme-toggle-track-bg';
-const TOGGLE_TRACK_ACTIVE_BG = '--color-theme-toggle-track-active-bg';
-const TOGGLE_TRACK_DISABLED_ACTIVE_BG = '--color-theme-toggle-track-disabled-active-bg';
-const TOGGLE_THUMB_BG = '--color-theme-toggle-thumb-bg';
-const TOGGLE_THUMB_BORDER = '--color-theme-toggle-thumb-border';
-const CONTROL_BG = '--color-theme-control-bg';
-const CONTROL_BG_ERROR = '--color-theme-control-bg-error';
-const CONTROL_BG_DISABLED = '--color-theme-control-bg-disabled';
-const CONTROL_BORDER = '--color-theme-control-border';
-const CONTROL_BORDER_ERROR = '--color-theme-control-border-error';
-const CONTROL_BORDER_FOCUS = '--color-theme-control-border-focus';
-const CONTROL_TEXT = '--color-theme-control-text';
-const CONTROL_TEXT_ERROR = '--color-theme-control-text-error';
-const CONTROL_TEXT_MUTED = '--color-theme-control-text-muted';
-const CONTROL_PLACEHOLDER = '--color-theme-control-placeholder';
-const CONTROL_PRETEXT_BG = '--color-theme-control-pretext-bg';
-const CONTROL_PRETEXT_TEXT = '--color-theme-control-pretext-text';
-const CONTROL_CLEAR_FG = '--color-theme-control-clear-fg';
-const CONTROL_CLEAR_HOVER_FG = '--color-theme-control-clear-hover-fg';
-const CONTROL_RING = '--color-theme-control-ring';
-const CONTROL_ERROR_RING = '--color-theme-control-error-ring';
-const CARD_HEADER_DEFAULT_BG = '--color-theme-card-header-default-bg';
-const CARD_HEADER_DEFAULT_FG = '--color-theme-card-header-default-fg';
-const CARD_HEADER_BLACK_BG = '--color-theme-card-header-black-bg';
-const CARD_HEADER_BLACK_FG = '--color-theme-card-header-black-fg';
-const CARD_HEADER_YELLOW_BG = '--color-theme-card-header-yellow-bg';
-const CARD_HEADER_YELLOW_FG = '--color-theme-card-header-yellow-fg';
-const INFO_BANNER_BG = '--color-theme-info-banner-bg';
-const INFO_BANNER_FG = '--color-theme-info-banner-fg';
-const INFO_BANNER_BORDER = '--color-theme-info-banner-border';
-const WARNING_BANNER_BG = '--color-theme-warning-banner-bg';
-const WARNING_BANNER_FG = '--color-theme-warning-banner-fg';
-const WARNING_BANNER_BORDER = '--color-theme-warning-banner-border';
-const SECTION_HEADER_BG = '--color-theme-section-header-bg';
-const SECTION_HEADER_FG = '--color-theme-section-header-fg';
 const THEME_MODE_STORAGE_KEY = 'uwazi.themeMode';
 
 type ThemeProviderProps = React.PropsWithChildren<{
@@ -125,6 +138,60 @@ type ThemeProviderProps = React.PropsWithChildren<{
   controlledMode?: ThemeMode;
   style?: React.CSSProperties & Record<string, string>;
 }>;
+
+function getPresetValue<T>(presetId: ThemePresetId, legacy: T, current: T) {
+  return presetId === 'legacy' ? legacy : current;
+}
+
+const LEGACY_BUTTON_VALUES = {
+  primary: '#2B56C1',
+  primaryDisabled: '#A5B4FC',
+  surface: '#FFFFFF',
+  surfaceWarm: '#F9FAFB',
+  border: '#E5E7EB',
+  softBorder: '#D1D5DB',
+  text: '#101828',
+  ghostText: '#374151',
+  secondaryHover: '#EEF2FF',
+  success: '#15803D',
+  successHover: '#166534',
+  successDisabled: '#86EFAC',
+  successTint: '#D1FAE5',
+  successTintText: '#15803D',
+  danger: '#D9534F',
+  dangerTint: '#FEE2E2',
+} as const;
+
+type ButtonThemeContext = {
+  isLegacy: boolean;
+  resolved: ResolvedThemeVars;
+  primaryBackground: string;
+  primaryForeground: string;
+  primaryDisabledBackground: string;
+  primaryDisabledForeground: string;
+  secondaryBackground: string;
+  secondaryBorderOnSurface: string;
+  secondaryTextOnButton: string;
+  secondaryHoverBackground: string;
+  ghostTextOnSurface: string;
+  compactBackground: string;
+  compactBorderOnBackground: string;
+  compactTextOnBackground: string;
+  successSolidBackground: string;
+  successSolidForeground: string;
+  successHoverBackground: string;
+  successDisabledBackground: string;
+  successDisabledForeground: string;
+  successSecondaryBackground: string;
+  successOnSecondaryBackground: string;
+  successBorderOnSurface: string;
+  dangerSecondaryBackground: string;
+  dangerOnSecondaryBackground: string;
+  dangerBorderOnSurface: string;
+  successOnSuccessTint: string;
+  dangerOnDangerTint: string;
+  dangerSolid: ReturnType<typeof getAccessibleColorPair>;
+};
 
 const getDerivedThemeVars = (topbar: string): Record<string, string> => {
   const hoverBg = mixHex(topbar, '#000000', 0.12);
@@ -149,282 +216,409 @@ const getActionThemeVars = (resolved: ResolvedThemeVars): Record<string, string>
   };
 };
 
-const getButtonThemeVars = (
+const getButtonThemeContext = (
   presetId: ThemePresetId,
   resolved: ResolvedThemeVars
-): Record<string, string> => {
-  const primaryBackground = presetId === 'legacy' ? '#2B56C1' : resolved['--color-theme-text-primary'];
+): ButtonThemeContext => {
+  const isLegacy = presetId === 'legacy';
+  const primaryBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.primary,
+    resolved['--color-theme-text-primary']
+  );
   const primaryForeground = getAccessibleForegroundOnBackground(
     primaryBackground,
-    presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-primary']
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.surface, resolved['--color-theme-bg-primary'])
   ).foreground;
-  const primaryDisabledBackground =
-    presetId === 'legacy'
-      ? '#A5B4FC'
-      : mixHex(primaryBackground, resolved['--color-theme-bg-surface'], 0.35);
-  const primaryDisabledForeground =
-    presetId === 'legacy'
-      ? '#FFFFFF'
-      : getAccessibleForegroundOnBackground(primaryDisabledBackground, primaryForeground).foreground;
-  const secondaryBackground = presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-surface'];
-  const secondaryBorderOnSurface =
-    presetId === 'legacy'
-      ? primaryBackground
-      : getAccessibleForegroundOnBackground(
-          resolved['--color-theme-bg-surface'],
-          resolved['--color-theme-border-primary'],
-          3
-        ).foreground;
+  const primaryDisabledBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.primaryDisabled,
+    mixHex(primaryBackground, resolved['--color-theme-bg-surface'], 0.35)
+  );
+  const primaryDisabledForeground = isLegacy
+    ? LEGACY_BUTTON_VALUES.surface
+    : getAccessibleForegroundOnBackground(primaryDisabledBackground, primaryForeground).foreground;
+  const secondaryBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.surface,
+    resolved['--color-theme-bg-surface']
+  );
+  const secondaryBorderOnSurface = isLegacy
+    ? primaryBackground
+    : getAccessibleForegroundOnBackground(
+        resolved['--color-theme-bg-surface'],
+        resolved['--color-theme-border-primary'],
+        3
+      ).foreground;
   const secondaryTextOnButton = getAccessibleForegroundOnBackground(
     secondaryBackground,
-    presetId === 'legacy' ? primaryBackground : resolved['--color-theme-text-secondary']
+    getPresetValue(presetId, primaryBackground, resolved['--color-theme-text-secondary'])
   ).foreground;
-  const secondaryHoverBackground =
-    presetId === 'legacy' ? '#EEF2FF' : resolved['--color-theme-bg-warm'];
+  const secondaryHoverBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.secondaryHover,
+    resolved['--color-theme-bg-warm']
+  );
   const ghostTextOnSurface = getAccessibleForegroundOnBackground(
     resolved['--color-theme-bg-surface'],
-    presetId === 'legacy' ? '#101828' : resolved['--color-theme-text-tertiary']
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.text, resolved['--color-theme-text-tertiary'])
   ).foreground;
-  const compactBackground = presetId === 'legacy' ? '#F9FAFB' : resolved['--color-theme-bg-warm'];
+  const compactBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.surfaceWarm,
+    resolved['--color-theme-bg-warm']
+  );
   const compactBorderOnBackground = getAccessibleForegroundOnBackground(
     compactBackground,
-    presetId === 'legacy' ? '#D1D5DB' : resolved['--color-theme-border-soft'],
+    getPresetValue(
+      presetId,
+      LEGACY_BUTTON_VALUES.softBorder,
+      resolved['--color-theme-border-soft']
+    ),
     3
   ).foreground;
   const compactTextOnBackground = getAccessibleForegroundOnBackground(
     compactBackground,
-    presetId === 'legacy' ? '#101828' : resolved['--color-theme-text-secondary']
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.text, resolved['--color-theme-text-secondary'])
   ).foreground;
-  const successSolidBackground = presetId === 'legacy' ? '#5CB85C' : resolved['--color-theme-success'];
+  const successSolidBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.success,
+    resolved['--color-theme-success']
+  );
+  const successHoverBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.successHover,
+    mixHex(successSolidBackground, '#000000', 0.08)
+  );
   const successSolidForeground = getAccessibleForegroundOnBackground(
     successSolidBackground,
-    '#FFFFFF'
+    LEGACY_BUTTON_VALUES.surface
   ).foreground;
-  const successSecondaryBackground =
-    presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-surface'];
+  const successDisabledBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.successDisabled,
+    mixHex(successSolidBackground, resolved['--color-theme-bg-surface'], 0.35)
+  );
+  const successDisabledForeground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.surface,
+    getAccessibleForegroundOnBackground(successDisabledBackground, successSolidForeground)
+      .foreground
+  );
+  const successSecondaryBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.surface,
+    resolved['--color-theme-bg-surface']
+  );
   const successOnSecondaryBackground = getAccessibleForegroundOnBackground(
     successSecondaryBackground,
-    presetId === 'legacy' ? '#5CB85C' : resolved['--color-theme-success']
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.success, resolved['--color-theme-success'])
   ).foreground;
   const successBorderOnSurface = getAccessibleForegroundOnBackground(
     resolved['--color-theme-bg-surface'],
-    presetId === 'legacy' ? '#5CB85C' : resolved['--color-theme-success'],
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.success, resolved['--color-theme-success']),
     3
   ).foreground;
-  const dangerSecondaryBackground =
-    presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-surface'];
+  const dangerSecondaryBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.surface,
+    resolved['--color-theme-bg-surface']
+  );
   const dangerOnSecondaryBackground = getAccessibleForegroundOnBackground(
     dangerSecondaryBackground,
-    presetId === 'legacy' ? '#D9534F' : resolved['--color-theme-accent-emphasis']
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.danger, resolved['--color-theme-accent-emphasis'])
   ).foreground;
   const dangerBorderOnSurface = getAccessibleForegroundOnBackground(
     resolved['--color-theme-bg-surface'],
-    presetId === 'legacy' ? '#D9534F' : resolved['--color-theme-accent-emphasis'],
+    getPresetValue(
+      presetId,
+      LEGACY_BUTTON_VALUES.danger,
+      resolved['--color-theme-accent-emphasis']
+    ),
     3
   ).foreground;
   const successOnSuccessTint = getAccessibleForegroundOnBackground(
-    presetId === 'legacy' ? '#D1FAE5' : resolved['--color-theme-success-light'],
-    presetId === 'legacy' ? '#15803D' : resolved['--color-theme-success']
+    getPresetValue(
+      presetId,
+      LEGACY_BUTTON_VALUES.successTint,
+      resolved['--color-theme-success-light']
+    ),
+    getPresetValue(
+      presetId,
+      LEGACY_BUTTON_VALUES.successTintText,
+      resolved['--color-theme-success']
+    )
   ).foreground;
   const dangerOnDangerTint = getAccessibleForegroundOnBackground(
-    presetId === 'legacy' ? '#FEE2E2' : resolved['--color-theme-accent-emphasis-tint'],
-    presetId === 'legacy' ? '#D9534F' : resolved['--color-theme-accent-emphasis']
+    getPresetValue(
+      presetId,
+      LEGACY_BUTTON_VALUES.dangerTint,
+      resolved['--color-theme-accent-emphasis-tint']
+    ),
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.danger, resolved['--color-theme-accent-emphasis'])
   ).foreground;
   const dangerSolid = getAccessibleColorPair(
-    presetId === 'legacy' ? '#D9534F' : resolved['--color-theme-accent-emphasis']
+    getPresetValue(presetId, LEGACY_BUTTON_VALUES.danger, resolved['--color-theme-accent-emphasis'])
   );
-  if (presetId === 'legacy') {
-    return {
-      [BUTTON_PRIMARY_BORDER]: primaryBackground,
-      [BUTTON_PRIMARY_BG]: primaryBackground,
-      [BUTTON_PRIMARY_FG]: primaryForeground,
-      [BUTTON_PRIMARY_DISABLED_BORDER]: primaryDisabledBackground,
-      [BUTTON_PRIMARY_DISABLED_BG]: primaryDisabledBackground,
-      [BUTTON_PRIMARY_DISABLED_FG]: primaryDisabledForeground,
-      [BUTTON_SECONDARY_BORDER]: secondaryBorderOnSurface,
-      [BUTTON_SECONDARY_BG]: secondaryBackground,
-      [BUTTON_SECONDARY_FG]: secondaryTextOnButton,
-      [BUTTON_SECONDARY_HOVER_BG]: secondaryHoverBackground,
-      [BUTTON_DANGER_BORDER]: dangerSolid.background,
-      [BUTTON_DANGER_BG]: dangerSolid.background,
-      [BUTTON_DANGER_FG]: dangerSolid.foreground,
-      [BUTTON_GHOST_BORDER]: 'transparent',
-      [BUTTON_GHOST_BG]: 'transparent',
-      [BUTTON_GHOST_FG]: ghostTextOnSurface,
-      [BUTTON_COMPACT_BORDER]: compactBorderOnBackground,
-      [BUTTON_COMPACT_BG]: compactBackground,
-      [BUTTON_COMPACT_FG]: compactTextOnBackground,
-      [BUTTON_SUCCESS_BORDER]: successSolidBackground,
-      [BUTTON_SUCCESS_BG]: successSolidBackground,
-      [BUTTON_SUCCESS_FG]: successSolidForeground,
-      [BUTTON_DANGER_SECONDARY_BORDER]: dangerBorderOnSurface,
-      [BUTTON_DANGER_SECONDARY_BG]: dangerSecondaryBackground,
-      [BUTTON_DANGER_SECONDARY_FG]: dangerOnSecondaryBackground,
-      [BUTTON_SUCCESS_SECONDARY_BORDER]: successBorderOnSurface,
-      [BUTTON_SUCCESS_SECONDARY_BG]: successSecondaryBackground,
-      [BUTTON_SUCCESS_SECONDARY_FG]: successOnSecondaryBackground,
-      [BUTTON_DANGER_SUBTLE_BORDER]: 'transparent',
-      [BUTTON_DANGER_SUBTLE_BG]: '#FEE2E2',
-      [BUTTON_DANGER_SUBTLE_FG]: dangerOnDangerTint,
-      [BUTTON_SUCCESS_SUBTLE_BORDER]: 'transparent',
-      [BUTTON_SUCCESS_SUBTLE_BG]: '#D1FAE5',
-      [BUTTON_SUCCESS_SUBTLE_FG]: successOnSuccessTint,
-      [EMBEDDED_BUTTON_ORANGE_BORDER]: '#FED7AA',
-      [EMBEDDED_BUTTON_ORANGE_BG]: '#FFF7ED',
-      [EMBEDDED_BUTTON_ORANGE_FG]: '#9A3412',
-      [EMBEDDED_BUTTON_GREEN_BORDER]: '#BBF7D0',
-      [EMBEDDED_BUTTON_GREEN_BG]: '#DCFCE7',
-      [EMBEDDED_BUTTON_GREEN_FG]: '#4ADE80',
-      [EMBEDDED_BUTTON_GREEN_DISABLED_BORDER]: '#BBF7D0',
-      [EMBEDDED_BUTTON_GREEN_DISABLED_BG]: '#F0FDF4',
-      [EMBEDDED_BUTTON_GREEN_DISABLED_FG]: '#BBF7D0',
-      [EMBEDDED_BUTTON_RED_BORDER]: '#E5E7EB',
-      [EMBEDDED_BUTTON_RED_BG]: '#F9FAFB',
-      [EMBEDDED_BUTTON_RED_FG]: '#D1D5DB',
-      [EMBEDDED_BUTTON_INDIGO_BORDER]: '#C7D2FE',
-      [EMBEDDED_BUTTON_INDIGO_BG]: '#E0E7FF',
-      [EMBEDDED_BUTTON_INDIGO_FG]: '#3730A3',
-      [EMBEDDED_BUTTON_INDIGO_DISABLED_BORDER]: '#C7D2FE',
-      [EMBEDDED_BUTTON_INDIGO_DISABLED_BG]: '#EEF2FF',
-      [EMBEDDED_BUTTON_INDIGO_DISABLED_FG]: '#C7D2FE',
-      [EMBEDDED_BUTTON_WHITE_BORDER]: '#E5E7EB',
-      [EMBEDDED_BUTTON_WHITE_BG]: '#FFFFFF',
-      [EMBEDDED_BUTTON_WHITE_FG]: '#101828',
-      [EMBEDDED_BUTTON_WHITE_DISABLED_BG]: '#F9FAFB',
-      [EMBEDDED_BUTTON_WHITE_DISABLED_FG]: '#D1D5DB',
-      [TOGGLE_TRACK_BG]: '#E5E7EB',
-      [TOGGLE_TRACK_ACTIVE_BG]: '#2B56C1',
-      [TOGGLE_TRACK_DISABLED_ACTIVE_BG]: '#A5B4FC',
-      [TOGGLE_THUMB_BG]: '#FFFFFF',
-      [TOGGLE_THUMB_BORDER]: '#D1D5DB',
-    };
-  }
-
   return {
-    [BUTTON_PRIMARY_BORDER]: primaryBackground,
-    [BUTTON_PRIMARY_BG]: primaryBackground,
-    [BUTTON_PRIMARY_FG]: primaryForeground,
-    [BUTTON_PRIMARY_DISABLED_BORDER]: primaryDisabledBackground,
-    [BUTTON_PRIMARY_DISABLED_BG]: primaryDisabledBackground,
-    [BUTTON_PRIMARY_DISABLED_FG]: primaryDisabledForeground,
-    [BUTTON_SECONDARY_BORDER]: secondaryBorderOnSurface,
-    [BUTTON_SECONDARY_BG]: 'transparent',
-    [BUTTON_SECONDARY_FG]: secondaryTextOnButton,
-    [BUTTON_SECONDARY_HOVER_BG]: secondaryHoverBackground,
-    [BUTTON_DANGER_BORDER]: dangerSolid.background,
-    [BUTTON_DANGER_BG]: dangerSolid.background,
-    [BUTTON_DANGER_FG]: dangerSolid.foreground,
-    [BUTTON_GHOST_BORDER]: 'transparent',
-    [BUTTON_GHOST_BG]: 'transparent',
-    [BUTTON_GHOST_FG]: ghostTextOnSurface,
-    [BUTTON_COMPACT_BORDER]: compactBorderOnBackground,
-    [BUTTON_COMPACT_BG]: compactBackground,
-    [BUTTON_COMPACT_FG]: compactTextOnBackground,
-    [BUTTON_SUCCESS_BORDER]: successSolidBackground,
-    [BUTTON_SUCCESS_BG]: successSolidBackground,
-    [BUTTON_SUCCESS_FG]: successSolidForeground,
-    [BUTTON_DANGER_SECONDARY_BORDER]: dangerBorderOnSurface,
-    [BUTTON_DANGER_SECONDARY_BG]: dangerSecondaryBackground,
-    [BUTTON_DANGER_SECONDARY_FG]: dangerOnSecondaryBackground,
-    [BUTTON_SUCCESS_SECONDARY_BORDER]: successBorderOnSurface,
-    [BUTTON_SUCCESS_SECONDARY_BG]: successSecondaryBackground,
-    [BUTTON_SUCCESS_SECONDARY_FG]: successOnSecondaryBackground,
-    [BUTTON_DANGER_SUBTLE_BORDER]: 'transparent',
-    [BUTTON_DANGER_SUBTLE_BG]: resolved['--color-theme-accent-emphasis-tint'],
-    [BUTTON_DANGER_SUBTLE_FG]: dangerOnDangerTint,
-    [BUTTON_SUCCESS_SUBTLE_BORDER]: 'transparent',
-    [BUTTON_SUCCESS_SUBTLE_BG]: resolved['--color-theme-success-light'],
-    [BUTTON_SUCCESS_SUBTLE_FG]: successOnSuccessTint,
-    [EMBEDDED_BUTTON_ORANGE_BORDER]: '#FED7AA',
-    [EMBEDDED_BUTTON_ORANGE_BG]: '#FFF7ED',
-    [EMBEDDED_BUTTON_ORANGE_FG]: '#9A3412',
-    [EMBEDDED_BUTTON_GREEN_BORDER]: '#BBF7D0',
-    [EMBEDDED_BUTTON_GREEN_BG]: '#DCFCE7',
-    [EMBEDDED_BUTTON_GREEN_FG]: '#4ADE80',
-    [EMBEDDED_BUTTON_GREEN_DISABLED_BORDER]: '#BBF7D0',
-    [EMBEDDED_BUTTON_GREEN_DISABLED_BG]: '#F0FDF4',
-    [EMBEDDED_BUTTON_GREEN_DISABLED_FG]: '#BBF7D0',
-    [EMBEDDED_BUTTON_RED_BORDER]: resolved['--color-theme-border-primary'],
-    [EMBEDDED_BUTTON_RED_BG]: resolved['--color-theme-bg-warm'],
-    [EMBEDDED_BUTTON_RED_FG]: resolved['--color-theme-border-primary'],
-    [EMBEDDED_BUTTON_INDIGO_BORDER]: '#C7D2FE',
-    [EMBEDDED_BUTTON_INDIGO_BG]: '#E0E7FF',
-    [EMBEDDED_BUTTON_INDIGO_FG]: '#3730A3',
-    [EMBEDDED_BUTTON_INDIGO_DISABLED_BORDER]: '#C7D2FE',
-    [EMBEDDED_BUTTON_INDIGO_DISABLED_BG]: '#EEF2FF',
-    [EMBEDDED_BUTTON_INDIGO_DISABLED_FG]: '#C7D2FE',
-    [EMBEDDED_BUTTON_WHITE_BORDER]: resolved['--color-theme-border-primary'],
-    [EMBEDDED_BUTTON_WHITE_BG]: resolved['--color-theme-bg-surface'],
-    [EMBEDDED_BUTTON_WHITE_FG]: resolved['--color-theme-text-primary'],
-    [EMBEDDED_BUTTON_WHITE_DISABLED_BG]: resolved['--color-theme-bg-warm'],
-    [EMBEDDED_BUTTON_WHITE_DISABLED_FG]: resolved['--color-theme-border-primary'],
-    [TOGGLE_TRACK_BG]: '#E5E7EB',
-    [TOGGLE_TRACK_ACTIVE_BG]: resolved['--color-theme-accent-primary'],
-    [TOGGLE_TRACK_DISABLED_ACTIVE_BG]: '#A5B4FC',
-    [TOGGLE_THUMB_BG]: '#FFFFFF',
-    [TOGGLE_THUMB_BORDER]: '#D1D5DB',
+    isLegacy,
+    resolved,
+    primaryBackground,
+    primaryForeground,
+    primaryDisabledBackground,
+    primaryDisabledForeground,
+    secondaryBackground,
+    secondaryBorderOnSurface,
+    secondaryTextOnButton,
+    secondaryHoverBackground,
+    ghostTextOnSurface,
+    compactBackground,
+    compactBorderOnBackground,
+    compactTextOnBackground,
+    successSolidBackground,
+    successSolidForeground,
+    successHoverBackground,
+    successDisabledBackground,
+    successDisabledForeground,
+    successSecondaryBackground,
+    successOnSecondaryBackground,
+    successBorderOnSurface,
+    dangerSecondaryBackground,
+    dangerOnSecondaryBackground,
+    dangerBorderOnSurface,
+    successOnSuccessTint,
+    dangerOnDangerTint,
+    dangerSolid,
   };
 };
 
-const getControlThemeVars = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Record<string, string> => ({
-  [CONTROL_BG]: presetId === 'legacy' ? '#F9FAFB' : resolved['--color-theme-bg-warm'],
-  [CONTROL_BG_ERROR]: presetId === 'legacy' ? '#FEF2F2' : resolved['--color-theme-danger-light'],
-  [CONTROL_BG_DISABLED]: resolved['--color-theme-bg-warm'],
+const getMainButtonThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+  [BUTTON_PRIMARY_BORDER]: context.primaryBackground,
+  [BUTTON_PRIMARY_BG]: context.primaryBackground,
+  [BUTTON_PRIMARY_FG]: context.primaryForeground,
+  [BUTTON_PRIMARY_DISABLED_BORDER]: context.primaryDisabledBackground,
+  [BUTTON_PRIMARY_DISABLED_BG]: context.primaryDisabledBackground,
+  [BUTTON_PRIMARY_DISABLED_FG]: context.primaryDisabledForeground,
+  [BUTTON_SECONDARY_BORDER]: context.secondaryBorderOnSurface,
+  [BUTTON_SECONDARY_BG]: context.isLegacy ? context.secondaryBackground : 'transparent',
+  [BUTTON_SECONDARY_FG]: context.secondaryTextOnButton,
+  [BUTTON_SECONDARY_HOVER_BG]: context.secondaryHoverBackground,
+  [BUTTON_GHOST_BORDER]: context.isLegacy ? LEGACY_BUTTON_VALUES.border : 'transparent',
+  [BUTTON_GHOST_BG]: context.isLegacy ? LEGACY_BUTTON_VALUES.surface : 'transparent',
+  [BUTTON_GHOST_FG]: context.isLegacy ? LEGACY_BUTTON_VALUES.ghostText : context.ghostTextOnSurface,
+  [BUTTON_GHOST_HOVER_BORDER]: context.isLegacy ? context.primaryBackground : 'transparent',
+  [BUTTON_GHOST_HOVER_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.secondaryHover
+    : context.resolved['--color-theme-bg-warm'],
+  [BUTTON_GHOST_HOVER_FG]: context.isLegacy
+    ? context.primaryBackground
+    : context.ghostTextOnSurface,
+  [BUTTON_COMPACT_BORDER]: context.compactBorderOnBackground,
+  [BUTTON_COMPACT_BG]: context.compactBackground,
+  [BUTTON_COMPACT_FG]: context.compactTextOnBackground,
+});
+
+const getStatusButtonThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+  [BUTTON_DANGER_BORDER]: context.dangerSolid.background,
+  [BUTTON_DANGER_BG]: context.dangerSolid.background,
+  [BUTTON_DANGER_FG]: context.dangerSolid.foreground,
+  [BUTTON_SUCCESS_BORDER]: context.successSolidBackground,
+  [BUTTON_SUCCESS_BG]: context.successSolidBackground,
+  [BUTTON_SUCCESS_FG]: context.successSolidForeground,
+  [BUTTON_SUCCESS_HOVER_BG]: context.successHoverBackground,
+  [BUTTON_SUCCESS_DISABLED_BORDER]: context.successDisabledBackground,
+  [BUTTON_SUCCESS_DISABLED_BG]: context.successDisabledBackground,
+  [BUTTON_SUCCESS_DISABLED_FG]: context.successDisabledForeground,
+  [BUTTON_DANGER_SECONDARY_BORDER]: context.dangerBorderOnSurface,
+  [BUTTON_DANGER_SECONDARY_BG]: context.dangerSecondaryBackground,
+  [BUTTON_DANGER_SECONDARY_FG]: context.dangerOnSecondaryBackground,
+  [BUTTON_SUCCESS_SECONDARY_BORDER]: context.successBorderOnSurface,
+  [BUTTON_SUCCESS_SECONDARY_BG]: context.successSecondaryBackground,
+  [BUTTON_SUCCESS_SECONDARY_FG]: context.successOnSecondaryBackground,
+  [BUTTON_DANGER_SUBTLE_BORDER]: 'transparent',
+  [BUTTON_DANGER_SUBTLE_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.dangerTint
+    : context.resolved['--color-theme-accent-emphasis-tint'],
+  [BUTTON_DANGER_SUBTLE_FG]: context.dangerOnDangerTint,
+  [BUTTON_SUCCESS_SUBTLE_BORDER]: 'transparent',
+  [BUTTON_SUCCESS_SUBTLE_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.successTint
+    : context.resolved['--color-theme-success-light'],
+  [BUTTON_SUCCESS_SUBTLE_FG]: context.successOnSuccessTint,
+});
+
+const getEmbeddedButtonThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+  [EMBEDDED_BUTTON_ORANGE_BORDER]: '#FED7AA',
+  [EMBEDDED_BUTTON_ORANGE_BG]: '#FFF7ED',
+  [EMBEDDED_BUTTON_ORANGE_FG]: '#9A3412',
+  [EMBEDDED_BUTTON_GREEN_BORDER]: '#BBF7D0',
+  [EMBEDDED_BUTTON_GREEN_BG]: '#DCFCE7',
+  [EMBEDDED_BUTTON_GREEN_FG]: '#4ADE80',
+  [EMBEDDED_BUTTON_GREEN_DISABLED_BORDER]: '#BBF7D0',
+  [EMBEDDED_BUTTON_GREEN_DISABLED_BG]: '#F0FDF4',
+  [EMBEDDED_BUTTON_GREEN_DISABLED_FG]: '#BBF7D0',
+  [EMBEDDED_BUTTON_RED_BORDER]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.border
+    : context.resolved['--color-theme-border-primary'],
+  [EMBEDDED_BUTTON_RED_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.surfaceWarm
+    : context.resolved['--color-theme-bg-warm'],
+  [EMBEDDED_BUTTON_RED_FG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.softBorder
+    : context.resolved['--color-theme-border-primary'],
+  [EMBEDDED_BUTTON_INDIGO_BORDER]: '#C7D2FE',
+  [EMBEDDED_BUTTON_INDIGO_BG]: '#E0E7FF',
+  [EMBEDDED_BUTTON_INDIGO_FG]: '#3730A3',
+  [EMBEDDED_BUTTON_INDIGO_DISABLED_BORDER]: '#C7D2FE',
+  [EMBEDDED_BUTTON_INDIGO_DISABLED_BG]: '#EEF2FF',
+  [EMBEDDED_BUTTON_INDIGO_DISABLED_FG]: '#C7D2FE',
+  [EMBEDDED_BUTTON_WHITE_BORDER]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.border
+    : context.resolved['--color-theme-border-primary'],
+  [EMBEDDED_BUTTON_WHITE_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.surface
+    : context.resolved['--color-theme-bg-surface'],
+  [EMBEDDED_BUTTON_WHITE_FG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.text
+    : context.resolved['--color-theme-text-primary'],
+  [EMBEDDED_BUTTON_WHITE_DISABLED_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.surfaceWarm
+    : context.resolved['--color-theme-bg-warm'],
+  [EMBEDDED_BUTTON_WHITE_DISABLED_FG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.softBorder
+    : context.resolved['--color-theme-border-primary'],
+});
+
+const getToggleThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+  [TOGGLE_TRACK_BG]: LEGACY_BUTTON_VALUES.border,
+  [TOGGLE_TRACK_ACTIVE_BG]: context.isLegacy
+    ? LEGACY_BUTTON_VALUES.primary
+    : context.resolved['--color-theme-accent-primary'],
+  [TOGGLE_TRACK_DISABLED_ACTIVE_BG]: LEGACY_BUTTON_VALUES.primaryDisabled,
+  [TOGGLE_THUMB_BG]: LEGACY_BUTTON_VALUES.surface,
+  [TOGGLE_THUMB_BORDER]: LEGACY_BUTTON_VALUES.softBorder,
+});
+
+const getButtonThemeVars = (
+  presetId: ThemePresetId,
+  resolved: ResolvedThemeVars
+): Record<string, string> => {
+  const context = getButtonThemeContext(presetId, resolved);
+  return {
+    ...getMainButtonThemeVars(context),
+    ...getStatusButtonThemeVars(context),
+    ...getEmbeddedButtonThemeVars(context),
+    ...getToggleThemeVars(context),
+  };
+};
+
+const getControlThemeVars = (
+  presetId: ThemePresetId,
+  resolved: ResolvedThemeVars
+): Record<string, string> => ({
+  [CONTROL_BG]: getPresetValue(presetId, '#F9FAFB', resolved['--color-theme-bg-warm']),
+  [CONTROL_BG_ERROR]: getPresetValue(presetId, '#FEF2F2', resolved['--color-theme-danger-light']),
+  [CONTROL_BG_DISABLED]: getPresetValue(presetId, '#F9FAFB', resolved['--color-theme-bg-warm']),
   [CONTROL_BORDER]: resolved['--color-theme-border-primary'],
-  [CONTROL_BORDER_ERROR]: presetId === 'legacy' ? '#FCA5A5' : resolved['--color-theme-danger'],
+  [CONTROL_BORDER_ERROR]: getPresetValue(presetId, '#FCA5A5', resolved['--color-theme-danger']),
   [CONTROL_BORDER_FOCUS]: resolved['--color-theme-accent-primary'],
   [CONTROL_TEXT]: resolved['--color-theme-text-primary'],
+  [CONTROL_TEXT_DISABLED]: getPresetValue(
+    presetId,
+    '#6B7280',
+    resolved['--color-theme-text-muted']
+  ),
   [CONTROL_TEXT_ERROR]: getAccessibleForegroundOnBackground(
-    presetId === 'legacy' ? '#FEF2F2' : resolved['--color-theme-danger-light'],
-    presetId === 'legacy' ? '#991B1B' : resolved['--color-theme-accent-emphasis']
+    getPresetValue(presetId, '#FEF2F2', resolved['--color-theme-danger-light']),
+    getPresetValue(presetId, '#991B1B', resolved['--color-theme-accent-emphasis'])
   ).foreground,
   [CONTROL_TEXT_MUTED]: resolved['--color-theme-text-muted'],
   [CONTROL_PLACEHOLDER]: resolved['--color-theme-text-muted'],
   [CONTROL_PRETEXT_BG]: resolved['--color-theme-bg-muted'],
   [CONTROL_PRETEXT_TEXT]: resolved['--color-theme-text-primary'],
   [CONTROL_CLEAR_FG]: resolved['--color-theme-text-primary'],
-  [CONTROL_CLEAR_HOVER_FG]: presetId === 'legacy' ? '#2B56C1' : resolved['--color-theme-accent-primary'],
+  [CONTROL_CLEAR_HOVER_FG]: getPresetValue(
+    presetId,
+    '#2B56C1',
+    resolved['--color-theme-accent-primary']
+  ),
   [CONTROL_RING]: 'color-mix(in srgb, var(--color-theme-accent-primary) 20%, transparent)',
   [CONTROL_ERROR_RING]: 'color-mix(in srgb, var(--color-theme-danger) 20%, transparent)',
 });
 
-const getCardThemeVars = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Record<string, string> => ({
+const getSurfaceThemeVars = (
+  presetId: ThemePresetId,
+  _resolved: ResolvedThemeVars
+): Record<string, string> => ({
+  [CARD_BORDER]: getPresetValue(
+    presetId,
+    '#F3F4F6',
+    'color-mix(in srgb, var(--color-theme-border-primary) 60%, transparent)'
+  ),
+  [CARD_SHADOW]: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+  [CARD_RADIUS]: getPresetValue(presetId, '0.375rem', '0.5rem'),
+});
+
+const getCardThemeVars = (
+  presetId: ThemePresetId,
+  resolved: ResolvedThemeVars
+): Record<string, string> => ({
   [CARD_HEADER_DEFAULT_BG]: resolved['--color-theme-bg-warm'],
-  [CARD_HEADER_DEFAULT_FG]:
-    presetId === 'legacy' ? resolved['--color-theme-accent-primary'] : resolved['--color-theme-text-primary'],
+  [CARD_HEADER_DEFAULT_FG]: getPresetValue(
+    presetId,
+    resolved['--color-theme-accent-primary'],
+    resolved['--color-theme-text-primary']
+  ),
   [CARD_HEADER_BLACK_BG]: resolved['--color-theme-bg-warm'],
   [CARD_HEADER_BLACK_FG]: resolved['--color-theme-text-primary'],
-  [CARD_HEADER_YELLOW_BG]:
-    presetId === 'legacy' ? '#FEF3C7' : resolved['--color-theme-highlight-yellow'],
-  [CARD_HEADER_YELLOW_FG]:
-    presetId === 'legacy'
-      ? getAccessibleForegroundOnBackground('#FEF3C7', '#92400E').foreground
-      : resolved['--color-theme-text-primary'],
+  [CARD_HEADER_YELLOW_BG]: getPresetValue(
+    presetId,
+    '#FEF3C7',
+    resolved['--color-theme-highlight-yellow']
+  ),
+  [CARD_HEADER_YELLOW_FG]: getPresetValue(
+    presetId,
+    getAccessibleForegroundOnBackground('#FEF3C7', '#92400E').foreground,
+    resolved['--color-theme-text-primary']
+  ),
 });
 
 const getBannerThemeVars = (
   presetId: ThemePresetId,
   resolved: ResolvedThemeVars
 ): Record<string, string> => ({
-  [INFO_BANNER_BG]: presetId === 'legacy' ? '#E0E7FF' : resolved['--color-theme-accent-supporting-tint'],
-  [INFO_BANNER_FG]:
-    presetId === 'legacy' ? resolved['--color-theme-accent-primary'] : resolved['--color-theme-text-primary'],
-  [INFO_BANNER_BORDER]:
-    presetId === 'legacy' ? '#A5B4FC' : resolved['--color-theme-accent-supporting'],
-  [WARNING_BANNER_BG]:
-    presetId === 'legacy' ? '#FEF3C7' : resolved['--color-theme-warning-light'],
-  [WARNING_BANNER_FG]:
-    presetId === 'legacy'
-      ? '#B45309'
-      : getAccessibleForegroundOnBackground(
-          resolved['--color-theme-warning-light'],
-          resolved['--color-theme-warning']
-        ).foreground,
-  [WARNING_BANNER_BORDER]:
-    presetId === 'legacy' ? '#FCD34D' : resolved['--color-theme-warning'],
+  [INFO_BANNER_BG]: getPresetValue(
+    presetId,
+    '#E0E7FF',
+    resolved['--color-theme-accent-supporting-tint']
+  ),
+  [INFO_BANNER_FG]: getPresetValue(
+    presetId,
+    resolved['--color-theme-accent-primary'],
+    resolved['--color-theme-text-primary']
+  ),
+  [INFO_BANNER_BORDER]: getPresetValue(
+    presetId,
+    '#A5B4FC',
+    resolved['--color-theme-accent-supporting']
+  ),
+  [WARNING_BANNER_BG]: getPresetValue(presetId, '#FEF3C7', resolved['--color-theme-warning-light']),
+  [WARNING_BANNER_FG]: getPresetValue(
+    presetId,
+    '#B45309',
+    getAccessibleForegroundOnBackground(
+      resolved['--color-theme-warning-light'],
+      resolved['--color-theme-warning']
+    ).foreground
+  ),
+  [WARNING_BANNER_BORDER]: getPresetValue(presetId, '#FCD34D', resolved['--color-theme-warning']),
   [SECTION_HEADER_BG]: resolved['--color-theme-bg-warm'],
-  [SECTION_HEADER_FG]:
-    presetId === 'legacy' ? resolved['--color-theme-accent-primary'] : resolved['--color-theme-text-primary'],
+  [SECTION_HEADER_FG]: getPresetValue(
+    presetId,
+    resolved['--color-theme-accent-primary'],
+    resolved['--color-theme-text-primary']
+  ),
 });
 
 const ThemeProvider = ({ children, className, controlledMode, style }: ThemeProviderProps) => {
@@ -442,6 +636,7 @@ const ThemeProvider = ({ children, className, controlledMode, style }: ThemeProv
     ...getActionThemeVars(resolved),
     ...getButtonThemeVars(presetId, resolved),
     ...getControlThemeVars(presetId, resolved),
+    ...getSurfaceThemeVars(presetId, resolved),
     ...getCardThemeVars(presetId, resolved),
     ...getBannerThemeVars(presetId, resolved),
   };

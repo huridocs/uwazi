@@ -273,7 +273,12 @@ const PDFSidepanel = ({
               />
             </VerticalDrawer>
             <div className="flex justify-between gap-2 px-4 py-2 border-t border-gray-200">
-              <Button type="button" variant="secondary" disabled={isSubmitting} onClick={handleClose}>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isSubmitting}
+                onClick={handleClose}
+              >
                 <Translate>Cancel</Translate>
               </Button>
               <div className="flex flex-row gap-2 items-center">

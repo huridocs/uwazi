@@ -356,7 +356,12 @@ const ProcessExtractorModal = ({ close, onTrain, selected }: ProcessExtractorMod
         </FormProvider>
       </Modal.Body>
       <Modal.Footer className="flex justify-between gap-2">
-        <Button disabled={isSubmitting} onClick={() => close()} variant="secondary" className="grow">
+        <Button
+          disabled={isSubmitting}
+          onClick={() => close()}
+          variant="secondary"
+          className="grow"
+        >
           <Translate>Cancel</Translate>
         </Button>
         <Button

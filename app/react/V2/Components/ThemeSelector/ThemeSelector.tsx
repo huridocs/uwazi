@@ -121,7 +121,10 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
 
   return (
     <div
-      className={['tw-content overflow-hidden rounded-xl border border-gray-200 shadow-sm', mode === 'dark' ? 'dark' : '']
+      className={[
+        'tw-content overflow-hidden rounded-xl border border-gray-200 shadow-sm',
+        mode === 'dark' ? 'dark' : '',
+      ]
         .filter(Boolean)
         .join(' ')}
       data-theme-custom
@@ -222,11 +225,18 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {THEME_PALETTE.filter(entry => entry.id.startsWith('accent-')).map(entry => (
             <div key={entry.id} className="rounded-lg border border-gray-200 p-2">
-              <div className="h-10 rounded-md" style={{ backgroundColor: `var(${entry.semanticKey})` }} />
+              <div
+                className="h-10 rounded-md"
+                style={{ backgroundColor: `var(${entry.semanticKey})` }}
+              />
               <p className="mt-2 truncate text-xs font-medium" style={{ color: primaryText }}>
                 {SEMANTIC_VAR_LABELS[entry.semanticKey]}
               </p>
-              <p className="truncate text-[0.6875rem]" style={{ color: secondaryText }} title={entry.semanticKey}>
+              <p
+                className="truncate text-[0.6875rem]"
+                style={{ color: secondaryText }}
+                title={entry.semanticKey}
+              >
                 {entry.semanticKey}
               </p>
             </div>
@@ -253,7 +263,9 @@ const PresetCard = ({
   <button
     type="button"
     className={`flex min-w-[10rem] flex-1 flex-col gap-3 rounded-xl border p-3 text-left transition-all ${
-      selected ? 'border-primary-600 ring-2 ring-primary-500/20' : 'border-gray-200 hover:border-gray-300'
+      selected
+        ? 'border-primary-600 ring-2 ring-primary-500/20'
+        : 'border-gray-200 hover:border-gray-300'
     }`}
     onClick={onClick}
   >
@@ -261,12 +273,18 @@ const PresetCard = ({
       <div className="grid grid-cols-2">
         <div className="space-y-2 p-2" style={{ backgroundColor: '#ffffff' }}>
           <div className="h-2 w-12 rounded-sm bg-black/20" />
-          <div className="h-8 rounded-md border" style={{ borderColor: lightAccent, backgroundColor: '#ffffff' }} />
+          <div
+            className="h-8 rounded-md border"
+            style={{ borderColor: lightAccent, backgroundColor: '#ffffff' }}
+          />
           <div className="h-6 rounded-md" style={{ backgroundColor: lightAccent }} />
         </div>
         <div className="space-y-2 p-2" style={{ backgroundColor: '#242424' }}>
           <div className="h-2 w-12 rounded-sm bg-white/20" />
-          <div className="h-8 rounded-md border" style={{ borderColor: darkAccent, backgroundColor: '#242424' }} />
+          <div
+            className="h-8 rounded-md border"
+            style={{ borderColor: darkAccent, backgroundColor: '#242424' }}
+          />
           <div className="h-6 rounded-md" style={{ backgroundColor: darkAccent }} />
         </div>
       </div>
@@ -289,7 +307,9 @@ export const ThemeSelector = ({
   const [showAdvanced, setShowAdvanced] = React.useState(false);
   const previewLogo = getThemeAsset(themeAssets, themeVars, previewMode, 'siteLogo', siteLogo);
   const previewFavicon = getThemeAsset(themeAssets, themeVars, previewMode, 'favicon', favicon);
-  const failedChecks = contrastChecks(themeVars, previewMode).filter(check => !check.result.passesAA);
+  const failedChecks = contrastChecks(themeVars, previewMode).filter(
+    check => !check.result.passesAA
+  );
   const colorOptions = React.useMemo(
     () =>
       Array.from(
@@ -342,25 +362,25 @@ export const ThemeSelector = ({
                 lightAccent={lightAccent}
                 darkAccent={darkAccent}
                 selected={selected}
-                onClick={() =>
-                  {
-                    onChange(
-                      theme.id === 'custom' ? getCustomThemeVars(themeVars, true) : getPresetVars(theme.id)
-                    );
-                    if (theme.id === 'default' || theme.id === 'legacy') {
-                      onThemeAssetsChange?.({
-                        ...themeAssets,
-                        preset: theme.id,
-                      });
-                    }
-                    if (theme.id === 'custom') {
-                      onThemeAssetsChange?.({
-                        ...themeAssets,
-                        preset: getThemeAssetPresetId(themeAssets, themeVars, true),
-                      });
-                    }
+                onClick={() => {
+                  onChange(
+                    theme.id === 'custom'
+                      ? getCustomThemeVars(themeVars, true)
+                      : getPresetVars(theme.id)
+                  );
+                  if (theme.id === 'default' || theme.id === 'legacy') {
+                    onThemeAssetsChange?.({
+                      ...themeAssets,
+                      preset: theme.id,
+                    });
                   }
-                }
+                  if (theme.id === 'custom') {
+                    onThemeAssetsChange?.({
+                      ...themeAssets,
+                      preset: getThemeAssetPresetId(themeAssets, themeVars, true),
+                    });
+                  }
+                }}
               />
             );
           })}
@@ -386,7 +406,10 @@ export const ThemeSelector = ({
           </div>
         </div>
         {failedChecks.length ? (
-          <SurfacePanel tone="warm" className="mb-3 border-warning-light bg-warning-light px-4 py-3 shadow-none">
+          <SurfacePanel
+            tone="warm"
+            className="mb-3 border-warning-light bg-warning-light px-4 py-3 shadow-none"
+          >
             <p className="text-xs font-medium text-amber-800">
               <Translate>Accessibility checks need attention</Translate>
             </p>

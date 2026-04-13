@@ -15,6 +15,7 @@ type SurfacePanelProps = {
   className?: string;
   tone?: SurfaceTone;
   padding?: SurfacePadding;
+  style?: React.CSSProperties;
 };
 
 const SurfacePanel = ({
@@ -22,6 +23,7 @@ const SurfacePanel = ({
   className = '',
   tone = 'default',
   padding = 'md',
+  style,
 }: SurfacePanelProps) => {
   const toneStyle: Record<SurfaceTone, React.CSSProperties> = {
     default: {
@@ -40,8 +42,15 @@ const SurfacePanel = ({
 
   return (
     <div
-      className={['rounded-lg border shadow-sm', paddingClass[padding], className].filter(Boolean).join(' ')}
-      style={toneStyle[tone]}
+      className={['rounded-lg border shadow-sm', paddingClass[padding], className]
+        .filter(Boolean)
+        .join(' ')}
+      style={{
+        ...toneStyle[tone],
+        borderRadius: 'var(--color-theme-card-radius)',
+        boxShadow: 'var(--color-theme-card-shadow)',
+        ...style,
+      }}
     >
       {children}
     </div>

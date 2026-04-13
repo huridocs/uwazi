@@ -28,7 +28,9 @@ export const Dropdown: React.FC<DropdownProps> = ({ title, items, className = ''
       aria-haspopup="menu"
     >
       {title}
-      <ChevronDownIcon className={`h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      <ChevronDownIcon
+        className={`h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+      />
     </button>
   );
 

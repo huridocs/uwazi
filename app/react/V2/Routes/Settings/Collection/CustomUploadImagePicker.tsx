@@ -35,8 +35,7 @@ const fileMatchesAssetUrl = (file: FileType, valueUrl: string): boolean => {
   return assetUrl(file) === valueUrl.trim();
 };
 
-const defaultPreviewClass =
-  'max-h-full max-w-full object-contain';
+const defaultPreviewClass = 'max-h-full max-w-full object-contain';
 
 const defaultPreviewWrapperClass =
   'flex h-14 w-28 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2';
@@ -71,7 +70,9 @@ const CustomUploadImagePicker = ({
   const [open, setOpen] = useState(false);
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ filename?: string; progress?: number }>({});
+  const [uploadProgress, setUploadProgress] = useState<{ filename?: string; progress?: number }>(
+    {}
+  );
   const uploadService = useMemo(() => new UploadService('custom'), []);
   const images = useMemo(() => files.filter(isImageFile), [files]);
   const trimmed = value?.trim() ?? '';
@@ -83,8 +84,12 @@ const CustomUploadImagePicker = ({
   React.useEffect(() => () => uploadService.abort(), [uploadService]);
 
   const notifyUploadResult = (responses: (FileType | FetchResponseError)[]) => {
-    const hasErrors = responses.some(response => response instanceof FetchResponseError || !response._id);
-    const hasSuccess = responses.some(response => !(response instanceof FetchResponseError) && response._id);
+    const hasErrors = responses.some(
+      response => response instanceof FetchResponseError || !response._id
+    );
+    const hasSuccess = responses.some(
+      response => !(response instanceof FetchResponseError) && response._id
+    );
 
     if (hasSuccess) {
       setNotifications({
@@ -204,7 +209,8 @@ const CustomUploadImagePicker = ({
                   <div className="text-xs text-gray-500">
                     {uploadProgress.filename ? (
                       <>
-                        <Translate>Uploading</Translate> {uploadProgress.filename} {uploadProgress.progress ?? 0}%
+                        <Translate>Uploading</Translate> {uploadProgress.filename}{' '}
+                        {uploadProgress.progress ?? 0}%
                       </>
                     ) : null}
                   </div>
@@ -227,37 +233,37 @@ const CustomUploadImagePicker = ({
                   <p className="text-sm font-medium text-gray-800">
                     <Translate>Select an existing image</Translate>
                   </p>
-              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {images.map(file => {
-                  const url = assetUrl(file);
-                  const selected = fileMatchesAssetUrl(file, trimmed);
-                  return (
-                    <li key={String(file._id ?? file.filename)}>
-                      <button
-                        type="button"
-                        onClick={() => pick(file)}
-                        className={[
-                          'flex w-full flex-col overflow-hidden rounded-lg border text-left transition-colors',
-                          selected
-                            ? 'border-primary-600 ring-2 ring-primary-500'
-                            : 'border-gray-200 hover:border-primary-400',
-                        ].join(' ')}
-                      >
-                        <span className="flex h-24 items-center justify-center bg-gray-50 p-2">
-                          <img
-                            src={url}
-                            alt=""
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        </span>
-                        <span className="truncate border-t border-gray-100 px-2 py-1.5 text-xs text-gray-700">
-                          {file.originalname || file.filename}
-                        </span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+                  <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                    {images.map(file => {
+                      const url = assetUrl(file);
+                      const selected = fileMatchesAssetUrl(file, trimmed);
+                      return (
+                        <li key={String(file._id ?? file.filename)}>
+                          <button
+                            type="button"
+                            onClick={() => pick(file)}
+                            className={[
+                              'flex w-full flex-col overflow-hidden rounded-lg border text-left transition-colors',
+                              selected
+                                ? 'border-primary-600 ring-2 ring-primary-500'
+                                : 'border-gray-200 hover:border-primary-400',
+                            ].join(' ')}
+                          >
+                            <span className="flex h-24 items-center justify-center bg-gray-50 p-2">
+                              <img
+                                src={url}
+                                alt=""
+                                className="max-h-full max-w-full object-contain"
+                              />
+                            </span>
+                            <span className="truncate border-t border-gray-100 px-2 py-1.5 text-xs text-gray-700">
+                              {file.originalname || file.filename}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </>
               )}
             </div>

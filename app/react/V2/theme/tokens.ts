@@ -154,8 +154,7 @@ const DEFAULT_DARK: ResolvedThemeVars = {
   '--color-theme-highlight-yellow-active': '#92400E',
   '--color-theme-highlight-blue': '#1E3A5F',
   '--color-theme-shadow-sm': '0 1px 2px rgba(0, 0, 0, 0.2)',
-  '--color-theme-shadow-md':
-    '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2)',
+  '--color-theme-shadow-md': '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2)',
   '--color-theme-shadow-lg':
     '0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.2)',
   '--color-theme-shadow-xl':

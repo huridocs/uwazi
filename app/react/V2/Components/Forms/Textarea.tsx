@@ -44,15 +44,19 @@ const Textarea = ({
   rows = 4,
 }: TextareaProps) => {
   const showError = Boolean(hasErrors || errorMessage);
+  let backgroundColor = 'var(--color-theme-control-bg)';
+
+  if (disabled) {
+    backgroundColor = 'var(--color-theme-control-bg-disabled)';
+  } else if (showError) {
+    backgroundColor = 'var(--color-theme-control-bg-error)';
+  }
+
   const fieldStyle: CSSProperties = {
     borderColor: showError
       ? 'var(--color-theme-control-border-error)'
       : 'var(--color-theme-control-border)',
-    backgroundColor: disabled
-      ? 'var(--color-theme-control-bg-disabled)'
-      : showError
-        ? 'var(--color-theme-control-bg-error)'
-        : 'var(--color-theme-control-bg)',
+    backgroundColor,
     color: showError ? 'var(--color-theme-control-text-error)' : 'var(--color-theme-control-text)',
     resize,
   };

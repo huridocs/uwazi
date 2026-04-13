@@ -289,7 +289,7 @@ const UserFormSidepanel = ({
                   {selectedUser?.accountLocked && (
                     <Button
                       type="button"
-                      variant="dangerSubtle"
+                      variant="dangerSecondary"
                       onClick={() => {
                         actionType.current = 'unlock-user';
                         setShowConfirmationModal(true);
@@ -304,9 +304,7 @@ const UserFormSidepanel = ({
               <div className="rounded-md border border-gray-50 shadow-md">
                 <MultiSelect
                   label={
-                    <Translate className="block w-full text-base font-semibold">
-                      Groups
-                    </Translate>
+                    <Translate className="block w-full text-base font-semibold">Groups</Translate>
                   }
                   onChange={selectedGroups => {
                     const values = calculateSelectedGroups(selectedGroups, groups);

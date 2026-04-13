@@ -61,7 +61,10 @@ const MenuLinks = ({ links = [], className = '' }: MenuLinksProps) => {
   if (!navLinks.length) return null;
 
   return (
-    <nav className={['flex items-center gap-2', className].filter(Boolean).join(' ')} aria-label="Primary">
+    <nav
+      className={['flex items-center gap-2', className].filter(Boolean).join(' ')}
+      aria-label="Primary"
+    >
       {navLinks}
     </nav>
   );

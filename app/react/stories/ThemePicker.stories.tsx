@@ -5,7 +5,13 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { createStore, Provider } from 'jotai';
 import { LEGACY_createStore as createReduxStore } from '#V2/testing/index.js';
 import { Header } from '#V2/Components/UI/Header/Header.js';
-import { userAtom, settingsAtom, localeAtom, themeModeAtom, translationsAtom } from '#V2/atoms/index.js';
+import {
+  userAtom,
+  settingsAtom,
+  localeAtom,
+  themeModeAtom,
+  translationsAtom,
+} from '#V2/atoms/index.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';

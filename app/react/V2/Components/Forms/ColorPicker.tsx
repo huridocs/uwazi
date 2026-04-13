@@ -101,7 +101,8 @@ const ColorPicker = ({
               ref={setPopperElement}
               style={{
                 ...styles.popper,
-                borderColor: 'color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent)',
+                borderColor:
+                  'color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent)',
                 backgroundColor: 'var(--color-theme-bg-surface)',
                 color: 'var(--color-theme-text-primary)',
               }}

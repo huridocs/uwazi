@@ -35,7 +35,10 @@ const Button = ({
   className = '',
   'data-testid': dataTestid,
 }: ButtonProps) => {
-  const sizeClasses: Record<ButtonVariant, Record<NonNullable<ButtonProps['size']> | 'default', string>> = {
+  const sizeClasses: Record<
+    ButtonVariant,
+    Record<NonNullable<ButtonProps['size']> | 'default', string>
+  > = {
     primary: {
       small: 'px-3 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
@@ -94,10 +97,12 @@ const Button = ({
     secondary:
       'enabled:hover:[background-color:var(--color-theme-button-secondary-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-secondary-border)]',
     danger: 'enabled:hover:opacity-90',
-    ghost: 'enabled:hover:[background-color:var(--color-theme-bg-warm)]',
+    ghost:
+      'enabled:hover:[background-color:var(--color-theme-button-ghost-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-ghost-hover-border)] enabled:hover:[color:var(--color-theme-button-ghost-hover-fg)]',
     compact:
       'enabled:hover:[background-color:var(--color-theme-bg-muted)] enabled:hover:[border-color:var(--color-theme-button-compact-border)]',
-    success: 'enabled:hover:opacity-90',
+    success:
+      'enabled:hover:[background-color:var(--color-theme-button-success-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-success-hover-bg)]',
     dangerSecondary:
       'enabled:hover:[background-color:var(--color-theme-button-danger-subtle-bg)] enabled:hover:[border-color:var(--color-theme-button-danger-secondary-border)]',
     successSecondary:
@@ -142,33 +147,47 @@ const Button = ({
       color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-compact-fg)',
     },
     success: {
-      borderColor: 'var(--color-theme-button-success-border)',
-      backgroundColor: 'var(--color-theme-button-success-bg)',
-      color: 'var(--color-theme-button-success-fg)',
+      borderColor: disabled
+        ? 'var(--color-theme-button-success-disabled-border)'
+        : 'var(--color-theme-button-success-border)',
+      backgroundColor: disabled
+        ? 'var(--color-theme-button-success-disabled-bg)'
+        : 'var(--color-theme-button-success-bg)',
+      color: disabled
+        ? 'var(--color-theme-button-success-disabled-fg)'
+        : 'var(--color-theme-button-success-fg)',
     },
     dangerSecondary: {
       borderColor: disabled
         ? 'color-mix(in srgb, var(--color-theme-accent-emphasis) 15%, transparent)'
         : 'var(--color-theme-button-danger-secondary-border)',
       backgroundColor: 'var(--color-theme-button-danger-secondary-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-danger-secondary-fg)',
+      color: disabled
+        ? 'var(--color-theme-text-muted)'
+        : 'var(--color-theme-button-danger-secondary-fg)',
     },
     successSecondary: {
       borderColor: disabled
         ? 'color-mix(in srgb, var(--color-theme-success) 15%, transparent)'
         : 'var(--color-theme-button-success-secondary-border)',
       backgroundColor: 'var(--color-theme-button-success-secondary-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-success-secondary-fg)',
+      color: disabled
+        ? 'var(--color-theme-text-muted)'
+        : 'var(--color-theme-button-success-secondary-fg)',
     },
     dangerSubtle: {
       borderColor: 'var(--color-theme-button-danger-subtle-border)',
       backgroundColor: 'var(--color-theme-button-danger-subtle-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-danger-subtle-fg)',
+      color: disabled
+        ? 'var(--color-theme-text-muted)'
+        : 'var(--color-theme-button-danger-subtle-fg)',
     },
     successSubtle: {
       borderColor: 'var(--color-theme-button-success-subtle-border)',
       backgroundColor: 'var(--color-theme-button-success-subtle-bg)',
-      color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-success-subtle-fg)',
+      color: disabled
+        ? 'var(--color-theme-text-muted)'
+        : 'var(--color-theme-button-success-subtle-fg)',
     },
   };
 

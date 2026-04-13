@@ -13,7 +13,9 @@ const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
 
 const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => {
-  const color = hasErrors ? 'var(--color-theme-accent-emphasis)' : 'var(--color-theme-text-secondary)';
+  const color = hasErrors
+    ? 'var(--color-theme-accent-emphasis)'
+    : 'var(--color-theme-text-secondary)';
 
   return (
     <label

@@ -115,9 +115,7 @@ const GroupFormSidepanel = ({
             <div className="mb-5 rounded-md border border-gray-50 shadow-md">
               <MultiSelect
                 label={
-                  <Translate className="block w-full text-base font-semibold">
-                    Members
-                  </Translate>
+                  <Translate className="block w-full text-base font-semibold">Members</Translate>
                 }
                 onChange={selected =>
                   setValue(
