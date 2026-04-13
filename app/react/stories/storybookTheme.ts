@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { getButtonThemeVars } from '#V2/theme/buttonThemeVars.js';
-import { getScopedThemeVars } from '#V2/theme/ThemeProvider.js';
+import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { checkContrast } from '#shared/utils/contrast.js';
 import {
   appliedTheme,

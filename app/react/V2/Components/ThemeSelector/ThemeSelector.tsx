@@ -2,7 +2,7 @@ import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { ColorPicker } from '#V2/Components/Forms/ColorPicker.js';
 import { Button, SectionHeading, SurfacePanel } from '#V2/Components/UI/index.js';
-import { getDerivedThemeVars } from '#V2/theme/ThemeProvider.js';
+import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import {
   ACCENT_PRIMARY_KEY,
@@ -20,7 +20,6 @@ import {
   THEME_MODES,
   themeStorageKey,
   toCanonicalThemeVars,
-  toCompatibilityVars,
   type SemanticVarKey,
   type ThemeAssets,
   type ThemeMode,
@@ -98,6 +97,7 @@ const contrastChecks = (themeVars: Record<string, string | undefined>, mode: The
 
 const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps) => {
   const resolved = appliedTheme(themeVars, mode, true);
+  const presetId = getPresetId(themeVars, true);
   const accent = resolved[ACCENT_PRIMARY_KEY] ?? '#1A1A1A';
   const surfaceBg = resolved['--color-theme-bg-surface'];
   const primaryText = resolveAccessibleText(
@@ -114,9 +114,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
   const outlineColor = resolveAccessibleText(surfaceBg, accent, primaryText);
   const style: React.CSSProperties & Record<string, string> = {
     colorScheme: mode,
-    ...resolved,
-    ...toCompatibilityVars(resolved),
-    ...getDerivedThemeVars(accent),
+    ...getScopedThemeVars(presetId, resolved),
   };
 
   return (
