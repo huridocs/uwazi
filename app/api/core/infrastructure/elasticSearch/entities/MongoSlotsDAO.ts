@@ -95,7 +95,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
 
   private async getAssignedSlots() {
     return this.getCollection()
-      .find({ assignedTo: { $ne: null } })
+      .find({ assignedTo: { $ne: null, $exists: true } })
       .toArray() as Promise<AssignedSlotDocument[]>;
   }
 
