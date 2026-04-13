@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLoaderData, useRevalidator } from 'react-router';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useAtomValue } from 'jotai';
-import throttle from 'lodash/throttle';
+import throttle from 'lodash/throttle.js';
 import { ArrowPathIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
