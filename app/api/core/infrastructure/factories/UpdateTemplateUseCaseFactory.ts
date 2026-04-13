@@ -2,7 +2,6 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { UpdateTemplateUseCase } from '#api/core/application/UpdateTemplate.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
@@ -18,23 +17,22 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
 import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 
 class UpdateTemplateUseCaseFactory {
   static async create() {
     const transactionManager = TransactionManagerFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+    const db = getConnection();
+    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const thesauriDS = new MongoThesauriDataSource(db, transactionManager);
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
     const filesDS = FilesDataSourceFactory.default(transactionManager);
-    const relationshipsV1DS = new MongoRelationshipsV1DataSource(
-      getConnection(),
-      transactionManager
-    );
+    const relationshipsV1DS = new MongoRelationshipsV1DataSource(db, transactionManager);
 
     let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
       TemplatePostProcessEntitiesJob: async () =>

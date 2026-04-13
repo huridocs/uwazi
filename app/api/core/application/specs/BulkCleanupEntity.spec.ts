@@ -23,6 +23,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity.js';
 import { FileStorage } from '../contracts/FileStorage.js';
 import { FilesService } from '../FilesService.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -174,9 +175,7 @@ const createSut = (props?: CreateSutProps) => {
   const relationshipsDS =
     props?.relationshipsDS ??
     new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
-  const entitiesDS =
-    props?.entitiesDS ??
-    new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = props?.entitiesDS ?? EntitiesDataSourceFactory.forTesting(transactionManager);
   const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });

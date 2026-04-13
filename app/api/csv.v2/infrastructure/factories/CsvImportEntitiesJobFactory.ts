@@ -10,13 +10,12 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob.js';
 import { CsvEntitiesImportMapper } from '../../application/services/CsvEntitiesImportMapper.js';
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 type FactoryOptions = {
   transactionManager?: MongoTransactionManager;
@@ -49,7 +48,7 @@ const buildEntityServices = (
 ) => {
   const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
   const filesService = FilesServiceFactory.default(transactionManager, { fileStorage });
   const idGenerator = IdGeneratorFactory.default();
   const translationsDS = DefaultTranslationsDataSource(transactionManager);

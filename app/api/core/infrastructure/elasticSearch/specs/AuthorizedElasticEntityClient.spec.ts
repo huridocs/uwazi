@@ -1,8 +1,8 @@
 import { Client } from '@elastic/elasticsearch';
-import { AuthorizedEntityESClient } from '../entities/AuthorizedElasticEntityClient';
-import { IndexNameResolver } from '../IndexNameResolver';
-import { MongoTenantRoutingDataSource } from '../MongoTenantRoutingDataSource';
-import { TenantAwareESClient } from '../TenantAwareESClient';
+import { AuthorizedEntityESClient } from '../entities/AuthorizedElasticEntityClient.js';
+import { IndexNameResolver } from '../IndexNameResolver.js';
+import { MongoTenantRoutingDataSource } from '../MongoTenantRoutingDataSource.js';
+import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import {
   factory,

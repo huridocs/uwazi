@@ -20,21 +20,16 @@ import { UserSchema } from '#shared/types/userType.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import {
-  factory,
-  fixtures,
-  permissionsFixtures,
-  SampleListener,
-} from './MultiUpdateEntityFixtures.js';
+import { factory, fixtures, permissionsFixtures } from './MultiUpdateEntityFixtures.js';
 
 const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
-  const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.forTesting(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const eventEmitter = EventEmitterFactory.default();
+  const eventEmitter = EventEmitterFactory.forTesting();
   const idGenerator = IdGeneratorFactory.default();
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
   const entityPermissionChecker = new MongoEntityPermissionChecker(
@@ -102,7 +97,6 @@ const getAllDocs = async (sharedId: string) =>
 describe('MultiUpdateEntity', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
-    EventEmitterFactory.default().listen(SampleListener);
   });
 
   beforeEach(async () => {
@@ -111,7 +105,6 @@ describe('MultiUpdateEntity', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-    EventEmitterFactory.default().reset();
   });
 
   describe('when updating property assignments', () => {
