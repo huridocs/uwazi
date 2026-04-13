@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
@@ -13,11 +14,12 @@ import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/templ
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-import { ObjectId } from 'mongodb';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { CreateRelationshipService } from '../CreateRelationshipService.js';
 import { DenormalizationService } from '../DenormalizationService.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 const factory = getFixturesFactory();
 
@@ -51,7 +53,11 @@ const createService = () => {
     new MongoRelationshipTypesDataSource(connection, transactionManager),
     new MongoEntitiesDataSource(
       connection,
-      new MongoTemplatesDataSource(connection, transactionManager),
+      new MongoTemplatesDataSource({
+        db: connection,
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      }),
       SettingsDataSource,
       transactionManager
     ),

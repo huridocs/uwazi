@@ -1,5 +1,3 @@
-import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
-import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 
@@ -163,13 +161,4 @@ const permissionsFixtures: DBFixture = {
   ],
 };
 
-class SampleListener extends Listener<any> {
-  static eventName = EntityUpdatedEvent.name;
-
-  // eslint-disable-next-line class-methods-use-this
-  protected async handle(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-}
-
-export { fixtures, permissionsFixtures, SampleListener, factory };
+export { fixtures, permissionsFixtures, factory };

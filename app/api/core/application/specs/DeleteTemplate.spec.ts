@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
 import fixtures, {
@@ -14,7 +15,6 @@ import db from '#api/utils/testing_db.js';
 import documents from '#api/documents/index.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
-import { ObjectId } from 'mongodb';
 import { TemplateInUseError } from '#api/core/domain/template/errors.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 

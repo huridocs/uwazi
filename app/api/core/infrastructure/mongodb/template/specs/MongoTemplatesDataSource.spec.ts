@@ -7,6 +7,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource.js';
 import { mapPropertyQuery } from '../QueryMapper.js';
+import { MongoTemplateMapper } from '../MongoTemplateMapper.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 const factory = getFixturesFactory();
 
@@ -73,13 +76,28 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+const createSut = () => {
+  const db = getConnection();
+  const transactionManager = TransactionManagerFactory.default();
+
+  const slotsReconciler = TestUtils.mockClass<SlotsReconciler>({
+    execute: jest.fn().mockResolvedValue(undefined),
+  });
+  const sut = new MongoTemplatesDataSource({
+    db,
+    slotsReconciler,
+    transactionManager,
+  });
+
+  return { sut, slotsReconciler, transactionManager };
+};
+
 describe('getAllProperties()', () => {
   it('should return all the properties properly typed', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getAllProperties().all();
+    const { sut } = createSut();
+
+    const result = await sut.getAllProperties().all();
+
     expect(result.length).toBe(4);
     expect(result[0]).toBeInstanceOf(RelationshipProperty);
     expect(result[1]).toBeInstanceOf(RelationshipProperty);
@@ -108,11 +126,10 @@ describe('getAllProperties()', () => {
 
 describe('when requesting the relationship properties configured in the system', () => {
   it('should return all the relationship properties', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getAllRelationshipProperties().all();
+    const { sut } = createSut();
+
+    const result = await sut.getAllRelationshipProperties().all();
+
     expect(result.length).toBe(3);
     result.forEach(property => {
       expect(property).toBeInstanceOf(RelationshipProperty);
@@ -143,7 +160,9 @@ describe('when requesting a property by name', () => {
   const props: { [name: string]: Property } = {};
 
   beforeAll(async () => {
-    tds = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
+    const { sut } = createSut();
+    tds = sut;
+
     props.newRelationship = await tds.getPropertyByName('relationshipProp2');
     props.text = await tds.getPropertyByName('textprop');
   });
@@ -177,11 +196,9 @@ describe('when requesting a property by name', () => {
 
 describe('getByIds()', () => {
   it('should return the templates', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource
+    const { sut } = createSut();
+
+    const result = await sut
       .getByIds([factory.id('template1').toString(), factory.id('template2').toString()])
       .all();
     expect(result).toMatchObject([
@@ -199,11 +216,9 @@ describe('getByIds()', () => {
 
 describe('getByNames()', () => {
   it('should return the templates', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getByNames(['template1', 'template3']).all();
+    const { sut } = createSut();
+
+    const result = await sut.getByNames(['template1', 'template3']).all();
 
     expect(result).toMatchObject([
       {
@@ -220,14 +235,41 @@ describe('getByNames()', () => {
 
 describe('getById()', () => {
   it('should return the template', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      TransactionManagerFactory.default()
-    );
-    const result = await dataSource.getById(factory.id('template1').toString());
+    const { sut } = createSut();
+
+    const result = await sut.getById(factory.id('template1').toString());
     expect(result.getData()).toMatchObject({
       id: factory.id('template1').toString(),
       name: 'template1',
     });
+  });
+});
+
+describe('slotsReconciler', () => {
+  it('is called after create()', async () => {
+    const { sut, slotsReconciler } = createSut();
+    const template = factory.template('new_template', [factory.property('a_prop', 'text')]);
+    await sut.create(MongoTemplateMapper.toDomain(template as any));
+    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('is called after update()', async () => {
+    const { sut, slotsReconciler } = createSut();
+    const existing = fixtures.templates[0];
+    await sut.update(MongoTemplateMapper.toDomain(existing as any));
+    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('is called after delete()', async () => {
+    const { sut, slotsReconciler } = createSut();
+    await sut.delete(factory.id('template3').toHexString());
+    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('is called after bulkUpdate()', async () => {
+    const { sut, slotsReconciler } = createSut();
+    const templates = fixtures.templates.slice(0, 2).map(MongoTemplateMapper.toDomain as any);
+    await sut.bulkUpdate(templates as any);
+    expect(slotsReconciler.execute).toHaveBeenCalledTimes(1);
   });
 });

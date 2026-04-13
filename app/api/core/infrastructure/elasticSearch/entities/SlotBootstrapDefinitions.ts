@@ -1,4 +1,3 @@
-import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import type { SlotType } from './SlotType.js';
 
 const AmountPerSlotType: Record<SlotType, number> = {
@@ -19,23 +18,6 @@ const AmountPerSlotType: Record<SlotType, number> = {
 };
 
 class SlotBootstrapDefinitions {
-  private static slotTypePropertyTypeDictionary = new Map<SlotType, PropertyType>([
-    ['txt', 'text'],
-    ['date', 'date'],
-    ['num', 'numeric'],
-    ['range', 'daterange'],
-    ['select', 'select'],
-    ['relationship', 'relationship'],
-    ['geolocation', 'geolocation'],
-
-    ['relationship_txt', 'relationship'],
-    ['relationship_num', 'relationship'],
-    ['relationship_date', 'relationship'],
-    ['relationship_range', 'relationship'],
-    ['relationship_select', 'relationship'],
-    ['relationship_geolocation', 'relationship'],
-  ]);
-
   private static allSlotTypes: SlotType[] = [
     'txt',
     'date',
@@ -54,10 +36,6 @@ class SlotBootstrapDefinitions {
 
   static slotList(): SlotType[] {
     return [...this.allSlotTypes];
-  }
-
-  static toPropertyType(slotType: SlotType): PropertyType | undefined {
-    return this.slotTypePropertyTypeDictionary.get(slotType);
   }
 
   static createSlotName(slotType: SlotType, index: number): string {

@@ -1,10 +1,10 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { RelationshipPropertyMappingFactory } from '#api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { propertyMappings } from './mappings.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 const createNewRelationshipMappingFactory = async () => {
   const db = getConnection();
@@ -15,7 +15,7 @@ const createNewRelationshipMappingFactory = async () => {
     return null;
   }
 
-  const templateDataSource = new MongoTemplatesDataSource(db, transactionManager);
+  const templateDataSource = TemplatesDataSourceFactory.default(transactionManager);
 
   return new RelationshipPropertyMappingFactory(templateDataSource, propertyMappings);
 };
