@@ -180,7 +180,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     setupQueueWorker({ standAloneProcess: false });
   }
 
-  if (config.ENVIRONMENT === 'development') {
+  if (config.defaultTenant.featureFlags.v2ElasticSearch) {
     // ===========Bootstrap Elastic Search===========
     const elasticSearchBootstrapper = new ElasticSearchBootstrapper({
       client: ElasticSearchClientFactory.getInstance(),
