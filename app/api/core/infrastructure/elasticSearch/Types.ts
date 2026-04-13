@@ -29,7 +29,7 @@ export interface ExecutionContext extends TenantContextData {
 export interface IndexDefinition {
   alias: string;
   physicalPrefix: string;
-  settings: IndicesIndexSettings;
+  settings: IndicesIndexSettings & Record<string, unknown>;
   mappings: MappingTypeMapping;
 }
 
@@ -52,11 +52,13 @@ export interface IndexOptions {
   alias: string;
   id: string;
   document: Record<string, unknown>;
+  routing?: string;
 }
 
 export interface DeleteOptions {
   alias: string;
   id: string;
+  routing?: string;
 }
 
 export interface BulkOperation {
@@ -67,6 +69,15 @@ export interface BulkOperation {
 export interface BulkOptions {
   alias: string;
   operations: BulkOperation[];
+  routing?: string;
+  refresh?: boolean;
+}
+
+export interface DeleteByQueryOptions {
+  alias: string;
+  query: QueryDslQueryContainer;
+  routing?: string;
+  refresh?: boolean;
 }
 
 export interface ProvisioningResult {

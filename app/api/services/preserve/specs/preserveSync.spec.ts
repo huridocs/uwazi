@@ -1,3 +1,12 @@
+import backend from 'fetch-mock';
+import path from 'path';
+import qs from 'qs';
+import { URL } from 'url';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+import { ApiResponse } from '@elastic/elasticsearch';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { config } from '#api/config.js';
 import { generateFileName, testingUploadPaths } from '#api/files/filesystem.js';
 import { storage } from '#api/files/storage.js';
@@ -9,17 +18,9 @@ import { Tenant } from '#api/tenants/tenantContext.js';
 import thesauri from '#api/thesauri/index.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import backend from 'fetch-mock';
-import path from 'path';
-import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
-import { URL } from 'url';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
-import { ApiResponse } from '@elastic/elasticsearch';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
+
 import { preserveSync } from '../preserveSync.js';
 import { preserveSyncModel } from '../preserveSyncModel.js';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures.js';

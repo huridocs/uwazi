@@ -25,6 +25,7 @@ type Tenant = {
     v2UpdateThesaurus?: boolean;
     v1CSVImportCompat?: boolean;
     v2GetEntity?: boolean;
+    v2ElasticSearch?: boolean;
     v2MultipleUpdateEntity?: boolean;
   };
   globalMatomo?: { id: string; url: string };

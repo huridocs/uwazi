@@ -1,6 +1,7 @@
 import { MongoClient, ClientSession } from 'mongodb';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
+import { OptimisticLockError } from './OptimisticLockError.js';
 
 export class MongoTransactionManager implements TransactionManager {
   private mongoClient: MongoClient;
@@ -11,16 +12,23 @@ export class MongoTransactionManager implements TransactionManager {
 
   private onCommitHandlers: ((returnValue: any) => Promise<void>)[];
 
+  private onRetryHandlers: (() => Promise<void>)[];
+
   private finished = false;
 
   constructor(mongoClient: MongoClient, logger: Logger) {
     this.onCommitHandlers = [];
+    this.onRetryHandlers = [];
     this.mongoClient = mongoClient;
     this.logger = logger;
   }
 
   async executeOnCommitHandlers(returnValue: unknown) {
     return Promise.all(this.onCommitHandlers.map(async handler => handler(returnValue)));
+  }
+
+  async executeOnRetryHandlers() {
+    return Promise.all(this.onRetryHandlers.map(async handler => handler()));
   }
 
   private validateState() {
@@ -72,12 +80,23 @@ export class MongoTransactionManager implements TransactionManager {
     }
   }
 
+  private isWriteConflict(error: unknown): boolean {
+    return error instanceof OptimisticLockError;
+  }
+
   private async runWithRetry<T>(callback: () => Promise<T>, retries = 3): Promise<T> {
     try {
       return await this.runInTransaction(callback);
     } catch (error) {
       if (retries > 0 && error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
         this.logger.debug(error);
+        await this.executeOnRetryHandlers();
+        return this.runWithRetry(callback, retries - 1);
+      }
+
+      if (retries > 0 && this.isWriteConflict(error)) {
+        this.logger.debug(error);
+        await this.executeOnRetryHandlers();
         return this.runWithRetry(callback, retries - 1);
       }
 
@@ -128,6 +147,11 @@ export class MongoTransactionManager implements TransactionManager {
 
   onCommitted(handler: () => Promise<void>) {
     this.onCommitHandlers.push(handler);
+    return this;
+  }
+
+  onRetry(handler: () => Promise<void>) {
+    this.onRetryHandlers.push(handler);
     return this;
   }
 }

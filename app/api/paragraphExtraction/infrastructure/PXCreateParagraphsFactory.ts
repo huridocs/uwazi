@@ -4,7 +4,6 @@ import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/tenantContext.js';
@@ -14,6 +13,7 @@ import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/Entit
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 export class PXCreateParagraphsFactory {
   static createDefault(batchSize?: number) {
@@ -25,7 +25,7 @@ export class PXCreateParagraphsFactory {
     const templatesDS = TemplatesDataSourceFactory.cached(mongoTransactionManager);
     const thesauriDS = ThesauriDataSourceFactory.default(mongoTransactionManager);
     const translationsDS = DefaultTranslationsDataSource(mongoTransactionManager);
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default(mongoTransactionManager);
     const jobsDispatcher = DefaultDispatcher(tenant.name, mongoTransactionManager);
 
     const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({

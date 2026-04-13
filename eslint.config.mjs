@@ -19,6 +19,40 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
+const localRulesPlugin = {
+  rules: {
+    'require-js-extension': {
+      meta: {
+        type: 'problem',
+        fixable: 'code',
+        schema: [],
+        messages: {
+          missingJsExtension: "Relative import '{{source}}' is missing the .js extension.",
+        },
+      },
+      create(context) {
+        return {
+          ImportDeclaration(node) {
+            const { value } = node.source;
+            if (!value.startsWith('./') && !value.startsWith('../')) return;
+            const lastSegment = value.split('/').pop();
+            if (lastSegment && lastSegment.includes('.')) return;
+            context.report({
+              node: node.source,
+              messageId: 'missingJsExtension',
+              data: { source: value },
+              fix(fixer) {
+                const quote = node.source.raw[0];
+                return fixer.replaceText(node.source, `${quote}${value}.js${quote}`);
+              },
+            });
+          },
+        };
+      },
+    },
+  },
+};
+
 export default defineConfig([
   { ignores: ['**/__snapshots__/**', '**/*.snap', 'eslint.config.mjs'] },
   ...compat.extends('airbnb', 'plugin:cypress/recommended'),
@@ -297,8 +331,10 @@ export default defineConfig([
   },
   {
     files: ['app/api/**/*.ts'],
+    plugins: { local: localRulesPlugin },
 
     rules: {
+      'local/require-js-extension': 'error',
       'no-restricted-syntax': [
         'error',
         {

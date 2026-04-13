@@ -1,7 +1,9 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB from '#api/utils/testing_db.js';
@@ -157,7 +159,11 @@ describe('Relationship fields caching strategy', () => {
       const transactionManager = TransactionManagerFactory.default();
       const ds = new MongoEntitiesDataSource(
         db,
-        new MongoTemplatesDataSource(db, transactionManager),
+        new MongoTemplatesDataSource({
+          db,
+          transactionManager,
+          slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+        }),
         settingsDsMock,
         transactionManager
       );
@@ -200,7 +206,11 @@ describe('Relationship fields caching strategy', () => {
       const transactionManager = TransactionManagerFactory.default();
       const ds = new MongoEntitiesDataSource(
         db,
-        new MongoTemplatesDataSource(db, transactionManager),
+        new MongoTemplatesDataSource({
+          db,
+          transactionManager,
+          slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+        }),
         settingsDsMock,
         transactionManager
       );
@@ -272,7 +282,11 @@ describe('Relationship fields caching strategy', () => {
       const tm = TransactionManagerFactory.default();
       const ds = new MongoEntitiesDataSource(
         db,
-        new MongoTemplatesDataSource(db, tm),
+        new MongoTemplatesDataSource({
+          db,
+          transactionManager: tm,
+          slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+        }),
         settingsDsMock,
         tm
       );
@@ -380,7 +394,11 @@ describe('When checking for the existence of entities', () => {
       const transactionManager = TransactionManagerFactory.default();
       const ds = new MongoEntitiesDataSource(
         db,
-        new MongoTemplatesDataSource(db, transactionManager),
+        new MongoTemplatesDataSource({
+          db,
+          transactionManager,
+          slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+        }),
         partialImplementation<MongoSettingsDataSource>({
           async getLanguageKeys() {
             return Promise.resolve(['en', 'pt']);
@@ -399,7 +417,11 @@ it('should return the sharedIds of the entities that have a particular id within
   const transactionManager = TransactionManagerFactory.default();
   const ds = new MongoEntitiesDataSource(
     db,
-    new MongoTemplatesDataSource(db, transactionManager),
+    new MongoTemplatesDataSource({
+      db,
+      transactionManager,
+      slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+    }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
@@ -420,7 +442,11 @@ it('should update the denormalizations value in all related entities', async () 
   const transactionManager = TransactionManagerFactory.default();
   const ds = new MongoEntitiesDataSource(
     db,
-    new MongoTemplatesDataSource(db, transactionManager),
+    new MongoTemplatesDataSource({
+      db,
+      transactionManager,
+      slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+    }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
@@ -498,7 +524,11 @@ it('should return records containing the obsoleteMetadata', async () => {
   const transactionManager = TransactionManagerFactory.default();
   const ds = new MongoEntitiesDataSource(
     db,
-    new MongoTemplatesDataSource(db, transactionManager),
+    new MongoTemplatesDataSource({
+      db,
+      transactionManager,
+      slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+    }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
