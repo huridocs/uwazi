@@ -399,6 +399,7 @@ export class MongoTemplatesDataSource
 
   async delete(templateId: string): Promise<void> {
     await this.getCollection().deleteOne({ _id: new ObjectId(templateId) });
+    await this.slotsReconciler.execute();
   }
 
   async bulkUpdate(template: Template[]): Promise<void> {
