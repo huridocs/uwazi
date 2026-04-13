@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import { FileDropzone, Select } from '#V2/Components/Forms/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { create } from '#V2/api/csv/index.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { templatesAtom, notificationAtom } from '#V2/atoms/index.js';
+import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 
 type DropzoneModalProps = {
   isOpen: boolean;
@@ -17,14 +18,14 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   const [templateId, setTemplateId] = useState<string | undefined>();
   const [uploading, setIsUploading] = useState(false);
   const templates = useAtomValue(templatesAtom);
+  const setNotification = useSetAtom(notificationAtom);
 
   const onProgress = (completed: number, total: number) => {
-    setProgress((completed / total) * 100);
+    setProgress(Math.round((completed / total) * 100));
   };
 
   const handleClose = () => {
     setIsUploading(false);
-    setTemplateId(undefined);
     setFileToUpload(undefined);
     onClose();
   };
@@ -35,10 +36,13 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       setProgress(0);
       const response = await create(fileToUpload, templateId, onProgress);
       if ('error' in response) {
-        console.log(response);
-      } else {
-        handleClose();
+        reportErrorToSentry(new Error(response.error), 'Error uploading file (CSV V2)');
+        setNotification({
+          type: 'error',
+          text: t('System', 'An error occurred', null, false),
+        });
       }
+      handleClose();
     }
   };
 
@@ -86,6 +90,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
             label={<Translate>Template</Translate>}
             options={options}
             onChange={event => setTemplateId(event.target.value)}
+            value={templateId}
           />
         </div>
       </Modal.Body>

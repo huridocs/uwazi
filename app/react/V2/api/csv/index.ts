@@ -93,7 +93,7 @@ type RegisterCsvImportResponse = {
 };
 
 type CsvImportCreateError = {
-  error: true;
+  error: any;
 };
 
 type CancelCsvImportResponse = {
@@ -121,9 +121,9 @@ const create = async (
       });
 
     return (await request).body;
-  } catch (_e) {
+  } catch (e) {
     return {
-      error: true,
+      error: e,
     };
   }
 };

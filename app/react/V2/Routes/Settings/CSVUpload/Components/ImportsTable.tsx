@@ -62,6 +62,8 @@ const ActionCell = ({ cell }: CellContext<TableData, TableData['id']>) => (
   </Link>
 );
 
+const NumericValueCell = ({ cell }: CellContext<TableData, number>) => cell.getValue() || 0;
+
 const TemplateCell = ({ cell }: CellContext<TableData, TableData['templateName']>) =>
   t(cell.row.original.templateId, cell.getValue(), null, false);
 
@@ -88,11 +90,13 @@ const columns = [
     id: 'stats.entitiesCreated',
     enableSorting: false,
     header: EntitiesHeader,
+    cell: NumericValueCell,
   }),
   columnHelper.accessor(row => row.stats?.rowsFailed, {
     id: 'stats.rowsFailed',
     enableSorting: false,
     header: FailedHeader,
+    cell: NumericValueCell,
   }),
   columnHelper.accessor('createdAt', {
     header: DateHeader,

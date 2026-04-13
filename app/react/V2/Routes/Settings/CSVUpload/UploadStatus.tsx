@@ -12,7 +12,7 @@ import { socket } from '#app/socket.js';
 import { statusMessages } from './Components/statusMessages.js';
 import { DateDisplay } from './Components/DateDisplay.js';
 import { Progress } from './Components/Progress.js';
-import { csvImportEvents, type CsvImportEventPayloads } from '#app/V2/api/csv/events.js';
+import { csvImportEvents } from '#app/V2/api/csv/events.js';
 import { CancelProcessModal } from './Components/CancelProcessModal.js';
 
 const UploadStatus = () => {
@@ -24,7 +24,8 @@ const UploadStatus = () => {
   const canCancel = !(
     entry?.status === CsvImportStatus.Cancelled ||
     entry?.status === CsvImportStatus.Completed ||
-    entry?.status === CsvImportStatus.Failed
+    entry?.status === CsvImportStatus.Failed ||
+    entry?.status === CsvImportStatus.ImportEntitiesDone
   );
 
   const templateName = useMemo(
