@@ -227,9 +227,20 @@ const Table = <T extends TableRow<T>>({
       sensors={sensors}
     >
       <div
-        className={`w-full overflow-auto rounded-md shadow-sm flex flex-col ${containerClassName || ''}`}
+        className={`flex w-full flex-col overflow-auto rounded-md shadow-sm ${containerClassName || ''}`}
+        style={{
+          backgroundColor: 'var(--color-theme-surface-raised)',
+          boxShadow: 'var(--color-theme-card-shadow)',
+        }}
       >
-        <div data-testid="table-header" className="flex justify-between items-center p-4 gap-4">
+        <div
+          data-testid="table-header"
+          className="flex items-center justify-between gap-4 p-4"
+          style={{
+            backgroundColor: 'var(--color-theme-surface-raised)',
+            color: 'var(--color-theme-text-primary)',
+          }}
+        >
           {header && <div className="grow">{header}</div>}
           <div className="flex gap-2">
             {hasGroups && (
@@ -246,7 +257,7 @@ const Table = <T extends TableRow<T>>({
           </div>
         </div>
         <table className={`w-full ${className || ''}`}>
-          <thead className="bg-gray-50">
+          <thead style={{ backgroundColor: 'var(--color-theme-section-header-bg)' }}>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(hdr => {
@@ -257,7 +268,12 @@ const Table = <T extends TableRow<T>>({
                       key={hdr.id}
                       colSpan={hdr.colSpan}
                       scope="col"
-                      className={`p-4 text-sm text-gray-500 uppercase border-b ${customClassName || ''}`}
+                      className={`border-b p-4 text-sm uppercase ${customClassName || ''}`}
+                      style={{
+                        color: 'var(--color-theme-section-header-fg)',
+                        borderColor:
+                          'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+                      }}
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span
@@ -293,7 +309,15 @@ const Table = <T extends TableRow<T>>({
         </table>
       </div>
       {footer && dataState.length > 0 && (
-        <div className="p-4 border-t border-gray-100">{footer}</div>
+        <div
+          className="border-t p-4"
+          style={{
+            borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+            backgroundColor: 'var(--color-theme-surface-raised)',
+          }}
+        >
+          {footer}
+        </div>
       )}
     </DndContext>
   );

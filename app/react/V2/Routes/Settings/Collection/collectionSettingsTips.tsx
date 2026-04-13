@@ -60,7 +60,7 @@ export const receivingEmail = (
       href="https://uwazi.readthedocs.io/en/latest/admin-docs/managing-settings.html#how-to-configure-a-contact-form-or-submission-form"
       target="_blank"
       rel="noreferrer"
-      className="underline text-primary-700 hover:text-primary-900 visited:text-primary-700"
+      className="underline [color:var(--color-theme-action-primary)] hover:[color:var(--color-theme-text-primary)] visited:[color:var(--color-theme-action-primary)]"
     >
       <Translate>here</Translate>
     </a>

@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler } from 'react';
+import React, { ChangeEventHandler, CSSProperties } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Label } from './Label.js';
 
@@ -34,9 +34,25 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     },
     ref
   ) => {
-    const fieldStyles = hasErrors
-      ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900'
-      : 'border-gray-300 border text-gray-900';
+    const showError = Boolean(hasErrors);
+    let backgroundColor = 'var(--color-theme-control-bg)';
+    let textColor = 'var(--color-theme-control-text)';
+
+    if (disabled) {
+      backgroundColor = 'var(--color-theme-control-bg-disabled)';
+      textColor = 'var(--color-theme-control-text-disabled)';
+    } else if (showError) {
+      backgroundColor = 'var(--color-theme-control-bg-error)';
+      textColor = 'var(--color-theme-control-text-error)';
+    }
+
+    const fieldStyle: CSSProperties = {
+      borderColor: showError
+        ? 'var(--color-theme-control-border-error)'
+        : 'var(--color-theme-control-border)',
+      backgroundColor,
+      color: textColor,
+    };
 
     return (
       <div className={className}>
@@ -45,7 +61,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </Label>
           <select
-            className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block w-full text-sm p-2.5 pr-10 appearance-none`}
+            className={`block w-full appearance-none rounded-lg border p-2.5 pr-10 text-sm focus:outline-hidden ${
+              showError
+                ? 'focus:[border-color:var(--color-theme-control-border-error)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+                : 'focus:[border-color:var(--color-theme-control-border-focus)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+            }`}
             id={id}
             disabled={disabled}
             ref={ref}
@@ -53,6 +73,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             onBlur={onBlur}
             onChange={onChange}
             value={value}
+            style={fieldStyle}
           >
             {options.map(({ key, value: optionValue, label: optionLabel }) => (
               <option key={key || optionValue} value={optionValue}>
@@ -61,7 +82,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <div className="pointer-events-none absolute bottom-1 right-3 transform -translate-y-2 flex items-center">
-            <ChevronDownIcon className="w-4 h-4 text-gray-500" />
+            <ChevronDownIcon className="h-4 w-4 [color:var(--color-theme-control-text-muted)]" />
           </div>
         </div>
       </div>

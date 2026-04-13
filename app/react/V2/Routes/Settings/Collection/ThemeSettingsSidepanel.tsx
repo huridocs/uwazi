@@ -23,6 +23,9 @@ const modeTitle: Record<ThemeMode, React.ReactNode> = {
   dark: <Translate>Dark Theme</Translate>,
 };
 
+const assetPreviewWrapperClassName =
+  'flex shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]';
+
 const ThemeSettingsSidepanel = ({
   isOpen,
   onClose,
@@ -78,14 +81,20 @@ const ThemeSettingsSidepanel = ({
                         files={customUploadFiles}
                         selectButtonTitle={<Translate>Select site logo image</Translate>}
                         recommendedSize="200x32 px"
-                        previewWrapperClassName="flex h-14 w-32 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2"
+                        sizeRule={{
+                          width: 200,
+                          height: 32,
+                          policy: 'soft',
+                          assetLabel: 'logotype',
+                        }}
+                        previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-32`}
                       />
                     </SurfacePanel>
                   ))}
                 </div>
               </div>
 
-              <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] pt-6">
+              <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] pt-6">
                 <SectionHeading>
                   <Translate>Theme favicon</Translate>
                 </SectionHeading>
@@ -108,7 +117,13 @@ const ThemeSettingsSidepanel = ({
                         files={customUploadFiles}
                         selectButtonTitle={<Translate>Select favicon image</Translate>}
                         recommendedSize="64x64 px"
-                        previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2"
+                        sizeRule={{
+                          width: 64,
+                          height: 64,
+                          policy: 'strict',
+                          assetLabel: 'favicon',
+                        }}
+                        previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-14`}
                       />
                     </SurfacePanel>
                   ))}
@@ -119,7 +134,7 @@ const ThemeSettingsSidepanel = ({
         </div>
       </Sidepanel.Body>
 
-      <Sidepanel.Footer className="border-t border-gray-200 px-4 py-3">
+      <Sidepanel.Footer className="border-t px-4 py-3 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
         <div className="flex justify-end">
           <Button type="button" variant="primary" onClick={onClose}>
             <Translate>Done</Translate>

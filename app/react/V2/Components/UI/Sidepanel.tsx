@@ -3,8 +3,10 @@ import React, { useId } from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { useAtomValue } from 'jotai';
 import { availableLanguages } from '#shared/language/index.js';
 import { Translate } from '#app/I18N/index.js';
+import { themeModeAtom } from '#V2/atoms/index.js';
 
 interface SidePanelProps {
   children: JSX.Element | React.ReactNode;
@@ -20,7 +22,13 @@ const sidepanelHeader = (
   title?: React.ReactNode,
   titleId?: string
 ) => (
-  <div className="flex p-4 mb-2 text-gray-500">
+  <div
+    className="mb-2 flex p-4"
+    style={{
+      color: 'var(--color-theme-text-secondary)',
+      backgroundColor: 'var(--color-theme-surface-raised)',
+    }}
+  >
     <h1 className="text-base font-bold grow" id={titleId}>
       {title}
     </h1>
@@ -49,6 +57,7 @@ const Sidepanel = ({
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
   const titleId = useId();
+  const themeMode = useAtomValue(themeModeAtom);
 
   let transitionRight = '-translate-x-[500px]';
   let transitionLeft = '-translate-x-[-500px]';
@@ -94,13 +103,18 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="div"
-          className={`w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
+          className={`fixed top-0 right-0 h-full w-full border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
           role="dialog"
           aria-modal="true"
           aria-labelledby={title ? titleId : undefined}
+          style={{
+            backgroundColor: 'var(--color-theme-surface-page)',
+            borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+            colorScheme: themeMode,
+          }}
         >
           <aside className="h-full">{panelContent}</aside>
         </Transition.Child>
@@ -112,10 +126,15 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="div"
-      className={`fixed top-0 right-0 z-10 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
+      className={`fixed top-0 right-0 z-10 h-full w-full border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
+      style={{
+        backgroundColor: 'var(--color-theme-surface-page)',
+        borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+        colorScheme: themeMode,
+      }}
     >
       <aside className="h-full">{panelContent}</aside>
     </Transition>
@@ -136,7 +155,14 @@ Sidepanel.Footer = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div className={`bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>;
+}) => (
+  <div
+    className={`bottom-0 left-0 z-1 w-full ${className}`}
+    style={{ backgroundColor: 'var(--color-theme-surface-page)' }}
+  >
+    {children}
+  </div>
+);
 
 export type { SidePanelProps };
 export { Sidepanel };

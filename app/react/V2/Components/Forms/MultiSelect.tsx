@@ -86,7 +86,14 @@ const MultiSelect = ({
   }, [value]);
 
   return (
-    <div data-testid="multiselect" className="rounded-lg shadow-md">
+    <div
+      data-testid="multiselect"
+      className="rounded-lg shadow-md"
+      style={{
+        backgroundColor: 'var(--color-theme-surface-raised)',
+        boxShadow: 'var(--color-theme-card-shadow)',
+      }}
+    >
       <div
         className={`flex h-12 items-center rounded-t-lg px-4 ${hasErrors ? 'bg-error-50' : ''}`}
         style={hasErrors ? undefined : { backgroundColor: 'var(--color-theme-section-header-bg)' }}
@@ -97,10 +104,11 @@ const MultiSelect = ({
         >
           {renderChild(label)}
         </span>
-        <Popover className="border border-gray-50">
+        <Popover className="border [border-color:color-mix(in_srgb,var(--color-theme-border-default)_20%,transparent)]">
           <Popover.Button
             ref={setReferenceElement}
-            className=" text-primary-700 disabled:text-primary-300"
+            className="disabled:opacity-40"
+            style={{ color: 'var(--color-theme-action-primary)' }}
             disabled={disabled || options.length === 0}
           >
             <span className="sr-only">{t('System', 'Select', null, false)}</span>
@@ -115,7 +123,12 @@ const MultiSelect = ({
             className="z-10"
           >
             <ul
-              className="max-w-md p-2 mb-2 overflow-y-auto bg-white rounded-md shadow-sm max-h-56 w-fit min-w-56"
+              className="mb-2 max-h-56 min-w-56 w-fit max-w-md overflow-y-auto rounded-md p-2 shadow-sm"
+              style={{
+                backgroundColor: 'var(--color-theme-surface-raised)',
+                border:
+                  '1px solid color-mix(in srgb, var(--color-theme-border-default) 60%, transparent)',
+              }}
               data-testid="multiselect-popover"
             >
               {options.map((option: Option) => (
@@ -150,15 +163,20 @@ const MultiSelect = ({
               if (!option) return null;
               return (
                 <Pill color="gray" key={option.value} className="flex flex-row gap-2">
-                  <span className="text-gray-600">{renderChild(option.label)}</span>
+                  <span style={{ color: 'var(--color-theme-text-secondary)' }}>
+                    {renderChild(option.label)}
+                  </span>
                   <button
                     type="button"
                     className={`content-center justify-center text-xs font-bold ${
-                      isDisabled
-                        ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-500 hover:text-gray-700'
+                      isDisabled ? 'cursor-not-allowed' : ''
                     }`}
                     disabled={isDisabled}
+                    style={{
+                      color: isDisabled
+                        ? 'var(--color-theme-text-muted)'
+                        : 'var(--color-theme-text-secondary)',
+                    }}
                     onClick={() => {
                       removeValue(v);
                     }}
@@ -169,7 +187,7 @@ const MultiSelect = ({
                 </Pill>
               );
             })
-          : renderChild(placeholder, 'text-gray-500')}
+          : renderChild(placeholder, '[color:var(--color-theme-text-muted)]')}
       </div>
     </div>
   );

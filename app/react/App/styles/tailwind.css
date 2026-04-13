@@ -204,23 +204,23 @@
 }
 
 @utility bg-paper {
-  background-color: var(--color-theme-bg-surface);
+  background-color: var(--color-theme-surface-raised, var(--color-theme-bg-surface));
 }
 
 @utility bg-parchment {
-  background-color: var(--color-theme-bg-primary);
+  background-color: var(--color-theme-surface-page, var(--color-theme-bg-primary));
 }
 
 @utility bg-warm {
-  background-color: var(--color-theme-bg-warm);
+  background-color: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
 }
 
 @utility bg-vellum {
-  background-color: var(--color-theme-bg-muted);
+  background-color: var(--color-theme-surface-muted, var(--color-theme-bg-muted));
 }
 
 @utility bg-ink {
-  background-color: var(--color-theme-text-primary);
+  background-color: var(--color-theme-action-primary, var(--color-theme-text-primary));
 }
 
 @utility bg-highlight {
@@ -236,11 +236,11 @@
 }
 
 @utility bg-overlay {
-  background-color: var(--color-theme-bg-overlay);
+  background-color: var(--color-theme-surface-overlay, var(--color-theme-bg-overlay));
 }
 
 @utility bg-selected {
-  background-color: var(--color-theme-bg-selected);
+  background-color: var(--color-theme-surface-selected, var(--color-theme-bg-selected));
 }
 
 @utility bg-emphasis-tint {
@@ -268,7 +268,7 @@
 }
 
 @utility text-parchment {
-  color: var(--color-theme-bg-primary);
+  color: var(--color-theme-text-on-solid, var(--color-theme-bg-primary));
 }
 
 @utility text-ink {
@@ -304,7 +304,7 @@
 }
 
 @utility border-ink {
-  border-color: var(--color-theme-text-primary);
+  border-color: var(--color-theme-border-interactive, var(--color-theme-text-primary));
 }
 
 @utility border-border {
@@ -483,16 +483,17 @@
 
 /* Theme customization: V2-wide when data-theme-custom is set on .tw-content */
 [data-theme-custom] {
-  --color-primary-600: var(--color-theme-brand-surface);
-  --color-primary-700: var(--color-theme-brand-surface);
-  --color-primary-800: var(--color-theme-brand-surface);
+  --color-primary-600: var(--color-theme-action-primary);
+  --color-primary-700: var(--color-theme-action-primary);
+  --color-primary-800: var(--color-theme-action-primary);
 }
 
 /* Header bar: uses header-scoped appearance vars rather than the tenant accent pipeline. */
 .tw-content .header-bar[data-uwazi-header] {
-  background-color: var(--color-theme-bg-surface, #ffffff);
-  color: var(--color-theme-text-primary, #1a1a1a);
-  border-bottom: 1px solid var(--color-theme-border-primary, #e5e7eb);
+  background-color: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
+  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
+  border-bottom: 1px solid
+    var(--color-theme-chrome-app-bar-separator, var(--color-theme-border-primary, #e5e7eb));
 }
 .tw-content .header-bar[data-uwazi-header] a,
 .tw-content .header-bar[data-uwazi-header] button {
@@ -504,7 +505,7 @@
   stroke: currentColor;
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-brand {
-  color: var(--color-theme-text-primary, #1a1a1a);
+  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button {

@@ -1,11 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { Button, Pill } from '#V2/Components/UI/index.js';
 import { StarIcon } from '@heroicons/react/20/solid';
+import { Button, Pill } from '#V2/Components/UI/index.js';
 
 import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
-import { Tooltip } from 'flowbite-react';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 import { TemplateRow } from '../types.js';
 
 const columnHelper = createColumnHelper<TemplateRow>();
@@ -92,8 +92,6 @@ const SyncedTemplateCell = ({ cell }: CellContext<TemplateRow, boolean>) =>
           <Translate>All editing options will be disabled.</Translate>
         </div>
       }
-      // eslint-disable-next-line react/style-prop-object
-      style="light"
     >
       <span className="cursor-help">
         <Translate>Synced template</Translate>

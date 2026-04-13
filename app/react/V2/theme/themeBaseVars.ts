@@ -1,4 +1,4 @@
-import { getAccessibleColorPair, getContrastTextColor, mixHex } from '#shared/utils/contrast.js';
+import { getAccessibleColorPair } from '#shared/utils/contrast.js';
 import {
   EMPHASIS_SOLID_BG,
   EMPHASIS_SOLID_FG,
@@ -10,26 +10,20 @@ import {
   THEME_SEPARATOR_VAR,
   THEME_VAR,
 } from '#V2/theme/roleTokens.js';
-import type { ResolvedThemeVars } from '#V2/theme/themes.js';
+import type { ThemeRoles } from '#V2/theme/themeRoles.js';
 
-const getDerivedThemeVars = (topbar: string): Record<string, string> => {
-  const hoverBg = mixHex(topbar, '#000000', 0.12);
-  const activeBg = mixHex(topbar, '#000000', 0.2);
-  const fg = getContrastTextColor(topbar);
+const getDerivedThemeVars = (chrome: ThemeRoles['chrome']): Record<string, string> => ({
+  [THEME_VAR]: chrome.appBar,
+  [THEME_FOREGROUND_VAR]: chrome.appBarFg,
+  [THEME_SEPARATOR_VAR]: chrome.separator,
+  [THEME_HOVER_BG]: chrome.appBarHover,
+  [THEME_HOVER_FG]: chrome.appBarFg,
+  [THEME_ACTIVE_BG]: chrome.appBarActive,
+  [THEME_ACTIVE_FG]: chrome.appBarFg,
+});
 
-  return {
-    [THEME_VAR]: topbar,
-    [THEME_FOREGROUND_VAR]: fg,
-    [THEME_SEPARATOR_VAR]: fg,
-    [THEME_HOVER_BG]: hoverBg,
-    [THEME_HOVER_FG]: getContrastTextColor(hoverBg),
-    [THEME_ACTIVE_BG]: activeBg,
-    [THEME_ACTIVE_FG]: getContrastTextColor(activeBg),
-  };
-};
-
-const getActionThemeVars = (resolved: ResolvedThemeVars): Record<string, string> => {
-  const emphasis = getAccessibleColorPair(resolved['--color-theme-accent-emphasis']);
+const getActionThemeVars = (roles: ThemeRoles): Record<string, string> => {
+  const emphasis = getAccessibleColorPair(roles.feedback.danger);
 
   return {
     [EMPHASIS_SOLID_BG]: emphasis.background,

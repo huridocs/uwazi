@@ -101,7 +101,7 @@ const ActivityLog = () => {
               defaultSorting={getDefaultSorting(searchParams)}
               onSort={({ sortingState }) => handleSorting(sortingState)}
               header={
-                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                   Activity Log
                 </Translate>
               }

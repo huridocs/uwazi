@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { Tooltip } from 'flowbite-react';
 import { FileType } from '#shared/types/fileType.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
 import { getOcrStatus, OcrStatus, postToOcr } from '#V2/api/files/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
-import { Button } from '#V2/Components/UI/index.js';
+import { Button, Tooltip } from '#V2/Components/UI/index.js';
 import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
 
@@ -136,8 +135,7 @@ const OCRButton = ({ file }: OCRButtonProps) => {
   };
 
   return (
-    // eslint-disable-next-line react/style-prop-object
-    <Tooltip content={tip} style="light">
+    <Tooltip content={tip}>
       <Button
         variant="secondary"
         disabled={ocrStatus.status !== OcrStatus.NONE}

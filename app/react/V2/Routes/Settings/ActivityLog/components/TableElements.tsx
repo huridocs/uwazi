@@ -2,9 +2,8 @@
 import React from 'react';
 import { DateTime } from 'luxon';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Tooltip } from 'flowbite-react';
 
-import { Pill, Button } from '#V2/Components/UI/index.js';
+import { Pill, Button, Tooltip } from '#V2/Components/UI/index.js';
 import type { PillColor } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { ActivityLogSemanticType } from '#shared/types/activityLogEntryType.js';
@@ -49,8 +48,6 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
   return (
     <div className="flex">
       <Tooltip
-        // eslint-disable-next-line react/style-prop-object
-        style="light"
         className="max-w-lg max-h-64 min-w-20"
         content={
           <div className="flex-col">

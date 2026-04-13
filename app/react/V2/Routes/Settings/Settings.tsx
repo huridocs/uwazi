@@ -14,7 +14,12 @@ const Settings = () => {
         <title>{t('System', 'Settings', null, false)}</title>
       </Helmet>
       <div
-        className={`md:min-w-[250px] border-r border-gray-200 bg-gray-50 h-full ${isSettingsParentRoute ? 'w-full' : 'invisible w-0 min-w-0'} md:visible`}
+        className={`md:min-w-[250px] h-full ${isSettingsParentRoute ? 'w-full' : 'invisible w-0 min-w-0'} md:visible`}
+        style={{
+          borderRight:
+            '1px solid color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+          backgroundColor: 'var(--color-theme-surface-muted)',
+        }}
       >
         <SettingsNavigation />
       </div>

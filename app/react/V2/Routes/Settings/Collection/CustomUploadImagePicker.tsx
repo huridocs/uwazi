@@ -13,6 +13,18 @@ import { notificationAtom } from '#V2/atoms/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 type AssetField = 'site_logo' | 'favicon';
+type ImageSizePolicy = 'strict' | 'soft';
+type ImageDimensions = { width: number; height: number };
+type ImageSizeRule = {
+  width: number;
+  height: number;
+  policy: ImageSizePolicy;
+  assetLabel: 'favicon' | 'logotype';
+};
+type ImageFeedback = {
+  type: 'warning' | 'error';
+  message: string;
+};
 
 const assetUrl = (file: FileType): string => {
   const u = file.url?.trim();
@@ -22,6 +34,50 @@ const assetUrl = (file: FileType): string => {
 };
 
 const isImageFile = (file: FileType): boolean => Boolean(file.mimetype?.startsWith('image/'));
+
+const loadImageDimensions = async (src: string): Promise<ImageDimensions> =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight });
+    image.onerror = () => reject(new Error('Failed to load image'));
+    image.src = src;
+  });
+
+const loadFileDimensions = async (file: File): Promise<ImageDimensions> => {
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    return await loadImageDimensions(objectUrl);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
+
+const expectedSize = (rule: ImageSizeRule) => `${rule.width}x${rule.height} px`;
+const currentSize = (dimensions: ImageDimensions) => `${dimensions.width}x${dimensions.height} px`;
+
+const getImageFeedback = (
+  rule: ImageSizeRule,
+  dimensions: ImageDimensions
+): ImageFeedback | null => {
+  if (dimensions.width === rule.width && dimensions.height === rule.height) {
+    return null;
+  }
+
+  const message =
+    rule.policy === 'strict'
+      ? `The ${rule.assetLabel} must be exactly ${expectedSize(rule)}. This image is ${currentSize(
+          dimensions
+        )}.`
+      : `The ${rule.assetLabel} works best at ${expectedSize(rule)}. This image is ${currentSize(
+          dimensions
+        )}.`;
+
+  return {
+    type: rule.policy === 'strict' ? 'error' : 'warning',
+    message,
+  };
+};
 
 const filenameFromAssetUrl = (valueUrl: string): string | undefined => {
   const m = valueUrl.trim().match(/\/assets\/([^?#]+)/);
@@ -38,7 +94,7 @@ const fileMatchesAssetUrl = (file: FileType, valueUrl: string): boolean => {
 const defaultPreviewClass = 'max-h-full max-w-full object-contain';
 
 const defaultPreviewWrapperClass =
-  'flex h-14 w-28 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2';
+  'flex h-14 w-28 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]';
 
 type CustomUploadImagePickerProps = {
   id: string;
@@ -51,6 +107,7 @@ type CustomUploadImagePickerProps = {
   previewImgClassName?: string;
   previewWrapperClassName?: string;
   recommendedSize?: string;
+  sizeRule?: ImageSizeRule;
 };
 
 const CustomUploadImagePicker = ({
@@ -64,24 +121,129 @@ const CustomUploadImagePicker = ({
   previewImgClassName = defaultPreviewClass,
   previewWrapperClassName = defaultPreviewWrapperClass,
   recommendedSize,
+  sizeRule,
 }: CustomUploadImagePickerProps) => {
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
   const [open, setOpen] = useState(false);
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [validationFeedback, setValidationFeedback] = useState<ImageFeedback | null>(null);
   const [uploadProgress, setUploadProgress] = useState<{ filename?: string; progress?: number }>(
     {}
   );
   const uploadService = useMemo(() => new UploadService('custom'), []);
   const images = useMemo(() => files.filter(isImageFile), [files]);
   const trimmed = value?.trim() ?? '';
-  const pick = (file: FileType) => {
-    onChange(assetUrl(file));
+  const sizeRuleKey = sizeRule
+    ? `${sizeRule.assetLabel}:${sizeRule.policy}:${sizeRule.width}x${sizeRule.height}`
+    : '';
+
+  const feedbackStyle = (type: ImageFeedback['type']) =>
+    type === 'error'
+      ? {
+          backgroundColor: 'var(--color-theme-feedback-danger-tint)',
+          borderColor: 'color-mix(in srgb, var(--color-theme-feedback-danger) 35%, transparent)',
+          color: 'var(--color-theme-feedback-danger)',
+        }
+      : {
+          backgroundColor: 'var(--color-theme-warning-banner-bg)',
+          borderColor: 'var(--color-theme-warning-banner-border)',
+          color: 'var(--color-theme-warning-banner-fg)',
+        };
+
+  const notifyFeedback = (feedback: ImageFeedback) => {
+    setNotifications({
+      type: feedback.type,
+      text: feedback.message,
+    });
+  };
+
+  const validateAssetUrl = async (url: string) => {
+    if (!sizeRule || !url.trim()) {
+      return null;
+    }
+
+    try {
+      const dimensions = await loadImageDimensions(url);
+      return getImageFeedback(sizeRule, dimensions);
+    } catch {
+      return null;
+    }
+  };
+
+  const validateFiles = async (newFiles: File[]) => {
+    if (!sizeRule || newFiles.length === 0) {
+      return { acceptedFiles: newFiles, feedback: null as ImageFeedback | null };
+    }
+
+    const validations = await Promise.all(
+      newFiles.map(async file => {
+        try {
+          return {
+            file,
+            feedback: getImageFeedback(sizeRule, await loadFileDimensions(file)),
+          };
+        } catch {
+          return { file, feedback: null as ImageFeedback | null };
+        }
+      })
+    );
+
+    return {
+      acceptedFiles:
+        sizeRule.policy === 'strict'
+          ? validations
+              .filter(validation => validation.feedback?.type !== 'error')
+              .map(validation => validation.file)
+          : newFiles,
+      feedback: validations.find(validation => validation.feedback)?.feedback ?? null,
+    };
+  };
+
+  const pick = async (file: FileType) => {
+    const url = assetUrl(file);
+    const feedback = await validateAssetUrl(url);
+
+    setValidationFeedback(feedback);
+
+    if (feedback?.type === 'error') {
+      notifyFeedback(feedback);
+      return;
+    }
+
+    if (feedback) {
+      notifyFeedback(feedback);
+    }
+
+    onChange(url);
     setOpen(false);
   };
 
   React.useEffect(() => () => uploadService.abort(), [uploadService]);
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const syncValidation = async () => {
+      if (!trimmed || !sizeRule) {
+        if (!cancelled) {
+          setValidationFeedback(null);
+        }
+        return;
+      }
+
+      const feedback = await validateAssetUrl(trimmed);
+      if (!cancelled) {
+        setValidationFeedback(feedback);
+      }
+    };
+
+    void syncValidation();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [trimmed, sizeRuleKey]);
 
   const notifyUploadResult = (responses: (FileType | FetchResponseError)[]) => {
     const hasErrors = responses.some(
@@ -126,7 +288,24 @@ const CustomUploadImagePicker = ({
     await revalidator.revalidate();
 
     if (uploadedImage) {
-      onChange(assetUrl(uploadedImage));
+      const uploadedUrl = assetUrl(uploadedImage);
+      const feedback = await validateAssetUrl(uploadedUrl);
+
+      setValidationFeedback(feedback);
+
+      if (feedback?.type === 'error') {
+        notifyFeedback(feedback);
+        setFilesToUpload([]);
+        setUploadProgress({});
+        setUploading(false);
+        return;
+      }
+
+      if (feedback) {
+        notifyFeedback(feedback);
+      }
+
+      onChange(uploadedUrl);
     }
 
     setFilesToUpload([]);
@@ -157,8 +336,16 @@ const CustomUploadImagePicker = ({
       )}
       <Label htmlFor={id}>{label}</Label>
       {recommendedSize ? (
-        <div className="mt-1 text-xs text-gray-500">
+        <div className="mt-1 text-xs [color:var(--color-theme-text-muted)]">
           <Translate>Recommended</Translate>: {recommendedSize}
+        </div>
+      ) : null}
+      {validationFeedback ? (
+        <div
+          className="mt-2 rounded-lg border px-3 py-2 text-xs"
+          style={feedbackStyle(validationFeedback.type)}
+        >
+          {validationFeedback.message}
         </div>
       ) : null}
       <div className="mt-2 flex flex-col gap-3">
@@ -195,18 +382,25 @@ const CustomUploadImagePicker = ({
           </Modal.Header>
           <Modal.Body className="!p-4">
             <div className="space-y-4">
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p className="mb-3 text-sm font-medium text-gray-800">
+              <div className="rounded-lg border p-4 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]">
+                <p className="mb-3 text-sm font-medium [color:var(--color-theme-text-primary)]">
                   <Translate>Upload a new image</Translate>
                 </p>
                 <FileDropzone
                   className="w-auto"
-                  onChange={(newFiles: File[]) => {
-                    setFilesToUpload(newFiles);
+                  onChange={async (newFiles: File[]) => {
+                    const { acceptedFiles, feedback } = await validateFiles(newFiles);
+
+                    setFilesToUpload(acceptedFiles);
+                    setValidationFeedback(feedback);
+
+                    if (feedback) {
+                      notifyFeedback(feedback);
+                    }
                   }}
                 />
                 <div className="mt-3 flex items-center justify-between gap-3">
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs [color:var(--color-theme-text-muted)]">
                     {uploadProgress.filename ? (
                       <>
                         <Translate>Uploading</Translate> {uploadProgress.filename}{' '}
@@ -225,12 +419,12 @@ const CustomUploadImagePicker = ({
               </div>
 
               {images.length === 0 ? (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm [color:var(--color-theme-text-secondary)]">
                   <Translate>Site logo no images hint</Translate>
                 </div>
               ) : (
                 <>
-                  <p className="text-sm font-medium text-gray-800">
+                  <p className="text-sm font-medium [color:var(--color-theme-text-primary)]">
                     <Translate>Select an existing image</Translate>
                   </p>
                   <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
@@ -241,22 +435,25 @@ const CustomUploadImagePicker = ({
                         <li key={String(file._id ?? file.filename)}>
                           <button
                             type="button"
-                            onClick={() => pick(file)}
-                            className={[
-                              'flex w-full flex-col overflow-hidden rounded-lg border text-left transition-colors',
-                              selected
-                                ? 'border-primary-600 ring-2 ring-primary-500'
-                                : 'border-gray-200 hover:border-primary-400',
-                            ].join(' ')}
+                            onClick={async () => pick(file)}
+                            className="flex w-full flex-col overflow-hidden rounded-lg border text-left transition-colors"
+                            style={{
+                              borderColor: selected
+                                ? 'var(--color-theme-action-primary)'
+                                : 'color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
+                              boxShadow: selected
+                                ? '0 0 0 2px var(--color-theme-action-primary)'
+                                : undefined,
+                            }}
                           >
-                            <span className="flex h-24 items-center justify-center bg-gray-50 p-2">
+                            <span className="flex h-24 items-center justify-center p-2 [background-color:var(--color-theme-surface-warm)]">
                               <img
                                 src={url}
                                 alt=""
                                 className="max-h-full max-w-full object-contain"
                               />
                             </span>
-                            <span className="truncate border-t border-gray-100 px-2 py-1.5 text-xs text-gray-700">
+                            <span className="truncate border-t px-2 py-1.5 text-xs [color:var(--color-theme-text-secondary)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
                               {file.originalname || file.filename}
                             </span>
                           </button>

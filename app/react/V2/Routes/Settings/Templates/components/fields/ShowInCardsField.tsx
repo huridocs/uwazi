@@ -1,9 +1,9 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { Checkbox } from '#V2/Components/Forms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { Tooltip } from 'flowbite-react';
-import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 
 export const ShowInCardsField = ({ control }: { control: any }) => (
   <Controller
@@ -18,8 +18,6 @@ export const ShowInCardsField = ({ control }: { control: any }) => (
           <span className="flex items-center gap-1">
             <Translate>Show in cards</Translate>{' '}
             <Tooltip
-              // eslint-disable-next-line react/style-prop-object
-              style="light"
               content={t(
                 'System',
                 'This property will appear in the library cards as part of the basic info.',

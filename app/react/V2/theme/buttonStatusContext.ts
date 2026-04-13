@@ -2,10 +2,10 @@ import { getAccessibleColorPair, mixHex } from '#shared/utils/contrast.js';
 import {
   LEGACY_BUTTON_VALUES,
   getAccessibleForeground,
-  getPresetResolvedValue,
   getPresetValue,
 } from '#V2/theme/buttonThemeShared.js';
-import type { ResolvedThemeVars, ThemePresetId } from '#V2/theme/themes.js';
+import type { ThemeRoles } from '#V2/theme/themeRoles.js';
+import type { ThemePresetId } from '#V2/theme/themes.js';
 
 type ButtonStatusContext = {
   successSolidBackground: string;
@@ -25,58 +25,42 @@ type ButtonStatusContext = {
 };
 
 const getStatusSecondaryTheme = ({
-  presetId,
-  resolved,
+  roles,
   secondaryBackground,
-  legacyColor,
-  resolvedKey,
+  solid,
 }: {
-  presetId: ThemePresetId;
-  resolved: ResolvedThemeVars;
+  roles: ThemeRoles;
   secondaryBackground: string;
-  legacyColor: string;
-  resolvedKey: keyof ResolvedThemeVars;
-}) => {
-  const solid = getPresetResolvedValue(presetId, resolved, legacyColor, resolvedKey);
-  return {
-    borderOnSurface: getAccessibleForeground(resolved['--color-theme-bg-surface'], solid, 3),
-    foregroundOnSecondary: getAccessibleForeground(secondaryBackground, solid),
-  };
-};
+  solid: string;
+}) => ({
+  borderOnSurface: getAccessibleForeground(roles.surface.raised, solid, 3),
+  foregroundOnSecondary: getAccessibleForeground(secondaryBackground, solid),
+});
 
 const getStatusButtonContext = (
   presetId: ThemePresetId,
-  resolved: ResolvedThemeVars,
-  secondaryBackground: string
+  secondaryBackground: string,
+  roles: ThemeRoles
 ): ButtonStatusContext => {
-  const successSolidBackground = getPresetResolvedValue(
-    presetId,
-    resolved,
-    LEGACY_BUTTON_VALUES.success,
-    '--color-theme-success'
-  );
+  const successSolidBackground = roles.feedback.success;
   const successSolidForeground = getAccessibleForeground(
     successSolidBackground,
-    LEGACY_BUTTON_VALUES.surface
+    roles.text.onSolid
   );
   const successDisabledBackground = getPresetValue(
     presetId,
     LEGACY_BUTTON_VALUES.successDisabled,
-    mixHex(successSolidBackground, resolved['--color-theme-bg-surface'], 0.35)
+    mixHex(successSolidBackground, roles.surface.raised, 0.35)
   );
   const successSecondaryTheme = getStatusSecondaryTheme({
-    presetId,
-    resolved,
+    roles,
     secondaryBackground,
-    legacyColor: LEGACY_BUTTON_VALUES.success,
-    resolvedKey: '--color-theme-success',
+    solid: roles.feedback.success,
   });
   const dangerSecondaryTheme = getStatusSecondaryTheme({
-    presetId,
-    resolved,
+    roles,
     secondaryBackground,
-    legacyColor: LEGACY_BUTTON_VALUES.danger,
-    resolvedKey: '--color-theme-accent-emphasis',
+    solid: roles.feedback.danger,
   });
 
   return {
@@ -100,41 +84,11 @@ const getStatusButtonContext = (
     dangerOnSecondaryBackground: dangerSecondaryTheme.foregroundOnSecondary,
     dangerBorderOnSurface: dangerSecondaryTheme.borderOnSurface,
     successOnSuccessTint: getAccessibleForeground(
-      getPresetResolvedValue(
-        presetId,
-        resolved,
-        LEGACY_BUTTON_VALUES.successTint,
-        '--color-theme-success-light'
-      ),
-      getPresetResolvedValue(
-        presetId,
-        resolved,
-        LEGACY_BUTTON_VALUES.success,
-        '--color-theme-success'
-      )
+      roles.feedback.successTint,
+      roles.feedback.success
     ),
-    dangerOnDangerTint: getAccessibleForeground(
-      getPresetResolvedValue(
-        presetId,
-        resolved,
-        LEGACY_BUTTON_VALUES.dangerTint,
-        '--color-theme-accent-emphasis-tint'
-      ),
-      getPresetResolvedValue(
-        presetId,
-        resolved,
-        LEGACY_BUTTON_VALUES.danger,
-        '--color-theme-accent-emphasis'
-      )
-    ),
-    dangerSolid: getAccessibleColorPair(
-      getPresetResolvedValue(
-        presetId,
-        resolved,
-        LEGACY_BUTTON_VALUES.danger,
-        '--color-theme-accent-emphasis'
-      )
-    ),
+    dangerOnDangerTint: getAccessibleForeground(roles.feedback.dangerTint, roles.feedback.danger),
+    dangerSolid: getAccessibleColorPair(roles.feedback.danger),
   };
 };
 

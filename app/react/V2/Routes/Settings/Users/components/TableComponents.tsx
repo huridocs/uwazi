@@ -2,9 +2,9 @@
 import React, { MouseEventHandler } from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
-import { Tooltip } from 'flowbite-react';
 import { Button, Pill } from '#app/V2/Components/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 import { User, Group } from '../types.js';
 
 const userColumns = createColumnHelper<User>();
@@ -72,11 +72,7 @@ const UsernameCell = ({ cell }: CellContext<User, User['username']>) => {
     <div className="flex gap-1 items-start">
       <span className={userIsBlocked ? 'text-error-800' : ''}>{cell.getValue()}</span>
       {userIsBlocked && (
-        <Tooltip
-          content={t('System', 'Account locked', null, false)}
-          // eslint-disable-next-line react/style-prop-object
-          style="light"
-        >
+        <Tooltip content={t('System', 'Account locked', null, false)}>
           <LockClosedIcon className="w-4 cursor-pointer text-error-600" />
         </Tooltip>
       )}

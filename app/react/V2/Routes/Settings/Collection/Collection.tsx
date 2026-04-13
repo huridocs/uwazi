@@ -6,14 +6,13 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import isUndefined from 'lodash/isUndefined.js';
-import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as FilesAPI from '#V2/api/files/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
-import { Button, Card } from '#V2/Components/UI/index.js';
+import { Button, Card, Tooltip } from '#V2/Components/UI/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
@@ -148,13 +147,8 @@ const Collection = () => {
   const labelWithTip = (label: React.ReactNode, tip: React.ReactNode) => (
     <span className="flex gap-4">
       {label}
-      <Tooltip
-        // eslint-disable-next-line react/style-prop-object
-        style="light"
-        content={tip}
-        placement="right"
-      >
-        <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+      <Tooltip content={tip} placement="right">
+        <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
       </Tooltip>
     </span>
   );
@@ -216,24 +210,56 @@ const Collection = () => {
                     files={customUploadFiles}
                     selectButtonTitle={<Translate>Select favicon image</Translate>}
                     recommendedSize="64x64 px"
-                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50 p-2"
+                    sizeRule={{
+                      width: 64,
+                      height: 64,
+                      policy: 'strict',
+                      assetLabel: 'favicon',
+                    }}
+                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]"
                   />
                 ) : null}
                 {themeCustomization && (
                   <>
                     <div className="sm:col-span-2">
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                      <div
+                        className="rounded-xl p-4"
+                        style={{
+                          border:
+                            '1px solid color-mix(in srgb, var(--color-theme-border-default) 60%, transparent)',
+                          backgroundColor: 'var(--color-theme-surface-muted)',
+                        }}
+                      >
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p
+                              className="text-sm font-medium"
+                              style={{ color: 'var(--color-theme-text-primary)' }}
+                            >
                               <Translate>Theme and branding</Translate>
                             </p>
                             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                              <span className="rounded-full bg-white px-2.5 py-1 font-medium text-gray-700 ring-1 ring-gray-200">
+                              <span
+                                className="rounded-full px-2.5 py-1 font-medium"
+                                style={{
+                                  backgroundColor: 'var(--color-theme-surface-raised)',
+                                  color: 'var(--color-theme-text-secondary)',
+                                  boxShadow:
+                                    'inset 0 0 0 1px color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
+                                }}
+                              >
                                 {selectedTheme?.label}
                               </span>
                               {hasThemeOverrides ? (
-                                <span className="rounded-full bg-primary-50 px-2.5 py-1 font-medium text-primary-700 ring-1 ring-primary-200">
+                                <span
+                                  className="rounded-full px-2.5 py-1 font-medium"
+                                  style={{
+                                    backgroundColor: 'var(--color-theme-feedback-info-tint)',
+                                    color: 'var(--color-theme-action-primary)',
+                                    boxShadow:
+                                      'inset 0 0 0 1px color-mix(in srgb, var(--color-theme-feedback-info) 35%, transparent)',
+                                  }}
+                                >
                                   <Translate>Customized</Translate>
                                 </span>
                               ) : null}
@@ -241,7 +267,13 @@ const Collection = () => {
                           </div>
 
                           <div className="flex items-center gap-4">
-                            <div className="overflow-hidden rounded-lg border border-gray-200">
+                            <div
+                              className="overflow-hidden rounded-lg"
+                              style={{
+                                border:
+                                  '1px solid color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
+                              }}
+                            >
                               <div className="flex">
                                 <span
                                   className="h-8 w-12"
@@ -346,13 +378,8 @@ const Collection = () => {
               title={
                 <span className="flex gap-4">
                   <Translate>Analytics</Translate>
-                  <Tooltip
-                    // eslint-disable-next-line react/style-prop-object
-                    style="light"
-                    content={tips.analytics}
-                    placement="right"
-                  >
-                    <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+                  <Tooltip content={tips.analytics} placement="right">
+                    <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
                   </Tooltip>
                 </span>
               }

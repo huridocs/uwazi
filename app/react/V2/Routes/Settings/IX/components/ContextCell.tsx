@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Truncate } from '#V2/Components/UI/index.js';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import sanitizeHtml from 'sanitize-html';
-import { Tooltip } from 'flowbite-react';
+import { Tooltip, Truncate } from '#V2/Components/UI/index.js';
 import {
   BASE_CONTEXT,
   extractTextContent,
@@ -313,8 +312,6 @@ const ContextCell = ({ text }: { text: string }) => {
         }
         arrow
         animation="duration-100"
-        // eslint-disable-next-line react/style-prop-object
-        style="light"
         className="shadow-xl z-[9999]"
       >
         <div className="pointer-events-auto cursor-pointer">{truncatedHTML}</div>

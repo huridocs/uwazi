@@ -1,5 +1,6 @@
 import type { ButtonThemeContext } from '#V2/theme/buttonThemeContext.js';
 import { LEGACY_BUTTON_VALUES } from '#V2/theme/buttonThemeContext.js';
+import type { ThemeRoles } from '#V2/theme/themeRoles.js';
 import {
   EMBEDDED_BUTTON_GREEN_BG,
   EMBEDDED_BUTTON_GREEN_BORDER,
@@ -31,7 +32,10 @@ import {
   TOGGLE_TRACK_DISABLED_ACTIVE_BG,
 } from '#V2/theme/roleTokens.js';
 
-const getEmbeddedButtonThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+const getEmbeddedButtonThemeVars = (
+  context: ButtonThemeContext,
+  roles: ThemeRoles
+): Record<string, string> => ({
   [EMBEDDED_BUTTON_ORANGE_BORDER]: '#FED7AA',
   [EMBEDDED_BUTTON_ORANGE_BG]: '#FFF7ED',
   [EMBEDDED_BUTTON_ORANGE_FG]: '#9A3412',
@@ -43,13 +47,13 @@ const getEmbeddedButtonThemeVars = (context: ButtonThemeContext): Record<string,
   [EMBEDDED_BUTTON_GREEN_DISABLED_FG]: '#BBF7D0',
   [EMBEDDED_BUTTON_RED_BORDER]: context.isLegacy
     ? LEGACY_BUTTON_VALUES.border
-    : context.resolved['--color-theme-border-primary'],
+    : roles.border.default,
   [EMBEDDED_BUTTON_RED_BG]: context.isLegacy
     ? LEGACY_BUTTON_VALUES.surfaceWarm
-    : context.resolved['--color-theme-bg-warm'],
+    : roles.surface.warm,
   [EMBEDDED_BUTTON_RED_FG]: context.isLegacy
     ? LEGACY_BUTTON_VALUES.softBorder
-    : context.resolved['--color-theme-border-primary'],
+    : roles.border.default,
   [EMBEDDED_BUTTON_INDIGO_BORDER]: '#C7D2FE',
   [EMBEDDED_BUTTON_INDIGO_BG]: '#E0E7FF',
   [EMBEDDED_BUTTON_INDIGO_FG]: '#3730A3',
@@ -58,26 +62,25 @@ const getEmbeddedButtonThemeVars = (context: ButtonThemeContext): Record<string,
   [EMBEDDED_BUTTON_INDIGO_DISABLED_FG]: '#C7D2FE',
   [EMBEDDED_BUTTON_WHITE_BORDER]: context.isLegacy
     ? LEGACY_BUTTON_VALUES.border
-    : context.resolved['--color-theme-border-primary'],
+    : roles.border.default,
   [EMBEDDED_BUTTON_WHITE_BG]: context.isLegacy
     ? LEGACY_BUTTON_VALUES.surface
-    : context.resolved['--color-theme-bg-surface'],
-  [EMBEDDED_BUTTON_WHITE_FG]: context.isLegacy
-    ? LEGACY_BUTTON_VALUES.text
-    : context.resolved['--color-theme-text-primary'],
+    : roles.surface.raised,
+  [EMBEDDED_BUTTON_WHITE_FG]: context.isLegacy ? LEGACY_BUTTON_VALUES.text : roles.text.primary,
   [EMBEDDED_BUTTON_WHITE_DISABLED_BG]: context.isLegacy
     ? LEGACY_BUTTON_VALUES.surfaceWarm
-    : context.resolved['--color-theme-bg-warm'],
+    : roles.surface.warm,
   [EMBEDDED_BUTTON_WHITE_DISABLED_FG]: context.isLegacy
     ? LEGACY_BUTTON_VALUES.softBorder
-    : context.resolved['--color-theme-border-primary'],
+    : roles.border.default,
 });
 
-const getToggleThemeVars = (context: ButtonThemeContext): Record<string, string> => ({
+const getToggleThemeVars = (
+  context: ButtonThemeContext,
+  roles: ThemeRoles
+): Record<string, string> => ({
   [TOGGLE_TRACK_BG]: LEGACY_BUTTON_VALUES.border,
-  [TOGGLE_TRACK_ACTIVE_BG]: context.isLegacy
-    ? LEGACY_BUTTON_VALUES.primary
-    : context.resolved['--color-theme-accent-primary'],
+  [TOGGLE_TRACK_ACTIVE_BG]: context.isLegacy ? LEGACY_BUTTON_VALUES.primary : roles.action.primary,
   [TOGGLE_TRACK_DISABLED_ACTIVE_BG]: LEGACY_BUTTON_VALUES.primaryDisabled,
   [TOGGLE_THUMB_BG]: LEGACY_BUTTON_VALUES.surface,
   [TOGGLE_THUMB_BORDER]: LEGACY_BUTTON_VALUES.softBorder,

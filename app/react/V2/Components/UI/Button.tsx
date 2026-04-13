@@ -124,7 +124,7 @@ const Button = ({
     },
     secondary: {
       borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent)'
+        ? 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)'
         : 'var(--color-theme-button-secondary-border)',
       backgroundColor: 'var(--color-theme-button-secondary-bg)',
       color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-secondary-fg)',
@@ -141,7 +141,7 @@ const Button = ({
     },
     compact: {
       borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-border-primary) 40%, transparent)'
+        ? 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)'
         : 'var(--color-theme-button-compact-border)',
       backgroundColor: 'var(--color-theme-button-compact-bg)',
       color: disabled ? 'var(--color-theme-text-muted)' : 'var(--color-theme-button-compact-fg)',
@@ -159,7 +159,7 @@ const Button = ({
     },
     dangerSecondary: {
       borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-accent-emphasis) 15%, transparent)'
+        ? 'color-mix(in srgb, var(--color-theme-feedback-danger) 15%, transparent)'
         : 'var(--color-theme-button-danger-secondary-border)',
       backgroundColor: 'var(--color-theme-button-danger-secondary-bg)',
       color: disabled
@@ -168,7 +168,7 @@ const Button = ({
     },
     successSecondary: {
       borderColor: disabled
-        ? 'color-mix(in srgb, var(--color-theme-success) 15%, transparent)'
+        ? 'color-mix(in srgb, var(--color-theme-feedback-success) 15%, transparent)'
         : 'var(--color-theme-button-success-secondary-border)',
       backgroundColor: 'var(--color-theme-button-success-secondary-bg)',
       color: disabled

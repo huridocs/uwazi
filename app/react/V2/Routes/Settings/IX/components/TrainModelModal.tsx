@@ -1,9 +1,8 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Tooltip } from 'flowbite-react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Modal, Button } from '#V2/Components/UI/index.js';
+import { Modal, Button, Tooltip } from '#V2/Components/UI/index.js';
 import { Checkbox, InputField, RadioSelect } from '#V2/Components/Forms/index.js';
 
 type TrainModelModalProps = {
@@ -71,8 +70,6 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
                 <div>
                   <label htmlFor={field.name} className="text-gray-900 pb-4">
                     <Tooltip
-                      // eslint-disable-next-line react/style-prop-object
-                      style="light"
                       content={
                         <div>
                           <Translate>Choose which data to use for training</Translate> :

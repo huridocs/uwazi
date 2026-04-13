@@ -1,10 +1,10 @@
 import React from 'react';
+import { useAtomValue } from 'jotai';
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 import { Icon } from '#app/UI/index.js';
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
-import { useAtomValue } from 'jotai';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
 const SettingsNavigation = () => {
@@ -14,8 +14,8 @@ const SettingsNavigation = () => {
   const renderLink = (to: string, children: React.ReactNode) => (
     <I18NLink
       to={to}
-      activeClassname="bg-primary-100 text-primary-800 focus:bg-primary-100"
-      className="block p-2 rounded-sm hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm"
+      activeClassname="[background-color:var(--color-theme-feedback-info-tint)] [color:var(--color-theme-action-primary)] focus:[background-color:var(--color-theme-feedback-info-tint)]"
+      className="block rounded-sm p-2 text-sm font-medium [color:var(--color-theme-text-secondary)] hover:[background-color:var(--color-theme-surface-warm)] hover:[color:var(--color-theme-text-primary)] focus:[background-color:var(--color-theme-surface-warm)] focus:[color:var(--color-theme-text-primary)]"
     >
       <span className="whitespace-nowrap flex items-center gap-1">{children}</span>
     </I18NLink>
@@ -27,7 +27,7 @@ const SettingsNavigation = () => {
       className="h-full flex flex-col gap-6 text-sm overflow-y-auto"
     >
       <section className="p-4">
-        <h2 className="font-bold text-sm text-gray-500 mb-4 tracking-wider">
+        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
           <Translate>Settings</Translate>
         </h2>
         <ul className="flex flex-col gap-4">
@@ -46,9 +46,9 @@ const SettingsNavigation = () => {
           </NeedAuthorization>
         </ul>
       </section>
-      <section className="p-4 border-t border-gray-200">
+      <section className="border-t p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
         <NeedAuthorization roles={['admin', 'editor']}>
-          <h2 className="font-bold text-sm text-gray-500 mb-2 tracking-wider">
+          <h2 className="mb-2 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
             <Translate>Metadata</Translate>
           </h2>
         </NeedAuthorization>
@@ -85,8 +85,8 @@ const SettingsNavigation = () => {
           </NeedAuthorization>
         </ul>
       </section>
-      <section className="p-4 border-t border-gray-200">
-        <h2 className="font-bold text-sm text-gray-500 mb-4 tracking-wider">
+      <section className="border-t p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
+        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
           <Translate>Tools</Translate>
         </h2>
         <ul className="flex flex-col gap-4">
@@ -129,7 +129,7 @@ const SettingsNavigation = () => {
               href="https://uwazi.io/page/9852italrtk/support"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 p-2 rounded-sm hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm whitespace-nowrap"
+              className="flex items-center gap-1 whitespace-nowrap rounded-sm p-2 text-sm font-medium [color:var(--color-theme-text-secondary)] hover:[background-color:var(--color-theme-surface-warm)] hover:[color:var(--color-theme-text-primary)] focus:[background-color:var(--color-theme-surface-warm)] focus:[color:var(--color-theme-text-primary)]"
             >
               <Translate>Documentation</Translate> <Icon icon="external-link-alt" />
             </a>

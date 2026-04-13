@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { TocSchema } from '#shared/types/commonTypes.js';
@@ -10,7 +9,7 @@ import { update as updateFile } from '#V2/api/files/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button } from '#V2/Components/UI/Button.js';
-import { NeedAuthorization } from '#V2/Components/UI/index.js';
+import { NeedAuthorization, Tooltip } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { BlankState } from '../BlankState.js';
 import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
@@ -172,8 +171,6 @@ const ToCPanel = ({
               </p>
               {generatedToc && (
                 <Tooltip
-                  // eslint-disable-next-line react/style-prop-object
-                  style="light"
                   arrow={false}
                   content="This table of contents was automatically created by the system."
                 >
