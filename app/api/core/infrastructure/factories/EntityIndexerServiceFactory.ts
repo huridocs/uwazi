@@ -9,7 +9,7 @@ export class EntityIndexerServiceFactory {
   static default(transactionManager: MongoTransactionManager): EntityIndexerService {
     const tenant = tenants.current();
 
-    if (!tenant.featureFlags?.v2ElasticSearch) {
+    if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
       return TestUtils.mockClass<EntityIndexerService>({
         deleteBySharedIds: jest.fn(),
         deleteByTemplateIds: jest.fn(),
