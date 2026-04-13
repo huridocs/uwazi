@@ -104,6 +104,7 @@ Authentication code,Κωδικός πιστοποίησης
 auto created,αυτόματα δημιουργημένος
 Auto-accept suggestions,Αυτόματη αποδοχή προτάσεων
 auto-created,αυτόματα δημιουργημένος
+Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Αυτόματος πίνακας περιεχομένων
 Automatically generated,Δημιουργήθηκε αυτόματα
 Available default translation,Διαθέσιμη προεπιλεγμένη μετάφραση
@@ -119,8 +120,10 @@ Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
 Cancel,Ακύρωση
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Ακύρωση
 Canceling...,Ακύρωση σε εξέλιξη...
+Cancelled,Cancelled
 Cannot find extractor,Δεν βρέθηκε ο εξαγωγέας
 Captcha,CAPTCHA
 Captcha bypass,"Ενεργοποιώντας αυτήν την επιλογή μπορείτε να επιτρέψετε στους χρήστες να υποβάλλουν στα εγκεκριμένα σας πρότυπα χωρίς να χρειάζεται να συμπληρώσουν CAPTCHA. 
@@ -149,6 +152,7 @@ Click,Κάντε κλικ
 Click here,Κάντε κλικ εδώ
 Click to fill,Κάντε κλικ για να συμπληρώσετε
 Close,Κλείσιμο
+Code,Code
 Collaborator,Συνεργάτης
 Collaborators,Συνεργάτες
 Collapse all,Σύμπτυξη όλων
@@ -156,6 +160,7 @@ Collapse All,Collapse All
 Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Common sources,Κοινές πηγές
+Completed,Completed
 Configuration,Διαμόρφωση
 Configure filters,Διαμόρφωση φίλτρων
 Configure templates,Διαμόρφωση προτύπων
@@ -213,6 +218,11 @@ Created relationship,Δημιουργήθηκε σχέση
 Created template,Δημιουργήθηκε πρότυπο
 Created thesaurus,Δημιουργήθηκε θησαυρός
 Created user group,Δημιουργήθηκε ομάδα χρηστών
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
 Custom component error,Σφάλμα σήμανσης προσαρμοσμένου στοιχείου: μη υποστηριζόμενες τιμές! Ελέγξτε τις ρυθμίσεις σας.
 Custom CSS,Προσαρμοσμένο CSS
@@ -223,6 +233,7 @@ custom page error warning,Παρουσιάστηκε απροσδόκητο σφ
 Custom Uploads,Προσαρμοσμένες μεταφορτώσεις
 Dark,Σκούρο
 Dashboard,Πίνακας ελέγχου
+Date,Date
 Date added,Ημερομηνία προσθήκης
 Date format,Μορφή ημερομηνίας
 Date modified,Ημερομηνία τροποποίησης
@@ -276,6 +287,11 @@ Documentation,Τεκμηρίωση
 documents,έγγραφα
 Documents,Έγγραφα
 documents.,έγγραφα.
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,Λήψη
 Download a third-party authenticator app from your mobile store.,Κατεβάστε μια εφαρμογή πιστοποίησης ταυτότητας από το το κατάστημα εφαρμογών της συσκευής σας.
 Drag and drop file in this window to upload,Σύρετε και αποθέστε αρχείο σε αυτό το παράθυρο για μεταφόρτωση
@@ -310,7 +326,9 @@ Enter your current password to confirm,Εισάγετε τον τρέχοντα 
 Entities,Οντότητες
 entities,συνολικά
 Entities across all languages,Οντότητες σε όλες τις γλώσσες
+Entities created,Entities created
 Entity,Οντότητα
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Η οντότητα διαγράφηκε
 Entity Page,Σελίδα οντότητας
 Entity saved,Η οντότητα αποθηκεύτηκε
@@ -331,12 +349,17 @@ Exporting entities to CSV,Εξαγωγή οντοτήτων σε CSV
 Extension Token,Token επέκτασης
 Extract new paragraphs,Εξαγωγή νέων παραγράφων
 Extract paragraphs,Εξαγωγή παραγράφων
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Διαμόρφωση εξαγωγής
 Extractor Name,Όνομα εξαγωγέα
 Extractor name,Όνομα εξαγωγέα
 Extractor/s deleted,Εξαγωγέας/εις διαγράφηκε/καν
 Extractors,Εξαγωγείς
+Failed,Failed
+Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
 
 1. Μεταφορτώστε το εικονίδιό σας στις ""Προσαρμοσμένες μεταφορτώσεις"".
@@ -346,6 +369,7 @@ Favicon description,"Το favicon είναι ένα μικρό εικονίδι�
 FEATURED,ΕΠΙΛΕΓΜΕΝΑ
 File,Αρχείο
 File deleted,Το αρχείο διαγράφηκε
+File extraction completed successfully.,File extraction completed successfully.
 File name,Όνομα αρχείου
 File updated,Το αρχείο ενημερώθηκε
 Files,Αρχεία
@@ -411,7 +435,12 @@ Import,Εισαγωγή
 Import asset,Εισαγωγή αρχείου
 Import completed,Η εισαγωγή ολοκληρώθηκε. Αριθμός δημιουργημένων οντοτήτων:
 Import CSV,Εισαγωγή CSV
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
 Import instructions,Οδηγίες εισαγωγής
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Εισήχθησαν οντότητες από αρχείο
 Imported translations from file,Εισήχθησαν μεταφράσεις από αρχείο
 Importing data in progress,Εισαγωγή δεδομένων σε εξέλιξη
@@ -561,6 +590,7 @@ No common filters,Δεν υπάρχουν κοινά φίλτρα
 No Connections,Δεν υπάρχουν συνδέσεις
 No Connections description,Οι συνδέσεις είναι οι άμεσες σχέσεις μεταξύ αυτού του εγγράφου και άλλων εγγράφων και οντοτήτων.
 No context,Δεν υπάρχει πλαίσιο
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΙΑΘΕΣΙΜΑ ΔΕΔΟΜΕΝΑ
 NO EXTRACTORS,ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΞΑΓΩΓΕΙΣ
 No files available,No files available
@@ -660,6 +690,9 @@ Please contact an admin for details.,Επικοινωνήστε με έναν δ
 Please type in,Πληκτρολογήστε
 Please type in letters and numbers from the image to start the export.,Πληκτρολογήστε γράμματα και αριθμούς από την εικόνα για να ξεκινήσει η εξαγωγή.
 Precision,Ακρίβεια
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Preserve
 Preserve Extension,Preserve επέκταση
 Preserve Setup Description,"Εάν γνωρίζετε το URL και το TOKEN του Uwazi σας, κάντε κλικ στον παρακάτω σύνδεσμο και συμπληρώστε τις απαιτούμενες πληροφορίες."
@@ -675,7 +708,9 @@ Process,Επεξεργασία
 Process extractor,Επεξεργασία εξαγωγέα
 Process selected,Επεξεργασία επιλεγμένων
 Processed,Επεξεργασμένο
+Processed rows,Processed rows
 Processing,Επεξεργασία σε εξέλιξη
+Progress,Progress
 Properties,Ιδιότητες
 Properties from other templates in the collection using the same label,Ιδιότητες από άλλα πρότυπα της συλλογής που χρησιμοποιούν την ίδια ετικέτα
 Properties from other templates in the collection using the same label.,Ιδιότητες από άλλα πρότυπα της συλλογής που χρησιμοποιούν την ίδια ετικέτα.
@@ -710,6 +745,7 @@ Publish,Δημοσίευση
 Published,Δημοσιευμένα
 QR Code,Κωδικός QR
 Query,Ερώτημα
+Queued,Queued
 RAW,RAW
 Re-uploaded document,Επαναφορτωμένο έγγραφο
 Receiving email,Λήψη email
@@ -742,6 +778,8 @@ Request id #,Αίτηση id #
 Request token,Αίτηση token
 Required,Απαιτούμενο
 Required property,Απαιτούμενη ιδιότητα
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,Επαναφορά
 Reset 2FA,Επαναφορά 2FA
 Reset default translation,Επαναφορά προεπιλεγμένης μετάφρασης
@@ -749,12 +787,16 @@ Reset language,Επαναφορά γλώσσας
 Reset Password,Επαναφορά κωδικού πρόσβασης
 Reset passwords,Επαναφορά κωδικών πρόσβασης
 Restricted,Περιορισμένα
+Retryable,Retryable
+Retrying,Retrying
 Return to login,Επιστροφή στη σύνδεση
 Review,Προεπισκόπηση
 Reviewed,Προεπισκόπηθηκε
 Role,Ρόλος
 Route,Διαδρομή
 Row,Σειρά
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,Δείγμα
 Satellite,Δορυφόρος
 Save,Αποθήκευση
@@ -764,6 +806,8 @@ Save password,Αποθήκευση κωδικού πρόσβασης
 Save your work to make change permanent,Αποθηκεύστε την εργασία σας για να κάνετε την αλλαγή μόνιμη
 Saved successfully.,Αποθηκεύτηκε με επιτυχία.
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,Αναζήτηση
 Search item,Αναζήτηση στοιχείου
 Search not found,Δεν βρέθηκε τίποτα
@@ -844,6 +888,7 @@ Source relationship type,Τύπος σχέσης πηγής
 Source template,Πρότυπο πηγής
 Source Template,Πρότυπο πηγής
 Source's role in the relationship Source-Target.,Ο ρόλος της πηγής στη σχέση πηγή-στόχος.
+Stage,Stage
 State,Πολιτεία
 Statistics,Στατιστικά στοιχεία
 Stats & Filters,Στατιστικά & φίλτρα
@@ -911,6 +956,7 @@ Thesauri deleted,Ο θησαυρός διαγράφηκε.
 Thesauri name,Όνομα θησαυρού
 thesauri new group desc,"Κάθε στοιχείο που δημιουργείται θα ανήκει σε αυτήν την ομάδα. Μόλις πληκτρολογήσετε το όνομα του πρώτου στοιχείου, μια νέα φόρμα στοιχείου θα εμφανιστεί από κάτω, ώστε να μπορείτε να συνεχίσετε να προσθέτετε όσα θέλετε."
 thesauri new item desc,"Μόλις πληκτρολογήσετε το όνομα του πρώτου στοιχείου, μια νέα φόρμα στοιχείου θα εμφανιστεί από κάτω, ώστε να μπορείτε να συνεχίσετε να προσθέτετε όσα θέλετε."
+Thesauri touched,Thesauri touched
 Thesauri updated.,Ο θησαυρός ενημερώθηκε.
 Thesaurus,Θησαυρός
 Thesaurus created successfully.,Ο θησαυρός δημιουργήθηκε με επιτυχία.
@@ -928,6 +974,7 @@ This file could not be opened. It may be corrupted or not a valid PDF.,This file
 This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,Αυτός ο τύπος αρχείου δεν υποστηρίζεται σε πεδία πολυμέσων
 This group is empty,Αυτή η ομάδα είναι κενή
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Αυτή η ετικέτα υπάρχει ήδη σε αυτό το πρότυπο
 This option will show a notification about the use of cookies in your instance.,Αυτή η επιλογή θα εμφανίσει μια ειδοποίηση σχετικά με τη χρήση cookies στην εγκατάστασή σας.
 This property can not be deleted,Αυτή η ιδιότητα δεν μπορεί να διαγραφεί
@@ -957,6 +1004,7 @@ total entities,σύνολο οντοτήτων
 Total files,Σύνολο αρχείων
 total files,σύνολο αρχείων
 "Total files from main documents, supporting files and uploads","Σύνολο αρχείων από κύρια έγγραφα, υποστηρικτικά αρχεία και μεταφορτώσεις"
+Total imports,Total imports
 total users,σύνολο χρηστών
 Train,Εκπαίδευση
 Train model,Εκπαίδευση μοντέλου
@@ -1033,6 +1081,8 @@ Using Authenticator,Χρήση της εφαρμογής πιστοποίηση�
 Using URLs,Χρήση URLs
 Uwazi is developed by,Το Uwazi έχει αναπτυχθεί από
 Uwazi UI,Uwazi UI
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Αξία
 Value cannot be transformed to the correct type,Η τιμή δεν μπορεί να μετατραπεί στον σωστό τύπο
 values,τιμές

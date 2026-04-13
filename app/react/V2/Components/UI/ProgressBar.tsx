@@ -28,3 +28,5 @@ export const ProgressBar = ({ progress, color = 'gray', className = '' }: Progre
     <div className={`h-2.5 rounded-full ${getColor(color)}`} style={{ width: `${progress}%` }} />
   </div>
 );
+
+export type { ProgressBarProps };
