@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ProgressBar, ProgressBarProps } from '#V2/Components/UI/index.js';
-import { CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
+import { CsvImportStatus } from '#app/V2/api/csv/index.js';
 
 const Progress = ({
   current,

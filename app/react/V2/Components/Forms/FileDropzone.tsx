@@ -48,15 +48,17 @@ const FileDropzone = ({
   };
 
   const handleOnDrop: DropzoneOptions['onDrop'] = (newFiles, fileRejections, event) => {
+    let updatedFiles: File[] = [];
     if (newFiles) {
       if (multiple) {
-        setFiles([...files, ...newFiles]);
+        updatedFiles = [...files, ...newFiles];
       } else {
-        setFiles(newFiles);
+        updatedFiles = newFiles;
       }
     }
+    setFiles(updatedFiles);
     if (onDrop) {
-      onDrop(files, fileRejections, event);
+      onDrop(updatedFiles, fileRejections, event);
     }
   };
 

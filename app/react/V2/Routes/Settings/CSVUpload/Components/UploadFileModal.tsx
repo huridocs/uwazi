@@ -20,8 +20,8 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   const templates = useAtomValue(templatesAtom);
   const setNotification = useSetAtom(notificationAtom);
 
-  const onProgress = (completed: number, total: number) => {
-    setProgress(Math.round((completed / total) * 100));
+  const onProgress = (completed: number) => {
+    setProgress(completed);
   };
 
   const handleClose = () => {
@@ -56,7 +56,9 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   );
 
   useEffect(() => {
-    setTemplateId(options[0].value);
+    if (options.length) {
+      setTemplateId(options[0].value);
+    }
   }, [options]);
 
   return isOpen ? (

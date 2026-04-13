@@ -105,7 +105,7 @@ type CancelCsvImportResponse = {
 const create = async (
   file: File,
   template: string,
-  onProgressCallback?: (completed: number, total: number) => void
+  onProgressCallback?: (completed: number) => void
 ): Promise<RegisterCsvImportResponse | CsvImportCreateError> => {
   try {
     const request = superagent
@@ -115,8 +115,8 @@ const create = async (
       .field('template', template)
       .attach('file', file as MultipartValueSingle)
       .on('progress', event => {
-        if (onProgressCallback && event.percent) {
-          onProgressCallback(Math.floor(event.percent), event.total);
+        if (onProgressCallback && event.percent !== undefined) {
+          onProgressCallback(Math.round(event.percent));
         }
       });
 
