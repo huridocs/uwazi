@@ -8,6 +8,8 @@ import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/Mon
 import testingDB from '#api/utils/testing_db.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EntityRelationshipsUpdateService } from '../EntityRelationshipsUpdateService.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 const factory = getFixturesFactory();
 
@@ -138,7 +140,11 @@ afterAll(async () => {
 function buildService() {
   const transactionManager = TransactionManagerFactory.default();
   const settingsDataSource = new MongoSettingsDataSource(getConnection(), transactionManager);
-  const templateDataSource = new MongoTemplatesDataSource(getConnection(), transactionManager);
+  const templateDataSource = new MongoTemplatesDataSource({
+    db: getConnection(),
+    transactionManager,
+    slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+  });
   const entityDataSource = new MongoEntitiesDataSource(
     getConnection(),
     templateDataSource,

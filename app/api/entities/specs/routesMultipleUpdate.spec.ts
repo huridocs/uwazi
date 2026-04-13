@@ -8,11 +8,7 @@ import { testingTenants } from '#api/utils/testingTenants';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { UserRole } from '#shared/types/userSchema.js';
 import db from '#api/utils/testing_db';
-import {
-  fixtures,
-  factory,
-  SampleListener,
-} from '#api/core/application/specs/MultiUpdateEntityFixtures';
+import { fixtures, factory } from '#api/core/application/specs/MultiUpdateEntityFixtures';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 
 jest.mock(
@@ -54,12 +50,10 @@ const multipleUpdate = async (
 beforeAll(async () => {
   testingTenants.mockCurrentTenant({ name: 'default' });
   await testingEnvironment.setUp(fixtures);
-  // Register a no-op listener so EntityUpdatedEvent does not throw "no listeners"
-  EventEmitterFactory.default().listen(SampleListener);
+  jest.spyOn(EventEmitterFactory, 'default').mockReturnValue(EventEmitterFactory.forTesting());
 });
 
 afterAll(async () => {
-  EventEmitterFactory.default().reset();
   await testingEnvironment.tearDown();
 });
 

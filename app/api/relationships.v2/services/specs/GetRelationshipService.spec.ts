@@ -12,6 +12,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { GetRelationshipService } from '../GetRelationshipService.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -52,7 +54,11 @@ const createService = (_user?: User) => {
   const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
   const relationshipTypesDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
-  const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
+  const templatesDS = new MongoTemplatesDataSource({
+    db: connection,
+    transactionManager,
+    slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+  });
   const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
   const authService = new AuthorizationService(
     new MongoPermissionsDataSource(connection, transactionManager),

@@ -84,3 +84,4 @@ class DependenciesContext extends AsyncLocalStorage<Context> {
 const dependenciesContext = new DependenciesContext();
 
 export { dependenciesContext as DependenciesContext };
+export type { Context as ContextDependencies };

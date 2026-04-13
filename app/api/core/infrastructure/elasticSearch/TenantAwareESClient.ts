@@ -7,6 +7,7 @@ import {
   type IndexOptions,
   type DeleteOptions,
   type BulkOptions,
+  type DeleteByQueryOptions,
   BulkIndexingError,
 } from './Types.js';
 import { IndexNameResolver } from './IndexNameResolver.js';
@@ -26,7 +27,7 @@ type Deps = {
 };
 
 class TenantAwareESClient {
-  private readonly tenantId: string;
+  readonly tenantId: string;
 
   constructor(private deps: Deps) {
     const parsed = Schema.parse({ tenantId: this.deps.tenantId });
@@ -85,14 +86,14 @@ class TenantAwareESClient {
     const id = this.buildDocumentId(options.id);
     const document = this.stampTenantId(options.document);
 
-    await this.deps.client.index({ index, id, body: document });
+    await this.deps.client.index({ index, id, body: document, routing: options.routing });
   }
 
   async delete(options: DeleteOptions): Promise<void> {
     const index = await this.deps.resolver.resolve(options.alias, this.tenantId);
     const id = this.buildDocumentId(options.id);
 
-    await this.deps.client.delete({ index, id });
+    await this.deps.client.delete({ index, id, routing: options.routing });
   }
 
   async bulk(options: BulkOptions): Promise<void> {
@@ -103,7 +104,11 @@ class TenantAwareESClient {
       this.stampTenantId(op.document),
     ]);
 
-    const response = await this.deps.client.bulk({ body });
+    const response = await this.deps.client.bulk({
+      body,
+      routing: options.routing,
+      refresh: options.refresh,
+    });
 
     if (response.body.errors) {
       // Todo: Inject logger here.
@@ -113,6 +118,18 @@ class TenantAwareESClient {
 
       throw new BulkIndexingError();
     }
+  }
+
+  async deleteByQuery(options: DeleteByQueryOptions): Promise<void> {
+    const index = await this.deps.resolver.resolve(options.alias, this.tenantId);
+    const guardedQuery = this.applyTenantGuard(options.query);
+
+    await this.deps.client.deleteByQuery({
+      index,
+      body: { query: guardedQuery },
+      routing: options.routing,
+      refresh: options.refresh,
+    });
   }
 }
 

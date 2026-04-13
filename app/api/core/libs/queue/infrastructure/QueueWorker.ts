@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError, UnregisteredJobError } from './errors.js';
@@ -52,7 +52,7 @@ export class QueueWorker {
     queueName: string,
     adapter: QueueAdapter,
     logger: Logger,
-    // eslint-disable-next-line no-empty-function
+
     onError?: QueueWorkerErrorHandler
   ) {
     this.queueName = queueName;

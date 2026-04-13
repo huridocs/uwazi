@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { Db, ObjectId } from 'mongodb';
 import {
   MongoDataSource,
   MongoDSOptions,
@@ -13,7 +14,6 @@ import {
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
-import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { Property } from '../../../domain/template/Property.js';
 import { RelationshipProperty } from '../../../domain/template/RelationshipProperty.js';
@@ -23,6 +23,14 @@ import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipP
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper.js';
 import { mapPropertyQuery } from './QueryMapper.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+
+type Deps = {
+  db: Db;
+  transactionManager: MongoTransactionManager;
+  slotsReconciler: SlotsReconciler;
+  options?: MongoDSOptions;
+};
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -34,8 +42,11 @@ export class MongoTemplatesDataSource
 
   private templatesMutated = new Map<ObjectId, TemplateDBO>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options?: MongoDSOptions) {
-    super(db, transactionManager, options);
+  private slotsReconciler: SlotsReconciler;
+
+  constructor(deps: Deps) {
+    super(deps.db, deps.transactionManager, deps.options);
+    this.slotsReconciler = deps.slotsReconciler;
 
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
@@ -313,12 +324,14 @@ export class MongoTemplatesDataSource
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
     this.templatesMutated.set(schema._id, schema);
+    await this.slotsReconciler.execute();
   }
 
   async create(template: Template): Promise<void> {
     const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().insertOne(schema);
     this.templatesMutated.set(schema._id, schema);
+    await this.slotsReconciler.execute();
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
@@ -386,6 +399,7 @@ export class MongoTemplatesDataSource
 
   async delete(templateId: string): Promise<void> {
     await this.getCollection().deleteOne({ _id: new ObjectId(templateId) });
+    await this.slotsReconciler.execute();
   }
 
   async bulkUpdate(template: Template[]): Promise<void> {
@@ -401,5 +415,8 @@ export class MongoTemplatesDataSource
     );
 
     schemas.forEach(schema => this.templatesMutated.set(schema._id, schema));
+    await this.slotsReconciler.execute();
   }
 }
+
+export type { Deps as MongoTemplatesDataSourceDeps };

@@ -28,7 +28,7 @@ import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
@@ -48,7 +48,7 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const filesDS = FilesDataSourceFactory.default(transactionManager);
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
   const eventEmitter = EventEmitterFactory.default();
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.forTesting(transactionManager);
   const fileService = FilesServiceFactory.default(transactionManager, {
     fileStorage,
     eventBus,
@@ -59,6 +59,7 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
     transactionManager,
     entitiesDS,
     eventEmitter,
+    templatesDS,
   });
 
   jest.spyOn(fileService, 'storeFiles').mockResolvedValue();

@@ -19,7 +19,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
@@ -58,6 +57,7 @@ import {
   targetTemplate,
   userId,
 } from './fixtures.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -88,7 +88,7 @@ const setUpUseCase = () => {
 
   const connection = getConnection();
   const mongoTransactionManager = TransactionManagerFactory.default();
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(mongoTransactionManager);
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
   const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
