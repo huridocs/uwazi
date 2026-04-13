@@ -11,9 +11,9 @@ export class EntityIndexerServiceFactory {
 
     if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
       return TestUtils.mockClass<EntityIndexerService>({
-        deleteBySharedIds: jest.fn(),
-        deleteByTemplateIds: jest.fn(),
-        index: jest.fn(),
+        deleteBySharedIds: async () => Promise.resolve(),
+        deleteByTemplateIds: async () => Promise.resolve(),
+        index: async () => Promise.resolve(),
       });
     }
 
