@@ -57,8 +57,6 @@ import {
   template2,
   thesauri1Value2,
 } from './fixtures.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 async function runAllTenants() {
   try {
@@ -185,13 +183,6 @@ describe('syncWorker', () => {
     }, 'host1');
     server = app.listen(6667);
     server2 = app.listen(6668);
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware('default'),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   afterAll(async () => {

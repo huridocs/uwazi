@@ -16,8 +16,6 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
-import { ContextDependencies, DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 
 const f = getFixturesFactory();
 
@@ -40,14 +38,6 @@ describe('FileUploadForEntity', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, true);
-    const tenant = tenants.current();
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
 
     const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
       dispatchMany: async callback => {

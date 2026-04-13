@@ -9,7 +9,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { tenants } from '#api/tenants/index.js';
-import { ContextDependencies, DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
@@ -20,22 +20,16 @@ import { UserSchema } from '#shared/types/userType.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import {
-  factory,
-  fixtures,
-  permissionsFixtures,
-  SampleListener,
-} from './MultiUpdateEntityFixtures.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { factory, fixtures, permissionsFixtures } from './MultiUpdateEntityFixtures.js';
 
 const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
   const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.forTesting(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const eventEmitter = EventEmitterFactory.default();
+  const eventEmitter = EventEmitterFactory.forTesting();
   const idGenerator = IdGeneratorFactory.default();
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
   const entityPermissionChecker = new MongoEntityPermissionChecker(
@@ -103,14 +97,6 @@ const getAllDocs = async (sharedId: string) =>
 describe('MultiUpdateEntity', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
-    EventEmitterFactory.default().listen(SampleListener);
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   beforeEach(async () => {
@@ -119,7 +105,6 @@ describe('MultiUpdateEntity', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-    EventEmitterFactory.default().reset();
   });
 
   describe('when updating property assignments', () => {

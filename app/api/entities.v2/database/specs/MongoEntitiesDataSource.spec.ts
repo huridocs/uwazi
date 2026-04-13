@@ -11,7 +11,6 @@ import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoEntitiesDataSource } from '../MongoEntitiesDataSource.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 const factory = getFixturesFactory();
 
@@ -164,7 +163,6 @@ describe('Relationship fields caching strategy', () => {
           db,
           transactionManager,
           slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-          entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
         }),
         settingsDsMock,
         transactionManager
@@ -212,7 +210,6 @@ describe('Relationship fields caching strategy', () => {
           db,
           transactionManager,
           slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-          entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
         }),
         settingsDsMock,
         transactionManager
@@ -289,7 +286,6 @@ describe('Relationship fields caching strategy', () => {
           db,
           transactionManager: tm,
           slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-          entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
         }),
         settingsDsMock,
         tm
@@ -402,7 +398,6 @@ describe('When checking for the existence of entities', () => {
           db,
           transactionManager,
           slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-          entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
         }),
         partialImplementation<MongoSettingsDataSource>({
           async getLanguageKeys() {
@@ -426,7 +421,6 @@ it('should return the sharedIds of the entities that have a particular id within
       db,
       transactionManager,
       slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-      entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
@@ -452,7 +446,6 @@ it('should update the denormalizations value in all related entities', async () 
       db,
       transactionManager,
       slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-      entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
@@ -535,7 +528,6 @@ it('should return records containing the obsoleteMetadata', async () => {
       db,
       transactionManager,
       slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-      entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
     }),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {

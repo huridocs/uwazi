@@ -24,8 +24,6 @@ import { FileType } from '#shared/types/fileType.js';
 import { preserveSync } from '../preserveSync.js';
 import { preserveSyncModel } from '../preserveSyncModel.js';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 const getEntitiesWithFiles = async () => {
   const entities = await testingEnvironment.db.getAllFrom('entities');
@@ -97,13 +95,6 @@ describe('preserveSync', () => {
     tenants.add(tenant1);
 
     await db.setupFixturesAndContext(fixtures);
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant1.name),
-      },
-      factories: {},
-    } as ContextDependencies);
 
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(elastic.indices, 'putMapping').mockResolvedValue({} as ApiResponse);

@@ -1,13 +1,10 @@
 /* eslint-disable max-statements */
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import entities from '#api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { tenants } from '#api/tenants/index.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
@@ -188,15 +185,6 @@ describe('Templates Update', () => {
 
   beforeAll(async () => {
     await setUpFixtures(fixtures);
-
-    const tenant = tenants.current();
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   afterEach(() => {

@@ -6,27 +6,12 @@ import {
   TemplateDoesNotExistError,
   DefaultTemplateConflictError,
 } from '#api/core/domain/template/errors.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
-import { tenants } from '#api/tenants/index.js';
 
 const factory = getFixturesFactory();
 
 describe('SetTemplateAsDefaultUseCase', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
-
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
-  });
-
-  beforeEach(async () => {
-    await testingEnvironment.setFixtures({});
   });
 
   afterAll(async () => {

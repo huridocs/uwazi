@@ -7,21 +7,10 @@ import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService.js';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
-import { tenants } from '#api/tenants/index.js';
 
 describe('SelectPropertyCreatorService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
-
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   afterAll(async () => {

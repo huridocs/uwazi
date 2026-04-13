@@ -8,9 +8,6 @@ import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { PropertyCreatorServiceStrategy } from '../propertyCreatorService/PropertyCreatorServiceStrategy.js';
 import { NestedPropertyNotAvailableError } from '../../domain/template/errors.js';
 import { NestedProperty } from '../../domain/template/NestedProperty.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
-import { tenants } from '#api/tenants/index.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
@@ -30,14 +27,6 @@ describe('NestedPropertyCreatorService', () => {
     await testingEnvironment.setUp({
       settings: [{ project: 'cejil' }],
     });
-
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   afterAll(async () => {

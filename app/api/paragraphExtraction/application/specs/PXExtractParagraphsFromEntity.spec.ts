@@ -58,8 +58,6 @@ import {
   userId,
 } from './fixtures.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -140,17 +138,9 @@ const setUpUseCase = () => {
 };
 
 describe('PXExtractParagraphsFromEntity', () => {
-  beforeAll(async () => {
-    await testingEnvironment.setUp(createFixtures(), 'px_extract_paragraphs_from_entity');
-    const tenant = tenants.current();
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
-  });
+  beforeAll(async () =>
+    testingEnvironment.setUp(createFixtures(), 'px_extract_paragraphs_from_entity')
+  );
 
   beforeEach(async () => {
     await testingEnvironment.setFixtures(createFixtures());

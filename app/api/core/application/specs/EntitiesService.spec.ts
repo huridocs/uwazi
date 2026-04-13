@@ -23,8 +23,6 @@ import { tenants } from '#api/tenants/index.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 const factory = getFixturesFactory();
 
@@ -115,14 +113,6 @@ describe('EntitiesService', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
-
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   beforeEach(async () => testingEnvironment.setFixtures(fixtures));

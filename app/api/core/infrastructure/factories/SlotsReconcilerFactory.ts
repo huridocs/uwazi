@@ -8,7 +8,6 @@ import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory';
 
 export class SlotsReconcilerFactory {
   static default(transactionManager: MongoTransactionManager): SlotsReconciler {
-    const db = getConnection();
     const tenant = tenants.current();
 
     if (!tenant.featureFlags?.v2ElasticSearch) {
@@ -16,6 +15,8 @@ export class SlotsReconcilerFactory {
         execute: async () => Promise.resolve(),
       });
     }
+
+    const db = getConnection();
 
     const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
 

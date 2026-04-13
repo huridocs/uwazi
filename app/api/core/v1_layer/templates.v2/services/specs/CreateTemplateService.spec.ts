@@ -14,7 +14,6 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { CreateTemplateService } from '../CreateTemplateService.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -51,7 +50,6 @@ function setUpService() {
     db: connection,
     transactionManager,
     slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-    entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
   });
   const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const settingsDS = new MongoSettingsDataSource(connection, transactionManager);

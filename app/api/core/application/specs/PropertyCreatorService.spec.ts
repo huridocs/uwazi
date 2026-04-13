@@ -6,9 +6,6 @@ import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService.js';
 import { TextProperty } from '../../domain/template/TextProperty.js';
 import { PropertyTypeMismatchError } from '../../domain/template/errors.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
-import { tenants } from '#api/tenants/index.js';
 
 const prevCreated = new ObjectId();
 
@@ -96,14 +93,6 @@ describe('PropertyCreatorService', () => {
         },
       ],
     });
-
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   afterAll(async () => {

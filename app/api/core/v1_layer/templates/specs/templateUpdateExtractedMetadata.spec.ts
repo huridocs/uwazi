@@ -1,8 +1,5 @@
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { ContextDependencies, DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { files } from '#api/files/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { tenants } from '#api/tenants/index.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
@@ -21,20 +18,8 @@ async function updateTemplate(template: TemplateSchema, language = 'en') {
 }
 
 describe('updateExtractedMetadataProperties', () => {
-  beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, true);
-    const tenant = tenants.current();
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
-  });
-
   beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
+    await testingEnvironment.setUp(fixtures, true);
   });
 
   afterAll(async () => {

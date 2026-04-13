@@ -13,7 +13,6 @@ import { DenormalizationService } from '../DenormalizationService.js';
 import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 const factory = getFixturesFactory();
 
@@ -347,7 +346,6 @@ beforeEach(async () => {
     db,
     transactionManager,
     slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-    entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
   });
   const entitiesDataSource = new MongoEntitiesDataSource(
     db,

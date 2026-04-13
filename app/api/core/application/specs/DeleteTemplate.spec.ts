@@ -17,28 +17,11 @@ import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateD
 import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import { TemplateInUseError } from '#api/core/domain/template/errors.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 describe('DeleteTemplateUseCase', () => {
-  beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'delete_template_use_case');
-
-    const tenant = tenants.current();
-
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
-  });
-
   beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+    await testingEnvironment.setUp(fixtures, 'delete_template_use_case');
   });
 
   afterAll(async () => {

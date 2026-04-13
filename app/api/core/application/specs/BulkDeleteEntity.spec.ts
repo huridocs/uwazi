@@ -14,8 +14,6 @@ import { UserSchema } from '#shared/types/userType.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
 
 const factory = getFixturesFactory();
 
@@ -154,15 +152,6 @@ describe('BulkDeleteEntityUseCase', () => {
     await testingEnvironment.setUp(fixtures, 'bulk_delete_entity_use_case');
 
     jobsCollection = getSharedConnection().collection('jobs');
-
-    const tenant = tenants.current();
-
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   beforeEach(async () => {

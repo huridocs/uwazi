@@ -14,9 +14,6 @@ import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyP
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { CreateTemplateUseCase } from '../CreateTemplate.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
-import { tenants } from '#api/tenants/index.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
@@ -89,13 +86,6 @@ const fixtures: DBFixture = {
 describe('CreateTemplateUseCase', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_spec_index.v2');
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   afterEach(async () => testingEnvironment.setFixtures(fixtures));

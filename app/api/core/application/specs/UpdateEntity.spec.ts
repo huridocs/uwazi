@@ -16,7 +16,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
-import { ContextDependencies, DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -24,7 +24,6 @@ import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/Entit
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { UpdateEntityUseCase, UpdateEntityUseCaseDeps } from '../UpdateEntity.js';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 
 const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -112,14 +111,6 @@ describe('UpdateEntityUseCase', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
     EventEmitterFactory.default().listen(SampleListener);
-
-    // const tenant = tenants.current();
-    // jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-    //   instances: {
-    //     elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-    //   },
-    //   factories: {},
-    // } as ContextDependencies);
   });
 
   beforeEach(async () => {

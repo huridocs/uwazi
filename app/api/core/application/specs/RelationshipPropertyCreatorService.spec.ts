@@ -13,9 +13,6 @@ import {
   TemplateDoesNotExistError,
 } from '../../domain/template/errors.js';
 import { RelationshipPropertyCreatorService } from '../propertyCreatorService/RelationshipPropertyCreatorService.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { DependenciesContext, ContextDependencies } from '#api/core/libs/DependenciesContext.js';
-import { tenants } from '#api/tenants/index.js';
 
 const factory = getFixturesFactory();
 
@@ -33,14 +30,6 @@ const createSut = () => {
 describe('RelationshipPropertyCreatorService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
-
-    const tenant = tenants.current();
-    jest.spyOn(DependenciesContext, 'getStore').mockReturnValue({
-      instances: {
-        elasticClient: ElasticSearchClientFactory.tenantAware(tenant.name),
-      },
-      factories: {},
-    } as ContextDependencies);
   });
 
   afterAll(async () => {

@@ -6,7 +6,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { CachedMongoTemplatesDataSource } from '../CachedMongoTemplatesDataSource.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 const factory = getFixturesFactory();
 
@@ -24,11 +23,6 @@ const createSut = () => {
     db: getConnection(),
     transactionManager,
     slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-    entityIndexerService: TestUtils.mockClass<EntityIndexerService>({
-      index: jest.fn(),
-      deleteBySharedIds: jest.fn(),
-      deleteByTemplateIds: jest.fn(),
-    }),
   });
 
   return { sut, transactionManager };

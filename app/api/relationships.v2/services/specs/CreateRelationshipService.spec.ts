@@ -20,7 +20,6 @@ import { DenormalizationService } from '../DenormalizationService.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 
 const factory = getFixturesFactory();
 
@@ -58,7 +57,6 @@ const createService = () => {
         db: connection,
         transactionManager,
         slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-        entityIndexerService: TestUtils.mockClass<EntityIndexerService>({}),
       }),
       SettingsDataSource,
       transactionManager
