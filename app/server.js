@@ -180,24 +180,26 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     setupQueueWorker({ standAloneProcess: false });
   }
 
-  // ===========Bootstrap Elastic Search===========
-  const elasticSearchBootstrapper = new ElasticSearchBootstrapper({
-    client: ElasticSearchClientFactory.getInstance(),
-    logger: LoggerFactory.systemLogger(),
-    pipelineRegistry: IngestPipelineRegistry,
-    registry: IndexMappingRegistry,
-  });
-  await elasticSearchBootstrapper.execute();
-  // ==============================================
+  if (config.ENVIRONMENT === 'development') {
+    // ===========Bootstrap Elastic Search===========
+    const elasticSearchBootstrapper = new ElasticSearchBootstrapper({
+      client: ElasticSearchClientFactory.getInstance(),
+      logger: LoggerFactory.systemLogger(),
+      pipelineRegistry: IngestPipelineRegistry,
+      registry: IndexMappingRegistry,
+    });
+    await elasticSearchBootstrapper.execute();
+    // ==============================================
 
-  // ===========Bootstrap Mongo Slots (per-tenant)===========
-  await ArrayUtils.parallelFor(Object.keys(tenants.tenants), tenantName =>
-    tenants.run(async () => {
-      const slotsBootstrapper = new MongoSlotsBootstrapper({ database: getConnection() });
-      await slotsBootstrapper.execute();
-    }, tenantName)
-  );
-  // ========================================================
+    // ===========Bootstrap Mongo Slots (per-tenant)===========
+    await ArrayUtils.parallelFor(Object.keys(tenants.tenants), tenantName =>
+      tenants.run(async () => {
+        const slotsBootstrapper = new MongoSlotsBootstrapper({ database: getConnection() });
+        await slotsBootstrapper.execute();
+      }, tenantName)
+    );
+    // ========================================================
+  }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
   const port = config.PORT;
