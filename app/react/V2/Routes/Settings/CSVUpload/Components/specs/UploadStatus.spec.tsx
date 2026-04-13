@@ -4,6 +4,7 @@
 import React from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import * as reactRouter from 'react-router';
+import { api } from '#app/utils/api.js';
 import { socket } from '#app/socket.js';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
@@ -172,6 +173,8 @@ describe('CSV import status view', () => {
   });
 
   it('should cancel a process', async () => {
+    jest.spyOn(api, 'post').mockResolvedValue({ json: {} });
+
     await renderComponent(csvImportsList[1]);
 
     await act(() => {
@@ -181,6 +184,11 @@ describe('CSV import status view', () => {
     await act(() => {
       const modal = screen.getByTestId('modal');
       within(modal).getByText('Cancel').click();
+    });
+
+    expect(api.post).toHaveBeenCalledWith('csvImportEntities/imports/csv-import-2/cancel', {
+      data: undefined,
+      headers: {},
     });
 
     expect(revalidateMock).toHaveBeenCalledTimes(1);
