@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useResetAtom } from 'jotai/utils';
 import { notificationAtom } from '#V2/atoms/index.js';
-import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { Notification } from '#V2/Components/UI/Notification.js';
 
 const NotificationsContainer = () => {
@@ -50,23 +49,21 @@ const NotificationsContainer = () => {
   }
 
   return (
-    <ThemeProvider>
-      <div
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className="fixed z-10 w-4/5 bottom-1 left-2 md:w-2/5"
-      >
-        <div className="shadow-lg" role="alert">
-          <Notification
-            type={notification.type}
-            text={notification.text}
-            details={notification.details}
-            heading={notification.heading}
-            dismissAction={onClickHandler}
-          />
-        </div>
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="fixed z-10 w-4/5 bottom-1 left-2 md:w-2/5"
+    >
+      <div className="shadow-lg" role="alert">
+        <Notification
+          type={notification.type}
+          text={notification.text}
+          details={notification.details}
+          heading={notification.heading}
+          dismissAction={onClickHandler}
+        />
       </div>
-    </ThemeProvider>
+    </div>
   );
 };
 

@@ -10,7 +10,6 @@ import {
   PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
 import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
@@ -254,7 +253,7 @@ const Entity = () => {
   }
 
   return (
-    <ThemeProvider style={{ width: '100%', height: '100%' }}>
+    <>
       <PaneLayout defaultRatios={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="h-full">
           <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
@@ -275,7 +274,7 @@ const Entity = () => {
       </PaneLayout>
 
       <SearchHintsModal />
-    </ThemeProvider>
+    </>
   );
 };
 

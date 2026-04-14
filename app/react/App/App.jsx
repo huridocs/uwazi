@@ -69,23 +69,36 @@ const App = ({ customParams }) => {
       <div className="content">
         {shouldShowNewHeader ? (
           <ThemeProvider>
-            <Header />
+            <>
+              <Header />
+              <NotificationsContainer />
+            </>
           </ThemeProvider>
         ) : (
-          <LegacyHeader />
+          <>
+            <LegacyHeader />
+            <ThemeProvider>
+              <NotificationsContainer />
+            </ThemeProvider>
+          </>
         )}
         <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
           <AppMainContext.Provider value={appContext}>
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Confirm {...confirmOptions} />
-            <Outlet />
+            {isV2Route ? (
+              <ThemeProvider style={{ width: '100%', height: '100%' }}>
+                <Outlet />
+              </ThemeProvider>
+            ) : (
+              <Outlet />
+            )}
             <GoogleAnalytics />
             <Matomo />
             <CleanInsights />
           </AppMainContext.Provider>
         </main>
       </div>
-      <NotificationsContainer />
       {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
     </div>
   );
