@@ -1,4 +1,4 @@
-/* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -16,7 +16,6 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
-import { ObjectId } from 'mongodb';
 
 const f = getFixturesFactory();
 

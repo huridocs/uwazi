@@ -81,7 +81,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.fileService.storeFiles(filesCreated);
 
     await this.transactionManager.run(async () => {
-      await this.deps.entitiesService.upsert(entity, {
+      await this.deps.entitiesService.update(entity, {
         actorId: this.actorId,
         targetLanguage: input.language,
       });

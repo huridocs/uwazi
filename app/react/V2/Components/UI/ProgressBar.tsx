@@ -9,22 +9,30 @@ interface ProgressBarProps {
 const getColor = (color: 'gray' | 'primary' | 'success' | 'error' | 'warning') => {
   switch (color) {
     case 'gray':
-      return 'bg-gray-500';
+      return 'var(--color-theme-text-muted)';
     case 'primary':
-      return 'bg-primary-500';
+      return 'var(--color-theme-action-primary)';
     case 'success':
-      return 'bg-success-500';
+      return 'var(--color-theme-feedback-success)';
     case 'error':
-      return 'bg-error-500';
+      return 'var(--color-theme-feedback-danger)';
     case 'warning':
-      return 'bg-warning-500';
+      return 'var(--color-theme-feedback-warning)';
     default:
-      return 'bg-gray-500';
+      return 'var(--color-theme-text-muted)';
   }
 };
 
 export const ProgressBar = ({ progress, color = 'gray', className = '' }: ProgressBarProps) => (
-  <div className={`w-full bg-gray-200 rounded-full h-2.5 ${className}`}>
-    <div className={`h-2.5 rounded-full ${getColor(color)}`} style={{ width: `${progress}%` }} />
+  <div
+    className={`h-2.5 w-full rounded-full ${className}`}
+    style={{ backgroundColor: 'var(--color-theme-surface-warm)' }}
+  >
+    <div
+      className="h-2.5 rounded-full"
+      style={{ width: `${progress}%`, backgroundColor: getColor(color) }}
+    />
   </div>
 );
+
+export type { ProgressBarProps };

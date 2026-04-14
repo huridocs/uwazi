@@ -14,10 +14,9 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
-import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { UseCaseContext } from '#api/core/libs/UseCase.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
@@ -29,6 +28,7 @@ import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/Entit
 import { CreateEntityUseCase } from '../CreateEntity.js';
 import { FilesService } from '../FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -209,12 +209,11 @@ const createSut = (props: CreateSutProps = {}) => {
   const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
 
   const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
-  const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
   const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
   const fileService = new FilesService({
@@ -230,12 +229,8 @@ const createSut = (props: CreateSutProps = {}) => {
     eventBus: applicationEventsBus,
   });
 
-  const entitiesService = EntitiesServiceFactory.default({
-    entitiesDS,
-    eventBus,
-    settingsDS,
+  const [entitiesService, deps] = EntitiesServiceFactory.forTesting({
     transactionManager,
-    dispatcher: jobsDispatcher,
   });
 
   const propertyAssignmentCreatorServiceStrategy =
@@ -255,13 +250,13 @@ const createSut = (props: CreateSutProps = {}) => {
       transactionManager,
       idGenerator,
       entitiesService,
-      eventBus,
+      eventBus: deps.eventBus,
       propertyAssignmentCreatorServiceStrategy,
     },
     context
   );
 
-  return { sut, fileService, eventBus };
+  return { sut, fileService, eventBus: deps.eventBus };
 };
 
 describe('CreateEntityUseCase', () => {

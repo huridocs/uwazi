@@ -61,7 +61,10 @@ enum ItemTypes {
 
 type FeatureFlags = Tenant['featureFlags'] & {};
 
-type ClientFeatureFlags = Pick<FeatureFlags, 'paragraphExtraction' | 'themeCustomization'>;
+type ClientFeatureFlags = Pick<
+  FeatureFlags,
+  'paragraphExtraction' | 'themeCustomization' | 'v2CSVImport'
+>;
 
 type ClientProperty = Property & {
   _id?: string;

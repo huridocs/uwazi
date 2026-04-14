@@ -94,7 +94,7 @@ class EntitiesService {
     });
   }
 
-  async upsert(entity: Entity, context: UpsertContext) {
+  async update(entity: Entity, context: UpsertContext) {
     this.ensureTransaction();
 
     if (!entity.hasChanged) return;
@@ -107,6 +107,27 @@ class EntitiesService {
         targetLanguage: context.targetLanguage,
         userId: context.actorId,
       })
+    );
+  }
+
+  async updateMultiple(entities: Entity[], context: UpsertContext) {
+    this.ensureTransaction();
+
+    const changedEntities = entities.filter(e => e.hasChanged);
+    if (changedEntities.length === 0) return;
+
+    await this.deps.entitiesDS.bulkUpdate(changedEntities);
+
+    await Promise.all(
+      changedEntities.map(async entity =>
+        this.deps.eventEmitter.emit(
+          EntityUpdatedEvent.create({
+            entity,
+            targetLanguage: context.targetLanguage,
+            userId: context.actorId,
+          })
+        )
+      )
     );
   }
 

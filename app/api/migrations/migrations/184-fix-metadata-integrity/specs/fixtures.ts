@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from '#shared/types/thesaurusType';
-import { Entity, Fixture, Template } from '../types';
+import { Entity, Fixture, Template } from '../types.js';
 
 const templateId = new ObjectId();
 const dictionaryId = new ObjectId();

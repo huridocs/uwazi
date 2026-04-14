@@ -26,6 +26,8 @@ type Tenant = {
     v1CSVImportCompat?: boolean;
     themeCustomization?: boolean;
     v2GetEntity?: boolean;
+    v2ElasticSearch?: boolean;
+    v2MultipleUpdateEntity?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

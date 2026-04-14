@@ -9,15 +9,13 @@ import { update as updateFile } from '#V2/api/files/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button } from '#V2/Components/UI/Button.js';
-import { NeedAuthorization, Tooltip } from '#V2/Components/UI/index.js';
+import { NeedAuthorization, Tooltip, BlankState } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
-import { BlankState } from '../BlankState.js';
 import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { useToc, useTocActions } from './tocAtom.js';
 import { getPageNumber } from './utils.js';
 import { pdfController } from '../atoms.js';
-
 const ToCPanel = ({
   toc,
   generatedToc,
@@ -45,13 +43,9 @@ const ToCPanel = ({
   const [isAllCollapsed, setIsAllCollapsed] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const mainPdfController = useAtomValue(pdfController);
-
-  // Initialize atom with prop data on mount and when toc prop changes
   useEffect(() => {
     setToc(toc);
   }, [toc, setToc]);
-
-  // Cleanup atom on unmount
   useEffect(
     () => () => {
       resetToc();
@@ -63,7 +57,6 @@ const ToCPanel = ({
     setIsAllExpanded(expanded);
     setIsAllCollapsed(collapsed);
   };
-
   const handleToCEntryClick = useCallback(
     (entry: ProcessedTocEntry) => {
       const pageNumber = getPageNumber(entry.entry);
@@ -73,11 +66,7 @@ const ToCPanel = ({
     },
     [mainPdfController]
   );
-
-  const handleEdit = () => {
-    setEditMode(true);
-  };
-
+  const handleEdit = () => setEditMode(true);
   const handleSave = async () => {
     if (!file || !file._id || !tocState.toc) {
       setEditMode(false);
@@ -86,8 +75,6 @@ const ToCPanel = ({
 
     setIsSaving(true);
     try {
-      // Sort entries before saving to match display order
-      // Note: selection rectangles are already normalized (scale=1) when entries are added
       const sortedToc = sortTocEntries(tocState.toc);
       const updatedFile: FileType = {
         ...file,
@@ -100,9 +87,7 @@ const ToCPanel = ({
           type: 'error',
           text: <Translate>Failed to save table of contents</Translate>,
         });
-        // Don't exit edit mode on error so user can retry
       } else {
-        // Success - invalidate cache and revalidate to get the latest data from the server
         if (file.entity) {
           entityLoaderCache.invalidateEntity(file.entity);
         }
@@ -118,18 +103,14 @@ const ToCPanel = ({
         type: 'error',
         text: <Translate>Failed to save table of contents</Translate>,
       });
-      // Don't exit edit mode on error so user can retry
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleCancel = () => {
     setEditMode(false);
-    // Restore original toc
     setToc(toc);
   };
-
   const handleEntryUpdate = useCallback(
     (index: number, updates: Partial<TocSchema>) => {
       if (!tocState.toc) return;
@@ -137,14 +118,12 @@ const ToCPanel = ({
     },
     [tocState.toc, updateEntry]
   );
-
   const handleIndentationChange = useCallback(
     (index: number, newIndentation: number) => {
       handleEntryUpdate(index, { indentation: newIndentation });
     },
     [handleEntryUpdate]
   );
-
   const handleDelete = useCallback(
     (index: number) => {
       if (!tocState.toc) return;
@@ -152,7 +131,6 @@ const ToCPanel = ({
     },
     [tocState.toc, deleteEntry]
   );
-
   const handleLabelChange = useCallback(
     (index: number, newLabel: string) => {
       handleEntryUpdate(index, { label: newLabel });
@@ -222,8 +200,8 @@ const ToCPanel = ({
               title={<Translate>No Table of contents</Translate>}
               description={
                 <Translate>
-                  You can start by selecting text in the document and clicking the "Add to ToC"
-                  button.
+                  You can start by selecting text in the document and clicking the &quot;Add to
+                  ToC&quot; button.
                 </Translate>
               }
             />

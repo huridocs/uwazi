@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
 
 import testingDB, { DBFixture } from '#api/utils/testing_db';
-import migration from '../index';
-import { Entity } from '../types';
-import { fixtures, correctFixtures, correctEntities } from './fixtures';
+import migration from '../index.js';
+import { Entity } from '../types.js';
+import { fixtures, correctFixtures, correctEntities } from './fixtures.js';
 
 let db: Db | null;
 

@@ -104,6 +104,7 @@ Authentication code,Код автентифікації
 auto created,автоматично створено
 Auto-accept suggestions,Автоматичне прийняття пропозицій
 auto-created,автоматично створено
+Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Автоматичний зміст
 Automatically generated,Генерується автоматично
 Available default translation,Доступний переклад за замовчуванням
@@ -119,8 +120,10 @@ Can edit,Може редагувати
 Can see,Може бачити
 Can view,Може переглядати
 Cancel,Скасування
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Скасування
 Canceling...,Скасування...
+Cancelled,Cancelled
 Cannot find extractor,Не вдається знайти екстрактор
 Captcha,Captcha
 Captcha bypass,"Увімкнувши цю опцію, ви можете дозволити користувачам надсилати заявки до ваших шаблонів з білого списку без необхідності заповнювати CAPTCHA.
@@ -150,6 +153,7 @@ Click,Клац!
 Click here,Натисніть сюди
 Click to fill,"Натисніть, щоб заповнити"
 Close,Закрити
+Code,Code
 Collaborator,Співкористувач
 Collaborators,Співробітники
 Collapse all,Згорнути все
@@ -157,6 +161,7 @@ Collapse All,Collapse All
 Collection,Колекція
 Collection Name,Назва колекції
 Common sources,Загальні джерела
+Completed,Completed
 Configuration,Конфігурація
 Configure filters,Налаштувати фільтри
 Configure templates,Налаштування шаблонів
@@ -214,6 +219,11 @@ Created relationship,Створені стосунки
 Created template,Створений шаблон
 Created thesaurus,Створено тезаурус
 Created user group,Створена група користувачів
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
 Custom CSS,Персональні CSS
@@ -225,6 +235,7 @@ custom page error warning,"На цій кастомній сторінці ст�
 Custom Uploads,Персоналізовані завантаження
 Dark,Темний
 Dashboard,Приладова панель
+Date,Date
 Date added,Дата додавання
 Date format,Формат дати
 Date modified,Дату змінено
@@ -278,6 +289,11 @@ Documentation,Документація
 documents,документи
 Documents,Документи
 documents.,документи.
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,Завантажити
 Download a third-party authenticator app from your mobile store.,Завантажте сторонній додаток-автентифікатор з вашого мобільного магазину.
 Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
@@ -312,7 +328,9 @@ Enter your current password to confirm,Введіть ваш поточний п
 Entities,Об'єкти
 entities,Об'єкти
 Entities across all languages,Сутності всіма мовами
+Entities created,Entities created
 Entity,Об'єкт
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Сутність видалено
 Entity Page,Сторінка сутності
 Entity saved,Об'єкт збережено
@@ -333,12 +351,17 @@ Exporting entities to CSV,Експортувати об'єкти до CSV
 Extension Token,Токен розширення
 Extract new paragraphs,Витягніть нові абзаци
 Extract paragraphs,Витягнути абзаци
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Конфігурація вилучення
 Extractor Name,Ім'я екстрактора
 Extractor name,Ім'я екстрактора
 Extractor/s deleted,Видалено розпакувальник(и)
 Extractors,Екстрактори
+Failed,Failed
+Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"Іконка - це невелика піктограма, яка представляє вашу колекцію у вкладках та закладках браузера. За замовчуванням це логотип Uwazi. Ви можете використовувати свій власний:
 
 1. За потреби завантажте свою іконку в Користувацькі завантаження.
@@ -352,6 +375,7 @@ Site logo no images hint,"Поки немає файлів зображень у
 FEATURED,ОБРАНІ
 File,Файл
 File deleted,Файл видалено
+File extraction completed successfully.,File extraction completed successfully.
 File name,Ім'я файлу
 File updated,Файл оновлено
 Files,Файли
@@ -417,7 +441,12 @@ Import,Імпортувати
 Import asset,Імпортний актив
 Import completed,Імпорт завершено. Кількість створених сутностей:
 Import CSV,Імпортувати CSV
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
 Import instructions,Інструкції з імпортування
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Імпортовані сутності з файлу
 Imported translations from file,Імпортовані переклади з файлу
 Importing data in progress,Імпортування даних під час виконання
@@ -567,6 +596,7 @@ No common filters,Немає спільних фільтрів
 No Connections,Немає зв'язків
 No Connections description,Зв'язки - це прямі відносини між цим документом та іншими документами і сутностями.
 No context,Без контексту
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,НЕМАЄ ДАНИХ
 NO EXTRACTORS,ЖОДНИХ ЕКСПРАКТОРІВ
 No files available,No files available
@@ -666,6 +696,9 @@ Please contact an admin for details.,"Будь ласка, зв'яжіться �
 Please type in,"Будь ласка, введіть"
 Please type in letters and numbers from the image to start the export.,"Будь ласка, введіть літери та цифри з зображення, щоб розпочати експорт."
 Precision,Точність
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Заповідник
 Preserve Extension,Зберегти розширення
 Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOKEN, перейдіть за посиланням нижче і заповніть необхідну інформацію."
@@ -681,7 +714,9 @@ Process,Процес
 Process extractor,Технологічний екстрактор
 Process selected,Вибрано процес
 Processed,Оброблено
+Processed rows,Processed rows
 Processing,Обробка
+Progress,Progress
 Properties,Властивості
 Properties from other templates in the collection using the same label,"Властивості з інших шаблонів у колекціях, які використовують цю ж мітку"
 Properties from other templates in the collection using the same label.,"Властивості з інших шаблонів у колекції, що використовують ту саму мітку."
@@ -716,6 +751,7 @@ Publish,Опублікувати
 Published,У відкритому доступі
 QR Code,QR-код
 Query,Запит
+Queued,Queued
 RAW,RAW
 Re-uploaded document,Перезавантажений документ
 Receiving email,Електронна пошта одержувача
@@ -748,6 +784,8 @@ Request id #,Запит ID #
 Request token,Токен запиту
 Required,Потрібно
 Required property,Необхідна властивість
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,Скидання
 Reset 2FA,Скинути 2FA
 Reset default translation,Скинути переклад за замовчуванням
@@ -755,12 +793,16 @@ Reset language,Скинути мову
 Reset Password,Скинути пароль
 Reset passwords,Скидання паролів
 Restricted,Для обмеженого кола осіб
+Retryable,Retryable
+Retrying,Retrying
 Return to login,Повернутись до авторизації
 Review,Огляд
 Reviewed,Переглянуто
 Role,Роль
 Route,Маршрут
 Row,Гребіть!
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,Зразок
 Satellite,Супутник
 Save,Зберегти
@@ -770,6 +812,8 @@ Save password,Зберегти пароль
 Save your work to make change permanent,"Збережіть свою роботу, щоб зробити зміни постійними"
 Saved successfully.,Врятовано успішно.
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,Шукати
 Search item,Шукати предмет
 Search not found,Пошук нічого не виявив
@@ -852,6 +896,7 @@ Source relationship type,Тип вихідного відношення
 Source template,Вихідний шаблон
 Source Template,Вихідний шаблон
 Source's role in the relationship Source-Target.,Роль джерела у відносинах Джерело-Ціль.
+Stage,Stage
 State,Держава
 Statistics,Статистика
 Stats & Filters,Статистика та фільтри
@@ -919,6 +964,7 @@ Thesauri deleted,Тезауруси видалено
 Thesauri name,Назва тезаурусу
 thesauri new group desc,тезауруси нова група спуск
 thesauri new item desc,тезауруси новий елемент desc
+Thesauri touched,Thesauri touched
 Thesauri updated.,Оновлені тезауруси.
 Thesaurus,Тезаурус
 Thesaurus created successfully.,Тезаурус створено успішно.
@@ -936,6 +982,7 @@ This file could not be opened. It may be corrupted or not a valid PDF.,This file
 This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,Цей тип файлів не підтримується на медіа-полях
 This group is empty,Ця група порожня
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Ця мітка вже існує в цьому шаблоні
 This option will show a notification about the use of cookies in your instance.,Ця опція покаже повідомлення про використання файлів cookie у вашій базі даних.
 This property can not be deleted,Цю властивість не можна видалити
@@ -965,6 +1012,7 @@ total entities,всього суб'єктів господарювання
 Total files,Всього файлів
 total files,всього файлів
 "Total files from main documents, supporting files and uploads","Загальна кількість файлів з основних документів, супровідних файлів та завантажень"
+Total imports,Total imports
 total users,всього користувачів
 Train,Потяг
 Train model,Навчальна модель
@@ -1041,6 +1089,8 @@ Using Authenticator,Використання автентифікатора
 Using URLs,Використання URL-адрес
 Uwazi is developed by,Uwazi розроблений
 Uwazi UI,Uwazi UI
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Значення
 Value cannot be transformed to the correct type,Значення не може бути перетворено до правильного типу
 values,значення

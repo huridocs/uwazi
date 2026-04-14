@@ -388,9 +388,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
+
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     themeCustomization: featureFlags?.themeCustomization,
+    v2CSVImport: featureFlags?.v2CSVImport,
   };
 
   if (req.aborted) {

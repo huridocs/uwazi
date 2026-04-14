@@ -1,7 +1,7 @@
 import { EntitiesService, EntitiesServiceDeps } from '#api/core/application/EntitiesService.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { search } from '#api/search/index.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
@@ -11,6 +11,7 @@ import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermi
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
@@ -55,6 +56,32 @@ class EntitiesServiceFactory {
       templatesDS,
       transactionManager,
     });
+  }
+
+  static forTesting(_deps?: Partial<EntitiesServiceDeps>) {
+    const transactionManager = TransactionManagerFactory.default();
+
+    const deps: EntitiesServiceDeps = {
+      eventEmitter: EventEmitterFactory.forTesting(),
+      templatesDS: TemplatesDataSourceFactory.forTesting(transactionManager),
+      dispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
+      entityPermissionChecker: new MongoEntityPermissionChecker(
+        getConnection(),
+        transactionManager
+      ),
+      eventBus: TestUtils.mockClass<EventsBus>({
+        clear: jest.fn(),
+        emit: jest.fn(),
+        on: jest.fn(),
+      }),
+      search,
+      settingsDS: SettingsDataSourceFactory.default(transactionManager),
+      transactionManager,
+      ..._deps,
+    };
+
+    return [new EntitiesService(deps), deps] as const;
   }
 }
 

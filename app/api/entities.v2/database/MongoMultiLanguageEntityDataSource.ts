@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { Db, Filter, ObjectId } from 'mongodb';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
@@ -13,10 +14,17 @@ import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/Temp
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
-import { Db, Filter, ObjectId } from 'mongodb';
 import { Entity } from '../../core/domain/entity/Entity.js';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes.js';
+import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
+
+type Deps = {
+  db: Db;
+  transactionManager: MongoTransactionManager;
+  entityIndexerService: EntityIndexerService;
+  options?: MongoDSOptions;
+};
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>
@@ -26,10 +34,31 @@ export class MongoMultiLanguageEntityDataSource
 
   private modifiedSharedIds = new Set<string>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
-    super(db, transactionManager, options);
-    transactionManager.onCommitted(async () => {
+  private mutatedEntities = new Map<string, EntityDBO>();
+
+  private deletedEntities = new Set<string>();
+
+  private entityIndexerService: EntityIndexerService;
+
+  constructor(deps: Deps) {
+    super(deps.db, deps.transactionManager, deps.options);
+
+    this.entityIndexerService = deps.entityIndexerService;
+
+    this.transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
+    });
+
+    this.transactionManager.onCommitted(async () => {
+      const entities = [...this.mutatedEntities.values()];
+      this.mutatedEntities.clear();
+      return this.entityIndexerService.index(entities);
+    });
+
+    this.transactionManager.onCommitted(async () => {
+      const entities = [...this.deletedEntities.values()];
+      this.deletedEntities.clear();
+      return this.entityIndexerService.deleteBySharedIds(entities);
     });
   }
 
@@ -52,25 +81,25 @@ export class MongoMultiLanguageEntityDataSource
     );
 
     this.modifiedSharedIds.add(entity.sharedId);
+    dbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkUpdate(entities: Entity[]): Promise<void> {
-    const updates = entities.flatMap(entity => {
-      const dbos = MongoEntityMapper.toDBO(entity);
+    const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
 
-      return dbos.map(dbo => ({
-        replaceOne: {
-          filter: { _id: dbo._id },
-          replacement: dbo,
-        },
-      }));
-    });
+    const updates = allDbos.map(dbo => ({
+      replaceOne: {
+        filter: { _id: dbo._id },
+        replacement: dbo,
+      },
+    }));
 
     if (updates.length > 0) {
       await this.getCollection().bulkWrite(updates, { ignoreUndefined: true });
     }
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+    allDbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   private async getReferencePropertyNames(): Promise<string[]> {
@@ -257,10 +286,17 @@ export class MongoMultiLanguageEntityDataSource
     affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
 
     await this.updateMetadataReferences(affectedSharedIds, deletedSharedIds);
+
+    const updatedDocs = await this.getCollection()
+      .find({ sharedId: { $in: affectedSharedIds } })
+      .toArray();
+    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkDelete(sharedIds: string[]): Promise<void> {
     await this.getCollection().deleteMany({ sharedId: { $in: sharedIds } });
+
+    sharedIds.forEach(id => this.deletedEntities.add(id));
   }
 
   async getAllBySharedId(sharedIds: string[]): Promise<ResultType<Entity[], Error>> {
@@ -281,6 +317,10 @@ export class MongoMultiLanguageEntityDataSource
       }
     );
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    const updatedDocs = await this.getCollection()
+      .find({ sharedId: { $in: sharedIds } })
+      .toArray();
+    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async renameMetadataProperties(
@@ -299,6 +339,10 @@ export class MongoMultiLanguageEntityDataSource
       }
     );
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    const updatedDocs = await this.getCollection()
+      .find({ sharedId: { $in: sharedIds } })
+      .toArray();
+    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[] = []) {
@@ -324,7 +368,12 @@ export class MongoMultiLanguageEntityDataSource
         .flat(),
       { ordered: false }
     );
-    entitiesToSave.map(e => e.sharedId).forEach(id => this.modifiedSharedIds.add(id));
+    const sharedIds = entitiesToSave.map(e => e.sharedId);
+    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    const updatedDocs = await this.getCollection()
+      .find({ sharedId: { $in: sharedIds } })
+      .toArray();
+    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async countByTemplateId(templateId: string): Promise<number> {
@@ -405,16 +454,23 @@ export class MongoMultiLanguageEntityDataSource
 
   async create(entity: Entity): Promise<void> {
     const dbos = MongoEntityMapper.toDBO(entity);
+
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
+
     this.modifiedSharedIds.add(entity.sharedId);
+    dbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 
   async bulkInsert(entities: Entity[]): Promise<void> {
     if (entities.length === 0) {
       return;
     }
+
     const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
+
     await this.getCollection().insertMany(allDbos, { ignoreUndefined: true, ordered: false });
+
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+    allDbos.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
   }
 }

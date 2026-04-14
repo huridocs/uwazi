@@ -104,6 +104,7 @@ Authentication code,စစ်မှန်ကြောင်း အတည်ပ�
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,အော်တို ဖန်တီးထားသော
+Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,အလိုအလျောက် မာတိကာ
 Automatically generated,အလိုအလျောက် ထုတ်လုပ်ထားသည်
 Available default translation,Available default translation
@@ -119,8 +120,10 @@ Can edit,တည်းဖြတ်နိုင်သည်
 Can see,မြင်နိုင်သည်
 Can view,ကြည့်နိုင်သည်
 Cancel,ပယ်ဖျက်ရန်
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Canceling
 Canceling...,Canceling...
+Cancelled,Cancelled
 Cannot find extractor,Cannot find extractor
 Captcha,ကက်ပ်ချာ
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
@@ -148,6 +151,7 @@ Click,Click
 Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Close,ပိတ်ရန်
+Code,Code
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collaborators,Collaborators
 Collapse all,Collapse all
@@ -155,6 +159,7 @@ Collapse All,Collapse All
 Collection,စုစည်းမှု
 Collection Name,Collection Name
 Common sources,Common sources
+Completed,Completed
 Configuration,Configuration
 Configure filters,စစ်ထုတ်မှုများကို ချိန်ညှိပါ
 Configure templates,Configure templates
@@ -212,6 +217,11 @@ Created relationship,Created relationship
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း ချွတ်ယွင်းချက်
 Custom CSS,စိတ်ကြိုက် CSS
@@ -223,6 +233,7 @@ custom page error warning,"There is an unexpected error on this custom page, it 
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
 Dark,Dark
 Dashboard,Dashboard
+Date,Date
 Date added,ဒေတာ ထည့်ပြီး
 Date format,ရက်စွဲ ဖော်မက်
 Date modified,ရက်စွဲ ပြင်ဆင်ပြီး
@@ -276,6 +287,11 @@ Documentation,စာရွက်စာတမ်း
 documents,စာရွက်စာတမ်းများ
 Documents,စာရွက်စာတမ်းများ
 documents.,စာရွက်စာတမ်းများ။
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,ဒေါင်းလုဒ်လုပ်ရန်
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်ကို ဤဝင်းဒိုးထဲသို့ ဆွဲချပါ
@@ -310,7 +326,9 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,ဖြည့်သွင်းချက်များ
 entities,ဖြည့်သွင်းချက်များ
 Entities across all languages,Entities across all languages
+Entities created,Entities created
 Entity,ဖြည့်သွင်းချက်
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
@@ -331,12 +349,17 @@ Exporting entities to CSV,ဖြည့်သွင်းချက်များ
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed,Failed
+Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads if needed.
@@ -350,6 +373,7 @@ Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, 
 FEATURED,FEATURED
 File,ဖိုင်
 File deleted,File deleted
+File extraction completed successfully.,File extraction completed successfully.
 File name,File name
 File updated,File updated
 Files,Files
@@ -415,7 +439,12 @@ Import,ထည့်သွင်းရန်
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV ထည့်သွင်းရန်
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
 Import instructions,ထည့်သွင်းမှု ညွှန်ကြားချက်များ
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,ဒေတာ ထည့်သွင်းဆဲ
@@ -565,6 +594,7 @@ No common filters,အသုံးများသော စစ်ထုတ်မ�
 No Connections,ချိတ်ဆက်မှု မရှိပါ
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
@@ -664,6 +694,9 @@ Please contact an admin for details.,ကျေးဇူးပြု၍ အသေ
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,ကျေးဇူးပြု၍ တင်ပို့မှုကို စတင်ရန် ရုပ်ပုံမှ စာလုံးများနှင့် ဂဏန်းများကို ရိုက်ထည့်ပါ။
 Precision,တိကျမှု
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
@@ -679,7 +712,9 @@ Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
 Processed,Processed
+Processed rows,Processed rows
 Processing,စီမံဆောင်ရွက်နေသည်
+Progress,Progress
 Properties,ထူးခြားချက်များ
 Properties from other templates in the collection using the same label,တူညီသော တံဆိပ်ကို သုံးထားသည့် စုစည်းမှုများရှိ အခြားပုံစံပြားများမှ ထူးခြားချက်များ
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -714,6 +749,7 @@ Publish,ထုတ်ဝေရန်
 Published,ထုတ်ဝေပြီး
 QR Code,QR Code
 Query,မေးခွန်း
+Queued,Queued
 RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Receiving email
@@ -746,6 +782,8 @@ Request id #,ငြင်းပယ်ရန်
 Request token,Request token
 Required,Required
 Required property,လိုအပ်သော ထူးခြားချက်
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,ပြန်လည်သတ်မှတ်ရန်
 Reset 2FA,2FA ကို ပြန်လည်သတ်မှတ်ရန်
 Reset default translation,Reset default translation
@@ -753,12 +791,16 @@ Reset language,Reset language
 Reset Password,စကားဝှက် ပြန်လည်သတ်မှတ်ရန်
 Reset passwords,Reset passwords
 Restricted,ကန့်သတ်ထားသည်
+Retryable,Retryable
+Retrying,Retrying
 Return to login,လော့ဂ်အင်သို့ ပြန်သွားရန်
 Review,Review
 Reviewed,သုံးသပ်ပြီး
 Role,အခန်းကဏ္ဍ
 Route,လမ်းကြောင်း
 Row,Row
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,နမူနာ
 Satellite,Satellite
 Save,သိမ်းဆည်းရန်
@@ -768,6 +810,8 @@ Save password,စကားဝှက် သိမ်းဆည်းရန်
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,ရှာဖွေရန်
 Search item,အိုင်တမ် ရှာရန်
 Search not found,ရှာသည့်အရာကို မတွေ့ပါ
@@ -850,6 +894,7 @@ Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
+Stage,Stage
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -917,6 +962,7 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
+Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
@@ -934,6 +980,7 @@ This file could not be opened. It may be corrupted or not a valid PDF.,This file
 This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,ဤရွေးချယ်မှုသည် သင့်အခြေအနေတွင် ကွတ်ကီးများ အသုံးပြုမှုအကြောင်း အသိပေးချက် ပြသပါမည်။
 This property can not be deleted,This property can not be deleted
@@ -963,6 +1010,7 @@ total entities,total entities
 Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+Total imports,Total imports
 total users,total users
 Train,Train
 Train model,Train model
@@ -1039,6 +1087,8 @@ Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
 Uwazi UI,Uwazi UI
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
