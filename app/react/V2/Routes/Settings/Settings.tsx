@@ -16,8 +16,9 @@ const Settings = () => {
         className={`md:min-w-[250px] h-full ${isSettingsParentRoute ? 'w-full' : 'invisible w-0 min-w-0'} md:visible`}
         style={{
           borderRight:
-            '1px solid color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
-          backgroundColor: 'var(--color-theme-surface-muted)',
+            '1px solid color-mix(in srgb, var(--color-theme-border-default) 42%, transparent)',
+          backgroundColor:
+            'var(--color-theme-chrome-settings-rail-bg, var(--color-theme-surface-muted))',
         }}
       >
         <SettingsNavigation />

@@ -2,7 +2,7 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 import { Helmet } from 'react-helmet';
 import { I18NLink } from '#app/I18N/index.js';
-import { settingsAtom, themeModeAtom } from '#V2/atoms/index.js';
+import { effectiveThemeModeAtom, settingsAtom } from '#V2/atoms/index.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
 
 interface SiteNameProps {
@@ -24,7 +24,7 @@ export const SiteName: React.FC<SiteNameProps> = ({
     themeVars,
     themeCustomization,
   } = useAtomValue(settingsAtom);
-  const themeMode = useAtomValue(themeModeAtom);
+  const themeMode = useAtomValue(effectiveThemeModeAtom);
   const themeCustomizationEnabled = Boolean(themeCustomization);
   const fallbackLogoUrl = siteLogo?.trim() ?? '';
   const fallbackFaviconUrl = favicon?.trim() ?? '';

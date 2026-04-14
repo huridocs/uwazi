@@ -459,6 +459,30 @@
   --color-primary-800: var(--color-theme-action-primary);
 }
 
+[data-theme-custom] .theme-surface a {
+  color: var(--color-theme-brand-surface-foreground, #111827);
+  background-color: transparent;
+}
+[data-theme-custom] .theme-surface a:hover,
+[data-theme-custom] .theme-surface a:focus,
+[data-theme-custom] .theme-surface a:active {
+  color: var(--color-theme-brand-surface-hover-fg, #111827);
+  background-color: var(--color-theme-brand-surface-hover-bg, #f3f4f6);
+}
+[data-theme-custom] .theme-surface button {
+  color: var(--color-theme-brand-surface-foreground, #111827);
+  background-color: transparent;
+}
+[data-theme-custom] .theme-surface button:hover,
+[data-theme-custom] .theme-surface button:focus {
+  color: var(--color-theme-brand-surface-hover-fg, #111827);
+  background-color: var(--color-theme-brand-surface-hover-bg, #f3f4f6);
+}
+[data-theme-custom] .theme-surface a svg,
+[data-theme-custom] .theme-surface button svg {
+  color: inherit;
+}
+
 /* Header bar: uses header-scoped appearance vars rather than the tenant accent pipeline. */
 .tw-content .header-bar[data-uwazi-header] {
   background-color: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
@@ -523,6 +547,32 @@
 .tw-content .header-bar[data-uwazi-header] .header-bar-skip {
   background-color: var(--color-theme-bg-surface, #ffffff);
   color: var(--color-theme-text-primary, #1a1a1a);
+}
+
+.tw-content nav[aria-label='Settings navigation'] .settings-nav-link {
+  position: relative;
+  border-radius: 0.125rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--color-theme-text-secondary);
+}
+.tw-content nav[aria-label='Settings navigation'] .settings-nav-link:hover {
+  color: var(--color-theme-text-primary);
+  background-color: transparent;
+}
+.tw-content nav[aria-label='Settings navigation'] .settings-nav-link[aria-current='page'] {
+  background-color: var(
+    --color-theme-chrome-settings-nav-item-active-bg,
+    var(--color-theme-surface-selected, var(--color-theme-bg-selected))
+  );
+  color: var(--color-theme-action-primary);
+}
+.tw-content nav[aria-label='Settings navigation'] .settings-nav-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--color-theme-border-interactive, var(--color-theme-accent-primary)) 35%, transparent);
 }
 
 .tw-content .theme-notification {

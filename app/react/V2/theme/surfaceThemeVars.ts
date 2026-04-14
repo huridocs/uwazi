@@ -76,7 +76,7 @@ const getSurfaceThemeVars = (
 ): Record<string, string> => ({
   [CARD_BORDER]: getPresetValue(
     presetId,
-    '#F3F4F6',
+    'color-mix(in srgb, #E5E7EB 70%, #ffffff)',
     `color-mix(in srgb, ${roles.border.default} 60%, transparent)`
   ),
   [CARD_SHADOW]: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
@@ -121,7 +121,7 @@ const getBannerThemeVars = (
   ),
   [WARNING_BANNER_BORDER]: getPresetValue(presetId, '#FCD34D', roles.feedback.warning),
   [SECTION_HEADER_BG]: roles.surface.warm,
-  [SECTION_HEADER_FG]: getPresetValue(presetId, roles.action.primary, roles.text.primary),
+  [SECTION_HEADER_FG]: getPresetValue(presetId, roles.text.secondary, roles.text.primary),
 });
 
 export { getBannerThemeVars, getCardThemeVars, getControlThemeVars, getSurfaceThemeVars };

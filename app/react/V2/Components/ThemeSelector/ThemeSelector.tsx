@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { themeModeAtom } from '#V2/atoms/index.js';
+import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
 import {
   appliedTheme,
   getCustomThemeVars,
@@ -39,7 +39,7 @@ const ThemeSelector = ({
   siteLogo,
   favicon,
 }: ThemeSelectorProps) => {
-  const activeThemeMode = useAtomValue(themeModeAtom);
+  const activeThemeMode = useAtomValue(effectiveThemeModeAtom);
   const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
   const selectedPreset = getPresetId(themeVars, true);
   const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);

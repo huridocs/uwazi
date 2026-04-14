@@ -176,7 +176,7 @@ const LEGACY_LIGHT: ResolvedThemeVars = {
   '--color-theme-text-muted': '#6B7280',
   '--color-theme-border-primary': '#E5E7EB',
   '--color-theme-border-soft': '#E5E7EB',
-  '--color-theme-bg-selected': '#EEF2FF',
+  '--color-theme-bg-selected': '#F2F2F4',
   '--color-theme-border-primary-64': '#E5E7EBA3',
   '--color-theme-border-soft-64': '#E5E7EBA3',
   '--color-theme-accent-supporting-tint': '#DBEAFE',

@@ -13,11 +13,7 @@ const SettingsNavigation = () => {
   const { allowcustomJS } = settings;
 
   const renderLink = (to: string, children: React.ReactNode) => (
-    <I18NLink
-      to={to}
-      activeClassname="[background-color:var(--color-theme-feedback-info-tint)] [color:var(--color-theme-action-primary)] focus:[background-color:var(--color-theme-feedback-info-tint)]"
-      className="block rounded-sm p-2 text-sm font-medium [color:var(--color-theme-text-secondary)] hover:[background-color:var(--color-theme-surface-warm)] hover:[color:var(--color-theme-text-primary)] focus:[background-color:var(--color-theme-surface-warm)] focus:[color:var(--color-theme-text-primary)]"
-    >
+    <I18NLink to={to} className="settings-nav-link block">
       <span className="whitespace-nowrap flex items-center gap-1">{children}</span>
     </I18NLink>
   );
@@ -47,7 +43,7 @@ const SettingsNavigation = () => {
           </NeedAuthorization>
         </ul>
       </section>
-      <section className="border-t p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
+      <section className="border-t border-solid [border-top-width:1px] p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
         <NeedAuthorization roles={['admin', 'editor']}>
           <h2 className="mb-2 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
             <Translate>Metadata</Translate>
@@ -86,7 +82,7 @@ const SettingsNavigation = () => {
           </NeedAuthorization>
         </ul>
       </section>
-      <section className="border-t p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
+      <section className="border-t border-solid [border-top-width:1px] p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
         <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
           <Translate>Tools</Translate>
         </h2>
@@ -135,7 +131,7 @@ const SettingsNavigation = () => {
               href="https://uwazi.io/page/9852italrtk/support"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 whitespace-nowrap rounded-sm p-2 text-sm font-medium [color:var(--color-theme-text-secondary)] hover:[background-color:var(--color-theme-surface-warm)] hover:[color:var(--color-theme-text-primary)] focus:[background-color:var(--color-theme-surface-warm)] focus:[color:var(--color-theme-text-primary)]"
+              className="settings-nav-link inline-flex items-center gap-1 whitespace-nowrap"
             >
               <Translate>Documentation</Translate> <Icon icon="external-link-alt" />
             </a>

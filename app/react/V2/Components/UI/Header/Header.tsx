@@ -44,7 +44,7 @@ const Header = () => {
   const settings = useAtomValue(settingsAtom);
   const isMobile = useIsMobile();
 
-  const { private: privateInstance, defaultLibraryView = 'cards' } = settings;
+  const { private: privateInstance, defaultLibraryView = 'cards', themeCustomization } = settings;
   const libraryUrl = getLibraryUrl(defaultLibraryView);
   const shouldShowLibrary = !privateInstance || authenticatedUser;
   const headerLinks = (settings.links ?? []).filter(link => !isLibraryUrl(link.url));
@@ -102,19 +102,21 @@ const Header = () => {
               {!isMobile ? <Translate>Sign in</Translate> : null}
             </I18NLink>
           )}
-          <button
-            type="button"
-            className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
-            onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
-            aria-label={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
-            title={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
-          >
-            {themeMode === 'light' ? (
-              <MoonIcon className="h-4 w-4" />
-            ) : (
-              <SunIcon className="h-4 w-4" />
-            )}
-          </button>
+          {themeCustomization ? (
+            <button
+              type="button"
+              className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+              onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
+              aria-label={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
+              title={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
+            >
+              {themeMode === 'light' ? (
+                <MoonIcon className="h-4 w-4" />
+              ) : (
+                <SunIcon className="h-4 w-4" />
+              )}
+            </button>
+          ) : null}
         </div>
       </div>
       <div className="nprogress-container" />

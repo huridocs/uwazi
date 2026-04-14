@@ -6,7 +6,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import { useAtomValue } from 'jotai';
 import { availableLanguages } from '#shared/language/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { themeModeAtom } from '#V2/atoms/index.js';
+import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
 
 interface SidePanelProps {
   children: JSX.Element | React.ReactNode;
@@ -57,7 +57,7 @@ const Sidepanel = ({
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
   const titleId = useId();
-  const themeMode = useAtomValue(themeModeAtom);
+  const themeMode = useAtomValue(effectiveThemeModeAtom);
 
   let transitionRight = '-translate-x-[500px]';
   let transitionLeft = '-translate-x-[-500px]';

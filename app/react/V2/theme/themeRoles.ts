@@ -47,8 +47,13 @@ type ThemeRoles = {
     appBarActive: string;
     appBarFg: string;
     separator: string;
+    settingsRailBg: string;
+    settingsNavItemActiveBg: string;
   };
 };
+
+const LEGACY_SETTINGS_RAIL_BG = '#fcfcfc';
+const LEGACY_SETTINGS_NAV_ITEM_ACTIVE_BG = '#e0e7ff';
 
 const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): ThemeRoles => {
   const actionPrimary = resolved['--color-theme-accent-primary'];
@@ -104,6 +109,12 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       appBarActive: resolved['--color-theme-bg-muted'],
       appBarFg,
       separator: resolved['--color-theme-border-primary'],
+      settingsRailBg:
+        presetId === 'legacy' ? LEGACY_SETTINGS_RAIL_BG : resolved['--color-theme-bg-muted'],
+      settingsNavItemActiveBg:
+        presetId === 'legacy'
+          ? LEGACY_SETTINGS_NAV_ITEM_ACTIVE_BG
+          : resolved['--color-theme-bg-selected'],
     },
   };
 };
@@ -137,6 +148,8 @@ const getThemeRoleVars = (roles: ThemeRoles): Record<string, string> => ({
   '--color-theme-chrome-app-bar-active': roles.chrome.appBarActive,
   '--color-theme-chrome-app-bar-fg': roles.chrome.appBarFg,
   '--color-theme-chrome-app-bar-separator': roles.chrome.separator,
+  '--color-theme-chrome-settings-rail-bg': roles.chrome.settingsRailBg,
+  '--color-theme-chrome-settings-nav-item-active-bg': roles.chrome.settingsNavItemActiveBg,
 });
 
 export { getThemeRoles, getThemeRoleVars };

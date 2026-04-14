@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { settingsAtom, themeModeAtom } from '#V2/atoms/index.js';
+import { getEffectiveThemeMode, settingsAtom, themeModeAtom } from '#V2/atoms/index.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { appliedTheme, getPresetId, type ThemeMode } from '#V2/theme/themes.js';
 
@@ -14,12 +14,12 @@ const ThemeProvider = ({ children, className, controlledMode, style }: ThemeProv
   const settings = useAtomValue(settingsAtom);
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
   const themeVars = settings.themeVars ?? undefined;
-  const resolvedThemeMode = controlledMode ?? themeMode;
   const enabled = Boolean(settings.themeCustomization);
+  const effectiveThemeMode = getEffectiveThemeMode(enabled, themeMode, controlledMode);
   const presetId = React.useMemo(() => getPresetId(themeVars, enabled), [enabled, themeVars]);
   const resolved = React.useMemo(
-    () => appliedTheme(themeVars, resolvedThemeMode, enabled),
-    [enabled, resolvedThemeMode, themeVars]
+    () => appliedTheme(themeVars, effectiveThemeMode, enabled),
+    [enabled, effectiveThemeMode, themeVars]
   );
   const themeVarsStyle = React.useMemo<React.CSSProperties & Record<string, string>>(
     () => getScopedThemeVars(presetId, resolved),
@@ -27,10 +27,10 @@ const ThemeProvider = ({ children, className, controlledMode, style }: ThemeProv
   );
   const mergedClassName = React.useMemo(
     () =>
-      ['tw-content', resolvedThemeMode === 'dark' ? 'dark' : '', className]
+      ['tw-content', effectiveThemeMode === 'dark' ? 'dark' : '', className]
         .filter(Boolean)
         .join(' '),
-    [className, resolvedThemeMode]
+    [className, effectiveThemeMode]
   );
 
   React.useEffect(() => {
@@ -43,8 +43,8 @@ const ThemeProvider = ({ children, className, controlledMode, style }: ThemeProv
     <div
       className={mergedClassName}
       data-theme-custom={enabled ? true : undefined}
-      data-theme-mode={resolvedThemeMode}
-      style={{ colorScheme: resolvedThemeMode, ...themeVarsStyle, ...style }}
+      data-theme-mode={effectiveThemeMode}
+      style={{ colorScheme: effectiveThemeMode, ...themeVarsStyle, ...style }}
     >
       {children}
     </div>
