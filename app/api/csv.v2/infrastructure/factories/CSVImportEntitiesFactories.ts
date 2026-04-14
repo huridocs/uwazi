@@ -102,9 +102,11 @@ export class CSVImportEntitiesFactories {
   static getCsvImportEntitiesImportUseCaseDefault() {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
+    const rowErrorsDS = this.CSVImportRowErrorsDSDefault(transactionManager);
 
     return new GetCsvImportEntitiesImportUseCase({
       csvImportEntitiesImportsDS,
+      rowErrorsDS,
     });
   }
 
