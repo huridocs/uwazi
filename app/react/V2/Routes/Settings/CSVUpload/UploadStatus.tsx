@@ -181,7 +181,12 @@ const UploadStatus = () => {
               ) : null}
               <div className="pt-6">
                 <Translate className="text-xl font-semibold pb-4 block">Progress</Translate>
-                <Progress current={progressCurrent} total={progressTotal} status={entry.status} />
+                <Progress
+                  current={progressCurrent}
+                  total={progressTotal}
+                  status={entry.status}
+                  stats={entry.stats}
+                />
                 <p className="text-sm text-gray-600 pt-2">
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
