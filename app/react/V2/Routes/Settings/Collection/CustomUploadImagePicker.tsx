@@ -238,7 +238,7 @@ const CustomUploadImagePicker = ({
       }
     };
 
-    void syncValidation();
+    syncValidation().catch(() => undefined);
 
     return () => {
       cancelled = true;

@@ -11,7 +11,6 @@ import {
   isValidHex,
   NAMED_THEMES,
   SEMANTIC_VAR_KEYS,
-  SEMANTIC_VAR_LABELS,
   THEME_MODES,
   themeStorageKey,
   toCanonicalThemeVars,

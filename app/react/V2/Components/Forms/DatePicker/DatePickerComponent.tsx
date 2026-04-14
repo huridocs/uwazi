@@ -112,7 +112,9 @@ const DatePickerComponent = React.forwardRef(
       backgroundColor: showError
         ? 'var(--color-theme-control-bg-error)'
         : 'var(--color-theme-control-bg)',
-      color: showError ? 'var(--color-theme-control-text-error)' : 'var(--color-theme-control-text)',
+      color: showError
+        ? 'var(--color-theme-control-text-error)'
+        : 'var(--color-theme-control-text)',
     };
 
     const instance = useRef<Datepicker | null>(null);

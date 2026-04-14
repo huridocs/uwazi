@@ -226,7 +226,7 @@ const PDFSidepanel = ({
               title={
                 <div className="flex gap-4 items-center">
                   <Translate
-                    className={`font-semibold uppercase ${selectionError ? 'text-pink-600' : 'text-gray-500'}`}
+                    className={`font-semibold uppercase ${selectionError ? 'text-error-600' : 'text-gray-500'}`}
                     context={templateId}
                   >
                     {property?.label}
@@ -241,7 +241,7 @@ const PDFSidepanel = ({
                       </Translate>
                     </ToggleButton>
                   )}
-                  {selectionError && <span className="text-pink-600">{selectionError}</span>}
+                  {selectionError && <span className="text-error-600">{selectionError}</span>}
                 </div>
               }
             >

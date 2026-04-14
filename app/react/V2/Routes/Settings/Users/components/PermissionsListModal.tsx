@@ -154,7 +154,7 @@ const LevelCell = ({ cell }: CellContext<PermissionByRole, Level>) => {
       );
 
     default:
-      return <XMarkIcon className="w-6 text-pink-600" />;
+      return <XMarkIcon className="w-6 text-error-600" />;
   }
 };
 

@@ -123,7 +123,8 @@ const Notification = ({
   };
   const toneStyles: Record<NotificationProps['type'], NotificationToneVars> = {
     info: {
-      '--notification-tone': 'var(--color-theme-feedback-info, var(--color-theme-accent-supporting))',
+      '--notification-tone':
+        'var(--color-theme-feedback-info, var(--color-theme-accent-supporting))',
       '--notification-tone-tint':
         'var(--color-theme-feedback-info-tint, var(--color-theme-accent-supporting-tint))',
     },

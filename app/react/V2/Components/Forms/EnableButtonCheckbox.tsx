@@ -45,35 +45,53 @@ const EnableButtonCheckbox = React.forwardRef(
     const hoverColor = isChecked
       ? 'var(--color-theme-feedback-danger)'
       : 'var(--color-theme-feedback-success)';
-    const backgroundColor = isChecked
-      ? disabled
-        ? 'color-mix(in srgb, var(--color-theme-feedback-success) 45%, var(--color-theme-surface-raised))'
-        : hovering && isInteractive
-          ? hoverColor
-          : 'var(--color-theme-feedback-success)'
-      : disabled
-        ? 'transparent'
-        : hovering && isInteractive
-          ? hoverColor
-          : 'var(--color-theme-surface-raised)';
-    const borderColor = isChecked
-      ? disabled
-        ? 'color-mix(in srgb, var(--color-theme-feedback-success) 45%, transparent)'
-        : hovering && isInteractive
-          ? hoverColor
-          : 'var(--color-theme-feedback-success)'
-      : disabled
-        ? 'color-mix(in srgb, var(--color-theme-action-primary) 35%, transparent)'
-        : hovering && isInteractive
-          ? hoverColor
-          : 'var(--color-theme-action-primary)';
-    const textColor = isChecked
-      ? 'var(--color-theme-text-on-solid)'
-      : disabled
-        ? 'color-mix(in srgb, var(--color-theme-action-primary) 40%, var(--color-theme-surface-page))'
-        : hovering && isInteractive
-          ? 'var(--color-theme-text-on-solid)'
-          : 'var(--color-theme-action-primary)';
+
+    let backgroundColor: string;
+    if (isChecked) {
+      if (disabled) {
+        backgroundColor =
+          'color-mix(in srgb, var(--color-theme-feedback-success) 45%, var(--color-theme-surface-raised))';
+      } else if (hovering && isInteractive) {
+        backgroundColor = hoverColor;
+      } else {
+        backgroundColor = 'var(--color-theme-feedback-success)';
+      }
+    } else if (disabled) {
+      backgroundColor = 'transparent';
+    } else if (hovering && isInteractive) {
+      backgroundColor = hoverColor;
+    } else {
+      backgroundColor = 'var(--color-theme-surface-raised)';
+    }
+
+    let borderColor: string;
+    if (isChecked) {
+      if (disabled) {
+        borderColor = 'color-mix(in srgb, var(--color-theme-feedback-success) 45%, transparent)';
+      } else if (hovering && isInteractive) {
+        borderColor = hoverColor;
+      } else {
+        borderColor = 'var(--color-theme-feedback-success)';
+      }
+    } else if (disabled) {
+      borderColor = 'color-mix(in srgb, var(--color-theme-action-primary) 35%, transparent)';
+    } else if (hovering && isInteractive) {
+      borderColor = hoverColor;
+    } else {
+      borderColor = 'var(--color-theme-action-primary)';
+    }
+
+    let textColor: string;
+    if (isChecked) {
+      textColor = 'var(--color-theme-text-on-solid)';
+    } else if (disabled) {
+      textColor =
+        'color-mix(in srgb, var(--color-theme-action-primary) 40%, var(--color-theme-surface-page))';
+    } else if (hovering && isInteractive) {
+      textColor = 'var(--color-theme-text-on-solid)';
+    } else {
+      textColor = 'var(--color-theme-action-primary)';
+    }
 
     return (
       <label
