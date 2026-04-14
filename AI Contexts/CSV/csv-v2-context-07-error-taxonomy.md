@@ -313,6 +313,14 @@ Keep this section as the actionable source of truth for next iterations.
    user-actionable failure class appears repeatedly and cannot be represented by existing codes.
 4. Preserve the factory-first rule: all new row-error sources must map through
    `CsvRowImportErrorFactory` rather than persisting ad-hoc messages.
+5. Empty source lines must not be surfaced as generic `INTERNAL_ERROR` with
+   `Row could not be imported due to an internal processing error.`:
+   - classify and filter these rows deterministically according to the agreed empty-line policy,
+   - preserve source index traceability while avoiding noisy/internal-looking row errors.
+6. Improve file-column misuse diagnostics for `file` cells containing multiple values (e.g. `a.pdf|b.jpg`):
+   - avoid misleading `FILE_NOT_FOUND` against the full token,
+   - emit a clear user-facing error explaining `file` accepts only one value and multi-file input
+     must use the `files` column.
 
 ### 13.1 TODO — Empty-line exception policy (agreed direction)
 
@@ -330,3 +338,17 @@ Implementation note for future iteration:
 
 - Apply this as a reporting/error-policy decision, not by losing index traceability.
 - Preserve ability to map staged/imported rows back to original source row positions.
+
+### 13.2 TODO — `file` column multi-value validation error
+
+Current gap:
+
+- `file` cells with `|`-separated values currently flow into file lookup as a single token and can
+  fail with misleading `FILE_NOT_FOUND`.
+
+Required behavior:
+
+- Detect multi-value usage in `file` early and map to a deterministic, user-facing validation error
+  (message must instruct to use `files` for multiple documents).
+- Keep `files` as the only multi-document column and maintain v1-compatible `file` single-value
+  semantics.

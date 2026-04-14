@@ -108,6 +108,10 @@ Use this snapshot first; companion docs provide deeper implementation detail.
   - List rows include `status` as a first-class field for UX list rendering.
 - **TODO (next iteration):**
   - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
+  - ✅ `GET /api/csvImportEntities/imports/:id` now includes:
+    - `rowErrors`: array populated from `csv_import_row_errors` for the given import id.
+    - `rowErrorsSummary`: summary/report pointer from `csv_imports.rowErrors` (when present).
+  - **Nice to Have:** paginate `rowErrors` in import detail responses for very large failed-row sets.
   - Add dedicated failed-rows report download endpoint for CSV v2
     (for `rowErrors.reportPath`, admin-only, import-scoped authorization).
   - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
@@ -477,6 +481,11 @@ Policy clarification (agreed):
 - Malformed rows are true failures and must remain visible in row errors and failed-rows CSV.
 - Empty source lines are the exception: they should not be surfaced as row errors and should not
   produce blank entries in failed-rows CSV.
+- Empty source lines must not appear as generic `INTERNAL_ERROR` /
+  `Row could not be imported due to an internal processing error.`.
+- `file` column misuse with multiple values (e.g. `fileA.pdf|fileB.jpg`) must not report
+  misleading `file not found`; it should return an explicit validation error instructing users
+  to use `files` for multi-document input.
 
 Source of truth for this track:
 
