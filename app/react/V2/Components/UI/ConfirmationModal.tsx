@@ -20,6 +20,8 @@ type confirmationModalType = {
   disabled?: boolean;
 };
 
+type FeedbackStyle = React.CSSProperties;
+
 const ConfirmationModal = ({
   header,
   body,
@@ -36,6 +38,12 @@ const ConfirmationModal = ({
 }: confirmationModalType) => {
   const [inputValue, setInputValue] = useState('');
   const [confirmed, setConfirmed] = useState(!(confirmWord || usePassword));
+  const warningStyle: FeedbackStyle = {
+    backgroundColor: 'var(--color-theme-feedback-danger-tint, var(--color-theme-danger-light))',
+    borderColor:
+      'color-mix(in srgb, var(--color-theme-feedback-danger, var(--color-theme-danger)) 35%, transparent)',
+    color: 'var(--color-theme-feedback-danger, var(--color-theme-danger))',
+  };
 
   const renderChild = (child: string | React.ReactNode) =>
     isString(child) ? <Translate>{child}</Translate> : child;
@@ -49,10 +57,7 @@ const ConfirmationModal = ({
         <Modal.CloseButton onClick={onCancelClick} disabled={disabled} />
       </Modal.Header>
       {warningText && (
-        <div
-          className="p-4 text-sm border-t border-b border-error-300 text-error-800 bg-error-50 top--3"
-          role="alert"
-        >
+        <div className="top--3 border-b border-t p-4 text-sm" role="alert" style={warningStyle}>
           {renderChild(warningText)}
         </div>
       )}

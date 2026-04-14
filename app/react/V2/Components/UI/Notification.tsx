@@ -9,6 +9,11 @@ interface NotificationProps {
   dismissAction?: () => void;
 }
 
+type NotificationToneVars = React.CSSProperties & {
+  '--notification-tone': string;
+  '--notification-tone-tint': string;
+};
+
 const viewMoreIcons = {
   more: (
     <svg
@@ -112,67 +117,52 @@ const Notification = ({
   dismissAction,
 }: NotificationProps) => {
   const [viewMore, setViewMore] = useState(false);
-  const [isDismissHovering, setIsDismissHovering] = useState(false);
-
-  let containerClass: string;
-  let dismissClass: string;
-  let viewMoreClass: string;
-  let iconContainer: string;
 
   const onClick = () => {
     setViewMore(!viewMore);
   };
-
-  switch (type) {
-    case 'info':
-      containerClass = 'text-primary-900 border-primary-300 bg-white';
-      dismissClass =
-        'text-primary-800 border-primary-800 hover:bg-primary-900 focus:ring-primary-200';
-      viewMoreClass = 'bg-primary-900 hover:bg-primary-950 focus:ring-primary-200';
-      iconContainer = 'bg-transparent';
-      break;
-
-    case 'error':
-      containerClass = 'text-error-900 border-error-300 bg-white';
-      dismissClass = 'text-error-800 border-error-800 hover:bg-error-900 focus:ring-error-200';
-      viewMoreClass = 'bg-error-900 hover:bg-error-950 focus:ring-error-200';
-      iconContainer = 'bg-error-100';
-      break;
-
-    case 'warning':
-      containerClass = 'text-warning-900 border-warning-300 bg-white';
-      dismissClass =
-        'text-warning-800 border-warning-800 hover:bg-warning-900 focus:ring-warning-200';
-      viewMoreClass = 'bg-warning-900 hover:bg-warning-950 focus:ring-warning-200';
-      iconContainer = 'bg-warning-100';
-      break;
-
-    default:
-      containerClass = 'text-success-900 border-success-300 bg-white';
-      dismissClass =
-        'text-success-800 border-success-800 hover:bg-success-900 focus:ring-success-200';
-      viewMoreClass = 'bg-success-900 hover:bg-success-950 focus:ring-success-200';
-      iconContainer = 'bg-success-100';
-      break;
-  }
+  const toneStyles: Record<NotificationProps['type'], NotificationToneVars> = {
+    info: {
+      '--notification-tone': 'var(--color-theme-feedback-info, var(--color-theme-accent-supporting))',
+      '--notification-tone-tint':
+        'var(--color-theme-feedback-info-tint, var(--color-theme-accent-supporting-tint))',
+    },
+    error: {
+      '--notification-tone':
+        'var(--color-theme-feedback-danger, var(--color-theme-accent-emphasis))',
+      '--notification-tone-tint':
+        'var(--color-theme-feedback-danger-tint, var(--color-theme-accent-emphasis-tint))',
+    },
+    warning: {
+      '--notification-tone': 'var(--color-theme-feedback-warning, var(--color-theme-warning))',
+      '--notification-tone-tint':
+        'var(--color-theme-feedback-warning-tint, var(--color-theme-warning-light))',
+    },
+    success: {
+      '--notification-tone': 'var(--color-theme-feedback-success, var(--color-theme-success))',
+      '--notification-tone-tint':
+        'var(--color-theme-feedback-success-tint, var(--color-theme-success-light))',
+    },
+  };
 
   return (
     <div
-      className={`p-4 mb-4 rounded-lg border ${containerClass}`}
+      className="theme-notification mb-4 rounded-lg border p-4"
       role="alert"
       data-testid="notifications-container"
+      style={toneStyles[type]}
     >
       {heading && (
         <div className="flex items-cente">
           {getIcon('small', type)}
-          <p className="ml-2 text-lg font-medium">{heading}</p>
+          <p className="theme-notification-heading ml-2 text-lg font-medium">{heading}</p>
         </div>
       )}
       {heading ? (
         <div className="mt-2 mb-4 text-sm">{text}</div>
       ) : (
         <div className="flex mb-4">
-          <span className={`p-1 mr-2 align-top rounded-sm border-0 ${iconContainer} w-fit h-fit`}>
+          <span className="theme-notification-icon mr-2 h-fit w-fit rounded-sm border-0 p-1 align-top">
             {getIcon('large', type)}
           </span>
           <div className="text-sm">{text}</div>
@@ -182,24 +172,18 @@ const Notification = ({
       <div className="flex">
         <button
           type="button"
-          className={`${dismissClass} bg-transparent border focus:ring-4 focus:outline-hidden 
-          font-medium rounded-lg text-xs px-3 mr-2 py-1.5 text-center`}
+          className="theme-notification-action mr-2 rounded-lg border bg-transparent px-3 py-1.5 text-center text-xs font-medium focus:outline-hidden focus:ring-4"
           data-dismiss-target="#alert-additional-content-1"
           aria-label="Dismiss notification"
-          onMouseEnter={() => setIsDismissHovering(true)}
-          onMouseLeave={() => setIsDismissHovering(false)}
           onClick={dismissAction}
         >
-          <span className={isDismissHovering ? 'text-white' : ''}>
-            <Translate>Dismiss</Translate>
-          </span>
+          <Translate>Dismiss</Translate>
         </button>
         {details && (
           <button
             type="button"
             onClick={onClick}
-            className={`${viewMoreClass} text-white focus:ring-4 focus:outline-hidden 
-            font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center`}
+            className="theme-notification-highlight inline-flex items-center rounded-lg px-3 py-1.5 text-center text-xs font-medium focus:outline-hidden focus:ring-4"
           >
             {viewMore ? viewMoreIcons.less : viewMoreIcons.more}
             {viewMore ? <Translate>View less</Translate> : <Translate>View more</Translate>}

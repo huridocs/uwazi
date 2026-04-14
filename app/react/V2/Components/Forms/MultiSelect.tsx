@@ -21,6 +21,9 @@ interface MultiSelectProps {
   updatable?: boolean;
 }
 
+type MultiSelectHeaderStyle = React.CSSProperties;
+const noop = () => undefined;
+
 const renderChild = (child: string | React.ReactNode, className?: string) =>
   isString(child) ? <Translate className={className || ''}>{child}</Translate> : child;
 
@@ -29,7 +32,7 @@ const MultiSelect = ({
   options,
   disabled,
   hasErrors,
-  onChange = () => {},
+  onChange = noop,
   placeholder = 'No options',
   canBeEmpty = true,
   value,
@@ -63,6 +66,14 @@ const MultiSelect = ({
   });
 
   const [currentValue, setCurrentValue] = useState<string[]>(value);
+  const headerStyle: MultiSelectHeaderStyle | undefined = hasErrors
+    ? {
+        backgroundColor: 'var(--color-theme-control-bg-error)',
+      }
+    : { backgroundColor: 'var(--color-theme-section-header-bg)' };
+  const labelStyle: MultiSelectHeaderStyle | undefined = hasErrors
+    ? { color: 'var(--color-theme-control-text-error)' }
+    : { color: 'var(--color-theme-section-header-fg)' };
 
   const optionIsSelected = (option: Option) => currentValue.includes(option.value);
 
@@ -94,14 +105,8 @@ const MultiSelect = ({
         boxShadow: 'var(--color-theme-card-shadow)',
       }}
     >
-      <div
-        className={`flex h-12 items-center rounded-t-lg px-4 ${hasErrors ? 'bg-error-50' : ''}`}
-        style={hasErrors ? undefined : { backgroundColor: 'var(--color-theme-section-header-bg)' }}
-      >
-        <span
-          className={`flex-1 text-sm font-semibold ${hasErrors ? 'text-pink-800' : ''}`}
-          style={hasErrors ? undefined : { color: 'var(--color-theme-section-header-fg)' }}
-        >
+      <div className="flex h-12 items-center rounded-t-lg px-4" style={headerStyle}>
+        <span className="flex-1 text-sm font-semibold" style={labelStyle}>
           {renderChild(label)}
         </span>
         <Popover className="border [border-color:color-mix(in_srgb,var(--color-theme-border-default)_20%,transparent)]">
