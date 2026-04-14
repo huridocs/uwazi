@@ -97,3 +97,15 @@ V2 emits to **tenant admins** (not per-session V1 pattern).
 - Failed-rows CSV remains row-only export in current V2 scope (error taxonomy is in DB/API, not appended to report CSV).
 - Failed-rows artifact path may exist in import data (`rowErrors.reportPath`), but there is currently no dedicated CSV v2 download endpoint for that file.
 
+## 4) Current row errors (what is implemented)
+
+- Row-level failures are persisted with structured taxonomy fields (not just plain text):
+  - `rowIndex`, `message`, `code`, optional `property`, optional `rawValue`, optional `details`.
+- Relationship resolution failures are now deterministic in row errors:
+  - `RELATIONSHIP_NOT_FOUND`
+  - `RELATIONSHIP_AMBIGUOUS`
+- Relationship row errors include useful metadata for UX/support in `details.unresolved[]`:
+  - `token`, `reason`, `scope`, and `candidates` (when ambiguous).
+- Import continues processing other rows; failed rows are counted in `stats.rowsFailed` and reflected in the failed-rows summary/report metadata.
+- Failed-rows CSV stays as a source-row export (no appended error-code columns in the file).
+
