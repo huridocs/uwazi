@@ -335,7 +335,7 @@ is confusing and inconsistent with thesauri preflight behavior.
   - resolves row files outside transactions,
   - uses `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to produce assignments,
   - stores files via `FilesService.storeFiles(...)` outside the DB transaction,
-  - inserts entity + file records inside a per-row transaction (`entitiesDS.create` +
+  - inserts entity + file records inside a per-row transaction (`EntitiesService.insert` +
     `FilesService.insert`).
 - Queue wiring updated to inject `FilesService`, `PropertyAssignmentCreatorServiceStrategy`,
   and `IdGenerator` into `CsvImportEntitiesJob`.
@@ -1232,6 +1232,24 @@ Implementation simplifications performed:
 - Verification:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/files/specs/uploadRoutes.spec.ts`
   - result: pass (includes new `POST /api/csvImportEntities` test).
+
+#### 18.23 Relationship sync regression in entities import (Apr 2026)
+
+- Manual/frontend validation surfaced a critical regression:
+  - relationship metadata values were persisted on imported rows,
+  - but actual relationship links were not created.
+- Root cause:
+  - `CsvImportEntitiesBatchProcessor` inserted entities via low-level
+    `entitiesDS.create(...)`, bypassing the Entities module side-effects.
+  - This skipped `RelationshipSyncJob` dispatch from `EntitiesService.insert(...)`.
+- Fix implemented:
+  - CSV v2 row import now persists entities through `EntitiesService.insert(...)`
+    inside the per-row transaction, then inserts files via `FilesService.insert(...)`.
+  - `CsvImportEntitiesJobFactory` now wires `EntitiesService` into the import job and
+    uses the same dispatcher instance so relationship sync dispatch is observable/testable.
+- Test coverage added:
+  - `CsvImportEntitiesJob.spec.ts` now asserts `RelationshipSyncJob` dispatch for
+    relationship-bearing imported rows.
 
 ### 19) TODO — Document ReadTheDocs import instructions
 

@@ -8,6 +8,7 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CsvImportRow } from '../../../domain/CsvImportRow.js';
@@ -104,7 +105,7 @@ const buildUseCase = () => {
       jobsDispatcher,
     });
 
-  return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS };
+  return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher };
 };
 
 const runSingleRowImport = async (params: {
@@ -244,7 +245,8 @@ describe('CsvImportEntitiesJob (integration)', () => {
   });
 
   it('should import rows with any-template relationship when there is a unique match', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher } =
+      buildUseCase();
     const importId = fixturesFactory.idString('import-entities-any-relationship');
     createdImportIds.push(importId);
     const userId = fixturesFactory.idString('import-entities-any-user');
@@ -314,6 +316,16 @@ describe('CsvImportEntitiesJob (integration)', () => {
     expect(translation.getValue('rel_any').value).toEqual([
       expect.objectContaining({ value: relatedSharedId }),
     ]);
+    expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
+      RelationshipSyncJob,
+      expect.objectContaining({
+        tenantName: tenants.current().name,
+        userId,
+        templateId,
+        targetLanguage: 'en',
+        sharedId: expect.any(String),
+      })
+    );
   });
 
   it('should import rows with multiple any-template relationships separated by pipe', async () => {
