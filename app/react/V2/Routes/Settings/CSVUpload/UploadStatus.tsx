@@ -136,15 +136,15 @@ const UploadStatus = () => {
                 </Card>
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
-                    <Translate>Thesauri touched</Translate>
+                    <Translate>Thesauri values created</Translate>
                     <span className="font-bold text-2xl text-gray-900">
-                      {entry.stats?.thesauriTouched || '-'}
+                      {entry.stats?.thesaurusValuesCreated || '-'}
                     </span>
                   </div>
                 </Card>
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
-                    <Translate>Relationships</Translate>
+                    <Translate>Related entities created</Translate>
                     <span className="text-bold text-2xl text-gray-900">
                       {entry.stats?.relationshipValuesCreated || '-'}
                     </span>

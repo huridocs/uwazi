@@ -222,7 +222,7 @@ Created user group,Створена група користувачів
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
@@ -754,6 +754,7 @@ Receiving email description,"Якщо у вас є контактна форма
 Reference,Посилання
 References,Посилання
 Reject,Відхилити
+Related entities created,Related entities created
 Relation type,Тип відношення
 Relationship,Взаємозв'язок
 Relationship Type,Тип взаємозв'язків
@@ -957,8 +958,8 @@ Thesauri deleted,Тезауруси видалено
 Thesauri name,Назва тезаурусу
 thesauri new group desc,тезауруси нова група спуск
 thesauri new item desc,тезауруси новий елемент desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Оновлені тезауруси.
+Thesauri values created,Thesauri values created
 Thesaurus,Тезаурус
 Thesaurus created successfully.,Тезаурус створено успішно.
 Thesaurus name,Назва тезауруса

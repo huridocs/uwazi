@@ -221,7 +221,7 @@ Created user group,Δημιουργήθηκε ομάδα χρηστών
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
 Custom component error,Σφάλμα σήμανσης προσαρμοσμένου στοιχείου: μη υποστηριζόμενες τιμές! Ελέγξτε τις ρυθμίσεις σας.
@@ -753,6 +753,7 @@ Receiving email description,"Εάν διαθέτετε φόρμα επικοιν
 Reference,Αναφορά
 References,Αναφορές
 Reject,Απόρριψη
+Related entities created,Related entities created
 Relation type,Τύπος σχέσης
 Relationship,Σχέση
 Relationship Type,Τύπος σχέσης
@@ -956,8 +957,8 @@ Thesauri deleted,Ο θησαυρός διαγράφηκε.
 Thesauri name,Όνομα θησαυρού
 thesauri new group desc,"Κάθε στοιχείο που δημιουργείται θα ανήκει σε αυτήν την ομάδα. Μόλις πληκτρολογήσετε το όνομα του πρώτου στοιχείου, μια νέα φόρμα στοιχείου θα εμφανιστεί από κάτω, ώστε να μπορείτε να συνεχίσετε να προσθέτετε όσα θέλετε."
 thesauri new item desc,"Μόλις πληκτρολογήσετε το όνομα του πρώτου στοιχείου, μια νέα φόρμα στοιχείου θα εμφανιστεί από κάτω, ώστε να μπορείτε να συνεχίσετε να προσθέτετε όσα θέλετε."
-Thesauri touched,Thesauri touched
 Thesauri updated.,Ο θησαυρός ενημερώθηκε.
+Thesauri values created,Thesauri values created
 Thesaurus,Θησαυρός
 Thesaurus created successfully.,Ο θησαυρός δημιουργήθηκε με επιτυχία.
 Thesaurus name,Όνομα θησαυρού

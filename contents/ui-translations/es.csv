@@ -218,7 +218,7 @@ Created user group,Grupo de usuarios creado
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
@@ -750,6 +750,7 @@ Receiving email description,"Si tienes un formulario de contacto, esta es la dir
 Reference,Reference
 References,Referencias
 Reject,Rechazar
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relación
 Relationship Type,Tipo de relación
@@ -952,8 +953,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Nombre del Tesauro
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Tesauro
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name
