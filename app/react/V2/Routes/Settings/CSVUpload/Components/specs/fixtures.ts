@@ -130,6 +130,26 @@ const csvImportsList: CsvImportListRow[] = [
       stage: 'validation',
       code: 'invalid_template_value',
     },
+    rowErrors: [
+      {
+        importId: 'csv-import-4',
+        rowIndex: 16,
+        message: 'Relationship value could not be resolved to an existing entity.',
+        code: 'RELATIONSHIP_NOT_FOUND',
+        property: 'related_case',
+        rawValue: 'CASE-404',
+        createdAt: 1712755400000,
+      },
+      {
+        importId: 'csv-import-4',
+        rowIndex: 17,
+        message: 'Referenced file was not found in the import package.',
+        code: 'FILE_NOT_FOUND',
+        property: 'file',
+        rawValue: 'missing.pdf',
+        createdAt: 1712755450000,
+      },
+    ],
   },
 ];
 

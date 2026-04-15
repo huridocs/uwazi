@@ -82,8 +82,32 @@ describe('CSV import status view', () => {
     expectStatistic('Entities created', '44');
     expectStatistic('Rows processed', '48');
     expectStatistic('Rows failed', '1');
-    expectStatistic('Thesauri touched', '-');
-    expectStatistic('Relationships', '-');
+    expectStatistic('Thesauri values created', '-');
+    expectStatistic('Related entities created', '-');
+  });
+
+  it('should render errors table with the correct row error details', async () => {
+    await renderComponent(csvImportsList[3]);
+
+    const errorsTable = screen.getByRole('table');
+
+    expect(within(errorsTable).getByRole('columnheader', { name: 'Row' })).toBeInTheDocument();
+    expect(within(errorsTable).getByRole('columnheader', { name: 'Property' })).toBeInTheDocument();
+    expect(within(errorsTable).getByRole('columnheader', { name: 'Message' })).toBeInTheDocument();
+
+    const [, ...errorRows] = within(errorsTable).getAllByRole('row');
+
+    expect(errorRows).toHaveLength(2);
+
+    expect(errorRows[0]).toHaveTextContent('19');
+    expect(errorRows[0]).toHaveTextContent('file');
+    expect(errorRows[0]).toHaveTextContent('Referenced file was not found in the import package.');
+
+    expect(errorRows[1]).toHaveTextContent('18');
+    expect(errorRows[1]).toHaveTextContent('related_case');
+    expect(errorRows[1]).toHaveTextContent(
+      'Relationship value could not be resolved to an existing entity.'
+    );
   });
 
   it('should revalidate once on different events', async () => {

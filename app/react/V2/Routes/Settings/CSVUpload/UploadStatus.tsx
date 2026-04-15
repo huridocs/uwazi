@@ -14,6 +14,7 @@ import { DateDisplay } from './Components/DateDisplay.js';
 import { Progress } from './Components/Progress.js';
 import { csvImportEvents } from '#app/V2/api/csv/events.js';
 import { CancelProcessModal } from './Components/CancelProcessModal.js';
+import { ErrorsTable } from './Components/ErrorsTable.js';
 
 const UploadStatus = () => {
   const revalidator = useRevalidator();
@@ -86,7 +87,7 @@ const UploadStatus = () => {
           title={fileName}
         />
         <SettingsContent.Body className="flex flex-col overflow-y-auto">
-          {entry ? (
+          {entry && (
             <>
               <div className="flex flex-col gap-4 border-b pb-4">
                 <div className="flex flex-row gap-2 items-baseline">
@@ -191,9 +192,12 @@ const UploadStatus = () => {
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
               </div>
+              {entry.rowErrors?.length && (
+                <div className="pt-6">
+                  <ErrorsTable errors={entry.rowErrors} />
+                </div>
+              )}
             </>
-          ) : (
-            <div>{fileName}</div>
           )}
         </SettingsContent.Body>
         <SettingsContent.Footer>
