@@ -77,15 +77,15 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
                 color: primaryText,
               }}
             >
-              Uwazi
+              <Translate>Uwazi</Translate>
             </div>
           )}
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold" style={{ color: primaryText }}>
-              Uwazi
+              <Translate>Uwazi</Translate>
             </p>
             <p className="truncate text-xs" style={{ color: secondaryText }}>
-              Header and button preview
+              <Translate>Header and button preview</Translate>
             </p>
           </div>
         </div>
@@ -99,7 +99,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
               color: secondaryText,
             }}
           >
-            Library
+            <Translate>Library</Translate>
           </button>
           <button
             type="button"
@@ -109,7 +109,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
               color: secondaryText,
             }}
           >
-            Settings
+            <Translate>Settings</Translate>
           </button>
         </div>
       </div>
@@ -123,7 +123,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
           }}
         >
           <p className="text-sm font-semibold" style={{ color: primaryText }}>
-            Theme preview
+            <Translate>Theme preview</Translate>
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button
