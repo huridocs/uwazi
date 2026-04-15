@@ -34,6 +34,7 @@ export class LoggerFactory {
       customUploads: 'N/a',
       indexName: 'N/a',
       uploadedDocuments: 'N/a',
+      domain: 'N/a',
     });
   }
 

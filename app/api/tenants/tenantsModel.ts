@@ -28,6 +28,7 @@ const mongoSchema = new mongoose.Schema({
   attachments: String,
   customUploads: String,
   activityLogs: String,
+  domain: String,
   featureFlags: {
     s3Storage: Boolean,
     esReplicas: Number,
