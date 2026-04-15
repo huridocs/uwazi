@@ -11,6 +11,7 @@ type SlotDocument = {
   type: SlotType;
   slotName: string;
   assignedTo: string | null;
+  rand: number;
 };
 
 type AssignedSlotDocument = SlotDocument & { assignedTo: string };
@@ -58,24 +59,17 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
 
   async assignSlot({ propertyName, propertyType, inheritedType }: AssignSlotInput) {
     const slots = await this.getSlotMap();
-    if (slots.has(propertyName)) return;
-
     const slotType = SlotTypeRegistry.toSlotType(propertyType, inheritedType);
-    if (slotType === undefined) return;
 
-    const result = await this.getCollection().updateOne(
-      {
-        assignedTo: null,
-        type: slotType,
-      },
-      {
-        $set: {
-          assignedTo: propertyName,
-        },
-      }
+    if (slots.has(propertyName) || slotType === undefined) return;
+
+    const assigned = await this.getCollection().findOneAndUpdate(
+      { assignedTo: null, type: slotType },
+      { $set: { assignedTo: propertyName } },
+      { sort: { rand: 1 } }
     );
 
-    if (result.modifiedCount === 0) {
+    if (!assigned) {
       throw new Error(`No available slots for type ${slotType}`);
     }
   }
@@ -88,6 +82,7 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
       {
         $set: {
           assignedTo: null,
+          rand: Math.random(),
         },
       }
     );

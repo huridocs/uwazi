@@ -42,8 +42,8 @@ describe('MongoSlotsDAO', () => {
       const { sut } = createSut();
 
       await slotsCollection().insertMany([
-        { type: 'txt', slotName: 'txt_01', assignedTo: null },
-        { type: 'txt', slotName: 'txt_02', assignedTo: null },
+        { type: 'txt', slotName: 'txt_01', assignedTo: null, rand: 0.1 },
+        { type: 'txt', slotName: 'txt_02', assignedTo: null, rand: 0.9 },
       ]);
 
       await sut.assignSlot({ propertyName: 'title', propertyType: 'text' });
@@ -51,8 +51,14 @@ describe('MongoSlotsDAO', () => {
       const slots = await slotsCollection().find({}).toArray();
 
       expect(slots).toEqual([
-        { _id: expect.any(ObjectId), type: 'txt', slotName: 'txt_01', assignedTo: 'title' },
-        { _id: expect.any(ObjectId), type: 'txt', slotName: 'txt_02', assignedTo: null },
+        {
+          _id: expect.any(ObjectId),
+          type: 'txt',
+          slotName: 'txt_01',
+          assignedTo: 'title',
+          rand: 0.1,
+        },
+        { _id: expect.any(ObjectId), type: 'txt', slotName: 'txt_02', assignedTo: null, rand: 0.9 },
       ]);
     });
 
@@ -114,6 +120,7 @@ describe('MongoSlotsDAO', () => {
 
       const slot = await slotsCollection().findOne({ slotName: 'txt_01' });
       expect(slot?.assignedTo).toBeNull();
+      expect(typeof slot?.rand).toBe('number');
     });
 
     it('does not throw when property does not exist', async () => {

@@ -60,6 +60,7 @@ describe('MongoSlotsBootstrapper', () => {
       expect(slots).toHaveLength(expectedSlotCount);
       expect(slotNames).toEqual(expectedSlotNames);
       expect(normalizedSlots).toEqual(expect.arrayContaining(expectedSlots));
+      slots.forEach(slot => expect(typeof slot.rand).toBe('number'));
     });
 
     it('is idempotent when executed more than once in an old environment', async () => {
@@ -124,6 +125,7 @@ describe('MongoSlotsBootstrapper', () => {
       expect(byName.assignedTo_1?.partialFilterExpression).toEqual({
         assignedTo: { $type: 'string' },
       });
+      expect(byName.rand_1).toBeDefined();
     });
 
     it('is idempotent when indexes already exist', async () => {
@@ -137,6 +139,7 @@ describe('MongoSlotsBootstrapper', () => {
 
       expect(names.filter(name => name === 'slotName_1')).toHaveLength(1);
       expect(names.filter(name => name === 'assignedTo_1')).toHaveLength(1);
+      expect(names.filter(name => name === 'rand_1')).toHaveLength(1);
     });
 
     it('does not throw when another instance created indexes first', async () => {
@@ -147,6 +150,7 @@ describe('MongoSlotsBootstrapper', () => {
         { assignedTo: 1 },
         { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
       );
+      await slotsCollection().createIndex({ rand: 1 });
 
       await expect(sut.execute()).resolves.not.toThrow();
     });
