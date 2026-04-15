@@ -131,6 +131,8 @@ describe('EntityIndexerService', () => {
           _score: 1,
           _routing: 'tenant-a',
           _source: {
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             sharedId: 'shared-1',
             language: 'en',
             template: entityEn.template.toString(),
@@ -165,6 +167,8 @@ describe('EntityIndexerService', () => {
           _score: 1,
           _routing: 'tenant-a',
           _source: {
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
             sharedId: 'shared-1',
             language: 'es',
             template: entityEs.template.toString(),

@@ -1,5 +1,6 @@
 import { elasticLanguageCodes } from '#shared/language/index.js';
 import { IndexDefinition } from '../Types.js';
+import { IngestPipelineRegistry } from '../IngestPipelineRegistry.js';
 import { createEntityMetadataMapping } from './EntityMetadataMapping.js';
 import { buildFullTextLanguageAnalyzers } from './FullTextLanguageAnalyzers.js';
 import { buildFullTextLanguageFilters } from './FullTextLanguageFilters.js';
@@ -27,6 +28,7 @@ const EntityIndexMappingDefinition: IndexDefinition = {
     number_of_replicas: 1,
 
     'index.mapping.total_fields.limit': 5000,
+    'index.default_pipeline': IngestPipelineRegistry.documentTimestamps.id,
 
     analysis: {
       normalizer: {
@@ -127,6 +129,9 @@ const EntityIndexMappingDefinition: IndexDefinition = {
       metadata: {
         properties: { ...createEntityMetadataMapping() },
       },
+
+      created_at: { type: 'date' },
+      updated_at: { type: 'date' },
       // ===============================
     },
   },

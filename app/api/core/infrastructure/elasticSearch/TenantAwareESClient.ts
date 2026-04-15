@@ -100,8 +100,8 @@ class TenantAwareESClient {
     const index = await this.deps.resolver.resolve(options.alias, this.tenantId);
 
     const body = options.operations.flatMap(op => [
-      { index: { _index: index, _id: this.buildDocumentId(op.id) } },
-      this.stampTenantId(op.document),
+      { update: { _index: index, _id: this.buildDocumentId(op.id) } },
+      { doc: this.stampTenantId(op.document), doc_as_upsert: true },
     ]);
 
     const response = await this.deps.client.bulk({
@@ -113,7 +113,7 @@ class TenantAwareESClient {
     if (response.body.errors) {
       // Todo: Inject logger here.
       console.log('Bulk indexing errors', {
-        failedItems: response.body.items.filter((item: any) => item.index?.error),
+        failedItems: response.body.items.filter((item: any) => item.update?.error),
       });
 
       throw new BulkIndexingError();
