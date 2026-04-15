@@ -20,9 +20,12 @@ import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
-import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
+import {
+  CustomUploadImagePicker,
+  faviconImageSizeRule,
+  ThemeSettingsSidepanel,
+} from './Theming/index.js';
 import { FileType } from '#shared/types/fileType.js';
-import { ThemeSettingsSidepanel } from './ThemeSettingsSidepanel.js';
 import { ACCENT_PRIMARY_KEY, appliedTheme, getPresetId, NAMED_THEMES } from '#V2/theme/themes.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
@@ -209,13 +212,8 @@ const Collection = () => {
                     onChange={v => setValue('favicon', v, { shouldDirty: true })}
                     files={customUploadFiles}
                     selectButtonTitle={<Translate>Select favicon image</Translate>}
-                    recommendedSize="64x64 px"
-                    sizeRule={{
-                      width: 64,
-                      height: 64,
-                      policy: 'strict',
-                      assetLabel: 'favicon',
-                    }}
+                    recommendedSize="16x16 to 512x512 px (square)"
+                    sizeRule={faviconImageSizeRule}
                     previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]"
                   />
                 ) : null}

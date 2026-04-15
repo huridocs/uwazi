@@ -12,6 +12,7 @@ A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Accepting suggestions,Accepting suggestions
+Accessibility checks need attention,Accessibility checks need attention
 Account,Cuenta
 Account locked,Account locked
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
@@ -68,6 +69,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
 Admins,Admins
+Advanced colors,Advanced colors
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
@@ -130,6 +132,7 @@ Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus pla
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
 Cards,Tarjetas
 Cards view,Vista de tarjetas
+Change,Change
 Change password,Cambiar la contraseña
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Los cambios en Tesauros impactarán en todas las entidades que usen esos valores.
@@ -138,6 +141,8 @@ Character support description,"Esta opción mejora la compatibilidad con idiomas
 Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
 Character support revert warning,"Después de seleccionar esta opción, no podrás volver a usar los nombres de propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,Choose which data to use for training
 Clear,Limpiar
 Clear all,Clear all
@@ -218,7 +223,7 @@ Created user group,Grupo de usuarios creado
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
@@ -226,10 +231,12 @@ Custom CSS,CSS personalizado
 Custom Favicon,Custom Favicon
 Custom JS,JS Personalizado
 Custom landing page,Custom landing page
-Custom site logo,Logotipo personalizado del sitio
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
 Custom Uploads,Subidas personalizadas
+Customize,Customize
+Customized,Customized
 Dark,Dark
+Dark Theme,Dark Theme
 Dashboard,Tablero
 Date,Date
 Date added,Fecha de creación
@@ -285,6 +292,7 @@ Documentation,Documentación
 documents,Documentos
 Documents,Documentos
 documents.,documentos.
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -307,6 +315,7 @@ Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Editar metadatos de entidades
+Edit theme,Edit theme
 Edit user,Edit user
 Editor,Editor
 editor,Editor
@@ -363,11 +372,7 @@ Favicon description,"Un favicon es un pequeño ícono que representa a tu colecc
 1. Sube tu ícono en Subidas personalizadas si hace falta.
 2. Haz clic en ""Seleccionar imagen del favicon"" y elige un archivo (solo imágenes de Subidas personalizadas).
 3. Recarga la página para ver tu favicon en acción."
-Site logo description,"El logotipo aparece en la barra superior junto al nombre de tu colección (unos 200×32 píxeles).
-
-1. Sube imágenes en Subidas personalizadas si hace falta.
-2. Haz clic en ""Seleccionar imagen del logotipo del sitio"" y elige un archivo; solo se listan imágenes de Subidas personalizadas."
-Site logo no images hint,"Aún no hay archivos de imagen en Subidas personalizadas. Añade primero imágenes PNG, SVG o JPEG allí."
+Favicon no images hint,Favicon no images hint
 FEATURED,DESTACADO
 File,Archivo
 File deleted,Archivo eliminado
@@ -417,8 +422,10 @@ Group Options,Group Options
 Group saved,Group saved
 Group updated,Grupo actualizado
 Groups,Grupos
+Header and button preview,Header and button preview
 help,ayuda
 here,aquí
+Hide,Hide
 Hide actions,Ocultar acciones
 Hide label,Ocultar etiqueta
 Hide toolbar,Ocultar barra de herramientas
@@ -433,6 +440,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,Importar
 Import asset,Import asset
 Import completed,Importación completada. Número de entidades creadas:
@@ -505,8 +513,11 @@ Library,Colección
 library list view,vista de lista de la colección
 library map view,vista de mapa de la colección
 library table view,vista de tabla de la colección
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,vinculado
+Live preview,Live preview
 Live translate,Traducción en vivo
 Loading,Cargando
 Login,Acceder
@@ -617,6 +628,7 @@ No table of contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
 No type,Sin tipo
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
 No value,Sin valor
 No Value,Sin valor
@@ -701,6 +713,7 @@ Preserve Setup Description,"Si conoces el URL y TOKEN de Uwazi, haz click en el 
 Press enter to add,Pulsa ENTER para añadir
 Preview,Previsualizar
 Previous,Anterior
+Primary button,Primary button
 Primary Documents,Documentos primarios
 Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
@@ -752,6 +765,7 @@ RAW,SIN FORMATO
 Re-uploaded document,Documento recargado
 Receiving email,Correo electrónico de recepción
 Receiving email description,"Si tienes un formulario de contacto, esta es la dirección de correo electrónico que recibirá los envíos del formulario."
+Recommended,Recommended
 Reference,Reference
 References,Referencias
 Reject,Rechazar
@@ -824,17 +838,19 @@ Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?""
 Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
 Select,Seleccionar
 Select & Search,Select & Search
 Select all,Seleccionar todo
+Select an existing image,Select an existing image
 Select favicon image,Seleccionar imagen del favicon
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select relationship type,Seleccionar tipo de relación
-Select target paragraph,Seleccionar párrafo de destino
 Select site logo image,Seleccionar imagen del logotipo del sitio
+Select target paragraph,Seleccionar párrafo de destino
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Seleccionar
@@ -879,6 +895,11 @@ Showing,Showing
 shown of,listados de
 Sign in,Registrarse
 Single relationships must have a hub,Las relaciones simples deben tener un nodo
+Site logo description,"El logotipo aparece en la barra superior junto al nombre de tu colección (unos 200×32 píxeles).
+
+1. Sube imágenes en Subidas personalizadas si hace falta.
+2. Haz clic en ""Seleccionar imagen del logotipo del sitio"" y elige un archivo; solo se listan imágenes de Subidas personalizadas."
+Site logo no images hint,"Aún no hay archivos de imagen en Subidas personalizadas. Añade primero imágenes PNG, SVG o JPEG allí."
 Size,Tamaño
 Skip to main content,Skip to main content
 Something went wrong,Algo salió mal
@@ -951,6 +972,11 @@ The request could not be processed.,La petición no pudo ser procesada.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,No hay páginas habilitadas para la vista de entidad
 There are no untranslated terms,No hay términos sin traducir
 Thesauri,Tesauros
@@ -1031,6 +1057,7 @@ Two-factor verification failed,Fallo en la verificación del doble factor de aut
 Two-step verification,Verificación de dos pasos.
 Two-step verification token required,El token de verificación es obligatorio
 Type,Tipo
+U,U
 "Unable to save, failed response","No se pudo guardar, respuesta fallida"
 Unauthorized,No autorizado
 Unexpected error,Error inesperado
@@ -1052,9 +1079,11 @@ Updated settings,Configuración actualizada
 Updated translations,Traducciones actualizadas
 Updated user,Usuario actualizado
 Updating template properties across,Updating template properties across
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Subir un archivo ZIP o CSV.
 Upload and select file,Sube y selecciona un archivo
 Upload from computer,Subir desde la computadora
+Upload image,Upload image
 Upload PDF,Subir PDF
 Upload PDF(s) to create,Subir PDFs
 Uploaded attachment,Archivo adjunto cargado
@@ -1082,6 +1111,7 @@ Users,Usuarios
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi es desarrollado por
 Uwazi UI,Uwazi UI
 Validating,Validating

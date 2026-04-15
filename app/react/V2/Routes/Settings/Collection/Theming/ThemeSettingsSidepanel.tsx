@@ -4,11 +4,8 @@ import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
 import { Button, SectionHeading, Sidepanel, SurfacePanel } from '#V2/Components/UI/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import type { ThemeAssets, ThemeMode } from '#V2/theme/themes.js';
-import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
-import {
-  faviconImageSizeRule,
-  themeLogotypeImageSizeRule,
-} from './Theming/brandImageUploadRules.js';
+import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
+import { faviconImageSizeRule, themeLogotypeImageSizeRule } from './brandImageUploadRules.js';
 
 type ThemeSettingsSidepanelProps = {
   isOpen: boolean;

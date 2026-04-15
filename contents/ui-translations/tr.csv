@@ -12,6 +12,7 @@ A valid email is required,E-posta gerekli
 Accept,Kabul Et
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
+Accessibility checks need attention,Accessibility checks need attention
 Account,Hesap
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -68,6 +69,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Admin,Yönetici
 Administrators and Editors,Yöneticiler ve Editörler
 Admins,Admins
+Advanced colors,Advanced colors
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
@@ -132,6 +134,7 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,Fişler
 Cards view,Fiş görünümü
+Change,Change
 Change password,Parola değiştir
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
@@ -140,6 +143,8 @@ Character support description,This option enhances support for non-Latin languag
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,Choose which data to use for training
 Clear,Clear
 Clear all,Clear all
@@ -220,7 +225,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Özel Yüklemeler
@@ -228,10 +233,12 @@ Custom CSS,Özel CSS
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 Custom landing page,Custom landing page
-Custom site logo,Custom site logo
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Özel Yüklemeler
+Customize,Customize
+Customized,Customized
 Dark,Dark
+Dark Theme,Dark Theme
 Dashboard,Dashboard
 Date,Date
 Date added,Eklenme tarihi
@@ -287,6 +294,7 @@ Documentation,Dokümantasyon
 documents,Belgeler
 Documents,Belgeler
 documents.,belgeler.
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -309,6 +317,7 @@ Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
+Edit theme,Edit theme
 Edit user,Edit user
 Editor,Editör
 editor,Editör
@@ -365,11 +374,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 1. Upload your icon in Custom Uploads if needed.
 2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
 3. Reload the page to see your favicon in action."
-Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
-
-1. Upload images in Custom Uploads if needed.
-2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
-Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
+Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,Dosya
 File deleted,File deleted
@@ -419,8 +424,10 @@ Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
 Groups,Gruplar
+Header and button preview,Header and button preview
 help,yardım
 here,here
+Hide,Hide
 Hide actions,Hide actions
 Hide label,Etiketi Gizle
 Hide toolbar,Hide toolbar
@@ -435,6 +442,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Harici bir URL ise, tam olarak oluşturulmuş bir URL kullanın: http://www.uwazi.io."
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,İçe aktar
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -507,8 +515,11 @@ Library,Kütüphane
 library list view,kütüphane listesi görünümü
 library map view,kütüphane harita görünümü
 library table view,kütüphane tablo görünümü
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,bağlantılı
+Live preview,Live preview
 Live translate,Live translate
 Loading,Loading
 Login,Giriş
@@ -619,6 +630,7 @@ No table of contents description,İçerik Tablosu Yok Açıklama
 No text match,Metin Eşleşmesi Yok
 No text match description,You can type something different in the search box to get some results.
 No type,Tür yok
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
 No value,Değer yok
 No Value,Değer yok
@@ -703,6 +715,7 @@ Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link 
 Press enter to add,Eklemek için enter'a basın
 Preview,Ön izleme
 Previous,Önceki
+Primary button,Primary button
 Primary Documents,BİRİNCİL BELGELER
 Priority sorting,Öncelik sıralaması
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -754,6 +767,7 @@ RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Receiving email
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Recommended,Recommended
 Reference,Reference
 References,Referanslar
 Reject,Reddet
@@ -826,17 +840,19 @@ Search Tips: one char wildcard,Arama İpuçları: Bir Char Wildcard
 Search Tips: proximity,Arama İpuçları: Yakınlık
 Search Tips: wildcard,Arama İpuçları: Wildcard
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
 Select all,Hepsini seç
+Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,Cihazınızdaki dosyaları seçin
 Select from computer,Select from computer
 Select relationship type,İlişki türü seç
-Select target paragraph,Hedef paragraf seç
 Select site logo image,Select site logo image
+Select target paragraph,Hedef paragraf seç
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Seç...
@@ -881,6 +897,11 @@ Showing,Showing
 shown of,gösterilen
 Sign in,Oturum aç
 Single relationships must have a hub,Single relationships must have a hub
+Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
+Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,Boyut
 Skip to main content,Skip to main content
 Something went wrong,Bir şey ters gitti
@@ -954,6 +975,11 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,Varlık görünümü için etkinleştirilmiş sayfa yok
 There are no untranslated terms,There are no untranslated terms
 Thesauri,Thesauri
@@ -1034,6 +1060,7 @@ Two-factor verification failed,İki faktörlü doğrulama başarısız oldu
 Two-step verification,İki faktörlü doğrulama
 Two-step verification token required,Two-step verification token required
 Type,Tür
+U,U
 "Unable to save, failed response","Unable to save, failed response"
 Unauthorized,Yetkisiz
 Unexpected error,Unexpected error
@@ -1055,9 +1082,11 @@ Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Bir ZIP veya CSV dosyası yükleyin.
 Upload and select file,Dosya yükle ve seç
 Upload from computer,Bilgisayardan yükle
+Upload image,Upload image
 Upload PDF,PDF Yükle
 Upload PDF(s) to create,Oluşturmak için PDF(leri) yükleyin
 Uploaded attachment,Uploaded attachment
@@ -1085,6 +1114,7 @@ Users,Kullanıcılar
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi tarafından geliştirildi
 Uwazi UI,Uwazi UI
 Validating,Validating

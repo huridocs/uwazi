@@ -12,6 +12,7 @@ A valid email is required,L'email est obligatoire
 Accept,Accepter
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
+Accessibility checks need attention,Accessibility checks need attention
 Account,Compte
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -68,6 +69,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
 Admins,Admins
+Advanced colors,Advanced colors
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
@@ -129,6 +131,7 @@ Captcha,Captcha
 Captcha bypass,Contournement du captcha
 Cards,Cartes
 Cards view,Vue en cartes
+Change,Change
 Change password,Changer le mot de passe
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
@@ -139,6 +142,8 @@ You will need to update them manually. After selecting this option, you will not
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,Choose which data to use for training
 Clear,Clear
 Clear all,Clear all
@@ -219,7 +224,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Erreur de composant personnalisé
@@ -227,10 +232,12 @@ Custom CSS,CSS personnalisé
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 Custom landing page,Custom landing page
-Custom site logo,Logo du site personnalisé
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Téléchargements personnalisés
+Customize,Customize
+Customized,Customized
 Dark,Dark
+Dark Theme,Dark Theme
 Dashboard,Dashboard
 Date,Date
 Date added,Date ajoutée
@@ -286,6 +293,7 @@ Documentation,Documentation
 documents,Documents
 Documents,Documents
 documents.,Documents.
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -308,6 +316,7 @@ Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
+Edit theme,Edit theme
 Edit user,Edit user
 Editor,Éditeur
 editor,Éditeur
@@ -364,11 +373,7 @@ Favicon description,"Un favicon est une petite icône qui représente votre coll
 1. Téléchargez votre icône dans Téléchargements personnalisés si nécessaire.
 2. Cliquez sur ""Sélectionner l'image du favicon"" et choisissez un fichier (images des Téléchargements personnalisés uniquement).
 3. Rechargez la page pour voir votre favicon."
-Site logo description,"Le logo apparaît dans la barre supérieure à côté du nom de votre collection (environ 200×32 pixels).
-
-1. Téléchargez des images dans Téléchargements personnalisés si nécessaire.
-2. Cliquez sur ""Sélectionner l'image du logo du site"" et choisissez un fichier ; seules les images des Téléchargements personnalisés sont listées."
-Site logo no images hint,"Aucun fichier image dans Téléchargements personnalisés pour l'instant. Ajoutez d'abord des images PNG, SVG ou JPEG."
+Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,Fichier
 File deleted,File deleted
@@ -418,8 +423,10 @@ Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
 Groups,Groupes
+Header and button preview,Header and button preview
 help,Aide
 here,here
+Hide,Hide
 Hide actions,Hide actions
 Hide label,Masquer l'étiquette
 Hide toolbar,Hide toolbar
@@ -434,6 +441,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si c'est une URL externe, utilisez une URL complète. Par exemple, http://www.uwazi.io."
 "If you want to continue, please type","Si vous voulez continuer, veuillez taper"
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,Importer
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -506,8 +514,11 @@ Library,Bibliothèque
 library list view,Bilbliothèque en vue par liste
 library map view,Bilbliothèque en vue cartographique
 library table view,Bilbliothèque en vue tabulaire
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,Lié
+Live preview,Live preview
 Live translate,Live translate
 Loading,Loading
 Login,Connexion
@@ -618,6 +629,7 @@ No table of contents description,Aucune description de Table des matières
 No text match,Aucune correspondance de texte
 No text match description,You can type something different in the search box to get some results.
 No type,Sans type
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
 No value,Aucune valeur
 No Value,Aucune valeur
@@ -702,6 +714,7 @@ Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link 
 Press enter to add,Appuyez sur la touche Entrée pour ajouter
 Preview,Aperçu
 Previous,Précédent
+Primary button,Primary button
 Primary Documents,Documents principaux
 Priority sorting,Tri prioritaire
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -753,6 +766,7 @@ RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Reception d'e-mail
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Recommended,Recommended
 Reference,Reference
 References,Références
 Reject,Rejeter
@@ -825,17 +839,19 @@ Search Tips: one char wildcard,Astuces de recherche: terme générique a un cara
 Search Tips: proximity,Astuces de recherche: proximité
 Search Tips: wildcard,Astuces de recherche: caractère générique
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
 Select all,Tout sélectionner
+Select an existing image,Select an existing image
 Select favicon image,Sélectionner l'image du favicon
 Select files on your device,Sélectionnez les fichiers sur votre appareil
 Select from computer,Select from computer
 Select relationship type,Sélectionner le type de relation
-Select target paragraph,Sélectionner le paragraphe cible
 Select site logo image,Sélectionner l'image du logo du site
+Select target paragraph,Sélectionner le paragraphe cible
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Sélectionner...
@@ -880,6 +896,11 @@ Showing,Showing
 shown of,Listé sur un total de
 Sign in,S'identifier
 Single relationships must have a hub,Single relationships must have a hub
+Site logo description,"Le logo apparaît dans la barre supérieure à côté du nom de votre collection (environ 200×32 pixels).
+
+1. Téléchargez des images dans Téléchargements personnalisés si nécessaire.
+2. Cliquez sur ""Sélectionner l'image du logo du site"" et choisissez un fichier ; seules les images des Téléchargements personnalisés sont listées."
+Site logo no images hint,"Aucun fichier image dans Téléchargements personnalisés pour l'instant. Ajoutez d'abord des images PNG, SVG ou JPEG."
 Size,Taille
 Skip to main content,Skip to main content
 Something went wrong,Quelque chose a mal tourné
@@ -953,6 +974,11 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,Il n'y a pas de pages activées pour la visualisation des entités
 There are no untranslated terms,There are no untranslated terms
 Thesauri,Thesauri
@@ -1033,6 +1059,7 @@ Two-factor verification failed,Échec de la vérification à deux facteurs
 Two-step verification,Vérification en deux étapes
 Two-step verification token required,Two-step verification token required
 Type,Type
+U,U
 "Unable to save, failed response","Unable to save, failed response"
 Unauthorized,Non autorisé
 Unexpected error,Unexpected error
@@ -1054,9 +1081,11 @@ Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Téléchargez un fichier ZIP ou CSV.
 Upload and select file,Télécharger et sélectionner le fichier
 Upload from computer,Télécharger à partir de l'ordinateur
+Upload image,Upload image
 Upload PDF,Télécharger le PDF
 Upload PDF(s) to create,Télécharger le(s) PDF à créer
 Uploaded attachment,Uploaded attachment
@@ -1084,6 +1113,7 @@ Users,Utilisateurs
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi est développé par
 Uwazi UI,Interface utilisateur d'Uwazi
 Validating,Validating
