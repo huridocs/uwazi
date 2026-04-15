@@ -46,7 +46,14 @@ const ProgressCell = ({ cell }: CellContext<TableData, TableData['progress']>) =
     processedRows: 0,
   };
 
-  return <Progress current={processedRows} total={totalRows} status={cell.row.original.status} />;
+  return (
+    <Progress
+      current={processedRows}
+      total={totalRows}
+      status={cell.row.original.status}
+      stats={cell.row.original.stats}
+    />
+  );
 };
 
 const DateCell = ({ cell }: CellContext<TableData, TableData['createdAt']>) => {

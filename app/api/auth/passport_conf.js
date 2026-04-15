@@ -4,7 +4,7 @@ import users from '#api/users/users.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { appContext } from '#api/utils/AppContext.js';
 
-const getDomain = req => `${req.protocol}://${req.get('host')}`;
+const getDomain = req => `${req.protocol}://${tenants.current().domain}`;
 
 passport.use(
   'local',

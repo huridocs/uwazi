@@ -13,6 +13,7 @@ type Tenant = {
   attachments: string;
   customUploads: string;
   activityLogs: string;
+  domain: string;
   featureFlags?: {
     s3Storage?: boolean;
     esReplicas?: number;

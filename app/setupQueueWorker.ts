@@ -57,25 +57,26 @@ function register<T extends Dispatchable>(
   factory: (namespace: string) => Promise<T>
 ) {
   this.register(dispatchable, async namespace => {
+    const deps = {
+      factories: {
+        transactionManager: TransactionManagerFactory.default,
+        jobsDispatcher: () => DefaultDispatcher(namespace, DependenciesContext.transactionManager),
+        eventEmitter: EventEmitterFactory.default,
+        idGenerator: IdGeneratorFactory.default,
+        logger: LoggerFactory.default,
+        elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
+        authorizedEntityESClient: () =>
+          ElasticSearchClientFactory.authorizedEntityClient(namespace, null),
+      },
+    };
+
     let instance!: T;
     await tenants.run(async () => {
-      instance = await DependenciesContext.run(
-        {
-          factories: {
-            transactionManager: TransactionManagerFactory.default,
-            jobsDispatcher: () =>
-              DefaultDispatcher(namespace, DependenciesContext.transactionManager),
-            eventEmitter: EventEmitterFactory.default,
-            idGenerator: IdGeneratorFactory.default,
-            logger: LoggerFactory.default,
-            elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
-            authorizedEntityESClient: () =>
-              ElasticSearchClientFactory.authorizedEntityClient(namespace, null),
-          },
-        },
-        async () => factory(namespace)
-      );
+      instance = await DependenciesContext.run(deps, async () => factory(namespace));
     }, namespace);
+
+    DependenciesContext.attachContext(instance, 'handleDispatch', deps);
+
     return instance;
   });
 }
