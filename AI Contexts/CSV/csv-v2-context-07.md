@@ -479,10 +479,10 @@ Policy clarification (agreed):
 
 - Preserve row index fidelity for analysis/import traceability.
 - Malformed rows are true failures and must remain visible in row errors and failed-rows CSV.
-- Empty source lines are the exception: they should not be surfaced as row errors and should not
-  produce blank entries in failed-rows CSV.
-- Empty source lines must not appear as generic `INTERNAL_ERROR` /
-  `Row could not be imported due to an internal processing error.`.
+- Empty source lines are explicit failures in row errors (to keep traceability), but must be
+  classified as `ROW_EMPTY_OR_MALFORMED` with message `Empty line.` (never generic `INTERNAL_ERROR`).
+- Empty-line row errors are counted in `stats.rowsFailed`.
+- `failed_rows.csv` is a filtered artifact: empty-line failures are excluded from exported CSV rows.
 - `file` column misuse with multiple values (e.g. `fileA.pdf|fileB.jpg`) must not report
   misleading `file not found`; it should return an explicit validation error instructing users
   to use `files` for multi-document input.

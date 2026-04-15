@@ -14,12 +14,14 @@ import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDat
 import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer.js';
 import { AppliedValueIndex, CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
 import { CsvImportRowFilesResolver } from '../services/CsvImportRowFilesResolver.js';
+import { CsvImportRowEmptyError } from '../services/CsvImportRowProcessingError.js';
 import {
   createRowProcessingState,
   RowProcessingState,
   trackFailedRow,
   trackImportedRow,
 } from './CsvImportEntitiesBatchRowState.js';
+import { createPropertyAssignments, isEmptyRow } from './CsvImportEntitiesPropertyAssignments.js';
 
 type BatchContext = {
   csvImport: CsvImport;
@@ -67,7 +69,11 @@ const buildEntityFromRow = (context: BatchContext) => {
   return entity;
 };
 
+// eslint-disable-next-line max-statements
 const prepareRowImport = async (deps: BatchDeps, context: BatchContext, rowValues: string[]) => {
+  if (isEmptyRow(rowValues)) {
+    throw new CsvImportRowEmptyError();
+  }
   const files = await CsvImportRowFilesResolver.resolve({
     importId: context.csvImport.id,
     rowValues,
@@ -106,11 +112,14 @@ const prepareRowImport = async (deps: BatchDeps, context: BatchContext, rowValue
     attachmentLookup,
   });
 
-  const propertyAssignments = await deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
+  const propertyAssignments = await createPropertyAssignments({
+    propertyAssignmentCreatorServiceStrategy: deps.propertyAssignmentCreatorServiceStrategy,
+    template: context.template,
     assignments,
-    context.template,
-    files.attachments
-  );
+    sanitizedHeaders: context.sanitizedHeaders,
+    rowValues,
+    attachments: files.attachments,
+  });
 
   const entity = buildEntityFromRow(context);
   entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, false);

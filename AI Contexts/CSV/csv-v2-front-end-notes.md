@@ -1,6 +1,6 @@
 # CSV V2 Frontend Notes (Concise)
 
-Date: 2026-03-19  
+Date: 2026-04-15  
 Audience: Frontend team  
 Scope: What UI needs to integrate CSV Import V2 now.
 
@@ -23,7 +23,8 @@ Scope: What UI needs to integrate CSV Import V2 now.
 ### `GET /api/csvImportEntities/imports/:id` (admin)
 
 - Response:
-  - raw import object (same model shape persisted in backend), including status/progress/stats/failure/extraction/rowErrors pointers when present.
+  - raw import object (same model shape persisted in backend), including status/progress/stats/failure/extraction.
+  - includes `rowErrorsSummary` (from import-level rowErrors pointer) and `rowErrors` array loaded from `csv_import_row_errors`.
 
 ### `POST /api/csvImportEntities/imports/:id/cancel` (admin)
 
@@ -95,17 +96,36 @@ V2 emits to **tenant admins** (not per-session V1 pattern).
 - V2 socket events are stage-oriented (`csvImport:*`) and emitted to tenant admins.
 - V1-like socket contract exists for legacy compatibility only and must not drive new UI behavior.
 - Failed-rows CSV remains row-only export in current V2 scope (error taxonomy is in DB/API, not appended to report CSV).
+- Failed-rows CSV is a filtered artifact:
+  - empty-line failures are still counted in `stats.rowsFailed`,
+  - but `ROW_EMPTY_OR_MALFORMED` rows are excluded from report CSV content.
 - Failed-rows artifact path may exist in import data (`rowErrors.reportPath`), but there is currently no dedicated CSV v2 download endpoint for that file.
 
 ## 4) Current row errors (what is implemented)
 
 - Row-level failures are persisted with structured taxonomy fields (not just plain text):
   - `rowIndex`, `message`, `code`, optional `property`, optional `rawValue`, optional `details`.
+- Current deterministic mapping includes:
+  - `FILE_NOT_FOUND`
+  - `RELATIONSHIP_NOT_FOUND`
+  - `RELATIONSHIP_AMBIGUOUS`
+  - `ROW_EMPTY_OR_MALFORMED` (message: `Empty line.`)
+  - `VALUE_INVALID_FORMAT` (existing entity/property validation bubbled with context)
+  - `INTERNAL_ERROR` (sanitized fallback only)
+- Validation failures now include richer context when available:
+  - `property`, `rawValue`,
+  - `details.column`,
+  - `details.validationMessage`,
+  - `details.sourceErrorName`.
 - Relationship resolution failures are now deterministic in row errors:
   - `RELATIONSHIP_NOT_FOUND`
   - `RELATIONSHIP_AMBIGUOUS`
 - Relationship row errors include useful metadata for UX/support in `details.unresolved[]`:
   - `token`, `reason`, `scope`, and `candidates` (when ambiguous).
+- Empty-line failures are explicit row errors:
+  - `code: ROW_EMPTY_OR_MALFORMED`
+  - `message: Empty line.`
+  - `details.reason: empty_line`
 - Import continues processing other rows; failed rows are counted in `stats.rowsFailed` and reflected in the failed-rows summary/report metadata.
-- Failed-rows CSV stays as a source-row export (no appended error-code columns in the file).
+- Failed-rows CSV stays as a source-row export (no appended error-code columns in the file) and excludes empty-line failures.
 
