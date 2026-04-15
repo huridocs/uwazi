@@ -12,6 +12,7 @@ const tenant: Tenant = {
   attachments: 'testTenant/attachments',
   customUploads: 'testTenant/customUploads',
   activityLogs: 'testTenant/activityLogs',
+  domain: 'test-tenant',
 };
 
 const jsonLogger = new StandardLogger(StandardJSONWriter, tenant);
