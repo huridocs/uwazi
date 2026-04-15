@@ -2,7 +2,12 @@ import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { ColorPicker } from '#V2/Components/Forms/ColorPicker.js';
 import { Button, SectionHeading, SurfacePanel } from '#V2/Components/UI/index.js';
-import { SEMANTIC_VAR_KEYS, SEMANTIC_VAR_LABELS, themeStorageKey } from '#V2/theme/themes.js';
+import {
+  colorPaletteFromHex,
+  SEMANTIC_VAR_KEYS,
+  SEMANTIC_VAR_LABELS,
+  themeStorageKey,
+} from '#V2/theme/themes.js';
 import type { SemanticVarKey, ThemeMode } from '#V2/theme/themes.js';
 
 type ThemeVars = Record<string, string | undefined>;
@@ -64,7 +69,7 @@ const ThemeAdvancedColorsSection = ({
                 <ColorPicker
                   name={`${previewMode}-${key}`}
                   value={displayValue}
-                  options={colorOptions}
+                  options={colorPaletteFromHex(displayValue).concat(colorOptions)}
                   onChange={color => updateModeVar(previewMode, key, color)}
                 />
 

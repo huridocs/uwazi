@@ -44,8 +44,20 @@ const ThemeSelector = ({
   const selectedPreset = getPresetId(themeVars, true);
   const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
-  const previewLogo = getThemeAsset(themeAssets, themeVars, previewMode, 'siteLogo', siteLogo);
-  const previewFavicon = getThemeAsset(themeAssets, themeVars, previewMode, 'favicon', favicon);
+  const previewLogo = getThemeAsset({
+    themeAssets,
+    themeVars,
+    mode: previewMode,
+    asset: 'siteLogo',
+    fallback: siteLogo,
+  });
+  const previewFavicon = getThemeAsset({
+    themeAssets,
+    themeVars,
+    mode: previewMode,
+    asset: 'favicon',
+    fallback: favicon,
+  });
   const resolvedPreviewTheme = React.useMemo(
     () => appliedTheme(themeVars, previewMode, true),
     [themeVars, previewMode]

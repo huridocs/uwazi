@@ -228,39 +228,6 @@ const PRESET_DEFINITIONS: Record<ThemePresetId, ThemePresetDefinition> = {
 
 const NAMED_THEMES = Object.values(PRESET_DEFINITIONS);
 
-const THEME_PALETTE: ThemePaletteEntry[] = [
-  {
-    id: 'accent-primary',
-    semanticKey: '--color-theme-accent-primary',
-    hex: DEFAULT_LIGHT['--color-theme-accent-primary'],
-  },
-  {
-    id: 'accent-supporting',
-    semanticKey: '--color-theme-accent-supporting',
-    hex: DEFAULT_LIGHT['--color-theme-accent-supporting'],
-  },
-  {
-    id: 'accent-emphasis',
-    semanticKey: '--color-theme-accent-emphasis',
-    hex: DEFAULT_LIGHT['--color-theme-accent-emphasis'],
-  },
-  {
-    id: 'bg-muted',
-    semanticKey: '--color-theme-bg-muted',
-    hex: DEFAULT_LIGHT['--color-theme-bg-muted'],
-  },
-  {
-    id: 'bg-primary',
-    semanticKey: '--color-theme-bg-primary',
-    hex: DEFAULT_LIGHT['--color-theme-bg-primary'],
-  },
-  {
-    id: 'bg-surface',
-    semanticKey: '--color-theme-bg-surface',
-    hex: DEFAULT_LIGHT['--color-theme-bg-surface'],
-  },
-];
-
 export {
   THEME_MODES,
   SEMANTIC_VAR_KEYS,
@@ -268,7 +235,6 @@ export {
   SEMANTIC_VAR_LABELS,
   PRESET_DEFINITIONS,
   NAMED_THEMES,
-  THEME_PALETTE,
 };
 export type {
   ThemeMode,
@@ -277,4 +243,6 @@ export type {
   EditableThemeVars,
   ResolvedThemeVars,
   ThemePresetDefinition,
+  ThemePaletteId,
+  ThemePaletteEntry,
 };
