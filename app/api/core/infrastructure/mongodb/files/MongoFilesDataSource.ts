@@ -14,6 +14,7 @@ import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoRes
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { Result } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
+import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
   FilesDataSource,
@@ -25,7 +26,7 @@ import { Segmentation } from '../../../domain/files/Segmentation.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
 import { FileMappers } from './FilesMappers.js';
 import { SegmentationMapper } from './SegmentationMapper.js';
-import { fileDBO } from './schemas/filesTypes.js';
+import { ProcessedPDFDBO, fileDBO } from './schemas/filesTypes.js';
 
 type GetDocumentsForEntityQuery = {
   entity: string;
@@ -39,6 +40,10 @@ export type SegmentationDBO = SegmentationType & {
   fileID: ObjectId;
 };
 
+export type MongoFilesDataSourceOptions = MongoDSOptions & {
+  fullTextIndexer: FullTextIndexerService;
+};
+
 export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
   protected collectionName = 'files';
 
@@ -46,27 +51,33 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   protected fileStorage: FileStorage;
 
+  private fullTextIndexer: FullTextIndexerService;
+
   constructor(
     db: Db,
     transactionManager: MongoTransactionManager,
     fileStorage: FileStorage,
-    options: MongoDSOptions = {}
+    options: MongoFilesDataSourceOptions
   ) {
     super(db, transactionManager, options);
     this.fileStorage = fileStorage;
+    this.fullTextIndexer = options.fullTextIndexer;
     transactionManager.onCommitted(async () => {
-      if (this.filesToReindex.size) {
-        let fullTextProjection: string | undefined;
-        const files = Array.from(this.filesToReindex);
-        if (files.some(f => f instanceof ProcessedPDF)) {
-          fullTextProjection = '+fullText';
-        }
-        await search.indexEntities(
-          { sharedId: { $in: Array.from(this.filesToReindex).map(f => f.entity) } },
-          fullTextProjection
-        );
-        this.filesToReindex = new Set<BaseFile>();
-      }
+      const files = Array.from(this.filesToReindex);
+      if (!files.length) return;
+
+      await search.indexEntities(
+        { sharedId: { $in: files.map(f => f.entity) } },
+        files.some(f => f instanceof ProcessedPDF) ? '+fullText' : undefined
+      );
+
+      const processedPDFs = files
+        .filter(f => f instanceof ProcessedPDF && f.pendingFullTextIndexing)
+        .map(f => FileMappers.toDBO(f));
+
+      await this.fullTextIndexer.index(processedPDFs as ProcessedPDFDBO[]);
+
+      this.filesToReindex = new Set<BaseFile>();
     });
   }
 
@@ -145,6 +156,12 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   async delete(files: BaseFile[]) {
+    const processedPDFIds = files
+      .filter((f): f is ProcessedPDF => f instanceof ProcessedPDF)
+      .map(f => new ObjectId(f.id));
+    if (processedPDFIds.length) {
+      await this.fullTextIndexer.deleteByFileIds(processedPDFIds);
+    }
     await this.getCollection().deleteMany({ _id: { $in: files.map(f => new ObjectId(f.id)) } });
     this.setFilesToReindex(files);
   }

@@ -36,6 +36,16 @@ export class ProcessedPDF extends FileWithContents {
 
   private fullTextLoader: fullTextLoader;
 
+  private _pendingFullTextIndexing = false;
+
+  get pendingFullTextIndexing(): boolean {
+    return this._pendingFullTextIndexing;
+  }
+
+  markForFullTextIndexing(): void {
+    this._pendingFullTextIndexing = true;
+  }
+
   constructor(props: Props) {
     const { entity, language, totalPages, fullText, generatedToc, ...baseProps } = props;
     super(baseProps);
