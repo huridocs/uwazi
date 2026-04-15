@@ -4,6 +4,7 @@ type FullTextElasticDocument = {
   [key: `fullText_${string}`]: string;
 
   filename: string;
+  fileId: string;
 
   fullText: {
     name: 'fullText';

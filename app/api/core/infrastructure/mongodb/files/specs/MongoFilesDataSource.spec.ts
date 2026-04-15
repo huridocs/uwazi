@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
@@ -13,6 +15,9 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { MongoFilesDataSource } from '../MongoFilesDataSource.js';
+import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { FileMappers } from '../FilesMappers.js';
 
 const f = getFixturesFactory();
 
@@ -115,13 +120,18 @@ afterAll(async () => {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
+  const fullTextIndexer = TestUtils.mockClass<FullTextIndexerService>({
+    index: jest.fn().mockResolvedValue(undefined),
+    deleteByFileIds: jest.fn().mockResolvedValue(undefined),
+  });
   const ds = new MongoFilesDataSource(
     getConnection(),
     transactionManager,
-    FileStorageFactory.default()
+    FileStorageFactory.default(),
+    { fullTextIndexer }
   );
 
-  return { ds, transactionManager };
+  return { ds, transactionManager, fullTextIndexer };
 };
 
 describe('MongoFilesDataSource', () => {
@@ -521,6 +531,42 @@ describe('MongoFilesDataSource', () => {
       );
 
       expect(dbFiles).toMatchObject([]);
+    });
+  });
+
+  describe('indexing on transaction commit', () => {
+    it('should index processed Documents marked to full text index on file update', async () => {
+      const { ds, fullTextIndexer, transactionManager } = createDs();
+
+      const processedPdf = FileBuilder.processedDocument(new ObjectId().toString());
+      const attachment = FileBuilder.attachment(new ObjectId().toString());
+
+      await ds.update(processedPdf);
+      await ds.update(attachment);
+
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      expect(fullTextIndexer.index).toHaveBeenCalledWith([]);
+
+      processedPdf.markForFullTextIndexing();
+
+      await ds.update(processedPdf);
+
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      expect(fullTextIndexer.index).toHaveBeenCalledWith([FileMappers.toDBO(processedPdf)]);
+    });
+
+    it('should only deleted full text documents on file delete', async () => {
+      const { ds, fullTextIndexer, transactionManager } = createDs();
+
+      const processedPdf = FileBuilder.processedDocument(new ObjectId().toString());
+      const attachment = FileBuilder.attachment(new ObjectId().toString());
+
+      await ds.delete([processedPdf, attachment]);
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      expect(fullTextIndexer.deleteByFileIds).toHaveBeenCalledWith([new ObjectId(processedPdf.id)]);
     });
   });
 });
