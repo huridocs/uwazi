@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { ProcessingFileFailed } from '#api/core/domain/files/errors.js';
@@ -43,6 +42,7 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
       ).getDataOrThrow();
 
       await this.transactionManager.run(async () => {
+        processedPDF.markForFullTextIndexing();
         await this.deps.filesDS.update(processedPDF);
 
         await this.deps.filesDS.create(thumbnail);
