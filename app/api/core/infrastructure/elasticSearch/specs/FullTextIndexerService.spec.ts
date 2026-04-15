@@ -125,7 +125,6 @@ describe('FullTextIndexerService', () => {
         tenantId: 'tenant-a',
         filename: 'test.pdf',
         fileId: file._id.toString(),
-        sharedId: 'shared-1',
         fullText_english: 'hello world',
         fullText: { name: 'fullText', parent: `tenant-a__${entityA._id.toString()}` },
       });
