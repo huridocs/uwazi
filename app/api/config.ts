@@ -112,7 +112,7 @@ export const config = {
     attachments: defaultTenantPaths.attachments,
     customUploads: defaultTenantPaths.customUploads,
     activityLogs: defaultTenantPaths.activityLogs,
-    domain: process.env.DOMAIN || `${hostname()}:${process.env.PORT || 3000}`,
+    domain: process.env.DEFAULT_TENANT_DOMAIN || `${hostname()}:${process.env.PORT || 3000}`,
     featureFlags: {
       s3Storage: defaultTenantS3Storage,
       esReplicas: 0,
