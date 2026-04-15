@@ -90,6 +90,7 @@ describe('preserveSync', () => {
       indexName: 'preserveSync_index',
       ...(await testingUploadPaths()),
       featureFlags: config.defaultTenant.featureFlags,
+      domain: 'test-tenant',
     };
 
     tenants.add(tenant1);

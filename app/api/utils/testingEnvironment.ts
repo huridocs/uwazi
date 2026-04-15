@@ -82,6 +82,7 @@ const testingEnvironment = {
       name: name || testingDB.dbName || 'defaultDB',
       dbName: testingDB.dbName || name || 'defaultDB',
       indexName: 'index',
+      domain: '127.0.0.1',
     });
     await setupTestUploadedPaths(subPath);
     this.uploadSubPath = subPath;
