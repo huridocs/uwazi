@@ -556,5 +556,17 @@ describe('MongoFilesDataSource', () => {
 
       expect(fullTextIndexer.index).toHaveBeenCalledWith([FileMappers.toDBO(processedPdf)]);
     });
+
+    it('should only deleted full text documents on file delete', async () => {
+      const { ds, fullTextIndexer, transactionManager } = createDs();
+
+      const processedPdf = FileBuilder.processedDocument(new ObjectId().toString());
+      const attachment = FileBuilder.attachment(new ObjectId().toString());
+
+      await ds.delete([processedPdf, attachment]);
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      expect(fullTextIndexer.deleteByFileIds).toHaveBeenCalledWith([new ObjectId(processedPdf.id)]);
+    });
   });
 });

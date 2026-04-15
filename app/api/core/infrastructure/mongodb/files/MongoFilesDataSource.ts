@@ -49,6 +49,8 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   protected filesToReindex = new Set<BaseFile>();
 
+  private fileToDelete = new Map<string, BaseFile>();
+
   protected fileStorage: FileStorage;
 
   private fullTextIndexer: FullTextIndexerService;
@@ -78,6 +80,18 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       await this.fullTextIndexer.index(processedPDFs as ProcessedPDFDBO[]);
 
       this.filesToReindex = new Set<BaseFile>();
+    });
+
+    transactionManager.onCommitted(async () => {
+      const files = Array.from(this.fileToDelete.values());
+
+      const processedPDFIds = files
+        .filter(f => f instanceof ProcessedPDF)
+        .map(f => new ObjectId(f.id));
+
+      await this.fullTextIndexer.deleteByFileIds(processedPDFIds);
+
+      this.fileToDelete.clear();
     });
   }
 
@@ -156,14 +170,10 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   async delete(files: BaseFile[]) {
-    const processedPDFIds = files
-      .filter((f): f is ProcessedPDF => f instanceof ProcessedPDF)
-      .map(f => new ObjectId(f.id));
-    if (processedPDFIds.length) {
-      await this.fullTextIndexer.deleteByFileIds(processedPDFIds);
-    }
     await this.getCollection().deleteMany({ _id: { $in: files.map(f => new ObjectId(f.id)) } });
     this.setFilesToReindex(files);
+
+    files.forEach(file => this.fileToDelete.set(file.id, file));
   }
 
   async bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void> {
