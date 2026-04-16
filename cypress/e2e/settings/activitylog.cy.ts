@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/index.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Activity log', () => {
   before(() => {
@@ -14,7 +15,7 @@ describe('Activity log', () => {
     cy.get('#metadataForm select').select('Reporte');
     cy.contains('Title').scrollIntoView();
     cy.get('textarea[name="library.sidepanel.metadata.title"]:not([disabled])').type('AL Report');
-    cy.contains('aside.side-panel.metadata-sidepanel.is-active .btn-success', 'Save').click();
+    cy.get('[data-testid="metadata-sidepanel"].is-active').contains('button', 'Save').click();
     cy.contains('Entity created');
   });
 
@@ -27,13 +28,13 @@ describe('Activity log', () => {
       'textarea[name="library.sidepanel.metadata.title"]:not([disabled])',
       'Report AL'
     );
-    cy.contains('.metadata-sidepanel.is-active .btn-success', 'Save').click();
+    cy.get('[data-testid="metadata-sidepanel"].is-active').contains('button', 'Save').click();
     cy.contains('Entity updated');
   });
 
   it('should register entity deletion in activity log', () => {
     cy.contains('div.item-document', 'Report AL', { timeout: 200 }).click();
-    cy.contains('.metadata-sidepanel.is-active .btn-danger', 'Delete').click();
+    cy.get('[data-testid="metadata-sidepanel"].is-active').contains('button', 'Delete').click();
     cy.contains('.confirm-button', 'Accept').click();
     cy.contains('Entity deleted');
   });
@@ -57,7 +58,7 @@ describe('Activity log', () => {
     cy.contains('span', 'Activity log').click();
     cy.contains('editor');
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   it('should list the last activity log entries', () => {

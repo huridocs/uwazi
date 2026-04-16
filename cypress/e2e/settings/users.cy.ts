@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/index.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
@@ -31,8 +32,10 @@ describe('Users', () => {
 
   it('accesibility check', () => {
     cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Users'));
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.contains('button', 'Cancel').click();
   });
 
@@ -97,7 +100,7 @@ describe('Users', () => {
     });
 
     it('should check accessibility on the table', () => {
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
     });
 
     it('should check the changes and the password change for the modified user', () => {

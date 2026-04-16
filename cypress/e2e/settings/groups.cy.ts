@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
@@ -22,11 +23,11 @@ describe('Groups', () => {
 
   it('accesibility check', () => {
     cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Groups'));
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.getByTestId('settings-content').matchImageSnapshot('content');
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.get('aside').matchImageSnapshot('sidepanel');
     cy.contains('button', 'Cancel').click();
   });

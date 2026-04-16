@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Relationship Types configuration', () => {
   before(() => {
@@ -12,7 +13,7 @@ describe('Relationship Types configuration', () => {
   });
 
   it('should have no detectable accessibility violations on load', () => {
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   beforeEach(() => {
@@ -22,7 +23,7 @@ describe('Relationship Types configuration', () => {
 
   it('tests add types', () => {
     cy.getByTestId('relationship-types-add').click();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.get('#relationship-type-name').click();
     cy.get('#relationship-type-name').type('Parent');
 
@@ -53,7 +54,7 @@ describe('Relationship Types configuration', () => {
     cy.get('tbody tr:nth-of-type(1) input').click();
 
     cy.getByTestId('relationship-types-delete').click();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.getByTestId('cancel-button').click();
 
     cy.getByTestId('relationship-types-delete').click();

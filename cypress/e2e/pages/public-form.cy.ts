@@ -57,7 +57,7 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');
-      cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
@@ -131,7 +131,7 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');
-      cy.contains('button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
@@ -254,7 +254,7 @@ describe('Public Form', () => {
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
-      cy.contains('button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
       cy.contains('Saved successfully');
       cy.contains('Basic').click();
       cy.get('input[id="page-url"]').then(url => {

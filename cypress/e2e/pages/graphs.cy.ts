@@ -24,7 +24,7 @@ const insertChart = (chart: string, chartName: string) => {
 };
 
 const savePage = () => {
-  cy.contains('button.bg-success-700', 'Save').click();
+  cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
   cy.contains('Saved successfully');
 };
 
@@ -106,7 +106,9 @@ describe('Graphs in Page ', () => {
       cy.contains('[role="tab"]', 'Javascript').click();
       cy.get('#panel-Advanced .monaco-editor textarea', { timeout: 10000 }).should('exist');
       typeInEditor('javascript', updateDatasetScript, true, 'updatePageDatasets', true);
-      cy.contains('button.bg-success-700', 'Save').should('not.be.disabled');
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', 'Save')
+        .should('not.be.disabled');
       savePage();
       visitPage();
       takeSnapshot();

@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 
