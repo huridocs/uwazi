@@ -4,7 +4,7 @@ import { SectionHeading, SurfacePanel } from '#V2/Components/UI/index.js';
 import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import { ACCENT_PRIMARY_KEY, appliedTheme, THEME_MODES } from '#V2/theme/themes.js';
 import type { ThemeMode } from '#V2/theme/themes.js';
-import { ThemePreview } from './ThemePreview';
+import { ThemePreview } from './ThemePreview.js';
 
 type ThemeVars = Record<string, string | undefined>;
 

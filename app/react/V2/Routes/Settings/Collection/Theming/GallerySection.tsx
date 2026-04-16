@@ -1,7 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { CustomUploadImagePickerModalProps } from './CustomUploadImagePickerModal';
-import { assetUrl, fileMatchesAssetUrl } from './customUploadImagePickerLib';
+import { CustomUploadImagePickerModalProps } from './CustomUploadImagePickerModal.js';
+import { assetUrl, fileMatchesAssetUrl } from './customUploadImagePickerLib.js';
 
 const muted = 'text-sm [color:var(--color-theme-text-secondary)]';
 
