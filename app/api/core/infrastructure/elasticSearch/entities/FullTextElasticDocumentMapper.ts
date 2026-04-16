@@ -12,17 +12,21 @@ class FullTextElasticDocumentMapper {
     tenantId: string
   ): FullTextElasticDocument | null {
     const pages = file.fullText;
-    if (!pages || Object.keys(pages).length === 0) {
+    if (!pages) {
       return null;
     }
 
-    const joinedText = Object.values(pages).join('\f');
+    const nonEmptyPages = Object.values(pages).filter(p => p.trim().length > 0);
+    if (nonEmptyPages.length === 0) {
+      return null;
+    }
+
+    const joinedText = nonEmptyPages.join('\f');
     const language = LanguageUtils.fromISO639_3(file.language)?.elastic ?? 'other';
 
     return {
       [`fullText_${language}`]: joinedText,
       filename: file.filename,
-      fileId: file._id.toString(),
       fullText: {
         name: 'fullText',
         parent: `${tenantId}__${entityId.toString()}`,
