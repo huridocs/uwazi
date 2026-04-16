@@ -21,25 +21,3 @@ Object {
   "type": "object",
 }
 `;
-
-exports[`entities DELETE /api/entities should have a validation schema 1`] = `
-Object {
-  "properties": Object {
-    "query": Object {
-      "properties": Object {
-        "sharedId": Object {
-          "type": "string",
-        },
-      },
-      "required": Array [
-        "sharedId",
-      ],
-      "type": "object",
-    },
-  },
-  "required": Array [
-    "query",
-  ],
-  "type": "object",
-}
-`;

@@ -13,7 +13,7 @@ export class FullTextIndexerServiceFactory {
 
     if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
       return TestUtils.mockClass<FullTextIndexerService>({
-        deleteByFileIds: async () => Promise.resolve(),
+        deleteByFilenames: async () => Promise.resolve(),
         index: async () => Promise.resolve(),
       });
     }

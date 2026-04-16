@@ -49,6 +49,7 @@ const createSlotMap = (
         assignedTo: entry.assignedTo,
         slotName: entry.slotName,
         type: entry.type,
+        rand: 0,
       },
     ])
   );

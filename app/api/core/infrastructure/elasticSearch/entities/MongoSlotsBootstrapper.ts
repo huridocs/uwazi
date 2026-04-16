@@ -28,6 +28,7 @@ class MongoSlotsBootstrapper {
           type: slotType,
           slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
           assignedTo: null,
+          rand: Math.random(),
         }))
       ) as Omit<SlotDocument, '_id'>[];
 
@@ -51,10 +52,19 @@ class MongoSlotsBootstrapper {
   }
 
   async createIndexes() {
+    // For unique constraint on slotName
     await this.collection.createIndex({ slotName: 1 }, { unique: true });
+
+    // For ensuring a slot is only assigned to one property at a time
     await this.collection.createIndex(
       { assignedTo: 1 },
       { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
+    );
+
+    // For speeding query slot retrieval
+    await this.collection.createIndex(
+      { type: 1, rand: 1 },
+      { partialFilterExpression: { assignedTo: null } }
     );
   }
 
