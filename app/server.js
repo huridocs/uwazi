@@ -42,7 +42,6 @@ import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/
 import { ElasticSearchBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/ElasticSearchBootstrapper.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { IngestPipelineRegistry } from '#api/core/infrastructure/elasticSearch/IngestPipelineRegistry.js';
 import { IndexMappingRegistry } from '#api/core/infrastructure/elasticSearch/IndexMappingRegistry.js';
 import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -185,7 +184,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     const elasticSearchBootstrapper = new ElasticSearchBootstrapper({
       client: ElasticSearchClientFactory.getInstance(),
       logger: LoggerFactory.systemLogger(),
-      pipelineRegistry: IngestPipelineRegistry,
       registry: IndexMappingRegistry,
     });
     await elasticSearchBootstrapper.execute();

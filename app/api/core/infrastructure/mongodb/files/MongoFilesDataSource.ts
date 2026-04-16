@@ -85,11 +85,11 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     transactionManager.onCommitted(async () => {
       const files = Array.from(this.fileToDelete.values());
 
-      const processedPDFIds = files
+      const processedPDFFilenames = files
         .filter(f => f instanceof ProcessedPDF)
-        .map(f => new ObjectId(f.id));
+        .map(f => f.filename);
 
-      await this.fullTextIndexer.deleteByFileIds(processedPDFIds);
+      await this.fullTextIndexer.deleteByFilenames(processedPDFFilenames);
 
       this.fileToDelete.clear();
     });

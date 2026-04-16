@@ -127,6 +127,9 @@ const EntityIndexMappingDefinition: IndexDefinition = {
       metadata: {
         properties: { ...createEntityMetadataMapping() },
       },
+
+      created_at: { type: 'date' },
+      updated_at: { type: 'date' },
       // ===============================
     },
   },
