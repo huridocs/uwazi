@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { Client as ESClient } from '@elastic/elasticsearch';
 import { ObjectId } from 'mongodb';
 import { config } from '#api/config.js';
@@ -61,9 +62,16 @@ const createSlotMap = (): SlotMap =>
         assignedTo: 'indexedText',
         slotName: 'txt_01',
         type: 'txt',
+        rand: 0,
       },
     ],
   ]);
+
+const queryBySharedId = async (tenantClient: TenantAwareESClient, sharedId: string) =>
+  tenantClient.search<EntityElasticDocument>({
+    alias: EntityIndexMappingDefinition.alias,
+    query: { term: { sharedId } },
+  });
 
 const createSut = (tenantId = 'tenant-a') => {
   const resolver = TestUtils.mockClass<IndexNameResolver>({
@@ -213,6 +221,57 @@ describe('EntityIndexerService', () => {
       });
 
       expect((result.body as any).hits.hits).toHaveLength(0);
+    });
+
+    describe('re-indexing an existing document', () => {
+      it('preserves created_at and refreshes updated_at', async () => {
+        const { sut, tenantClient } = createSut('tenant-a');
+        const entity = createEntity('shared-reindex', 'en', 'original');
+
+        await sut.index([entity], true);
+
+        const first = await queryBySharedId(tenantClient, 'shared-reindex');
+        const firstCreatedAt = first.hits.hits[0]._source!.created_at;
+        const firstUpdatedAt = first.hits.hits[0]._source!.updated_at;
+
+        // Brief pause so the second ingest timestamp is strictly later
+        // eslint-disable-next-line no-promise-executor-return
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        await sut.index([{ ...entity, title: 'Updated title' }], true);
+
+        const second = await queryBySharedId(tenantClient, 'shared-reindex');
+        const secondSource = second.hits.hits[0]._source!;
+
+        expect(secondSource.created_at).toBe(firstCreatedAt);
+        expect(secondSource.updated_at).not.toBe(firstUpdatedAt);
+      });
+
+      it('reflects updated field values', async () => {
+        const { sut, tenantClient } = createSut('tenant-a');
+        const entity = createEntity('shared-update', 'en', 'original text');
+
+        await sut.index([entity], true);
+        await sut.index([{ ...entity, title: 'Updated Title' }], true);
+
+        const result = await queryBySharedId(tenantClient, 'shared-update');
+
+        expect(result.hits.hits[0]._source!.title).toBe('Updated Title');
+      });
+
+      it('removes metadata values no longer present in the entity', async () => {
+        const { sut, tenantClient } = createSut('tenant-a');
+        const entity = createEntity('shared-metadata-remove', 'en', 'to be removed');
+
+        await sut.index([entity], true);
+        const before = await queryBySharedId(tenantClient, 'shared-metadata-remove');
+        expect(before.hits.hits[0]._source!.metadata).toEqual({ txt_01: ['to be removed'] });
+
+        await sut.index([{ ...entity, metadata: {} }], true);
+
+        const after = await queryBySharedId(tenantClient, 'shared-metadata-remove');
+        expect(after.hits.hits[0]._source!.metadata).toEqual({});
+      });
     });
   });
 
