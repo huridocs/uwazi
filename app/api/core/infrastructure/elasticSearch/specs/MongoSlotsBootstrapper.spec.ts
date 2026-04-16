@@ -118,14 +118,24 @@ describe('MongoSlotsBootstrapper', () => {
       await sut.execute();
 
       const indexes = await slotsCollection().indexes();
-      const byName = Object.fromEntries(indexes.map(index => [index.name, index]));
 
-      expect(byName.slotName_1?.unique).toBe(true);
-      expect(byName.assignedTo_1?.unique).toBe(true);
-      expect(byName.assignedTo_1?.partialFilterExpression).toEqual({
-        assignedTo: { $type: 'string' },
-      });
-      expect(byName.rand_1).toBeDefined();
+      expect(indexes).toEqual([
+        { v: 2, key: { _id: 1 }, name: '_id_' },
+        { v: 2, key: { slotName: 1 }, name: 'slotName_1', unique: true },
+        {
+          v: 2,
+          key: { assignedTo: 1 },
+          name: 'assignedTo_1',
+          unique: true,
+          partialFilterExpression: { assignedTo: { $type: 'string' } },
+        },
+        {
+          v: 2,
+          key: { type: 1, rand: 1 },
+          name: 'type_1_rand_1',
+          partialFilterExpression: { assignedTo: null },
+        },
+      ]);
     });
 
     it('is idempotent when indexes already exist', async () => {
@@ -135,11 +145,24 @@ describe('MongoSlotsBootstrapper', () => {
       await expect(sut.execute()).resolves.not.toThrow();
 
       const indexes = await slotsCollection().indexes();
-      const names = indexes.map(index => index.name);
 
-      expect(names.filter(name => name === 'slotName_1')).toHaveLength(1);
-      expect(names.filter(name => name === 'assignedTo_1')).toHaveLength(1);
-      expect(names.filter(name => name === 'rand_1')).toHaveLength(1);
+      expect(indexes).toEqual([
+        { v: 2, key: { _id: 1 }, name: '_id_' },
+        { v: 2, key: { slotName: 1 }, name: 'slotName_1', unique: true },
+        {
+          v: 2,
+          key: { assignedTo: 1 },
+          name: 'assignedTo_1',
+          unique: true,
+          partialFilterExpression: { assignedTo: { $type: 'string' } },
+        },
+        {
+          v: 2,
+          key: { type: 1, rand: 1 },
+          name: 'type_1_rand_1',
+          partialFilterExpression: { assignedTo: null },
+        },
+      ]);
     });
 
     it('does not throw when another instance created indexes first', async () => {
