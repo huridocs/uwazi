@@ -6,7 +6,7 @@ import entities from '#api/entities/entities.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 
 const RequestSchema = z.object({
-  sharedId: z.coerce.string().trim().min(1, 'sharedId is required'),
+  sharedId: z.string().trim().min(1, 'sharedId is required'),
 });
 
 type RequestDto = z.infer<typeof RequestSchema>;
@@ -16,6 +16,7 @@ class DeleteEntityController extends AbstractController<RequestDto> {
     const startTime = Date.now();
     try {
       const { sharedId } = RequestSchema.parse(this.request.query);
+
       if (tenants.current().featureFlags?.v2DeleteEntity) {
         const useCase = BulkDeleteEntityUseCaseFactory.default();
 

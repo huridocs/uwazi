@@ -194,7 +194,7 @@ describe('entities', () => {
     it('should use entities to delete it', async () => {
       const req = {
         query: {
-          sharedId: 123,
+          sharedId: '123',
           _rev: 456,
         },
       };
