@@ -15,6 +15,7 @@ import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js
 import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
 import { GetEntityController } from '#api/core/infrastructure/express/entity/GetEntityController.js';
 import { MultiUpdateEntityController } from '#api/core/infrastructure/express/entity/MultiUpdateEntityController.js';
+import { DeleteEntityController } from '#api/core/infrastructure/express/entity/DeleteEntityController.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import templates from '../core/v1_layer/templates/templates.js';
 import { thesauri } from '../thesauri/thesauri.js';
@@ -260,25 +261,7 @@ export default app => {
   app.delete(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          properties: {
-            sharedId: { type: 'string' },
-          },
-          required: ['sharedId'],
-        },
-      },
-      required: ['query'],
-    }),
-    (req, res, next) => {
-      entities
-        .delete(req.query.sharedId)
-        .then(response => res.json(response))
-        .catch(next);
-    }
+    DeleteEntityController.createHandler()
   );
 
   app.post(

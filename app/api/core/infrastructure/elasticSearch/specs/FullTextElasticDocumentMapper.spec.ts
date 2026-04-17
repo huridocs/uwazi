@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { ProcessedPDFDBO } from '../../mongodb/files/schemas/filesTypes.js';
 import { FullTextElasticDocumentMapper } from '../entities/FullTextElasticDocumentMapper.js';
@@ -95,13 +94,6 @@ describe('FullTextElasticDocumentMapper', () => {
       const result = FullTextElasticDocumentMapper.toDocument(file, entityId, tenantId);
 
       expect(result).not.toBeNull();
-    });
-
-    it('includes fileId equal to file._id as string', () => {
-      const result = FullTextElasticDocumentMapper.toDocument(createFile(), entityId, tenantId);
-
-      expect(result).not.toBeNull();
-      expect(result!.fileId).toBe(fileId.toString());
     });
 
     it('does not include tenantId (stamped downstream by TenantAwareESClient)', () => {

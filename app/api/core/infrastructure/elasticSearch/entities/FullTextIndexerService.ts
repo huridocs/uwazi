@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { ProcessedPDFDBO } from '../../mongodb/files/schemas/filesTypes.js';
 import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
@@ -44,8 +43,8 @@ class FullTextIndexerService {
     });
   }
 
-  async deleteByFileIds(fileIds: ObjectId[], refresh = false): Promise<void> {
-    if (fileIds.length === 0) {
+  async deleteByFilenames(filenames: string[], refresh = false): Promise<void> {
+    if (filenames.length === 0) {
       return;
     }
 
@@ -54,10 +53,7 @@ class FullTextIndexerService {
       routing: this.deps.esClient.tenantId,
       query: {
         bool: {
-          filter: [
-            { terms: { fileId: fileIds.map(id => id.toString()) } },
-            { term: { fullText: 'fullText' } },
-          ],
+          filter: [{ terms: { filename: filenames } }, { term: { fullText: 'fullText' } }],
         },
       },
       refresh,
