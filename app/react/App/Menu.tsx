@@ -22,6 +22,7 @@ interface MenuProps {
   className: string;
   defaultLibraryView?: string;
   toggleMobileMenu: (visible: boolean) => void;
+  isMobile: boolean;
 }
 
 const mapStateToProps = (state: IStore) => {
@@ -63,6 +64,7 @@ const MenuComponent = ({
   links = Immutable.fromJS([]),
   defaultLibraryView,
   privateInstance,
+  isMobile,
 }: mappedProps) => {
   const resolvedLibraryView = isLibraryView(defaultLibraryView) ? defaultLibraryView : 'cards';
   const hideMobileMenu = () => toggleMobileMenu(false);
@@ -134,9 +136,11 @@ const MenuComponent = ({
         className="menuNav-item only-desktop"
         style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}
       >
-        <div className="tw-content">
-          <RequestStatus />
-        </div>
+        {!isMobile && (
+          <div className="tw-content">
+            <RequestStatus />
+          </div>
+        )}
       </li>
       <I18NMenu />
       <li className="menuActions mobile-menuActions">

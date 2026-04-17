@@ -182,7 +182,8 @@ describe('Entity with main documents', () => {
     cy.contains('.file-edit', 'Edit').click();
     cy.get('#language').select('English (English)');
     cy.contains('button', 'Save').click();
-    cy.contains('div.alert', 'File updated').should('be.visible');
+    cy.get('[data-testid="notification-flash"]').should('be.visible');
+    cy.get('[data-testid="notification-flash-title"]').should('contain', 'File updated');
     cy.get('.is-active .closeSidepanel').click();
   });
 

@@ -12,6 +12,14 @@ interface NotificationFlashProps {
 
 const NotificationFlash = ({ title, type, phase, color = 'black' }: NotificationFlashProps) => {
   const [isIn, setIsIn] = useState(false);
+  const typeLabel: Record<NotificationType, string> = {
+    success: 'Success',
+    warning: 'Warning',
+    error: 'Error',
+    info: 'Information',
+  };
+  const announcement = `${typeLabel[type]}: ${title}`;
+  const isError = type === 'error';
 
   // After mount, trigger the enter transition on the next animation frame
   // so the browser renders the collapsed initial state first.
@@ -36,6 +44,7 @@ const NotificationFlash = ({ title, type, phase, color = 'black' }: Notification
     // Outer: animates max-width and opacity (the "container grow" effect)
     <div
       data-testid="notification-flash"
+      aria-hidden="true"
       className={`overflow-hidden transition-[max-width,opacity] duration-500 ease-out ${
         isIn ? 'max-w-[12rem] opacity-100' : 'max-w-0 opacity-0'
       }`}
@@ -53,11 +62,9 @@ const NotificationFlash = ({ title, type, phase, color = 'black' }: Notification
         <span
           className="inline-flex items-center px-1 py-0.5 rounded-md text-xs font-medium whitespace-nowrap"
           style={{ color }}
-          role="status"
-          aria-live="polite"
         >
           <span data-testid="notification-flash-title" className="max-w-[10rem] truncate block">
-            {title}
+            {announcement}
           </span>
         </span>
       </div>

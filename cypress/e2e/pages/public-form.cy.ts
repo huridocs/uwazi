@@ -102,8 +102,9 @@ describe('Public Form', () => {
       );
       cy.contains('span', 'Bahamas').click();
       cy.get('.captcha input').type('42hf');
+      cy.intercept('POST', '/api/public*').as('submitPublicForm');
       cy.contains('button', 'Submit').click();
-      cy.get('.alert.alert-success').click();
+      cy.wait('@submitPublicForm').its('response.statusCode').should('eq', 200);
     });
   });
 

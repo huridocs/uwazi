@@ -31,13 +31,15 @@ describe('Share Entities', () => {
   });
 
   it('Should update the permissions of an entity', () => {
+    cy.intercept('POST', '/api/entities/share*').as('shareEntities');
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
     shareSearchTerm('editor');
     shareSearchTerm('Ase', 'Asesores legales');
     cy.contains('Mixed access', { timeout: 200 }).parent().select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
-    cy.get('.alert.alert-success').click();
+    cy.wait('@shareEntities').its('response.statusCode').should('eq', 200);
+    cy.get('[data-testid=modal]').should('not.exist');
   });
 
   it('Should not keep previous entity data', () => {
@@ -118,6 +120,7 @@ describe('Share Entities', () => {
   });
 
   it('should be able to edit and save', () => {
+    cy.intercept('POST', '/api/entities').as('saveEntity');
     cy.contains('h2', titleEntity4).click();
     clickOnEditEntity();
     cy.contains('Edit');
@@ -127,7 +130,7 @@ describe('Share Entities', () => {
       delay: 0,
     });
     cy.get('aside.is-active').contains('button', 'Save').click();
-    cy.get('div.alert').click();
+    cy.wait('@saveEntity').its('response.statusCode').should('eq', 200);
     cy.contains('h2', 'Edited title').should('exist');
     cy.get('aside.is-active button[aria-label="Close side panel"]').click();
   });

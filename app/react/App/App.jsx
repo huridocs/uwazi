@@ -9,6 +9,7 @@ import { Matomo, CleanInsights } from '#app/V2/Components/Analitycs/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { TranslateModal } from '#app/I18N/index.js';
 import { inlineEditAtom } from '#V2/atoms/index.js';
+import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { Header } from '#app/V2/Components/UI/Header/Header.js';
 import { Confirm } from './Confirm.js';
 import { AppMainContext } from './AppMainContext.js';
@@ -70,6 +71,7 @@ const App = ({ customParams }) => {
         ) : (
           <LegacyHeader />
         )}
+        <NotificationsPanel />
         <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
           <AppMainContext.Provider value={appContext}>
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}

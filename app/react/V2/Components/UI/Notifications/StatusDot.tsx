@@ -9,6 +9,8 @@ interface StatusDotProps {
   onClick: () => void;
   popKey?: number;
   color?: string;
+  controlsId?: string;
+  isExpanded?: boolean;
 }
 
 const dotColorMap: Record<Exclude<OverallStatus, 'loading'>, string> = {
@@ -71,23 +73,24 @@ const LoadingDots = ({ color }: { color: string }) => (
   </span>
 );
 
-const TOOLTIP_ID = 'disconnect-tooltip';
-
-const DisconnectWarning = ({ color }: { color: string }) => (
-  <span
-    className="relative inline-flex group"
-    aria-label="Server disconnected"
-    aria-describedby={TOOLTIP_ID}
-  >
-    <LinkSlashIcon className="w-4 h-4 cursor-help" style={{ color }} aria-hidden="true" />
+const DisconnectWarning = ({ color, tooltipId }: { color: string; tooltipId: string }) => (
+  <span className="relative inline-flex group">
+    <button
+      type="button"
+      className="inline-flex items-center rounded-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+      aria-label="Server disconnected"
+      aria-describedby={tooltipId}
+    >
+      <LinkSlashIcon className="w-4 h-4 cursor-help" style={{ color }} aria-hidden="true" />
+    </button>
     <span
-      id={TOOLTIP_ID}
+      id={tooltipId}
       role="tooltip"
       className={[
         'pointer-events-none absolute z-50 top-full left-1/2 -translate-x-1/2 mt-2',
         'whitespace-nowrap rounded-md bg-white border border-gray-200 px-2.5 py-1.5 text-xs text-gray-700 shadow-md',
         'opacity-0 transition-opacity duration-150',
-        'group-hover:opacity-100 group-focus:opacity-100',
+        'group-hover:opacity-100 group-focus-within:opacity-100',
       ].join(' ')}
     >
       Cannot connect to server
@@ -117,17 +120,21 @@ const StatusDot = ({
   onClick,
   popKey,
   color = 'black',
+  controlsId,
+  isExpanded,
 }: StatusDotProps) => (
   <>
     {/* eslint-disable-next-line react/no-danger */}
     <style dangerouslySetInnerHTML={{ __html: DOT_KEYFRAMES }} />
     <div className="flex items-center gap-1.5">
-      {!isConnected && <DisconnectWarning color={color} />}
+      {!isConnected && <DisconnectWarning color={color} tooltipId="disconnect-tooltip" />}
 
       <button
         type="button"
         onClick={onClick}
         aria-label={buildAriaLabel(overallStatus, isConnected, hasRunningTasks)}
+        aria-controls={controlsId}
+        aria-expanded={isExpanded}
         data-testid="status-dot"
         className="flex items-center gap-1.5 p-1 rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300"
       >

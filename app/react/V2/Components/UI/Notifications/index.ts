@@ -5,6 +5,5 @@ export { NotificationItem } from './NotificationItem.js';
 export { TaskItem } from './TaskItem.js';
 
 export type { StatusDotProps } from './StatusDot.js';
-export type { NotificationsPanelProps } from './NotificationsPanel.js';
 export type { NotificationItemProps } from './NotificationItem.js';
 export type { TaskItemProps } from './TaskItem.js';

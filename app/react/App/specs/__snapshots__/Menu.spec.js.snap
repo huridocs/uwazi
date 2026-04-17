@@ -78,6 +78,22 @@ exports[`Menu Links returns the expected HTML 1`] = `
       </li>
     </ul>
   </li>
+  <li
+    className="menuNav-item only-desktop"
+    style={
+      Object {
+        "alignItems": "center",
+        "display": "flex",
+        "padding": "0 8px",
+      }
+    }
+  >
+    <div
+      className="tw-content"
+    >
+      <RequestStatus />
+    </div>
+  </li>
   <I18NMenu />
   <li
     className="menuActions mobile-menuActions"

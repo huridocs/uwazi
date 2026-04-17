@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { KeyboardEvent, useId, useState } from 'react';
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
@@ -13,6 +13,9 @@ import { NotificationType, StatusNotification } from '#V2/atoms/requestStatusAto
 interface NotificationItemProps {
   notification: StatusNotification;
   onDismiss: (id: string) => void;
+  tabIndex?: number;
+  itemRef?: (element: HTMLDivElement | null) => void;
+  onArrowNavigate?: (direction: 'next' | 'prev') => void;
 }
 
 const iconMap: Record<NotificationType, React.ReactNode> = {
@@ -49,23 +52,53 @@ const formatTimestamp = (date: Date): string => {
   });
 };
 
-const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) => {
+const NotificationItem = ({
+  notification,
+  onDismiss,
+  tabIndex = -1,
+  itemRef,
+  onArrowNavigate,
+}: NotificationItemProps) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const detailsId = useId();
+  const titleId = useId();
+  const messageId = useId();
+  const timestampId = useId();
+  const detailsToggleId = useId();
+  const detailsDescription = notification.message ? `${messageId} ${timestampId}` : timestampId;
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      onArrowNavigate?.('next');
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      onArrowNavigate?.('prev');
+    }
+  };
 
   return (
     <div
-      className={`flex items-start gap-3 p-3 rounded-lg border ${borderMap[notification.type]}`}
-      role="listitem"
+      ref={itemRef}
+      tabIndex={tabIndex}
+      role="article"
+      aria-labelledby={titleId}
+      aria-describedby={detailsDescription}
+      onKeyDown={handleKeyDown}
+      className={`flex items-start gap-3 p-3 rounded-lg border outline-none focus:ring-2 focus:ring-indigo-300 ${borderMap[notification.type]}`}
     >
       {iconMap[notification.type]}
 
       <div className="flex-1 min-w-0 overflow-hidden">
-        <p className="text-sm font-medium text-gray-800 break-words whitespace-normal">
+        <p id={titleId} className="text-sm font-medium text-gray-800 break-words whitespace-normal">
           {notification.title}
         </p>
 
         {notification.message && (
-          <p className="mt-1 text-xs text-gray-600 break-words whitespace-normal">
+          <p id={messageId} className="mt-1 text-xs text-gray-600 break-words whitespace-normal">
             {notification.message}
           </p>
         )}
@@ -75,7 +108,9 @@ const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) =>
             <button
               type="button"
               onClick={() => setDetailsOpen(o => !o)}
+              id={detailsToggleId}
               aria-expanded={detailsOpen}
+              aria-controls={detailsId}
               className="flex items-center gap-0.5 text-xs text-gray-400 cursor-pointer hover:text-gray-600 transition-colors"
             >
               {detailsOpen ? (
@@ -87,14 +122,18 @@ const NotificationItem = ({ notification, onDismiss }: NotificationItemProps) =>
             </button>
 
             {detailsOpen && (
-              <pre className="mt-1.5 text-xs text-gray-500 bg-white/70 rounded p-2 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed">
+              <pre
+                id={detailsId}
+                aria-labelledby={detailsToggleId}
+                className="mt-1.5 text-xs text-gray-500 bg-white/70 rounded p-2 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed"
+              >
                 {notification.details}
               </pre>
             )}
           </div>
         )}
 
-        <p className="mt-1 text-xs text-gray-400 whitespace-normal">
+        <p id={timestampId} className="mt-1 text-xs text-gray-400 whitespace-normal">
           {formatTimestamp(notification.timestamp)}
         </p>
       </div>

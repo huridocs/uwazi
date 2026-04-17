@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
+import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const meta: Meta = {
@@ -136,6 +137,7 @@ const Playground = () => {
       className="tw-content h-[700px] overflow-hidden bg-gray-50 p-6"
       dir={isRTL ? 'rtl' : 'ltr'}
     >
+      <NotificationsPanel />
       <div className="max-w-3xl mx-auto h-full overflow-y-auto flex flex-col gap-6">
         {/* Header: dot lives here */}
         <div

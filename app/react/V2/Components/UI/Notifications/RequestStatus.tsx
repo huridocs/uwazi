@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { NotificationType, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { useContrastColor } from '#V2/CustomHooks/useContrastColor.js';
 import { StatusDot } from './StatusDot.js';
-import { NotificationsPanel } from './NotificationsPanel.js';
 import { NotificationFlash } from './NotificationFlash.js';
 
 interface FlashState {
@@ -12,6 +11,13 @@ interface FlashState {
   phase: 'showing' | 'leaving';
 }
 
+const flashTypeLabel: Record<NotificationType, string> = {
+  success: 'Success',
+  warning: 'Warning',
+  error: 'Error',
+  info: 'Information',
+};
+
 const RequestStatus = () => {
   const {
     overallStatus,
@@ -19,11 +25,7 @@ const RequestStatus = () => {
     hasRunningTasks,
     isPanelOpen,
     notifications,
-    tasks,
     togglePanel,
-    removeNotification,
-    removeTask,
-    clearAll,
   } = useRequestStatus();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,6 +40,8 @@ const RequestStatus = () => {
 
   const [popKey, setPopKey] = useState(0);
   const lastPopId = useRef<string | null>(null);
+  const PANEL_ID = 'notifications-panel-dialog';
+  const liveAnnouncement = flash ? `${flashTypeLabel[flash.type]}: ${flash.title}` : '';
 
   const startFlash = useCallback((id: string, title: string, type: NotificationType) => {
     if (leaveTimerRef.current !== null) {
@@ -92,6 +96,17 @@ const RequestStatus = () => {
     <>
       <div ref={containerRef} className="flex items-center p-1 rounded-xl gap-1.5">
         {flash && (
+          <div
+            key={`announcement-${flash.id}`}
+            className="sr-only"
+            role={flash.type === 'error' ? 'alert' : 'status'}
+            aria-live={flash.type === 'error' ? 'assertive' : 'polite'}
+            aria-atomic="true"
+          >
+            {liveAnnouncement}
+          </div>
+        )}
+        {flash && (
           <NotificationFlash
             key={flash.id}
             title={flash.title}
@@ -107,17 +122,10 @@ const RequestStatus = () => {
           onClick={togglePanel}
           popKey={popKey}
           color={contrastColor}
+          controlsId={PANEL_ID}
+          isExpanded={isPanelOpen}
         />
       </div>
-      <NotificationsPanel
-        isOpen={isPanelOpen}
-        notifications={notifications}
-        tasks={tasks}
-        onClose={togglePanel}
-        onDismissNotification={removeNotification}
-        onRemoveTask={removeTask}
-        onClear={clearAll}
-      />
     </>
   );
 };

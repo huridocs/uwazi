@@ -16,8 +16,9 @@ const labelEntityTitle = (
   cy.get('textarea[name="documentViewer.sidepanel.metadata.title"]')
     .invoke('val')
     .should('eq', selectValue);
+  cy.intercept('POST', '/api/entities*').as('saveEntity');
   cy.get('button[type="submit"]').click();
-  cy.get('div.alert-success').click();
+  cy.wait('@saveEntity').its('response.statusCode').should('eq', 200);
 };
 
 const checkTemplatesList = (templates: string[]) => {
