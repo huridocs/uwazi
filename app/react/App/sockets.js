@@ -28,7 +28,12 @@ socket.on('disconnect', reason => {
   disconnectTimer = setTimeout(() => {
     wasDisconnectedByOutage = true;
     setConnected(false);
-    const message = t('System', 'Lost connection to the server. Your changes may be lost', null, false);
+    const message = t(
+      'System',
+      'Lost connection to the server. Your changes may be lost',
+      null,
+      false
+    );
     bridgeNotify(message, 'warning');
     store.dispatch(notificationActions.notify(message, 'warning'));
   }, 8000);
@@ -129,7 +134,10 @@ socket.on('translationKeysChange', translationsEntries => {
 socket.on('translationsInstallDone', () => {
   endTask('language-install', 'completed');
   store.dispatch(
-    notificationActions.notify(t('System', 'Languages installed successfully', null, false), 'success')
+    notificationActions.notify(
+      t('System', 'Languages installed successfully', null, false),
+      'success'
+    )
   );
 });
 
@@ -137,7 +145,10 @@ socket.on('translationsInstallError', errorMessage => {
   endTask('language-install', 'failed');
   const message = `${t('System', 'An error has occured while installing languages:', null, false)}
 ${errorMessage}`;
-  bridgeNotify(t('System', 'An error has occurred while installing languages:', null, false), 'error');
+  bridgeNotify(
+    t('System', 'An error has occurred while installing languages:', null, false),
+    'error'
+  );
   store.dispatch(notificationActions.notify(message, 'danger'));
 });
 
@@ -151,7 +162,10 @@ socket.on('translationsDelete', locale => {
 socket.on('translationsDeleteDone', () => {
   endTask('language-uninstall', 'completed');
   store.dispatch(
-    notificationActions.notify(t('System', 'Language uninstalled successfully', null, false), 'success')
+    notificationActions.notify(
+      t('System', 'Language uninstalled successfully', null, false),
+      'success'
+    )
   );
 });
 
@@ -159,7 +173,10 @@ socket.on('translationsDeleteError', errorMessage => {
   endTask('language-uninstall', 'failed');
   const message = `${t('System', 'An error has occured while deleting a language:', null, false)}
 ${errorMessage}`;
-  bridgeNotify(t('System', 'An error has occurred while uninstalling a language:', null, false), 'error');
+  bridgeNotify(
+    t('System', 'An error has occurred while uninstalling a language:', null, false),
+    'error'
+  );
   store.dispatch(notificationActions.notify(message, 'danger'));
 });
 
