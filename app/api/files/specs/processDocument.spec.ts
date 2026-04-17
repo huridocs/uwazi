@@ -4,11 +4,16 @@ import {
   MimeTypeNotSupportedForConversion,
 } from '#api/services/convertToPDF/convertToPdfService.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
+import entitiesModel from '#api/entities/entitiesModel.js';
 import { files, UpdateFileError } from '../files.js';
 import { attachmentsPath, setupTestUploadedPaths } from '../filesystem.js';
-import { processDocument } from '../processDocument.js';
+import { processDocument, convertPDF } from '../processDocument.js';
+import { PDF } from '../PDF.js';
+
+const f = getFixturesFactory();
 
 describe('processDocument', () => {
   beforeEach(async () => {
@@ -93,5 +98,72 @@ describe('processDocument', () => {
 
     expect(file).toBeUndefined();
     expect(thumbnail).toBeUndefined();
+  });
+
+  describe('convertPDF - entity preview', () => {
+    const sharedId = 'previewEntity';
+
+    beforeEach(async () => {
+      await testingEnvironment.setUp({
+        settings: [
+          {
+            languages: [
+              { default: true, key: 'en', label: 'English' },
+              { key: 'es', label: 'Spanish' },
+            ],
+          },
+        ],
+        templates: [f.template('t1')],
+        entities: [
+          f.entity(sharedId, 't1', {}, { language: 'en' }),
+          f.entity(sharedId, 't1', {}, { language: 'es' }),
+        ],
+      });
+      await setupTestUploadedPaths();
+    });
+
+    it('should set preview on all entity language rows after thumbnail creation', async () => {
+      const thumbnailFilename = 'preview-thumb.jpg';
+
+      jest.spyOn(PDF.prototype, 'convert').mockResolvedValue({
+        language: 'eng', // ISO639-3 for English
+        fullText: {},
+        totalPages: 1,
+        generatedToc: false,
+      } as any);
+
+      jest.spyOn(PDF.prototype, 'createThumbnail').mockResolvedValue({
+        filename: thumbnailFilename,
+        size: 1024,
+      } as any);
+
+      const upload = await files.save({
+        entity: sharedId,
+        type: 'document',
+        status: 'processing',
+        filename: 'doc.pdf',
+        originalname: 'doc.pdf',
+        mimetype: 'application/pdf',
+      });
+
+      await new Promise<void>((resolve, reject) => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        convertPDF(
+          upload as any,
+          sharedId,
+          { filename: 'doc.pdf', destination: attachmentsPath('doc.pdf') },
+          false,
+          () => resolve(),
+          e => reject(e)
+        );
+      });
+
+      const entityRows = await entitiesModel.get({ sharedId });
+      const en = entityRows.find(e => e.language === 'en');
+      const es = entityRows.find(e => e.language === 'es');
+
+      expect(en?.preview).toBe(thumbnailFilename);
+      expect(es?.preview).toBe(thumbnailFilename);
+    });
   });
 });

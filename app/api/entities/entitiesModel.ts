@@ -27,6 +27,7 @@ const mongoSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     permissions: { type: mongoose.Schema.Types.Mixed, select: false },
     obsoleteMetadata: { type: [String] },
+    preview: { type: String },
   },
   { minimize: false }
 );

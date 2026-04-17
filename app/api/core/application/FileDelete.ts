@@ -4,7 +4,6 @@ import { createError } from '#api/utils/index.js';
 import { z } from 'zod';
 import { EntityPermissionChecker } from '../domain/entity/EntityPermissionChecker.js';
 import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
-import { Thumbnail } from '../domain/files/Thumbnail.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
@@ -31,11 +30,6 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
 
   async execute({ fileId }: Input): Promise<Output> {
     const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
-    let thumbnails: Thumbnail[] = [];
-
-    if (file instanceof ProcessedPDF) {
-      thumbnails = await this.deps.filesDS.getThumbnails([file.entity]).all();
-    }
 
     if (
       !(
@@ -46,7 +40,7 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
     }
 
     await this.transactionManager.run(async () => {
-      await this.deps.filesService.delete([file, ...thumbnails]);
+      await this.deps.filesService.delete([file]);
 
       if (file instanceof ProcessedPDF) {
         const entity = (await this.deps.entitiesDS.getById(file.entity)).getDataOrThrow();

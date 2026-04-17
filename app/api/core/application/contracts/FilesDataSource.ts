@@ -34,6 +34,7 @@ interface FilesDataSource {
     options?: GetDocumentsForEntityOptions
   ): ResultSet<ProcessedPDF>;
   getThumbnails(entitySharedIds: string[]): ResultSet<Thumbnail>;
+  getThumbnailsForProcessedPDFs(documentIds: string[]): ResultSet<Thumbnail>;
   getByFilename(
     filename: string,
     allowedTypes?: FileType[]

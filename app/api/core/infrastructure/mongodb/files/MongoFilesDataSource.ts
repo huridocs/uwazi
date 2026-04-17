@@ -146,6 +146,17 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     );
   }
 
+  getThumbnailsForProcessedPDFs(documentIds: string[]): ResultSet<Thumbnail> {
+    const filenames = documentIds.map(id => `${id}.jpg`);
+    return new MongoResultSet<fileDBO, Thumbnail>(
+      this.getCollection().find({
+        filename: { $in: filenames },
+        type: 'thumbnail',
+      }),
+      dbo => this.toModel(dbo) as Thumbnail
+    );
+  }
+
   async getProcessingById(fileId: string) {
     const processing = await this.getCollection().findOne({
       _id: new ObjectId(fileId),
