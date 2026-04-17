@@ -1,7 +1,7 @@
 import { CheckCircleIcon, InformationCircleIcon, XCircleIcon } from '@heroicons/react/20/solid';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import React, { useEffect, useState } from 'react';
-import { NotificationType } from '#app/V2/atoms/requestStatusAtom.js';
+import type { NotificationType } from '#app/V2/atoms/requestStatusAtom.js';
 
 interface NotificationFlashProps {
   title: string;
@@ -19,7 +19,6 @@ const NotificationFlash = ({ title, type, phase, color = 'black' }: Notification
     info: 'Information',
   };
   const announcement = `${typeLabel[type]}: ${title}`;
-  const isError = type === 'error';
 
   // After mount, trigger the enter transition on the next animation frame
   // so the browser renders the collapsed initial state first.

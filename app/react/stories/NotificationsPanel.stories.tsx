@@ -24,7 +24,13 @@ const DemoPanel = () => {
     if (initializedRef.current) return;
     initializedRef.current = true;
 
-    notify('success', 'Entity saved successfully.', 'All fields were valid.', undefined, ago(20 * SEC));
+    notify(
+      'success',
+      'Entity saved successfully.',
+      'All fields were valid.',
+      undefined,
+      ago(20 * SEC)
+    );
     notify(
       'error',
       'Failed to save entity.',

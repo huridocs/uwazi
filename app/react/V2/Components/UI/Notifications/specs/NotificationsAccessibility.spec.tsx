@@ -36,7 +36,10 @@ describe('Notifications accessibility', () => {
       />
     );
 
-    expect(screen.getByTestId('status-dot')).toHaveAttribute('aria-controls', 'notifications-panel-dialog');
+    expect(screen.getByTestId('status-dot')).toHaveAttribute(
+      'aria-controls',
+      'notifications-panel-dialog'
+    );
     expect(screen.getByTestId('status-dot')).toHaveAttribute('aria-expanded', 'true');
   });
 
@@ -221,7 +224,9 @@ describe('Notifications accessibility', () => {
     expect(firstFocusable).toHaveFocus();
 
     fireEvent.keyDown(dialog, { key: 'Escape' });
-    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Notifications' })).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: 'Notifications' })).not.toBeInTheDocument()
+    );
     expect(openButton).toHaveFocus();
   });
 });

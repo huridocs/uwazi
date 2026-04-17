@@ -44,18 +44,18 @@ const TaskItem = ({ task, onRemove }: TaskItemProps) => {
         <span id={taskLabelId} className="flex-1 text-sm font-medium text-gray-800 truncate">
           {task.label}
         </span>
-      <span className={`text-xs font-medium ${statusLabelColor[task.status]}`}>
-        {statusLabel[task.status]}
-      </span>
-      <button
-        type="button"
-        onClick={() => onRemove(task.id)}
-        aria-label="Hide task"
-        className="ml-1 rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors shrink-0"
-      >
-        <XMarkIcon className="w-3.5 h-3.5" aria-hidden="true" />
-      </button>
-    </div>
+        <span className={`text-xs font-medium ${statusLabelColor[task.status]}`}>
+          {statusLabel[task.status]}
+        </span>
+        <button
+          type="button"
+          onClick={() => onRemove(task.id)}
+          aria-label="Hide task"
+          className="ml-1 rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors shrink-0"
+        >
+          <XMarkIcon className="w-3.5 h-3.5" aria-hidden="true" />
+        </button>
+      </div>
 
       {task.progress !== undefined && (
         <div className="flex items-center gap-2">
