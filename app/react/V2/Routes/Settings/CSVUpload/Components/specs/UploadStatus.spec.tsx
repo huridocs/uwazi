@@ -11,7 +11,7 @@ import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js'
 import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
 import { csvImportsList, templates, translations } from './fixtures.js';
 import { UploadStatus } from '../../UploadStatus.js';
-import { CsvImportListRow } from '#app/V2/api/csv/index.js';
+import type { CsvImportListRow } from '#app/V2/api/csv/index.js';
 import { csvImportEvents } from '#app/V2/api/csv/events.js';
 
 describe('CSV import status view', () => {

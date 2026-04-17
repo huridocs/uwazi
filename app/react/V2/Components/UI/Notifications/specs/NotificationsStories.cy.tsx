@@ -13,17 +13,17 @@ describe('Notifications stories accessibility', () => {
     mount(<Playground />);
 
     cy.getByTestId('status-dot').click();
-    cy.findByRole('dialog', { name: /notifications/i }).should('exist');
+    cy.get('#notifications-panel-dialog').should('exist');
 
     cy.get('body').trigger('keydown', { key: 'Escape' });
-    cy.findByRole('dialog', { name: /notifications/i }).should('not.exist');
+    cy.get('#notifications-panel-dialog').should('not.exist');
   });
 
   it('has no critical axe violations when panel is open', () => {
     mount(<Mixed />);
 
     cy.injectAxe();
-    cy.findByRole('dialog', { name: /notifications/i }).should('exist');
+    cy.get('#notifications-panel-dialog').should('exist');
     cy.checkA11y(undefined, { includedImpacts: ['critical'] });
   });
 });

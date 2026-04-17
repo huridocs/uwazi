@@ -9,8 +9,12 @@ import { Translate } from '#app/I18N/index.js';
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400">
     <span className="block w-3 h-3 rounded-full bg-green-400 mb-3" />
-    <p className="text-sm font-medium">All clear</p>
-    <p className="text-xs mt-1">No notifications or active tasks.</p>
+    <p className="text-sm font-medium">
+      <Translate>All clear</Translate>
+    </p>
+    <p className="text-xs mt-1">
+      <Translate>No notifications or active tasks.</Translate>
+    </p>
   </div>
 );
 
@@ -54,14 +58,13 @@ const NotificationsPanel = () => {
     if (orderedNotifications.length === 0) return;
 
     const lastIndex = orderedNotifications.length - 1;
-    const nextIndex =
-      direction === 'next'
-        ? currentIndex >= lastIndex
-          ? 0
-          : currentIndex + 1
-        : currentIndex <= 0
-          ? lastIndex
-          : currentIndex - 1;
+    let nextIndex = currentIndex;
+
+    if (direction === 'next') {
+      nextIndex = currentIndex >= lastIndex ? 0 : currentIndex + 1;
+    } else {
+      nextIndex = currentIndex <= 0 ? lastIndex : currentIndex - 1;
+    }
 
     setActiveNotificationIndex(nextIndex);
   };

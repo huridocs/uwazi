@@ -71,6 +71,7 @@ Admins,Admins
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
+All clear,All clear
 All data,Todos los datos
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
@@ -78,10 +79,10 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Permitir la omisión de captcha
 Already exists,Already exists
 Amount,Amount
-An error has occured while deleting a language:,An error has occured while deleting a language:
-An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Ocurrió un error
 An error has occurred during data export,Se ha producido un error durante la exportación de datos.
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,Se ha producido un error
 Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
@@ -124,6 +125,7 @@ cancel csv import,Cancel the import process. This will stop the creation of new 
 Canceling,Canceling
 Canceling...,Cancelando
 Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
@@ -175,7 +177,7 @@ Connect to a paragraph,Conectar a un párrafo
 Connect to an entity,Connect to an entity
 Connect to document,Connect to document
 Connect to paragraph,Connect to paragraph
-Connected to server,Conectado al servidor
+Connection to the server has been restored,Connection to the server has been restored
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
 Contact Form,Formulario de contacto
@@ -218,7 +220,7 @@ Created user group,Grupo de usuarios creado
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
@@ -454,6 +456,7 @@ Input,Input
 Install,Instalar
 Install Language(s),Instalar Idioma(s)
 Install the browser extension.,Install the browser extension.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -483,14 +486,10 @@ Importante: Debes usar URLs relativos. Estos empiezan con / y no incluyen el nom
 Language,Idioma
 Language Code,Código de Idioma
 Language deleted,Idioma eliminado
-Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
 Language reset success,Idioma reseteado exitósamente
-Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
-Language uninstalled successfully,Idioma eliminado exitósamente
 Language(s),Language(s)
 Language:,Language:
 Languages,Idiomas
-Languages installed successfully,Idioma instalado exitósamente
 Last updated,Última actualización
 Latitude,Latitud
 Learn more,Aprender más
@@ -597,6 +596,7 @@ No icon / flag,Sin icono / bandera
 No items available,No items available
 No Label,No existe etiqueta
 No label,No label
+No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,Opciones no encontradas
 No property,Ninguna propiedad
@@ -623,6 +623,7 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,No encontrado
 Nothing selected,Nothing selected
+Notifications,Notifications
 Number of sentences above threshold,El número de frases supera el límite
 Obsolete,Obsoleto
 obsolete,obsolete
@@ -920,6 +921,7 @@ Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Tasks,Tasks
 Template,Plantilla
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template color,Template color
@@ -1029,6 +1031,7 @@ Unauthorized,No autorizado
 Unexpected error,Error inesperado
 Uninstall,Desinstalar
 Uninstall language,Desinstalar idioma
+Uninstalling language,Uninstalling language
 Unlink,Desenlazar
 Unlock account,Unlock account
 Unsupported OCR language,Idioma no soportado para ROC
@@ -1089,8 +1092,6 @@ view,Ver
 View entities,Ver entidades
 View entity,View entity
 View in library,Ver en la colección
-View less,Ver menos
-View more,Ver más
 View page,Ver página
 WARNING,ADVERTENCIA
 Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { NotificationType, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import type { NotificationType } from '#V2/atoms/requestStatusAtom.js';
 import { useContrastColor } from '#V2/CustomHooks/useContrastColor.js';
 import { StatusDot } from './StatusDot.js';
 import { NotificationFlash } from './NotificationFlash.js';
@@ -19,14 +20,8 @@ const flashTypeLabel: Record<NotificationType, string> = {
 };
 
 const RequestStatus = () => {
-  const {
-    overallStatus,
-    isConnected,
-    hasRunningTasks,
-    isPanelOpen,
-    notifications,
-    togglePanel,
-  } = useRequestStatus();
+  const { overallStatus, isConnected, hasRunningTasks, isPanelOpen, notifications, togglePanel } =
+    useRequestStatus();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contrastColor = useContrastColor(containerRef);
@@ -93,40 +88,38 @@ const RequestStatus = () => {
   }, [notifications]);
 
   return (
-    <>
-      <div ref={containerRef} className="flex items-center p-1 rounded-xl gap-1.5">
-        {flash && (
-          <div
-            key={`announcement-${flash.id}`}
-            className="sr-only"
-            role={flash.type === 'error' ? 'alert' : 'status'}
-            aria-live={flash.type === 'error' ? 'assertive' : 'polite'}
-            aria-atomic="true"
-          >
-            {liveAnnouncement}
-          </div>
-        )}
-        {flash && (
-          <NotificationFlash
-            key={flash.id}
-            title={flash.title}
-            type={flash.type}
-            phase={flash.phase}
-            color={contrastColor}
-          />
-        )}
-        <StatusDot
-          overallStatus={overallStatus}
-          isConnected={isConnected}
-          hasRunningTasks={hasRunningTasks}
-          onClick={togglePanel}
-          popKey={popKey}
+    <div ref={containerRef} className="flex items-center p-1 rounded-xl gap-1.5">
+      {flash && (
+        <div
+          key={`announcement-${flash.id}`}
+          className="sr-only"
+          role={flash.type === 'error' ? 'alert' : 'status'}
+          aria-live={flash.type === 'error' ? 'assertive' : 'polite'}
+          aria-atomic="true"
+        >
+          {liveAnnouncement}
+        </div>
+      )}
+      {flash && (
+        <NotificationFlash
+          key={flash.id}
+          title={flash.title}
+          type={flash.type}
+          phase={flash.phase}
           color={contrastColor}
-          controlsId={PANEL_ID}
-          isExpanded={isPanelOpen}
         />
-      </div>
-    </>
+      )}
+      <StatusDot
+        overallStatus={overallStatus}
+        isConnected={isConnected}
+        hasRunningTasks={hasRunningTasks}
+        onClick={togglePanel}
+        popKey={popKey}
+        color={contrastColor}
+        controlsId={PANEL_ID}
+        isExpanded={isPanelOpen}
+      />
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowPathIcon, LinkSlashIcon } from '@heroicons/react/24/outline';
-import { OverallStatus } from '#V2/atoms/requestStatusAtom.js';
+import type { OverallStatus } from '#V2/atoms/requestStatusAtom.js';
+import { Translate } from '#app/I18N/index.js';
 
 interface StatusDotProps {
   overallStatus: OverallStatus;
@@ -93,7 +94,7 @@ const DisconnectWarning = ({ color, tooltipId }: { color: string; tooltipId: str
         'group-hover:opacity-100 group-focus-within:opacity-100',
       ].join(' ')}
     >
-      Cannot connect to server
+      <Translate>Cannot connect to server</Translate>
       <span
         className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-200"
         aria-hidden="true"

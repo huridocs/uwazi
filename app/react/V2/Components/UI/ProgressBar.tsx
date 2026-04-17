@@ -44,7 +44,10 @@ export const ProgressBar = ({
       aria-valuenow={Math.round(boundedProgress)}
       aria-valuetext={ariaValueText}
     >
-      <div className={`h-2.5 rounded-full ${getColor(color)}`} style={{ width: `${boundedProgress}%` }} />
+      <div
+        className={`h-2.5 rounded-full ${getColor(color)}`}
+        style={{ width: `${boundedProgress}%` }}
+      />
     </div>
   );
 };
