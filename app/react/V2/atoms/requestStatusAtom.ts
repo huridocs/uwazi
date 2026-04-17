@@ -1,5 +1,6 @@
 import { atom, useAtom } from 'jotai';
 import { getStore } from '#shared/atomStore/index.js';
+import { createUuid } from '#V2/utils/uuid.js';
 
 type NotificationType = 'success' | 'warning' | 'error' | 'info';
 
@@ -106,7 +107,7 @@ const useRequestStatus = () => {
     details?: string,
     timestamp?: Date
   ) => {
-    const id = crypto.randomUUID();
+    const id = createUuid();
     setState(prev => ({
       ...prev,
       notifications: [

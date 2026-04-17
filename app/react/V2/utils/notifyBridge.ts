@@ -1,5 +1,6 @@
 import { getStore } from '#shared/atomStore/index.js';
 import { requestStatusAtom, startLoading, endLoading } from '#V2/atoms/requestStatusAtom.js';
+import { createUuid } from '#V2/utils/uuid.js';
 
 type BridgeNotificationType = 'success' | 'warning' | 'danger' | 'error' | 'info';
 
@@ -13,7 +14,7 @@ const notify = (
   message?: string,
   details?: string
 ) => {
-  const id = crypto.randomUUID();
+  const id = createUuid();
   getStore().set(requestStatusAtom, prev => ({
     ...prev,
     notifications: [
