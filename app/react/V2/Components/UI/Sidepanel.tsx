@@ -187,8 +187,6 @@ const Sidepanel = ({
             id={panelId}
             tabIndex={-1}
             className="h-full"
-            role="dialog"
-            aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
             onKeyDown={handlePanelKeyDown}
           >
@@ -213,8 +211,6 @@ const Sidepanel = ({
         id={panelId}
         tabIndex={-1}
         className="h-full"
-        role="dialog"
-        aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
         onKeyDown={handlePanelKeyDown}
       >
