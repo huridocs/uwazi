@@ -155,7 +155,7 @@ class FilesService {
   async delete(files: BaseFile[]) {
     if (!files.length) return;
     const thumbnails = await this.deps.filesDS
-      .getThumbnails(files.filter(f => f instanceof ProcessedPDF))
+      .getThumbnails(files.filter(f => f instanceof ProcessedPDF).map(f => f.entity))
       .all();
 
     const allFilesToDelete = [...files, ...thumbnails];

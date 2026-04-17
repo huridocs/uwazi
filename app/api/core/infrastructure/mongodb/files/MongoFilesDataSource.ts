@@ -136,10 +136,11 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     );
   }
 
-  getThumbnails(files: ProcessedPDF[]): ResultSet<Thumbnail> {
+  getThumbnails(entitySharedIds: string[]): ResultSet<Thumbnail> {
     return new MongoResultSet<fileDBO, Thumbnail>(
       this.getCollection().find({
-        filename: { $in: files.map(f => `${f.id}.jpg`) },
+        entity: { $in: entitySharedIds },
+        type: 'thumbnail',
       }),
       dbo => this.toModel(dbo) as Thumbnail
     );

@@ -484,7 +484,7 @@ describe('MongoFilesDataSource', () => {
         (await ds.getById(f.idString('processed1'))).getDataOrThrow() as ProcessedPDF,
         (await ds.getById(f.idString('processed2'))).getDataOrThrow() as ProcessedPDF,
       ];
-      const thumbnails = await ds.getThumbnails(processed).all();
+      const thumbnails = await ds.getThumbnails(processed.map(p => p.entity)).all();
       expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
       expect(thumbnails[1]).toBeInstanceOf(Thumbnail);
     });
