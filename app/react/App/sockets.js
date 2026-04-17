@@ -4,6 +4,7 @@ import { t } from '#app/I18N/index.js';
 import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
 import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
 import { setConnected, endTask, notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import { store } from '../store.js';
 import { socket, reconnectSocket } from '../socket.js';
 
@@ -27,23 +28,27 @@ socket.on('disconnect', reason => {
   disconnectTimer = setTimeout(() => {
     wasDisconnectedByOutage = true;
     setConnected(false);
-    bridgeNotify(
-      t('System', 'Lost connection to the server. Your changes may be lost', null, false),
-      'warning'
-    );
+    const message = t('System', 'Lost connection to the server. Your changes may be lost', null, false);
+    bridgeNotify(message, 'warning');
+    store.dispatch(notificationActions.notify(message, 'warning'));
   }, 8000);
 });
 
 // socket.on('connect') fires on every namespace-level connection:
 // both automatic transport reconnects AND manual socket.connect() calls.
-socket.on('connect', () => {
+const onRecoveredConnection = () => {
   clearTimeout(disconnectTimer);
   setConnected(true);
   if (wasDisconnectedByOutage) {
     wasDisconnectedByOutage = false;
-    bridgeNotify(t('System', 'Connection to the server has been restored', null, false), 'success');
+    const message = t('System', 'Connected to server', null, false);
+    bridgeNotify(message, 'success');
+    store.dispatch(notificationActions.notify(message, 'success'));
   }
-});
+};
+
+socket.on('connect', onRecoveredConnection);
+socket.io.on('reconnect', onRecoveredConnection);
 
 socket.on('forceReconnect', () => {
   reconnectSocket();
@@ -123,15 +128,17 @@ socket.on('translationKeysChange', translationsEntries => {
 
 socket.on('translationsInstallDone', () => {
   endTask('language-install', 'completed');
+  store.dispatch(
+    notificationActions.notify(t('System', 'Languages installed successfully', null, false), 'success')
+  );
 });
 
 socket.on('translationsInstallError', errorMessage => {
   endTask('language-install', 'failed');
-  bridgeNotify(
-    t('System', 'An error has occurred while installing languages:', null, false),
-    'error',
-    errorMessage
-  );
+  const message = `${t('System', 'An error has occured while installing languages:', null, false)}
+${errorMessage}`;
+  bridgeNotify(t('System', 'An error has occurred while installing languages:', null, false), 'error');
+  store.dispatch(notificationActions.notify(message, 'danger'));
 });
 
 socket.on('translationsDelete', locale => {
@@ -143,15 +150,17 @@ socket.on('translationsDelete', locale => {
 
 socket.on('translationsDeleteDone', () => {
   endTask('language-uninstall', 'completed');
+  store.dispatch(
+    notificationActions.notify(t('System', 'Language uninstalled successfully', null, false), 'success')
+  );
 });
 
 socket.on('translationsDeleteError', errorMessage => {
   endTask('language-uninstall', 'failed');
-  bridgeNotify(
-    t('System', 'An error has occurred while uninstalling a language:', null, false),
-    'error',
-    errorMessage
-  );
+  const message = `${t('System', 'An error has occured while deleting a language:', null, false)}
+${errorMessage}`;
+  bridgeNotify(t('System', 'An error has occurred while uninstalling a language:', null, false), 'error');
+  store.dispatch(notificationActions.notify(message, 'danger'));
 });
 
 socket.on('documentProcessed', sharedId => {

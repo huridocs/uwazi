@@ -12,13 +12,6 @@ interface NotificationFlashProps {
 
 const NotificationFlash = ({ title, type, phase, color = 'black' }: NotificationFlashProps) => {
   const [isIn, setIsIn] = useState(false);
-  const typeLabel: Record<NotificationType, string> = {
-    success: 'Success',
-    warning: 'Warning',
-    error: 'Error',
-    info: 'Information',
-  };
-  const announcement = `${typeLabel[type]}: ${title}`;
 
   // After mount, trigger the enter transition on the next animation frame
   // so the browser renders the collapsed initial state first.
@@ -63,7 +56,7 @@ const NotificationFlash = ({ title, type, phase, color = 'black' }: Notification
           style={{ color }}
         >
           <span data-testid="notification-flash-title" className="max-w-[10rem] truncate block">
-            {announcement}
+            {title}
           </span>
         </span>
       </div>

@@ -1,14 +1,19 @@
-import { notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
+import uniqueID from '#shared/uniqueID.js';
+import * as types from './actionTypes.js';
 
-// Kept as a Redux thunk so all existing call sites (store.dispatch, this.props.notify)
-// continue to work without any changes.
-export function notify(message, type) {
-  return () => {
-    bridgeNotify(message, type);
-  };
+export function removeNotification(id) {
+  return { type: types.REMOVE_NOTIFICATION, id };
 }
 
-// No-op kept for backward compatibility with any imports of removeNotification
-export function removeNotification() {
-  return () => {};
+export function notify(message, type, delay = 1500) {
+  return dispatch => {
+    const id = uniqueID();
+    dispatch({ type: types.NOTIFY, notification: { message, type, id } });
+
+    if (delay !== false) {
+      setTimeout(() => dispatch(removeNotification(id)), delay);
+    }
+
+    return id;
+  };
 }
