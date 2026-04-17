@@ -2,7 +2,6 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/tenantContext.js';
@@ -16,6 +15,7 @@ import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
 import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -151,7 +151,7 @@ const expectImportState = (updatedImport: {
 };
 
 const fetchEntitiesByTemplate = async (
-  entitiesDS: MongoMultiLanguageEntityDataSource,
+  entitiesDS: MultiLanguageEntityDataSource,
   templateId: string
 ) => {
   const result = await entitiesDS.getEntitiesByTemplateId(templateId);

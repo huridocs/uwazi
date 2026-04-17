@@ -70,6 +70,7 @@ describe('S3FileStorage', () => {
       attachments: 'test-tenant/attachments',
       customUploads: 'test-tenant/customUploads',
       activityLogs: 'test-tenant/log',
+      domain: 'test-tenant',
     };
 
     testingTenants.mockCurrentTenant(tenant);

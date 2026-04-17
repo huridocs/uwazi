@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { getCurrentScope, captureException, close } from '@sentry/node-core/light';
+import { inspect } from 'util';
 import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -9,7 +10,10 @@ import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { RoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import {
+  DefaultDispatcher,
+  RoundRobinQueueAdapter,
+} from '#api/core/libs/queue/configuration/factories.js';
 import {
   QueueWorker,
   QueueWorkerErrorHandler,
@@ -22,7 +26,11 @@ import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
-import { inspect } from 'util';
+import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -48,17 +56,29 @@ function register<T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
   factory: (namespace: string) => Promise<T>
 ) {
-  this.register(
-    dispatchable,
-    async namespace =>
-      new Promise((resolve, reject) => {
-        tenants
-          .run(async () => {
-            resolve(await factory(namespace));
-          }, namespace)
-          .catch(reject);
-      })
-  );
+  this.register(dispatchable, async namespace => {
+    const deps = {
+      factories: {
+        transactionManager: TransactionManagerFactory.default,
+        jobsDispatcher: () => DefaultDispatcher(namespace, DependenciesContext.transactionManager),
+        eventEmitter: EventEmitterFactory.default,
+        idGenerator: IdGeneratorFactory.default,
+        logger: LoggerFactory.default,
+        elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
+        authorizedEntityESClient: () =>
+          ElasticSearchClientFactory.authorizedEntityClient(namespace, null),
+      },
+    };
+
+    let instance!: T;
+    await tenants.run(async () => {
+      instance = await DependenciesContext.run(deps, async () => factory(namespace));
+    }, namespace);
+
+    DependenciesContext.attachContext(instance, 'handleDispatch', deps);
+
+    return instance;
+  });
 }
 
 const captureError: QueueWorkerErrorHandler = (error, context) => {

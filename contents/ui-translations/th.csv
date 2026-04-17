@@ -104,6 +104,7 @@ Authentication code,รหัสผ่าน
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,สร้างขึ้นอัตโนมัติ
+Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
 Available default translation,Available default translation
@@ -119,8 +120,10 @@ Can edit,แก้ไขได้
 Can see,มองเห็นได้
 Can view,มองเห็นได้
 Cancel,ยกเลิก
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Canceling
 Canceling...,Canceling...
+Cancelled,Cancelled
 Cannot find extractor,Cannot find extractor
 Captcha,captcha
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
@@ -148,6 +151,7 @@ Click,Click
 Click here,คลิกที่นี่
 Click to fill,คลิกเพื่อใส่ค่า
 Close,ปิด
+Code,Code
 Collaborator,ผู้ประสานงาน
 Collaborators,Collaborators
 Collapse all,Collapse all
@@ -155,6 +159,7 @@ Collapse All,Collapse All
 Collection,คอลเล็คชั่น
 Collection Name,Collection Name
 Common sources,Common sources
+Completed,Completed
 Configuration,Configuration
 Configure filters,กำหนดค่าตัวกรอง
 Configure templates,Configure templates
@@ -212,6 +217,11 @@ Created relationship,Created relationship
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
 Custom CSS,CSS ที่กำหนดเอง
@@ -222,6 +232,7 @@ custom page error warning,"There is an unexpected error on this custom page, it 
 Custom Uploads,อัปโหลดแบบกำหนดค่าเอง
 Dark,Dark
 Dashboard,Dashboard
+Date,Date
 Date added,เพิ่ม ณ วันที่
 Date format,รูปแบบวันที่
 Date modified,แก้ไข ณ วันที่
@@ -275,6 +286,11 @@ Documentation,เอกสาร
 documents,เอกสาร
 Documents,เอกสาร
 documents.,เอกสาร.
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,ดาวน์โหลด
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
@@ -309,7 +325,9 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,รายการ
 entities,รายการ
 Entities across all languages,Entities across all languages
+Entities created,Entities created
 Entity,รายการ
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
@@ -330,12 +348,17 @@ Exporting entities to CSV,โหลดรายการเป็น CSV
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed,Failed
+Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -345,6 +368,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,ไฟล์
 File deleted,File deleted
+File extraction completed successfully.,File extraction completed successfully.
 File name,File name
 File updated,File updated
 Files,Files
@@ -410,7 +434,12 @@ Import,นำเข้า
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,นำเข้า CSV
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
 Import instructions,คำแนะนำการนำเข้าข้อมูล
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,การนำเข้าข้อมูลที่กำลังดำเนินอยู่
@@ -560,6 +589,7 @@ No common filters,ไม่มีฟิลเตอร์สามัญ
 No Connections,ไม่มีการเชื่อมต่อ
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
@@ -659,6 +689,9 @@ Please contact an admin for details.,กรุณาติดต่อผู้�
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,กรุณาพิมพ์ตัวอักษรและตัวเลขจากภาพเพื่อเริ่มการส่งออก
 Precision,ความแม่นยำ
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
@@ -674,7 +707,9 @@ Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
 Processed,Processed
+Processed rows,Processed rows
 Processing,กำลังประมวลผล
+Progress,Progress
 Properties,คุณสมบัติ
 Properties from other templates in the collection using the same label,คุณสมบัติจากเทมเพลตอื่นๆในคอลเลกชันที่อยู่ในประเภทเดียวกัน
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -709,6 +744,7 @@ Publish,เผยแพร่
 Published,ตีพิมพ์แล้ว
 QR Code,QR Code
 Query,สืบค้น
+Queued,Queued
 RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Receiving email
@@ -741,6 +777,8 @@ Request id #,ขอรหัส #
 Request token,Request token
 Required,Required
 Required property,คุณสมบัติที่จำเป็น
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
@@ -748,12 +786,16 @@ Reset language,Reset language
 Reset Password,สร้าง รหัสผ่าน ใหม่
 Reset passwords,Reset passwords
 Restricted,ถูก จำกัด
+Retryable,Retryable
+Retrying,Retrying
 Return to login,กลับไปที่การเข้าสู่ระบบ
 Review,Review
 Reviewed,ตรวจสอบแล้ว
 Role,บทบาท
 Route,เส้นทาง
 Row,Row
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,ตัวอย่าง
 Satellite,Satellite
 Save,บันทึก
@@ -763,6 +805,8 @@ Save password,บันทึกรหัสผ่าน
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,ค้นหา
 Search item,ค้นหารายการ
 Search not found,ไม่พบการค้นหา
@@ -843,6 +887,7 @@ Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
+Stage,Stage
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -910,6 +955,7 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
+Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
@@ -927,6 +973,7 @@ This file could not be opened. It may be corrupted or not a valid PDF.,This file
 This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
 This property can not be deleted,This property can not be deleted
@@ -956,6 +1003,7 @@ total entities,total entities
 Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+Total imports,Total imports
 total users,total users
 Train,Train
 Train model,Train model
@@ -1032,6 +1080,8 @@ Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 Uwazi UI,uwazi ui
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values

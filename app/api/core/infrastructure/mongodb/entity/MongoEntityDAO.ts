@@ -1,14 +1,14 @@
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
-import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
 import { fileDBO } from '../files/schemas/filesTypes.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetWithFilesMatch = {
   language?: LanguageISO6391;
-  sharedId?: string;
+  sharedId?: string | { $in: string[] };
   published?: boolean;
 };
 
@@ -21,7 +21,7 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
 
   constructor(
     db: Db,
-    transactionManager: MongoTransactionManager,
+    transactionManager: TransactionManager,
     user: User,
     options?: MongoDSOptions
   ) {
@@ -81,10 +81,19 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
           },
         },
       },
+
       {
         $unset: 'files',
       },
     ]);
+  }
+
+  async getEntityIdsBySharedId(
+    sharedIds: string[]
+  ): Promise<{ _id: ObjectId; sharedId: string }[]> {
+    return this.getCollection()
+      .find({ sharedId: { $in: sharedIds } }, { projection: { _id: 1, sharedId: 1 } })
+      .toArray();
   }
 }
 

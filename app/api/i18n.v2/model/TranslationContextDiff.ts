@@ -1,4 +1,4 @@
-import { Translation } from './Translation';
+import { Translation } from './Translation.js';
 
 /**
  * Represents the differences between two states of a TranslationContext.

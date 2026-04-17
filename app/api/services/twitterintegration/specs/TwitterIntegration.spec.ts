@@ -50,6 +50,7 @@ describe('TwitterIntegration', () => {
       dbName: tenantName,
       indexName: tenantName,
       ...folders,
+      domain: 'test-tenant',
     };
 
     tenants.tenants = { tenant_twitter_integration: tenant1 };

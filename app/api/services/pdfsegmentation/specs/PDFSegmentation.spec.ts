@@ -55,6 +55,7 @@ describe('PDFSegmentation', () => {
     dbName: 'tenantOne',
     indexName: 'tenantOne',
     ...folders,
+    domain: 'test-tenant-1',
   };
 
   const tenantTwo = {
@@ -62,6 +63,7 @@ describe('PDFSegmentation', () => {
     dbName: 'tenantTwo',
     indexName: 'tenantTwo',
     ...folders,
+    domain: 'test-tenant-2',
   };
 
   let dbOne: Db;

@@ -3,8 +3,10 @@ import { userSchema } from '#shared/types/userSchema.js';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth/index.js';
 import users from './users.js';
 import { PUBLIC_USER_ID } from './publicUser.js';
+import { tenants } from '#api/tenants/index.js';
 
-const getDomain = req => `${req.protocol}://${req.get('host')}`;
+const getDomain = req => `${req.protocol}://${tenants.current().domain}`;
+
 export default app => {
   app.post(
     '/api/users',

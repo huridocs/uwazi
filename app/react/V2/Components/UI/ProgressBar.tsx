@@ -48,3 +48,4 @@ export const ProgressBar = ({
     </div>
   );
 };
+export type { ProgressBarProps };

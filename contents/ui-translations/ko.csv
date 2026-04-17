@@ -104,6 +104,7 @@ Authentication code,인증 코드
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,자동 생성 완료
+Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,자동 생성 목차
 Automatically generated,자동 생성됨
 Available default translation,Available default translation
@@ -119,8 +120,10 @@ Can edit,편집 가능
 Can see,열람 가능
 Can view,열람 가능
 Cancel,취소
+cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
 Canceling,Canceling
 Canceling...,Canceling...
+Cancelled,Cancelled
 Cannot find extractor,Cannot find extractor
 Captcha,보안 문자
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
@@ -148,6 +151,7 @@ Click,Click
 Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
 Close,닫기
+Code,Code
 Collaborator,협업자
 Collaborators,Collaborators
 Collapse all,Collapse all
@@ -155,6 +159,7 @@ Collapse All,Collapse All
 Collection,컬렉션
 Collection Name,Collection Name
 Common sources,Common sources
+Completed,Completed
 Configuration,Configuration
 Configure filters,필터 구성
 Configure templates,Configure templates
@@ -212,6 +217,11 @@ Created relationship,Created relationship
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
+Creating entities,Creating entities
+Creating relationships,Creating relationships
+Creating thesauri,Creating thesauri
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
@@ -222,6 +232,7 @@ custom page error warning,"There is an unexpected error on this custom page, it 
 Custom Uploads,사용자 맞춤 업로드
 Dark,Dark
 Dashboard,Dashboard
+Date,Date
 Date added,추가한 날짜
 Date format,날짜 형식
 Date modified,수정한 날짜
@@ -275,6 +286,11 @@ Documentation,기록
 documents,문서
 Documents,문서
 documents.,문서
+Done creating entities,Done creating entities
+Done creating relationships,Done creating relationships
+Done creating thesauri,Done creating thesauri
+Done extracting files,Done extracting files
+Done scanning,Done scanning
 Download,다운로드
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,이 창에 파일을 드래그 앤 드롭해 업로드합니다.
@@ -309,7 +325,9 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,엔티티
 entities,엔티티
 Entities across all languages,Entities across all languages
+Entities created,Entities created
 Entity,엔티티
+Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
@@ -330,12 +348,17 @@ Exporting entities to CSV,엔티티를 CSV 로 추출
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extracting files,Extracting files
+Extracting files from uploaded package.,Extracting files from uploaded package.
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed,Failed
+Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
+Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -345,6 +368,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,선택 필터
 File,파일
 File deleted,File deleted
+File extraction completed successfully.,File extraction completed successfully.
 File name,File name
 File updated,File updated
 Files,Files
@@ -410,7 +434,12 @@ Import,업로드
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV 업로드
+Import failed. Review details below.,Import failed. Review details below.
+Import finished successfully.,Import finished successfully.
 Import instructions,업로드 가이드라인
+Import is currently processing rows.,Import is currently processing rows.
+Import is retrying after an error.,Import is retrying after an error.
+Import was cancelled.,Import was cancelled.
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,데이터 업로드 중
@@ -560,6 +589,7 @@ No common filters,공통 필터 없음
 No Connections,커넥션 없음
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+No CSVs yet,No CSVs yet
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
@@ -659,6 +689,9 @@ Please contact an admin for details.,자세한 내용은 관리자에게 문의�
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,이미지에 있는 문자와 숫자를 입력해 추출을 시작하십시오.
 Precision,정확도
+Preflight scan completed.,Preflight scan completed.
+Preparing required relationships.,Preparing required relationships.
+Preparing required thesauri values.,Preparing required thesauri values.
 Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
@@ -674,7 +707,9 @@ Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
 Processed,Processed
+Processed rows,Processed rows
 Processing,처리 중
+Progress,Progress
 Properties,속성
 Properties from other templates in the collection using the same label,이 컬렉션 내 다른 템플릿의 속성이 동일한 라벨을 사용하고 있습니다.
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -709,6 +744,7 @@ Publish,게시
 Published,공개 게시물
 QR Code,QR Code
 Query,검사
+Queued,Queued
 RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,수신 이메일 주소
@@ -741,6 +777,8 @@ Request id #,아이디 요청 #
 Request token,Request token
 Required,Required
 Required property,필수 속성
+Required relationships were prepared.,Required relationships were prepared.
+Required thesauri values were prepared.,Required thesauri values were prepared.
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
 Reset default translation,Reset default translation
@@ -748,12 +786,16 @@ Reset language,Reset language
 Reset Password,암호 재설정
 Reset passwords,Reset passwords
 Restricted,비공개 게시물
+Retryable,Retryable
+Retrying,Retrying
 Return to login,로그인으로 돌아가기
 Review,Review
 Reviewed,검토 완료
 Role,권한
 Route,루트
 Row,Row
+Rows failed,Rows failed
+Rows processed,Rows processed
 Sample,샘플
 Satellite,Satellite
 Save,저장
@@ -763,6 +805,8 @@ Save password,암호 저장
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
 Saving...,Saving...
+Scanning,Scanning
+Scanning rows before import.,Scanning rows before import.
 Search,검색
 Search item,아이템 검색
 Search not found,검색 결과 없음
@@ -843,6 +887,7 @@ Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
+Stage,Stage
 State,State
 Statistics,Statistics
 Stats & Filters,Stats & Filters
@@ -910,6 +955,7 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
+Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
@@ -927,6 +973,7 @@ This file could not be opened. It may be corrupted or not a valid PDF.,This file
 This file is no longer available.,This file is no longer available.
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.
 This property can not be deleted,This property can not be deleted
@@ -956,6 +1003,7 @@ total entities,total entities
 Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+Total imports,Total imports
 total users,total users
 Train,Train
 Train model,Train model
@@ -1032,6 +1080,8 @@ Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi 제작 및 개발:
 Uwazi UI,Uwazi UI
+Validating,Validating
+Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values

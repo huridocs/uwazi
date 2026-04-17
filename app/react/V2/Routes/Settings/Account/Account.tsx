@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
@@ -190,7 +189,7 @@ const Account = () => {
             <a
               href="/logout"
               data-testid="account-logout"
-              className="text-error-900 bg-white enabled:hover:bg-error-50 text-error-900 border-error-900 disabled:text-error-400 disabled:border-error-400 enabled:hover:border-error-950 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+              className="bg-white enabled:hover:bg-error-50 text-error-900 border-error-900 disabled:text-error-400 disabled:border-error-400 enabled:hover:border-error-950 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-hidden focus:ring-4 focus:ring-indigo-200"
             >
               <Translate>Logout</Translate>

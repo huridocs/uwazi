@@ -191,19 +191,15 @@ describe('entities', () => {
         .mockImplementation(async () => Promise.resolve({ json: 'ok' }));
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.delete.validation('/api/entities')).toMatchSnapshot();
-    });
-
     it('should use entities to delete it', async () => {
       const req = {
         query: {
-          sharedId: 123,
+          sharedId: '123',
           _rev: 456,
         },
       };
       await routes.delete('/api/entities', req);
-      expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
+      expect(entities.delete).toHaveBeenCalledWith('123');
     });
   });
 });

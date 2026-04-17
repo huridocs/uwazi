@@ -1,5 +1,22 @@
+import { elasticLanguageCodes } from '#shared/language/index.js';
 import { IndexDefinition } from '../Types.js';
 import { createEntityMetadataMapping } from './EntityMetadataMapping.js';
+import { buildFullTextLanguageAnalyzers } from './FullTextLanguageAnalyzers.js';
+import { buildFullTextLanguageFilters } from './FullTextLanguageFilters.js';
+
+const buildFullTextMappings = () =>
+  Object.fromEntries(
+    elasticLanguageCodes.map(lang => [
+      `fullText_${lang}`,
+      {
+        type: 'text',
+        analyzer: `fulltext_${lang}`,
+        search_analyzer: `stop_${lang}`,
+        search_quote_analyzer: `fulltext_${lang}`,
+        term_vector: 'with_positions_offsets',
+      },
+    ])
+  );
 
 const EntityIndexMappingDefinition: IndexDefinition = {
   alias: 'entities',
@@ -8,6 +25,8 @@ const EntityIndexMappingDefinition: IndexDefinition = {
   settings: {
     number_of_shards: 6,
     number_of_replicas: 1,
+
+    'index.mapping.total_fields.limit': 5000,
 
     analysis: {
       normalizer: {
@@ -25,6 +44,8 @@ const EntityIndexMappingDefinition: IndexDefinition = {
         },
       },
 
+      filter: buildFullTextLanguageFilters(),
+
       analyzer: {
         other: {
           type: 'custom',
@@ -38,6 +59,8 @@ const EntityIndexMappingDefinition: IndexDefinition = {
           tokenizer: 'title_sayt',
           filter: ['lowercase', 'asciifolding'],
         },
+
+        ...buildFullTextLanguageAnalyzers(),
       },
 
       tokenizer: {
@@ -54,21 +77,39 @@ const EntityIndexMappingDefinition: IndexDefinition = {
   mappings: {
     dynamic: false,
     _routing: { required: true },
-
     properties: {
+      // Used on all ES documents on this Index
       tenantId: { type: 'keyword' },
+      // ==================================
 
+      // Used on all fullText ES documents
+      filename: { type: 'keyword' },
+      fileId: { type: 'keyword' },
       fullText: {
         type: 'join',
         relations: { entity: 'fullText' },
       },
+      fullText_other: {
+        type: 'text',
+        analyzer: 'other',
+        term_vector: 'with_positions_offsets',
+      },
+      ...buildFullTextMappings(),
+      // ==============================
 
+      // Used on all ES Entity documents
       template: { type: 'keyword' },
       language: { type: 'keyword' },
+      user: { type: 'keyword' },
       sharedId: { type: 'keyword' },
+      permissionRefIds: { type: 'keyword' },
 
-      documents: { type: 'object', enabled: false },
-      attachments: { type: 'object', enabled: false },
+      published: { type: 'boolean' },
+
+      creationDate: { type: 'date', format: 'epoch_millis' },
+      editDate: { type: 'date', format: 'epoch_millis' },
+
+      rawEntity: { type: 'object', enabled: false },
 
       title: {
         type: 'text',
@@ -83,31 +124,13 @@ const EntityIndexMappingDefinition: IndexDefinition = {
         },
       },
 
-      creationDate: { type: 'date', format: 'epoch_millis' },
-      editDate: { type: 'date', format: 'epoch_millis' },
-
-      user: { type: 'keyword' },
-      published: { type: 'keyword' },
-
-      permissionRefIds: { type: 'keyword' },
-
-      permissions: {
-        type: 'nested',
-        properties: {
-          refId: { type: 'keyword' },
-          level: { type: 'keyword' },
-          type: { type: 'keyword' },
-        },
-      },
-
-      type: { type: 'keyword' },
-      generatedToc: { type: 'boolean' },
-
       metadata: {
         properties: { ...createEntityMetadataMapping() },
       },
 
-      rawEntity: { type: 'object', enabled: false },
+      created_at: { type: 'date' },
+      updated_at: { type: 'date' },
+      // ===============================
     },
   },
 };

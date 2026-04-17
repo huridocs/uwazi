@@ -1,5 +1,5 @@
 import { Db, MongoServerError } from 'mongodb';
-import { MongoSlotsDataSource, SlotDocument } from './MongoSlotsDataSource.js';
+import { MongoSlotsDAO, SlotDocument } from './MongoSlotsDAO.js';
 import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
 
 type Deps = {
@@ -7,13 +7,14 @@ type Deps = {
 };
 
 class MongoSlotsBootstrapper {
-  private static collectionName = MongoSlotsDataSource.collectionName;
+  private static collectionName = MongoSlotsDAO.collectionName;
 
   constructor(private deps: Deps) {}
 
-  async executeAll() {
+  async execute() {
     await this.createSlots();
     await this.createIndexes();
+    await this.createSentinel();
   }
 
   private get collection() {
@@ -24,9 +25,10 @@ class MongoSlotsBootstrapper {
     try {
       const slotsToCreate = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
         Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-          type: SlotBootstrapDefinitions.toPropertyType(slotType),
+          type: slotType,
           slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
           assignedTo: null,
+          rand: Math.random(),
         }))
       ) as Omit<SlotDocument, '_id'>[];
 
@@ -50,10 +52,27 @@ class MongoSlotsBootstrapper {
   }
 
   async createIndexes() {
+    // For unique constraint on slotName
     await this.collection.createIndex({ slotName: 1 }, { unique: true });
+
+    // For ensuring a slot is only assigned to one property at a time
     await this.collection.createIndex(
       { assignedTo: 1 },
       { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
+    );
+
+    // For speeding query slot retrieval
+    await this.collection.createIndex(
+      { type: 1, rand: 1 },
+      { partialFilterExpression: { assignedTo: null } }
+    );
+  }
+
+  async createSentinel() {
+    await this.collection.updateOne(
+      { _id: MongoSlotsDAO.sentinelId as any },
+      { $setOnInsert: { version: 0 } },
+      { upsert: true }
     );
   }
 }

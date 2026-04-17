@@ -1,5 +1,5 @@
-import { Translation } from '../Translation';
-import { TranslationContextModel } from '../TranslationContextModel';
+import { Translation } from '../Translation.js';
+import { TranslationContextModel } from '../TranslationContextModel.js';
 
 describe('TranslationContextModel', () => {
   type ContextType = 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';

@@ -12,7 +12,9 @@ export class LoggerFactory {
     }
 
     if (process.env.NODE_ENV === 'test') {
-      return this.fake();
+      writer = () => {
+        // do nothing
+      };
     }
 
     return new StandardLogger(writer, getTenant());
@@ -32,6 +34,7 @@ export class LoggerFactory {
       customUploads: 'N/a',
       indexName: 'N/a',
       uploadedDocuments: 'N/a',
+      domain: 'N/a',
     });
   }
 

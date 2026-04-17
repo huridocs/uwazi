@@ -1,7 +1,8 @@
+/* eslint-disable max-statements */
 import { Client as ESClient } from '@elastic/elasticsearch';
-import { TenantAwareESClient } from '../TenantAwareESClient';
+import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { IndexNameResolver } from '../IndexNameResolver';
+import { IndexNameResolver } from '../IndexNameResolver.js';
 import { config } from '#api/config.js';
 
 const mockResolver = (indexName: string) =>
@@ -394,6 +395,105 @@ describe('TenantAwareESClient', () => {
         (hit: any) => hit._source.tenantId === 'tenant-a'
       );
       expect(allHaveTenantA).toBe(true);
+    });
+
+    it('forwards routing to bulk when provided', async () => {
+      const { sut } = createSut();
+      const bulkSpy = jest.spyOn(esClient, 'bulk');
+
+      await sut.bulk({
+        alias: 'products',
+        routing: 'tenant-a',
+        operations: [{ id: 'bulk-routing-1', document: { name: 'Routing Product' } }],
+      });
+
+      expect(bulkSpy).toHaveBeenCalledWith(expect.objectContaining({ routing: 'tenant-a' }));
+      bulkSpy.mockRestore();
+    });
+  });
+
+  describe('routing forwarding on single-document writes', () => {
+    it('forwards routing to index when provided', async () => {
+      const { sut } = createSut();
+      const indexSpy = jest.spyOn(esClient, 'index');
+
+      await sut.index({
+        alias: 'products',
+        id: 'idx-routing-test',
+        document: { name: 'Routing Index Product' },
+        routing: 'tenant-a',
+      });
+
+      expect(indexSpy).toHaveBeenCalledWith(expect.objectContaining({ routing: 'tenant-a' }));
+      indexSpy.mockRestore();
+    });
+
+    it('forwards routing to delete when provided', async () => {
+      const { sut } = createSut();
+      const id = 'del-routing-test';
+
+      await sut.index({ alias: 'products', id, document: { name: 'Routing Delete Product' } });
+      await esClient.indices.refresh({ index: testIndexName });
+
+      const deleteSpy = jest.spyOn(esClient, 'delete');
+
+      await sut.delete({ alias: 'products', id, routing: 'tenant-a' });
+
+      expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ routing: 'tenant-a' }));
+      deleteSpy.mockRestore();
+    });
+  });
+
+  describe('deleteByQuery()', () => {
+    it('deletes only bound-tenant documents and forwards routing', async () => {
+      const { sut } = createSut();
+      const marker = `dbq-routing-${Date.now()}-${Math.random()}`;
+
+      await esClient.index({
+        index: testIndexName,
+        id: 'tenant-a__dbq-routing-a',
+        routing: 'tenant-a',
+        body: { tenantId: 'tenant-a', name: marker },
+      });
+      await esClient.index({
+        index: testIndexName,
+        id: 'tenant-b__dbq-routing-b',
+        routing: 'tenant-b',
+        body: { tenantId: 'tenant-b', name: marker },
+      });
+      await esClient.indices.refresh({ index: testIndexName });
+
+      const deleteByQuerySpy = jest.spyOn(esClient, 'deleteByQuery');
+
+      await sut.deleteByQuery({
+        alias: 'products',
+        query: { ids: { values: ['tenant-a__dbq-routing-a', 'tenant-b__dbq-routing-b'] } },
+        routing: 'tenant-a',
+      });
+
+      expect(deleteByQuerySpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          index: testIndexName,
+          routing: 'tenant-a',
+        })
+      );
+
+      await esClient.indices.refresh({ index: testIndexName });
+
+      await expect(
+        esClient.get({
+          index: testIndexName,
+          id: 'tenant-a__dbq-routing-a',
+        })
+      ).rejects.toMatchObject({ statusCode: 404 });
+
+      const tenantBDoc: any = await esClient.get({
+        index: testIndexName,
+        id: 'tenant-b__dbq-routing-b',
+      });
+      expect(tenantBDoc.body._id).toBe('tenant-b__dbq-routing-b');
+
+      deleteByQuerySpy.mockRestore();
     });
   });
 });

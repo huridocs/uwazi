@@ -83,6 +83,12 @@ import { PageView } from './Pages/PageView.js';
 import { ResetPassword } from './Users/ResetPassword.js';
 import { UnlockAccount } from './Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
+import {
+  CSVList,
+  csvListLoader,
+  UploadStatus,
+  uploadStatusLoader,
+} from './V2/Routes/Settings/CSVUpload/index.js';
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
@@ -382,6 +388,14 @@ const getRoutesLayout = (
           settings?.features?.newRelationships ? <NewRelMigrationDashboard /> : <GeneralError />
         }
       />
+      <Route path="csv">
+        <Route index element={adminsOnlyRoute(<CSVList />)} loader={csvListLoader(headers)} />
+        <Route
+          path=":entry"
+          element={adminsOnlyRoute(<UploadStatus />)}
+          loader={uploadStatusLoader(headers)}
+        />
+      </Route>
     </Route>
   </Route>
 );

@@ -1,15 +1,14 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { ObjectId } from 'mongodb';
 import { Template } from '#api/core/domain/template/Template.js';
 import { RelationshipPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -375,7 +374,7 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
 
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
@@ -1436,7 +1435,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
   it('should throw when validateRequired is true and a required relationship property has no value', async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
     const sut = new RelationshipPropertyAssignmentCreatorService(

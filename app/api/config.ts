@@ -1,17 +1,18 @@
-import uniqueID from '#shared/uniqueID.js';
 import dotenv from 'dotenv';
-import { Tenant } from './tenants/tenantContext.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import { readFileSync } from 'fs';
+import { hostname } from 'os';
+import { Tenant } from './tenants/tenantContext.js';
+import uniqueID from '#shared/uniqueID.js';
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageJson = JSON.parse(readFileSync(`${__dirname}/../../package.json`, 'utf-8'));
-const version = packageJson.version;
+const { version } = packageJson;
 
 const {
   ACTIVITY_LOGS_FOLDER,
@@ -111,6 +112,7 @@ export const config = {
     attachments: defaultTenantPaths.attachments,
     customUploads: defaultTenantPaths.customUploads,
     activityLogs: defaultTenantPaths.activityLogs,
+    domain: process.env.DEFAULT_TENANT_DOMAIN || `${hostname()}:${process.env.PORT || 3000}`,
     featureFlags: {
       s3Storage: defaultTenantS3Storage,
       esReplicas: 0,
@@ -123,6 +125,9 @@ export const config = {
       v2UpdateThesaurus: false,
       v1CSVImportCompat: false,
       v2GetEntity: false,
+      v2MultipleUpdateEntity: false,
+      v2ElasticSearch: false,
+      v2DeleteEntity: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

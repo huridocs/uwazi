@@ -10,11 +10,10 @@ import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import { Entity } from '#V2/domain/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
-import { ConfirmationModal } from '#V2/Components/UI/index.js';
+import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { CreateReference } from './CreateReference.js';
 import { Reference } from './Reference.js';
-import { BlankState } from '../BlankState.js';
 import { useReferences, useReferencesActions } from './referencesAtom.js';
 import { pdfController } from '../atoms.js';
 

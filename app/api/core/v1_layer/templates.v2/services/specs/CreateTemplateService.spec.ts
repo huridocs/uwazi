@@ -12,6 +12,8 @@ import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { CreateTemplateService } from '../CreateTemplateService.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -44,7 +46,11 @@ afterAll(async () => {
 function setUpService() {
   const connection = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
+  const templatesDS = new MongoTemplatesDataSource({
+    db: connection,
+    transactionManager,
+    slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+  });
   const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
   const entityDS = new MongoEntitiesDataSource(

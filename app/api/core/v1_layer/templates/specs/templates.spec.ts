@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 

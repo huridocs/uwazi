@@ -4,6 +4,7 @@ import { BulkWriteStream } from './BulkWriteStream.js';
 import { MongoTransactionManager } from './MongoTransactionManager.js';
 import { SessionScopedCollection } from './SessionScopedCollection.js';
 import { SyncedCollection } from './SyncedCollection.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;
@@ -20,9 +21,13 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
 
   private useSyncedCollection: boolean;
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager | TransactionManager,
+    options: MongoDSOptions = {}
+  ) {
     this.db = db;
-    this.transactionManager = transactionManager;
+    this.transactionManager = transactionManager as MongoTransactionManager;
     this.useSyncedCollection =
       options.useSyncedCollection !== undefined ? options.useSyncedCollection : true;
     this.documentTracker = new DocumentTracker();

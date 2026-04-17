@@ -7,6 +7,7 @@ import {
   type IndexOptions,
   type DeleteOptions,
   type BulkOptions,
+  type DeleteByQueryOptions,
   BulkIndexingError,
 } from './Types.js';
 import { IndexNameResolver } from './IndexNameResolver.js';
@@ -26,7 +27,14 @@ type Deps = {
 };
 
 class TenantAwareESClient {
-  private readonly tenantId: string;
+  readonly tenantId: string;
+
+  private indexScript = `
+    def savedCreatedAt = ctx._source.containsKey('created_at') ? ctx._source.created_at : params.now;
+    ctx._source = params.doc;
+    ctx._source.created_at = savedCreatedAt;
+    ctx._source.updated_at = params.now;
+  `;
 
   constructor(private deps: Deps) {
     const parsed = Schema.parse({ tenantId: this.deps.tenantId });
@@ -85,34 +93,62 @@ class TenantAwareESClient {
     const id = this.buildDocumentId(options.id);
     const document = this.stampTenantId(options.document);
 
-    await this.deps.client.index({ index, id, body: document });
+    await this.deps.client.index({ index, id, body: document, routing: options.routing });
   }
 
   async delete(options: DeleteOptions): Promise<void> {
     const index = await this.deps.resolver.resolve(options.alias, this.tenantId);
     const id = this.buildDocumentId(options.id);
 
-    await this.deps.client.delete({ index, id });
+    await this.deps.client.delete({ index, id, routing: options.routing });
   }
 
   async bulk(options: BulkOptions): Promise<void> {
-    const index = await this.deps.resolver.resolve(options.alias, this.tenantId);
+    const _index = await this.deps.resolver.resolve(options.alias, this.tenantId);
 
+    const now = new Date().toISOString();
     const body = options.operations.flatMap(op => [
-      { index: { _index: index, _id: this.buildDocumentId(op.id) } },
-      this.stampTenantId(op.document),
+      { update: { _index, _id: this.buildDocumentId(op.id) } },
+      {
+        script: {
+          source: this.indexScript,
+          lang: 'painless',
+          params: {
+            doc: this.stampTenantId(op.document),
+            now,
+          },
+        },
+        scripted_upsert: true,
+        upsert: {},
+      },
     ]);
 
-    const response = await this.deps.client.bulk({ body });
+    const response = await this.deps.client.bulk({
+      body,
+      routing: options.routing,
+      refresh: options.refresh,
+    });
 
     if (response.body.errors) {
       // Todo: Inject logger here.
       console.log('Bulk indexing errors', {
-        failedItems: response.body.items.filter((item: any) => item.index?.error),
+        failedItems: response.body.items.filter((item: any) => item.update?.error),
       });
 
       throw new BulkIndexingError();
     }
+  }
+
+  async deleteByQuery(options: DeleteByQueryOptions): Promise<void> {
+    const index = await this.deps.resolver.resolve(options.alias, this.tenantId);
+    const guardedQuery = this.applyTenantGuard(options.query);
+
+    await this.deps.client.deleteByQuery({
+      index,
+      body: { query: guardedQuery },
+      routing: options.routing,
+      refresh: options.refresh,
+    });
   }
 }
 
