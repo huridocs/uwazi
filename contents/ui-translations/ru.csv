@@ -79,6 +79,8 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 Amount,Amount
+An error has occured while deleting a language:,An error has occured while deleting a language:
+An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error has occurred while installing languages:,An error has occurred while installing languages:
@@ -176,7 +178,7 @@ Connect to a paragraph,Подключиться к абзацу
 Connect to an entity,Connect to an entity
 Connect to document,Connect to document
 Connect to paragraph,Connect to paragraph
-Connection to the server has been restored,Connection to the server has been restored
+Connected to server,Connected to server
 Connection type,Тип связи
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,Форма обратной связи
@@ -486,9 +488,11 @@ Language,Язык
 Language Code,Language Code
 Language deleted,Язык удален
 Language reset success,Language reset success
+Language uninstalled successfully,Language uninstalled successfully
 Language(s),Language(s)
 Language:,Language:
 Languages,Языки
+Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Широта
 Learn more,Узнать больше
