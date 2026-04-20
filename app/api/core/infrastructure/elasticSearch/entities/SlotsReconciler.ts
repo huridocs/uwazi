@@ -14,7 +14,7 @@ class SlotsReconciler {
   async execute(): Promise<void> {
     const snapshotVersion = await this.deps.slotsDAO.getSentinelVersion();
 
-    const allProperties = await this.deps.templatesDAO.getAllProperties();
+    const allProperties = await this.deps.templatesDAO.getAllFilterableProperties();
 
     const desired = new Map<string, PropertyDescriptor>();
     allProperties.forEach(({ name, type, inheritedType }) =>
@@ -22,16 +22,16 @@ class SlotsReconciler {
     );
 
     const assignedSlots = await this.deps.slotsDAO.getSlotMap();
+    const assignedPropertyNames = new Set([...assignedSlots.values()].map(slot => slot.assignedTo));
 
     await ArrayUtils.parallelFor(
       [...desired.entries()],
       async ([propertyName, { type, inheritedType }]) =>
-        assignedSlots.has(propertyName) ||
         this.deps.slotsDAO.assignSlot({ propertyName, propertyType: type, inheritedType })
     );
 
     await ArrayUtils.parallelFor(
-      [...assignedSlots.keys()],
+      [...assignedPropertyNames],
       async name => !desired.has(name) && this.deps.slotsDAO.unassignSlot(name)
     );
 

@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ProcessedPDFDBO } from '../../mongodb/files/schemas/filesTypes.js';
 import { FullTextElasticDocument } from './FullTextElasticDocument.js';
@@ -8,7 +7,7 @@ type MappedDocument = { id: string; document: FullTextElasticDocument };
 class FullTextElasticDocumentMapper {
   static toDocument(
     file: ProcessedPDFDBO,
-    entityId: ObjectId,
+    sharedId: string,
     tenantId: string
   ): FullTextElasticDocument | null {
     const pages = file.fullText;
@@ -29,19 +28,19 @@ class FullTextElasticDocumentMapper {
       filename: file.filename,
       fullText: {
         name: 'fullText',
-        parent: `${tenantId}__${entityId.toString()}`,
+        parent: `${tenantId}__${sharedId}`,
       },
     } as FullTextElasticDocument;
   }
 
   static toDocuments(
-    pairs: { file: ProcessedPDFDBO; entityId: ObjectId }[],
+    pairs: { file: ProcessedPDFDBO; sharedId: string }[],
     tenantId: string
   ): MappedDocument[] {
-    return pairs.flatMap(({ file, entityId }) => {
-      const document = this.toDocument(file, entityId, tenantId);
+    return pairs.flatMap(({ file, sharedId }) => {
+      const document = this.toDocument(file, sharedId, tenantId);
       if (!document) return [];
-      return [{ id: `${entityId.toString()}_${file._id.toString()}`, document }];
+      return [{ id: `${sharedId}_${file._id.toString()}`, document }];
     });
   }
 }

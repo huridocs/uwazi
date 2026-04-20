@@ -149,4 +149,26 @@ describe('SlotTypeRegistry', () => {
       });
     });
   });
+
+  describe('isTranslatable()', () => {
+    it.each(['txt', 'select', 'relationship', 'relationship_txt', 'relationship_select'] as const)(
+      'returns true for %s',
+      slotType => {
+        expect(SlotTypeRegistry.isTranslatable(slotType)).toBe(true);
+      }
+    );
+
+    it.each([
+      'date',
+      'num',
+      'range',
+      'geolocation',
+      'relationship_date',
+      'relationship_num',
+      'relationship_range',
+      'relationship_geolocation',
+    ] as const)('returns false for %s', slotType => {
+      expect(SlotTypeRegistry.isTranslatable(slotType)).toBe(false);
+    });
+  });
 });

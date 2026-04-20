@@ -4,6 +4,7 @@ import { tenants } from '#api/tenants/index.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 export class MongoSlotsDAOFactory {
   static default(transactionManager: MongoTransactionManager): MongoSlotsDAO {
@@ -26,6 +27,7 @@ export class MongoSlotsDAOFactory {
       db,
       transactionManager,
       tenantName: tenant.name,
+      settingsDS: SettingsDataSourceFactory.cached(transactionManager),
     });
 
     return slotsDAO;

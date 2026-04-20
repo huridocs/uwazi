@@ -1,18 +1,23 @@
-import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 import { OptimisticLockError } from '../../mongodb/common/OptimisticLockError.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-const createSut = () => {
+const createSut = (languageKeys: LanguageISO6391[] = ['en']) => {
   const transactionManager = TransactionManagerFactory.default();
 
   const sut = new MongoSlotsDAO({
     db: getConnection(),
     transactionManager,
     tenantName: 'tenant-a',
+    settingsDS: TestUtils.mockClass<SettingsDataSource>({
+      getInstalledLanguages: async () => languageKeys.map(key => ({ key, label: key })),
+    }),
   });
 
   return { sut, transactionManager };
@@ -38,42 +43,146 @@ describe('MongoSlotsDAO', () => {
   });
 
   describe('assignSlot()', () => {
-    it('assigns an available slot for the requested property type', async () => {
-      const { sut } = createSut();
+    describe('translatable property type (txt)', () => {
+      it('assigns one slot per installed language', async () => {
+        const { sut } = createSut(['en', 'pt']);
 
-      await slotsCollection().insertMany([
-        { type: 'txt', slotName: 'txt_01', assignedTo: null, rand: 0.1 },
-        { type: 'txt', slotName: 'txt_02', assignedTo: null, rand: 0.9 },
-      ]);
+        await slotsCollection().insertMany([
+          { type: 'txt', slotName: 'txt_01', assignedTo: null, language: null, rand: 0.1 },
+          { type: 'txt', slotName: 'txt_02', assignedTo: null, language: null, rand: 0.2 },
+          { type: 'txt', slotName: 'txt_03', assignedTo: null, language: null, rand: 0.9 },
+        ]);
 
-      await sut.assignSlot({ propertyName: 'title', propertyType: 'text' });
+        await sut.assignSlot({ propertyName: 'title', propertyType: 'text' });
 
-      const slots = await slotsCollection().find({}).toArray();
+        const assigned = await slotsCollection()
+          .find({ assignedTo: 'title' })
+          .sort({ rand: 1 })
+          .toArray();
 
-      expect(slots).toEqual([
-        {
-          _id: expect.any(ObjectId),
-          type: 'txt',
-          slotName: 'txt_01',
-          assignedTo: 'title',
-          rand: 0.1,
-        },
-        { _id: expect.any(ObjectId), type: 'txt', slotName: 'txt_02', assignedTo: null, rand: 0.9 },
-      ]);
-    });
-
-    it('throws when there are no available slots for the requested type', async () => {
-      const { sut } = createSut();
-
-      await slotsCollection().insertOne({
-        type: 'txt',
-        slotName: 'txt_01',
-        assignedTo: 'already_used',
+        expect(assigned).toHaveLength(2);
+        expect(assigned.map(s => s.language)).toEqual(expect.arrayContaining(['en', 'pt']));
       });
 
-      await expect(sut.assignSlot({ propertyName: 'title', propertyType: 'text' })).rejects.toThrow(
-        'No available slots for type txt'
-      );
+      it('is a no-op for already-assigned (property, language) pairs', async () => {
+        const { sut } = createSut(['en']);
+
+        await slotsCollection().insertMany([
+          { type: 'txt', slotName: 'txt_01', assignedTo: 'title', language: 'en', rand: 0.1 },
+          { type: 'txt', slotName: 'txt_02', assignedTo: null, language: null, rand: 0.2 },
+        ]);
+
+        await sut.assignSlot({ propertyName: 'title', propertyType: 'text' });
+
+        const assigned = await slotsCollection().find({ assignedTo: 'title' }).toArray();
+        expect(assigned).toHaveLength(1);
+        expect(assigned[0].slotName).toBe('txt_01');
+      });
+
+      it('adds a slot for a newly added language on re-call', async () => {
+        await slotsCollection().insertMany([
+          { type: 'txt', slotName: 'txt_01', assignedTo: null, language: null, rand: 0.1 },
+          { type: 'txt', slotName: 'txt_02', assignedTo: null, language: null, rand: 0.2 },
+        ]);
+
+        const { sut: sutEn } = createSut(['en']);
+        await sutEn.assignSlot({ propertyName: 'title', propertyType: 'text' });
+
+        const { sut: sutEnPt } = createSut(['en', 'pt']);
+        await sutEnPt.assignSlot({ propertyName: 'title', propertyType: 'text' });
+
+        const assigned = await slotsCollection().find({ assignedTo: 'title' }).toArray();
+        expect(assigned).toHaveLength(2);
+        expect(assigned.map(s => s.language)).toEqual(expect.arrayContaining(['en', 'pt']));
+      });
+
+      it('releases a slot for a removed language on re-call', async () => {
+        await slotsCollection().insertMany([
+          { type: 'txt', slotName: 'txt_01', assignedTo: 'title', language: 'en', rand: 0.1 },
+          { type: 'txt', slotName: 'txt_02', assignedTo: 'title', language: 'pt', rand: 0.2 },
+        ]);
+
+        const { sut } = createSut(['en']); // pt removed
+        await sut.assignSlot({ propertyName: 'title', propertyType: 'text' });
+
+        const assigned = await slotsCollection().find({ assignedTo: 'title' }).toArray();
+        expect(assigned).toHaveLength(1);
+        expect(assigned[0].language).toBe('en');
+
+        const released = await slotsCollection().findOne({ slotName: 'txt_02' });
+        expect(released?.assignedTo).toBeNull();
+        expect(released?.language).toBeNull();
+      });
+
+      it('throws when no available slot for a needed language', async () => {
+        const { sut } = createSut(['en', 'pt']);
+
+        await slotsCollection().insertOne({
+          type: 'txt',
+          slotName: 'txt_01',
+          assignedTo: null,
+          language: null,
+          rand: 0.1,
+        });
+
+        await expect(
+          sut.assignSlot({ propertyName: 'title', propertyType: 'text' })
+        ).rejects.toThrow('No available slots for type txt');
+      });
+    });
+
+    describe('non-translatable property type (date)', () => {
+      it('assigns one slot with language: null', async () => {
+        const { sut } = createSut(['en', 'pt']);
+
+        await slotsCollection().insertMany([
+          { type: 'date', slotName: 'date_01', assignedTo: null, language: null, rand: 0.1 },
+          { type: 'date', slotName: 'date_02', assignedTo: null, language: null, rand: 0.9 },
+        ]);
+
+        await sut.assignSlot({ propertyName: 'created_at', propertyType: 'date' });
+
+        const assigned = await slotsCollection().find({ assignedTo: 'created_at' }).toArray();
+        expect(assigned).toHaveLength(1);
+        expect(assigned[0].language).toBeNull();
+      });
+
+      it('is a no-op when already assigned', async () => {
+        const { sut } = createSut();
+
+        await slotsCollection().insertMany([
+          {
+            type: 'date',
+            slotName: 'date_01',
+            assignedTo: 'created_at',
+            language: null,
+            rand: 0.1,
+          },
+          { type: 'date', slotName: 'date_02', assignedTo: null, language: null, rand: 0.9 },
+        ]);
+
+        await sut.assignSlot({ propertyName: 'created_at', propertyType: 'date' });
+
+        const assigned = await slotsCollection().find({ assignedTo: 'created_at' }).toArray();
+        expect(assigned).toHaveLength(1);
+        expect(assigned[0].slotName).toBe('date_01');
+      });
+
+      it('throws when no available slot', async () => {
+        const { sut } = createSut();
+
+        await slotsCollection().insertOne({
+          type: 'date',
+          slotName: 'date_01',
+          assignedTo: 'other_prop',
+          language: null,
+          rand: 0.1,
+        });
+
+        await expect(
+          sut.assignSlot({ propertyName: 'created_at', propertyType: 'date' })
+        ).rejects.toThrow('No available slots for type date');
+      });
     });
 
     it('is a no-op when the property type is unsupported', async () => {
@@ -88,38 +197,49 @@ describe('MongoSlotsDAO', () => {
         .toArray();
       expect(assigned).toHaveLength(0);
     });
-
-    it('is a no-op when the property is already assigned to a slot', async () => {
-      const { sut } = createSut();
-
-      await slotsCollection().insertMany([
-        { type: 'txt', slotName: 'txt_01', assignedTo: 'title' },
-        { type: 'txt', slotName: 'txt_02', assignedTo: null },
-      ]);
-
-      await expect(
-        sut.assignSlot({ propertyName: 'title', propertyType: 'text' })
-      ).resolves.not.toThrow();
-
-      const slot = await slotsCollection().findOne({ slotName: 'txt_01' });
-      expect(slot?.assignedTo).toBe('title');
-    });
   });
 
   describe('unassignSlot()', () => {
-    it('sets assignedTo to null for the matching property', async () => {
+    it('releases all language variant slots for a translatable property', async () => {
       const { sut } = createSut();
 
-      await slotsCollection().insertOne({
-        type: 'txt',
-        slotName: 'txt_01',
-        assignedTo: 'title',
-      });
+      await slotsCollection().insertMany([
+        { type: 'txt', slotName: 'txt_01', assignedTo: 'title', language: 'en', rand: 0.1 },
+        { type: 'txt', slotName: 'txt_02', assignedTo: 'title', language: 'pt', rand: 0.2 },
+        { type: 'txt', slotName: 'txt_03', assignedTo: 'other', language: 'en', rand: 0.3 },
+      ]);
 
       await sut.unassignSlot('title');
 
-      const slot = await slotsCollection().findOne({ slotName: 'txt_01' });
+      const titleSlots = await slotsCollection()
+        .find({ slotName: { $in: ['txt_01', 'txt_02'] } })
+        .toArray();
+      titleSlots.forEach(s => {
+        expect(s.assignedTo).toBeNull();
+        expect(s.language).toBeNull();
+        expect(typeof s.rand).toBe('number');
+      });
+
+      const otherSlot = await slotsCollection().findOne({ slotName: 'txt_03' });
+      expect(otherSlot?.assignedTo).toBe('other');
+    });
+
+    it('releases the single slot for a non-translatable property', async () => {
+      const { sut } = createSut();
+
+      await slotsCollection().insertOne({
+        type: 'date',
+        slotName: 'date_01',
+        assignedTo: 'created_at',
+        language: null,
+        rand: 0.1,
+      });
+
+      await sut.unassignSlot('created_at');
+
+      const slot = await slotsCollection().findOne({ slotName: 'date_01' });
       expect(slot?.assignedTo).toBeNull();
+      expect(slot?.language).toBeNull();
       expect(typeof slot?.rand).toBe('number');
     });
 
@@ -130,20 +250,72 @@ describe('MongoSlotsDAO', () => {
   });
 
   describe('getSlotMap()', () => {
-    it('returns a propertyName -> slotName map', async () => {
+    it('returns a composite propertyName::language key for translatable slots', async () => {
       const { sut } = createSut();
 
       await slotsCollection().insertMany([
-        { type: 'txt', slotName: 'txt_01', assignedTo: 'title' },
-        { type: 'date', slotName: 'date_01', assignedTo: 'createdAt' },
-        { type: 'txt', slotName: 'txt_02', assignedTo: null },
+        { type: 'txt', slotName: 'txt_01', assignedTo: 'title', language: 'en', rand: 0.1 },
+        { type: 'txt', slotName: 'txt_02', assignedTo: 'title', language: 'pt', rand: 0.2 },
       ]);
 
       const slotMap = await sut.getSlotMap();
 
-      expect(slotMap.get('title')?.slotName).toBe('txt_01');
-      expect(slotMap.get('createdAt')?.slotName).toBe('date_01');
-      expect(slotMap.has('missing')).toBe(false);
+      expect(slotMap.get('title::en')?.slotName).toBe('txt_01');
+      expect(slotMap.get('title::pt')?.slotName).toBe('txt_02');
+      expect(slotMap.has('title')).toBe(false);
+    });
+
+    it('returns just the propertyName key for non-translatable slots', async () => {
+      const { sut } = createSut();
+
+      await slotsCollection().insertMany([
+        { type: 'date', slotName: 'date_01', assignedTo: 'created_at', language: null, rand: 0.1 },
+      ]);
+
+      const slotMap = await sut.getSlotMap();
+
+      expect(slotMap.get('created_at')?.slotName).toBe('date_01');
+      expect(slotMap.has('created_at::null')).toBe(false);
+    });
+
+    it('returns both key forms when a mix of slot types is present', async () => {
+      const { sut } = createSut();
+
+      await slotsCollection().insertMany([
+        { type: 'txt', slotName: 'txt_01', assignedTo: 'title', language: 'en', rand: 0.1 },
+        { type: 'date', slotName: 'date_01', assignedTo: 'created_at', language: null, rand: 0.2 },
+      ]);
+
+      const slotMap = await sut.getSlotMap();
+
+      expect(slotMap.get('title::en')?.slotName).toBe('txt_01');
+      expect(slotMap.get('created_at')?.slotName).toBe('date_01');
+      expect(slotMap.size).toBe(2);
+    });
+
+    it('excludes unassigned slots from the map', async () => {
+      const { sut } = createSut();
+
+      await slotsCollection().insertMany([
+        { type: 'txt', slotName: 'txt_01', assignedTo: 'title', language: 'en', rand: 0.1 },
+        { type: 'txt', slotName: 'txt_02', assignedTo: null, language: null, rand: 0.9 },
+      ]);
+
+      const slotMap = await sut.getSlotMap();
+
+      expect(slotMap.size).toBe(1);
+      expect(slotMap.has('title::en')).toBe(true);
+    });
+  });
+
+  describe('slotKey()', () => {
+    it('returns propertyName::language for translatable slots', () => {
+      expect(MongoSlotsDAO.slotKey('title', 'en')).toBe('title::en');
+      expect(MongoSlotsDAO.slotKey('my_select', 'pt')).toBe('my_select::pt');
+    });
+
+    it('returns just propertyName for non-translatable slots', () => {
+      expect(MongoSlotsDAO.slotKey('created_at', null)).toBe('created_at');
     });
   });
 

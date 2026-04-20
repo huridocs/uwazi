@@ -1,12 +1,10 @@
 import { ProcessedPDFDBO } from '../../mongodb/files/schemas/filesTypes.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition.js';
 import { FullTextElasticDocumentMapper } from './FullTextElasticDocumentMapper.js';
 
 type FullTextIndexerServiceDeps = {
   esClient: TenantAwareESClient;
-  entityDAO: MongoEntityDAO;
 };
 
 class FullTextIndexerService {
@@ -19,15 +17,8 @@ class FullTextIndexerService {
       return;
     }
 
-    const sharedIds = [...new Set(files.map(f => f.entity))];
-    const entityVariants = await this.deps.entityDAO.getEntityIdsBySharedId(sharedIds);
-
-    const pairs = files.flatMap(file =>
-      entityVariants.filter(e => e.sharedId === file.entity).map(e => ({ file, entityId: e._id }))
-    );
-
     const operations = FullTextElasticDocumentMapper.toDocuments(
-      pairs,
+      files.map(file => ({ file, sharedId: file.entity })),
       this.deps.esClient.tenantId
     );
 
