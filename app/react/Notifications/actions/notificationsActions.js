@@ -1,4 +1,5 @@
 import uniqueID from '#shared/uniqueID.js';
+import { notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
 import * as types from './actionTypes.js';
 
 export function removeNotification(id) {
@@ -9,6 +10,7 @@ export function notify(message, type, delay = 1500) {
   return dispatch => {
     const id = uniqueID();
     dispatch({ type: types.NOTIFY, notification: { message, type, id } });
+    bridgeNotify(message, type);
 
     if (delay !== false) {
       setTimeout(() => dispatch(removeNotification(id)), delay);
