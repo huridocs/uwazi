@@ -99,15 +99,15 @@ describe('CSV import status view', () => {
 
     expect(errorRows).toHaveLength(2);
 
-    expect(errorRows[0]).toHaveTextContent('19');
-    expect(errorRows[0]).toHaveTextContent('file');
-    expect(errorRows[0]).toHaveTextContent('Referenced file was not found in the import package.');
-
-    expect(errorRows[1]).toHaveTextContent('18');
-    expect(errorRows[1]).toHaveTextContent('related_case');
-    expect(errorRows[1]).toHaveTextContent(
+    expect(errorRows[0]).toHaveTextContent('18');
+    expect(errorRows[0]).toHaveTextContent('related_case');
+    expect(errorRows[0]).toHaveTextContent(
       'Relationship value could not be resolved to an existing entity.'
     );
+
+    expect(errorRows[1]).toHaveTextContent('19');
+    expect(errorRows[1]).toHaveTextContent('file');
+    expect(errorRows[1]).toHaveTextContent('Referenced file was not found in the import package.');
   });
 
   it('should revalidate once on different events', async () => {
