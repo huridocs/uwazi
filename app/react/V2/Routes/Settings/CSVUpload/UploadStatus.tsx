@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon, XMarkIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import throttle from 'lodash/throttle.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Card } from '#V2/Components/UI/index.js';
@@ -35,7 +35,6 @@ const UploadStatus = () => {
   );
 
   const statusMessage = entry ? statusMessages[entry.status] : undefined;
-
   const progressTotal = entry?.progress?.totalRows || 0;
   const progressCurrent = entry?.progress?.processedRows || 0;
   const completionPercent =
@@ -192,11 +191,11 @@ const UploadStatus = () => {
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
               </div>
-              {entry.rowErrors?.length && (
+              {entry.rowErrors?.length ? (
                 <div className="pt-6">
                   <ErrorsTable errors={entry.rowErrors} />
                 </div>
-              )}
+              ) : undefined}
             </>
           )}
         </SettingsContent.Body>
@@ -207,18 +206,33 @@ const UploadStatus = () => {
               <Translate>Back</Translate>
             </Button>
           </I18NLinkV2>
-          <Button
-            type="button"
-            color="error"
-            className="float-right flex flex-row gap-2 items-center"
-            onClick={() => {
-              setCancelModal(true);
-            }}
-            disabled={!canCancel}
-          >
-            <XMarkIcon className="w-4 h-4" />
-            <Translate>Cancel</Translate>
-          </Button>
+          <div className="float-right flex flex-wrap flex-row gap-2">
+            {entry?.rowErrors?.length ? (
+              <a
+                href={`/api/csvImportEntities/imports/${entry.id}/failed-rows-csv`}
+                target="_blank"
+                rel="noreferrer"
+                className="float-left"
+              >
+                <Button type="button" styling="light" className="flex flex-row gap-2 items-center">
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                  <Translate>Download failed rows</Translate>
+                </Button>
+              </a>
+            ) : undefined}
+            <Button
+              type="button"
+              color="error"
+              className="flex flex-row gap-2 items-center"
+              onClick={() => {
+                setCancelModal(true);
+              }}
+              disabled={!canCancel}
+            >
+              <XMarkIcon className="w-4 h-4" />
+              <Translate>Cancel</Translate>
+            </Button>
+          </div>
         </SettingsContent.Footer>
       </SettingsContent>
       {entry && (
@@ -233,5 +247,4 @@ const UploadStatus = () => {
     </div>
   );
 };
-
 export { UploadStatus };

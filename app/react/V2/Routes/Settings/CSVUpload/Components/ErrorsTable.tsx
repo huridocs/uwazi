@@ -40,7 +40,7 @@ const ErrorsTable = ({ errors }: { errors: CsvImportListRow['rowErrors'] }) => {
   return (
     <Table
       header={<Translate>Failure details</Translate>}
-      defaultSorting={[{ id: 'rowIndex', desc: true }]}
+      defaultSorting={[{ id: 'rowIndex', desc: false }]}
       columns={columns}
       data={tableData}
     />
