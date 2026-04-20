@@ -10,6 +10,7 @@ import { EntityIndexerService } from '../entities/EntityIndexerService.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
 import type { MongoSlotsDAO, SlotMap } from '../entities/MongoSlotsDAO.js';
 import { EntityElasticDocument } from '../entities/EntityElasticDocument.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 const esClient = new ESClient({ node: config.elasticsearch.nodes });
 const indexName = `entity-indexer-service-test-${Date.now()}-${Math.random()}`;
@@ -60,7 +61,7 @@ const translatableSlotKey = (assignedTo: string, language: string) => `${assigne
  * Creates a SlotMap with translatable txt slots for `indexedText` keyed per language.
  * Slot names are txt_01, txt_02, ... in the order languages are given.
  */
-const createSlotMap = (languages: string[] = ['en']): SlotMap =>
+const createSlotMap = (languages: LanguageISO6391[] = ['en']): SlotMap =>
   new Map(
     languages.map((lang, i) => [
       translatableSlotKey('indexedText', lang),
