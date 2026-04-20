@@ -8,7 +8,8 @@ const template1Id = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 
-const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
+const f = getFixturesFactory();
+const createTranslationDBO = f.v2.database.translationDBO;
 
 const translationsV2: TranslationDBO[] = [
   createTranslationDBO('value1', 'value1', 'en', {
@@ -40,10 +41,9 @@ const fixtures: DBFixture = {
       name: 'template to relate',
       properties: [],
     },
-    {
-      _id: template1Id,
-      name: 'base template',
-      properties: [
+    f.template(
+      'base template',
+      [
         {
           _id: db.id(),
           type: propertyTypes.text,
@@ -61,13 +61,7 @@ const fixtures: DBFixture = {
           type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),
-          content: thesauri1Id,
-        },
-        {
-          _id: db.id(),
-          type: 'non_defined_type',
-          label: 'not defined type',
-          name: templateUtils.safeName('not defined type'),
+          content: thesauri1Id.toString(),
         },
         {
           _id: db.id(),
@@ -88,7 +82,8 @@ const fixtures: DBFixture = {
           name: templateUtils.safeName('auto id'),
         },
       ],
-    },
+      { _id: template1Id }
+    ),
   ],
 
   dictionaries: [

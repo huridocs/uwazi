@@ -24,6 +24,7 @@ import { FileIsNotAPDF, PDFService } from '../../services/PDFService.js';
 import { PDFPostProcessJobHandler } from '../PDFPostProcessJobHandler.js';
 import { EntitiesDataSourceFactory } from '../../factories/EntitiesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
+import { search } from '#api/search/search.js';
 
 async function filesAreIdentical(file1: string, file2: string) {
   const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
@@ -83,6 +84,8 @@ describe('PDFPostProcessJob', () => {
         }),
       ],
     };
+
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     await testingEnvironment.setupTenantTmpPaths(fixtures.files);
   });

@@ -24,8 +24,8 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import {
-    Dispatchable,
-    HeartbeatCallback,
+  Dispatchable,
+  HeartbeatCallback,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';

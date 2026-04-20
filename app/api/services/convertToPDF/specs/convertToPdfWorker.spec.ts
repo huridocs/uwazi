@@ -13,6 +13,9 @@ import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
 import { convertToPDFService } from '../convertToPdfService.js';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+
+const f = getFixturesFactory();
 
 describe('convertToPdfWorker', () => {
   let worker: ConvertToPdfWorker;
@@ -39,7 +42,7 @@ describe('convertToPdfWorker', () => {
       settings: [
         {
           features: { convertToPdf: { active: true, url: 'http://localhost:5060' } },
-          languages: [{ label: 'English', key: 'en' }],
+          languages: [{ label: 'English', key: 'en', default: true }],
         },
       ],
       files: [
@@ -51,6 +54,8 @@ describe('convertToPdfWorker', () => {
           originalname: 'attachment.docx',
         },
       ],
+      entities: [f.entity('entity', 'template')],
+      templates: [f.template('template')],
     });
 
     tenants.add({
