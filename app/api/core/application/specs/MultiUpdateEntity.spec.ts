@@ -1,58 +1,17 @@
 /* eslint-disable max-statements */
-import { ObjectId } from 'mongodb';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { MultiUpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/MultiUpdateEntityUseCaseFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { tenants } from '#api/tenants/index.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { MultiUpdateEntity, MultiUpdateEntityDeps } from '../MultiUpdateEntity.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { ObjectId } from 'mongodb';
+import { MultiUpdateEntityDeps } from '../MultiUpdateEntity.js';
 import { factory, fixtures, permissionsFixtures } from './MultiUpdateEntityFixtures.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) => {
-  const transactionManager = TransactionManagerFactory.default();
-  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.forTesting(transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const eventEmitter = EventEmitterFactory.forTesting();
-  const idGenerator = IdGeneratorFactory.default();
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-  const entityPermissionChecker = new MongoEntityPermissionChecker(
-    getConnection(),
-    transactionManager
-  );
-
-  const propertyAssignmentCreatorServiceStrategy =
-    PropertyAssignmentCreatorServiceStrategy.createWithRequired({
-      entitiesDS,
-      settingsDS,
-      thesauriDS,
-      translationsDS,
-    });
-
-  const entitiesService = EntitiesServiceFactory.default({
-    transactionManager,
-    entitiesDS,
-    eventEmitter,
-    settingsDS,
-    templatesDS,
-  });
-
   const defaultActor: UserSchema = {
     _id: new ObjectId(),
     role: 'admin',
@@ -61,32 +20,29 @@ const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) =
     username: 'admin',
   };
 
-  const sut = new MultiUpdateEntity(
-    {
-      entitiesDS,
-      entitiesService,
-      templatesDS,
-      propertyAssignmentCreatorServiceStrategy,
-      entityPermissionChecker,
-      transactionManager,
-      eventEmitter,
-      idGenerator,
-      ..._deps,
-    },
-    { actor: actor ?? defaultActor, tenant: tenants.current() }
-  );
+  testingEnvironment.setPermissions(actor ?? defaultActor);
 
-  DependenciesContext.attachContext(sut, 'execute', {
-    factories: {
-      transactionManager: () => transactionManager,
-      eventEmitter: () => eventEmitter,
-      idGenerator: () => idGenerator,
-      jobsDispatcher: () => jobsDispatcher,
-      logger: () => TestUtils.mockClass<Logger>({}),
-      authorizedEntityESClient: () => TestUtils.mockClass({}),
-      elasticClient: () => TestUtils.mockClass({}),
+  const sut = DependenciesContext.run(
+    {
+      factories: {
+        transactionManager: TransactionManagerFactory.default,
+        eventEmitter: EventEmitterFactory.forTesting,
+
+        jobsDispatcher: () => {
+          throw new Error('Not implemented jobs dispatcher');
+        },
+        idGenerator: IdGeneratorFactory.default,
+        logger: LoggerFactory.default,
+        elasticClient: () => {
+          throw new Error('Not implemented elastic client');
+        },
+        authorizedEntityESClient: () => {
+          throw new Error('Not implemented elastic');
+        },
+      },
     },
-  });
+    () => MultiUpdateEntityUseCaseFactory.default()
+  );
 
   return { sut };
 };

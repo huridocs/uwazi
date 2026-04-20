@@ -17,44 +17,24 @@ class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
     const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
 
-    const dispatcher =
-      deps?.dispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
-
-    const entitiesDS =
-      deps?.entitiesDS ??
-      EntitiesDataSourceFactory.default(transactionManager as MongoTransactionManager);
-
-    const entityPermissionChecker =
-      deps?.entityPermissionChecker ??
-      new MongoEntityPermissionChecker(
-        getConnection(),
-        transactionManager as MongoTransactionManager
-      );
-
-    const eventBus = deps?.eventBus ?? applicationEventsBus;
-
     const searchInstance = deps?.search ?? search;
 
-    const settingsDS =
-      deps?.settingsDS ??
-      SettingsDataSourceFactory.default(transactionManager as MongoTransactionManager);
-
-    const templatesDS =
-      deps?.templatesDS ??
-      TemplatesDataSourceFactory.default(transactionManager as MongoTransactionManager);
-
-    const eventEmitter = deps?.eventEmitter ?? EventEmitterFactory.default();
-
     return new EntitiesService({
-      eventEmitter,
-      dispatcher,
-      entitiesDS,
-      entityPermissionChecker,
-      eventBus,
+      eventEmitter: EventEmitterFactory.default(),
+      dispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      entitiesDS: EntitiesDataSourceFactory.default(transactionManager as MongoTransactionManager),
+      entityPermissionChecker: new MongoEntityPermissionChecker(
+        getConnection(),
+        transactionManager as MongoTransactionManager
+      ),
+      eventBus: applicationEventsBus,
       search: searchInstance,
-      settingsDS,
-      templatesDS,
+      settingsDS: SettingsDataSourceFactory.default(transactionManager as MongoTransactionManager),
+      templatesDS: TemplatesDataSourceFactory.default(
+        transactionManager as MongoTransactionManager
+      ),
       transactionManager,
+      ...deps,
     });
   }
 

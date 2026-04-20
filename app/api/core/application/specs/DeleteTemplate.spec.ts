@@ -21,7 +21,7 @@ import * as setupSockets from '#api/socketio/setupSockets.js';
 describe('DeleteTemplateUseCase', () => {
   beforeEach(async () => {
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-    await testingEnvironment.setUp(fixtures, 'delete_template_use_case');
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
