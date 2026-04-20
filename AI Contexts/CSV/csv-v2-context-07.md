@@ -478,6 +478,8 @@ and avoid leaking internal exceptions directly to users.
 Policy clarification (agreed):
 
 - Preserve row index fidelity for analysis/import traceability.
+- Row-error persistence cardinality is currently one error per failed row (first encountered failure).
+- Multi-error per row is not part of the current write model and would require explicit design work.
 - Malformed rows are true failures and must remain visible in row errors and failed-rows CSV.
 - Empty source lines are explicit failures in row errors (to keep traceability), but must be
   classified as `ROW_EMPTY_OR_MALFORMED` with message `Empty line.` (never generic `INTERNAL_ERROR`).

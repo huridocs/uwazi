@@ -58,6 +58,8 @@ Primary path:
 
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesBatchProcessor.ts`
   - per-row exceptions are normalized through `CsvRowImportErrorFactory`.
+  - cardinality is **one persisted row error per failed row** (first thrown error wins for that row).
+  - importer does not persist a generic per-row array of multiple errors in current behavior.
 
 Representative error sources today:
 
@@ -164,6 +166,8 @@ Notes:
 - Keep `message` for human readability.
 - Add `code` as required for all newly persisted errors.
 - No legacy-row fallback logic is required (clean slate: no existing CSV v2 import records).
+- Current importer behavior is first-error-per-row (single persisted record per failed row); any
+  future multi-error collection would require explicit pipeline/model changes.
 
 ---
 

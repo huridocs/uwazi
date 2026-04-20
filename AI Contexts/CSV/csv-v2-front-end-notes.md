@@ -105,6 +105,11 @@ V2 emits to **tenant admins** (not per-session V1 pattern).
 
 - Row-level failures are persisted with structured taxonomy fields (not just plain text):
   - `rowIndex`, `message`, `code`, optional `property`, optional `rawValue`, optional `details`.
+- Error cardinality per row is currently **single-error**:
+  - importer persists only the first failure encountered for a row,
+  - row processing stops for that row after first throw,
+  - no generic array-of-errors payload exists per row (except type-specific arrays inside `details`,
+    such as relationship `details.unresolved[]`).
 - Current deterministic mapping includes:
   - `FILE_NOT_FOUND`
   - `RELATIONSHIP_NOT_FOUND`
