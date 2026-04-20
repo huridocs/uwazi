@@ -34,11 +34,12 @@ const recreateTestIndex = async () => {
 const createFile = (
   sharedId: string,
   language: LanguageISO6393 = 'eng',
-  fullText: ProcessedPDFDBO['fullText'] = { 1: 'hello world' }
+  fullText: ProcessedPDFDBO['fullText'] = { 1: 'hello world' },
+  filename = 'test.pdf'
 ): ProcessedPDFDBO => ({
   _id: new ObjectId(),
-  originalname: 'test.pdf',
-  filename: 'test.pdf',
+  originalname: filename,
+  filename,
   mimetype: 'application/pdf',
   size: 1000,
   creationDate: 1000,
@@ -124,7 +125,6 @@ describe('FullTextIndexerService', () => {
       expect(hit._source).toMatchObject({
         tenantId: 'tenant-a',
         filename: 'test.pdf',
-        fileId: file._id.toString(),
         fullText_english: 'hello world',
         fullText: { name: 'fullText', parent: `tenant-a__${entityA._id.toString()}` },
       });
@@ -164,6 +164,20 @@ describe('FullTextIndexerService', () => {
       expect(result.hits.hits).toHaveLength(0);
     });
 
+    it('skips files whose fullText pages are all empty or whitespace', async () => {
+      const { sut, tenantClient, entityDAO } = createSut('tenant-a');
+      const file = createFile('shared-1', 'eng', { 1: '', 2: '   ' });
+      (entityDAO.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA]);
+
+      await sut.index([file], true);
+
+      const result = await tenantClient.search<FullTextElasticDocument>({
+        alias: EntityIndexMappingDefinition.alias,
+        query: { term: { fullText: 'fullText' } },
+      });
+      expect(result.hits.hits).toHaveLength(0);
+    });
+
     it('is a no-op for empty input', async () => {
       const { sut, entityDAO } = createSut('tenant-a');
 
@@ -173,21 +187,22 @@ describe('FullTextIndexerService', () => {
     });
   });
 
-  describe('deleteByFileIds()', () => {
-    it('deletes fullText docs matching the given fileIds', async () => {
+  describe('deleteByFilenames()', () => {
+    it('deletes fullText docs matching the given filenames', async () => {
       const { sut, tenantClient, entityDAO } = createSut('tenant-a');
-      const [fileDelete, fileKeep] = [createFile('shared-1'), createFile('shared-1')];
+      const fileDelete = createFile('shared-1', 'eng', { 1: 'hello world' }, 'delete.pdf');
+      const fileKeep = createFile('shared-1', 'eng', { 1: 'hello world' }, 'keep.pdf');
       (entityDAO.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA]);
       await sut.index([fileDelete, fileKeep], true);
 
-      await sut.deleteByFileIds([fileDelete._id], true);
+      await sut.deleteByFilenames([fileDelete.filename], true);
 
       const result = await tenantClient.search<FullTextElasticDocument>({
         alias: EntityIndexMappingDefinition.alias,
         query: { term: { fullText: 'fullText' } },
       });
       expect(result.hits.hits).toHaveLength(1);
-      expect(result.hits.hits[0]._source!.fileId).toBe(fileKeep._id.toString());
+      expect(result.hits.hits[0]._source!.filename).toBe(fileKeep.filename);
     });
 
     it('respects tenant isolation', async () => {
@@ -199,19 +214,19 @@ describe('FullTextIndexerService', () => {
 
       await sutA.index([file], true);
       await sutB.index([file], true);
-      await sutA.deleteByFileIds([file._id], true);
+      await sutA.deleteByFilenames([file.filename], true);
 
       const resultB = await tcB.search<FullTextElasticDocument>({
         alias: EntityIndexMappingDefinition.alias,
         query: { term: { fullText: 'fullText' } },
       });
       expect(resultB.hits.hits).toHaveLength(1);
-      expect(resultB.hits.hits[0]._source!.fileId).toBe(file._id.toString());
+      expect(resultB.hits.hits[0]._source!.filename).toBe(file.filename);
     });
 
     it('is a no-op for empty input', async () => {
       const { sut } = createSut('tenant-a');
-      await expect(sut.deleteByFileIds([])).resolves.toBeUndefined();
+      await expect(sut.deleteByFilenames([])).resolves.toBeUndefined();
     });
   });
 });

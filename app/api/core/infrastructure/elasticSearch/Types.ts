@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import type {
   IndicesIndexSettings,
-  IngestProcessorContainer,
   MappingTypeMapping,
   QueryDslQueryContainer,
   SearchResponse,
@@ -31,12 +30,6 @@ export interface IndexDefinition {
   physicalPrefix: string;
   settings: IndicesIndexSettings & Record<string, unknown>;
   mappings: MappingTypeMapping;
-}
-
-export interface IngestPipelineDefinition {
-  id: string;
-  description: string;
-  processors: IngestProcessorContainer[];
 }
 
 export interface SearchOptions {

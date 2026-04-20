@@ -3,9 +3,9 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import { readFileSync } from 'fs';
+import { hostname } from 'os';
 import { Tenant } from './tenants/tenantContext.js';
 import uniqueID from '#shared/uniqueID.js';
-import { hostname } from 'os';
 
 dotenv.config();
 
@@ -129,6 +129,7 @@ export const config = {
       v2GetEntity: false,
       v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,
+      v2DeleteEntity: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
