@@ -9,6 +9,7 @@ import { RegisterCsvImportController } from './RegisterCsvImportController.js';
 import { ListCsvImportEntitiesImportsController } from './ListCsvImportEntitiesImportsController.js';
 import { GetCsvImportEntitiesImportController } from './GetCsvImportEntitiesImportController.js';
 import { CancelCsvImportEntitiesImportController } from './CancelCsvImportEntitiesImportController.js';
+import { DownloadCsvImportFailedRowsCsvController } from './DownloadCsvImportFailedRowsCsvController.js';
 
 const csvImportRoutes = (app: Application) => {
   // Legacy V1 route
@@ -87,6 +88,12 @@ const csvImportRoutes = (app: Application) => {
     '/api/csvImportEntities/imports/:id/cancel',
     needsAuthorization(['admin']),
     CancelCsvImportEntitiesImportController.createHandler()
+  );
+
+  app.get(
+    '/api/csvImportEntities/imports/:id/failed-rows-csv',
+    needsAuthorization(['admin']),
+    DownloadCsvImportFailedRowsCsvController.createHandler()
   );
 };
 

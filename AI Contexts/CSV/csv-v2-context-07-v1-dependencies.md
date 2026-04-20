@@ -220,6 +220,8 @@ With temporary thesauri/translations adapters removed, the next candidate in thi
 
 - remove remaining intentional compatibility bridges when product rollout allows:
   - v1 fallback route path in `csv.v2` HTTP routing.
+  - legacy v1 `/api/import` tests in `app/api/files/specs/uploadRoutes.spec.ts`
+    (remove after csv v1 route is retired).
 
 ### 9.1 Current decision (Apr 2026 update)
 

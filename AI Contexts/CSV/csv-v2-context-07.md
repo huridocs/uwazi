@@ -87,6 +87,9 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 - Entities import job now has a basic integration test (single-row happy path).
   Still missing tests for batch processing, row errors report, stop thresholds,
   and files/attachments integration (see 6.10).
+- TODO (post-v1 removal): once legacy `/api/import` is retired, remove remaining
+  v1 CSV route tests from `app/api/files/specs/uploadRoutes.spec.ts` and keep CSV
+  route coverage only under `app/api/csv.v2/**`.
 
 #### 3.5 Retention and cleanup
 
@@ -112,8 +115,10 @@ Use this snapshot first; companion docs provide deeper implementation detail.
     - `rowErrors`: array populated from `csv_import_row_errors` for the given import id.
     - `rowErrorsSummary`: summary/report pointer from `csv_imports.rowErrors` (when present).
   - **Nice to Have:** paginate `rowErrors` in import detail responses for very large failed-row sets.
-  - Add dedicated failed-rows report download endpoint for CSV v2
-    (for `rowErrors.reportPath`, admin-only, import-scoped authorization).
+  - ✅ Added dedicated failed-rows report download endpoint for CSV v2:
+    - `GET /api/csvImportEntities/imports/:id/failed-rows-csv`
+    - admin-only
+    - returns `404` when report artifact is unavailable.
   - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
     collections performant and improve UX load times.
   - Include already-persisted extraction metadata in the detail response so UX can render

@@ -35,6 +35,14 @@ Scope: What UI needs to integrate CSV Import V2 now.
   - idempotent,
   - terminal imports may return `cancelled: false` with unchanged terminal status.
 
+### `GET /api/csvImportEntities/imports/:id/failed-rows-csv` (admin)
+
+- Response:
+  - streams CSV download (`text/csv`) from the persisted `rowErrors.reportPath` artifact.
+- Semantics:
+  - returns `404` when the import does not exist,
+  - returns `404` when no failed-rows CSV artifact is available for the import.
+
 ## 2) Socket events and payloads
 
 V2 emits to **tenant admins** (not per-session V1 pattern).
@@ -102,7 +110,8 @@ V2 emits to **tenant admins** (not per-session V1 pattern).
 - Failed-rows CSV is a filtered artifact:
   - empty-line failures are still counted in `stats.rowsFailed`,
   - but `ROW_EMPTY_OR_MALFORMED` rows are excluded from report CSV content.
-- Failed-rows artifact path may exist in import data (`rowErrors.reportPath`), but there is currently no dedicated CSV v2 download endpoint for that file.
+- Failed-rows artifact path is exposed in import data (`rowErrors.reportPath`) and can be downloaded via:
+  - `GET /api/csvImportEntities/imports/:id/failed-rows-csv`.
 
 ## 4) Current row errors (what is implemented)
 
