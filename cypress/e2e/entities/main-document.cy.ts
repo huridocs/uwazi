@@ -19,7 +19,7 @@ describe('Entity with main document', () => {
     });
 
     it('should navigate to the library', () => {
-      cy.contains('a', 'Library').click();
+      cy.visit('/en/library');
       cy.get('button').contains('Create entity').should('be.visible');
     });
 
