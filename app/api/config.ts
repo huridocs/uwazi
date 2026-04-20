@@ -121,7 +121,7 @@ export const config = {
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,
       v2UpdateEntity: false,
-      v2CSVImport: true,
+      v2CSVImport: false,
       v2UpdateThesaurus: false,
       v2GetEntity: false,
       v2MultipleUpdateEntity: false,
