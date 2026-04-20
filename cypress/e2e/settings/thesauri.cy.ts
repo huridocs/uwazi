@@ -159,13 +159,15 @@ describe('Thesauri configuration', () => {
 
     cy.get('select[id="property-type"]').select('Select');
     cy.get('select[name="content"]').select('New Thesaurus');
-
     cy.contains('aside button', 'Add property').click();
+
+    cy.intercept('GET', '/api/templates').as('getUpdatedTemplates');
     cy.contains('Save').click();
+    cy.wait('@getUpdatedTemplates');
   });
 
   it('should list the thesauri', () => {
-    cy.contains('span', 'Thesauri').click();
+    cy.contains('a', 'Thesauri').click();
     cy.contains('tr', 'New Thesaurus').contains('País');
   });
 
