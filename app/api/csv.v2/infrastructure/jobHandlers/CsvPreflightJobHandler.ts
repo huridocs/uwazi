@@ -9,7 +9,6 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
-import { CsvV1CompatEmitter } from '../services/CsvV1CompatEmitter.js';
 import {
   dispatchCleanupAfterCancelledStage,
   handleTerminalFailureCleanup,
@@ -22,7 +21,6 @@ type Params = UserAwareDispatchableParams & {
 type Deps = {
   useCase: CsvPreflightJob;
   sockets: V1WebSocketsWrapper;
-  v1Compat?: CsvV1CompatEmitter;
 };
 
 export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
@@ -81,7 +79,6 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
             });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
-            this.deps.v1Compat?.error(tenantName, error);
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:scan:error', {
               importId,
               message: error.message,

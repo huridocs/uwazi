@@ -86,6 +86,9 @@ V2 emits to **tenant admins** (not per-session V1 pattern).
 - `IMPORT_CSV_ROW_EXCEPTIONS` (legacy grouped payload)
 - `IMPORT_CSV_ERROR` (legacy error payload)
 - `IMPORT_CSV_END` (no payload)
+- Source of truth:
+  - These legacy events are emitted only by the V1 `/api/import` route flow.
+  - CSV V2 jobs do not emit `IMPORT_CSV_*`; they emit only `csvImport:*` stage events.
 
 ## 3) V1 vs V2 (expectation management)
 
@@ -94,7 +97,7 @@ V2 emits to **tenant admins** (not per-session V1 pattern).
 - V2 is a multi-stage background pipeline with explicit statuses (not a single monolithic flow).
 - V2 has dedicated read/cancel endpoints for polling/recovery (`/api/csvImportEntities/imports*`).
 - V2 socket events are stage-oriented (`csvImport:*`) and emitted to tenant admins.
-- V1-like socket contract exists for legacy compatibility only and must not drive new UI behavior.
+- V1-like socket contract (`IMPORT_CSV_*`) exists only for the legacy `/api/import` flow and must not drive new UI behavior.
 - Failed-rows CSV remains row-only export in current V2 scope (error taxonomy is in DB/API, not appended to report CSV).
 - Failed-rows CSV is a filtered artifact:
   - empty-line failures are still counted in `stats.rowsFailed`,
