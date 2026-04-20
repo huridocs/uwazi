@@ -31,7 +31,7 @@ describe('Share Entities', () => {
   });
 
   it('Should update the permissions of an entity', () => {
-    cy.intercept('POST', '/api/entities/share*').as('shareEntities');
+    cy.intercept('POST', '/api/entities/permissions').as('shareEntities');
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
     shareSearchTerm('editor');
@@ -132,10 +132,10 @@ describe('Share Entities', () => {
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.wait('@saveEntity').its('response.statusCode').should('eq', 200);
     cy.contains('h2', 'Edited title').should('exist');
-    cy.get('aside.is-active button[aria-label="Close side panel"]').click();
   });
 
   it('should be able to see only published entities', () => {
+    cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     selectPublishedEntities();
     cy.get('.item-document').should('have.length', 30);
     cy.get('.search-box input').type('"Resolución de la Corte IDH."');
