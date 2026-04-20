@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { atom, useAtom } from 'jotai';
 import { getStore } from '#shared/atomStore/index.js';
 import { createUuid } from '#V2/utils/uuid.js';
@@ -100,23 +101,26 @@ const useRequestStatus = () => {
     return 'success';
   })();
 
-  const notify = (
-    type: NotificationType,
-    title: string,
-    message?: string,
-    details?: string,
-    timestamp?: Date
-  ) => {
-    const id = createUuid();
-    setState(prev => ({
-      ...prev,
-      notifications: [
-        ...prev.notifications,
-        { id, type, title, message, details, timestamp: timestamp ?? new Date() },
-      ],
-      unreadNotificationIds: [...prev.unreadNotificationIds, id],
-    }));
-  };
+  const notify = useCallback(
+    (
+      type: NotificationType,
+      title: string,
+      message?: string,
+      details?: string,
+      timestamp?: Date
+    ) => {
+      const id = createUuid();
+      setState(prev => ({
+        ...prev,
+        notifications: [
+          ...prev.notifications,
+          { id, type, title, message, details, timestamp: timestamp ?? new Date() },
+        ],
+        unreadNotificationIds: [...prev.unreadNotificationIds, id],
+      }));
+    },
+    [setState]
+  );
 
   const updateTask = (
     id: string,

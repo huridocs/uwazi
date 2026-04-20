@@ -1,5 +1,9 @@
 import { getStore } from '#shared/atomStore/index.js';
-import { requestStatusAtom, startLoading, endLoading } from '#V2/atoms/requestStatusAtom.js';
+import {
+  requestStatusAtom,
+  startLoading as startRequestLoading,
+  endLoading as endRequestLoading,
+} from '#V2/atoms/requestStatusAtom.js';
 import { createUuid } from '#V2/utils/uuid.js';
 
 type BridgeNotificationType = 'success' | 'warning' | 'danger' | 'error' | 'info';
@@ -50,5 +54,9 @@ const endTask = (id: string, finalStatus: 'completed' | 'failed' = 'completed') 
     ),
   }));
 };
+
+// Keep stable bridge exports for legacy callers such as LoadingProgressBar.
+const startLoading = () => startRequestLoading();
+const endLoading = () => endRequestLoading();
 
 export { notify, startLoading, endLoading, setConnected, registerTask, endTask };
