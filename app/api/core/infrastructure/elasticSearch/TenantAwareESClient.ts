@@ -29,6 +29,13 @@ type Deps = {
 class TenantAwareESClient {
   readonly tenantId: string;
 
+  private indexScript = `
+    def savedCreatedAt = ctx._source.containsKey('created_at') ? ctx._source.created_at : params.now;
+    ctx._source = params.doc;
+    ctx._source.created_at = savedCreatedAt;
+    ctx._source.updated_at = params.now;
+  `;
+
   constructor(private deps: Deps) {
     const parsed = Schema.parse({ tenantId: this.deps.tenantId });
     this.tenantId = parsed.tenantId;
@@ -97,11 +104,23 @@ class TenantAwareESClient {
   }
 
   async bulk(options: BulkOptions): Promise<void> {
-    const index = await this.deps.resolver.resolve(options.alias, this.tenantId);
+    const _index = await this.deps.resolver.resolve(options.alias, this.tenantId);
 
+    const now = new Date().toISOString();
     const body = options.operations.flatMap(op => [
-      { index: { _index: index, _id: this.buildDocumentId(op.id) } },
-      this.stampTenantId(op.document),
+      { update: { _index, _id: this.buildDocumentId(op.id) } },
+      {
+        script: {
+          source: this.indexScript,
+          lang: 'painless',
+          params: {
+            doc: this.stampTenantId(op.document),
+            now,
+          },
+        },
+        scripted_upsert: true,
+        upsert: {},
+      },
     ]);
 
     const response = await this.deps.client.bulk({
@@ -113,7 +132,7 @@ class TenantAwareESClient {
     if (response.body.errors) {
       // Todo: Inject logger here.
       console.log('Bulk indexing errors', {
-        failedItems: response.body.items.filter((item: any) => item.index?.error),
+        failedItems: response.body.items.filter((item: any) => item.update?.error),
       });
 
       throw new BulkIndexingError();

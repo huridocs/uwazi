@@ -20,6 +20,7 @@ import { DenormalizationService } from '../DenormalizationService.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 
 const factory = getFixturesFactory();
 
@@ -61,7 +62,12 @@ const createService = () => {
       SettingsDataSource,
       transactionManager
     ),
-    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default()),
+    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default(), {
+      fullTextIndexer: TestUtils.mockClass<FullTextIndexerService>({
+        index: jest.fn().mockResolvedValue(undefined),
+        deleteByFilenames: jest.fn().mockResolvedValue(undefined),
+      }),
+    }),
     transactionManager,
     MongoIdHandler,
     authServiceMock,

@@ -62,8 +62,8 @@ type EntityElasticDocument = {
   creationDate: number;
   editDate: number;
 
-  created_at: number;
-  updated_at: number;
+  created_at: string;
+  updated_at: string;
 
   fullText: {
     name: 'entity';

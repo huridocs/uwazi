@@ -1,5 +1,22 @@
+import { elasticLanguageCodes } from '#shared/language/index.js';
 import { IndexDefinition } from '../Types.js';
 import { createEntityMetadataMapping } from './EntityMetadataMapping.js';
+import { buildFullTextLanguageAnalyzers } from './FullTextLanguageAnalyzers.js';
+import { buildFullTextLanguageFilters } from './FullTextLanguageFilters.js';
+
+const buildFullTextMappings = () =>
+  Object.fromEntries(
+    elasticLanguageCodes.map(lang => [
+      `fullText_${lang}`,
+      {
+        type: 'text',
+        analyzer: `fulltext_${lang}`,
+        search_analyzer: `stop_${lang}`,
+        search_quote_analyzer: `fulltext_${lang}`,
+        term_vector: 'with_positions_offsets',
+      },
+    ])
+  );
 
 const EntityIndexMappingDefinition: IndexDefinition = {
   alias: 'entities',
@@ -9,7 +26,7 @@ const EntityIndexMappingDefinition: IndexDefinition = {
     number_of_shards: 6,
     number_of_replicas: 1,
 
-    'index.mapping.total_fields.limit': 4500,
+    'index.mapping.total_fields.limit': 5000,
 
     analysis: {
       normalizer: {
@@ -27,6 +44,8 @@ const EntityIndexMappingDefinition: IndexDefinition = {
         },
       },
 
+      filter: buildFullTextLanguageFilters(),
+
       analyzer: {
         other: {
           type: 'custom',
@@ -40,6 +59,8 @@ const EntityIndexMappingDefinition: IndexDefinition = {
           tokenizer: 'title_sayt',
           filter: ['lowercase', 'asciifolding'],
         },
+
+        ...buildFullTextLanguageAnalyzers(),
       },
 
       tokenizer: {
@@ -63,17 +84,24 @@ const EntityIndexMappingDefinition: IndexDefinition = {
 
       // Used on all fullText ES documents
       filename: { type: 'keyword' },
+      fileId: { type: 'keyword' },
       fullText: {
         type: 'join',
         relations: { entity: 'fullText' },
       },
+      fullText_other: {
+        type: 'text',
+        analyzer: 'other',
+        term_vector: 'with_positions_offsets',
+      },
+      ...buildFullTextMappings(),
       // ==============================
 
       // Used on all ES Entity documents
       template: { type: 'keyword' },
       language: { type: 'keyword' },
-      sharedId: { type: 'keyword' },
       user: { type: 'keyword' },
+      sharedId: { type: 'keyword' },
       permissionRefIds: { type: 'keyword' },
 
       published: { type: 'boolean' },
@@ -99,6 +127,9 @@ const EntityIndexMappingDefinition: IndexDefinition = {
       metadata: {
         properties: { ...createEntityMetadataMapping() },
       },
+
+      created_at: { type: 'date' },
+      updated_at: { type: 'date' },
       // ===============================
     },
   },
