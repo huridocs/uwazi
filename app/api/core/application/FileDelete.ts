@@ -45,10 +45,10 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
       if (file instanceof ProcessedPDF) {
         const entity = (await this.deps.entitiesDS.getById(file.entity)).getDataOrThrow();
 
-        entity.setPreview(
-          await this.deps.filesDS.getThumbnails([entity.sharedId]).all(),
-          await this.deps.settingsDS.getDefaultLanguageKey()
-        );
+        const allThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();
+        const survivingThumbnails = allThumbnails.filter(t => t.filename !== `${file.id}.jpg`);
+
+        entity.setPreview(survivingThumbnails, await this.deps.settingsDS.getDefaultLanguageKey());
 
         await this.deps.entitiesDS.update(entity);
       }

@@ -23,7 +23,6 @@ import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrast
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import {
     Dispatchable,
     HeartbeatCallback,
