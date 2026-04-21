@@ -1,8 +1,10 @@
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { CsvImportEntitiesImportsDataSource } from '../contracts/CsvImportEntitiesImportsDataSource.js';
+import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
 
 type Deps = {
   csvImportEntitiesImportsDS: CsvImportEntitiesImportsDataSource;
+  rowErrorsDS: CsvImportRowErrorsDataSource;
 };
 
 type Input = {
@@ -14,7 +16,13 @@ class GetCsvImportEntitiesImportUseCase extends AbstractUseCase<Input, Record<st
     const csvImport = (
       await this.deps.csvImportEntitiesImportsDS.getById(input.id)
     ).getDataOrThrow();
-    return csvImport.toObject();
+    const rowErrors = await this.deps.rowErrorsDS.getByImport(input.id);
+    const importObject = csvImport.toObject();
+    return {
+      ...importObject,
+      rowErrorsSummary: importObject.rowErrors,
+      rowErrors: rowErrors.map(error => error.toObject()),
+    };
   }
 }
 

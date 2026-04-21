@@ -1,5 +1,4 @@
 Key,Korean
-% of sentences above threshold,임계값 이상 문장 비율
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -220,7 +219,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,사용자 맞춤 구성 오류
@@ -293,6 +292,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,다운로드
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,이 창에 파일을 드래그 앤 드롭해 업로드합니다.
 Drag row,Drag row
 Drop your files here to upload or,여기에 파일을 드롭해 업로드합니다.
@@ -302,7 +302,6 @@ Duplicated name,중복된 이름
 Duplicated username,사용자 이름 중복
 Duration,Duration
 Edit,편집
-Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -342,7 +341,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,탐색
 Export CSV,CSV 추출
 Exporting entities to CSV,엔티티를 CSV 로 추출
 Extension Token,Extension Token
@@ -387,7 +385,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,미세 조정
 Fit,맞추기
 Flag,깃발
 for,for
@@ -625,7 +622,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,임계값 이상 문장 수
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR (광학 문자 인식)
@@ -658,7 +654,6 @@ Other,기타
 other,기타
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,out of
 Page,페이지
 Page not found,Page not found
 Pages,페이지
@@ -688,7 +683,6 @@ Plain text,일반 텍스트
 Please contact an admin for details.,자세한 내용은 관리자에게 문의하십시오.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,이미지에 있는 문자와 숫자를 입력해 추출을 시작하십시오.
-Precision,정확도
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -752,6 +746,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Reference,Reference
 References,참고문헌
 Reject,거부
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,연결
 Relationship Type,Relationship Type
@@ -809,7 +804,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,검색
 Search item,아이템 검색
-Search not found,검색 결과 없음
 Search related entities or documents,연결된 엔티티 및 문서 검색
 Search relevance,관련성 검색
 Search text,텍스트 검색
@@ -838,18 +832,11 @@ selected,선택 완료
 selected of,~ 중 선택됨
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,시맨틱 서치
-Semantic Search,시맨틱 서치
-Semantic search minimum sentences help,시맨틱 서치를 위한 최소 문장 팁
-Semantic search overview,시맨틱 서치 개요
-Semantic search results,시맨틱 서치 결과
-Semantic search threshold help,시맨틱 서치 임계값 도움말
 Send,전송
 Send recovery email,복구 이메일 전송
 Sending email,발신 이메일 주소
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,임계값 이상 문장
 Services,Services
 Set as default,기본으로 설정
 Set default language,Set default language
@@ -955,8 +942,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name
@@ -985,7 +972,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,임계점
 Time,시간
 Timelinks,Timelinks
 Timestamp,Timestamp

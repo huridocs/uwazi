@@ -17,16 +17,16 @@ Use it to answer:
 
 ## 2) Current inventory (classified)
 
-### 2.1 Must remain temporarily (intentional compatibility bridges)
+### 2.1 Remaining temporary compatibility bridge
 
 1. `app/api/csv.v2/infrastructure/http/routes.ts`
-   - Uses `CSVLoader` from `#api/csv/index.js` for the v1 fallback path when `v2CSVImport` is disabled.
-   - This is expected while `/api/import` still supports flag-based v1 fallback.
+   - Uses `CSVLoader` from `#api/csv/index.js` for the legacy V1 `/api/import` path.
+   - This is expected while `/api/import` remains as a compatibility route.
 
-2. `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`
-   - Emits old `IMPORT_CSV_*` events under `featureFlags.v1CSVImportCompat`.
-   - Wired through CSV v2 job handlers and `app/queueRegistry.ts`.
-   - This is temporary and removable once v2 UI/socket contract is fully adopted.
+2. `CsvV1CompatEmitter` bridge
+   - Removed in Apr 2026.
+   - `v1CSVImportCompat` flag was removed from tenant feature flags.
+   - CSV v2 flow now emits only `csvImport:*` events.
 
 ### 2.2 Test-only dependency status (`createTestingZip`)
 
@@ -128,7 +128,7 @@ Conclusion:
 ### 5.1 Keep for now (explicitly allowed)
 
 - Keep v1 fallback route in `csv.v2` routes until feature-flag retirement is approved.
-- Keep `CsvV1CompatEmitter` until v2 UI no longer depends on `IMPORT_CSV_*`.
+- `CsvV1CompatEmitter` already removed (Apr 2026).
 
 ### 5.2 Migrate now (next slice)
 
@@ -147,7 +147,7 @@ Conclusion:
 1. ✅ Completed: test helper decoupling (`createTestingZip`).
 2. ✅ Completed: normalization import decoupling (`normalizeThesaurusLabel`).
 3. ✅ Completed: thesauri-create repository replacement off legacy adapters.
-4. Next candidate: remove temporary compatibility bridges (`v1CSVImportCompat`, v1 route fallback) when product/UI rollout allows.
+4. Next candidate: remove the v1 route fallback once product/UI rollout allows.
 
 ## 7) Verification checklist for this workstream
 
@@ -155,7 +155,7 @@ Conclusion:
   - `#api/csv/**` (except intentional v1 fallback in `infrastructure/http/routes.ts`)
   - `#api/thesauri/thesauri.js`
   - `#api/i18n/translations.js`
-- V1 fallback route and compat emitter remain only where intentionally allowed.
+- V1 fallback route remains only where intentionally allowed.
 - Focused Jest specs for touched CSV v2 flows pass with the standard command.
 - This file and `csv-v2-context-07.md` are updated in the same iteration.
 
@@ -219,13 +219,12 @@ Verification:
 With temporary thesauri/translations adapters removed, the next candidate in this workstream is:
 
 - remove remaining intentional compatibility bridges when product rollout allows:
-  - `v1CSVImportCompat` emitter path
   - v1 fallback route path in `csv.v2` HTTP routing.
+  - legacy v1 `/api/import` tests in `app/api/files/specs/uploadRoutes.spec.ts`
+    (remove after csv v1 route is retired).
 
-### 9.1 Current decision (Mar 2026, latest)
+### 9.1 Current decision (Apr 2026 update)
 
-- **Deferred intentionally (not now):** do not remove the remaining compatibility bridges yet.
-- Keep current behavior unchanged for:
+- `CsvV1CompatEmitter` path was removed and is no longer part of the baseline.
+- Remaining deferred bridge:
   - v1 fallback route in `app/api/csv.v2/infrastructure/http/routes.ts`
-  - compat emitter flow (`CsvV1CompatEmitter`, `v1CSVImportCompat` flag, queue wiring)
-- Next agent should start from this deferred baseline and pick up the next approved task, not bridge removal, unless user/team re-prioritizes explicitly.

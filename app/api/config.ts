@@ -123,7 +123,6 @@ export const config = {
       v2UpdateEntity: false,
       v2CSVImport: false,
       v2UpdateThesaurus: false,
-      v1CSVImportCompat: false,
       v2GetEntity: false,
       v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,
