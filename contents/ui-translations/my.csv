@@ -292,6 +292,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,ဒေါင်းလုဒ်လုပ်ရန်
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်ကို ဤဝင်းဒိုးထဲသို့ ဆွဲချပါ
 Drag row,Drag row
 Drop your files here to upload or,သင့်ဖိုင်များကို အပ်လုဒ်လုပ်ရန် ဒီနေရာတွင် ချပါ သို့မဟုတ်
@@ -745,6 +746,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Reference,Reference
 References,ကိုးကားချက်များ
 Reject,ငြင်းပယ်ရန်
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,ဆက်နွှယ်မှု
 Relationship Type,Relationship Type
@@ -940,8 +942,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name

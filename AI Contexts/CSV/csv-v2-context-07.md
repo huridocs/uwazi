@@ -87,6 +87,9 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 - Entities import job now has a basic integration test (single-row happy path).
   Still missing tests for batch processing, row errors report, stop thresholds,
   and files/attachments integration (see 6.10).
+- TODO (post-v1 removal): once legacy `/api/import` is retired, remove remaining
+  v1 CSV route tests from `app/api/files/specs/uploadRoutes.spec.ts` and keep CSV
+  route coverage only under `app/api/csv.v2/**`.
 
 #### 3.5 Retention and cleanup
 
@@ -108,8 +111,14 @@ Use this snapshot first; companion docs provide deeper implementation detail.
   - List rows include `status` as a first-class field for UX list rendering.
 - **TODO (next iteration):**
   - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
-  - Add dedicated failed-rows report download endpoint for CSV v2
-    (for `rowErrors.reportPath`, admin-only, import-scoped authorization).
+  - ✅ `GET /api/csvImportEntities/imports/:id` now includes:
+    - `rowErrors`: array populated from `csv_import_row_errors` for the given import id.
+    - `rowErrorsSummary`: summary/report pointer from `csv_imports.rowErrors` (when present).
+  - **Nice to Have:** paginate `rowErrors` in import detail responses for very large failed-row sets.
+  - ✅ Added dedicated failed-rows report download endpoint for CSV v2:
+    - `GET /api/csvImportEntities/imports/:id/failed-rows-csv`
+    - admin-only
+    - returns `404` when report artifact is unavailable.
   - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
     collections performant and improve UX load times.
   - Include already-persisted extraction metadata in the detail response so UX can render
@@ -335,7 +344,7 @@ is confusing and inconsistent with thesauri preflight behavior.
   - resolves row files outside transactions,
   - uses `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to produce assignments,
   - stores files via `FilesService.storeFiles(...)` outside the DB transaction,
-  - inserts entity + file records inside a per-row transaction (`entitiesDS.create` +
+  - inserts entity + file records inside a per-row transaction (`EntitiesService.insert` +
     `FilesService.insert`).
 - Queue wiring updated to inject `FilesService`, `PropertyAssignmentCreatorServiceStrategy`,
   and `IdGenerator` into `CsvImportEntitiesJob`.
@@ -362,28 +371,12 @@ is confusing and inconsistent with thesauri preflight behavior.
   (job still updates status and dispatches the next stage).
 - Spec coverage added for the **no-relationships** path (no progress emit, stats set to zero).
 
-13. **V1 socket-compat layer (Mar 2026)**
+13. **V1 socket-compat layer removal (Apr 2026)**
 
-- Added a removable, handler-only compat emitter to reuse the v1 UI socket footprint while the
-  v2 UI is under construction.
-- Emits **tenant-admin** events only (no session propagation), to avoid polluting use cases.
-- Feature-flagged via `featureFlags.v1CSVImportCompat` (default `false`).
-- Events:
-  - `IMPORT_CSV_START`: emitted from extract job start.
-  - `IMPORT_CSV_PROGRESS`: emitted from entities-import batches (cumulative entities created).
-  - `IMPORT_CSV_ROW_EXCEPTIONS`: emitted once on entities-import success, built from
-    `csv_import_row_errors` and grouped by error message.
-  - `IMPORT_CSV_ERROR`: emitted from any stage failure (extract, preflight, thesauri, relationships, import).
-  - `IMPORT_CSV_END`: emitted after entities-import success (after row exceptions).
-- Implementation:
-  - `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`
-  - wired in queue worker registration (`app/queueRegistry.ts`)
-  - used in job handlers:
-    - `CsvExtractUploadedZipJobHandler`
-    - `CsvPreflightJobHandler`
-    - `CsvCreateThesauriValuesJobHandler`
-    - `CsvCreateRelationshipEntitiesJobHandler`
-    - `CsvImportEntitiesJobHandler`
+- Removed temporary V1 socket compatibility bridge from CSV v2 flow.
+- Removed `featureFlags.v1CSVImportCompat` and `CsvV1CompatEmitter`.
+- CSV v2 handlers now emit only the native `csvImport:*` tenant-admin events.
+- Legacy `IMPORT_CSV_*` socket stats continue to be emitted only by the V1 `/api/import` route flow.
 
 14. **Extraction metadata persisted on imports (Feb 2026)**
 
@@ -404,15 +397,15 @@ is confusing and inconsistent with thesauri preflight behavior.
 - UX data inventory doc added:
   - `AI Contexts/CSV/csv-v2-ux-data-inventory.md`
 
-#### How to remove v1 compat (when v2 UI is ready)
+#### V1 compat removal checklist (completed Apr 2026)
 
-1. Delete `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`.
-2. Remove `v1CSVImportCompat` from:
+1. Deleted `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`.
+2. Removed `v1CSVImportCompat` from:
    - `app/api/tenants/tenantContext.ts`
    - `app/api/config.ts`
-3. Remove `CsvV1CompatEmitter` wiring in `app/queueRegistry.ts`.
-4. Remove optional `v1Compat` usage from CSV job handlers listed above.
-5. Delete any v1 compat references in docs/tests (if added).
+3. Removed compat wiring from `app/queueRegistry.ts`.
+4. Removed optional `v1Compat` usage from CSV v2 job handlers.
+5. Updated docs to reflect the bridge retirement.
 
 ### 7) Agent-specific notes (handoff)
 
@@ -474,9 +467,16 @@ and avoid leaking internal exceptions directly to users.
 Policy clarification (agreed):
 
 - Preserve row index fidelity for analysis/import traceability.
+- Row-error persistence cardinality is currently one error per failed row (first encountered failure).
+- Multi-error per row is not part of the current write model and would require explicit design work.
 - Malformed rows are true failures and must remain visible in row errors and failed-rows CSV.
-- Empty source lines are the exception: they should not be surfaced as row errors and should not
-  produce blank entries in failed-rows CSV.
+- Empty source lines are explicit failures in row errors (to keep traceability), but must be
+  classified as `ROW_EMPTY_OR_MALFORMED` with message `Empty line.` (never generic `INTERNAL_ERROR`).
+- Empty-line row errors are counted in `stats.rowsFailed`.
+- `failed_rows.csv` is a filtered artifact: empty-line failures are excluded from exported CSV rows.
+- `file` column misuse with multiple values (e.g. `fileA.pdf|fileB.jpg`) must not report
+  misleading `file not found`; it should return an explicit validation error instructing users
+  to use `files` for multi-document input.
 
 Source of truth for this track:
 
@@ -1064,15 +1064,13 @@ Implementation simplifications performed:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
   - result: pass (2 suites, 4 tests).
 
-#### 18.13 Boundary-cleanup status checkpoint (Mar 2026, latest)
+#### 18.13 Boundary-cleanup status checkpoint (Apr 2026 update)
 
 - CSV-local thesauri/translations adapters are removed and covered by focused tests.
 - Remaining v1 compatibility bridges are identified and documented in:
   - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
-- **Current decision:** bridge removal (`v1` fallback route + `CsvV1CompatEmitter`) is explicitly deferred for now and should not be executed in the next slice unless re-prioritized by user/team.
-- Handoff rule for next agent:
-  - use the current bridge-preserving baseline as the starting point,
-  - proceed with the next approved task, not compat bridge removal by default.
+- `CsvV1CompatEmitter` bridge was removed.
+- Current remaining compatibility bridge is only the v1 `/api/import` route path.
 
 #### 18.14 Cleanup workstream context split (Mar 2026)
 
@@ -1226,12 +1224,30 @@ Implementation simplifications performed:
   - middleware: V2 `UploadMiddleware` (request-time instantiation)
   - handler: `RegisterCsvImportController`
 - Compatibility route remains:
-  - `POST /api/import` still supports V1/V2 flag-based behavior for transition/testing.
+  - `POST /api/import` is V1-only for transition/testing while V2 uses `POST /api/csvImportEntities`.
 - Frontend handoff doc updated to make V2 endpoint primary:
   - `AI Contexts/CSV/csv-v2-front-end-notes.md`
 - Verification:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/files/specs/uploadRoutes.spec.ts`
   - result: pass (includes new `POST /api/csvImportEntities` test).
+
+#### 18.23 Relationship sync regression in entities import (Apr 2026)
+
+- Manual/frontend validation surfaced a critical regression:
+  - relationship metadata values were persisted on imported rows,
+  - but actual relationship links were not created.
+- Root cause:
+  - `CsvImportEntitiesBatchProcessor` inserted entities via low-level
+    `entitiesDS.create(...)`, bypassing the Entities module side-effects.
+  - This skipped `RelationshipSyncJob` dispatch from `EntitiesService.insert(...)`.
+- Fix implemented:
+  - CSV v2 row import now persists entities through `EntitiesService.insert(...)`
+    inside the per-row transaction, then inserts files via `FilesService.insert(...)`.
+  - `CsvImportEntitiesJobFactory` now wires `EntitiesService` into the import job and
+    uses the same dispatcher instance so relationship sync dispatch is observable/testable.
+- Test coverage added:
+  - `CsvImportEntitiesJob.spec.ts` now asserts `RelationshipSyncJob` dispatch for
+    relationship-bearing imported rows.
 
 ### 19) TODO — Document ReadTheDocs import instructions
 

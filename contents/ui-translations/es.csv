@@ -290,6 +290,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
 Drag row,Drag row
 Drop your files here to upload or,Suelta los archivos aquí para cargar o
@@ -743,6 +744,7 @@ Receiving email description,"Si tienes un formulario de contacto, esta es la dir
 Reference,Reference
 References,Referencias
 Reject,Rechazar
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relación
 Relationship Type,Tipo de relación
@@ -937,8 +939,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Nombre del Tesauro
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Tesauro
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name

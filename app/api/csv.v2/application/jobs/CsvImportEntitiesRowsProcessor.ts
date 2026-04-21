@@ -1,5 +1,5 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
@@ -16,7 +16,7 @@ type ProcessRowsDeps = {
   rowsDS: CsvImportRowsDataSource;
   rowErrorsDS: CsvImportRowErrorsDataSource;
   csvImportsDS: CsvImportsDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesService: EntitiesService;
   transactionManager: TransactionManager;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
   filesService: FilesService;
@@ -35,6 +35,8 @@ const processImportRows = async (params: {
   context: ImportContext;
   callbacks: Callbacks;
   deps: ProcessRowsDeps;
+  tenantName: string;
+  actorId: string;
   batchSize: number;
   failurePolicy: FailurePolicy;
 }): Promise<{
@@ -45,7 +47,7 @@ const processImportRows = async (params: {
   cancelled: boolean;
   stopReason?: string;
 }> => {
-  const { context, callbacks, deps, batchSize, failurePolicy } = params;
+  const { context, callbacks, deps, batchSize, failurePolicy, tenantName, actorId } = params;
   const { totalRows } = context;
   let processedRows = context.csvImport.progress?.processedRows ?? 0;
   const startOffset = Math.min(
@@ -80,7 +82,7 @@ const processImportRows = async (params: {
     // eslint-disable-next-line no-await-in-loop
     const batchResult = await processImportBatch({
       deps: {
-        entitiesDS: deps.entitiesDS,
+        entitiesService: deps.entitiesService,
         csvImportsDS: deps.csvImportsDS,
         rowErrorsDS: deps.rowErrorsDS,
         transactionManager: deps.transactionManager,
@@ -90,6 +92,11 @@ const processImportRows = async (params: {
         idGenerator: deps.idGenerator,
       },
       context,
+      insertContext: {
+        tenantName,
+        actorId,
+        targetLanguage: context.defaultLanguage,
+      },
       rows,
       offset,
       totalRows,
