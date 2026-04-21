@@ -14,6 +14,7 @@ import waitForExpect from 'wait-for-expect';
 import { convertToPDFService } from '../convertToPdfService.js';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { search } from '#api/search/search.js';
 
 const f = getFixturesFactory();
 
@@ -38,6 +39,7 @@ describe('convertToPdfWorker', () => {
     redisSMQ = new RedisSMQ({ client: redisClient });
     await testingDB.connect({ defaultTenant: false });
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp({
       settings: [
         {
@@ -78,6 +80,7 @@ describe('convertToPdfWorker', () => {
   });
 
   afterAll(async () => {
+    jest.resetAllMocks();
     await Redis.disconnect();
     await testingEnvironment.tearDown();
     await worker.stop();

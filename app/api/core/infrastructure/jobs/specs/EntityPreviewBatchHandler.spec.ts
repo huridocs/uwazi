@@ -87,7 +87,7 @@ const createSUT = () => {
 
 const heartbeat = jest.fn();
 
-const dispatch = (
+const dispatch = async (
   handler: EntityPreviewBatchHandler,
   sharedIds: string[],
   languageKey: 'en' | 'es' = 'es'
@@ -97,6 +97,14 @@ const dispatch = (
     { languageKey, sharedIds },
     { namespace: tenants.current().name, maxRetries: 3, retryCount: 0 }
   );
+
+const getEntityPreviews = async (sharedId: string) => {
+  const all = await testingEnvironment.db.getAllFrom('entities');
+  return {
+    en: all.find(e => e.sharedId === sharedId && e.language === 'en')?.preview,
+    es: all.find(e => e.sharedId === sharedId && e.language === 'es')?.preview,
+  };
+};
 
 describe('EntityPreviewBatchHandler', () => {
   beforeEach(async () => {
@@ -150,21 +158,21 @@ describe('EntityPreviewBatchHandler', () => {
     it('should correctly recalculate preview for each entity independently', async () => {
       await dispatch(createSUT(), ['entity1', 'entity2', 'entity3']);
 
-      const entities = await testingEnvironment.db.getAllFrom('entities');
+      const [e1, e2, e3] = await Promise.all([
+        getEntityPreviews('entity1'),
+        getEntityPreviews('entity2'),
+        getEntityPreviews('entity3'),
+      ]);
 
-      const entity1En = entities.find(e => e.sharedId === 'entity1' && e.language === 'en');
-      const entity1Es = entities.find(e => e.sharedId === 'entity1' && e.language === 'es');
-      const entity2En = entities.find(e => e.sharedId === 'entity2' && e.language === 'en');
-      const entity2Es = entities.find(e => e.sharedId === 'entity2' && e.language === 'es');
-      const entity3En = entities.find(e => e.sharedId === 'entity3' && e.language === 'en');
-      const entity3Es = entities.find(e => e.sharedId === 'entity3' && e.language === 'es');
-
-      expect(entity1En?.preview).toBe(`${f.idString('doc1-en')}.jpg`);
-      expect(entity1Es?.preview).toBe(`${f.idString('doc1-es')}.jpg`);
-      expect(entity2En?.preview).toBe(`${f.idString('doc2-en')}.jpg`);
-      expect(entity2Es?.preview).toBe(`${f.idString('doc2-en')}.jpg`);
-      expect(entity3En?.preview).toBeUndefined();
-      expect(entity3Es?.preview).toBeUndefined();
+      expect(e1).toEqual({
+        en: `${f.idString('doc1-en')}.jpg`,
+        es: `${f.idString('doc1-es')}.jpg`,
+      });
+      expect(e2).toEqual({
+        en: `${f.idString('doc2-en')}.jpg`,
+        es: `${f.idString('doc2-en')}.jpg`,
+      });
+      expect(e3).toEqual({ en: undefined, es: undefined });
     });
   });
 });

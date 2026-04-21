@@ -1,29 +1,34 @@
-import testingDB from '#api/utils/testing_db.js';
+// eslint-disable-next-line node/no-restricted-import
+import { writeFile } from 'fs/promises';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import { search } from '#api/search/search.js';
 import {
   convertToPDFService,
   MimeTypeNotSupportedForConversion,
 } from '#api/services/convertToPDF/convertToPdfService.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-// eslint-disable-next-line node/no-restricted-import
-import { writeFile } from 'fs/promises';
-import entitiesModel from '#api/entities/entitiesModel.js';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { files, UpdateFileError } from '../files.js';
 import { attachmentsPath, setupTestUploadedPaths } from '../filesystem.js';
-import { processDocument, convertPDF } from '../processDocument.js';
 import { PDF } from '../PDF.js';
+import { convertPDF, processDocument } from '../processDocument.js';
 
 const f = getFixturesFactory();
 
 describe('processDocument', () => {
   beforeEach(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp({});
     await setupTestUploadedPaths();
     await writeFile(attachmentsPath('test.docx'), 'data');
   });
 
-  afterAll(async () => testingEnvironment.tearDown());
+  afterAll(async () => {
+    jest.resetAllMocks();
+    await testingEnvironment.tearDown();
+  });
 
   describe('process non pdf document', () => {
     it('should go through the normal pdf flow (when feature is not active)', async () => {

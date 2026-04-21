@@ -90,6 +90,10 @@ describe('PDFPostProcessJob', () => {
     await testingEnvironment.setupTenantTmpPaths(fixtures.files);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });

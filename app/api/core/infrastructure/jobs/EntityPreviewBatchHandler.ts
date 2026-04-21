@@ -34,9 +34,18 @@ export class EntityPreviewBatchHandler extends V1CompatTenantDispatchable<Params
       const allThumbnails = await this.deps.filesDS.getThumbnails(sharedIds).all();
       const entities = (await this.deps.entitiesDS.getAllBySharedId(sharedIds)).getDataOrThrow();
 
+      const thumbnailsByEntity = allThumbnails.reduce<Map<string, typeof allThumbnails>>(
+        (grouped, thumbnail) => {
+          const list = grouped.get(thumbnail.entity) ?? [];
+          list.push(thumbnail);
+          grouped.set(thumbnail.entity, list);
+          return grouped;
+        },
+        new Map()
+      );
+
       entities.forEach(entity => {
-        const entityThumbnails = allThumbnails.filter(t => t.entity === entity.sharedId);
-        entity.setPreview(entityThumbnails, defaultLanguage);
+        entity.setPreview(thumbnailsByEntity.get(entity.sharedId) ?? [], defaultLanguage);
       });
       await this.deps.entitiesDS.bulkUpdate(entities);
     });
