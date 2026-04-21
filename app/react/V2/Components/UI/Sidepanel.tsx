@@ -14,6 +14,7 @@ interface SidePanelProps {
   withOverlay?: boolean;
   size?: 'small' | 'medium' | 'large';
   panelId?: string;
+  boundedToParent?: boolean;
 }
 
 const sidepanelHeader = (
@@ -48,6 +49,7 @@ const Sidepanel = ({
   withOverlay,
   size = 'medium',
   panelId,
+  boundedToParent = false,
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
   const titleId = useId();
@@ -161,11 +163,18 @@ const Sidepanel = ({
   );
 
   if (withOverlay) {
+    const overlayContainerClass = boundedToParent
+      ? 'absolute inset-0 z-10 flex w-full h-full max-h-full'
+      : 'fixed top-0 left-0 z-10 flex w-full h-full max-h-full';
+    const overlayPanelClass = boundedToParent
+      ? `w-full h-full top-0 right-0 absolute bg-white border-l-2 transition duration-200 ease-in transform ${width}`
+      : `w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`;
+
     return (
       <Transition
         show={isOpen}
         as="div"
-        className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full"
+        className={overlayContainerClass}
       >
         <Transition.Child
           as="div"
@@ -177,7 +186,7 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="div"
-          className={`w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
+          className={overlayPanelClass}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
@@ -201,7 +210,7 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="div"
-      className={`fixed top-0 right-0 z-40 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
+      className={`${boundedToParent ? 'absolute inset-0' : 'fixed top-0 right-0'} z-40 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
