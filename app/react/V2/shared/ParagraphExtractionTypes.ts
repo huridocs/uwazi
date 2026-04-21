@@ -1,5 +1,5 @@
 import { ClientEntitySchema } from '#app/istore.js';
-import { Entity } from '../api/entities/types';
+import { Entity } from '../api/entities/types.js';
 
 enum EntityStatus {
   New = 'new',

@@ -108,7 +108,7 @@ describe('sidepanelFunctions', () => {
 
     it('should return undefined when entity is not provided', async () => {
       const result = await handleEntitySave(undefined, mockTextProperty, 'new value', mockTemplate);
-      expect(result).toBeUndefined();
+      expect(result).toEqual([undefined]);
     });
 
     it('should return undefined when property name is not provided', async () => {
@@ -119,7 +119,7 @@ describe('sidepanelFunctions', () => {
         'new value',
         mockTemplate
       );
-      expect(result).toBeUndefined();
+      expect(result).toEqual([undefined]);
     });
 
     it('should handle title property updates', async () => {

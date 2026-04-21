@@ -4,7 +4,6 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { FileType } from '#shared/types/fileType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 import { Translate } from '#app/I18N/index.js';
 import { ClientTemplateSchema } from '#app/istore.js';
@@ -126,15 +125,15 @@ const PDFSidepanel = ({
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
     if (dirtyFields.field && entity?._id) {
-      const savedEntity = await handleEntitySave(
+      const [savedEntity, error] = await handleEntitySave(
         { ...entity, __extractedMetadata: { fileID: pdfFile?._id, selections } },
         property,
         value.field,
         template
       );
 
-      if (savedEntity instanceof FetchResponseError) {
-        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+      if (error) {
+        const details = error.json.prettyMessage;
 
         setNotifications({ type: 'error', text: 'An error occurred', details });
       } else if (savedEntity) {

@@ -2,10 +2,12 @@ import { ClientPropertySchema } from '#app/istore.js';
 import { MetadataObjectSchema, PropertyValueSchema } from '#shared/types/commonTypes.js';
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as filesAPI from '#V2/api/files/index.js';
 import { parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import * as entitiesAPI from '#V2/api/entities/index.js';
 import { Entity } from '#V2/api/entities/types.js';
+import { ApiResponse } from '#V2/api/ApiResponse.js';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
 
@@ -56,10 +58,10 @@ const handleEntitySave = async (
   property?: ClientPropertySchema,
   metadata?: PropertyValueSchema | PropertyValueSchema[] | undefined,
   template?: TemplateSchema
-) => {
+): Promise<ApiResponse<Entity | undefined, FetchResponseError>> => {
   const propertyName = property?.name;
   if (!entity || !propertyName) {
-    return undefined;
+    return [undefined];
   }
 
   let data;
@@ -85,8 +87,7 @@ const handleEntitySave = async (
 
   const entityToSave = entitiesAPI.formatter.update(entity, data);
 
-  const [result] = await entitiesAPI.update(entityToSave);
-  return result;
+  return entitiesAPI.update(entityToSave);
 };
 
 const coerceValue = async (

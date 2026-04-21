@@ -3,7 +3,6 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 import { Translate } from '#app/I18N/index.js';
 import { ClientTemplateSchema } from '#app/istore.js';
@@ -92,15 +91,14 @@ const PropertySidepanel = ({
     }
   }, [dirtyFields.field, setValue]);
 
-  // eslint-disable-next-line max-statements
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
     if (dirtyFields.field) {
-      const savedEntity = await handleEntitySave(entity, property, value.field, template);
+      const [savedEntity, error] = await handleEntitySave(entity, property, value.field, template);
 
-      if (savedEntity instanceof FetchResponseError) {
-        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+      if (error) {
+        const details = error.json.prettyMessage;
 
         setNotifications({ type: 'error', text: 'An error occurred', details });
       } else if (savedEntity) {

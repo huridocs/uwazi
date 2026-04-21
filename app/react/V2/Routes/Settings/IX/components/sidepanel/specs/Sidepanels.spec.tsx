@@ -121,7 +121,7 @@ jest.mock('#V2/api/entities', () => ({
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
   coerceValue: jest.fn().mockResolvedValue({ success: true, value: 'test' }),
-  save: jest.fn().mockResolvedValue({ success: true }),
+  update: jest.fn().mockResolvedValue([{}]),
 }));
 
 jest.mock('#V2/api/search', () => ({
