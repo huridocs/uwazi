@@ -539,6 +539,38 @@ describe('UpdateThesaurusUseCase', () => {
     expect(jobsAfter).toEqual(jobsBefore);
   });
 
+  it('should persist reordered values without triggering translations or denormalization jobs', async () => {
+    const { sut } = createSut();
+    const existing = await getThesaurusById(factory.id('countries'));
+    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+
+    const reorderedValues = [
+      {
+        ...existing.values[2],
+        values: [existing.values[2].values![1], existing.values[2].values![0]],
+      },
+      existing.values[0],
+      existing.values[1],
+    ];
+
+    await sut.execute({
+      id: existing._id.toString(),
+      name: existing.name,
+      values: reorderedValues,
+    });
+
+    const after = await getThesaurusById(factory.id('countries'));
+    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+    const jobs = await getJobs();
+
+    expect(after.values.map(value => value.id)).toEqual(reorderedValues.map(value => value.id));
+    expect(after.values[0].values!.map(value => value.id)).toEqual(
+      reorderedValues[0].values!.map(value => value.id)
+    );
+    expect(translationsAfter).toEqual(translationsBefore);
+    expect(jobs).toHaveLength(0);
+  });
+
   it('should do nothing when no changes are made', async () => {
     const existing = await getThesaurusById(factory.id('countries'));
 
