@@ -29,10 +29,6 @@ function initializeFiltersForm(values = {}) {
 function selectDocument(_doc) {
   return async (dispatch, getState) => {
     const doc = _doc.toJS ? _doc.toJS() : _doc;
-    const showingSemanticSearch = getState().library.sidepanel.tab === 'semantic-search-results';
-    if (showingSemanticSearch && !doc.semanticSearch) {
-      dispatch(actions.set('library.sidepanel.tab', ''));
-    }
     dispatch(actions.set('library.sidepanel.view', 'library'));
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENT, doc });

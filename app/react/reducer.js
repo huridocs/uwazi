@@ -11,7 +11,6 @@ import { reducer as connections } from '#app/Connections/reducers/reducer.js';
 import { reducer as relationships } from '#app/Relationships/reducers/reducer.js';
 import { connectionsListReducer as ConnectionsList } from '#app/ConnectionsList/reducers/reducer.js';
 import { reducer as attachments } from '#app/Attachments/index.js';
-import { reducer as semanticSearch } from '#app/SemanticSearch/reducers/reducer.js';
 
 import { reducer as library } from '#app/Library/reducers/reducer.js';
 import { modalsReducer as modals } from '#app/Modals/reducers/modalsReducer.js';
@@ -34,7 +33,6 @@ const rootReducer = combineReducers({
   importEntities,
   locale,
   inlineEdit,
-  semanticSearch,
   inlineEditForm: formReducer('inlineEditModel', {}),
   inlineEditModel: modelReducer('inlineEditModel', {}),
   page,

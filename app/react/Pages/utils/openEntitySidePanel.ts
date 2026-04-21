@@ -7,7 +7,6 @@ type SidePanelTab =
   | 'metadata'
   | 'references'
   | 'relationships'
-  | 'semantic-search-results'
   | 'text-search'
   | 'toc';
 
