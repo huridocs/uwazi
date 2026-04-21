@@ -1,5 +1,4 @@
 Key,French
-% of sentences above threshold,% des phrases en-dessus du seuil
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -219,7 +218,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Erreur de composant personnalisé
@@ -301,7 +300,6 @@ Duplicated name,Nom dupliqué
 Duplicated username,Nom d'utilisateur en double
 Duration,Durée
 Edit,Éditer
-Edit all documents matching this criteria,Modifier tous les documents correspondant à ce critère
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -341,7 +339,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,Exploration
 Export CSV,Exporter CSV
 Exporting entities to CSV,Exporter des entités vers CSV
 Extension Token,Extension Token
@@ -386,7 +383,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,Ajuster
 Fit,Adapter
 Flag,Drapeau
 for,for
@@ -624,7 +620,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,Number of sentences above threshold
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -657,7 +652,6 @@ Other,Autre
 other,Autre
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,hors de
 Page,Page
 Page not found,Page non trouvée
 Pages,Pages
@@ -687,7 +681,6 @@ Plain text,Texte brut
 Please contact an admin for details.,Veuillez contacter un administrateur pour plus de détails.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,Veuillez saisir les lettres et les chiffres de l'image pour lancer l'exportation.
-Precision,Précision
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -808,7 +801,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Recherche
 Search item,Recherche d'éléménts
-Search not found,Recherche non trouvée
 Search related entities or documents,Rechercher des entités ou des documents liés
 Search relevance,Pertinence de recherche
 Search text,Recherche de texte
@@ -837,18 +829,11 @@ selected,Sélectionné
 selected of,sélectionné sur
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,Recherche sémantique
-Semantic Search,Recherche sémantique
-Semantic search minimum sentences help,Aide sur les phrases minimales de la recherche sémantique
-Semantic search overview,Aperçu de la recherche sémantique
-Semantic search results,Résultats de la recherche sémantique
-Semantic search threshold help,Aide sur les seuils de recherche sémantique
 Send,Envoyer
 Send recovery email,Envoyer mail de récupération
 Sending email,Envoi d'e-mail
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,Phrases au-dessus du seuil
 Services,Services
 Set as default,Définir par défaut
 Set default language,Set default language
@@ -984,7 +969,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,Seuil
 Time,Temps
 Timelinks,Timelinks
 Timestamp,Timestamp

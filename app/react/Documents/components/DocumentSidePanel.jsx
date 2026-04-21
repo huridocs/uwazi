@@ -15,7 +15,6 @@ import { ConnectionsList as Connections } from '#app/Viewer/components/Connectio
 import { ConnectionsGroups } from '#app/ConnectionsList/index.js';
 import { ShowIf } from '#app/App/ShowIf.js';
 import { SidePanel } from '#app/Layout/SidePanel.js';
-import { DocumentSemanticSearchResults } from '#app/SemanticSearch/components/DocumentResults.js';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
 import { TocGeneratedLabel, ReviewTocButton } from '#app/ToggledFeatures/tocGeneration/index.js';
 import { actions } from '#app/BasicReducer/index.js';
@@ -198,54 +197,6 @@ class DocumentSidePanel extends Component {
           </button>
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
-              {(() => {
-                if (!this.props.raw && doc.get('semanticSearch')) {
-                  return (
-                    <li>
-                      <ShowIf if={currentSidepanelView === 'entity'}>
-                        <TabLink
-                          className=""
-                          to="semantic-search-results"
-                          role="button"
-                          tabIndex="0"
-                          aria-label={t('System', 'Semantic search results', null, false)}
-                          component="div"
-                        >
-                          <I18NLink
-                            className={this.linkClassNames(tab === 'semantic-search-results')}
-                            replace
-                            to={linkTo('semantic-search-results')}
-                            onClick={() =>
-                              store.dispatch(
-                                actions.set('viewer.sidepanel.tab', 'semantic-search-results')
-                              )
-                            }
-                          >
-                            <Icon icon="flask" />
-                            <span className="tab-link-tooltip">
-                              <Translate>Semantic search results</Translate>
-                            </span>
-                          </I18NLink>
-                        </TabLink>
-                      </ShowIf>
-                      <ShowIf if={currentSidepanelView === 'library'}>
-                        <TabLink
-                          to="semantic-search-results"
-                          role="button"
-                          tabIndex="0"
-                          aria-label={t('System', 'Semantic search results', null, false)}
-                          component="div"
-                        >
-                          <Icon icon="flask" />
-                          <span className="tab-link-tooltip">
-                            <Translate>Semantic search results</Translate>
-                          </span>
-                        </TabLink>
-                      </ShowIf>
-                    </li>
-                  );
-                }
-              })()}
               {(() => {
                 if (!this.props.raw) {
                   return (
@@ -725,9 +676,6 @@ class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="relationships" className="connections">
               <ConnectionsGroups expanded={this.state.relationshipsExpanded} />
-            </TabContent>
-            <TabContent for="semantic-search-results">
-              <DocumentSemanticSearchResults doc={jsDoc} />
             </TabContent>
           </Tabs>
         </div>
