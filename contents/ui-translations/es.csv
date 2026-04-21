@@ -1,5 +1,4 @@
 Key,Spanish
-% of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
 2FA,2FA
@@ -218,7 +217,7 @@ Created user group,Grupo de usuarios creado
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
@@ -300,7 +299,6 @@ Duplicated name,Nombre duplicado
 Duplicated username,Nombre de usuario duplicado
 Duration,Duración
 Edit,Editar
-Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -340,7 +338,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expandir todo
 Expand All,Expand All
-Exploration,Exploración
 Export CSV,Exportar CSV
 Exporting entities to CSV,Exportando entidades a CSV
 Extension Token,Token extensión
@@ -385,7 +382,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Encontrando sugerencias
-Fine tune,Afinar búsqueda
 Fit,Encajar
 Flag,Bandera
 for,for
@@ -623,7 +619,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,No encontrado
 Nothing selected,Nothing selected
-Number of sentences above threshold,El número de frases supera el límite
 Obsolete,Obsoleto
 obsolete,obsolete
 OCR,ROC
@@ -656,7 +651,6 @@ Other,Otro
 other,Otro
 Other users will be affected by this action!,Otros usuarios pueden resultar afectados por ésta acción!
 Others,Others
-out of,fuera de
 Page,Página
 Page not found,Página no encontrada
 Pages,Páginas
@@ -686,7 +680,6 @@ Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
 Please type in,Por favor digite
 Please type in letters and numbers from the image to start the export.,"Por favor, teclea los caracteres de la imagen para iniciar la exportación."
-Precision,Precisión
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -807,7 +800,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Buscar
 Search item,Buscar elemento
-Search not found,Búsqueda no encontrada
 Search related entities or documents,Buscar entidades o documentos relacionados
 Search relevance,Relevancia de la búsqueda
 Search text,Buscar texto
@@ -836,18 +828,11 @@ selected,seleccionado(s)
 selected of,seleccionados de
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,Búsqueda semántica
-Semantic Search,Búsqueda semántica
-Semantic search minimum sentences help,La búsqueda semántica se aplica a cada oración en un documento. Filtra los documentos por el número mínimo de oraciones que superan el límite.
-Semantic search overview,"La búsqueda semántica es una técnica para proporcionar resultados contextuales. Su capacidad para capturar conceptos y asociaciones de palabras en el lenguaje humano permite recuperar información relacionada, como sinónimos, categorías o entidades conectadas, etc."
-Semantic search results,Resultados de búsqueda semántica
-Semantic search threshold help,El límite determina qué tan cerca coinciden los resultados con el concepto de búsqueda. Mueve el control deslizante hacia la derecha para reducir el concepto de la consulta de búsqueda. Los resultados obtenidos serán más precisos. Mueve el control deslizante hacia la izquierda para ampliar más el concepto y explorar contenido relacionado.
 Send,Enviar
 Send recovery email,Enviar correo electrónico de recuperación
 Sending email,Correo electrónico de envío
 Sending email description,Esta es la dirección de correo electrónico que aparecerá como remitente cuando se envíe un correo electrónico desde tu colección Uwazi a usuarios registrados. La dirección predeterminada es *no-reply@uwazi.io*. Puedes configurar una dirección personalizada aquí.
 Sending labeled data,Sending labeled data
-Sentences above threshold,Palabras por encima del límite
 Services,Servicios
 Set as default,Establecer como predeterminado
 Set default language,Establecer idioma predeterminado
@@ -982,7 +967,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,Límite
 Time,Tiempo
 Timelinks,Líneas de tiempo
 Timestamp,Timestamp

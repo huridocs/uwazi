@@ -10,7 +10,6 @@ import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import * as semanticSearchActions from '#app/SemanticSearch/actions/actions.js';
 import * as libraryActions from '#app/Library/actions/libraryActions.js';
 import { SearchBar } from '#app/Library/components/SearchBar.js';
 import { IStore } from '#app/istore.js';
@@ -39,7 +38,6 @@ describe('SearchBar', () => {
 
     jest.spyOn(libraryActions, 'searchDocuments');
     jest.spyOn(formActions, 'change');
-    jest.spyOn(semanticSearchActions, 'submitNewSearch');
     state = {
       ...defaultState,
       library: {
