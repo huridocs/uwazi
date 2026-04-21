@@ -13,12 +13,7 @@ import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
 import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
 import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource.js';
-import {
-  CsvImportDomain,
-  CsvImportStatus,
-  CsvImportStats,
-  CsvImport,
-} from '../../domain/CsvImport.js';
+import { CsvImportDomain, CsvImportStatus, CsvImportStats } from '../../domain/CsvImport.js';
 import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
 import { persistRowErrorsReport } from '../services/CsvImportEntitiesErrorReporting.js';
 import { processImportRows } from './CsvImportEntitiesRowsProcessor.js';
@@ -54,7 +49,6 @@ type Deps = {
 const DEFAULT_BATCH_SIZE = 1000;
 
 type FinalizeSuccessInput = {
-  csvImport: CsvImport;
   entitiesCreated: number;
   processedRows: number;
   failedRows: number;
@@ -101,8 +95,8 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
   }
 
   private async finalizeSuccess(input: FinalizeSuccessInput) {
-    const { csvImport, entitiesCreated, processedRows, failedRows, importId, tenantName, userId } =
-      input;
+    const { entitiesCreated, processedRows, failedRows, importId, tenantName, userId } = input;
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     await this.transactionManager.run(async () => {
       const updatedStats: CsvImportStats = {
         ...(csvImport.stats || {}),
@@ -136,7 +130,7 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
       importId
     );
     const actorId = userId ?? context.csvImport.createdBy;
-    const { entitiesCreated, csvImport, processedRows, shouldStop, stopReason, cancelled } =
+    const { entitiesCreated, processedRows, shouldStop, stopReason, cancelled } =
       await processImportRows({
         context,
         callbacks,
@@ -173,7 +167,6 @@ class CsvImportEntitiesJob extends CsvCleanupAwareJob<Input, void, Deps> {
       throw new NonRetryableJobError(new Error(stopReason || 'Stopped due to failure policy'));
     }
     await this.finalizeSuccess({
-      csvImport,
       entitiesCreated,
       processedRows,
       failedRows: report.failedRows,

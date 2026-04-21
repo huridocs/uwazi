@@ -517,6 +517,14 @@ describe('CsvImportEntitiesJob (integration)', () => {
         },
       ],
     });
+
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(updatedImport.rowErrors).toEqual(
+      expect.objectContaining({
+        failedRows: 1,
+        reportPath: `csv-imports/${importId}/reports/failed_rows.csv`,
+      })
+    );
   });
 
   it('classifies empty lines as row errors and excludes them from failed-rows report artifact', async () => {
