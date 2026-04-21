@@ -4,11 +4,7 @@ import { ThemeSelector } from '#V2/Components/ThemeSelector/index.js';
 import { Button, SectionHeading, Sidepanel, SurfacePanel } from '#V2/Components/UI/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import type { ThemeAssets, ThemeMode } from '#V2/theme/themes.js';
-import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
-import {
-  faviconImageSizeRule,
-  themeLogotypeImageSizeRule,
-} from './Theming/brandImageUploadRules.js';
+import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
 
 type ThemeSettingsSidepanelProps = {
   isOpen: boolean;
@@ -84,9 +80,13 @@ const ThemeSettingsSidepanel = ({
                         }
                         files={customUploadFiles}
                         selectButtonTitle={<Translate>Select site logo image</Translate>}
-                        recommendedSize="48x16 to 800x120 px"
-                        sizeRule={themeLogotypeImageSizeRule}
-                        emptyGalleryHint={<Translate>Site logo no images hint</Translate>}
+                        recommendedSize="200x32 px"
+                        sizeRule={{
+                          width: 200,
+                          height: 32,
+                          policy: 'soft',
+                          assetLabel: 'logotype',
+                        }}
                         previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-32`}
                       />
                     </SurfacePanel>
@@ -116,9 +116,13 @@ const ThemeSettingsSidepanel = ({
                         }
                         files={customUploadFiles}
                         selectButtonTitle={<Translate>Select favicon image</Translate>}
-                        recommendedSize="16x16 to 512x512 px (square)"
-                        sizeRule={faviconImageSizeRule}
-                        emptyGalleryHint={<Translate>Favicon no images hint</Translate>}
+                        recommendedSize="64x64 px"
+                        sizeRule={{
+                          width: 64,
+                          height: 64,
+                          policy: 'strict',
+                          assetLabel: 'favicon',
+                        }}
                         previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-14`}
                       />
                     </SurfacePanel>

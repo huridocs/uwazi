@@ -52,8 +52,8 @@ const takeSnapshot = () => {
     }
   });
   cy.get('.markdown-viewer', { timeout: 30000 }).should('be.visible');
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.get('.markdown-viewer').wait(2000).matchImageSnapshot();
+  cy.waitForMarkdownChartSettled();
+  cy.get('.markdown-viewer').matchImageSnapshot();
 };
 
 const testChart = (chart: string, name: string) => {

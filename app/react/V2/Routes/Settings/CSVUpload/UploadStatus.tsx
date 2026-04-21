@@ -203,12 +203,7 @@ const UploadStatus = () => {
               ) : null}
               <div className="pt-6">
                 <Translate className="text-xl font-semibold pb-4 block">Progress</Translate>
-                <Progress
-                  current={progressCurrent}
-                  total={progressTotal}
-                  status={entry.status}
-                  stats={entry.stats}
-                />
+                <Progress current={progressCurrent} total={progressTotal} status={entry.status} />
                 <p className="pt-2 text-sm" style={{ color: 'var(--color-theme-text-secondary)' }}>
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>

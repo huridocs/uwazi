@@ -22,7 +22,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Translate, t } from '#app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents.js';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents.js';
 import { dndSortHandler, getRowIds } from './helpers.js';
@@ -88,6 +88,7 @@ const Table = <T extends TableRow<T>>({
   const { memoizedColumns, groupColumnIndex } = useMemo<{
     memoizedColumns: ColumnDef<T, any>[];
     groupColumnIndex: number;
+    // eslint-disable-next-line max-statements
   }>(() => {
     const tableColumns = [...columns];
     const hasGroups = data.find(item => item.subRows);
@@ -176,6 +177,7 @@ const Table = <T extends TableRow<T>>({
     });
   };
 
+  // eslint-disable-next-line max-statements
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const overRow = dataState.find(row => row.rowId === over?.id);
@@ -226,7 +228,6 @@ const Table = <T extends TableRow<T>>({
     >
       <div
         className={`flex w-full flex-col overflow-auto rounded-md shadow-sm ${containerClassName || ''}`}
-        aria-label={t('System', 'Table content', 'Table content', false)}
         style={{
           backgroundColor: 'var(--color-theme-surface-raised)',
           boxShadow: 'var(--color-theme-card-shadow)',

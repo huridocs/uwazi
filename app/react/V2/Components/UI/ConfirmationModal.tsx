@@ -38,11 +38,16 @@ const ConfirmationModal = ({
 }: confirmationModalType) => {
   const [inputValue, setInputValue] = useState('');
   const [confirmed, setConfirmed] = useState(!(confirmWord || usePassword));
+  const warningEdge =
+    'color-mix(in srgb, var(--color-theme-feedback-danger, var(--color-theme-danger)) 35%, transparent)';
   const warningStyle: FeedbackStyle = {
     backgroundColor: 'var(--color-theme-feedback-danger-tint, var(--color-theme-danger-light))',
-    borderColor:
-      'color-mix(in srgb, var(--color-theme-feedback-danger, var(--color-theme-danger)) 35%, transparent)',
-    color: 'var(--color-theme-feedback-danger, var(--color-theme-danger))',
+    borderTopColor: warningEdge,
+    borderBottomColor: warningEdge,
+    borderLeftWidth: 4,
+    borderLeftStyle: 'solid',
+    borderLeftColor: 'var(--color-theme-feedback-danger, var(--color-theme-danger))',
+    color: 'var(--color-theme-text-primary)',
   };
 
   const renderChild = (child: string | React.ReactNode) =>

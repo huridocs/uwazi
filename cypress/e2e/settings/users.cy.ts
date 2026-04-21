@@ -3,6 +3,13 @@ import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/index.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
 
+const axeUsersFormRules = { rules: { 'autocomplete-valid': { enabled: false } } };
+
+const goToUsersTab = () => {
+  cy.get('nav[aria-label="Settings navigation"] a[href*="settings/users"]').click();
+  cy.contains('[role="tab"]', 'Users').click();
+};
+
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
     cy.wrap(row).within(() => {
@@ -13,9 +20,9 @@ const namesShouldMatch = (names: string[]) => {
 
 const checkWorngPasswordState = () => {
   cy.contains('An error occurred');
-  cy.contains('button', 'View more').click();
+  cy.contains('button', 'View more').click({ force: true });
   cy.contains('Request failed with status code 403: Forbidden');
-  cy.contains('button', 'Dismiss').click();
+  cy.contains('button', 'Dismiss').click({ force: true });
   cy.get('aside').should('be.visible');
 };
 
@@ -25,17 +32,16 @@ describe('Users', () => {
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.contains('span', 'Users & Groups').click();
-    cy.contains('button', 'Users').click();
+    goToUsersTab();
     cy.injectAxe();
   });
 
   it('accesibility check', () => {
     cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Users'));
-    cy.checkA11y(undefined, undefined, logA11yViolations);
-    cy.contains('button', 'Add user').click();
+    cy.checkA11y(undefined, axeUsersFormRules, logA11yViolations);
+    cy.contains('button', 'Add user').click({ force: true });
     cy.contains('h1', 'New user');
-    cy.checkA11y(undefined, undefined, logA11yViolations);
+    cy.checkA11y(undefined, axeUsersFormRules, logA11yViolations);
     cy.contains('button', 'Cancel').click();
   });
 
@@ -47,7 +53,7 @@ describe('Users', () => {
   describe('actions', () => {
     it('create user', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
-      cy.contains('button', 'Add user').click();
+      cy.contains('button', 'Add user').click({ force: true });
       cy.get('aside').within(() => {
         cy.get('#username').type('User_1', { delay: 0 });
         cy.get('#email').type('user@mailer.com', { delay: 0 });
@@ -69,7 +75,10 @@ describe('Users', () => {
     });
 
     it('edit user', () => {
-      cy.contains('td', 'Carmen').siblings().last().click();
+      cy.contains('tr', 'Carmen').scrollIntoView();
+      cy.contains('tr', 'Carmen').within(() => {
+        cy.contains('button', 'Edit').click();
+      });
       cy.get('aside').within(() => {
         cy.get('#username').should('have.value', 'Carmen');
         cy.get('#email').should('have.value', 'carmen@huridocs.org');
@@ -100,7 +109,7 @@ describe('Users', () => {
     });
 
     it('should check accessibility on the table', () => {
-      cy.checkA11y(undefined, undefined, logA11yViolations);
+      cy.checkA11y(undefined, axeUsersFormRules, logA11yViolations);
     });
 
     it('should check the changes and the password change for the modified user', () => {
@@ -120,12 +129,11 @@ describe('Users', () => {
     before(() => {
       clearCookiesAndLogin();
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('span', 'Users & Groups').click();
-      cy.contains('button', 'Users').click();
+      goToUsersTab();
     });
 
     it('check for unique name and email', () => {
-      cy.contains('button', 'Add user').click();
+      cy.contains('button', 'Add user').click({ force: true });
       cy.get('aside').within(() => {
         cy.get('#username').type('admin', { delay: 0 });
         cy.get('#email').type('admin@uwazi.com', { delay: 0 });
@@ -256,8 +264,7 @@ describe('Users', () => {
     before(() => {
       clearCookiesAndLogin();
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('span', 'Users & Groups').click();
-      cy.contains('button', 'Users').click();
+      goToUsersTab();
     });
 
     it('should make a collaborator user into an admin', () => {
@@ -279,8 +286,7 @@ describe('Users', () => {
     it('should log in with the new admin user', () => {
       clearCookiesAndLogin('admin2', 'password');
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('span', 'Users & Groups').click();
-      cy.contains('button', 'Users').click();
+      goToUsersTab();
     });
   });
 

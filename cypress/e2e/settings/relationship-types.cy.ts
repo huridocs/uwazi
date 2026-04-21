@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { dismissModalIfVisible } from '../helpers/pageEditor.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Relationship Types configuration', () => {
@@ -64,7 +65,8 @@ describe('Relationship Types configuration', () => {
   });
 
   it('test cant delete when in use', () => {
-    cy.contains('span', 'Templates').click();
+    dismissModalIfVisible();
+    cy.get('nav[aria-label="Settings navigation"] a[href*="settings/templates"]').click();
     cy.contains('[data-testid="settings-content-header"]', 'Templates');
     cy.contains('Edit').click();
     cy.contains('[data-testid="settings-content-header"]', 'Document');
@@ -77,7 +79,7 @@ describe('Relationship Types configuration', () => {
 
     cy.contains('Save').click();
     cy.wait('@fetchtemplates');
-    cy.contains('span', 'Relationship types').click();
+    cy.get('nav[aria-label="Settings navigation"] a[href*="settings/relationship-types"]').click();
 
     cy.get('tbody tr:nth-of-type(1) input').should('be.disabled');
   });

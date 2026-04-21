@@ -57,7 +57,9 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');
-      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
@@ -69,9 +71,10 @@ describe('Public Form', () => {
       cy.get('input[id="page-url"]').then(url => {
         cy.contains('a', 'Menu').click();
         cy.contains('button', 'Add link').click();
-        cy.get('#link-title').click();
-        cy.get('#link-title').type('Public Form Link', { delay: 0 });
-        cy.get('#link-url').type(url.val() as string);
+        cy.get('#link-title').scrollIntoView();
+        cy.clearAndType('#link-title', 'Public Form Link', { delay: 0, force: true });
+        cy.get('#link-url').scrollIntoView();
+        cy.clearAndType('#link-url', url.val() as string, { delay: 0, force: true });
         cy.getByTestId('menu-form-submit').click();
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
@@ -131,7 +134,9 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');
-      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
@@ -254,7 +259,9 @@ describe('Public Form', () => {
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
-      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
       cy.contains('Basic').click();
       cy.get('input[id="page-url"]').then(url => {

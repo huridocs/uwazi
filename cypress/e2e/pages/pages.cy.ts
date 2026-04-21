@@ -53,7 +53,9 @@ describe('Pages', () => {
       cy.contains('[role="tab"]', 'Basic').click();
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(600);
-      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
       cy.get('input[id="page-url"]')
         .should('have.prop', 'value')
@@ -146,7 +148,9 @@ describe('Pages', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.get('input[name="title"]').clear();
-      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('p', 'This field is required');
     });
 
@@ -171,7 +175,9 @@ describe('Pages', () => {
       typeInEditor('javascript', script, false, 'currentEntitySharedId', true);
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
-      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully').as('expectedMessage');
       cy.get('@expectedMessage').should('not.exist');
     });
@@ -183,7 +189,7 @@ describe('Pages', () => {
       cy.contains('Display entity view from page').click();
       cy.contains('Select page');
       cy.get('#select-page').select('My entity view page');
-      cy.contains('[data-testid="settings-content-footer"] button', 'Save').click();
+      cy.contains('[data-testid="settings-content-footer"] button', /^Save$/).click();
       cy.contains('Dismiss').click();
     });
 

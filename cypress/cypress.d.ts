@@ -34,6 +34,7 @@ declare global {
       realDragAndDrop(subject: Chainable, target: Chainable): void;
       realDrag(subject: Chainable, targetX: number, targetY: number): void;
       waitForLegacyNotifications();
+      waitForMarkdownChartSettled(): Chainable;
       cleanupUnexpectedUi(): Chainable;
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;

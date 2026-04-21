@@ -1,37 +1,39 @@
 import React, { useMemo } from 'react';
 import { ProgressBar, ProgressBarProps } from '#V2/Components/UI/index.js';
-import { CsvImportStatus, type CsvImportListRow } from '#app/V2/api/csv/index.js';
+import { CsvImportStatus } from '#app/V2/api/csv/index.js';
 
 const Progress = ({
   current,
   total,
   status,
-  stats,
 }: {
   current: number;
   total: number;
   status: CsvImportStatus;
-  stats: CsvImportListRow['stats'];
 }) => {
   const { progress, color } = useMemo(() => {
     const safeTotal = total > 0 ? total : 1;
     const calculated = (current / safeTotal) * 100;
-    const rowsFailed = stats?.rowsFailed ?? 0;
-    let colorByStatus: ProgressBarProps['color'] = 'gray';
+    let colorByStatus: ProgressBarProps['color'] = 'primary';
 
-    if (status === CsvImportStatus.Cancelled) {
-      colorByStatus = 'warning';
-    } else if (status === CsvImportStatus.Failed) {
-      colorByStatus = 'error';
-    } else if (
-      status === CsvImportStatus.ImportEntitiesDone ||
-      status === CsvImportStatus.Completed
-    ) {
-      colorByStatus = rowsFailed > 0 ? 'warning' : 'success';
+    switch (status) {
+      case CsvImportStatus.Cancelled:
+        colorByStatus = 'warning';
+        break;
+      case CsvImportStatus.Failed:
+        colorByStatus = 'error';
+        break;
+      case CsvImportStatus.ImportEntitiesDone:
+      case CsvImportStatus.Completed:
+        colorByStatus = 'success';
+        break;
+      default:
+        colorByStatus = 'gray';
+        break;
     }
 
     return { progress: calculated, color: colorByStatus };
-  }, [current, stats?.rowsFailed, status, total]);
+  }, [current, status, total]);
 
   return (
     <div className="flex flex-col items-center gap-1">

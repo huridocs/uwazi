@@ -58,14 +58,14 @@ const getFaviconURL = reduxData => {
   const themeAssets = reduxData.settings.collection.get('themeAssets');
   const themeVars = reduxData.settings.collection.get('themeVars');
   const themeCustomization = reduxData.settings.collection.get('themeCustomization');
-  return getThemeAsset({
+  return getThemeAsset(
     themeAssets,
     themeVars,
-    mode: 'light',
-    asset: 'favicon',
-    fallback: favicon || '',
-    themeCustomizationEnabled: Boolean(themeCustomization),
-  });
+    'light',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
 };
 
 const getFaviconLinks = reduxData => {
@@ -78,22 +78,22 @@ const getFaviconLinks = reduxData => {
     return [<link key="favicon-default" rel="shortcut icon" href={getFaviconURL(reduxData)} />];
   }
 
-  const lightFavicon = getThemeAsset({
+  const lightFavicon = getThemeAsset(
     themeAssets,
     themeVars,
-    mode: 'light',
-    asset: 'favicon',
-    fallback: favicon || '',
-    themeCustomizationEnabled: Boolean(themeCustomization),
-  });
-  const darkFavicon = getThemeAsset({
+    'light',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
+  const darkFavicon = getThemeAsset(
     themeAssets,
     themeVars,
-    mode: 'dark',
-    asset: 'favicon',
-    fallback: favicon || '',
-    themeCustomizationEnabled: Boolean(themeCustomization),
-  });
+    'dark',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
 
   return [
     <link
