@@ -87,7 +87,7 @@ const UploadStatus = () => {
           title={fileName}
         />
         <SettingsContent.Body className="flex flex-col overflow-y-auto">
-          {entry ? (
+          {entry && (
             <>
               <div
                 className="flex flex-col gap-4 border-b pb-4"
@@ -222,8 +222,6 @@ const UploadStatus = () => {
                 </div>
               ) : undefined}
             </>
-          ) : (
-            <div>{fileName}</div>
           )}
         </SettingsContent.Body>
         <SettingsContent.Footer>
@@ -270,5 +268,4 @@ const UploadStatus = () => {
     </div>
   );
 };
-
 export { UploadStatus };
