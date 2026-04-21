@@ -277,4 +277,5 @@ export type {
   EditableThemeVars,
   ResolvedThemeVars,
   ThemePresetDefinition,
+  ThemePaletteEntry,
 };

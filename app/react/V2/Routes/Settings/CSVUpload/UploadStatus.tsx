@@ -14,6 +14,7 @@ import { DateDisplay } from './Components/DateDisplay.js';
 import { Progress } from './Components/Progress.js';
 import { csvImportEvents } from '#app/V2/api/csv/events.js';
 import { CancelProcessModal } from './Components/CancelProcessModal.js';
+
 const UploadStatus = () => {
   const revalidator = useRevalidator();
   const entry = useLoaderData() as CsvImportListRow | undefined;
@@ -71,9 +72,7 @@ const UploadStatus = () => {
     });
 
     return () => {
-      trackedEvents.forEach(event => {
-        socket.off(event, doRevalidation);
-      });
+      trackedEvents.forEach(event => socket.off(event, doRevalidation));
     };
   }, [entry, revalidator]);
   return (
@@ -203,7 +202,12 @@ const UploadStatus = () => {
               ) : null}
               <div className="pt-6">
                 <Translate className="text-xl font-semibold pb-4 block">Progress</Translate>
-                <Progress current={progressCurrent} total={progressTotal} status={entry.status} />
+                <Progress
+                  current={progressCurrent}
+                  total={progressTotal}
+                  status={entry.status}
+                  stats={entry.stats}
+                />
                 <p className="pt-2 text-sm" style={{ color: 'var(--color-theme-text-secondary)' }}>
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
@@ -224,9 +228,7 @@ const UploadStatus = () => {
             type="button"
             variant="danger"
             className="float-right flex flex-row gap-2 items-center"
-            onClick={() => {
-              setCancelModal(true);
-            }}
+            onClick={() => setCancelModal(true)}
             disabled={!canCancel}
           >
             <XMarkIcon className="w-4 h-4" />
@@ -237,9 +239,7 @@ const UploadStatus = () => {
       {entry && (
         <CancelProcessModal
           isOpen={cancelModal}
-          onClose={() => {
-            setCancelModal(false);
-          }}
+          onClose={() => setCancelModal(false)}
           entryId={entry.id}
         />
       )}
