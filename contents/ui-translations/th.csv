@@ -1,5 +1,4 @@
 Key,Thai
-% of sentences above threshold,เปอร์เซ็นต์ของประโยคที่เกินเกณฑ์มาตรฐาน
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -302,6 +301,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,ดาวน์โหลด
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
 Drag row,Drag row
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
@@ -311,7 +311,6 @@ Duplicated name,ชื่อที่ซ้ำกัน
 Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
 Duration,Duration
 Edit,แก้ไข
-Edit all documents matching this criteria,แก้ไขเอกสารทั้งหมดที่ตรงตามเกณฑ์นี้
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -352,7 +351,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,ค้นหา
 Export CSV,โหลดเป็น CSV
 Exporting entities to CSV,โหลดรายการเป็น CSV
 Extension Token,Extension Token
@@ -397,7 +395,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,ปรับแต่ง
 Fit,พอดี
 Flag,แฟล็ก
 for,for
@@ -642,7 +639,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,จำนวนประโยคเกินเกณฑ์ที่กำหนด
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -675,7 +671,6 @@ Other,อื่น
 other,อื่น
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,ออกไปจาก
 Page,หน้า
 Page not found,Page not found
 Pages,หน้า
@@ -705,7 +700,6 @@ Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,กรุณาพิมพ์ตัวอักษรและตัวเลขจากภาพเพื่อเริ่มการส่งออก
-Precision,ความแม่นยำ
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -771,6 +765,7 @@ Recommended,Recommended
 Reference,Reference
 References,การอ้างอิง
 Reject,ปฏิเสธ
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,ความสัมพันธ์
 Relationship Type,Relationship Type
@@ -828,7 +823,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ค้นหา
 Search item,ค้นหารายการ
-Search not found,ไม่พบการค้นหา
 Search related entities or documents,ค้นหารายการหรือเอกสารที่เกี่ยวข้อง
 Search relevance,ความเกี่ยวข้องของการค้นหา
 Search text,ข้อความค้นหา
@@ -861,18 +855,11 @@ selected,เลือกแล้ว
 selected of,ถูกเลือกโดย
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,ค้นหาความหมาย
-Semantic Search,ค้นหาความหมาย
-Semantic search minimum sentences help,ความช่วยเหลือเกี่ยวกับ การค้นหาความหมายของประโยคขั้นต่ำ
-Semantic search overview,ภาพรวมเกี่ยวกับการค้นหาความหมาย
-Semantic search results,ผลการค้นหาความหมาย
-Semantic search threshold help,ความช่วยเหลือเกี่ยวกับเกณฑ์การค้นหาความหมาย
 Send,ส่ง
 Send recovery email,ส่งอีเมลการกู้คืน
 Sending email,Sending email
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,ประโยคที่เกินเกณฑ์ที่กำหนด
 Services,Services
 Set as default,ตั้งเป็นค่าเริ่มต้น
 Set default language,Set default language
@@ -988,8 +975,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name
@@ -1018,7 +1005,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,เกณฑ์
 Time,เวลา
 Timelinks,Timelinks
 Timestamp,Timestamp

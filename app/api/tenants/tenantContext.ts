@@ -24,7 +24,6 @@ type Tenant = {
     fileCacheHeaders?: boolean;
     v2CSVImport?: boolean;
     v2UpdateThesaurus?: boolean;
-    v1CSVImportCompat?: boolean;
     themeCustomization?: boolean;
     v2GetEntity?: boolean;
     v2ElasticSearch?: boolean;

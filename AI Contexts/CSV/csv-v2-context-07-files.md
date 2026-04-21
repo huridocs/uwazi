@@ -52,7 +52,9 @@ files at creation time:
 
 - resolving extracted files into `InputFile[]` per row,
 - using `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)`,
-- calling `FilesService.storeFiles` (outside TM) and `FilesService.insert` (inside TM).
+- calling `FilesService.storeFiles` (outside TM),
+- persisting entities with `EntitiesService.insert` (inside TM),
+- then calling `FilesService.insert` (inside TM).
 
 Result: CSV v2 **does** import files/attachments using the Entities V2 file flow.
 
@@ -151,7 +153,7 @@ Cons:
    - Use `propertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to create assignments,
      passing the row attachments.
    - Apply assignments to the `Entity`, store files via `FilesService.storeFiles(...)` outside TM,
-     and insert entity + file records inside a per-row transaction (`entitiesDS.create` and
+     and insert entity + file records inside a per-row transaction (`EntitiesService.insert` and
      `FilesService.insert`).
    - CSV import does **not** implement file cleanup for files written by Entities V2.
 
@@ -227,7 +229,9 @@ transaction conflicts. Keep Option A documented for the caveats above.
 3. ✅ **Updated** CSV batch processor to:
 
    - build assignments via `PropertyAssignmentCreatorServiceStrategy`,
-   - call `FilesService.storeFiles` (outside TM) + `FilesService.insert` (inside TM),
+   - call `FilesService.storeFiles` (outside TM),
+   - persist entities via `EntitiesService.insert` (inside TM),
+   - call `FilesService.insert` (inside TM),
    - keep batch transactions clean (per-row TM only; batch progress update uses separate TM).
 
 4. **Still needed — add tests:**
