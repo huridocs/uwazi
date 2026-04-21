@@ -12,7 +12,10 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 - Architecture: V2 hexagonal; background jobs process after quick upload response.
 - Collection: `csv_imports` stores each import and its status.
 - Storage: Use files.v2 `FileStorage` with `customPath` under `csv-imports/{importId}`.
-- Routing: `POST /api/import`, admin-only, feature-flagged via `v2CSVImport`.
+- Routing (current baseline, Apr 2026):
+  - `POST /api/import` is admin-only V1 route.
+  - `POST /api/csvImportEntities` is admin-only V2 route.
+  - `v2CSVImport` is not used for backend route switching.
 - MVP Statuses: start at `queued`; Job 1 sets `extracting files`, then proceeds.
 
 ### Storage layout (MVP, reaffirmed)
@@ -286,12 +289,10 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
   - Lint/ES rules:
     - Avoid `global-require` in tests; import `FileContentsIO` at top-level and use `new FileContentsIO()`.
 
-- Route testing note (temporary):
-  - To exercise `/api/import` after route moved to csv.v2, tests can register both route sets on the same Express app:
-    - `import csvV2Routes from 'api/csv.v2/routes/routes';`
-    - After building the app with `uploadRoutes`, call `csvV2Routes(app);` or wrap both in a combined route initializer.
-  - Enable the v2 flag in tests to use the new path:
-    - `testingTenants.changeCurrentTenant({ featureFlags: { v2CSVImport: true } });`
+- Route testing note (current baseline):
+  - Use `/api/import` to test legacy V1 behavior.
+  - Use `/api/csvImportEntities` to test CSV V2 register/import behavior.
+  - No backend route-selection flag setup is required for choosing V1 vs V2 path.
 
 ### Agent handoff: operational guidelines and preferences
 
@@ -348,9 +349,10 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - Feature flags and routes
 
-  - Feature flag: `v2CSVImport` toggles v1/v2 behavior on `/api/import`.
-  - For tests that need v2 behavior: `testingTenants.changeCurrentTenant({ featureFlags: { v2CSVImport: true } });`
-  - For route tests that were previously bound to v1: register both `uploadRoutes` and `csv.v2` routes on the same Express app (temporarily) if needed.
+  - `v2CSVImport` is now client-facing only (menu visibility), not a backend route selector.
+  - Route split is explicit:
+    - `/api/import` -> V1
+    - `/api/csvImportEntities` -> V2
 
 - Lint/style guardrails
 

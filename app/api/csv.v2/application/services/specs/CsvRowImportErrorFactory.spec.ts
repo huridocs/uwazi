@@ -1,9 +1,22 @@
+import { z } from 'zod';
 import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CsvRowImportErrorFactory } from '../CsvRowImportErrorFactory.js';
 import {
   CsvImportFileNotFoundError,
+  CsvImportPropertyValidationError,
   CsvImportRelationshipResolutionError,
+  CsvImportRowEmptyError,
 } from '../CsvImportRowProcessingError.js';
+
+const createZodValidationError = () => {
+  const dateSchema = z.object({ value: z.number() });
+  try {
+    dateSchema.parse({ value: Number.NaN });
+    return undefined;
+  } catch (error) {
+    return error;
+  }
+};
 
 describe('CsvRowImportErrorFactory', () => {
   it('maps missing file errors to FILE_NOT_FOUND with stable message/details', () => {
@@ -80,6 +93,42 @@ describe('CsvRowImportErrorFactory', () => {
     expect(rowError.code).toBe(RowErrorCode.RelationshipAmbiguous);
     expect(rowError.message).toBe(
       'Relationship value is ambiguous and cannot be resolved uniquely.'
+    );
+  });
+
+  it('maps empty rows to ROW_EMPTY_OR_MALFORMED', () => {
+    const rowError = CsvRowImportErrorFactory.fromException({
+      importId: 'import-1',
+      rowIndex: 2,
+      error: new CsvImportRowEmptyError(),
+    });
+
+    expect(rowError.code).toBe(RowErrorCode.RowEmptyOrMalformed);
+    expect(rowError.message).toBe('Empty line.');
+    expect(rowError.details).toEqual({ reason: 'empty_line' });
+  });
+
+  it('maps wrapped validation errors to VALUE_INVALID_FORMAT with context', () => {
+    const rowError = CsvRowImportErrorFactory.fromException({
+      importId: 'import-1',
+      rowIndex: 3,
+      error: new CsvImportPropertyValidationError({
+        property: 'published_date',
+        column: 'published_date__en',
+        rawValue: 'not-a-date',
+        cause: createZodValidationError(),
+      }),
+    });
+
+    expect(rowError.code).toBe(RowErrorCode.ValueInvalidFormat);
+    expect(rowError.property).toBe('published_date');
+    expect(rowError.rawValue).toBe('not-a-date');
+    expect(rowError.message).toContain('Invalid value for "published_date".');
+    expect(rowError.details).toEqual(
+      expect.objectContaining({
+        column: 'published_date__en',
+        sourceErrorName: 'ZodError',
+      })
     );
   });
 

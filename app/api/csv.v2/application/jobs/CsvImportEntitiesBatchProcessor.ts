@@ -1,7 +1,7 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FilesService } from '#api/core/application/FilesService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
@@ -9,13 +9,19 @@ import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CsvImport, CsvImportDomain } from '../../domain/CsvImport.js';
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
-import { CsvImportRowError } from '../../domain/CsvImportRowError.js';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
 import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource.js';
 import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer.js';
 import { AppliedValueIndex, CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
 import { CsvImportRowFilesResolver } from '../services/CsvImportRowFilesResolver.js';
-import { CsvRowImportErrorFactory } from '../services/CsvRowImportErrorFactory.js';
+import { CsvImportRowEmptyError } from '../services/CsvImportRowProcessingError.js';
+import {
+  createRowProcessingState,
+  RowProcessingState,
+  trackFailedRow,
+  trackImportedRow,
+} from './CsvImportEntitiesBatchRowState.js';
+import { createPropertyAssignments, isEmptyRow } from './CsvImportEntitiesPropertyAssignments.js';
 
 type BatchContext = {
   csvImport: CsvImport;
@@ -30,7 +36,7 @@ type BatchContext = {
 };
 
 type BatchDeps = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesService: EntitiesService;
   csvImportsDS: CsvImportsDataSource;
   rowErrorsDS: CsvImportRowErrorsDataSource;
   transactionManager: TransactionManager;
@@ -38,6 +44,19 @@ type BatchDeps = {
   filesService: FilesService;
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
+};
+
+type InsertContext = {
+  tenantName: string;
+  actorId: string;
+  targetLanguage: LanguageISO6391;
+};
+
+type PersistedBatchSummary = {
+  created: number;
+  rowErrorsCount: number;
+  endConsecutiveFailures: number;
+  maxConsecutiveFailures: number;
 };
 
 const buildEntityFromRow = (context: BatchContext) => {
@@ -50,7 +69,11 @@ const buildEntityFromRow = (context: BatchContext) => {
   return entity;
 };
 
+// eslint-disable-next-line max-statements
 const prepareRowImport = async (deps: BatchDeps, context: BatchContext, rowValues: string[]) => {
+  if (isEmptyRow(rowValues)) {
+    throw new CsvImportRowEmptyError();
+  }
   const files = await CsvImportRowFilesResolver.resolve({
     importId: context.csvImport.id,
     rowValues,
@@ -89,11 +112,14 @@ const prepareRowImport = async (deps: BatchDeps, context: BatchContext, rowValue
     attachmentLookup,
   });
 
-  const propertyAssignments = await deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
+  const propertyAssignments = await createPropertyAssignments({
+    propertyAssignmentCreatorServiceStrategy: deps.propertyAssignmentCreatorServiceStrategy,
+    template: context.template,
     assignments,
-    context.template,
-    files.attachments
-  );
+    sanitizedHeaders: context.sanitizedHeaders,
+    rowValues,
+    attachments: files.attachments,
+  });
 
   const entity = buildEntityFromRow(context);
   entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, false);
@@ -105,10 +131,62 @@ const prepareRowImport = async (deps: BatchDeps, context: BatchContext, rowValue
   await deps.filesService.storeFiles(entityFiles);
   return { entity, entityFiles };
 };
+const importSingleRow = async (params: {
+  deps: BatchDeps;
+  context: BatchContext;
+  row: CsvImportRow;
+  insertContext: InsertContext;
+}) => {
+  const { deps, context, row, insertContext } = params;
+  const { entity, entityFiles } = await prepareRowImport(deps, context, row.values);
+  await deps.transactionManager.run(async () => {
+    await deps.entitiesService.insert(entity, insertContext);
+    await deps.filesService.insert(entityFiles);
+  });
+};
+
+const processBatchRows = async (params: {
+  deps: BatchDeps;
+  context: BatchContext;
+  rows: CsvImportRow[];
+  csvImport: CsvImport;
+  insertContext: InsertContext;
+}) => {
+  const { deps, context, rows, csvImport, insertContext } = params;
+  let state = createRowProcessingState();
+  for (const row of rows) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await importSingleRow({ deps, context, row, insertContext });
+      state = trackImportedRow(state);
+    } catch (error) {
+      state = trackFailedRow({ state, csvImport, row, error });
+    }
+  }
+  return state;
+};
+const persistBatchProgress = async (params: {
+  deps: BatchDeps;
+  updatedImport: CsvImport;
+  rowState: RowProcessingState;
+}) => {
+  const { deps, updatedImport, rowState } = params;
+  return deps.transactionManager.run(async (): Promise<PersistedBatchSummary> => {
+    await deps.csvImportsDS.update(updatedImport);
+    await deps.rowErrorsDS.insertMany(rowState.errors);
+    return {
+      created: rowState.created,
+      rowErrorsCount: rowState.errors.length,
+      endConsecutiveFailures: rowState.consecutiveFailures,
+      maxConsecutiveFailures: rowState.maxConsecutiveFailures,
+    };
+  });
+};
 
 const processImportBatch = async (params: {
   deps: BatchDeps;
   context: BatchContext;
+  insertContext: InsertContext;
   rows: CsvImportRow[];
   offset: number;
   totalRows: number;
@@ -123,7 +201,17 @@ const processImportBatch = async (params: {
   endConsecutiveFailures: number;
   maxConsecutiveFailures: number;
 }> => {
-  const { deps, context, rows, offset, totalRows, processedRows, batchSize, csvImport } = params;
+  const {
+    deps,
+    context,
+    rows,
+    offset,
+    totalRows,
+    processedRows,
+    batchSize,
+    csvImport,
+    insertContext,
+  } = params;
   const batchLastIndex = offset + rows.length - 1;
   const progress = {
     totalRows,
@@ -132,47 +220,14 @@ const processImportBatch = async (params: {
     batchSize,
   };
   const updatedImport = CsvImportDomain.withProgress(csvImport, progress);
-  const errors: CsvImportRowError[] = [];
-  let created = 0;
-  let consecutiveFailures = 0;
-  let maxConsecutiveFailures = 0;
-
-  for (const row of rows) {
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      const { entity, entityFiles } = await prepareRowImport(deps, context, row.values);
-      // eslint-disable-next-line no-await-in-loop
-      await deps.transactionManager.run(async () => {
-        await deps.entitiesDS.create(entity);
-        await deps.filesService.insert(entityFiles);
-      });
-      created += 1;
-      consecutiveFailures = 0;
-    } catch (error) {
-      errors.push(
-        CsvRowImportErrorFactory.fromException({
-          importId: csvImport.id,
-          rowIndex: row.rowIndex,
-          error,
-        })
-      );
-      consecutiveFailures += 1;
-      if (consecutiveFailures > maxConsecutiveFailures) {
-        maxConsecutiveFailures = consecutiveFailures;
-      }
-    }
-  }
-
-  const entitiesCreated = await deps.transactionManager.run(async () => {
-    await deps.csvImportsDS.update(updatedImport);
-    await deps.rowErrorsDS.insertMany(errors);
-    return {
-      created,
-      rowErrorsCount: errors.length,
-      endConsecutiveFailures: consecutiveFailures,
-      maxConsecutiveFailures,
-    };
+  const rowState = await processBatchRows({
+    deps,
+    context,
+    rows,
+    csvImport,
+    insertContext,
   });
+  const entitiesCreated = await persistBatchProgress({ deps, updatedImport, rowState });
   return {
     entitiesCreated: entitiesCreated.created,
     processedRows: progress.processedRows,

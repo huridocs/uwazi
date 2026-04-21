@@ -25,6 +25,28 @@ enum CsvImportStatus {
   Cancelled = 'cancelled',
 }
 
+type RowErrorCode =
+  | 'ROW_EMPTY_OR_MALFORMED'
+  | 'HEADER_MISSING_REQUIRED_COLUMN'
+  | 'VALUE_INVALID_FORMAT'
+  | 'VALUE_UNSUPPORTED_LANGUAGE_COLUMN'
+  | 'THESAURUS_VALUE_NOT_FOUND'
+  | 'RELATIONSHIP_NOT_FOUND'
+  | 'RELATIONSHIP_AMBIGUOUS'
+  | 'FILE_NOT_FOUND'
+  | 'FILE_INVALID_REFERENCE'
+  | 'INTERNAL_ERROR';
+
+type RowError = {
+  importId: string;
+  rowIndex: number;
+  message: string;
+  code: RowErrorCode;
+  property?: string;
+  rawValue?: string;
+  createdAt: number;
+};
+
 type CsvImportProgress = {
   totalRows: number;
   processedRows: number;
@@ -80,6 +102,7 @@ type CsvImportListRow = {
   stats?: CsvImportStats;
   extraction?: CsvImportExtraction;
   failure?: CsvImportFailure;
+  rowErrors?: RowError[];
 };
 
 type CsvImportsList = {
@@ -180,5 +203,6 @@ export type {
   CancelCsvImportResponse,
   RegisterCsvImportResponse,
   CsvImportCreateError,
+  RowError,
 };
 export { CsvImportStatus, create, get, getById, cancel };
