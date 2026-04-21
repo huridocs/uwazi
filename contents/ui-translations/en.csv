@@ -1,5 +1,4 @@
 Key,English
-% of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -305,7 +304,6 @@ Duplicated name,Duplicated name
 Duplicated username,Duplicated username
 Duration,Duration
 Edit,Edit
-Edit all documents matching this criteria,Edit all documents matching this criteria
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -345,7 +343,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,Exploration
 Export CSV,Export CSV
 Exporting entities to CSV,Exporting entities to CSV
 Extension Token,Extension Token
@@ -390,7 +387,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,Fine tune
 Fit,Fit
 Flag,Flag
 for,for
@@ -628,7 +624,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,Number of sentences above threshold
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -661,7 +656,6 @@ Other,Other
 other,other
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,out of
 Page,Page
 Page not found,Page not found
 Pages,Pages
@@ -691,7 +685,6 @@ Plain text,Plain text
 Please contact an admin for details.,Please contact an admin for details.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,Please type in letters and numbers from the image to start the export.
-Precision,Precision
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -813,7 +806,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Search
 Search item,Search item
-Search not found,Search not found
 Search related entities or documents,Search related entities or documents
 Search relevance,Search relevance
 Search text,Search text
@@ -842,18 +834,11 @@ selected,selected
 selected of,selected of
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,Semantic search
-Semantic Search,Semantic Search
-Semantic search minimum sentences help,Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.
-Semantic search overview,"Semantic search is a technique to provide contextual results. Its ability to capture concepts and word associations in human language enables the retrieval of related information such as synonyms, connected categories or entities, etc. ."
-Semantic search results,Semantic search results
-Semantic search threshold help,The threshold determines how close the results match the search concept. Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise. Move the slider to the left to more broaden the concept and explore related content.
 Send,Send
 Send recovery email,Send recovery email
 Sending email,Sending email
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,Sentences above threshold
 Services,Services
 Set as default,Set as default
 Set default language,Set default language
@@ -989,7 +974,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,Threshold
 Time,Time
 Timelinks,Timelinks
 Timestamp,Timestamp

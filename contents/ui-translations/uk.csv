@@ -1,5 +1,4 @@
 Key,Ukrainian
-% of sentences above threshold,"% пропозицій, що перевищують поріг"
 *please keep this key secret and don't share it.,"*будь ласка, зберігайте цей ключ у таємниці та не передавайте його нікому."
 + click to select multiple cards.,"(+) натисніть, щоб вибрати декілька карток"
 2FA,2FA
@@ -305,7 +304,6 @@ Duplicated name,Дубльоване ім'я
 Duplicated username,Продубльоване ім'я користувача
 Duration,Duration
 Edit,Редагувати
-Edit all documents matching this criteria,"Відредагуйте всі документи, які відповідають цим критеріям"
 Edit Extractor,Редагувати витягач
 Edit File,Редагувати файл
 Edit group,Група редагування
@@ -345,7 +343,6 @@ Error setting default template,Помилка встановлення шабл�
 Error updating thesauri.,Помилка оновлення тезаурусів.
 Expand all,Розгорнути все
 Expand All,Expand All
-Exploration,Вивчення
 Export CSV,Експортувати CSV
 Exporting entities to CSV,Експортувати об'єкти до CSV
 Extension Token,Токен розширення
@@ -390,7 +387,6 @@ Find suggestions after training,Знайдіть пропозиції після
 Find suggestions for,Знайдіть пропозиції для
 Find suggestions for selected,Знайдіть пропозиції для обраних
 Finding suggestions,Пошук пропозицій
-Fine tune,Тонке налаштування
 Fit,Пристосувати
 Flag,Прапорець
 for,за
@@ -628,7 +624,6 @@ Not already been use as source template in another extractor,Не викорис
 Not already been use as target template,Ще не використовувався як цільовий шаблон
 Not Found,Не знайдено
 Nothing selected,Нічого не вибрано
-Number of sentences above threshold,Кількість пропозицій перевищує поріг
 Obsolete,Застарілий
 obsolete,застарілий
 OCR,Оптичне розпізнавання символів
@@ -661,7 +656,6 @@ Other,Інший
 other,Інший
 Other users will be affected by this action!,Ця дія вплине на інших користувачів!
 Others,Інші
-out of,з
 Page,Сторінка
 Page not found,Сторінку не знайдено
 Pages,Сторінки
@@ -691,7 +685,6 @@ Plain text,Звичайний текст
 Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
 Please type in,"Будь ласка, введіть"
 Please type in letters and numbers from the image to start the export.,"Будь ласка, введіть літери та цифри з зображення, щоб розпочати експорт."
-Precision,Точність
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -813,7 +806,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Шукати
 Search item,Шукати предмет
-Search not found,Пошук нічого не виявив
 Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
 Search relevance,Релевантність пошуку
 Search text,Пошук за текстом
@@ -842,18 +834,11 @@ selected,вибраний
 selected of,вибраний із
 Selected or suggested,Вибрані або запропоновані
 Selected templates,Вибрані шаблони
-Semantic search,Семантичний пошук
-Semantic Search,Семантичний пошук
-Semantic search minimum sentences help,"Семантичний пошук застосовується до кожного речення в документі. Відфільтруйте документи за мінімальною кількістю речень, що перевищують поріг."
-Semantic search overview,"Семантичний пошук - це метод отримання контекстних результатів. Його здатність фіксувати концепції та асоціації слів у людській мові дозволяє знаходити пов'язану інформацію, таку як синоніми, пов'язані категорії або сутності тощо."
-Semantic search results,Результати семантичного пошуку
-Semantic search threshold help,"Поріг визначає, наскільки близько результати відповідають концепції пошуку. Перемістіть повзунок вправо, щоб звузити концепцію пошукового запиту. Отримані результати будуть більш точними. Перемістіть повзунок вліво, щоб розширити концепцію і дослідити пов'язаний контент."
 Send,Відправити
 Send recovery email,Відправити лист для відновлення на електронну пошту
 Sending email,Електронна пошта відправника
 Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
 Sending labeled data,Відправлення маркованих даних
-Sentences above threshold,Пропозиції перевищують поріг
 Services,Послуги
 Set as default,Встановити за замовчуванням
 Set default language,Встановити мову за замовчуванням
@@ -989,7 +974,6 @@ This property will be the default filter in the library for this template.,Ця 
 This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
-Threshold,Поріг
 Time,Час
 Timelinks,Тимчасові посилання
 Timestamp,Відмітка часу

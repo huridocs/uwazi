@@ -1,5 +1,4 @@
 Key,Russian
-% of sentences above threshold,% предложений выше порога
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -300,7 +299,6 @@ Duplicated name,Дублированное имя
 Duplicated username,Продублированное имя пользователя
 Duration,Duration
 Edit,Редактировать
-Edit all documents matching this criteria,"Отредактируйте все документы, соответствующие этим критериям"
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -340,7 +338,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,Изучение
 Export CSV,Экспортировать CSV
 Exporting entities to CSV,Экспортировать объекты в CSV
 Extension Token,Extension Token
@@ -385,7 +382,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,Тонкая настройка
 Fit,Приспособить
 Flag,Флажок
 for,for
@@ -623,7 +619,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,Количество предложений выше порога
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,Оптическое распознавание символов
@@ -656,7 +651,6 @@ Other,Другой
 other,Другой
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,из
 Page,Страница
 Page not found,Page not found
 Pages,Страницы
@@ -686,7 +680,6 @@ Plain text,Обычный текст
 Please contact an admin for details.,"Пожалуйста, свяжитесь с администратором для выяснения деталей."
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,"Пожалуйста, введите буквы и цифры с изображения для того, чтобы начать экспорт."
-Precision,Точность
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -808,7 +801,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Искать
 Search item,Искать предмет
-Search not found,Поиск ничего не выявил
 Search related entities or documents,Искать взаимосвязанные объекты и документы
 Search relevance,Релевантность поиска
 Search text,Поиск по тексту
@@ -837,18 +829,11 @@ selected,выбранный
 selected of,выбран из
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,Семантический поиск
-Semantic Search,Семантический поиск
-Semantic search minimum sentences help,Справка о минимуме предложений для семантического поиска
-Semantic search overview,Обзор семантического поиска
-Semantic search results,Результаты семантического поиска
-Semantic search threshold help,Справка о пороге для семантического поиска
 Send,Отправить
 Send recovery email,Отправить письмо для восстановления на электронную почту
 Sending email,Электронная почта отправителя
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,Предложения выше порога
 Services,Services
 Set as default,Установить по умолчанию
 Set default language,Set default language
@@ -984,7 +969,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,Порог
 Time,Время
 Timelinks,Timelinks
 Timestamp,Timestamp

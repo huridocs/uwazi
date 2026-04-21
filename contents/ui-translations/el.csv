@@ -1,5 +1,4 @@
 Key,Greek
-% of sentences above threshold,% των προτάσεων πάνω από το όριο
 *please keep this key secret and don't share it.,*κρατήστε μυστικό αυτό το κλειδί και μην το μοιραστείτε με κανέναν.
 + click to select multiple cards.,+ κάντε κλικ για να επιλέξετε πολλαπλές κάρτες.
 2FA,2FA
@@ -304,7 +303,6 @@ Duplicated name,Διπλότυπο όνομα
 Duplicated username,Διπλότυπο όνομα χρήστη
 Duration,Duration
 Edit,Επεξεργασία
-Edit all documents matching this criteria,Επεξεργασία όλων των εγγράφων που ανταποκρίνονται σε αυτά τα κριτήρια
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
@@ -344,7 +342,6 @@ Error setting default template,Σφάλμα ρύθμισης προεπιλεγ�
 Error updating thesauri.,Σφάλμα ενημέρωσης θησαυρών.
 Expand all,Ανάπτυξη όλων
 Expand All,Expand All
-Exploration,Εξερεύνηση
 Export CSV,Εξαγωγή CSV
 Exporting entities to CSV,Εξαγωγή οντοτήτων σε CSV
 Extension Token,Token επέκτασης
@@ -389,7 +386,6 @@ Find suggestions after training,Εύρεση προτάσεων μετά την 
 Find suggestions for,Εύρεση προτάσεων για
 Find suggestions for selected,Εύρεση προτάσεων για επιλεγμένα
 Finding suggestions,Εύρεση προτάσεων...
-Fine tune,Λεπτομερής ρύθμιση
 Fit,Προσαρμογή
 Flag,Σημαία
 for,για
@@ -627,7 +623,6 @@ Not already been use as source template in another extractor,Δεν έχει ή�
 Not already been use as target template,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο στόχου
 Not Found,Δεν βρέθηκε
 Nothing selected,Δεν έχει επιλεγεί τίποτα
-Number of sentences above threshold,Αριθμός προτάσεων πάνω από το όριο
 Obsolete,Παρωχημένο
 obsolete,παρωχημένο
 OCR,OCR
@@ -660,7 +655,6 @@ Other,Άλλα
 other,άλλα
 Other users will be affected by this action!,Αυτή η ενέργεια θα επηρεάσει και άλλους χρήστες.
 Others,Άλλοι
-out of,από
 Page,Σελίδα
 Page not found,Η σελίδα δεν βρέθηκε
 Pages,Σελίδες
@@ -690,7 +684,6 @@ Plain text,Απλό κείμενο
 Please contact an admin for details.,Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Please type in,Πληκτρολογήστε
 Please type in letters and numbers from the image to start the export.,Πληκτρολογήστε γράμματα και αριθμούς από την εικόνα για να ξεκινήσει η εξαγωγή.
-Precision,Ακρίβεια
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -812,7 +805,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Αναζήτηση
 Search item,Αναζήτηση στοιχείου
-Search not found,Δεν βρέθηκε τίποτα
 Search related entities or documents,Αναζήτηση σχετικών οντοτήτων ή εγγράφων
 Search relevance,Συνάφεια αναζήτησης
 Search text,Aναζήτηση κείμενου
@@ -841,18 +833,11 @@ selected,επιλεγμένα
 selected of,επιλεγμένα από
 Selected or suggested,Επιλεγμένα ή προτεινόμενα
 Selected templates,Επιλεγμένα πρότυπα
-Semantic search,Σημασιολογική αναζήτηση
-Semantic Search,Σημασιολογική αναζήτηση
-Semantic search minimum sentences help,Η σημασιολογική αναζήτηση εφαρμόζεται σε κάθε πρόταση ενός εγγράφου. Φιλτράρετε τα έγγραφα με τον ελάχιστο αριθμό προτάσεων που υπερβαίνουν το όριο.
-Semantic search overview,"Η σημασιολογική αναζήτηση είναι μια τεχνική που παρέχει συμφραζόμενα αποτελέσματα. Η ικανότητά της να αποτυπώνει έννοιες και συσχετίσεις λέξεων στην ανθρώπινη γλώσσα επιτρέπει την ανάκτηση σχετικών πληροφοριών όπως συνώνυμα, συνδεδεμένες κατηγορίες ή οντότητες, κ.λπ."
-Semantic search results,Αποτελέσματα σημασιολογικής αναζήτησης
-Semantic search threshold help,Το όριο καθορίζει πόσο κοντά τα αποτελέσματα ταιριάζουν με την έννοια της αναζήτησης. Μετακινήστε τον διακόπτη προς τα δεξιά για να εξειδικεύσετε την έννοια του ερωτήματος αναζήτησης. Τα αποτελέσματα που θα λάβετε θα είναι πιο ακριβή. Μετακινήστε τον διακόπτη προς τα αριστερά για να διευρύνετε την έννοια και να εξερευνήσετε σχετικό περιεχόμενο.
 Send,Αποστολή
 Send recovery email,Αποστολή email ανάκτησης
 Sending email,Αποστολή email
 Sending email description,"Αυτή είναι η διεύθυνση email που θα εμφανίζεται ως αποστολέας όταν αποστέλλεται ένα μήνυμα email από την Uwazi συλλογή σας σε εγγεγραμμένους χρήστες. Η προεπιλεγμένη διεύθυνση είναι *uwazi@uwazi.io*. Μπορείτε να ορίσετε μια προσαρμοσμένη διεύθυνση, εισάγοντας εδώ τη διεύθυνση email που επιθυμείτε."
 Sending labeled data,Αποστολή επισημασμένων δεδομένων
-Sentences above threshold,Προτάσεις πάνω από το όριο
 Services,Υπηρεσίες
 Set as default,Ορισμός ως προεπιλογή
 Set default language,Ορισμός προεπιλεγμένης γλώσσας
@@ -988,7 +973,6 @@ This property will be the default filter in the library for this template.,Αυ�
 This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
-Threshold,Κατώφλι
 Time,Χρόνος
 Timelinks,Χρονοσυνδέσμος
 Timestamp,Χρονοσφραγίδα
