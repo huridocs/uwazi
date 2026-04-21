@@ -1,7 +1,12 @@
-import type { EntitySchema } from '#shared/types/entityType.js';
+import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import type { FileType as ApiFileType } from '#shared/types/fileType.js';
+
+interface FileType extends Omit<ApiFileType, '_id'> {
+  _id: string;
+}
 
 interface Entity extends Omit<
-  EntitySchema,
+  EntityWithFilesSchema,
   '_id' | 'sharedId' | 'language' | 'title' | 'template' | 'creationDate' | 'user'
 > {
   _id: string;
@@ -11,6 +16,8 @@ interface Entity extends Omit<
   template: string;
   creationDate: number;
   user: String;
+  documents?: FileType[];
+  attachments?: FileType[];
 }
 
 export type { Entity };

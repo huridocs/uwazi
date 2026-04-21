@@ -7,9 +7,11 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { SearchQuery, CompoundFilter } from '#shared/types/SearchQueryType.js';
 import { getEntityCompositionUseCase } from '#V2/application/container/singletons.js';
 import { cardViewOptions } from '#V2/application/optionsPresets.js';
-import { Entity } from '#V2/domain/entities/Entity.js';
+import { Entity as DomainEntity } from '#V2/domain/entities/Entity.js';
 import { EntitySearchResponse } from '../types.js';
 import * as formatter from './formatter.js';
+import { ApiResponse } from '../ApiResponse.js';
+import { Entity } from './types.js';
 
 const getById = async ({
   _id,
@@ -19,7 +21,7 @@ const getById = async ({
   _id: string;
   language: string;
   omitRelationships?: boolean;
-}): Promise<EntitySchema[]> => {
+}): Promise<ApiResponse<Entity | undefined, FetchResponseError>> => {
   try {
     const requestParams = new RequestParams({
       _id,
@@ -31,9 +33,9 @@ const getById = async ({
     const {
       json: { rows: response },
     } = await api.get('entities', requestParams);
-    return response;
+    return [response];
   } catch (e) {
-    return e;
+    return [undefined, e as FetchResponseError];
   }
 };
 
@@ -44,7 +46,7 @@ const getBySharedId = async (
     omitRelationships = true,
   }: { sharedId: string; language: string; omitRelationships?: boolean },
   headers?: IncomingHttpHeaders
-): Promise<EntitySchema[]> => {
+): Promise<ApiResponse<Entity[] | undefined, FetchResponseError>> => {
   try {
     const requestParams = new RequestParams(
       {
@@ -59,9 +61,9 @@ const getBySharedId = async (
     const {
       json: { rows: response },
     } = await api.get('entities', requestParams);
-    return response;
+    return [response];
   } catch (e) {
-    return e;
+    return [undefined, e as FetchResponseError];
   }
 };
 
@@ -93,6 +95,7 @@ const coerceValue = async (
   }
 };
 
+// eslint-disable-next-line max-statements
 const searchByTitle = async (
   {
     title,
@@ -108,7 +111,7 @@ const searchByTitle = async (
     includeFiles?: boolean;
   },
   headers?: IncomingHttpHeaders
-): Promise<Entity[]> => {
+): Promise<DomainEntity[]> => {
   try {
     const finalFields = includeFiles
       ? [...new Set([...fields, 'documents', 'attachments'])]
@@ -157,7 +160,9 @@ const searchByTitle = async (
       })
     );
 
-    return compositionResults.filter((entity: Entity | null): entity is Entity => entity !== null);
+    return compositionResults.filter(
+      (entity: DomainEntity | null): entity is DomainEntity => entity !== null
+    );
   } catch (e) {
     return [];
   }
