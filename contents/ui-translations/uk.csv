@@ -294,6 +294,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Завантажити
 Download a third-party authenticator app from your mobile store.,Завантажте сторонній додаток-автентифікатор з вашого мобільного магазину.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
 Drag row,Перетягування рядка
 Drop your files here to upload or,"Опустіть свої файли сюди, щоб завантажити або"
@@ -747,6 +748,7 @@ Receiving email description,"Якщо у вас є контактна форма
 Reference,Посилання
 References,Посилання
 Reject,Відхилити
+Related entities created,Related entities created
 Relation type,Тип відношення
 Relationship,Взаємозв'язок
 Relationship Type,Тип взаємозв'язків
@@ -942,8 +944,8 @@ Thesauri deleted,Тезауруси видалено
 Thesauri name,Назва тезаурусу
 thesauri new group desc,тезауруси нова група спуск
 thesauri new item desc,тезауруси новий елемент desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Оновлені тезауруси.
+Thesauri values created,Thesauri values created
 Thesaurus,Тезаурус
 Thesaurus created successfully.,Тезаурус створено успішно.
 Thesaurus name,Назва тезауруса

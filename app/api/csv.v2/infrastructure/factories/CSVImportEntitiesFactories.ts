@@ -2,6 +2,7 @@ import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStor
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
@@ -13,6 +14,7 @@ import { CsvImportEntities } from '../../CsvImportEntities.js';
 import { ListCsvImportEntitiesImportsUseCase } from '../../application/useCases/ListCsvImportEntitiesImportsUseCase.js';
 import { GetCsvImportEntitiesImportUseCase } from '../../application/useCases/GetCsvImportEntitiesImportUseCase.js';
 import { CancelCsvImportEntitiesImportUseCase } from '../../application/useCases/CancelCsvImportEntitiesImportUseCase.js';
+import { DownloadCsvImportFailedRowsCsvUseCase } from '../../application/useCases/DownloadCsvImportFailedRowsCsvUseCase.js';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob.js';
 import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource.js';
 import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource.js';
@@ -102,9 +104,11 @@ export class CSVImportEntitiesFactories {
   static getCsvImportEntitiesImportUseCaseDefault() {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
+    const rowErrorsDS = this.CSVImportRowErrorsDSDefault(transactionManager);
 
     return new GetCsvImportEntitiesImportUseCase({
       csvImportEntitiesImportsDS,
+      rowErrorsDS,
     });
   }
 
@@ -114,6 +118,17 @@ export class CSVImportEntitiesFactories {
 
     return new CancelCsvImportEntitiesImportUseCase({
       csvImportEntitiesImportsDS,
+    });
+  }
+
+  static downloadCsvImportFailedRowsCsvUseCaseDefault() {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
+    const fileStorage = FileStorageFactory.default();
+
+    return new DownloadCsvImportFailedRowsCsvUseCase({
+      csvImportEntitiesImportsDS,
+      fileStorage,
     });
   }
 }
