@@ -27,7 +27,7 @@ function initializeFiltersForm(values = {}) {
 }
 
 function selectDocument(_doc) {
-  return async (dispatch, getState) => {
+  return async dispatch => {
     const doc = _doc.toJS ? _doc.toJS() : _doc;
     dispatch(actions.set('library.sidepanel.view', 'library'));
     await dispatch(maybeSaveQuickLabels());

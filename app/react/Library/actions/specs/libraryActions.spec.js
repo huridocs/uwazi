@@ -496,7 +496,6 @@ describe('libraryActions', () => {
           .catch(done.fail);
       });
     });
-
   });
 
   describe('saveEntity', () => {

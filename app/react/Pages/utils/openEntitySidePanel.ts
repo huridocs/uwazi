@@ -3,12 +3,7 @@ import { getAndSelectDocument } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { store } from '#app/store.js';
 
-type SidePanelTab =
-  | 'metadata'
-  | 'references'
-  | 'relationships'
-  | 'text-search'
-  | 'toc';
+type SidePanelTab = 'metadata' | 'references' | 'relationships' | 'text-search' | 'toc';
 
 const openEntitySidePanel = (sharedId: string, tab?: SidePanelTab) => {
   if (!store || !sharedId) {
