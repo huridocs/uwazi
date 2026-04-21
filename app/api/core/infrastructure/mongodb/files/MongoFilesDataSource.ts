@@ -1,6 +1,7 @@
 import { Db, ObjectId } from 'mongodb';
 
 import { LanguageUtils } from '#shared/language/index.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
@@ -141,6 +142,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       this.getCollection().find({
         entity: { $in: entitySharedIds },
         type: 'thumbnail',
+      }),
+      dbo => this.toModel(dbo) as Thumbnail
+    );
+  }
+
+  getThumbnailsByLanguage(language: LanguageISO6391): ResultSet<Thumbnail> {
+    return new MongoResultSet<fileDBO, Thumbnail>(
+      this.getCollection().find({
+        type: 'thumbnail',
+        language: LanguageUtils.fromISO639_1(language).ISO639_3,
       }),
       dbo => this.toModel(dbo) as Thumbnail
     );

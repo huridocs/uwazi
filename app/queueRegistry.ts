@@ -11,6 +11,8 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { EntityPreviewBatchHandlerFactory } from '#api/core/infrastructure/factories/EntityPreviewBatchFactory.js';
+import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
 import { BulkCleanupEntityJob } from '#api/core/infrastructure/jobs/BulkCleanupEntityJob.js';
 import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
 import { DenormalizeThesaurusEntitiesChunkHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesChunkHandler.js';
@@ -257,6 +259,8 @@ export function registerJobs(register: Register) {
     const useCase = CsvCleanupImportFilesJobFactory.default();
     return new CsvCleanupImportFilesJobHandler({ useCase });
   });
+
+  register(EntityPreviewBatchHandler, async () => EntityPreviewBatchHandlerFactory.default());
 
   register(
     BulkCleanupEntityJob,

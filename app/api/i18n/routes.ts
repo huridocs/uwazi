@@ -10,6 +10,12 @@ import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchem
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
 import type { Application, Request } from 'express';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
 
@@ -24,6 +30,23 @@ const addLanguage = async (language: LanguageSchema) => {
     : addedTranslations;
   await entities.addLanguage(language.key);
   await pages.addLanguage(language.key);
+
+  const transactionManager = TransactionManagerFactory.default();
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
+  const thumbnails = await filesDS.getThumbnailsByLanguage(language.key).all();
+  const sharedIds = [...new Set(thumbnails.map(t => t.entity))];
+  if (sharedIds.length > 0) {
+    const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
+    const dispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+    await dispatcher.dispatchMany(async dispatch =>
+      chunks.forEach(chunk =>
+        dispatch(EntityPreviewBatchHandler, {
+          languageKey: language.key,
+          sharedIds: chunk,
+        })
+      )
+    );
+  }
   try {
     await translations.importPredefined(language.key);
   } catch (error) {
