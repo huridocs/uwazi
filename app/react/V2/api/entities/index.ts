@@ -33,9 +33,12 @@ const getById = async ({
     const {
       json: { rows: response },
     } = await api.get('entities', requestParams);
-    return [response];
+    if (response.length) {
+      return [response[0]];
+    }
+    return [undefined];
   } catch (e) {
-    return [undefined, e as FetchResponseError];
+    return [undefined, e];
   }
 };
 
@@ -63,17 +66,19 @@ const getBySharedId = async (
     } = await api.get('entities', requestParams);
     return [response];
   } catch (e) {
-    return [undefined, e as FetchResponseError];
+    return [undefined, e];
   }
 };
 
-const save = async (entity: EntitySchema): Promise<EntitySchema | FetchResponseError> => {
+const update = async (
+  entity: Entity
+): Promise<ApiResponse<Entity | undefined, FetchResponseError>> => {
   try {
     const requestParams = new RequestParams(entity);
     const { json: response } = await api.post('entities', requestParams);
-    return response;
+    return [response];
   } catch (e) {
-    return e;
+    return [undefined, e];
   }
 };
 
@@ -168,4 +173,4 @@ const searchByTitle = async (
   }
 };
 
-export { getById, save, coerceValue, formatter, getBySharedId, searchByTitle };
+export { getById, update, coerceValue, formatter, getBySharedId, searchByTitle };

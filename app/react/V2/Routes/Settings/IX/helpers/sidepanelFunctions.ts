@@ -1,19 +1,16 @@
-import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
+import { ClientPropertySchema } from '#app/istore.js';
 import { MetadataObjectSchema, PropertyValueSchema } from '#shared/types/commonTypes.js';
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import * as filesAPI from '#V2/api/files/index.js';
 import { parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import * as entitiesAPI from '#V2/api/entities/index.js';
-import * as filesAPI from '#V2/api/files/index.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
+import { Entity } from '#V2/api/entities/types.js';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
 
 // eslint-disable-next-line max-statements
-const getFormValue = (
-  suggestion?: EntitySuggestionType,
-  entity?: ClientEntitySchema,
-  type?: string
-) => {
+const getFormValue = (suggestion?: EntitySuggestionType, entity?: Entity, type?: string) => {
   let value;
 
   if (!suggestion || !entity) {
@@ -45,16 +42,17 @@ const loadSidepanelData = async ({
   entityId: string;
   language: string;
 }) => {
-  const [file, entity] = await Promise.all([
+  const [file, entityResponse] = await Promise.all([
     (fileId && filesAPI.getById(fileId)) || [],
     entitiesAPI.getById({ _id: entityId, language }),
   ]);
 
-  return { ...(file[0] && { file: file[0] }), entity: entity[0] };
+  return { ...(file[0] && { file: file[0] }), entityResponse };
 };
 
+// eslint-disable-next-line max-statements
 const handleEntitySave = async (
-  entity?: ClientEntitySchema,
+  entity?: Entity,
   property?: ClientPropertySchema,
   metadata?: PropertyValueSchema | PropertyValueSchema[] | undefined,
   template?: TemplateSchema
@@ -87,7 +85,8 @@ const handleEntitySave = async (
 
   const entityToSave = entitiesAPI.formatter.update(entity, data);
 
-  return entitiesAPI.save(entityToSave);
+  const [result] = await entitiesAPI.update(entityToSave);
+  return result;
 };
 
 const coerceValue = async (

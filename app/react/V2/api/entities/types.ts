@@ -1,3 +1,4 @@
+import { MetadataSchema } from '#shared/types/commonTypes.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import type { FileType as ApiFileType } from '#shared/types/fileType.js';
 
@@ -18,6 +19,7 @@ interface Entity extends Omit<
   user: String;
   documents?: FileType[];
   attachments?: FileType[];
+  metadata?: MetadataSchema;
 }
 
 export type { Entity };

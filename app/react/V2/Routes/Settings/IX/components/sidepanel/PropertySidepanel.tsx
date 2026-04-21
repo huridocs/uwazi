@@ -6,7 +6,7 @@ import loadable from '@loadable/component';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 import { Translate } from '#app/I18N/index.js';
-import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
   Sidepanel,
@@ -16,6 +16,7 @@ import {
 } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 import {
   coerceValue,
   getFormValue,
@@ -31,7 +32,6 @@ import { SidepanelProps } from './types.js';
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('../TextProperty')).TextProperty);
 
-// eslint-disable-next-line max-statements
 const PropertySidepanel = ({
   showSidepanel,
   setShowSidepanel,
@@ -41,7 +41,7 @@ const PropertySidepanel = ({
   extractor,
 }: SidepanelProps) => {
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
-  const [entity, setEntity] = useState<ClientEntitySchema>();
+  const [entity, setEntity] = useState<Entity>();
   const [highlights, setHighlights] = useAtom(highlightsAtom);
   const [selectionError, setSelectionError] = useAtom(selectionErrorAtom);
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
@@ -76,7 +76,8 @@ const PropertySidepanel = ({
   useEffect(() => {
     if (showSidepanel && suggestion) {
       loadSidepanelData(suggestion)
-        .then(({ entity: suggestionEntity }) => {
+        .then(({ entityResponse }) => {
+          const [suggestionEntity] = entityResponse;
           setEntity(suggestionEntity);
         })
         .catch(e => {
