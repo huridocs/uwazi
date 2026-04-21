@@ -294,6 +294,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Download
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,Drag and drop file in this window to upload
 Drag row,Drag row
 Drop your files here to upload or,Drop your files here to upload or
@@ -747,6 +748,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Reference,Reference
 References,References
 Reject,Reject
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relationship
 Relationship Type,Relationship Type
@@ -942,8 +944,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name

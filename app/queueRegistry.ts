@@ -38,14 +38,12 @@ import { CsvImportEntitiesJobFactory } from '#api/csv.v2/infrastructure/factorie
 import { CsvPreflightJobFactory } from '#api/csv.v2/infrastructure/factories/CsvPreflightJobFactory.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 import { CsvCleanupImportFilesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCleanupImportFilesJobFactory.js';
-import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
 import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
 import { CsvImportEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler.js';
 import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { CsvCreateRelationshipEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
 import { CsvCleanupImportFilesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCleanupImportFilesJobHandler.js';
-import { CsvV1CompatEmitter } from '#api/csv.v2/infrastructure/services/CsvV1CompatEmitter.js';
 import { denormalizeRelated } from '#api/entities/denormalize.js';
 import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
@@ -230,38 +228,31 @@ export function registerJobs(register: Register) {
   register(CsvExtractUploadedZipJobHandler, async () => {
     const useCase = CsvExtractUploadedZipJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvExtractUploadedZipJobHandler({ useCase, sockets, v1Compat });
+    return new CsvExtractUploadedZipJobHandler({ useCase, sockets });
   });
 
   register(CsvPreflightJobHandler, async () => {
     const useCase = CsvPreflightJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvPreflightJobHandler({ useCase, sockets, v1Compat });
+    return new CsvPreflightJobHandler({ useCase, sockets });
   });
 
   register(CsvCreateThesauriValuesJobHandler, async () => {
     const useCase = CsvCreateThesauriValuesJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvCreateThesauriValuesJobHandler({ useCase, sockets, v1Compat });
+    return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
   });
 
   register(CsvCreateRelationshipEntitiesJobHandler, async () => {
     const useCase = CsvCreateRelationshipEntitiesJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvCreateRelationshipEntitiesJobHandler({ useCase, sockets, v1Compat });
+    return new CsvCreateRelationshipEntitiesJobHandler({ useCase, sockets });
   });
 
   register(CsvImportEntitiesJobHandler, async () => {
     const useCase = CsvImportEntitiesJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const transactionManager = TransactionManagerFactory.default();
-    const rowErrorsDS = CSVImportEntitiesFactories.CSVImportRowErrorsDSDefault(transactionManager);
-    const v1Compat = new CsvV1CompatEmitter({ sockets, rowErrorsDS });
-    return new CsvImportEntitiesJobHandler({ useCase, sockets, v1Compat });
+    return new CsvImportEntitiesJobHandler({ useCase, sockets });
   });
 
   register(CsvCleanupImportFilesJobHandler, async () => {
