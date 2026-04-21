@@ -2,9 +2,9 @@ import React, { useRef } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
 import { MediaMetadataProperty } from '#V2/domain/entities/types.js';
-import { MetadataFieldProps } from './types.js';
+import { MetadataFieldProps } from '../types.js';
 import { PropertyLabel } from './PropertyLabel.js';
-import { MediaPlayer } from '../UI/index.js';
+import { MediaPlayer } from '../../UI/index.js';
 import { MetadataCard } from './MetadataCard.js';
 
 type MediaProps = MetadataFieldProps & {

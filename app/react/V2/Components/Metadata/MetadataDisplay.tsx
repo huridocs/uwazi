@@ -1,20 +1,22 @@
 import React, { Fragment, useCallback } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { Entity, MetadataProperty } from '#V2/domain/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { Date } from './Date.js';
-import { Geolocation } from './Geolocation.js';
-import { Relationship } from './Relationship.js';
-import { Media } from './Media.js';
-import { Image } from './Image.js';
-import { SimpleValue } from './SimpleValue.js';
-import { Title } from './Title.js';
-import { Markdown } from './Markdown.js';
-import { Select } from './Select.js';
-import { MetadataCard } from './MetadataCard.js';
-import { TemplateLabel } from './TemplateLabel.js';
-import { LinkProperty } from './LinkProperty.js';
+import {
+  Date,
+  Geolocation,
+  Relationship,
+  Media,
+  Image,
+  SimpleValue,
+  Title,
+  Markdown,
+  Select,
+  MetadataCard,
+  TemplateLabel,
+  LinkProperty,
+} from './Components/index.js';
+import { Entity } from './types.js';
 
 type MetadataDisplayProps = {
   entity: Entity;

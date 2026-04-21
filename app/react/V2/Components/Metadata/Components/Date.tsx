@@ -1,7 +1,7 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { DateMetadataProperty, DateRangeMetadataProperty } from '#V2/domain/entities/types.js';
-import { MetadataFieldProps } from './types.js';
+import { MetadataFieldProps } from '../types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
 
