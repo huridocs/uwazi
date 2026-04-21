@@ -2,9 +2,10 @@
  * @jest-environment jsdom
  */
 
-import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
+import { ClientPropertySchema } from '#app/istore.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
+import { Entity } from '#V2/api/entities/types.js';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
@@ -17,16 +18,16 @@ jest.mock('#V2/api/entities', () => ({
   formatter: {
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
-  save: jest.fn().mockResolvedValue({ success: true }),
+  update: jest.fn().mockResolvedValue([{}]),
   coerceValue: jest.fn(),
 }));
 
-const mockEntity: ClientEntitySchema = {
+const mockEntity: Entity = {
   _id: 'entity1',
   title: 'Test Entity',
   sharedId: 'shared1',
   metadata: {},
-} as ClientEntitySchema;
+} as Entity;
 
 const mockTextProperty: ClientPropertySchema = {
   _id: 'prop1',
@@ -122,28 +123,28 @@ describe('sidepanelFunctions', () => {
     });
 
     it('should handle title property updates', async () => {
-      const { formatter, save } = jest.requireMock('#V2/api/entities');
+      const { formatter, update } = jest.requireMock('#V2/api/entities');
 
       await handleEntitySave(mockEntity, mockTextProperty, 'New Title', mockTemplate);
 
       expect(formatter.update).toHaveBeenCalledWith(mockEntity, { title: 'New Title' });
-      expect(save).toHaveBeenCalled();
+      expect(update).toHaveBeenCalled();
     });
 
     it('should handle regular property updates', async () => {
       const regularProperty = { ...mockTextProperty, name: 'description' };
-      const { formatter, save } = jest.requireMock('#V2/api/entities');
+      const { formatter, update } = jest.requireMock('#V2/api/entities');
 
       await handleEntitySave(mockEntity, regularProperty, 'New Description', mockTemplate);
 
       expect(formatter.update).toHaveBeenCalledWith(mockEntity, {
         properties: [{ description: 'New Description' }],
       });
-      expect(save).toHaveBeenCalled();
+      expect(update).toHaveBeenCalled();
     });
 
     it('should handle relationship property updates with the same content', async () => {
-      const { save } = jest.requireMock('#V2/api/entities');
+      const { update } = jest.requireMock('#V2/api/entities');
 
       await handleEntitySave(
         mockEntity,
@@ -152,7 +153,7 @@ describe('sidepanelFunctions', () => {
         mockTemplate
       );
 
-      expect(save).toHaveBeenCalledWith({
+      expect(update).toHaveBeenCalledWith({
         ...mockEntity,
         properties: [
           { relatedEntities: ['entity1', 'entity2'] },
