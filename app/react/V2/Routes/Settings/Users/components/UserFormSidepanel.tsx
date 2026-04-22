@@ -172,7 +172,6 @@ const UserFormSidepanel = ({
       <Sidepanel
         isOpen={showSidepanel}
         withOverlay
-        boundedToParent
         closeSidepanelFunction={closeSidepanel}
         title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
       >

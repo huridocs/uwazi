@@ -147,7 +147,7 @@ const Collection = () => {
   ];
 
   return (
-    <div className="w-full h-full overflow-y-auto" data-testid="settings-collection">
+    <div className="w-full h-full" data-testid="settings-collection">
       <SettingsContent>
         <SettingsContent.Header title="Collection" />
         <SettingsContent.Body>

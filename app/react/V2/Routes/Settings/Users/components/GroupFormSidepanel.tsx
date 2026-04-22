@@ -88,7 +88,6 @@ const GroupFormSidepanel = ({
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      boundedToParent
       closeSidepanelFunction={closeSidepanel}
       title={selectedGroup ? <Translate>Edit group</Translate> : <Translate>New group</Translate>}
     >

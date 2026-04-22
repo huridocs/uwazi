@@ -29,6 +29,7 @@ type Tenant = {
     v2ElasticSearch?: boolean;
     v2MultipleUpdateEntity?: boolean;
     v2DeleteEntity?: boolean;
+    newHeader?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

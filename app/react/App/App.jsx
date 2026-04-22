@@ -40,9 +40,7 @@ const App = ({ customParams }) => {
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
 
-  //TODO: Remove this once the new header is ready
-  const shouldShowNewHeader = false;
-  //const shouldShowNewHeader = location.pathname.includes('/settings') || location.pathname.includes('/v2');
+  const shouldShowNewHeader = Boolean(settings.features?.newHeader);
 
   const confirm = options => {
     setConfirmOptions(options);
@@ -71,7 +69,6 @@ const App = ({ customParams }) => {
         ) : (
           <LegacyHeader />
         )}
-        <NotificationsPanel />
         <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
           <AppMainContext.Provider value={appContext}>
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
@@ -84,6 +81,7 @@ const App = ({ customParams }) => {
         </main>
       </div>
       {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
+      <NotificationsPanel />
     </div>
   );
 };

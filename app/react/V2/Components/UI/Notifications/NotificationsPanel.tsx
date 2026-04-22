@@ -5,14 +5,15 @@ import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { NotificationItem } from './NotificationItem.js';
 import { TaskItem } from './TaskItem.js';
 import { Translate } from '#app/I18N/index.js';
+import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 
 const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400">
-    <span className="block w-3 h-3 rounded-full bg-green-400 mb-3" />
-    <p className="text-sm font-medium">
+  <div className="flex flex-col items-center justify-center py-1 text-center text-gray-400">
+    <HandThumbUpIcon className="h-6 w-6" />
+    <p className="font-semibold text-lg">
       <Translate>All clear</Translate>
     </p>
-    <p className="text-xs mt-1">
+    <p className="mt-1">
       <Translate>No notifications or active tasks.</Translate>
     </p>
   </div>
@@ -31,7 +32,13 @@ const NotificationsPanel = () => {
 
   const isEmpty = notifications.length === 0 && tasks.length === 0;
   const hasClearable = notifications.length > 0 || tasks.some(t => t.status !== 'running');
-  const orderedNotifications = useMemo(() => [...notifications].reverse(), [notifications]);
+  const orderedNotifications = useMemo(
+    () =>
+      [...notifications].sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      ),
+    [notifications]
+  );
   const [activeNotificationIndex, setActiveNotificationIndex] = useState(0);
   const notificationRefs = useRef<Array<HTMLDivElement | null>>([]);
 
