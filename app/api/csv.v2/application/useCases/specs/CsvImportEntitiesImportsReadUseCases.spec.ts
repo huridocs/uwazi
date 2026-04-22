@@ -2,6 +2,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
+import { CsvImportRowError, RowErrorCode } from '../../../domain/CsvImportRowError.js';
 import { CSVImportEntitiesFactories } from '../../../infrastructure/factories/CSVImportEntitiesFactories.js';
 import { ListCsvImportEntitiesImportsUseCase } from '../ListCsvImportEntitiesImportsUseCase.js';
 import { GetCsvImportEntitiesImportUseCase } from '../GetCsvImportEntitiesImportUseCase.js';
@@ -68,7 +69,11 @@ describe('CsvImportEntities imports read use cases (integration)', () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportEntitiesImportsDS =
       CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
-    const getUseCase = new GetCsvImportEntitiesImportUseCase({ csvImportEntitiesImportsDS });
+    const rowErrorsDS = CSVImportEntitiesFactories.CSVImportRowErrorsDSDefault(transactionManager);
+    const getUseCase = new GetCsvImportEntitiesImportUseCase({
+      csvImportEntitiesImportsDS,
+      rowErrorsDS,
+    });
     const f = getFixturesFactory();
 
     const csvImport = CsvImportDomain.withStatus(
@@ -103,6 +108,70 @@ describe('CsvImportEntities imports read use cases (integration)', () => {
           originalUploadSizeBytes: 33,
           extractedFilesCount: 1,
         }),
+      })
+    );
+  });
+
+  it('should return rowErrors array in import details from csv_import_row_errors', async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportEntitiesImportsDS =
+      CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowErrorsDS = CSVImportEntitiesFactories.CSVImportRowErrorsDSDefault(transactionManager);
+    const getUseCase = new GetCsvImportEntitiesImportUseCase({
+      csvImportEntitiesImportsDS,
+      rowErrorsDS,
+    });
+    const f = getFixturesFactory();
+
+    const csvImport = CsvImportDomain.withStatus(
+      CsvImportDomain.withRowErrors(
+        CsvImportDomain.create({
+          id: f.idString('detail-with-errors'),
+          templateId: 'template-detail-errors',
+          file: { originalName: 'detail-errors.csv', mimeType: 'text/csv', size: 44 },
+          createdBy: f.idString('user-detail-errors'),
+        }),
+        {
+          failedRows: 1,
+          reportPath: 'csv-imports/detail-with-errors/reports/failed_rows.csv',
+        }
+      ),
+      CsvImportStatus.ImportEntitiesDone
+    );
+
+    await csvImportEntitiesImportsDS.insert(csvImport);
+    await rowErrorsDS.insertMany([
+      CsvImportRowError.create({
+        importId: csvImport.id,
+        rowIndex: 2,
+        message: 'Relationship value could not be resolved to an existing entity.',
+        code: RowErrorCode.RelationshipNotFound,
+        property: 'rel_any',
+        rawValue: 'Unknown Related',
+        details: {
+          unresolved: [{ token: 'Unknown Related', reason: 'not_found', scope: 'any-template' }],
+        },
+      }),
+    ]);
+
+    const result = await getUseCase.execute({ id: csvImport.id });
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        id: csvImport.id,
+        rowErrorsSummary: expect.objectContaining({
+          failedRows: 1,
+          reportPath: 'csv-imports/detail-with-errors/reports/failed_rows.csv',
+        }),
+        rowErrors: [
+          expect.objectContaining({
+            importId: csvImport.id,
+            rowIndex: 2,
+            code: RowErrorCode.RelationshipNotFound,
+            property: 'rel_any',
+            rawValue: 'Unknown Related',
+          }),
+        ],
       })
     );
   });
