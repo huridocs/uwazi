@@ -58,11 +58,9 @@ describe('customization', () => {
     cy.contains('td', 'batman.jpg').parent().contains('button', 'Edit').click();
     cy.contains('Edit File');
     cy.checkA11y(undefined, undefined, logA11yViolations);
-    cy.get('[role="dialog"]').within(() => {
-      cy.get('#filename').clear();
-      cy.get('#filename').type('Batman - superhero pic', { delay: 0 });
-      cy.contains('button', 'Save').click();
-    });
+    cy.get('#filename').clear();
+    cy.get('#filename').type('Batman - superhero pic', { delay: 0 });
+    cy.contains('button', 'Save').click();
     cy.contains('td', 'Batman - superhero pic.jpg');
   });
 
