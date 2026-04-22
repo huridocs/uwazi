@@ -13,6 +13,7 @@ export const thumbnailMissingAllId = new ObjectId();
 export const thumbnailMissingEntityId = new ObjectId();
 export const thumbnailMissingOriginalnameId = new ObjectId();
 export const thumbnailNoMatchingPdfId = new ObjectId();
+export const thumbnailInvalidObjectIdId = new ObjectId();
 
 // Processed PDF documents
 export const processedPdfForComplete = {
@@ -130,6 +131,15 @@ export const thumbnailNoMatchingPdf = {
   creationDate: 1583767594000,
 };
 
+// Filename is not a valid ObjectId — should be deleted
+export const thumbnailInvalidObjectId = {
+  _id: thumbnailInvalidObjectIdId,
+  filename: 'not-a-valid-objectid.jpg',
+  type: 'thumbnail' as const,
+  size: 12535,
+  creationDate: 1583767594000,
+};
+
 export const fixtures: Fixture = {
   files: [
     processedPdfForComplete,
@@ -141,5 +151,6 @@ export const fixtures: Fixture = {
     thumbnailMissingEntity,
     thumbnailMissingOriginalname,
     thumbnailNoMatchingPdf,
+    thumbnailInvalidObjectId,
   ],
 };

@@ -8,6 +8,7 @@ import {
   processedPdfForMissingEntity,
   processedPdfForMissingOriginalnameDoc,
   thumbnailCompleteId,
+  thumbnailInvalidObjectIdId,
   thumbnailMissingAllId,
   thumbnailMissingEntityId,
   thumbnailMissingOriginalnameId,
@@ -86,6 +87,11 @@ describe('migration fix-missing-fields-on-thumbnails', () => {
 
   it('should delete a thumbnail whose filename does not match any processed PDF', async () => {
     const thumbnail = await db!.collection('files').findOne({ _id: thumbnailNoMatchingPdfId });
+    expect(thumbnail).toBeNull();
+  });
+
+  it('should delete a thumbnail whose filename is not a valid ObjectId', async () => {
+    const thumbnail = await db!.collection('files').findOne({ _id: thumbnailInvalidObjectIdId });
     expect(thumbnail).toBeNull();
   });
 });
