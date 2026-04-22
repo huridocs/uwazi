@@ -1,5 +1,3 @@
-import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
-import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
@@ -58,7 +56,7 @@ export class CSVImportEntitiesFactories {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = this.CSVImportDSDefault(transactionManager);
     const tenant = tenants.current();
-    const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
+    const fileStorage = FileStorageFactory.default();
     const idGenerator = IdGeneratorFactory.default();
     const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     return new CsvImportEntities({
