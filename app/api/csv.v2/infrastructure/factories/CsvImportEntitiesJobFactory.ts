@@ -10,6 +10,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob.js';
@@ -44,7 +45,8 @@ const buildCsvDataSources = (transactionManager: MongoTransactionManager) => {
 
 const buildEntityServices = (
   transactionManager: MongoTransactionManager,
-  fileStorage: FileStorage
+  fileStorage: FileStorage,
+  jobsDispatcher: JobsDispatcher
 ) => {
   const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
@@ -59,11 +61,19 @@ const buildEntityServices = (
     translationsDS,
     entitiesDS,
   });
+  const entitiesService = EntitiesServiceFactory.default({
+    transactionManager,
+    settingsDS,
+    templatesDS,
+    entitiesDS,
+    dispatcher: jobsDispatcher,
+  });
 
   return {
     templatesDS,
     settingsDS,
     entitiesDS,
+    entitiesService,
     filesService,
     idGenerator,
     propertyAssignmentCreatorServiceStrategy,
@@ -81,7 +91,7 @@ class CsvImportEntitiesJobFactory {
     const jobsDispatcher =
       options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
     const dataSources = buildCsvDataSources(transactionManager);
-    const services = buildEntityServices(transactionManager, fileStorage);
+    const services = buildEntityServices(transactionManager, fileStorage, jobsDispatcher);
     const mapper = new CsvEntitiesImportMapper(
       dataSources.thesauriValuesDS,
       dataSources.relationshipValuesDS
@@ -94,7 +104,7 @@ class CsvImportEntitiesJobFactory {
       thesauriValuesDS: dataSources.thesauriValuesDS,
       templatesDS: services.templatesDS,
       settingsDS: services.settingsDS,
-      entitiesDS: services.entitiesDS,
+      entitiesService: services.entitiesService,
       mapper,
       transactionManager,
       fileStorage,

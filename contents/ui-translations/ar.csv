@@ -1,5 +1,4 @@
 Key,Arabic
-% of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -219,7 +218,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,خطأ في المكون المخصص
@@ -292,6 +291,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,تحميل
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,اسحب الملف وأفلته في هذه النافذة للتحميل
 Drag row,Drag row
 Drop your files here to upload or,اسحب ملفاتك هنا للتحميل أو
@@ -301,7 +301,6 @@ Duplicated name,اسم مكرر
 Duplicated username,اسم المستخدم مكرر
 Duration,المدة
 Edit,تحرير
-Edit all documents matching this criteria,حرر جميع المستندات المستوفية لهذه المعايير
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -341,7 +340,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,استكشاف
 Export CSV,تصدير ملف القيم المفصولة بفواصل
 Exporting entities to CSV,تصدير كيانات (إدخالات) إلى ملف القيم المفصولة بفواصل
 Extension Token,Extension Token
@@ -386,7 +384,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,ضبط دقيق
 Fit,متوافق
 Flag,علم
 for,for
@@ -624,7 +621,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,عدد الجمل أزيد من الحد
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -657,7 +653,6 @@ Other,آخر
 other,آخر
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,خارج
 Page,صفحة
 Page not found,لم يتم العثور على الصفحة
 Pages,الصفحات
@@ -687,7 +682,6 @@ Plain text,نص عادي
 Please contact an admin for details.,يرجى الاتصال بالمشرف (المسؤول) للحصول على التفاصيل.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,يرجى كتابة الحروف والأرقام من الصورة لبدء التصدير.
-Precision,دقة
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -751,6 +745,7 @@ Receiving email description,"If you have a contact form, this is the email addre
 Reference,Reference
 References,مراجع
 Reject,رفض
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,صلة
 Relationship Type,Relationship Type
@@ -808,7 +803,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ابحث
 Search item,البحث عن بند
-Search not found,البحث غير متوفر
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
 Search relevance,ملائمة البحث
 Search text,بحث النص
@@ -837,18 +831,11 @@ selected,المحدد
 selected of,مختار من
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,البحث الدلالي
-Semantic Search,البحث الدلالي
-Semantic search minimum sentences help,المساعدة في البحث الدلالي بالحد الأدنى من الجمل
-Semantic search overview,نظرة عامة على البحث الدلالي
-Semantic search results,نتائج البحث الدلالي
-Semantic search threshold help,مساعدة البدء في البحث الدلالي
 Send,إرسال
 Send recovery email,إرسل بريد الكتروني للاستعادة
 Sending email,البريد الالكتروني المرسل
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,الجمل أزيد من الحد
 Services,Services
 Set as default,تعيين كافتراضي
 Set default language,Set default language
@@ -954,8 +941,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name
@@ -984,7 +971,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,حد
 Time,زمن
 Timelinks,Timelinks
 Timestamp,Timestamp
