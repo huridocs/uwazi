@@ -18,7 +18,7 @@ type SlotDocument = {
   rand: number;
 };
 
-type AssignedSlotDocument = SlotDocument & { assignedTo: string; language: LanguageISO6391 };
+type AssignedSlotDocument = SlotDocument & { assignedTo: string };
 
 type AssignSlotInput = {
   propertyName: string;
