@@ -59,8 +59,6 @@ enum ItemTypes {
   ROW = 'row',
 }
 
-type FeatureFlags = Tenant['featureFlags'] & {};
-
 type ClientProperty = Property & {
   _id?: string;
 };
