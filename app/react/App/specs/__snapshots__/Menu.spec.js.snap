@@ -101,29 +101,6 @@ exports[`Menu Links returns the expected HTML 1`] = `
     <ul
       className="menuNav-list"
     >
-      <Connect(FeatureToggleSemanticSearch)>
-        <li
-          className="menuNav-item semantic-search"
-        >
-          <button
-            aria-label="Semantic search"
-            className="menuNav-btn btn btn-default"
-            onClick={[Function]}
-            type="button"
-          >
-            <Icon
-              icon="flask"
-            />
-            <span
-              className="tab-link-tooltip"
-            >
-              <Translate>
-                Semantic search
-              </Translate>
-            </span>
-          </button>
-        </li>
-      </Connect(FeatureToggleSemanticSearch)>
       <li
         className="menuNav-item"
       >
