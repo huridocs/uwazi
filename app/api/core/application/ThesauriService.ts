@@ -10,13 +10,38 @@ type Deps = {
   thesaurusTranslationService: ThesaurusTranslationService;
 };
 
-type UpsertContext = {
+type UpdateContext = {
   tenantName: string;
   actorId: string;
 };
 
 class ThesauriService {
   constructor(private deps: Deps) {}
+
+  private static shouldSkipUpdate(diff: ReturnType<Thesaurus['getDiff']>) {
+    return !diff.hasChanges && !diff.hasOrderChanges;
+  }
+
+  private async persistOrderOnlyIfNeeded(
+    thesaurus: Thesaurus,
+    diff: ReturnType<Thesaurus['getDiff']>
+  ) {
+    if (!diff.hasChanges && diff.hasOrderChanges) {
+      await this.deps.thesauriDS.update(thesaurus);
+      return true;
+    }
+
+    return false;
+  }
+
+  private async validateNameIfChanged(
+    thesaurus: Thesaurus,
+    diff: ReturnType<Thesaurus['getDiff']>
+  ) {
+    if (diff.updatedName) {
+      (await this.deps.thesauriDS.exists(thesaurus)).getDataOrThrow();
+    }
+  }
 
   async insert(thesaurus: Thesaurus): Promise<void> {
     (await this.deps.thesauriDS.exists(thesaurus)).getDataOrThrow();
@@ -25,16 +50,18 @@ class ThesauriService {
     await this.deps.thesaurusTranslationService.create(thesaurus);
   }
 
-  async upsert(thesaurus: Thesaurus, context: UpsertContext): Promise<void> {
+  async update(thesaurus: Thesaurus, context: UpdateContext): Promise<void> {
     const diff = thesaurus.getDiff();
 
-    if (!diff.hasChanges) {
+    if (ThesauriService.shouldSkipUpdate(diff)) {
       return;
     }
 
-    if (diff.updatedName) {
-      (await this.deps.thesauriDS.exists(thesaurus)).getDataOrThrow();
+    if (await this.persistOrderOnlyIfNeeded(thesaurus, diff)) {
+      return;
     }
+
+    await this.validateNameIfChanged(thesaurus, diff);
 
     await this.deps.thesauriDS.update(thesaurus);
 
