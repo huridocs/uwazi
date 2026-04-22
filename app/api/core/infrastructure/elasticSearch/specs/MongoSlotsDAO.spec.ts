@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
@@ -214,6 +215,11 @@ describe('MongoSlotsDAO', () => {
       const titleSlots = await slotsCollection()
         .find({ slotName: { $in: ['txt_01', 'txt_02'] } })
         .toArray();
+
+      const [first, second] = titleSlots;
+
+      expect(first.rand).not.toEqual(second.rand);
+
       titleSlots.forEach(s => {
         expect(s.assignedTo).toBeNull();
         expect(s.language).toBeNull();

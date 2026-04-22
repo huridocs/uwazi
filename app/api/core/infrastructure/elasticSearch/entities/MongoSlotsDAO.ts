@@ -140,10 +140,15 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
   }
 
   async unassignSlot(propertyName: string): Promise<void> {
-    await this.getCollection().updateMany(
-      { assignedTo: propertyName },
-      { $set: { assignedTo: null, language: null, rand: Math.random() } }
-    );
+    await this.getCollection().updateMany({ assignedTo: propertyName }, [
+      {
+        $set: {
+          assignedTo: null,
+          language: null,
+          rand: { $rand: {} },
+        },
+      },
+    ]);
   }
 
   static slotKey(assignedTo: string, language: LanguageISO6391 | null): string {
