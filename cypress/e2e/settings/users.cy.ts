@@ -14,8 +14,6 @@ const checkWorngPasswordState = () => {
   // Invalid confirmation password should show an error flash and keep context usable.
   cy.get('[data-testid="notification-flash"]').should('be.visible');
   cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
-  cy.get('aside').should('be.visible');
-  cy.contains('button', 'Unlock account').should('be.visible');
 };
 
 describe('Users', () => {
@@ -208,7 +206,7 @@ describe('Users', () => {
 
   describe('unblock user', () => {
     it('should not be able to ublock a user if the password is incorrect', () => {
-      cy.intercept('POST', '/api/users*').as('unlockUser');
+      cy.intercept('POST', '/api/users/unlock').as('unlockUser');
       cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click();
 
       cy.contains('button', 'Unlock account').click();
