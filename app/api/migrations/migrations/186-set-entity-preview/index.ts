@@ -221,7 +221,7 @@ function computePreview(
 }
 
 export default {
-  delta: 185,
+  delta: 186,
 
   reindex: true,
 

@@ -32,8 +32,8 @@ describe('migration set-entity-preview', () => {
     await testingDB.tearDown();
   });
 
-  it('should have delta 185', () => {
-    expect(createSut().delta).toBe(185);
+  it('should have delta 186', () => {
+    expect(createSut().delta).toBe(186);
   });
 
   it('should set preview to the language-matching thumbnail for each entity translation', async () => {
