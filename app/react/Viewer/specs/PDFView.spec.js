@@ -80,7 +80,6 @@ describe('PDFView', () => {
     user: Immutable.fromJS({ _id: 'user1' }),
     settings: { collection: Immutable.fromJS({}) },
     modals: Immutable.fromJS({ ConfirmCloseForm: Immutable.fromJS({ _id: 'document1' }) }),
-    semanticSearch: { selectedDocument: Immutable.fromJS({}) },
   };
 
   const render = () => {
