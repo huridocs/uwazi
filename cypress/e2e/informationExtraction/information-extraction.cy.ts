@@ -63,6 +63,7 @@ describe('Information Extraction', () => {
 
     it('should create an extractor', () => {
       cy.contains('button', 'Create Extractor').click();
+      cy.intercept('GET', '/api/ixextractors').as('fetchExtractors');
       cy.getByTestId('modal').within(() => {
         cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
 
@@ -76,6 +77,7 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Create').click();
       });
 
+      cy.wait('@fetchExtractors');
       cy.contains('td', 'Extractor 1');
     });
 
