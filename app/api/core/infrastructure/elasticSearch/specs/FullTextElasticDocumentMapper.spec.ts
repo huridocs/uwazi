@@ -27,7 +27,7 @@ describe('FullTextElasticDocumentMapper', () => {
   describe('toDocument()', () => {
     it('joins pages with \\f separator', () => {
       const file = createFile({ fullText: { 1: 'page one', 2: 'page two', 3: 'page three' } });
-      const result = FullTextElasticDocumentMapper.toDocument(file, sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(file, tenantId);
 
       expect(result).not.toBeNull();
       expect(result!.fullText_english).toBe('page one\fpage two\fpage three');
@@ -35,7 +35,7 @@ describe('FullTextElasticDocumentMapper', () => {
 
     it('maps a known ISO639_3 language to its elastic name', () => {
       const file = createFile({ language: 'eng' });
-      const result = FullTextElasticDocumentMapper.toDocument(file, sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(file, tenantId);
 
       expect(result).not.toBeNull();
       expect(result).toHaveProperty('fullText_english');
@@ -43,7 +43,7 @@ describe('FullTextElasticDocumentMapper', () => {
 
     it('maps arabic ISO639_3 language to arabic elastic name', () => {
       const file = createFile({ language: 'arb' });
-      const result = FullTextElasticDocumentMapper.toDocument(file, sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(file, tenantId);
 
       expect(result).not.toBeNull();
       expect(result).toHaveProperty('fullText_arabic');
@@ -51,7 +51,7 @@ describe('FullTextElasticDocumentMapper', () => {
 
     it('falls back to fullText_other for an unrecognised language', () => {
       const file = createFile({ language: 'xyz' as any });
-      const result = FullTextElasticDocumentMapper.toDocument(file, sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(file, tenantId);
 
       expect(result).not.toBeNull();
       expect(result).toHaveProperty('fullText_other');
@@ -59,7 +59,7 @@ describe('FullTextElasticDocumentMapper', () => {
 
     it('falls back to fullText_other when file language is undefined', () => {
       const file = createFile({ language: undefined as any });
-      const result = FullTextElasticDocumentMapper.toDocument(file, sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(file, tenantId);
 
       expect(result).not.toBeNull();
       expect(result).toHaveProperty('fullText_other');
@@ -67,20 +67,20 @@ describe('FullTextElasticDocumentMapper', () => {
 
     it('returns null when fullText is undefined', () => {
       const file = createFile({ fullText: undefined });
-      const result = FullTextElasticDocumentMapper.toDocument(file, sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(file, tenantId);
 
       expect(result).toBeNull();
     });
 
     it('returns null when fullText is an empty object', () => {
       const file = createFile({ fullText: {} });
-      const result = FullTextElasticDocumentMapper.toDocument(file, sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(file, tenantId);
 
       expect(result).toBeNull();
     });
 
     it('sets the join parent to tenantId__sharedId', () => {
-      const result = FullTextElasticDocumentMapper.toDocument(createFile(), sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(createFile(), tenantId);
 
       expect(result).not.toBeNull();
       expect(result!.fullText).toEqual({
@@ -90,14 +90,14 @@ describe('FullTextElasticDocumentMapper', () => {
     });
 
     it('does not include sharedId in the document (stamped downstream)', () => {
-      const result = FullTextElasticDocumentMapper.toDocument(createFile(), sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(createFile(), tenantId);
 
       expect(result).not.toBeNull();
       expect(result).not.toHaveProperty('sharedId');
     });
 
     it('does not include tenantId (stamped downstream by TenantAwareESClient)', () => {
-      const result = FullTextElasticDocumentMapper.toDocument(createFile(), sharedId, tenantId);
+      const result = FullTextElasticDocumentMapper.toDocument(createFile(), tenantId);
 
       expect(result).not.toBeNull();
       expect(result).not.toHaveProperty('tenantId');
@@ -109,15 +109,9 @@ describe('FullTextElasticDocumentMapper', () => {
       const sharedId2 = 'shared-xyz';
       const fileId2 = new ObjectId('dddddddddddddddddddddddd');
       const file1 = createFile({ _id: fileId });
-      const file2 = createFile({ _id: fileId2, language: 'spa' });
+      const file2 = createFile({ _id: fileId2, language: 'spa', entity: sharedId2 });
 
-      const results = FullTextElasticDocumentMapper.toDocuments(
-        [
-          { file: file1, sharedId },
-          { file: file2, sharedId: sharedId2 },
-        ],
-        tenantId
-      );
+      const results = FullTextElasticDocumentMapper.toDocuments([file1, file2], tenantId);
 
       expect(results).toHaveLength(2);
       expect(results[0].id).toBe(`${sharedId}_${fileId.toString()}`);
@@ -129,13 +123,7 @@ describe('FullTextElasticDocumentMapper', () => {
       const file1 = createFile({ _id: fileId });
       const file2 = createFile({ _id: fileId2, language: 'spa' });
 
-      const results = FullTextElasticDocumentMapper.toDocuments(
-        [
-          { file: file1, sharedId },
-          { file: file2, sharedId },
-        ],
-        tenantId
-      );
+      const results = FullTextElasticDocumentMapper.toDocuments([file1, file2], tenantId);
 
       expect(results).toHaveLength(2);
       expect(results[0].document.fullText.parent).toBe(`${tenantId}__${sharedId}`);
@@ -147,10 +135,7 @@ describe('FullTextElasticDocumentMapper', () => {
       const fileWithoutText = createFile({ _id: new ObjectId(), fullText: {} });
 
       const results = FullTextElasticDocumentMapper.toDocuments(
-        [
-          { file: fileWithText, sharedId },
-          { file: fileWithoutText, sharedId },
-        ],
+        [fileWithText, fileWithoutText],
         tenantId
       );
 

@@ -18,7 +18,7 @@ class FullTextIndexerService {
     }
 
     const operations = FullTextElasticDocumentMapper.toDocuments(
-      files.map(file => ({ file, sharedId: file.entity })),
+      files,
       this.deps.esClient.tenantId
     );
 

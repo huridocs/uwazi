@@ -18,22 +18,6 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     super(deps.db, deps.transactionManager);
   }
 
-  async getAllProperties(): Promise<PropertyDescriptor[]> {
-    return this.getCollection()
-      .aggregate<PropertyDescriptor>([
-        { $unwind: '$properties' },
-        {
-          $project: {
-            _id: 0,
-            name: '$properties.name',
-            type: '$properties.type',
-            inheritedType: '$properties.inherit.type',
-          },
-        },
-      ])
-      .toArray();
-  }
-
   async getAllFilterableProperties(): Promise<PropertyDescriptor[]> {
     const fromTemplates = await this.getCollection()
       .aggregate<PropertyDescriptor>([
