@@ -22,7 +22,7 @@ describe('Public Form', () => {
     });
 
     it('should whitelist Mecanismo and Reporte', () => {
-      cy.get('[data-testid="settings-collection"]').scrollTo('center');
+      cy.get('[data-testid="settings-collection"]').parent().scrollTo('center');
       cy.get('[data-testid="multiselect"]')
         .eq(0)
         .within(() => {

@@ -193,7 +193,7 @@ describe('Entities', () => {
 
   describe('Entity Metadata', () => {
     it('should create an entity filling all the props.', () => {
-      cy.contains('a', 'Library').click();
+      cy.visit('/en/library');
       cy.get('button').contains('Create entity').should('be.visible');
       cy.get('button').contains('Create entity').click();
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
