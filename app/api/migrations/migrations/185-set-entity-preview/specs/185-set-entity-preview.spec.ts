@@ -78,11 +78,21 @@ describe('migration set-entity-preview', () => {
     expect(es?.preview).toBeUndefined();
   });
 
-  it('should clear a stale preview when no thumbnails remain', async () => {
-    await createSut().up();
+  it('should be idempotent — running up() twice produces the same result', async () => {
+    const sut = createSut();
+    await sut.up();
+    await sut.up();
 
-    const en = await testingDB.mongodb!.collection('entities').findOne({ _id: entity5EnId });
+    const en = await testingDB.mongodb!.collection('entities').findOne({ _id: entity1EnId });
+    const es = await testingDB.mongodb!.collection('entities').findOne({ _id: entity1EsId });
+    const entity2En = await testingDB.mongodb!.collection('entities').findOne({ _id: entity2EnId });
+    const entity4En = await testingDB.mongodb!.collection('entities').findOne({ _id: entity4EnId });
+    const entity5En = await testingDB.mongodb!.collection('entities').findOne({ _id: entity5EnId });
 
-    expect(en?.preview).toBeUndefined();
+    expect(en?.preview).toBe(`${entity1DocEnId.toString()}.jpg`);
+    expect(es?.preview).toBe(`${entity1DocEsId.toString()}.jpg`);
+    expect(entity2En?.preview).toBe(`${entity2DocEnId.toString()}.jpg`);
+    expect(entity4En?.preview).toBeUndefined();
+    expect(entity5En?.preview).toBeUndefined();
   });
 });

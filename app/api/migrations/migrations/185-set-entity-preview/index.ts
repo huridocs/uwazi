@@ -237,7 +237,9 @@ export default {
       ((settings?.languages ?? []) as { key: string; default?: boolean }[]).find(l => l.default)
         ?.key ?? 'en';
 
-    const cursor = db.collection<EntityDocument>('entities').find({});
+    const cursor = db
+      .collection<EntityDocument>('entities')
+      .find({}, { projection: { _id: 1, sharedId: 1, language: 1 } });
 
     let batch: EntityDocument[] = [];
     let updatedCount = 0;
@@ -277,7 +279,7 @@ export default {
       }
 
       if (operations.length) {
-        await db.collection('entities').bulkWrite(operations, { ordered: false });
+        await db.collection('entities').bulkWrite(operations);
         updatedCount += operations.length;
       }
     };
