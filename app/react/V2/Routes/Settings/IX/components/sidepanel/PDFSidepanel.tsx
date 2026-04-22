@@ -4,10 +4,9 @@ import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { FileType } from '#shared/types/fileType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 import { Translate } from '#app/I18N/index.js';
-import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
   Sidepanel,
@@ -18,6 +17,7 @@ import {
 import { PDF, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 import {
   coerceValue,
   getFormValue,
@@ -51,7 +51,7 @@ const PDFSidepanel = ({
 }: SidepanelProps) => {
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
   const [pdfFile, setPdfFile] = useState<FileType | undefined>();
-  const [entity, setEntity] = useState<ClientEntitySchema>();
+  const [entity, setEntity] = useState<Entity>();
   const [highlights, setHighlights] = useAtom(highlightsAtom);
   const [selectionError, setSelectionError] = useAtom(selectionErrorAtom);
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
@@ -90,8 +90,11 @@ const PDFSidepanel = ({
   useEffect(() => {
     if (showSidepanel && suggestion) {
       loadSidepanelData(suggestion)
-        .then(({ file, entity: suggestionEntity }) => {
+        .then(({ file, entityResponse }) => {
+          const [suggestionEntity] = entityResponse;
+
           setPdfFile(file || undefined);
+
           setEntity(suggestionEntity);
         })
         .catch(e => {
@@ -121,16 +124,16 @@ const PDFSidepanel = ({
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
-    if (dirtyFields.field) {
-      const savedEntity = await handleEntitySave(
+    if (dirtyFields.field && entity?._id) {
+      const [savedEntity, error] = await handleEntitySave(
         { ...entity, __extractedMetadata: { fileID: pdfFile?._id, selections } },
         property,
         value.field,
         template
       );
 
-      if (savedEntity instanceof FetchResponseError) {
-        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+      if (error) {
+        const details = error.json.prettyMessage;
 
         setNotifications({ type: 'error', text: 'An error occurred', details });
       } else if (savedEntity) {
