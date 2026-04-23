@@ -76,6 +76,13 @@ class MongoSlotsBootstrapper {
       { upsert: true }
     );
   }
+
+  async reset(): Promise<void> {
+    await this.collection.drop().catch(err => {
+      if (err?.codeName !== 'NamespaceNotFound') throw err;
+    });
+    await this.execute();
+  }
 }
 
 export { MongoSlotsBootstrapper };

@@ -223,4 +223,33 @@ describe('MongoEntityDAO', () => {
       expect(entities[0].sharedId).toBe('entity_4');
     });
   });
+
+  describe('streamAll()', () => {
+    it('returns all entity documents regardless of permissions or published status', async () => {
+      const dao = new MongoEntityDAO(
+        getConnection(),
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await dao.streamAll().toArray();
+      const sharedIds = [...new Set(entities.map(e => e.sharedId))].sort();
+      expect(sharedIds).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
+    });
+
+    describe('when collection is empty', () => {
+      beforeAll(async () => {
+        await testingEnvironment.setUp({ entities: [] });
+      });
+
+      it('returns an empty cursor', async () => {
+        const dao = new MongoEntityDAO(
+          getConnection(),
+          TransactionManagerFactory.default(),
+          User.createFrom(null)
+        );
+        const result = await dao.streamAll().toArray();
+        expect(result).toHaveLength(0);
+      });
+    });
+  });
 });
