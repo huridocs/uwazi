@@ -199,3 +199,70 @@ If code is discarded after diagnosis, preserve this document as the source of tr
 - confirmed root cause,
 - verified temporary fix behavior.
 
+## 11) Affected implementations under strict transaction-scoped handler model
+
+If `TransactionManager.onCommitted` / `onRetry` are changed to be strictly transaction-scoped
+(allowed only while a transaction is active, and throwing outside `run()`), the following
+non-test implementations are affected and would lose behavior unless migrated.
+
+### 11.1 Affected (constructor-level registrations; behavior would be missing)
+
+1. `app/api/core/infrastructure/mongodb/CachedMongoSettingsDataSource.ts`
+   - Current use: constructor registers `onCommitted` to clear settings cache.
+   - Missing after strict-scoped change: cache no longer auto-invalidates after commits;
+     stale settings/language reads can persist.
+
+2. `app/api/core/infrastructure/mongodb/thesauri/CachedMongoThesauriDataSource.ts`
+   - Current use: constructor registers `onCommitted` to clear thesauri cache.
+   - Missing: stale thesauri entries may be served after writes.
+
+3. `app/api/i18n.v2/database/CachedMongoTranslationsDataSource.ts`
+   - Current use: constructor registers `onCommitted` to clear translations cache.
+   - Missing: stale translations may be returned after updates.
+
+4. `app/api/core/infrastructure/mongodb/template/CachedMongoTemplatesDataSource.ts`
+   - Current use: constructor registers `onCommitted` to clear templates cache.
+   - Missing: stale template/default-template reads.
+
+5. `app/api/core/infrastructure/elasticSearch/entities/MongoSlotsDAO.ts`
+   - Current use: constructor registers both `onCommitted` and `onRetry` to invalidate slot cache.
+   - Missing: stale slot map reuse across commits/retries, risking incorrect slot assignment behavior
+     and retry flows operating with outdated cache state.
+
+6. `app/api/entities.v2/database/MongoMultiLanguageEntityDataSource.ts`
+   - Current use: constructor registers three `onCommitted` handlers to:
+     - run `search.indexEntities`,
+     - run `entityIndexerService.index` for mutated entities,
+     - run `entityIndexerService.deleteBySharedIds` for deleted entities.
+   - Missing: search/index synchronization with entity writes stops.
+   - Additional risk: in-memory accumulators (`modifiedSharedIds`, `mutatedEntities`,
+     `deletedEntities`) can grow without being flushed.
+
+7. `app/api/core/infrastructure/mongodb/files/MongoFilesDataSource.ts`
+   - Current use: constructor registers `onCommitted` handlers to:
+     - reindex entities/files and trigger full-text indexing for processed PDFs,
+     - delete full-text entries for removed files.
+   - Missing: full-text/search index drift for created/updated/deleted files.
+   - Additional risk: in-memory accumulators (`filesToReindex`, `fileToDelete`) can grow.
+
+8. `app/api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.ts`
+   - Current use: constructor registers `onCommitted` to call `updateMapping` with mutated templates.
+   - Missing: template mapping updates stop, creating search/schema divergence.
+
+### 11.2 Not affected (already transaction-scoped registrations)
+
+The following implementations register handlers inside active transaction flows and are compatible
+with strict transaction-scoped semantics:
+
+- `app/api/core/application/EntitiesService.ts`
+- `app/api/core/application/FilesService.ts`
+- `app/api/relationships.v2/services/DenormalizationService.ts`
+- `app/api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.ts`
+- `app/api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.ts`
+
+### 11.3 Architectural implication
+
+A strict scoped-only contract is safer for long-running jobs and avoids handler accumulation,
+but constructor-level cross-transaction side effects (cache invalidation and indexing hooks)
+must be migrated to a centralized infrastructure mechanism before enforcing that contract.
+
