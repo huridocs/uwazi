@@ -1,4 +1,4 @@
-import { MetadataSchema } from '#shared/types/commonTypes.js';
+import { MetadataSchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import type { FileType as ApiFileType } from '#shared/types/fileType.js';
 
@@ -22,4 +22,4 @@ interface Entity extends Omit<
   metadata?: MetadataSchema;
 }
 
-export type { Entity };
+export type { Entity, MetadataSchema, MetadataObjectSchema };
