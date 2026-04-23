@@ -12,6 +12,7 @@ import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
@@ -230,6 +231,50 @@ describe('FilesService', () => {
         expect.stringContaining('.jpg'),
         expect.stringContaining('.jpg'),
       ]);
+    });
+  });
+
+  describe('delete', () => {
+    describe('when an entity has multiple documents each with a thumbnail', () => {
+      const fixtures: DBFixture = {
+        settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+        entities: [f.entity('entity1')],
+        files: [
+          ...f.processedDocument('doc1', {
+            entity: 'entity1',
+            language: 'en',
+            mimetype: 'application/pdf',
+            size: 1000,
+            creationDate: 1000,
+          }),
+          ...f.processedDocument('doc2', {
+            entity: 'entity1',
+            language: 'es',
+            mimetype: 'application/pdf',
+            size: 1000,
+            creationDate: 1000,
+          }),
+        ],
+      };
+
+      it('should only delete the thumbnail belonging to the deleted document', async () => {
+        await testingEnvironment.setUp(fixtures);
+        const transactionManager = TransactionManagerFactory.fake();
+        const { service } = createService();
+        const filesDataSource = FilesDataSourceFactory.default(transactionManager);
+
+        const doc1 = (await filesDataSource.getById(f.idString('doc1'))).getDataOrThrow();
+
+        await transactionManager.run(async () => {
+          await service.delete([doc1]);
+        });
+
+        const dbFiles = await testingEnvironment.db.getAllFrom('files');
+        const filenames = dbFiles.map(file => file.filename);
+
+        expect(filenames).not.toContain(`${f.idString('doc1')}.jpg`);
+        expect(filenames).toContain(`${f.idString('doc2')}.jpg`);
+      });
     });
   });
 

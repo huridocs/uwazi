@@ -60,6 +60,7 @@ class UpdateEntityUseCaseFactory {
         fileService,
         idGenerator,
         transactionManager,
+        settingsDS,
       },
       { actor: permissionsContext.getUserInContext()!, tenant }
     );

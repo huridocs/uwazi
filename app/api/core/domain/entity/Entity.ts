@@ -24,6 +24,7 @@ import { AccessLevel } from './AccessLevel.js';
 import { EntityTranslationDoesNotExistError } from './errors.js';
 import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
 import { EntityDTO } from './EntityDTO.js';
+import { Thumbnail } from '../files/Thumbnail.js';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -337,6 +338,16 @@ class Entity {
           language
         );
       });
+    });
+  }
+
+  setPreview(thumbnails: Thumbnail[], defaultLanguage: LanguageISO6391): void {
+    this.translationsList.forEach(([language, translation]) => {
+      const match =
+        thumbnails.find(t => t.language === language) ??
+        thumbnails.find(t => t.language === defaultLanguage) ??
+        thumbnails[0];
+      translation.preview = match?.filename;
     });
   }
 }
