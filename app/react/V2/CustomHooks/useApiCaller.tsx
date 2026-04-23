@@ -1,9 +1,6 @@
-import React from 'react';
-import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
+import { t } from '#app/I18N/index.js';
 
 interface ApiCallerResult {
   data?: Promise<any | undefined>;
@@ -16,36 +13,30 @@ const getError = async (res: Response) => {
 };
 
 const useApiCaller = () => {
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
-  const handleSuccess = async (res: Response, successMessageComponent: React.ReactNode) => {
-    setNotifications({
-      type: 'success',
-      text: successMessageComponent,
-    });
+  const handleSuccess = async (res: Response, successMessage: string) => {
+    notify('success', successMessage);
     return getData(res);
   };
 
-  const handleError = async (e: FetchResponseError) => {
-    setNotifications({
-      type: 'error',
-      text: <Translate>An error occurred</Translate>,
-      details: e.json?.prettyMessage ? <span>{e.json.prettyMessage}</span> : undefined,
-    });
-    return e.message;
+  const handleError = async (e: unknown) => {
+    const details = e instanceof Error ? (e as any).json?.prettyMessage || undefined : undefined;
+    notify('error', t('System', 'An error occurred', null, false), undefined, details);
+    return e instanceof Error ? e.message : String(e);
   };
 
   const requestAction = async (
     action: (params: RequestParams) => Promise<Response>,
     requestParams: RequestParams,
-    successMessageComponent: React.ReactNode
+    successMessage: string
   ): Promise<ApiCallerResult> => {
     let data;
     let error;
     try {
       const res: Response = await action(requestParams);
       if (!res.status || res.status === 200) {
-        data = handleSuccess(res, successMessageComponent);
+        data = handleSuccess(res, successMessage);
       } else {
         error = handleError(await getError(res));
       }

@@ -1,4 +1,5 @@
 import { EntitySchema } from '#shared/types/entityType.js';
+import { notify as notifyBridge } from '#V2/utils/notifyBridge.js';
 import { EntityCompositionSanitizer } from '../services/sanitizers/EntityCompositionSanitizer.js';
 
 export interface EntitySaveUseCase {
@@ -21,11 +22,9 @@ export interface SaveResult {
 
 export class EntitySaveUseCaseImpl implements EntitySaveUseCase {
   private sanitizer: EntityCompositionSanitizer;
-  private setNotification: (notification: any) => void;
 
-  constructor(sanitizer: EntityCompositionSanitizer, setNotification: (notification: any) => void) {
+  constructor(sanitizer: EntityCompositionSanitizer) {
     this.sanitizer = sanitizer;
-    this.setNotification = setNotification;
   }
 
   async saveEntity(
@@ -45,7 +44,7 @@ export class EntitySaveUseCaseImpl implements EntitySaveUseCase {
 
       if (options.onSuccess) options.onSuccess(saveResult);
       if (options.showNotifications !== false) {
-        this.showSuccessNotification('Entity updated successfully');
+        notifyBridge('Entity updated successfully', 'success');
       }
 
       return saveResult;
@@ -53,7 +52,9 @@ export class EntitySaveUseCaseImpl implements EntitySaveUseCase {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
 
       if (options.onError) options.onError(error as Error);
-      if (options.showNotifications !== false) this.showErrorNotification(errorMessage);
+      if (options.showNotifications !== false) {
+        notifyBridge('An error occurred', 'error', undefined, errorMessage);
+      }
 
       return { success: false, error: errorMessage };
     }
@@ -69,19 +70,5 @@ export class EntitySaveUseCaseImpl implements EntitySaveUseCase {
 
   private validateEntity(entity: EntitySchema): void {
     if (!entity.title) throw new Error('Entity title is required');
-  }
-
-  private showSuccessNotification(message: string): void {
-    this.setNotification({
-      type: 'success',
-      text: message,
-    });
-  }
-
-  private showErrorNotification(message: string): void {
-    this.setNotification({
-      type: 'error',
-      text: message,
-    });
   }
 }

@@ -1,9 +1,6 @@
-import React from 'react';
 import { captureException } from '@sentry/react';
-import { getStore } from '#shared/atomStore/index.js';
 import { isClient } from '#app/utils/index.js';
-import { Translate } from '#app/I18N/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { notify as notifyBridge } from '#V2/utils/notifyBridge.js';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {
@@ -64,12 +61,9 @@ const resetChunkErrorFlag = (): void => {
 
 const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   reportErrorToSentry(error, key);
-  getStore().set(notificationAtom, () => ({
-    type: 'error',
-    text: <Translate>An error occurred</Translate>,
-    details:
-      'json' in error ? error.json?.prettyMessage || error.json?.error : error.message || undefined,
-  }));
+  const details =
+    'json' in error ? error.json?.prettyMessage || error.json?.error : error.message || undefined;
+  notifyBridge('An error occurred', 'error', undefined, details);
 };
 
 export {

@@ -1,5 +1,4 @@
 export { hydrateAtomStore } from './store.js';
-export { notificationAtom } from './notificationAtom.js';
 export { settingsAtom } from './settingsAtom.js';
 export { templatesAtom } from './templatesAtom.js';
 export { translationsAtom, inlineEditAtom, localeAtom } from './translationsAtoms.js';
@@ -11,4 +10,3 @@ export { relationshipTypesAtom } from './relationshipTypes.js';
 export { deletedEntityAtom } from './deletedEntityAtom.js';
 export { serverIsMobileAtom } from './isMobileAtom.js';
 export type { AtomStoreData } from './store.js';
-export type { notificationAtomType } from './notificationAtom.js';

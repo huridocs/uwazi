@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { Translate, I18NLinkV2 as I18NLink, t } from '#app/I18N/index.js';
-import { useSetAtom } from 'jotai';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { Table } from '#V2/Components/UI/Table/Table.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import * as templatesApi from '#V2/api/templates/index.js';
@@ -15,6 +13,7 @@ import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 import { columns } from './components/TemplatesTableComponents.js';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal.js';
 import { TemplateRow } from './types.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
@@ -58,17 +57,14 @@ const Templates = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const hasSyncedTemplates = templates.some(template => template.synced);
 
   const handleSetDefault = async (row: TemplateRow) => {
     try {
       await templatesApi.setDefault(new RequestParams({ _id: row._id }));
-      setNotifications({
-        type: 'success',
-        text: <Translate>Default template set successfully.</Translate>,
-      });
+      notify('success', t('System', 'Default template set successfully.', null, false));
       await revalidator.revalidate();
     } catch (e) {
       handleUnexpectedError(e, 'Error setting default template');
@@ -88,10 +84,7 @@ const Templates = () => {
         )
       );
       setSelected([]);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template(s) deleted successfully.</Translate>,
-      });
+      notify('success', t('System', 'Template(s) deleted successfully.', null, false));
       await revalidator.revalidate();
     } catch (e) {
       handleUnexpectedError(e, 'Error deleting template(s)');

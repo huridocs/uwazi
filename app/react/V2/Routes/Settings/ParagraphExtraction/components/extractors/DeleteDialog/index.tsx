@@ -1,11 +1,10 @@
 import React from 'react';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ConfirmationModal } from '#V2/Components/UI/index.js';
 import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { PXTable } from '../../../types.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const DeleteDialog = ({
   setIsProcessing,
@@ -21,7 +20,7 @@ const DeleteDialog = ({
   setIsOpen?: (value: boolean) => void;
 }) => {
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const handleDelete = async () => {
     setIsProcessing(true);
@@ -30,16 +29,10 @@ const DeleteDialog = ({
       await extractorsAPI.remove(selected);
       await revalidator.revalidate();
       setIsOpen(false);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Extractor/s deleted</Translate>,
-      });
+      notify('success', t('System', 'Extractor/s deleted', null, false));
       onSuccess();
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-      });
+      notify('error', t('System', 'An error occurred', null, false));
     }
 
     setIsOpen(false);
