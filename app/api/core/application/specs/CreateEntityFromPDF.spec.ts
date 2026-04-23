@@ -11,6 +11,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { UseCaseContext } from '#api/core/libs/UseCase.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { tenants } from '#api/tenants/index.js';
@@ -55,7 +56,9 @@ const createSut = (props: CreateSutProps = {}) => {
 
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+  const jobsDispatcher = new DispatcherAdapter(
+    DefaultDispatcher(tenants.current().name, transactionManager)
+  );
 
   const entitiesService = EntitiesServiceFactory.default({
     entitiesDS,

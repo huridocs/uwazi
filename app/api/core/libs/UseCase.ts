@@ -6,6 +6,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
+import { Dispatcher } from '../application/contracts/Dispatcher.js';
 import { Logger } from './logger/contracts/Logger.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 
@@ -17,6 +18,7 @@ type Deps<ExtendedDeps> = {
   transactionManager?: TransactionManager;
   eventBus?: EventsBus;
   jobsDispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
   idGenerator?: IdGenerator;
   logger?: Logger;
   eventEmitter?: EventEmitter;
@@ -118,6 +120,14 @@ abstract class AbstractUseCase<
     }
 
     return this.deps.jobsDispatcher;
+  }
+
+  protected get dispatcher(): Dispatcher {
+    if (!this.deps.dispatcher) {
+      throw new Error('Dispatcher dependency not provided');
+    }
+
+    return this.deps.dispatcher;
   }
 
   abstract execute(input: Input, ...args: Args): Promise<Output>;

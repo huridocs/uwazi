@@ -4,16 +4,11 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDiff } from '../domain/template/TemplateDiff.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
-import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable.js';
-import {
-  JobsDispatcher,
-  DispatchableClass,
-} from '../libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatcher, TemplatePostProcessParams } from './contracts/Dispatcher.js';
 import { Template } from '../domain/template/Template.js';
 
 type Deps = {
-  jobsDispatcher: JobsDispatcher;
+  dispatcher: Dispatcher;
   templatesDS: TemplatesDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
 };
@@ -24,7 +19,7 @@ type Input = {
   context: TemplateUpdatedEventContext;
 };
 
-type DispatchPostProcessJobProps = {
+type CollectPostProcessJobProps = {
   diff: TemplateDiff;
   tenantName: string;
   userId: string;
@@ -37,49 +32,49 @@ class TemplatePostProcessService {
 
   async createJobsForEntities({ before, after, context }: Input) {
     const diff = new TemplateDiff(before, after);
+    const items: TemplatePostProcessParams[] = [];
 
-    await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
+    if (diff.hasAnyPostProcessChanges()) {
+      await this.collectPostProcessJobParams(
+        {
+          tenantName: context!.tenantName,
+          userId: context!.userId,
+          language: context!.language,
+          fullReindex: false,
+          diff,
+        },
+        items
+      );
+    }
+
+    if (context?.fullReindex) {
+      let templates = await this.deps.templatesDS.getAll().all();
       if (diff.hasAnyPostProcessChanges()) {
-        await this.dispatchPostProcessJob(
+        templates = templates.filter(t => t.id !== after.id);
+      }
+
+      await ArrayUtils.sequentialFor(templates, async template =>
+        this.collectPostProcessJobParams(
           {
-            tenantName: context!.tenantName,
-            userId: context!.userId,
-            language: context!.language,
-            fullReindex: false,
-            diff,
+            language: context.language,
+            fullReindex: true,
+            userId: context.userId,
+            tenantName: context.tenantName,
+            diff: new TemplateDiff(template, template),
           },
-          dispatch
-        );
-      }
+          items
+        )
+      );
+    }
 
-      if (context?.fullReindex) {
-        let templates = await this.deps.templatesDS.getAll().all();
-        if (diff.hasAnyPostProcessChanges()) {
-          templates = templates.filter(t => t.id !== after.id);
-        }
-
-        await ArrayUtils.sequentialFor(templates, async template =>
-          this.dispatchPostProcessJob(
-            {
-              language: context.language,
-              fullReindex: true,
-              userId: context.userId,
-              tenantName: context.tenantName,
-              diff: new TemplateDiff(template, template),
-            },
-            dispatch
-          )
-        );
-      }
-    });
+    if (items.length > 0) {
+      await this.deps.dispatcher.scheduleTemplatePostProcessBatch(items);
+    }
   }
 
-  private async dispatchPostProcessJob(
-    { diff, language, fullReindex, userId, tenantName }: DispatchPostProcessJobProps,
-    dispatch: <T extends Dispatchable>(
-      dispatchable: DispatchableClass<T>,
-      params: Parameters<T['handleDispatch']>[1]
-    ) => void
+  private async collectPostProcessJobParams(
+    { diff, language, fullReindex, userId, tenantName }: CollectPostProcessJobProps,
+    items: TemplatePostProcessParams[]
   ) {
     const limit = 50;
     const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(diff.templateId);
@@ -92,8 +87,7 @@ class TemplatePostProcessService {
 
     // eslint-disable-next-line no-await-in-loop
     while (await resultSet.hasNext()) {
-      // eslint-disable-next-line no-await-in-loop
-      dispatch(TemplatePostProcessEntitiesJob, {
+      items.push({
         // eslint-disable-next-line no-await-in-loop
         entitiesIds: await resultSet.nextBatch(limit),
         templateId: diff.templateId,

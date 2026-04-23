@@ -14,23 +14,21 @@ import { ObjectId } from 'mongodb';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO.js';
-import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler.js';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { PDFService } from '../infrastructure/services/PDFService.js';
 import { EventsBus } from '../libs/eventsbus/index.js';
-import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatcher } from './contracts/Dispatcher.js';
 import { Result } from '../libs/Result.js';
 import { IdGenerator } from './contracts/IdGenerator.js';
 import { TransactionManager } from './contracts/TransactionManager.js';
-import { DeleteFileFromStorageJobHandler } from '../infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
 import { PathManager } from '../infrastructure/files/PathManager.js';
 
 type Deps = {
   idGenerator: IdGenerator;
   fileStorage: FileStorage;
   filesDS: FilesDataSource;
-  jobsDispatcher: JobsDispatcher;
+  jobsDispatcher: Dispatcher;
   pdfService: PDFService;
   filesIO: FileContentsIO;
   relV1DS: MongoRelationshipsV1DataSource;
@@ -93,21 +91,23 @@ class FilesService {
     if (isNonEmptyArray<BaseFile>(files)) {
       await this.deps.filesDS.bulkCreate(files);
 
-      await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-        files.forEach(file => {
-          if (file instanceof ProcessingPDF) {
-            const userId = permissionsContext.getUserInContext()?._id?.toString();
-            if (!userId) {
-              throw new Error('PDFPostProcess needs a user Id');
-            }
-            dispatch(PDFPostProcessJobHandler, {
-              tenantName: tenants.current().name,
-              documentId: file.id,
-              userId,
-            });
+      const processingPDFs = files
+        .filter((f): f is ProcessingPDF => f instanceof ProcessingPDF)
+        .map(f => {
+          const userId = permissionsContext.getUserInContext()?._id?.toString();
+          if (!userId) {
+            throw new Error('PDFPostProcess needs a user Id');
           }
+          return {
+            tenantName: tenants.current().name,
+            documentId: f.id,
+            userId,
+          };
         });
-      });
+
+      if (processingPDFs.length > 0) {
+        await this.deps.jobsDispatcher.schedulePDFPostProcessBatch(processingPDFs);
+      }
 
       this.deps.transactionManager.onCommitted(async () => {
         await ArrayUtils.sequentialFor(files, async file => {
@@ -170,13 +170,9 @@ class FilesService {
       await this.deps.eventBus.emit(
         new FilesDeletedEvent({ files: allFilesToDelete.map(f => FileMappers.toDBO(f)) })
       );
-      await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-        await ArrayUtils.sequentialFor(contentFiles, async file => {
-          dispatch(DeleteFileFromStorageJobHandler, {
-            filePath: this.deps.pathManager.createPath(file),
-          });
-        });
-      });
+      await this.deps.jobsDispatcher.deleteFilesFromStorage(
+        contentFiles.map(file => this.deps.pathManager.createPath(file))
+      );
     });
   }
 

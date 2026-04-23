@@ -14,9 +14,7 @@ import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
-import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -46,16 +44,15 @@ const fileStorage = TestUtils.mockClass<FileStorage>({
   },
 });
 
-const dispatchMock = jest.fn().mockImplementation((job, params) => {
-  if (job === DeleteFileFromStorageJobHandler) {
-    dispatchedDeletes.push(params.filePath);
-  }
-});
-
-const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-  dispatchMany: async callback => {
-    await callback(dispatchMock);
-  },
+const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
+  deleteFilesFromStorage: jest.fn().mockImplementation(async (paths: string[]) => {
+    dispatchedDeletes.push(...paths);
+  }),
+  schedulePDFPostProcessBatch: jest.fn().mockResolvedValue(undefined),
+  syncRelationships: jest.fn().mockResolvedValue(undefined),
+  bulkSyncRelationships: jest.fn().mockResolvedValue(undefined),
+  bulkCleanupEntities: jest.fn().mockResolvedValue(undefined),
+  scheduleTemplatePostProcessBatch: jest.fn().mockResolvedValue(undefined),
 });
 
 const createService = (deps?: Partial<FilesServiceDeps>) => {
@@ -111,12 +108,14 @@ describe('FilesService', () => {
     });
 
     it('should dispatch pdf post process jobs when file is document', async () => {
-      expect(dispatchMock).toHaveBeenCalledTimes(1);
-      expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJobHandler, {
-        documentId: document.id,
-        userId: permissionsContext.getUserInContext()?._id?.toString(),
-        tenantName: tenants.current().name,
-      });
+      expect(jobsDispatcher.schedulePDFPostProcessBatch).toHaveBeenCalledTimes(1);
+      expect(jobsDispatcher.schedulePDFPostProcessBatch).toHaveBeenCalledWith([
+        {
+          documentId: document.id,
+          userId: permissionsContext.getUserInContext()?._id?.toString(),
+          tenantName: tenants.current().name,
+        },
+      ]);
     });
   });
 

@@ -8,7 +8,6 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -16,6 +15,7 @@ import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class DeleteTemplateUseCaseFactory {
   static async create() {
@@ -30,7 +30,7 @@ class DeleteTemplateUseCaseFactory {
     const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default(transactionManager);
     const filesDS = FilesDataSourceFactory.default(transactionManager);
     const relationshipsV1DS = new MongoRelationshipsV1DataSource(db, transactionManager);
-    let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
+    const jobsDispatcher = new SyncDispatcherForTests({
       TemplatePostProcessEntitiesJob: async () =>
         new TemplatePostProcessEntitiesJob({
           useCase: new TemplateUpdateDenormalizeEntitiesBatch({
@@ -44,9 +44,10 @@ class DeleteTemplateUseCaseFactory {
         }),
     });
 
-    if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
-    }
+    const dispatcher =
+      process.env.NODE_ENV !== 'test'
+        ? new DispatcherAdapter(DefaultDispatcher(tenant.name, transactionManager))
+        : new DispatcherAdapter(jobsDispatcher);
 
     const useCase = new DeleteTemplateUseCase(
       {
@@ -57,7 +58,7 @@ class DeleteTemplateUseCaseFactory {
         settingsDS,
         translationsDS,
         multiLanguageEntitiesDS,
-        jobsDispatcher,
+        dispatcher,
       },
       { actor: permissionsContext.getUserInContext()!, tenant }
     );

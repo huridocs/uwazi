@@ -7,8 +7,7 @@ import { FileUploadForEntityFactory } from '#api/core/infrastructure/factories/F
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { fileExistsOnPath } from '#api/files/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -25,11 +24,7 @@ const fixtures: DBFixture = {
   entities: [f.entity('entity1', 'template')],
 };
 
-const dispatchedJobs: Array<{ job: any; params: any }> = [];
-
-const dispatchMock = jest.fn().mockImplementation((job, params) => {
-  dispatchedJobs.push({ job, params });
-});
+const schedulePDFPostProcessBatchMock = jest.fn().mockResolvedValue(undefined);
 
 describe('FileUploadForEntity', () => {
   let result: any;
@@ -39,10 +34,8 @@ describe('FileUploadForEntity', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, true);
 
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      dispatchMany: async callback => {
-        await callback(dispatchMock);
-      },
+    const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
+      schedulePDFPostProcessBatch: schedulePDFPostProcessBatchMock,
     });
 
     eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
@@ -95,12 +88,14 @@ describe('FileUploadForEntity', () => {
   });
 
   it('should dispatch PDFPostProcessJobHandler for document files', () => {
-    expect(dispatchMock).toHaveBeenCalledTimes(1);
-    expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJobHandler, {
-      documentId: result._id,
-      userId: permissionsContext.getUserInContext()?._id?.toString(),
-      tenantName: tenants.current().name,
-    });
+    expect(schedulePDFPostProcessBatchMock).toHaveBeenCalledTimes(1);
+    expect(schedulePDFPostProcessBatchMock).toHaveBeenCalledWith([
+      {
+        documentId: result._id,
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
+      },
+    ]);
   });
 
   it('should store file in the correct directory on filesystem', async () => {

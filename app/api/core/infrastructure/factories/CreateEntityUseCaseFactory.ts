@@ -13,6 +13,7 @@ import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class CreateEntityUseCaseFactory {
   static default(targetLanguage: LanguageISO6391) {
@@ -20,10 +21,11 @@ class CreateEntityUseCaseFactory {
 
     const transactionManager = TransactionManagerFactory.default();
 
-    const jobsDispatcher =
+    const dispatcher = new DispatcherAdapter(
       process.env.NODE_ENV === 'test'
         ? NoOpDispatcher()
-        : DefaultDispatcher(tenant.name, transactionManager);
+        : DefaultDispatcher(tenant.name, transactionManager)
+    );
 
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
@@ -46,10 +48,12 @@ class CreateEntityUseCaseFactory {
       eventBus,
       settingsDS,
       transactionManager,
-      dispatcher: jobsDispatcher,
+      dispatcher,
     });
 
-    const fileService = FilesServiceFactory.default(transactionManager, { jobsDispatcher });
+    const fileService = FilesServiceFactory.default(transactionManager, {
+      jobsDispatcher: dispatcher,
+    });
 
     const useCase = new CreateEntityUseCase(
       {
