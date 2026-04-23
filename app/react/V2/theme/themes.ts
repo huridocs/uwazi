@@ -199,13 +199,23 @@ const getThemeAsset = (
   asset: ThemeAssetId,
   fallback?: string,
   themeCustomizationEnabled: boolean = true
-) =>
-  getEffectiveThemeAssets(themeAssets, themeCustomizationEnabled)?.[asset]?.[mode] ??
-  THEME_ASSET_PRESETS[getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)][
+) => {
+  const fromEffective = getEffectiveThemeAssets(themeAssets, themeCustomizationEnabled)?.[asset]?.[
     mode
-  ][asset] ??
-  fallback ??
-  '';
+  ];
+  if (fromEffective) return fromEffective;
+
+  const preset =
+    THEME_ASSET_PRESETS[getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)][
+      mode
+    ][asset];
+
+  if (!themeCustomizationEnabled) {
+    return (fallback?.trim() ? fallback : preset) ?? '';
+  }
+
+  return preset ?? fallback ?? '';
+};
 
 const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableThemeVars> => ({
   light: Object.fromEntries(

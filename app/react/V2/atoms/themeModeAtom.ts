@@ -13,7 +13,7 @@ const getPreferredThemeMode = (): ThemeMode => {
     return 'light';
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)')?.matches === true ? 'dark' : 'light';
 };
 
 const themeModeAtom = atomWithStorage<ThemeMode>(
