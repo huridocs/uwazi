@@ -70,7 +70,6 @@ describe('Filters', () => {
   it('should save the filters', () => {
     cy.contains('button', 'Save').click();
     cy.contains('Filters saved');
-    cy.contains('button', 'Dismiss').click();
   });
 
   describe('groups', () => {
@@ -158,7 +157,6 @@ describe('Filters', () => {
     it('should save and delete empty groups', () => {
       cy.contains('button', 'Save').click();
       cy.contains('Filters saved');
-      cy.contains('button', 'Dismiss').click();
       cy.contains('tr', 'Reportes y causas').should('not.exist');
     });
   });
@@ -194,7 +192,6 @@ describe('Filters', () => {
       cy.contains('button', 'Delete').click();
       cy.contains('button', 'Save').click();
       cy.contains('Filters saved');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should delete group items and an entire group', () => {
@@ -204,7 +201,6 @@ describe('Filters', () => {
       cy.contains('button', 'Delete').click();
       cy.contains('button', 'Save').click();
       cy.contains('Filters saved');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should check the results', () => {
