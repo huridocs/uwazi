@@ -22,6 +22,9 @@ import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService.js';
 import { PDFPostProcessJobHandler } from '../PDFPostProcessJobHandler.js';
+import { EntitiesDataSourceFactory } from '../../factories/EntitiesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
+import { search } from '#api/search/search.js';
 
 async function filesAreIdentical(file1: string, file2: string) {
   const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
@@ -51,6 +54,8 @@ const setUpJob = (pdfService = new PDFService()) => {
         pdfService,
         idGenerator: IdGeneratorFactory.default(),
         filesService: FilesServiceFactory.default(transactionManager, { eventBus }),
+        entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
+        settingsDS: SettingsDataSourceFactory.default(transactionManager),
       }),
       wSockets,
     }),
@@ -65,6 +70,9 @@ const heartBeatCallBack = jest.fn();
 describe('PDFPostProcessJob', () => {
   beforeEach(async () => {
     const fixtures = {
+      settings: [{ languages: [{ label: 'English', default: true, key: 'en' as const }] }],
+      templates: [f.template('template')],
+      entities: [...f.entityInMultipleLanguages(['en'], 'fileEntity', 'template')],
       files: [
         f.document('processing_doc', {
           status: 'processing',
@@ -76,8 +84,14 @@ describe('PDFPostProcessJob', () => {
         }),
       ],
     };
+
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     await testingEnvironment.setupTenantTmpPaths(fixtures.files);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   afterAll(async () => {
