@@ -225,7 +225,6 @@ Handoff requirement:
   - progress-update writes vs
   - relationship-sync enqueue/processing latency vs
   - downstream relationship write/search metadata updates.
-
 ### 4) Immediate next steps (agreed direction)
 
 1. **Keep future work scoped**
