@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 import { createStore } from 'jotai';
-import { TocSchema } from '#shared/types/commonTypes.js';
-import { TextSelection } from '@huridocs/react-text-selection-handler';
+import type { TocSchema } from '#shared/types/commonTypes.js';
+import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { tocStateAtom, tocActions, convertTextSelectionToTocEntry } from '../tocAtom.js';
 
 // Test data

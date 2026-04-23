@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.228.275",
+  "version": "1.228.276",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -78,6 +78,7 @@
     "e2e-puppeteer-all": "echo 'MAKE SURE UWAZI IS RUNNING WITH uwazi_e2e DATABASE AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
     "e2e-puppeteer": "yarn e2e-puppeteer-all --roots '<rootDir>/suite1' '<rootDir>/suite2'",
     "e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
+    "blank-e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.blank-e2e.sh",
     "eslint": "./node_modules/.bin/eslint e2e app cypress --quiet",
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
     "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",

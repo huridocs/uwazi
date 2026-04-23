@@ -46,7 +46,7 @@ type Deps = {
   batchSize?: number;
 };
 
-const DEFAULT_BATCH_SIZE = 1000;
+const DEFAULT_BATCH_SIZE = 10;
 
 type FinalizeSuccessInput = {
   entitiesCreated: number;

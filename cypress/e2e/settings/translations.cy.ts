@@ -74,12 +74,13 @@ describe('Translations', () => {
       cy.get('input[name="formValues.2.values.0.value"]').should('have.value', 'تاريخ');
     });
 
-    it('should disable the form and buttons, and emit a notification when saving', () => {
+    it('should disable the form and buttons while saving', () => {
+      cy.intercept('POST', '/api/translations').as('saveTranslations');
       cy.contains('button', 'Save').click();
       cy.contains('button', 'Save').should('be.disabled');
       cy.contains('button', 'Cancel').should('be.disabled');
       cy.get('input[type=text]').should('be.disabled');
-      cy.contains('[data-testid="notifications-container"]', 'Translations saved');
+      cy.wait('@saveTranslations').its('response.statusCode').should('be.oneOf', [200, 201]);
     });
 
     it('Should filter translations that have no untranslated terms', () => {
@@ -97,9 +98,10 @@ describe('Translations', () => {
       }).as('api/translations');
       cy.contains('button', 'Save').click();
       cy.wait('@api/translations').then(() => {
-        cy.contains('[data-testid="notifications-container"]', 'An error occurred');
-        cy.contains('button', 'Dismiss').trigger('mouseover');
-        cy.contains('button', 'Dismiss').click();
+        cy.get('[data-testid="notification-flash"]').should('be.visible');
+        cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
+        cy.get('input[type=text]').should('not.be.disabled');
+        cy.contains('button', 'Save').should('not.be.disabled');
       });
     });
 

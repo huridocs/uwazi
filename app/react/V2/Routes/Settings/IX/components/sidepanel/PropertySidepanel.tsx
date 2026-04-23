@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
@@ -13,7 +13,6 @@ import {
   VerticalDrawer,
   Truncate,
 } from '#V2/Components/UI/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import {
@@ -27,6 +26,7 @@ import { SidepanelForms } from './SidepanelForms.js';
 import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms/index.js';
 import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom.js';
 import { SidepanelProps } from './types.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('../TextProperty')).TextProperty);
@@ -45,10 +45,10 @@ const PropertySidepanel = ({
   const [selectionError, setSelectionError] = useAtom(selectionErrorAtom);
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
   const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const templateId = suggestion?.entityTemplateId;
-  const template = templates.find(t => t._id.toString() === templateId);
+  const template = templates.find(templateItem => templateItem._id.toString() === templateId);
 
   const handleClose = () => {
     setEntity(undefined);
@@ -100,13 +100,13 @@ const PropertySidepanel = ({
       if (error) {
         const details = error.json.prettyMessage;
 
-        setNotifications({ type: 'error', text: 'An error occurred', details });
+        notify('error', t('System', 'An error occurred', null, false), undefined, details);
       } else if (savedEntity) {
         if (savedEntity) {
           setEntity(savedEntity);
         }
 
-        setNotifications({ type: 'success', text: 'Saved successfully.' });
+        notify('success', t('System', 'Saved successfully.', null, false));
       }
     }
 

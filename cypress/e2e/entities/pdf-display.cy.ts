@@ -1,12 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { clearCookiesAndLogin } from '../helpers/login.js';
-import {
-  clickOnCreateEntity,
-  editPropertyForExtractor,
-  saveEntity,
-  waitForLegacyNotifications,
-} from '../helpers';
+import { clickOnCreateEntity, editPropertyForExtractor, saveEntity } from '../helpers';
 
 describe('PDF display', () => {
   before(() => {
@@ -26,8 +21,12 @@ describe('PDF display', () => {
       cy.get('select[id="property-type"]').select('Text');
 
       cy.contains('aside button', 'Add property').click();
+      //wait for post to api templates and the get to api templates
+      cy.intercept('POST', 'api/templates').as('postTemplate');
+      cy.intercept('GET', 'api/templates').as('getTemplates');
       cy.contains('button', 'Save').click();
-      cy.contains('button', 'Dismiss').click();
+      cy.wait('@postTemplate');
+      cy.wait('@getTemplates');
     });
 
     it('should create and entity with a pdf file', () => {
@@ -39,7 +38,6 @@ describe('PDF display', () => {
         force: true,
       });
       saveEntity();
-      waitForLegacyNotifications();
     });
 
     it('should select the english as the file language', () => {
@@ -49,7 +47,6 @@ describe('PDF display', () => {
         cy.contains('button', 'Save').click();
       });
       cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
-      waitForLegacyNotifications();
     });
   });
 
@@ -165,7 +162,6 @@ describe('PDF display', () => {
           );
 
         cy.get('button[type="submit"]').click();
-        cy.get('div.alert-success').click();
       });
 
       it('should navigate to the IX settings screen and create and extractor for the text property', () => {
@@ -180,7 +176,6 @@ describe('PDF display', () => {
           cy.contains('button', 'Create').click();
         });
         cy.contains('td', 'Extractor 1');
-        cy.contains('button', 'Dismiss').click();
       });
     });
 
