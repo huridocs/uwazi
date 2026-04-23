@@ -49,7 +49,7 @@ jobs:
             needs_ix_config: false
             needs_external_services: false
           - name: settings-2
-            spec: 'cypress/e2e/settings/users.cy.ts,cypress/e2e/settings/activitylog.cy.ts,cypress/e2e/settings/filters.cy.ts,cypress/e2e/settings/groups.cy.ts,cypress/e2e/settings/menu.cy.ts,cypress/e2e/settings/relationship-types.cy.ts,cypress/e2e/settings/custom-uploads.cy.ts'
+            spec: 'cypress/e2e/settings/users.cy.ts,cypress/e2e/settings/activitylog.cy.ts,cypress/e2e/settings/filters.cy.ts,cypress/e2e/settings/groups.cy.ts,cypress/e2e/settings/menu.cy.ts,cypress/e2e/settings/relationship-types.cy.ts,cypress/e2e/settings/custom-uploads.cy.ts,cypress/e2e/settings/search-filters-default.cy.ts'
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
