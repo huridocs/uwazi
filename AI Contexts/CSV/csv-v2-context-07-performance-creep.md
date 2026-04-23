@@ -45,18 +45,22 @@ Even with preflight, row import still performs non-trivial work:
 4. Property-assignment strategy execution per mapped property; for some property types this includes
    DS access (relationship/select validation paths).
 
-## 5) Primary hypothesis
+## 5) Diagnosis status (updated)
 
-Most likely bottleneck is cumulative side-effect pressure from relationship sync:
+The original RelationshipSync-first hypothesis is now **falsified** by A/B tests:
 
-- one `RelationshipSyncJob` per inserted entity,
-- concurrent write/read contention with import writes,
-- queue/jobs collection growth and scheduling overhead during the same run.
+- In A/B runs where `RelationshipSyncJob` dispatch was disabled for CSV import diagnostics,
+  creep still persisted with very similar slope.
+- This means RelationshipSync queue pressure is not the primary root cause of the time creep.
 
-Secondary candidates:
+Confirmed primary root cause:
 
-- repeated DS calls in property-assignment strategies (`settings`, `entities`, `thesauri`, `translations`);
-- increased relationship metadata update costs as data grows.
+- `MongoTransactionManager` kept `onCommitHandlers` / `onRetryHandlers` arrays across repeated `run()`
+  calls in the same manager instance.
+- Per-row import transactions register commit handlers; without per-run cleanup, handler count
+  grows monotonically and inflates transaction-overhead cost over time.
+- This manifests as increasing `transactionOverheadMs` while core row work (`entityInsertMs`,
+  `progressUpdateMs`, mapping) stays relatively stable.
 
 ## 6) Files to inspect first
 
@@ -78,29 +82,20 @@ Property assignment services:
 - `app/api/core/application/propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.ts`
 - `app/api/core/application/propertyAssignmentCreatorService/SelectPropertyAssignmentCreatorService.ts`
 
-## 7) Diagnosis checklist (for next agent)
+## 7) Diagnosis checklist (completed)
 
-Do this before proposing behavior changes:
+Completed confirmation sequence:
 
-1. Measure wall-time per 10-row import batch across run progression:
-   - batch 1..10 vs 40..50 vs 80..90.
-2. Measure queue backlog growth during import:
-   - pending/running count for `RelationshipSyncJob`.
-3. Attribute time inside a batch:
-   - row import transaction duration,
-   - progress update duration,
-   - property-assignment creation duration.
-4. Attribute relationship sync cost:
-   - job pick latency,
-   - per-job execution latency,
-   - relationship write/update durations.
-5. Confirm whether slowdown correlates with:
-   - number of imported entities so far,
-   - relationship-bearing templates,
-   - number of relationship properties.
-6. Keep the rerun signal explicit in all analyses:
-   - if slowdown resets at new run start and reappears later, prioritize in-run accumulating
-     pressures (queue backlog, side-jobs, lock/contention), not static dataset-size explanations.
+1. Measured per-batch wall time and row-step attribution across long runs.
+2. Added queue-pressure sampling for `RelationshipSyncJob`.
+3. Ran A/B with RelationshipSync dispatch disabled (diagnostic-only).
+4. Added transaction-manager debug counters (`onCommitHandlersCount` / `onRetryHandlersCount`).
+5. Verified direct correlation:
+   - handler count grew linearly in creeping runs,
+   - `transactionOverheadMs` rose with the same pattern.
+6. Applied temporary manager-level per-run handler reset:
+   - handler count stayed at `0`,
+   - creep collapsed (stable throughput across full 1000-row run).
 
 ## 8) Guardrails while diagnosing
 
@@ -108,4 +103,99 @@ Do this before proposing behavior changes:
 - Do not alter queue core contracts while diagnosing.
 - Do not mark this track as complete until measurements identify dominant contributor(s)
   and a mitigation plan is reviewed.
+
+## 9) Temporary diagnostics used during investigation
+
+The investigation used temporary console-based instrumentation and temporary A/B behavior toggles
+to isolate the bottleneck. These changes were diagnostic scaffolding only (not intended as permanent
+product behavior).
+
+Captured diagnostic signals included:
+
+- per-batch throughput (`batchPerRowMs`, `creepRatio`),
+- row-step timings (`transactionMs`, `transactionCallbackMs`, `transactionOverheadMs`, etc.),
+- optional queue pressure samples,
+- transaction-manager debug counters (`onCommitHandlersCount`, `onRetryHandlersCount`).
+
+Temporary A/B mode used during diagnosis:
+
+- CSV-v2 import path with RelationshipSync dispatch disabled (diagnostic-only) to test hypothesis,
+- temporary transaction-manager handler reset patch to validate causality.
+
+## 10) Confirmed diagnosis (A/B + causality validation)
+
+Date: 2026-04-23
+
+### 10.1 Baseline run (before A/B)
+
+Observed in baseline diagnostics:
+
+- Severe in-run creep:
+  - early batches around `~27ms/row`,
+  - late sampled batches around `~600ms+/row`.
+- `rowTimings.transactionOverheadMs` grew continuously with batch index.
+- Relationship-sync queue also grew in baseline runs, but this was not yet causal proof.
+
+### 10.2 A/B run with RelationshipSync dispatch disabled (diagnostic-only)
+
+Temporary CSV-v2-only wrapper disabled `RelationshipSyncJob` dispatch during import.
+
+Result:
+
+- `relationshipSyncQueue.deltaFromStart` remained `0`.
+- Creep remained largely unchanged.
+- `transactionOverheadMs` still increased strongly with batch index.
+
+Conclusion:
+
+- Relationship-sync queue pressure is **not** the primary root cause of this creep.
+
+### 10.3 Transaction-manager handler accumulation probe
+
+Added diagnostics field:
+
+- `transactionManagerDebug.onCommitHandlersCount`
+
+In the unchanged (creeping) run:
+
+- `onCommitHandlersCount` increased almost perfectly linearly with processed rows
+  (roughly `+10` per 10-row batch).
+- `transactionOverheadMs` increased with the same progression pattern.
+
+This established a direct in-run accumulator correlated with slowdown.
+
+### 10.4 Temporary core patch to validate causality (diagnostic-only)
+
+Temporary patch in `MongoTransactionManager.run(...)`:
+
+- clear `onCommitHandlers` and `onRetryHandlers` at run start,
+- clear again in `finally`.
+
+Validation run result (1000 rows):
+
+- `transactionManagerDebug.onCommitHandlersCount` stayed `0` across all batches.
+- Creep collapsed:
+  - `batchPerRowMs` stabilized around `~7-9ms`,
+  - `transactionOverheadMs` stayed low and stable (~`35-45ms` per 10-row batch),
+  - no progressive growth pattern.
+- Total import:
+  - `processedRows: 1000`,
+  - `avgPerRowMs: 7.52`,
+  - `processRowsMs: 7764`.
+
+Final conclusion (confirmed):
+
+- Progressive entities-import slowdown was primarily caused by **accumulation of transaction-manager
+  commit/retry handlers across runs inside the same manager instance**, which inflated transaction
+  overhead over time.
+
+### 10.5 Scope and cleanup note
+
+All diagnosis instrumentation and temporary behavior toggles used in this investigation are disposable.
+If code is discarded after diagnosis, preserve this document as the source of truth for:
+
+- observed symptoms,
+- A/B falsification of RelationshipSync primary-cause hypothesis,
+- confirmed root cause,
+- verified temporary fix behavior.
 
