@@ -17,6 +17,7 @@ import { PropertyType } from '../template/PropertyType.js';
 type Props = {
   language: LanguageISO6391;
   metadata?: Record<string, PropertyAssignment>;
+  preview?: string;
 } & IdProps;
 
 class EntityTranslation {
@@ -26,10 +27,13 @@ class EntityTranslation {
 
   metadata: Record<string, PropertyAssignment>;
 
+  preview?: string;
+
   constructor(props: Props) {
     this.id = new Id(props);
     this.metadata = props.metadata || {};
     this.language = props.language;
+    this.preview = props.preview;
   }
 
   get properties(): Record<string, PropertyAssignment> {
@@ -53,11 +57,12 @@ class EntityTranslation {
     return this.getValue<DateEntry>('editDate');
   }
 
-  get asDTO(): Required<Props> {
+  get asDTO() {
     return {
       id: this.id.value,
       language: this.language,
       metadata: this.metadata,
+      preview: this.preview,
     };
   }
 
