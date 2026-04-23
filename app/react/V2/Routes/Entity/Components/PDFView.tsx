@@ -6,10 +6,11 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
 import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
-import { TemplateLabel } from '#V2/Components/Metadata/index.js';
+import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { Entity } from '#V2/domain/entities/Entity.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { PlainText } from './PlainText.js';
@@ -21,10 +22,11 @@ import { pdfController } from './atoms.js';
 
 type PDFViewProps = {
   entity: Entity;
+  template?: ClientTemplateSchema;
   pagePlaintext?: string;
 };
 
-const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
+const PDFView = ({ entity, template, pagePlaintext }: PDFViewProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
@@ -173,11 +175,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
           <div className="w-full p-4 rounded-md bg-gray-50">
             <div className="flex flex-row justify-between gap-2">
               <div>
-                <TemplateLabel
-                  label={entity.template?.label || ''}
-                  templateId={entity.template?._id}
-                  color={entity.template?.color}
-                />
+                <TemplateLabel template={template} />
               </div>
               <div>
                 <label htmlFor="render-mode" className="sr-only">

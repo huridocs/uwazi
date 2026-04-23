@@ -4,13 +4,13 @@ import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
 
 const prepareMetadata = (
   metadata: Entity['metadata'],
-  template: ClientTemplateSchema
+  template?: ClientTemplateSchema
 ): BaseMetadataProperty[] => {
-  if (!metadata) {
+  if (!metadata || !template?.properties) {
     return [];
   }
 
-  const templateProperties: ClientTemplateSchema['properties'] = [...(template.properties || [])];
+  const templateProperties: ClientTemplateSchema['properties'] = [...(template?.properties || [])];
   const propertiesByName = new Map(templateProperties.map(property => [property.name, property]));
 
   return Object.entries(metadata).flatMap(([name]) => {
@@ -19,6 +19,7 @@ const prepareMetadata = (
     if (!property?._id) {
       return [];
     }
+
     const inheritedType = property.inherit?.type;
 
     return [

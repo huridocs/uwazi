@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { FileType } from '#shared/types/fileType.js';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
-import { TemplateLabel } from '#app/V2/Components/Metadata/Components/TemplateLabel.js';
+import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { Entity } from '#V2/domain/index.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 
 type SelectTextInTargetStepProps = {
   selectedEntity: Entity | undefined;
@@ -18,17 +20,19 @@ const SelectTextInTargetStep = ({
   onTargetPdfSelect,
   onTargetPdfDeselect,
 }: SelectTextInTargetStepProps) => {
+  const templates = useAtomValue(templatesAtom);
+  const entityTemplate = useMemo(
+    () => templates.find(template => template._id === selectedEntity?.template?._id),
+    [selectedEntity, templates]
+  );
+
   if (!selectedFile?.filename) return null;
   return (
     <div className="flex flex-col flex-1 min-h-0 gap-2">
       <div className="flex flex-col gap-2">
         <h3 className="text-md font-bold text-gray-900">{selectedEntity?.title}</h3>
         <h3 className="text-sm text-gray-500">{selectedFile.filename}</h3>
-        <TemplateLabel
-          label={selectedEntity?.template?.name || ''}
-          templateId={selectedEntity?.template?._id}
-          color={selectedEntity?.template?.color}
-        />
+        <TemplateLabel template={entityTemplate} />
       </div>
       <div className="flex-1 min-h-50 overflow-auto border border-gray-200 rounded-md">
         <PDF
