@@ -13,6 +13,8 @@ import { FileStorageFactory } from '../../files/FileStorageFactory.js';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
 import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { EntitiesDataSourceFactory } from '../../factories/EntitiesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -63,6 +65,8 @@ class FileDeleteController extends AbstractController {
         filesDS: FilesDataSourceFactory.default(transactionManager),
         filesService: FilesServiceFactory.default(transactionManager, { jobsDispatcher }),
         entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
+        settingsDS: SettingsDataSourceFactory.default(transactionManager),
         transactionManager,
       },
       { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
