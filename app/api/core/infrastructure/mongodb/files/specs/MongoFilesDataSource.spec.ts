@@ -484,9 +484,51 @@ describe('MongoFilesDataSource', () => {
         (await ds.getById(f.idString('processed1'))).getDataOrThrow() as ProcessedPDF,
         (await ds.getById(f.idString('processed2'))).getDataOrThrow() as ProcessedPDF,
       ];
-      const thumbnails = await ds.getThumbnails(processed).all();
+      const thumbnails = await ds.getThumbnails(processed.map(p => p.entity)).all();
       expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
       expect(thumbnails[1]).toBeInstanceOf(Thumbnail);
+    });
+  });
+
+  describe('getThumbnailsForProcessedPDFs', () => {
+    it('should return only the thumbnails belonging to the given document ids', async () => {
+      const { ds } = createDs();
+
+      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('processed1')]).all();
+
+      expect(thumbnails).toHaveLength(1);
+      expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
+      expect(thumbnails[0].filename).toBe(`${f.idString('processed1')}.jpg`);
+    });
+
+    it('should not return thumbnails belonging to other documents of the same entity', async () => {
+      const { ds } = createDs();
+
+      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('processed1')]).all();
+
+      const filenames = thumbnails.map(t => t.filename);
+      expect(filenames).not.toContain(`${f.idString('processed2')}.jpg`);
+    });
+
+    it('should return thumbnails for multiple document ids at once', async () => {
+      const { ds } = createDs();
+
+      const thumbnails = await ds
+        .getThumbnailsForProcessedPDFs([f.idString('processed1'), f.idString('processed2')])
+        .all();
+
+      expect(thumbnails).toHaveLength(2);
+      const filenames = thumbnails.map(t => t.filename);
+      expect(filenames).toContain(`${f.idString('processed1')}.jpg`);
+      expect(filenames).toContain(`${f.idString('processed2')}.jpg`);
+    });
+
+    it('should return empty when no document ids match', async () => {
+      const { ds } = createDs();
+
+      const thumbnails = await ds.getThumbnailsForProcessedPDFs([f.idString('nonexistent')]).all();
+
+      expect(thumbnails).toHaveLength(0);
     });
   });
 
