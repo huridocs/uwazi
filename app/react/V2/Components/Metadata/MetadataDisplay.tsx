@@ -1,139 +1,148 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { Button } from '#V2/Components/UI/index.js';
-import {
-  Date,
-  Geolocation,
-  Relationship,
-  Media,
-  Image,
-  SimpleValue,
-  Title,
-  Markdown,
-  Select,
-  MetadataCard,
-  TemplateLabel,
-  LinkProperty,
-} from './Components/index.js';
-import { Entity } from './types.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { Entity } from '#V2/api/entities/types.js';
+import { Date, SimpleValue, Title, MetadataCard, TemplateLabel } from './Components/index.js';
+import { formatSimpleProperty, prepareMetadata } from './Formatters/index.js';
+import { BaseMetadataProperty } from './MetadataPropertiesType.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
 };
 
 const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
-  const templateId = entity?.template?._id!;
+  const templates = useAtomValue(templatesAtom);
+  const entityTemplate = useMemo(
+    () => templates.find(template => template._id === entity.template),
+    [entity.template, templates]
+  );
+
+  const metadata = useMemo(
+    () => prepareMetadata(entity.metadata, entityTemplate),
+    [entity.metadata, entityTemplate]
+  );
 
   const renderMetadataProperty = useCallback(
-    // eslint-disable-next-line max-statements
-    (data: MetadataProperty) => {
-      const translationContext = templateId;
-
-      if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
-        return (
-          <SimpleValue
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
+    (property: BaseMetadataProperty) => {
+      const translationContext = entityTemplate?._id;
 
       if (
-        data.type === 'date' ||
-        data.type === 'daterange' ||
-        data.type === 'multidate' ||
-        data.type === 'multidaterange'
+        property.type === 'text' ||
+        property.type === 'generatedid' ||
+        property.type === 'numeric'
       ) {
-        return (
-          <Date values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
+        const simpleProperty = formatSimpleProperty(property, entity.metadata);
 
-      if (data.type === 'geolocation') {
-        return (
-          <Geolocation
-            markers={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
-
-      if (data.type === 'media') {
-        return (
-          <Media values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
-
-      if (data.type === 'image' || data.type === 'preview') {
-        return (
-          <Image
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-            imageStyle={data.properties?.style === 'contain' ? 'contain' : 'cover'}
-          />
-        );
-      }
-
-      if (data.type === 'markdown') {
-        return (
-          <Markdown
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
-
-      if (data.type === 'select' || data.type === 'multiselect') {
-        return (
-          <Select values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
-
-      if (data.type === 'link') {
-        return (
-          <LinkProperty
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-            hideLabel={data.properties?.hideLabel}
-          />
-        );
-      }
-
-      if (data.type === 'relationship') {
-        if (data.properties?.inherited && data.properties.inheritedProperty) {
-          const inheritedType = data.properties.inheritedProperty.type;
-          const { properties, ...restData } = data;
-          const reformattedData = {
-            ...restData,
-            ...properties.inheritedProperty,
-            name: data.name,
-            label: data.label,
-            transtalatedLabel: data.translatedLabel,
-            type: inheritedType,
-          };
-          return renderMetadataProperty(reformattedData as MetadataProperty);
+        if (!simpleProperty) {
+          return undefined;
         }
+
         return (
-          <Relationship
-            values={Array.isArray(data.values) ? data.values : []}
-            label={data.label}
-            translationContext={translationContext}
+          <SimpleValue
+            values={simpleProperty.values}
+            label={simpleProperty.label}
+            translationContext={translationContext || ''}
           />
         );
       }
+
+      // if (
+      //   data.type === 'date' ||
+      //   data.type === 'daterange' ||
+      //   data.type === 'multidate' ||
+      //   data.type === 'multidaterange'
+      // ) {
+      //   return (
+      //     <Date values={data.values} label={data.label} translationContext={translationContext} />
+      //   );
+      // }
+
+      // if (data.type === 'geolocation') {
+      //   return (
+      //     <Geolocation
+      //       markers={data.values}
+      //       label={data.label}
+      //       translationContext={translationContext}
+      //     />
+      //   );
+      // }
+
+      // if (data.type === 'media') {
+      //   return (
+      //     <Media values={data.values} label={data.label} translationContext={translationContext} />
+      //   );
+      // }
+
+      // if (data.type === 'image' || data.type === 'preview') {
+      //   return (
+      //     <Image
+      //       values={data.values}
+      //       label={data.label}
+      //       translationContext={translationContext}
+      //       imageStyle={data.properties?.style === 'contain' ? 'contain' : 'cover'}
+      //     />
+      //   );
+      // }
+
+      // if (data.type === 'markdown') {
+      //   return (
+      //     <Markdown
+      //       values={data.values}
+      //       label={data.label}
+      //       translationContext={translationContext}
+      //     />
+      //   );
+      // }
+
+      // if (data.type === 'select' || data.type === 'multiselect') {
+      //   return (
+      //     <Select values={data.values} label={data.label} translationContext={translationContext} />
+      //   );
+      // }
+
+      // if (data.type === 'link') {
+      //   return (
+      //     <LinkProperty
+      //       values={data.values}
+      //       label={data.label}
+      //       translationContext={translationContext}
+      //       hideLabel={data.properties?.hideLabel}
+      //     />
+      //   );
+      // }
+
+      // if (data.type === 'relationship') {
+      //   if (data.properties?.inherited && data.properties.inheritedProperty) {
+      //     const inheritedType = data.properties.inheritedProperty.type;
+      //     const { properties, ...restData } = data;
+      //     const reformattedData = {
+      //       ...restData,
+      //       ...properties.inheritedProperty,
+      //       name: data.name,
+      //       label: data.label,
+      //       transtalatedLabel: data.translatedLabel,
+      //       type: inheritedType,
+      //     };
+      //     return renderMetadataProperty(reformattedData as MetadataProperty);
+      //   }
+      //   return (
+      //     <Relationship
+      //       values={Array.isArray(data.values) ? data.values : []}
+      //       label={data.label}
+      //       translationContext={translationContext}
+      //     />
+      //   );
+      // }
 
       return undefined;
     },
-    [templateId]
+    [entity.metadata, entityTemplate?._id]
   );
 
-  if (!entity) {
+  if (!entity || !entityTemplate) {
     return <Translate>NO DATA AVAILABLE</Translate>;
   }
 
@@ -146,33 +155,42 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
               <Translate>Template</Translate>
             </dt>
             <dd>
-              <TemplateLabel
-                label={entity.template?.label || ''}
-                color={entity.template?.color}
-                templateId={templateId}
-              />
+              <TemplateLabel template={entityTemplate} />
             </dd>
             <Title
               label="Title"
               title={entity.title}
-              translationContext={templateId}
-              iconId={entity.icon?._id}
+              translationContext={entityTemplate._id || ''}
             />
           </MetadataCard>
 
-          {entity.creationDate && (
+          {typeof entity.creationDate === 'number' && (
             <Date
-              values={entity.creationDate.values}
+              values={[
+                {
+                  value: entity.creationDate,
+                  label: new globalThis.Date(entity.creationDate).toLocaleDateString(),
+                },
+              ]}
               label="Creation Date"
               translationContext="System"
             />
           )}
 
-          {entity.editDate && (
-            <Date values={entity.editDate.values} label="Edit Date" translationContext="System" />
+          {typeof entity.editDate === 'number' && (
+            <Date
+              values={[
+                {
+                  value: entity.editDate,
+                  label: new globalThis.Date(entity.editDate).toLocaleDateString(),
+                },
+              ]}
+              label="Edit Date"
+              translationContext="System"
+            />
           )}
 
-          {entity.metadata.map((data, index) => (
+          {metadata.map((data, index) => (
             <Fragment key={data?.name || data?.label || index}>
               {renderMetadataProperty(data)}
             </Fragment>

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 import { ProcessingContext } from '#V2/application/index.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { Entity } from '#V2/api/entities/types.js';
 
 const thesauri: ClientThesaurus[] = [
   {
@@ -347,12 +347,13 @@ const settings: ClientSettings = {
   ],
 };
 
-const rawEntity: EntitySchema = {
+const apiEntity: Entity = {
   _id: '1',
   language: 'en',
   mongoLanguage: 'en',
   sharedId: 'shared1',
   title: 'Title of the displayed entity',
+  user: 'user',
   icon: {
     _id: 'ECU',
     label: 'Ecuador',
@@ -647,4 +648,4 @@ const processingContextBase: Omit<ProcessingContext, 'templates' | 'settings' | 
   defaultLanguage: 'en',
 };
 
-export { rawEntity, processingContextBase, thesauri, templates, settings };
+export { apiEntity, processingContextBase, thesauri, templates, settings };

@@ -232,4 +232,4 @@ type MetadataProperty =
   | LinkMetadataProperty
   | RelationshipMetadataProperty;
 
-export type { MetadataProperty, BaseMetadataProperty };
+export type { MetadataProperty, BaseMetadataProperty, SimpleMetadataProperty };

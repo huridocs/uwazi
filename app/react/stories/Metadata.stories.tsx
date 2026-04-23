@@ -2,77 +2,62 @@ import React, { useMemo } from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
-import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
-import { settingsAtom } from '#V2/atoms/index.js';
-import { Entity } from '#V2/domain/index.js';
-import { FluentCompositionBuilder, ProcessingContext } from '#V2/application/index.js';
-import {
-  rawEntity,
-  processingContextBase,
-  thesauri,
-  templates,
-  settings,
-} from './fixtures/MetadataDisplayFixtures.js';
+import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
+import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
+import { apiEntity, templates } from './fixtures/MetadataDisplayFixtures.js';
+import { Entity, MetadataSchema } from '#V2/api/entities/types.js';
 
 const store = createStore();
 store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
+store.set(templatesAtom, templates);
 
 const MetadataDisplayComponent = ({
-  dbEntity,
-  context,
-  contextThesauri,
-  contextTemplates,
-  contextSettings,
+  entity,
   showGeolocationProperties,
 }: {
-  dbEntity: EntitySchema;
-  context: ProcessingContext;
-  contextThesauri: ClientThesaurus[];
-  contextTemplates: Template[];
-  contextSettings: ClientSettings;
+  entity: Entity;
   showGeolocationProperties: boolean;
 }) => {
-  //This methods are meant to be used in loaders
-  const fluentBuilder = FluentCompositionBuilder.create({
-    ...context,
-    thesauri: contextThesauri,
-    templates: contextTemplates,
-    settings: contextSettings,
-  });
-  const { entity } = fluentBuilder.forDetailView().processEntity(dbEntity);
-
   //Storybook cannot understand relative paths to api/files
-  const storyReadyEntity = useMemo(() => {
-    const newMetadata = entity.metadata
-      .map(property => {
-        if (property.type === 'preview') {
-          return {
-            ...property,
-            values: property.values.map(value => ({
-              ...value,
-              value: value.value.replace('/api/files', ''),
-            })),
-          };
+  const storyReadyEntity = useMemo<Entity>(() => {
+    if (!entity.metadata) {
+      return entity;
+    }
+
+    const template = templates.find(currentTemplate => currentTemplate._id === entity.template);
+    const hiddenGeolocationProperties = new Set(
+      showGeolocationProperties
+        ? []
+        : (template?.properties ?? [])
+            .filter(property => property.type === 'geolocation')
+            .map(property => property.name)
+    );
+
+    const metadata = Object.entries(entity.metadata).reduce<MetadataSchema>(
+      (acc, [name, values]) => {
+        if (!values || hiddenGeolocationProperties.has(name)) {
+          return acc;
         }
 
-        if (!showGeolocationProperties && property.type === 'geolocation') {
-          return undefined;
-        }
+        acc[name] = values.map(value =>
+          typeof value.value === 'string'
+            ? { ...value, value: value.value.replace('/api/files', '') }
+            : value
+        );
 
-        return property;
-      })
-      .filter(p => p);
+        return acc;
+      },
+      {}
+    );
 
-    return { ...entity, metadata: newMetadata };
+    return { ...entity, metadata };
   }, [entity, showGeolocationProperties]);
 
   return (
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <MetadataDisplay entity={storyReadyEntity as Entity} />
+          <MetadataDisplay entity={storyReadyEntity} />
         </Provider>
       </BrowserRouter>
     </div>
@@ -84,18 +69,12 @@ const meta: Meta<typeof MetadataDisplayComponent> = {
   component: MetadataDisplayComponent,
 };
 
-export default meta;
-
 type Story = StoryObj<typeof MetadataDisplayComponent>;
 
 const Primary: Story = {
   render: args => (
     <MetadataDisplayComponent
-      dbEntity={args.dbEntity}
-      context={args.context}
-      contextThesauri={args.contextThesauri}
-      contextTemplates={args.contextTemplates}
-      contextSettings={args.contextSettings}
+      entity={args.entity}
       showGeolocationProperties={args.showGeolocationProperties}
     />
   ),
@@ -104,18 +83,10 @@ const Primary: Story = {
 const Basic: Story = {
   ...Primary,
   args: {
-    dbEntity: rawEntity,
-    context: {
-      ...processingContextBase,
-      templates,
-      settings,
-      thesauri,
-    },
-    contextThesauri: thesauri,
-    contextTemplates: templates,
-    contextSettings: settings,
+    entity: apiEntity,
     showGeolocationProperties: true,
   },
 };
 
+export default meta;
 export { Basic };
