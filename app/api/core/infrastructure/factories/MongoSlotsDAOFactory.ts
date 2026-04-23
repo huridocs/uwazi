@@ -12,8 +12,8 @@ export class MongoSlotsDAOFactory {
 
     if (!tenant.featureFlags?.v2ElasticSearch) {
       return TestUtils.mockClass<MongoSlotsDAO>({
-        assignSlot: async () => Promise.resolve(),
-        unassignSlot: async () => Promise.resolve(),
+        assignSlots: async () => Promise.resolve(),
+        unassignSlots: async () => Promise.resolve(),
         getSentinelVersion: async () => Promise.resolve(0),
         touchSentinel: async () => Promise.resolve(),
         getSlotMap: async () => Promise.resolve(new Map()),
@@ -35,8 +35,8 @@ export class MongoSlotsDAOFactory {
 
   static forTesting() {
     return TestUtils.mockClass<MongoSlotsDAO>({
-      assignSlot: jest.fn().mockResolvedValue(undefined),
-      unassignSlot: jest.fn().mockResolvedValue(undefined),
+      assignSlots: jest.fn().mockResolvedValue(undefined),
+      unassignSlots: jest.fn().mockResolvedValue(undefined),
       getSentinelVersion: jest.fn().mockResolvedValue(0),
       touchSentinel: jest.fn().mockResolvedValue(undefined),
       getSlotMap: jest.fn().mockResolvedValue(new Map()),
