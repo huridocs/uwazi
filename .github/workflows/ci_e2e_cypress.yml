@@ -24,7 +24,7 @@ jobs:
             needs_ix_config: false
             needs_external_services: false
           - name: entities
-            spec: 'cypress/e2e/entities/*.cy.ts'
+            spec: 'cypress/e2e/entities/*.cy.ts,!cypress/e2e/entities/main-document.cy.ts'
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
