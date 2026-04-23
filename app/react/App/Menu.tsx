@@ -13,12 +13,14 @@ import { Icon } from '#app/UI/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { DropdownMenu } from './DropdownMenu.js';
 
 interface MenuProps {
   className: string;
   defaultLibraryView?: string;
   toggleMobileMenu: (visible: boolean) => void;
+  isMobile: boolean;
 }
 
 const mapStateToProps = (state: IStore) => {
@@ -58,6 +60,7 @@ const MenuComponent = ({
   links = Immutable.fromJS([]),
   defaultLibraryView,
   privateInstance,
+  isMobile,
 }: mappedProps) => {
   const resolvedLibraryView = isLibraryView(defaultLibraryView) ? defaultLibraryView : 'cards';
   const hideMobileMenu = () => toggleMobileMenu(false);
@@ -124,6 +127,16 @@ const MenuComponent = ({
     <ul className={className}>
       <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
+      </li>
+      <li
+        className="menuNav-item only-desktop"
+        style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}
+      >
+        {!isMobile && (
+          <div className="tw-content">
+            <RequestStatus />
+          </div>
+        )}
       </li>
       <I18NMenu />
       <li className="menuActions mobile-menuActions">

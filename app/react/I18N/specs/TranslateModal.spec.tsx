@@ -4,14 +4,9 @@
 import React, { act } from 'react';
 import { fireEvent, render, RenderResult } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
-import {
-  settingsAtom,
-  translationsAtom,
-  inlineEditAtom,
-  notificationAtom,
-} from '#V2/atoms/index.js';
+import { settingsAtom, translationsAtom, inlineEditAtom } from '#V2/atoms/index.js';
 import * as translationsAPI from '#V2/api/translations/index.js';
-import { NotificationsContainer } from '#V2/Components/UI/index.js';
+import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { TranslateModal } from '../TranslateModal.js';
 import { languages, translations } from './fixtures.js';
 
@@ -33,11 +28,10 @@ describe('TranslateModal', () => {
           [settingsAtom, { languages }],
           [translationsAtom, translations],
           [inlineEditAtom, { inlineEdit, context, translationKey }],
-          [notificationAtom, {}],
         ]}
       >
         <TranslateModal />
-        <NotificationsContainer />
+        <RequestStatus />
       </TestAtomStoreProvider>
     );
   };
@@ -88,6 +82,9 @@ describe('TranslateModal', () => {
       translations[0].contexts[0]
     );
     expect(renderResult.queryByText('Translate')).not.toBeInTheDocument();
+    await act(() => {
+      fireEvent.click(renderResult.getByTestId('status-dot'));
+    });
     expect(renderResult.queryByText('Translations saved')).toBeInTheDocument();
   });
 

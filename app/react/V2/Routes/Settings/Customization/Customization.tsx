@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { useSetAtom } from 'jotai';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =
@@ -26,7 +25,7 @@ const Customisation = () => {
   const [showModal, setShowModal] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const blocker = useBlocker(hasChanges);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -39,16 +38,9 @@ const Customisation = () => {
       const response = await settingsAPI.save({ customCSS: cssContent, customJS: jsContent });
 
       if (response instanceof FetchResponseError) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: response.message,
-        });
+        notify('error', t('System', 'An error occurred', null, false), undefined, response.message);
       } else {
-        setNotifications({
-          type: 'success',
-          text: <Translate>Saved successfully.</Translate>,
-        });
+        notify('success', t('System', 'Saved successfully.', null, false));
         setHasChanges(false);
       }
     }
