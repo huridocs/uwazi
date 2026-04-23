@@ -311,6 +311,32 @@ describe('when registering onCommitted event handlers within the run() callback'
 
     expect(checkpoints).toEqual([1, 2, 3]);
   });
+
+  it('should not leak onCommitted handlers to subsequent runs', async () => {
+    const transactionManager = createTransactionManager();
+    const runHandler = jest.fn().mockResolvedValue(undefined);
+
+    await transactionManager.run(async () => {
+      transactionManager.onCommitted(runHandler);
+    });
+
+    await transactionManager.run(async () => {});
+
+    expect(runHandler).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('when registering onCommitted handlers outside a transaction', () => {
+  it('should execute persistent handlers on every run', async () => {
+    const transactionManager = createTransactionManager();
+    const persistentHandler = jest.fn().mockResolvedValue(undefined);
+    transactionManager.onCommitted(persistentHandler);
+
+    await transactionManager.run(async () => {});
+    await transactionManager.run(async () => {});
+
+    expect(persistentHandler).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('when registering onCommitted event handlers with the runHandlingOnCommited() call', () => {
@@ -497,6 +523,34 @@ describe('when registering onRetry event handlers', () => {
     await transactionManager.executeOnRetryHandlers();
 
     expect(checkpoints).toEqual([1, 2]);
+  });
+
+  it('should not leak run-scoped retry handlers to subsequent runs', async () => {
+    const transactionManager = createTransactionManager();
+    const retryHandler = jest.fn().mockResolvedValue(undefined);
+
+    let firstRunThrowed = false;
+    await transactionManager.run(async () => {
+      transactionManager.onRetry(retryHandler);
+      if (!firstRunThrowed) {
+        firstRunThrowed = true;
+        const error = new MongoError('TransientTransactionError');
+        error.addErrorLabel('TransientTransactionError');
+        throw error;
+      }
+    });
+
+    let secondRunThrowed = false;
+    await transactionManager.run(async () => {
+      if (!secondRunThrowed) {
+        secondRunThrowed = true;
+        const error = new MongoError('TransientTransactionError');
+        error.addErrorLabel('TransientTransactionError');
+        throw error;
+      }
+    });
+
+    expect(retryHandler).toHaveBeenCalledTimes(1);
   });
 });
 
