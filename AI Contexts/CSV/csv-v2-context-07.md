@@ -34,6 +34,7 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 4. Improve integration coverage (full chain + import batch/report/failure-threshold scenarios).
 5. Stabilize test infrastructure behavior for CI-like parallel execution.
 6. Publish user-facing import guidance (ReadTheDocs scope in section 19).
+7. **Import progress/lock safety (new priority):** align progress checkpoint durability with row-import transaction scope and ensure heartbeat cadence does not depend on very large import batches.
 
 ### 1.1) Critical working rule (highest priority)
 
@@ -136,6 +137,39 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 - Relationship creation now uses `EntitiesService.create` per title, but `EntitiesService` is wired
   with cached settings/templates data sources (mirrors PX pattern) to avoid repeated DB reads.
 - Ensure progress callbacks/heartbeats are emitted per batch (not only at end) for long runs.
+
+#### 3.9 Import progress durability + long-running lock renewal (critical)
+
+Production testing surfaced a critical mismatch in entities import behavior:
+
+- A 1000-row CSV can remain at `progress: null` for a long interval, then jump from `0%` to `100%`.
+- In multi-worker production, the same import produced duplicated entities (for example 2000 created
+  from 1000 source rows), while local single-worker environments masked this issue.
+
+Root causes identified in current implementation:
+
+1. **Progress checkpoint durability is coarser than write durability.**
+   - Entity creation commits per row transaction, but progress is persisted at the end of a larger
+     batch checkpoint.
+   - If rows commit and the worker crashes/retries before checkpoint persistence, replay can re-run
+     committed rows.
+2. **Heartbeat renewal is coupled to progress callback cadence.**
+   - If progress emits only at large batch boundaries, lock renewal can be too sparse for long runs.
+   - With multi-worker queue consumers, expired lock windows allow the same job to be picked again.
+
+Required direction (must implement in CSV v2 scope):
+
+- Progress advancement durability must match the import write durability boundary.
+  - If writes are per-row transactions, progress checkpoints must be persisted per-row (or in the
+    exact same micro-batch transaction as those writes).
+- Heartbeat cadence must be independent from very large batch checkpoints.
+  - Target frequent renewals/progress emission (for example every ~10 rows) so long imports do not
+    rely on single coarse callbacks.
+- Endpoint polling (`GET /imports/:id`) and socket events must expose intermediate progress for large runs.
+- Add integration coverage for:
+  - long-running import with lock-window pressure,
+  - restart/retry between committed rows and checkpoint persistence,
+  - multi-worker no-duplicate guarantee in the supported concurrency model.
 
 ### 4) Immediate next steps (agreed direction)
 
@@ -763,6 +797,10 @@ Use this as a strict gate before, during, and after implementation.
   - completed progress remains visible,
   - status remains `cancelled`,
   - no downstream stage is dispatched.
+- Include at least one scenario where import processing is interrupted after a subset of row writes and verify:
+  - persisted progress does not lag behind committed row writes,
+  - retries do not duplicate entities from already committed rows,
+  - lock renewal remains active during long-running imports.
 
 #### 17.7 Escalation rule
 
