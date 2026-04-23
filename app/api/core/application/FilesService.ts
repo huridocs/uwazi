@@ -106,7 +106,7 @@ class FilesService {
         });
 
       if (processingPDFs.length > 0) {
-        await this.deps.jobsDispatcher.schedulePDFPostProcessBatch(processingPDFs);
+        await this.deps.jobsDispatcher.postProcessPDFs(processingPDFs);
       }
 
       this.deps.transactionManager.onCommitted(async () => {

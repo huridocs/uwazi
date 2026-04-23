@@ -50,11 +50,10 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
   const dispatcher = TestUtils.mockClass<Dispatcher>({
     syncRelationships: jest.fn().mockResolvedValue(undefined),
-    bulkSyncRelationships: jest.fn().mockResolvedValue(undefined),
-    bulkCleanupEntities: jest.fn().mockResolvedValue(undefined),
-    schedulePDFPostProcessBatch: jest.fn().mockResolvedValue(undefined),
+    cleanupEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
     deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
-    scheduleTemplatePostProcessBatch: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest.fn().mockResolvedValue(undefined),
   });
 
   const sut = EntitiesServiceFactory.default({
@@ -177,13 +176,15 @@ describe('EntitiesService', () => {
         });
       });
 
-      expect(dispatcher.syncRelationships).toHaveBeenCalledWith({
-        sharedId: entity.sharedId,
-        targetLanguage: entity.languages[0],
-        templateId: entity.template.id,
-        tenantName: 'tenantName',
-        userId: 'actorId',
-      });
+      expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
+        {
+          sharedId: entity.sharedId,
+          targetLanguage: entity.languages[0],
+          templateId: entity.template.id,
+          tenantName: 'tenantName',
+          userId: 'actorId',
+        },
+      ]);
     });
   });
 
@@ -226,8 +227,8 @@ describe('EntitiesService', () => {
         });
       });
 
-      expect(dispatcher.bulkSyncRelationships).toHaveBeenCalledTimes(1);
-      expect(dispatcher.bulkSyncRelationships).toHaveBeenCalledWith([
+      expect(dispatcher.syncRelationships).toHaveBeenCalledTimes(1);
+      expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
         {
           sharedId: entity1.sharedId,
           targetLanguage: entity1.languages[0],
@@ -315,7 +316,7 @@ describe('EntitiesService', () => {
       const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
       expect(entitiesCreated.length).toBe(0);
 
-      expect(dispatcher.bulkSyncRelationships).toHaveBeenCalledTimes(1);
+      expect(dispatcher.syncRelationships).toHaveBeenCalledTimes(1);
       expect(eventBus.emit).not.toHaveBeenCalled();
     });
   });

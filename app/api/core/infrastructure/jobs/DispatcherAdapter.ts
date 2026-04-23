@@ -15,23 +15,19 @@ import { TemplatePostProcessEntitiesJob } from './TemplatePostProcessEntitiesJob
 class DispatcherAdapter implements Dispatcher {
   constructor(private jobsDispatcher: JobsDispatcher) {}
 
-  async syncRelationships(params: SyncRelationshipsParams): Promise<void> {
-    await this.jobsDispatcher.dispatch(RelationshipSyncJob, params);
-  }
-
-  async bulkSyncRelationships(items: SyncRelationshipsParams[]): Promise<void> {
+  async syncRelationships(items: SyncRelationshipsParams[]): Promise<void> {
     await this.jobsDispatcher.dispatchMany(async dispatch => {
       items.forEach(p => dispatch(RelationshipSyncJob, p));
     });
   }
 
-  async bulkCleanupEntities(chunks: CleanupEntityParams[]): Promise<void> {
+  async cleanupEntities(chunks: CleanupEntityParams[]): Promise<void> {
     await this.jobsDispatcher.dispatchMany(async dispatch => {
       chunks.forEach(c => dispatch(BulkCleanupEntityJob, c));
     });
   }
 
-  async schedulePDFPostProcessBatch(items: PDFPostProcessParams[]): Promise<void> {
+  async postProcessPDFs(items: PDFPostProcessParams[]): Promise<void> {
     await this.jobsDispatcher.dispatchMany(async dispatch => {
       items.forEach(p => dispatch(PDFPostProcessJobHandler, p));
     });
@@ -43,7 +39,7 @@ class DispatcherAdapter implements Dispatcher {
     });
   }
 
-  async scheduleTemplatePostProcessBatch(items: TemplatePostProcessParams[]): Promise<void> {
+  async postProcessTemplateEntities(items: TemplatePostProcessParams[]): Promise<void> {
     await this.jobsDispatcher.dispatchMany(async dispatch => {
       items.forEach(p => dispatch(TemplatePostProcessEntitiesJob, p));
     });

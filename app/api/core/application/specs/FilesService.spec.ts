@@ -48,11 +48,10 @@ const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
   deleteFilesFromStorage: jest.fn().mockImplementation(async (paths: string[]) => {
     dispatchedDeletes.push(...paths);
   }),
-  schedulePDFPostProcessBatch: jest.fn().mockResolvedValue(undefined),
+  postProcessPDFs: jest.fn().mockResolvedValue(undefined),
   syncRelationships: jest.fn().mockResolvedValue(undefined),
-  bulkSyncRelationships: jest.fn().mockResolvedValue(undefined),
-  bulkCleanupEntities: jest.fn().mockResolvedValue(undefined),
-  scheduleTemplatePostProcessBatch: jest.fn().mockResolvedValue(undefined),
+  cleanupEntities: jest.fn().mockResolvedValue(undefined),
+  postProcessTemplateEntities: jest.fn().mockResolvedValue(undefined),
 });
 
 const createService = (deps?: Partial<FilesServiceDeps>) => {
@@ -108,8 +107,8 @@ describe('FilesService', () => {
     });
 
     it('should dispatch pdf post process jobs when file is document', async () => {
-      expect(jobsDispatcher.schedulePDFPostProcessBatch).toHaveBeenCalledTimes(1);
-      expect(jobsDispatcher.schedulePDFPostProcessBatch).toHaveBeenCalledWith([
+      expect(jobsDispatcher.postProcessPDFs).toHaveBeenCalledTimes(1);
+      expect(jobsDispatcher.postProcessPDFs).toHaveBeenCalledWith([
         {
           documentId: document.id,
           userId: permissionsContext.getUserInContext()?._id?.toString(),

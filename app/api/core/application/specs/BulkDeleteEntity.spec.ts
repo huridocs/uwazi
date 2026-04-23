@@ -239,7 +239,7 @@ describe('BulkDeleteEntityUseCase', () => {
 
   it('should revert when dispatching of jobs fails', async () => {
     const dispatcher = TestUtils.mockClass<Dispatcher>({
-      bulkCleanupEntities: jest.fn().mockRejectedValue(new Error('Dispatch failed')),
+      cleanupEntities: jest.fn().mockRejectedValue(new Error('Dispatch failed')),
     });
 
     const { sut } = createSut({ dispatcher });

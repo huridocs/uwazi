@@ -79,13 +79,15 @@ class EntitiesService {
 
     await this.deps.entitiesDS.create(entity);
 
-    await this.deps.dispatcher.syncRelationships({
-      sharedId: entity.sharedId,
-      targetLanguage: entity.languages[0],
-      templateId: entity.template.id,
-      tenantName: context.tenantName,
-      userId: context.actorId,
-    });
+    await this.deps.dispatcher.syncRelationships([
+      {
+        sharedId: entity.sharedId,
+        targetLanguage: entity.languages[0],
+        templateId: entity.template.id,
+        tenantName: context.tenantName,
+        userId: context.actorId,
+      },
+    ]);
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage));
@@ -134,7 +136,7 @@ class EntitiesService {
 
     await this.deps.entitiesDS.bulkInsert(entities);
 
-    await this.deps.dispatcher.bulkSyncRelationships(
+    await this.deps.dispatcher.syncRelationships(
       entities.map(entity => ({
         sharedId: entity.sharedId,
         targetLanguage: context.targetLanguage,
@@ -171,7 +173,7 @@ class EntitiesService {
 
     const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 
-    await this.deps.dispatcher.bulkCleanupEntities(
+    await this.deps.dispatcher.cleanupEntities(
       chunks.map(chunk => ({
         sharedIds: chunk,
         userId: context.actor._id,

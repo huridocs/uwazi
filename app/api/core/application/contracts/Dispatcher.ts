@@ -34,12 +34,11 @@ type TemplatePostProcessParams = {
 };
 
 interface Dispatcher {
-  syncRelationships(params: SyncRelationshipsParams): Promise<void>;
-  bulkSyncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
-  bulkCleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
-  schedulePDFPostProcessBatch(items: PDFPostProcessParams[]): Promise<void>;
+  syncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
+  cleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
+  postProcessPDFs(items: PDFPostProcessParams[]): Promise<void>;
   deleteFilesFromStorage(paths: string[]): Promise<void>;
-  scheduleTemplatePostProcessBatch(items: TemplatePostProcessParams[]): Promise<void>;
+  postProcessTemplateEntities(items: TemplatePostProcessParams[]): Promise<void>;
 }
 
 export type {

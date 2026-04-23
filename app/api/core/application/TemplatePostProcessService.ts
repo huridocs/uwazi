@@ -68,7 +68,7 @@ class TemplatePostProcessService {
     }
 
     if (items.length > 0) {
-      await this.deps.dispatcher.scheduleTemplatePostProcessBatch(items);
+      await this.deps.dispatcher.postProcessTemplateEntities(items);
     }
   }
 

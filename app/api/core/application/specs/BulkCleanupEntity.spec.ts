@@ -187,11 +187,10 @@ const createSut = (props?: CreateSutProps) => {
 
   const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
     deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
-    schedulePDFPostProcessBatch: jest.fn().mockResolvedValue(undefined),
+    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
     syncRelationships: jest.fn().mockResolvedValue(undefined),
-    bulkSyncRelationships: jest.fn().mockResolvedValue(undefined),
-    bulkCleanupEntities: jest.fn().mockResolvedValue(undefined),
-    scheduleTemplatePostProcessBatch: jest.fn().mockResolvedValue(undefined),
+    cleanupEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest.fn().mockResolvedValue(undefined),
   });
 
   const filesService =
