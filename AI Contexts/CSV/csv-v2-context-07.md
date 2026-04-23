@@ -35,6 +35,7 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 5. Stabilize test infrastructure behavior for CI-like parallel execution.
 6. Publish user-facing import guidance (ReadTheDocs scope in section 19).
 7. **Import progress/lock safety (new priority):** align progress checkpoint durability with row-import transaction scope and ensure heartbeat cadence does not depend on very large import batches.
+8. **Entities import time-creep diagnosis (new):** investigate progressive slowdown during long imports (early batches fast, late batches significantly slower) despite preflight.
 
 ### 1.1) Critical working rule (highest priority)
 
@@ -170,6 +171,60 @@ Required direction (must implement in CSV v2 scope):
   - long-running import with lock-window pressure,
   - restart/retry between committed rows and checkpoint persistence,
   - multi-worker no-duplicate guarantee in the supported concurrency model.
+
+Current implementation progress (Apr 2026):
+
+- Entities import default batch size changed from `1000` to `10` in `CsvImportEntitiesJob`.
+- Progress durability is now aligned to row processing:
+  - success path: entity/file insert + import progress update in the same transaction boundary for each row,
+  - failure path: row error insert + import progress update in the same transaction boundary for each failed row.
+- Result: import progress sockets/endpoints now emit and persist intermediate progress every batch of 10 rows (instead of 0->100 jump for 1000-row imports).
+- Focused integration verification passed:
+  - `app/api/csv.v2/application/jobs/specs/CsvImportEntitiesJob.spec.ts` (7/7).
+
+#### 3.10 Entities import time-creep under long runs (new, critical)
+
+Observed behavior after the batching/progress fix:
+
+- Import progress emits regularly every 10 rows (expected), but throughput degrades as the run advances.
+- Example from production-style run:
+  - around rows `710..810`, each 10-row batch took roughly `~8-11s`,
+  - user observation: early batches (`1..5`) were much faster than late batches (`80+`).
+- This indicates **progressive cost growth** (time creep), not a constant per-row cost.
+- Additional confirmation (rerun signal):
+  - Re-running the same CSV against a collection that already contains the previously imported entities
+    still starts fast on early batches and slows again on late batches within that run.
+  - This strongly suggests a **run-local accumulating bottleneck** rather than a simple baseline
+    “collection already large” read penalty.
+
+Known runtime work still executed during row import (post-preflight):
+
+1. Per-row `EntitiesService.insert(...)` transaction.
+2. Per-row dispatch of `RelationshipSyncJob` from `EntitiesService.insert(...)`.
+3. Per-row `csv_imports` progress update (intentional durability fix).
+4. Property-assignment creation path still calls service strategies that can query DS
+   for relationship/select validations depending on template/property mix.
+
+Initial hypothesis ranking:
+
+1. **Most likely:** accumulated `RelationshipSyncJob` pressure and shared DB contention
+   while import still writes entities/progress.
+2. Secondary: property-assignment service reads (`getLanguageKeys`, relationship/shared-id checks,
+   thesaurus/translations lookups) amplified by row count and template complexity.
+3. Secondary: queue/jobs collection churn and index contention under high per-row dispatch rates.
+
+Non-hypothesis note:
+
+- Socket `2` / `3` frames seen in logs are transport ping/pong and are not import-stage work.
+
+Handoff requirement:
+
+- Next agent must perform focused diagnosis (no speculative refactor first) and isolate where
+  batch wall-time increases:
+  - import row transaction time vs
+  - progress-update writes vs
+  - relationship-sync enqueue/processing latency vs
+  - downstream relationship write/search metadata updates.
 
 ### 4) Immediate next steps (agreed direction)
 
@@ -456,6 +511,9 @@ is confusing and inconsistent with thesauri preflight behavior.
 - **Queue test-pollution companion:** For queue isolation/cleanup hardening in CSV v2 specs,
   read and maintain
   `AI Contexts/CSV/csv-v2-context-07-queue-test-pollution.md` together with this file.
+- **Performance-creep companion:** For entities-import throughput degradation findings, measurements,
+  and diagnosis checklist, read and maintain
+  `AI Contexts/CSV/csv-v2-context-07-performance-creep.md` together with this file.
 - **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
   in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
