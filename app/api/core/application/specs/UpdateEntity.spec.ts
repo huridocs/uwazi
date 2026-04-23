@@ -77,6 +77,7 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
       entitiesDS,
       transactionManager,
       eventEmitter,
+      settingsDS,
     },
     { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
   );
@@ -930,5 +931,96 @@ describe('UpdateEntityUseCase', () => {
         },
       },
     ]);
+  });
+
+  describe('preview is updated when documents with thumbnails are removed', () => {
+    const getEntities = async (sharedId: string) =>
+      testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
+
+    describe('when only deleting a document', () => {
+      it('should set preview to the surviving thumbnail on all translations', async () => {
+        const { sut } = createSut();
+
+        // entity1 has doc1 (thumbnail) and doc2 (thumbnail) — remove doc2, keep doc1
+        await sut.execute({
+          language: 'en',
+          sharedId: 'entity1',
+          propertyAssignments: [],
+          files: [
+            {
+              id: factory.id('entity1_doc1').toHexString(),
+              originalname: 'Document 1.pdf',
+            },
+          ],
+        });
+
+        const entities = await getEntities('entity1');
+        const expectedPreview = `${factory.id('entity1_doc1').toHexString()}.jpg`;
+
+        entities.forEach(translation => {
+          expect(translation.preview).toBe(expectedPreview);
+        });
+      });
+
+      it('should clear preview on all translations when all documents are removed', async () => {
+        const { sut } = createSut();
+
+        // Remove all files
+        await sut.execute({
+          language: 'en',
+          sharedId: 'entity1',
+          propertyAssignments: [],
+          files: [],
+        });
+
+        const entities = await getEntities('entity1');
+
+        entities.forEach(translation => {
+          expect(translation.preview).toBeUndefined();
+        });
+      });
+    });
+
+    describe('when deleting a document and uploading a new one', () => {
+      it('should set preview to the surviving thumbnail (new doc has no thumbnail yet)', async () => {
+        const { sut } = createSut();
+
+        // Remove doc2, keep doc1, add a new document upload
+        await sut.execute({
+          language: 'en',
+          sharedId: 'entity1',
+          propertyAssignments: [],
+          files: [
+            {
+              id: factory.id('entity1_doc1').toHexString(),
+              originalname: 'Document 1.pdf',
+            },
+          ],
+          uploadedFiles: [
+            new InputFile(
+              {
+                fieldname: 'documents[0]',
+                encoding: '7bit',
+                mimetype: 'application/pdf',
+                destination: '/tmp',
+                originalname: 'new_doc.pdf',
+                filename: 'new_doc.pdf',
+                path: '/tmp/new_doc.pdf',
+                size: 50000,
+              },
+              'document'
+            ),
+          ],
+        });
+
+        const entities = await getEntities('entity1');
+        // doc1's thumbnail survives; newly uploaded doc has no thumbnail yet
+        const expectedPreview = `${factory.id('entity1_doc1').toHexString()}.jpg`;
+
+        entities.forEach(translation => {
+          expect(translation.preview).toBe(expectedPreview);
+        });
+      });
+    });
   });
 });

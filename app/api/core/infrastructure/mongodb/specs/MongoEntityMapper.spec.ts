@@ -570,4 +570,64 @@ describe('TemplateMapper', () => {
       expect(mappedBack[1].permissions).toEqual(originalEntities[1].permissions);
     });
   });
+
+  describe('preview field mapping', () => {
+    it('should map preview from DBO to domain', () => {
+      const entitiesWithPreview = factory.entityInMultipleLanguages(
+        ['en', 'es'],
+        'entity_with_preview',
+        'sample_template',
+        {},
+        {
+          creationDate: 1000000,
+          editDate: 2000000,
+          published: true,
+          preview: 'thumbnail_abc.jpg',
+        }
+      );
+
+      const result = MongoEntityMapper.toDomain(entitiesWithPreview as any[], templateDbo as any);
+
+      expect(result.translations.en.preview).toBe('thumbnail_abc.jpg');
+      expect(result.translations.es.preview).toBe('thumbnail_abc.jpg');
+    });
+
+    it('should map preview from domain to DBO', () => {
+      const entitiesWithPreview = factory.entityInMultipleLanguages(
+        ['en', 'es'],
+        'entity_with_preview',
+        'sample_template',
+        {},
+        {
+          creationDate: 1000000,
+          editDate: 2000000,
+          published: true,
+          preview: 'thumbnail_abc.jpg',
+        }
+      );
+
+      const entity = MongoEntityMapper.toDomain(entitiesWithPreview as any[], templateDbo as any);
+      const mappedBack = MongoEntityMapper.toDBO(entity);
+
+      expect(mappedBack[0].preview).toBe('thumbnail_abc.jpg');
+      expect(mappedBack[1].preview).toBe('thumbnail_abc.jpg');
+    });
+
+    it('should handle entities without preview', () => {
+      const entitiesWithoutPreview = factory.entityInMultipleLanguages(
+        ['en'],
+        'entity_no_preview',
+        'sample_template',
+        {},
+        { creationDate: 1000000, editDate: 2000000, published: true }
+      );
+
+      const result = MongoEntityMapper.toDomain(
+        entitiesWithoutPreview as any[],
+        templateDbo as any
+      );
+
+      expect(result.translations.en.preview).toBeUndefined();
+    });
+  });
 });
