@@ -10,8 +10,37 @@ import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchem
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
 import type { Application, Request } from 'express';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
+
+const dispatchEntityPreviewJobs = async (languageKey: LanguageISO6391) => {
+  const transactionManager = TransactionManagerFactory.default();
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
+  const thumbnails = await filesDS.getThumbnailsByLanguage(languageKey).all();
+  const sharedIds = [...new Set(thumbnails.map(t => t.entity))];
+  if (sharedIds.length === 0) return;
+  const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
+  const dispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+  await dispatcher.dispatchMany(async dispatch =>
+    chunks.forEach(chunk => dispatch(EntityPreviewBatchHandler, { languageKey, sharedIds: chunk }))
+  );
+};
+
+const importPredefinedIfAvailable = async (key: LanguageISO6391) => {
+  try {
+    await translations.importPredefined(key);
+  } catch (error) {
+    if (!(error instanceof UITranslationNotAvailable)) {
+      throw error;
+    }
+  }
+};
 
 const addLanguage = async (language: LanguageSchema) => {
   const newSettings = await settings.addLanguage(language);
@@ -24,13 +53,8 @@ const addLanguage = async (language: LanguageSchema) => {
     : addedTranslations;
   await entities.addLanguage(language.key);
   await pages.addLanguage(language.key);
-  try {
-    await translations.importPredefined(language.key);
-  } catch (error) {
-    if (!(error instanceof UITranslationNotAvailable)) {
-      throw error;
-    }
-  }
+  await dispatchEntityPreviewJobs(language.key);
+  await importPredefinedIfAvailable(language.key);
   return { newSettings, newTranslations };
 };
 

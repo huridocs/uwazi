@@ -25,6 +25,7 @@ export interface EntityDBO {
   mongoLanguage?: string; // Todo: needs to be mapped and implemented
   generatedToc?: boolean; // Todo: needs to be mapped and implemented
   permissions?: PermissionSchema[];
+  preview?: string;
   __v?: number;
 }
 
