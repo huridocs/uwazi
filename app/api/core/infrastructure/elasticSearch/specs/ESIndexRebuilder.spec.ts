@@ -25,6 +25,7 @@ import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
 import { ESIndexRebuilder } from '../ESIndexRebuilder.js';
 import type { IndexDefinition } from '../Types.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const factory = getFixturesFactory();
 const rawESClient = new Client({ node: config.elasticsearch.nodes });
@@ -109,7 +110,7 @@ const createSut = () => {
 
   const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
   const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
-  const entityDAO = new MongoEntityDAO(db, transactionManager);
+  const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
   const filesDAO = new MongoFilesDAO({ db, transactionManager });
 
   const esBootstrapper = new ElasticSearchBootstrapper({
