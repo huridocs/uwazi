@@ -5,7 +5,7 @@ import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
   Sidepanel,
