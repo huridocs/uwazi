@@ -18,12 +18,8 @@ describe('Entity with main document', () => {
       createTemplate('Template for documents', ['Text', 'Date'], '00b894');
     });
 
-    it('should navigate to the library', () => {
-      cy.visit('/en/library');
-      cy.get('button').contains('Create entity').should('be.visible');
-    });
-
     it('should create an entity with a document', () => {
+      cy.visit('/en/library');
       cy.get('button').contains('Create entity').click();
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Entity with document 1', {
@@ -59,7 +55,7 @@ describe('Entity with main document', () => {
 
   describe('document and text layer', { viewportWidth: 1138, viewportHeight: 640 }, () => {
     it('should visit the entity ', () => {
-      cy.visit(`/en/entity/${entitySharedId}`);
+      cy.visit(`/en/entityv2/${entitySharedId}`);
     });
 
     it('should display the PDF', () => {
@@ -101,7 +97,7 @@ describe('Entity with main document', () => {
     });
 
     it('should render on the correct page based on the url', () => {
-      cy.visit(`en/entity/${entitySharedId}?page=3`);
+      cy.visit(`en/entityv2/${entitySharedId}?page=3`);
       cy.contains('div[class="page"]', 'Elizabeth Odio Benito').should('be.visible');
     });
 
@@ -115,7 +111,7 @@ describe('Entity with main document', () => {
 
   describe('search', () => {
     it('should navigate with a search term', () => {
-      cy.visit(`/en/entity/${entitySharedId}?searchTerm=Rep%C3%BAblica%20de%20Nicaragua`);
+      cy.visit(`/en/entityv2/${entitySharedId}?searchTerm=Rep%C3%BAblica%20de%20Nicaragua`);
       cy.contains('div[class="page"]', 'RESOLUCIÓN DE LA PRESIDENTA DE LA').should('be.visible');
     });
 
@@ -132,7 +128,7 @@ describe('Entity with main document', () => {
 
   describe('responsive', { viewportWidth: 450, viewportHeight: 650 }, () => {
     it('should view the file in mobile view', () => {
-      cy.visit(`/en/entity/${entitySharedId}?page=2`);
+      cy.visit(`/en/entityv2/${entitySharedId}?page=2`);
       //wait for page to render
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(500);
