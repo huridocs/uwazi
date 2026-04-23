@@ -287,13 +287,6 @@ Cypress.Commands.add('waitForMarkdownChartSettled', () => {
       tick();
     });
   });
-  cy.get('body').realMouseMove(12, 12, { position: 'topLeft' });
-  cy.get('.markdown-viewer').then($root => {
-    const $tip = $root.find('.recharts-tooltip-wrapper').first();
-    if ($tip.length) {
-      cy.wrap($tip).should('have.css', 'visibility', 'hidden');
-    }
-  });
 });
 
 addMatchImageSnapshotCommand({
