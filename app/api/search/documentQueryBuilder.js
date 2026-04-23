@@ -90,6 +90,7 @@ export default function () {
         'published',
         'relationships',
         'obsoleteMetadata',
+        'preview',
       ],
       excludes: ['documents.__v'],
     },
