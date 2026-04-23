@@ -12,6 +12,14 @@ interface FlashState {
   phase: 'showing' | 'leaving';
 }
 
+interface E2ERequestStatusState {
+  isLoading: boolean;
+  hasRunningTasks: boolean;
+  isIdle: boolean;
+  overallStatus: string;
+  updatedAt: number;
+}
+
 const flashTypeLabel: Record<NotificationType, string> = {
   success: 'Success',
   warning: 'Warning',
@@ -20,8 +28,15 @@ const flashTypeLabel: Record<NotificationType, string> = {
 };
 
 const RequestStatus = () => {
-  const { overallStatus, isConnected, hasRunningTasks, isPanelOpen, notifications, togglePanel } =
-    useRequestStatus();
+  const {
+    overallStatus,
+    isConnected,
+    hasRunningTasks,
+    isPanelOpen,
+    notifications,
+    togglePanel,
+    isLoading,
+  } = useRequestStatus();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contrastColor = useContrastColor(containerRef);
@@ -86,6 +101,19 @@ const RequestStatus = () => {
     setPopKey(k => k + 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notifications]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    (window as typeof window & { __uwaziRequestStatus?: E2ERequestStatusState }).__uwaziRequestStatus =
+      {
+        isLoading,
+        hasRunningTasks,
+        isIdle: !isLoading && !hasRunningTasks,
+        overallStatus,
+        updatedAt: Date.now(),
+      };
+  }, [hasRunningTasks, isLoading, overallStatus]);
 
   return (
     <div ref={containerRef} className="flex items-center p-1 rounded-xl gap-1.5">

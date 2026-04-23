@@ -34,6 +34,11 @@ declare global {
       realDragAndDrop(subject: Chainable, target: Chainable): void;
       realDrag(subject: Chainable, targetX: number, targetY: number): void;
       cleanupUnexpectedUi(): Chainable;
+      waitForRequestStatusIdle(options?: {
+        timeout?: number;
+        stabilityMs?: number;
+        log?: boolean;
+      }): Chainable;
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
