@@ -1,7 +1,6 @@
 import { clearCookiesAndLogin } from '../helpers/login.js';
 
 const entityRowsSelector = 'div.main-wrapper > div.item-group > div.item-document';
-const countryFilterOptionsSelector = '#filtersForm li.multiselectItem';
 const countryCandidates = ['Peru', 'Perú', 'Colombia', 'Ecuador', 'El Salvador', 'Venezuela'];
 
 const getAllEntitiesTitles = () =>
@@ -23,11 +22,6 @@ const getSearchFilters = () =>
       countryPanel.querySelectorAll('li.multiselectItem .multiselectItem-name')
     ).map(el => el.textContent?.trim() || '');
   });
-
-const waitForSearchResponse = (alias = 'search') => {
-  cy.intercept('GET', '/api/search*').as(alias);
-  cy.wait(`@${alias}`).its('response.statusCode').should('be.oneOf', [200, 304]);
-};
 
 const selectFilterOption = (text: string, position: number) => {
   cy.intercept('GET', '/api/search*').as('searchFilterOption');
@@ -54,17 +48,17 @@ const clickByTextCandidates = (selector: string, candidates: string[]) => {
 const setDateFilter = (wrapperSelector: string, value: string) => {
   const inputSelector = `${wrapperSelector} input`;
 
-  cy.get(wrapperSelector).scrollIntoView().click({ force: true });
+  cy.get(wrapperSelector).scrollIntoView();
+  cy.get(wrapperSelector).click({ force: true });
   cy.get(inputSelector).should('exist');
 
   // In Cypress GUI the datepicker sometimes wipes the value after typing.
   // Retry once if the first write does not persist.
-  const writeDate = () =>
-    cy
-      .get(inputSelector)
-      .clear({ force: true })
-      .type(`${value}{enter}`, { force: true, delay: 0 })
-      .blur({ force: true });
+  const writeDate = () => {
+    cy.get(inputSelector).clear({ force: true });
+    cy.get(inputSelector).type(`${value}{enter}`, { force: true, delay: 0 });
+    cy.get(inputSelector).blur({ force: true });
+  };
 
   writeDate();
   cy.get(inputSelector).then($input => {
@@ -96,16 +90,6 @@ const expandCountryOptions = () => {
   cy.get('#filtersForm').find('li.multiselectItem').should('have.length.greaterThan', 0);
 };
 
-const clickCountryOption = (country: string, alias: string) => {
-  expandCountryOptions();
-  cy.intercept('GET', '/api/search*').as(alias);
-  const countryPattern = country === 'Peru' ? /Peru|Perú/ : new RegExp(country, 'i');
-  cy.contains('span.multiselectItem-name', countryPattern)
-    .should('be.visible')
-    .click({ force: true });
-  cy.wait(`@${alias}`).its('response.statusCode').should('be.oneOf', [200, 304]);
-};
-
 const clickAnyCountryOption = () => {
   expandCountryOptions();
   cy.get('span.multiselectItem-name').then($options => {
@@ -114,7 +98,7 @@ const clickAnyCountryOption = () => {
       countryCandidates.find(candidate =>
         options.some(option => option.toLowerCase() === candidate.toLowerCase())
       ) || options[0];
-    expect(target).to.exist;
+    expect(target).to.be.a('string');
     cy.wrap(target as string).as('selectedCountry');
     cy.contains('span.multiselectItem-name', target as string).click({ force: true });
   });

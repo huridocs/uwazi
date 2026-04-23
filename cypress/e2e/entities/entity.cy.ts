@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { clearCookiesAndLogin } from '../helpers/login.js';
-import { changeLanguage, clickOnEditEntity, saveEntity } from '../helpers/index.js';
+import { clickOnEditEntity, saveEntity } from '../helpers/index.js';
 
 const entityTitle = 'Entity with all props';
 const textWithHtml = `<h1>The title</h1>
@@ -197,13 +197,12 @@ describe('Entities', () => {
       cy.get('button').contains('Create entity').should('be.visible');
       cy.get('button').contains('Create entity').click();
       cy.waitForRequestStatusIdle();
-      cy.get('textarea[name="library.sidepanel.metadata.title"]')
-        .should('be.visible')
-        .and('not.be.disabled')
-        .click()
-        .clear()
-        .type(entityTitle, { delay: 0 })
-        .should('have.value', entityTitle);
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').should('be.visible');
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').and('not.be.disabled');
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').clear();
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').type(entityTitle, { delay: 0 });
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').should('have.value', entityTitle);
       cy.contains('#metadataForm', 'Type').get('select').eq(0).select('All props');
       cy.get('select:first-of-type').select('All props');
       cy.get('.form-group.text input').type('demo text', { delay: 0 });

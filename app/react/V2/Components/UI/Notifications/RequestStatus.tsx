@@ -105,14 +105,15 @@ const RequestStatus = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    (window as typeof window & { __uwaziRequestStatus?: E2ERequestStatusState }).__uwaziRequestStatus =
-      {
-        isLoading,
-        hasRunningTasks,
-        isIdle: !isLoading && !hasRunningTasks,
-        overallStatus,
-        updatedAt: Date.now(),
-      };
+    (
+      window as typeof window & { __uwaziRequestStatus?: E2ERequestStatusState }
+    ).__uwaziRequestStatus = {
+      isLoading,
+      hasRunningTasks,
+      isIdle: !isLoading && !hasRunningTasks,
+      overallStatus,
+      updatedAt: Date.now(),
+    };
   }, [hasRunningTasks, isLoading, overallStatus]);
 
   return (

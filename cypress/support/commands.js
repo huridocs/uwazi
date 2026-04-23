@@ -244,7 +244,9 @@ Cypress.Commands.add('waitForRequestStatusIdle', options => {
         );
       }
 
-      return cy.wait(100, { log: false }).then(readStatus);
+      return cy
+        .then({ log: false }, () => new Cypress.Promise(resolve => setTimeout(resolve, 100)))
+        .then(readStatus);
     });
 
   return readStatus();
