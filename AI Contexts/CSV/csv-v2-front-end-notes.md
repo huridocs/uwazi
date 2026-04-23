@@ -87,6 +87,13 @@ V2 emits to **tenant admins** (not per-session V1 pattern).
 - `csvImport:import:success` -> `{ importId }`
 - `csvImport:import:error` -> `{ importId, message }`
 
+Current implementation caveat (open backend fix):
+
+- Production testing showed coarse progress for large imports (for example `0% -> 100%` jumps)
+  when entities-import checkpoints are emitted too sparsely.
+- Frontend should continue polling `GET /api/csvImportEntities/imports/:id` and not assume socket
+  progress events are high-frequency until backend checkpoint granularity is corrected.
+
 ### Legacy bridge events (not for new UI)
 
 - `IMPORT_CSV_START` (no payload)
