@@ -1,3 +1,3 @@
 export { getTextColor } from './getTextColor.js';
-export { prepareMetadata } from './prepareMetadata.js';
+export { formatMetadataFields } from './formatMetadataFields.js';
 export { formatSimpleProperty } from './formatSimpleProperty.js';

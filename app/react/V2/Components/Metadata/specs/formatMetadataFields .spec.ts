@@ -1,13 +1,5 @@
-import { Entity } from '#V2/api/entities/types.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { prepareMetadata } from '../Formatters/index.js';
-
-const metadata = {
-  title: [{ value: 'A title' }],
-  sourceA: [{ value: 'Only for template A' }],
-  sourceB: [{ value: 'Only for template B' }],
-  orphan: [{ value: 'Should be ignored' }],
-} as Entity['metadata'];
+import { formatMetadataFields } from '../Formatters/index.js';
 
 const templateA = {
   properties: [
@@ -35,23 +27,13 @@ const templateB = {
   ],
 } as ClientTemplateSchema;
 
-const templateC = {
-  properties: [{ _id: 'p-title', name: 'title', label: 'Title', type: 'text' }],
-} as ClientTemplateSchema;
-
-const templateD = {
-  commonProperties: [{ name: 'title', label: 'Title' }],
-} as ClientTemplateSchema;
-
-describe('prepareMetadata', () => {
-  it('should return an empty array when metadata is missing, or theres no template, or no properties', () => {
-    expect(prepareMetadata(undefined, templateC)).toEqual([]);
-    expect(prepareMetadata(metadata, undefined)).toEqual([]);
-    expect(prepareMetadata(metadata, templateD)).toEqual([]);
+describe('formatMetadataFields ', () => {
+  it('should return an empty array when metadata there is no properties', () => {
+    expect(formatMetadataFields(undefined)).toEqual([]);
   });
 
-  it('should return only properties that exist in the provided template', () => {
-    expect(prepareMetadata(metadata, templateA)).toEqual([
+  it('should return properties formatted', () => {
+    expect(formatMetadataFields(templateA)).toEqual([
       {
         _id: 'p-title-a',
         name: 'title',
@@ -70,7 +52,7 @@ describe('prepareMetadata', () => {
       },
     ]);
 
-    expect(prepareMetadata(metadata, templateB)).toEqual([
+    expect(formatMetadataFields(templateB)).toEqual([
       {
         _id: 'p-title-b',
         name: 'title',
@@ -90,15 +72,9 @@ describe('prepareMetadata', () => {
     ]);
   });
 
-  it('should ignore template properties without _id and use inherit info from template', () => {
-    const metadata = {
-      noId: [{ value: 'no id value' }],
-      fromTemplate: [{ value: 'value', inheritedType: 'date' }],
-    } as Entity['metadata'];
-
+  it('should format with inheritance info from template', () => {
     const template = {
       properties: [
-        { name: 'noId', label: 'No Id', type: 'text' },
         {
           _id: 'p-from-template',
           name: 'fromTemplate',
@@ -109,7 +85,7 @@ describe('prepareMetadata', () => {
       ],
     } as ClientTemplateSchema;
 
-    expect(prepareMetadata(metadata, template)).toEqual([
+    expect(formatMetadataFields(template)).toEqual([
       {
         _id: 'p-from-template',
         name: 'fromTemplate',

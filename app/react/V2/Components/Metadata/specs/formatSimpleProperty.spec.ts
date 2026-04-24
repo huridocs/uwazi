@@ -7,6 +7,7 @@ describe('formatSimpleProperty', () => {
     simple_text: [{ value: 'Emergency incident report' }],
     numeric_field: [{ value: 42 }],
     empty_text: [{ value: '' }],
+    empty_array: [],
   } as Entity['metadata'];
 
   it('should prepare simple properties with value, label and template id', () => {
@@ -28,7 +29,7 @@ describe('formatSimpleProperty', () => {
     });
   });
 
-  it('should return null for non-simple properties or empty values', () => {
+  it('should return null for non-simple properties', () => {
     const dateProperty = {
       _id: 'p2',
       name: 'single_date',
@@ -36,6 +37,10 @@ describe('formatSimpleProperty', () => {
       type: 'date',
     } as BaseMetadataProperty;
 
+    expect(formatSimpleProperty(dateProperty, metadata)).toBeNull();
+  });
+
+  it('should return an empty value when metadata key exists but has no usable value', () => {
     const emptyTextProperty = {
       _id: 'p3',
       name: 'empty_text',
@@ -43,9 +48,51 @@ describe('formatSimpleProperty', () => {
       type: 'text',
     } as BaseMetadataProperty;
 
-    expect(formatSimpleProperty(dateProperty, metadata)).toBeNull();
+    const emptyArrayProperty = {
+      _id: 'p5',
+      name: 'empty_array',
+      label: 'Empty Array',
+      type: 'text',
+    } as BaseMetadataProperty;
 
-    expect(formatSimpleProperty(emptyTextProperty, metadata)).toBeNull();
+    expect(formatSimpleProperty(emptyTextProperty, metadata)).toEqual({
+      _id: 'p3',
+      name: 'empty_text',
+      type: 'text',
+      values: [{ value: '' }],
+      label: 'Empty Text',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+
+    expect(formatSimpleProperty(emptyArrayProperty, metadata)).toEqual({
+      _id: 'p5',
+      name: 'empty_array',
+      type: 'text',
+      values: [{ value: '' }],
+      label: 'Empty Array',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
+
+  it('should return an empty value when metadata key does not exist', () => {
+    const missingProperty = {
+      _id: 'p6',
+      name: 'missing_simple',
+      label: 'Missing Simple',
+      type: 'text',
+    } as BaseMetadataProperty;
+
+    expect(formatSimpleProperty(missingProperty, metadata)).toEqual({
+      _id: 'p6',
+      name: 'missing_simple',
+      type: 'text',
+      values: [{ value: '' }],
+      label: 'Missing Simple',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
   });
 
   it('should stringify numeric values', () => {
