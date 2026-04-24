@@ -66,50 +66,54 @@ class ESIndexRebuilder {
     let entityBatch: EntityDBO[] = [];
     let prevSharedId: string | undefined;
 
-    while (await entityCursor.hasNext()) {
-      const entity = (await entityCursor.next())!;
+    try {
+      while (await entityCursor.hasNext()) {
+        const entity = (await entityCursor.next())!;
 
-      if (entity.sharedId !== prevSharedId && entityBatch.length >= this.batchSize) {
+        if (entity.sharedId !== prevSharedId && entityBatch.length >= this.batchSize) {
+          await this.deps.entityIndexer.index(entityBatch);
+          entitiesIndexed += entityBatch.length;
+          this.notify({ stage: 'index-entities', indexed: entitiesIndexed });
+          entityBatch = [];
+        }
+
+        entityBatch.push(entity);
+        prevSharedId = entity.sharedId;
+      }
+
+      if (entityBatch.length > 0) {
         await this.deps.entityIndexer.index(entityBatch);
         entitiesIndexed += entityBatch.length;
         this.notify({ stage: 'index-entities', indexed: entitiesIndexed });
-        entityBatch = [];
       }
-
-      entityBatch.push(entity);
-      prevSharedId = entity.sharedId;
+    } finally {
+      await entityCursor.close();
     }
-
-    if (entityBatch.length > 0) {
-      await this.deps.entityIndexer.index(entityBatch);
-      entitiesIndexed += entityBatch.length;
-      this.notify({ stage: 'index-entities', indexed: entitiesIndexed });
-    }
-
-    await entityCursor.close();
 
     let fulltextIndexed = 0;
     const fileCursor = this.deps.filesDAO.streamProcessedDocs();
     let fileBatch: ProcessedPDFDBO[] = [];
 
-    while (await fileCursor.hasNext()) {
-      fileBatch.push((await fileCursor.next())!);
+    try {
+      while (await fileCursor.hasNext()) {
+        fileBatch.push((await fileCursor.next())!);
 
-      if (fileBatch.length >= this.batchSize) {
+        if (fileBatch.length >= this.batchSize) {
+          await this.deps.fullTextIndexer.index(fileBatch);
+          fulltextIndexed += fileBatch.length;
+          this.notify({ stage: 'index-fulltext', indexed: fulltextIndexed });
+          fileBatch = [];
+        }
+      }
+
+      if (fileBatch.length > 0) {
         await this.deps.fullTextIndexer.index(fileBatch);
         fulltextIndexed += fileBatch.length;
         this.notify({ stage: 'index-fulltext', indexed: fulltextIndexed });
-        fileBatch = [];
       }
+    } finally {
+      await fileCursor.close();
     }
-
-    if (fileBatch.length > 0) {
-      await this.deps.fullTextIndexer.index(fileBatch);
-      fulltextIndexed += fileBatch.length;
-      this.notify({ stage: 'index-fulltext', indexed: fulltextIndexed });
-    }
-
-    await fileCursor.close();
 
     this.notify({ stage: 'done' });
   }
