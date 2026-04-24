@@ -23,7 +23,7 @@ import { IndexNameResolver } from '../IndexNameResolver.js';
 import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO.js';
 import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
-import { ESIndexRebuilder } from '../ESIndexRebuilder.js';
+import { ESIndexRebuilder, ESIndexRebuilderDeps } from '../ESIndexRebuilder.js';
 import type { IndexDefinition } from '../Types.js';
 import { User } from '#api/users.v2/model/User.js';
 
@@ -80,7 +80,7 @@ const deleteTestIndex = async () =>
 
 const refreshTestIndex = async () => rawESClient.indices.refresh({ index: testAlias });
 
-const createSut = () => {
+const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
   const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
   const db = getConnection();
 
@@ -130,6 +130,7 @@ const createSut = () => {
     filesDAO,
     registry: testRegistry,
     logger: TestUtils.mockClass<Logger>({ info: jest.fn() }),
+    ...deps,
   });
 
   return { sut, tenantAwareClient, slotsDAO };
@@ -259,6 +260,43 @@ describe('ESIndexRebuilder', () => {
 
       const afterCount = await slotsCollection().countDocuments({ assignedTo: 'stale_prop' });
       expect(afterCount).toBe(0);
+    });
+
+    it('a multi-language entity produces a single ES document containing all language variants', async () => {
+      await testingEnvironment.setFixtures({
+        settings: [
+          { languages: [{ key: 'en' as LanguageISO6391, label: 'English', default: true }] },
+        ],
+        templates: [factory.template('template_a', [])],
+        entities: [
+          factory.entity('multi_lang', 'template_a', {}, { language: 'en', published: true }),
+          factory.entity('multi_lang', 'template_a', {}, { language: 'es', published: true }),
+          factory.entity('multi_lang', 'template_a', {}, { language: 'pt', published: true }),
+
+          factory.entity('multi_lang_2', 'template_a', {}, { language: 'en', published: true }),
+          factory.entity('multi_lang_2', 'template_a', {}, { language: 'es', published: true }),
+          factory.entity('multi_lang_2', 'template_a', {}, { language: 'pt', published: true }),
+        ],
+      });
+
+      MongoSlotsDAO.clearCache();
+
+      const { sut, tenantAwareClient } = createSut({ batchSize: 1 });
+
+      await sut.execute();
+      await refreshTestIndex();
+
+      const result = await tenantAwareClient.search({
+        alias: testAlias,
+        query: { term: { sharedId: 'multi_lang' } },
+      });
+
+      expect(result.hits.hits).toHaveLength(1);
+
+      const source = result.hits.hits[0]._source as any;
+      expect(source?.rawEntities?.en).toBeDefined();
+      expect(source?.rawEntities?.es).toBeDefined();
+      expect(source?.rawEntities?.pt).toBeDefined();
     });
   });
 });

@@ -32,13 +32,18 @@ type Deps = {
   filesDAO: MongoFilesDAO;
   registry: Record<string, IndexDefinition>;
   logger: Logger;
+  batchSize?: number;
   onProgress?: (e: ProgressEvent) => void;
 };
 
-const BATCH_SIZE = 500;
-
 class ESIndexRebuilder {
+  private static BATCH_SIZE = 500;
+
   constructor(private deps: Deps) {}
+
+  private get batchSize() {
+    return this.deps.batchSize || ESIndexRebuilder.BATCH_SIZE;
+  }
 
   private notify(event: ProgressEvent): void {
     if (!this.deps.onProgress) return;
@@ -59,16 +64,20 @@ class ESIndexRebuilder {
     let entitiesIndexed = 0;
     const entityCursor = this.deps.entityDAO.streamAll();
     let entityBatch: EntityDBO[] = [];
+    let prevSharedId: string | undefined;
 
     while (await entityCursor.hasNext()) {
-      entityBatch.push((await entityCursor.next())!);
+      const entity = (await entityCursor.next())!;
 
-      if (entityBatch.length >= BATCH_SIZE) {
+      if (entity.sharedId !== prevSharedId && entityBatch.length >= this.batchSize) {
         await this.deps.entityIndexer.index(entityBatch);
         entitiesIndexed += entityBatch.length;
         this.notify({ stage: 'index-entities', indexed: entitiesIndexed });
         entityBatch = [];
       }
+
+      entityBatch.push(entity);
+      prevSharedId = entity.sharedId;
     }
 
     if (entityBatch.length > 0) {
@@ -86,7 +95,7 @@ class ESIndexRebuilder {
     while (await fileCursor.hasNext()) {
       fileBatch.push((await fileCursor.next())!);
 
-      if (fileBatch.length >= BATCH_SIZE) {
+      if (fileBatch.length >= this.batchSize) {
         await this.deps.fullTextIndexer.index(fileBatch);
         fulltextIndexed += fileBatch.length;
         this.notify({ stage: 'index-fulltext', indexed: fulltextIndexed });

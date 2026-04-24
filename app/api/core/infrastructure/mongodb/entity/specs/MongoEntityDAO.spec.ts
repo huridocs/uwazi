@@ -236,6 +236,17 @@ describe('MongoEntityDAO', () => {
       expect(sharedIds).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
     });
 
+    it('returns results sorted by sharedId so language variants are contiguous', async () => {
+      const dao = new MongoEntityDAO(
+        getConnection(),
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await dao.streamAll().toArray();
+      const returnedSharedIds = entities.map(e => e.sharedId);
+      expect(returnedSharedIds).toEqual([...returnedSharedIds].sort());
+    });
+
     describe('when collection is empty', () => {
       beforeAll(async () => {
         await testingEnvironment.setUp({ entities: [] });

@@ -1,7 +1,7 @@
 import type { SlotType } from './SlotType.js';
 
 const AmountPerSlotType: Record<SlotType, number> = {
-  txt: 100,
+  txt: 150,
   date: 50,
   num: 50,
   range: 50,
@@ -9,7 +9,7 @@ const AmountPerSlotType: Record<SlotType, number> = {
   relationship: 50,
   geolocation: 50,
 
-  relationship_txt: 100,
+  relationship_txt: 150,
   relationship_num: 50,
   relationship_date: 50,
   relationship_range: 50,

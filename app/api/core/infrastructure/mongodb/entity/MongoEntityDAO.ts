@@ -89,7 +89,7 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
   }
 
   streamAll(): FindCursor<EntityDBO> {
-    return this.getCollection().find({});
+    return this.getCollection().find({}).sort({ sharedId: 1 });
   }
 
   async getEntityIdsBySharedId(
