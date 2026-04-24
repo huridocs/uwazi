@@ -17,6 +17,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { tenants } from '../tenants/index.js';
 
 export const Preserve = {
@@ -108,7 +109,9 @@ export const Preserve = {
         settingsDS: SettingsDataSourceFactory.default(transactionManager),
         translationsDS: DefaultTranslationsDataSource(transactionManager),
       }),
-      jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      dispatcher: new DispatcherAdapter(
+        DefaultDispatcher(tenants.current().name, transactionManager)
+      ),
     });
 
     const thesaurus = Thesaurus.create({

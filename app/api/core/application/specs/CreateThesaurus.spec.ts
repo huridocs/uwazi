@@ -10,6 +10,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { ThesaurusNameAlreadyExistsError } from '#api/core/domain/thesaurus/errors.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
@@ -65,7 +66,7 @@ const createSut = (props?: CreateProps) => {
   const thesauriService = new ThesauriService({
     thesauriDS,
     thesaurusTranslationService,
-    jobsDispatcher: DefaultDispatcher(tenant.name, transactionManager),
+    dispatcher: new DispatcherAdapter(DefaultDispatcher(tenant.name, transactionManager)),
   });
 
   const sut = new CreateThesaurusUseCase({

@@ -55,11 +55,11 @@ describe('Account', () => {
       });
 
       cy.wait('@updateUser');
-      cy.contains('Dismiss').click();
       cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io');
     });
 
     it('should not save changes when the password is wrong', () => {
+      cy.intercept('POST', '/api/users').as('updateUserWrongPassword');
       cy.get('input[name=password]').type('12345', { delay: 0 });
       cy.get('input[name=passwordConfirm]').type('12345', { delay: 0 });
       cy.get('input[name=email]').clear();
@@ -72,16 +72,12 @@ describe('Account', () => {
         cy.contains('button', 'Accept').click();
       });
 
+      cy.wait('@updateUserWrongPassword').its('response.statusCode').should('eq', 403);
+      cy.get('[data-testid="notification-flash"]').should('be.visible');
+      cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
       cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io.com');
       cy.get('input[name=password]').should('not.contain.value');
       cy.get('input[name=passwordConfirm]').should('not.contain.value');
-    });
-
-    it('should check the error and dismiss the notification', () => {
-      cy.contains('An error occurred');
-      cy.contains('button', 'View more').click();
-      cy.contains('Request failed with status code 403: Forbidden');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should login with the new password', () => {
@@ -116,7 +112,6 @@ describe('Account', () => {
           cy.get('input[name=token]').type(token);
           cy.contains('aside button', 'Enable').click();
           cy.contains('Activated');
-          cy.contains('Dismiss').click();
         });
     });
 

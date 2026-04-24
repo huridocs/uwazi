@@ -9,9 +9,7 @@ import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import { EventsBus } from '../libs/eventsbus/index.js';
 import { TransactionManager } from './contracts/TransactionManager.js';
-import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher.js';
-import { RelationshipSyncJob } from '../infrastructure/jobs/RelationshipSyncJob.js';
-import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob.js';
+import { Dispatcher } from './contracts/Dispatcher.js';
 import {
   EntityPermissionChecker,
   Specification,
@@ -31,7 +29,7 @@ type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
   eventBus: EventsBus;
   transactionManager: TransactionManager;
-  dispatcher: JobsDispatcher;
+  dispatcher: Dispatcher;
   search: typeof search;
   entityPermissionChecker: EntityPermissionChecker;
   eventEmitter: EventEmitter;
@@ -81,13 +79,15 @@ class EntitiesService {
 
     await this.deps.entitiesDS.create(entity);
 
-    await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
-      sharedId: entity.sharedId,
-      targetLanguage: entity.languages[0],
-      templateId: entity.template.id,
-      tenantName: context.tenantName,
-      userId: context.actorId,
-    });
+    await this.deps.dispatcher.syncRelationships([
+      {
+        sharedId: entity.sharedId,
+        targetLanguage: entity.languages[0],
+        templateId: entity.template.id,
+        tenantName: context.tenantName,
+        userId: context.actorId,
+      },
+    ]);
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage));
@@ -136,17 +136,15 @@ class EntitiesService {
 
     await this.deps.entitiesDS.bulkInsert(entities);
 
-    await this.deps.dispatcher.dispatchMany(async dispatch => {
-      entities.forEach(entity => {
-        dispatch(RelationshipSyncJob, {
-          sharedId: entity.sharedId,
-          targetLanguage: context.targetLanguage,
-          templateId: entity.template.id,
-          tenantName: context.tenantName,
-          userId: context.actorId,
-        });
-      });
-    });
+    await this.deps.dispatcher.syncRelationships(
+      entities.map(entity => ({
+        sharedId: entity.sharedId,
+        targetLanguage: context.targetLanguage,
+        templateId: entity.template.id,
+        tenantName: context.tenantName,
+        userId: context.actorId,
+      }))
+    );
 
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
@@ -175,14 +173,12 @@ class EntitiesService {
 
     const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 
-    await this.deps.dispatcher.dispatchMany(async dispatch =>
-      chunks.forEach(chunk =>
-        dispatch(BulkCleanupEntityJob, {
-          sharedIds: chunk,
-          userId: context.actor._id,
-          tenantName: context.tenantName,
-        })
-      )
+    await this.deps.dispatcher.cleanupEntities(
+      chunks.map(chunk => ({
+        sharedIds: chunk,
+        userId: context.actor._id,
+        tenantName: context.tenantName,
+      }))
     );
 
     await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
