@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
 import { FileType } from '#shared/types/fileType.js';
-import { Translate } from '#app/I18N/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { t } from '#app/I18N/index.js';
+import { notify } from '#V2/utils/notifyBridge.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import {
   assetUrl,
@@ -24,7 +23,6 @@ type Args = {
 
 export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChange }: Args) => {
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
   const [open, setOpen] = useState(false);
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -91,17 +89,11 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     );
 
     if (hasSuccess) {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Uploaded custom file</Translate>,
-      });
+      notify(t('System', 'Uploaded custom file', null, false), 'success');
     }
 
     if (hasErrors) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-      });
+      notify(t('System', 'An error occurred', null, false), 'error');
     }
   };
 

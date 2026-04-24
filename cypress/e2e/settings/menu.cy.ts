@@ -50,7 +50,6 @@ describe('Menu configuration', () => {
 
   it('should save', () => {
     cy.getByTestId('menu-save').click();
-    cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');
     cy.getByTestId('menu-save').should('be.disabled');
   });
@@ -71,7 +70,6 @@ describe('Menu configuration', () => {
     cy.get('#link-title').type('Group 2', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
     cy.getByTestId('menu-save').click();
-    cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');
   });
 
@@ -96,7 +94,6 @@ describe('Menu configuration', () => {
 
   it('should save the edited links', () => {
     cy.getByTestId('menu-save').click();
-    cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');
     cy.getByTestId('menu-save').should('be.disabled');
   });
@@ -114,7 +111,6 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-save').click();
-    cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');
   });
 
@@ -126,7 +122,6 @@ describe('Menu configuration', () => {
       cy.contains('button', 'Update').click();
     });
     cy.getByTestId('menu-save').click();
-    cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');
   });
 
@@ -147,7 +142,6 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-delete-link').click();
 
     cy.getByTestId('menu-save').click();
-    cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');
   });
 

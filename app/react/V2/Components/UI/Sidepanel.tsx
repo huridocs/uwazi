@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useId } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
@@ -15,6 +15,7 @@ interface SidePanelProps {
   title?: string | React.ReactNode;
   withOverlay?: boolean;
   size?: 'small' | 'medium' | 'large';
+  panelId?: string;
 }
 
 const sidepanelHeader = (
@@ -23,7 +24,7 @@ const sidepanelHeader = (
   titleId?: string
 ) => (
   <div
-    className="mb-2 flex p-4"
+    className="mb-2 flex justify-between p-4"
     style={{
       color: 'var(--color-theme-text-secondary)',
       backgroundColor: 'var(--color-theme-surface-raised)',
@@ -54,10 +55,14 @@ const Sidepanel = ({
   title,
   withOverlay,
   size = 'medium',
+  panelId,
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
   const titleId = useId();
   const themeMode = useAtomValue(effectiveThemeModeAtom);
+  const panelRef = useRef<HTMLElement>(null);
+  const previousFocusedElement = useRef<HTMLElement | null>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   let transitionRight = '-translate-x-[500px]';
   let transitionLeft = '-translate-x-[-500px]';
@@ -83,6 +88,110 @@ const Sidepanel = ({
   const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
   const transition = isRigthToLeft ? transitionRight : transitionLeft;
   const contentClasses = 'flex flex-col h-full overflow-y-auto';
+  const focusableSelector =
+    'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusedElement.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+      requestAnimationFrame(() => {
+        const panel = panelRef.current;
+        if (!panel) return;
+        const firstFocusable = panel.querySelector<HTMLElement>(focusableSelector);
+        (firstFocusable ?? panel).focus();
+      });
+      return;
+    }
+
+    if (previousFocusedElement.current) {
+      previousFocusedElement.current.focus();
+      previousFocusedElement.current = null;
+    }
+  }, [isOpen, focusableSelector]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const onDocumentKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      closeSidepanelFunction();
+    };
+
+    document.addEventListener('keydown', onDocumentKeyDown);
+    return () => document.removeEventListener('keydown', onDocumentKeyDown);
+  }, [closeSidepanelFunction, isOpen]);
+
+  useEffect(() => {
+    const getRenderedHeader = () =>
+      document.querySelector<HTMLElement>('.content > .tw-content > header') ||
+      document.querySelector<HTMLElement>('.content > header');
+
+    const measureHeader = () => {
+      const renderedHeader = getRenderedHeader();
+      setHeaderHeight(renderedHeader ? renderedHeader.getBoundingClientRect().height : 0);
+    };
+
+    measureHeader();
+    window.addEventListener('resize', measureHeader);
+
+    const renderedHeader = getRenderedHeader();
+    if (!renderedHeader || typeof ResizeObserver === 'undefined') {
+      return () => window.removeEventListener('resize', measureHeader);
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      measureHeader();
+    });
+
+    resizeObserver.observe(renderedHeader);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', measureHeader);
+    };
+  }, []);
+
+  const handlePanelKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeSidepanelFunction();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const focusableElements = Array.from(
+      panel.querySelectorAll<HTMLElement>(focusableSelector)
+    ).filter(
+      element => !element.hasAttribute('disabled') && element.getAttribute('aria-hidden') !== 'true'
+    );
+
+    if (focusableElements.length === 0) {
+      event.preventDefault();
+      panel.focus();
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    const activeElement = document.activeElement;
+
+    if (event.shiftKey && activeElement === firstElement) {
+      event.preventDefault();
+      lastElement.focus();
+      return;
+    }
+
+    if (!event.shiftKey && activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
+  };
 
   const panelContent = (
     <div className={contentClasses}>
@@ -90,11 +199,23 @@ const Sidepanel = ({
       {children}
     </div>
   );
+  const sidepanelContainerStyle = {
+    top: `${headerHeight}px`,
+    height: `calc(100vh - ${headerHeight}px)`,
+  };
 
   if (withOverlay) {
+    const overlayContainerClass = 'fixed left-0 z-10 flex w-full max-h-full';
+
     return (
-      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
+      <Transition
+        show={isOpen}
+        as="div"
+        className={overlayContainerClass}
+        style={sidepanelContainerStyle}
+      >
         <Transition.Child
+          as="div"
           className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:grow"
           enterFrom="opacity-0"
           enterTo="opacity-50"
@@ -116,7 +237,16 @@ const Sidepanel = ({
             colorScheme: themeMode,
           }}
         >
-          <aside className="h-full">{panelContent}</aside>
+          <aside
+            ref={panelRef}
+            id={panelId}
+            tabIndex={-1}
+            className="h-full"
+            aria-labelledby={title ? titleId : undefined}
+            onKeyDown={handlePanelKeyDown}
+          >
+            {panelContent}
+          </aside>
         </Transition.Child>
       </Transition>
     );
@@ -126,17 +256,27 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="div"
-      className={`fixed top-0 right-0 z-10 h-full w-full border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
+      className={`fixed right-0 z-40 w-full border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
       style={{
+        ...sidepanelContainerStyle,
         backgroundColor: 'var(--color-theme-surface-page)',
         borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
         colorScheme: themeMode,
       }}
     >
-      <aside className="h-full">{panelContent}</aside>
+      <aside
+        ref={panelRef}
+        id={panelId}
+        tabIndex={-1}
+        className="h-full"
+        aria-labelledby={title ? titleId : undefined}
+        onKeyDown={handlePanelKeyDown}
+      >
+        {panelContent}
+      </aside>
     </Transition>
   );
 };

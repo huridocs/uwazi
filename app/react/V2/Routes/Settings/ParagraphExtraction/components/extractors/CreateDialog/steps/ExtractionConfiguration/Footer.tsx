@@ -2,18 +2,17 @@
 
 import React from 'react';
 import { Button } from '#V2/Components/UI/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
 import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 import { isClient } from '#app/utils/index.js';
 import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const Footer = () => {
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const {
     sourceTemplateId,
     setStep,
@@ -46,10 +45,7 @@ const Footer = () => {
       await extractorsAPI.save(values);
       setShowModal(false);
       await revalidator.revalidate();
-      setNotifications({
-        type: 'success',
-        text: <Translate>Paragraph Extractor added</Translate>,
-      });
+      notify('success', t('System', 'Paragraph Extractor added', null, false));
     } catch (e) {
       if (isClient) {
         handleUnexpectedError(e, 'Error creating paragraph extractor');

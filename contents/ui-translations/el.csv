@@ -72,6 +72,7 @@ Advanced colors,Advanced colors
 ALL,ΟΛΑ
 All,Όλα
 "All changes will be lost, are you sure you want to proceed?","Όλες οι αλλαγές θα χαθούν, είστε σίγουροι ότι θέλετε να προχωρήσετε;"
+All clear,All clear
 All data,Όλα τα δεδομένα
 All editing options will be disabled.,Όλες οι επιλογές επεξεργασίας θα απενεργοποιηθούν.
 All of the paragraphs will be deleted,Όλες οι παράγραφοι θα διαγραφούν
@@ -79,10 +80,12 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Παράκαμψη CAPTCHA
 Already exists,Υπάρχει ήδη
 Amount,Ποσό
-An error has occured while deleting a language:,Παρουσιάστηκε σφάλμα κατά τη διαγραφή γλώσσας:
-An error has occured while installing languages:,Παρουσιάστηκε σφάλμα κατά την εγκατάσταση γλωσσών:
+An error has occured while deleting a language:,An error has occured while deleting a language:
+An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Παρουσιάστηκε σφάλμα
 An error has occurred during data export,Παρουσιάστηκε σφάλμα κατά την εξαγωγή δεδομένων
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,Παρουσιάστηκε σφάλμα
 Analytics,Αναλυτικά στοιχεία
 Analytics description,"Αν θέλετε να παρακολουθείτε αναλυτικά στοιχεία σχετικά με τις επισκέψεις στη συλλογή σας, το Uwazi υποστηρίζει τόσο το Google Analytics όσο και το Matomo."
@@ -125,6 +128,7 @@ cancel csv import,Cancel the import process. This will stop the creation of new 
 Canceling,Ακύρωση
 Canceling...,Ακύρωση σε εξέλιξη...
 Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Δεν βρέθηκε ο εξαγωγέας
 Captcha,CAPTCHA
 Captcha bypass,"Ενεργοποιώντας αυτήν την επιλογή μπορείτε να επιτρέψετε στους χρήστες να υποβάλλουν στα εγκεκριμένα σας πρότυπα χωρίς να χρειάζεται να συμπληρώσουν CAPTCHA. 
@@ -182,7 +186,7 @@ Connect to a paragraph,Σύνδεση με παράγραφο
 Connect to an entity,Σύνδεση με οντότητα
 Connect to document,Connect to document
 Connect to paragraph,Connect to paragraph
-Connected to server,Συνδέθηκε στον διακομιστή
+Connected to server,Connected to server
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
 Contact Form,Φόρμα επικοινωνίας
@@ -467,6 +471,7 @@ Input,Είσοδος
 Install,Εγκατάσταση
 Install Language(s),Εγκατάσταση γλωσσών
 Install the browser extension.,Εγκαταστήστε την επέκταση του προγράμματος περιήγησης.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Οι οδηγίες για το πώς να το πετύχετε αυτό διαφέρουν ανάλογα με την εφαρμογή που χρησιμοποιείται, ανατρέξτε στην τεκμηρίωση της εφαρμογής."
 Instructions to reset password,"Εάν η παρεχόμενη διεύθυνση email είναι σωστή, θα στείλουμε οδηγίες για την επαναφορά του κωδικού πρόσβασης."
 Instructions to reset the password were sent to the user,Οι οδηγίες επαναφοράς κωδικού πρόσβασης στάλθηκαν στον χρήστη
@@ -496,14 +501,12 @@ Landing page description,"Η σελίδα προορισμού είναι η π�
 Language,Γλώσσα
 Language Code,Κωδικός γλώσσας
 Language deleted,Η γλώσσα διαγράφηκε
-Language Install Start Message,Η διαδικασία εγκατάστασης γλώσσας ξεκίνησε. Μπορεί να διαρκέσει αρκετά λεπτά ανάλογα με το μέγεθος της συλλογής. Περιμένετε μέχρι να ολοκληρωθεί η διαδικασία εγκατάστασης.
 Language reset success,Επιτυχία επαναφοράς γλώσσας
-Language Uninstall Start Message,Η διαδικασία απεγκατάστασης γλώσσας ξεκίνησε. Μπορεί να διαρκέσει αρκετά λεπτά ανάλογα με το μέγεθος της συλλογής. Περιμένετε μέχρι να ολοκληρωθεί η διαδικασία απεγκατάστασης.
-Language uninstalled successfully,Η γλώσσα απεγκαταστάθηκε με επιτυχία
+Language uninstalled successfully,Language uninstalled successfully
 Language(s),Γλώσσα(ες)
 Language:,Γλώσσα:
 Languages,Γλώσσες
-Languages installed successfully,Οι γλώσσες εγκαταστάθηκαν με επιτυχία
+Languages installed successfully,Languages installed successfully
 Last updated,Τελευταία ενημέρωση
 Latitude,Γεωγραφικό πλάτος
 Learn more,Μάθετε περισσότερα
@@ -613,6 +616,7 @@ No icon / flag,Χωρίς εικονίδιο/σημαία
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
+No notifications or active tasks.,No notifications or active tasks.
 No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
@@ -640,6 +644,7 @@ Not already been use as source template in another extractor,Δεν έχει ή�
 Not already been use as target template,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο στόχου
 Not Found,Δεν βρέθηκε
 Nothing selected,Δεν έχει επιλεγεί τίποτα
+Notifications,Notifications
 Obsolete,Παρωχημένο
 obsolete,παρωχημένο
 OCR,OCR
@@ -938,6 +943,7 @@ Target relationship type,Τύπος σχέσης στόχου
 Target Template,Πρότυπο στόχου
 Target template,Πρότυπο στόχου
 Target's role in the relationship Source-Target.,Ο ρόλος του στόχου στη σχέση πηγή-στόχος.
+Tasks,Tasks
 Template,Πρότυπο
 Template changes are being applied to all related entities.,Οι αλλαγές προτύπων εφαρμόζονται σε όλες τις σχετικές οντότητες.
 Template color,Template color
@@ -1053,6 +1059,7 @@ Unauthorized,Μη εξουσιοδοτημένο
 Unexpected error,Μη αναμενόμενο σφάλμα
 Uninstall,Απεγκατάσταση
 Uninstall language,Απεγκατάσταση γλώσσας
+Uninstalling language,Uninstalling language
 Unlink,Αποσύνδεση
 Unlock account,Ξεκλείδωμα λογαριασμού
 Unsupported OCR language,Μη υποστηριζόμενη γλώσσα OCR
@@ -1116,8 +1123,6 @@ view,προβολή
 View entities,Προβολή οντοτήτων
 View entity,Προβολή οντότητας
 View in library,Προβολή στη βιβλιοθήκη
-View less,Προβολή λιγότερων
-View more,Προβολή περισσότερων
 View page,Προβολή σελίδας
 WARNING,ΠΡΟΕΙΔΟΠΟΙΗΣΗ
 Warning: you are editing multiple entities. Fields marked with a,Προειδοποίηση: επεξεργάζεστε πολλαπλές οντότητες. Τα πεδία που σημειώνονται με

@@ -2,14 +2,13 @@ import React, { useMemo, useState } from 'react';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import type { UseFormRegisterReturn } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
 import { FileType } from '#shared/types/fileType.js';
-import { Translate } from '#app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
+import { notify } from '#V2/utils/notifyBridge.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { Label } from '#V2/Components/Forms/Label.js';
 import { FileDropzone } from '#V2/Components/Forms/index.js';
 import { UploadService } from '#V2/api/files/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 type AssetField = 'site_logo' | 'favicon';
@@ -124,7 +123,6 @@ const CustomUploadImagePicker = ({
   sizeRule,
 }: CustomUploadImagePickerProps) => {
   const revalidator = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
   const [open, setOpen] = useState(false);
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -153,10 +151,7 @@ const CustomUploadImagePicker = ({
         };
 
   const notifyFeedback = (feedback: ImageFeedback) => {
-    setNotifications({
-      type: feedback.type,
-      text: feedback.message,
-    });
+    notify(feedback.message, feedback.type);
   };
 
   const validateAssetUrl = async (url: string) => {
@@ -254,17 +249,11 @@ const CustomUploadImagePicker = ({
     );
 
     if (hasSuccess) {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Uploaded custom file</Translate>,
-      });
+      notify(t('System', 'Uploaded custom file', null, false), 'success');
     }
 
     if (hasErrors) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-      });
+      notify(t('System', 'An error occurred', null, false), 'error');
     }
   };
 

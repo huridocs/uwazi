@@ -3,9 +3,10 @@ import { t, Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import * as relationshipTypesAPI from '#V2/api/relationshiptypes/index.js';
-import { useSetAtom, useAtom } from 'jotai';
-import { notificationAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
+import { useAtom } from 'jotai';
+import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface AddRelationshipTypeModalProps {
   onClose: () => void;
@@ -14,7 +15,7 @@ interface AddRelationshipTypeModalProps {
 export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalProps) => {
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const [relationshipTypes, setRelationshipTypes] = useAtom(relationshipTypesAtom);
   const [nameError, setNameError] = useState(false);
 
@@ -26,10 +27,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
   const save = async () => {
     const newRelationshipType = await relationshipTypesAPI.save({ name: name.trim() });
     setRelationshipTypes([...relationshipTypes, newRelationshipType]);
-    setNotifications({
-      type: 'success',
-      text: <Translate>Relationship type created successfully.</Translate>,
-    });
+    notify('success', t('System', 'Relationship type created successfully.', null, false));
   };
 
   const handleSave = async () => {

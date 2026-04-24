@@ -30,15 +30,12 @@ describe('Relationship Types configuration', () => {
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
-
     cy.getByTestId('relationship-types-add').click();
     cy.get('#relationship-type-name').click();
     cy.get('#relationship-type-name').type('Son');
 
     cy.getByTestId('relationship-type-form-submit').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
   });
 
   it('tests Edit', () => {
@@ -48,7 +45,6 @@ describe('Relationship Types configuration', () => {
     cy.getByTestId('relationship-type-form-submit').click();
 
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
   });
 
   it('tests delete', () => {
@@ -61,7 +57,6 @@ describe('Relationship Types configuration', () => {
     cy.getByTestId('relationship-types-delete').click();
     cy.getByTestId('accept-button').click();
     cy.wait('@fetchTypes');
-    cy.contains('Dismiss').click();
   });
 
   it('test cant delete when in use', () => {

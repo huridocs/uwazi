@@ -133,7 +133,6 @@ describe('Relationship view', () => {
         .within(() => {
           cy.contains('div', 'Anzualdo Castro');
         });
-      cy.waitForLegacyNotifications();
     });
 
     // eslint-disable-next-line max-statements
@@ -159,7 +158,6 @@ describe('Relationship view', () => {
         .within(() => {
           cy.contains('div', 'My test Mecanismo');
         });
-      cy.waitForLegacyNotifications();
     });
 
     it('should be able to move entities from the second hub to the first one', () => {

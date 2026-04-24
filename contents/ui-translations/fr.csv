@@ -72,6 +72,7 @@ Advanced colors,Advanced colors
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
+All clear,All clear
 All data,Tous les données
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
@@ -83,6 +84,8 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
@@ -125,6 +128,7 @@ cancel csv import,Cancel the import process. This will stop the creation of new 
 Canceling,Canceling
 Canceling...,Canceling...
 Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,Contournement du captcha
@@ -465,6 +469,7 @@ Input,Input
 Install,Install
 Install Language(s),Install Language(s)
 Install the browser extension.,Install the browser extension.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -494,9 +499,7 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Langue
 Language Code,Language Code
 Language deleted,Language deleted
-Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
 Language reset success,Language reset success
-Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
 Language(s),Language(s)
 Language:,Language:
@@ -611,6 +614,7 @@ No icon / flag,No icon / flag
 No items available,No items available
 No Label,Aucune étiquettes
 No label,No label
+No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,Aucune option trouvée
 No property,Aucune propriété
@@ -638,6 +642,7 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
+Notifications,Notifications
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -936,6 +941,7 @@ Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Tasks,Tasks
 Template,Modèle
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template color,Template color
@@ -1051,6 +1057,7 @@ Unauthorized,Non autorisé
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Uninstalling language,Uninstalling language
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Langage OCR non supporté
@@ -1114,8 +1121,6 @@ view,Vue
 View entities,View entities
 View entity,View entity
 View in library,Voir dans la bibliothèque
-View less,View less
-View more,View more
 View page,Voir page
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Attention : vous êtes en train de modifier plusieurs entités. Les champs marqués d'un

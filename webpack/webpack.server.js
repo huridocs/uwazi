@@ -25,6 +25,18 @@ const __dirname = path.dirname(__filename);
 
   const compiler = webpack(webpackConfig.default);
 
+  compiler.hooks.watchRun.tap('DebugWatchRun', comp => {
+    const changed = comp.modifiedFiles ? Array.from(comp.modifiedFiles) : [];
+    const removed = comp.removedFiles ? Array.from(comp.removedFiles) : [];
+    if (changed.length > 0 || removed.length > 0) {
+      process.stdout.write('[webpack] rebuild triggered by:\n');
+      changed.forEach(f => process.stdout.write(`  [changed] ${f}\n`));
+      removed.forEach(f => process.stdout.write(`  [removed] ${f}\n`));
+    } else {
+      process.stdout.write('[webpack] rebuild triggered (no modifiedFiles reported — likely initial or forced)\n');
+    }
+  });
+
   const middleware = webpackDevMiddleware(compiler, {
     publicPath: webpackConfig.default.output.publicPath,
     headers: { 'Access-Control-Allow-Origin': '*' },

@@ -23,7 +23,7 @@ const Settings = () => {
       >
         <SettingsNavigation />
       </div>
-      <div className="flex-1 overflow-auto h-full">{outlet}</div>
+      <div className="relative flex-1 overflow-auto h-full">{outlet}</div>
     </div>
   );
 };

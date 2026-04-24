@@ -189,8 +189,7 @@ describe('Pages', () => {
       cy.contains('Display entity view from page').click();
       cy.contains('Select page');
       cy.get('#select-page').select('My entity view page');
-      cy.contains('[data-testid="settings-content-footer"] button', /^Save$/).click();
-      cy.contains('Dismiss').click();
+      cy.contains('[data-testid="settings-content-footer"] button', 'Save').click();
     });
 
     it('display the entity in custom page', () => {
@@ -249,7 +248,6 @@ describe('Pages', () => {
       cy.contains('Deleted successfully');
       cy.contains('Country page');
       cy.contains('Page with error').should('not.exist');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should not delete a page used as entity view', () => {

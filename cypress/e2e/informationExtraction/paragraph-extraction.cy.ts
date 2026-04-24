@@ -73,7 +73,6 @@ describe('Paragraph Extraction', () => {
 
     it('should show a success notification', () => {
       cy.contains('Paragraph Extractor added');
-      cy.contains('Dismiss').click();
     });
 
     it('should contain the extractor created', () => {
@@ -131,7 +130,6 @@ describe('Paragraph Extraction', () => {
       cy.contains('The process of extracting the paragraphs has successfully started').as(
         'successMessage'
       );
-      cy.contains('Dismiss').click();
       cy.contains('button', 'Extract new paragraphs').should('be.disabled');
     });
 
@@ -221,7 +219,6 @@ describe('Paragraph Extraction', () => {
       cy.contains('h1', 'Are you sure?');
       cy.contains('button', 'Continue').click();
       cy.contains('The process of extracting the paragraphs has successfully started');
-      cy.contains('Dismiss').click();
       cy.contains('button', 'Filters').click();
       cy.contains('label', 'Obsolete').find('input[type="checkbox"]').should('be.checked');
       cy.contains('label', 'Processed').find('input[type="checkbox"]').should('be.checked');

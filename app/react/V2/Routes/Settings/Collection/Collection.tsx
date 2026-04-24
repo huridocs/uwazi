@@ -4,15 +4,14 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
 import isUndefined from 'lodash/isUndefined.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as FilesAPI from '#V2/api/files/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
 import { Button, Card, Tooltip } from '#V2/Components/UI/index.js';
+import { useSetAtom } from 'jotai';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
@@ -24,6 +23,7 @@ import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
 import { ThemeSettingsSidepanel } from './ThemeSettingsSidepanel.js';
 import { ACCENT_PRIMARY_KEY, appliedTheme, getPresetId, NAMED_THEMES } from '#V2/theme/themes.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -94,7 +94,7 @@ const Collection = () => {
   const { links, custom, ...formData } = settings;
   const [showThemeSidepanel, setShowThemeSidepanel] = React.useState(false);
 
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
   formData.private = !formData.private;
@@ -129,17 +129,15 @@ const Collection = () => {
     const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
     const response = await SettingsAPI.save(rest);
     if (response instanceof FetchResponseError) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: response.message || undefined,
-      });
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        response.message || undefined
+      );
     } else {
       setSettings(response);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Settings updated</Translate>,
-      });
+      notify('success', t('System', 'Settings updated', null, false));
     }
     await revalidator.revalidate();
   };
@@ -185,7 +183,7 @@ const Collection = () => {
   const darkAccent = appliedTheme(watchedThemeVars, 'dark', true)[ACCENT_PRIMARY_KEY];
 
   return (
-    <div className="w-full h-full overflow-y-auto" data-testid="settings-collection">
+    <div className="w-full h-full" data-testid="settings-collection">
       <SettingsContent>
         <SettingsContent.Header title="Collection" />
         <SettingsContent.Body>

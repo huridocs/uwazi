@@ -9,7 +9,9 @@ import { InputFile } from '../infrastructure/files/InputFile.js';
 import { FilesService } from './FilesService.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
+import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
+import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
 import { EntitiesService } from './EntitiesService.js';
 
 type Input = {
@@ -32,6 +34,7 @@ type Deps = {
   fileService: FilesService;
   templatesDS: TemplatesDataSource;
   filesDS: FilesDataSource;
+  settingsDS: SettingsDataSource;
 };
 
 class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -77,6 +80,18 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         updatedFiles.push(keptFile.update({ originalname: update.originalname }));
       });
     }
+
+    const removedPDFIds = removedFiles
+      .filter((f): f is ProcessedPDF => f instanceof ProcessedPDF)
+      .map(f => f.id);
+
+    const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();
+    const remainingThumbnails = allEntityThumbnails.filter(
+      t => !removedPDFIds.some(id => t.filename === `${id}.jpg`)
+    );
+
+    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+    entity.setPreview(remainingThumbnails, defaultLanguage);
 
     await this.deps.fileService.storeFiles(filesCreated);
 

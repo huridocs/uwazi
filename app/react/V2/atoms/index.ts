@@ -1,5 +1,4 @@
 export { hydrateAtomStore } from './store.js';
-export { notificationAtom } from './notificationAtom.js';
 export { settingsAtom } from './settingsAtom.js';
 export { templatesAtom } from './templatesAtom.js';
 export { translationsAtom, inlineEditAtom, localeAtom } from './translationsAtoms.js';
@@ -13,5 +12,4 @@ export { serverIsMobileAtom } from './isMobileAtom.js';
 export { themeModeAtom } from './themeModeAtom.js';
 export { effectiveThemeModeAtom, getEffectiveThemeMode } from './effectiveThemeModeAtom.js';
 export type { AtomStoreData } from './store.js';
-export type { notificationAtomType } from './notificationAtom.js';
 export type { ThemeMode } from './themeModeAtom.js';

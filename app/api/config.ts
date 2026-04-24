@@ -33,6 +33,7 @@ const {
   SENTRY_API_DSN,
   UPLOADS_FOLDER,
   USER_SESSION_SECRET,
+  NEW_HEADER,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -129,6 +130,7 @@ export const config = {
       v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,
       v2DeleteEntity: false,
+      newHeader: NEW_HEADER === 'true' || false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

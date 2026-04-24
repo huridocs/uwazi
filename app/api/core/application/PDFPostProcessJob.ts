@@ -3,11 +3,13 @@ import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { ProcessingFileFailed } from '#api/core/domain/files/errors.js';
 import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService.js';
 import { EventsBus } from '../libs/eventsbus/index.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PDFService } from './contracts/PDFService.js';
 import { FilesService } from './FilesService.js';
+import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 
 type Input = {
   documentId: string;
@@ -21,6 +23,8 @@ type Deps = {
   fileStorage: FileStorage;
   pdfService: PDFService;
   filesService: FilesService;
+  entitiesDS: MultiLanguageEntityDataSource;
+  settingsDS: SettingsDataSource;
 };
 
 export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boolean]> {
@@ -47,6 +51,15 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
 
         await this.deps.filesDS.create(thumbnail);
         await this.deps.fileStorage.storeFile(thumbnail);
+
+        const entity = (await this.deps.entitiesDS.getById(processingPDF.entity)).getDataOrThrow();
+
+        entity.setPreview(
+          await this.deps.filesDS.getThumbnails([entity.sharedId]).all(),
+          await this.deps.settingsDS.getDefaultLanguageKey()
+        );
+
+        await this.deps.entitiesDS.update(entity);
       });
 
       await this.eventBus.emit(

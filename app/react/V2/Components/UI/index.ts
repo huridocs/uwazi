@@ -4,7 +4,6 @@ export { Modal } from './Modal.js';
 export { Pill } from './Pill.js';
 export { Table } from './Table/index.js';
 export { ToggleButton } from './ToggleButton.js';
-export { NotificationsContainer } from './NotificationsContainer.js';
 export { Tabs } from './Tabs.js';
 export { Sidepanel } from './Sidepanel.js';
 export { ConfirmationModal } from './ConfirmationModal.js';

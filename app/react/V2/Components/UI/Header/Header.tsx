@@ -12,6 +12,7 @@ import { Translate } from '#app/I18N/index.js';
 import { SiteName } from '#app/App/SiteName.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
 import { settingsAtom, themeModeAtom, userAtom } from '../../../atoms/index.js';
+import { RequestStatus } from '../Notifications/RequestStatus.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
 import { MobileMenuDropdown } from './MobileMenuDropdown.js';
@@ -68,6 +69,7 @@ const Header = () => {
           {!isMobile ? <MenuLinks links={headerLinks} className="min-w-0 flex-wrap" /> : null}
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          <RequestStatus />
           <LanguageDropdown />
           <div
             className="header-bar-separator hidden h-8 w-px shrink-0 sm:block"
@@ -119,7 +121,6 @@ const Header = () => {
           ) : null}
         </div>
       </div>
-      <div className="nprogress-container" />
     </header>
   );
 };

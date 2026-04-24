@@ -13,8 +13,7 @@ import {
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { ClientTranslationSchema } from '#app/istore.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
@@ -34,11 +33,11 @@ const RenderIfVisible = resolveDefaultExport<React.ComponentType<{ children: Rea
 );
 import * as translationsAPI from '#V2/api/translations/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { Settings } from '#shared/types/settingsType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { LanguagePill } from './components/LanguagePill.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -195,7 +194,7 @@ const EditTranslations = () => {
   const fetcher = useFetcher<ClientTranslationSchema[] | FetchResponseError>();
   const [hideTranslated, setHideTranslated] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
@@ -231,31 +230,27 @@ const EditTranslations = () => {
   useEffect(() => {
     switch (true) {
       case fetcher.data instanceof FetchResponseError:
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
-        });
+        notify(
+          'error',
+          t('System', 'An error occurred', null, false),
+          undefined,
+          fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined
+        );
         break;
 
       case fetcher.formData?.get('intent') === 'form-submit':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Translations saved</Translate>,
-        });
+        notify('success', t('System', 'Translations saved', null, false));
         break;
 
       case fetcher.formData?.get('intent') === 'file-upload':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Translations imported.</Translate>,
-        });
+        notify('success', t('System', 'Translations imported.', null, false));
         break;
 
       default:
         break;
     }
-  }, [fetcher.data, fetcher.formData, setNotifications]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.data, fetcher.formData]);
 
   useEffect(() => {
     if (fetcher.data) {
