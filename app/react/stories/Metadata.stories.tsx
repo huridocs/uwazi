@@ -3,21 +3,26 @@ import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
-import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
+import { localeAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { apiEntity, templates } from './fixtures/MetadataDisplayFixtures.js';
 import { Entity, MetadataSchema } from '#V2/api/entities/types.js';
-
-const store = createStore();
-store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
-store.set(templatesAtom, templates);
 
 const MetadataDisplayComponent = ({
   entity,
   showGeolocationProperties,
+  locale = 'en',
+  dateFormat = 'yyyy-MM-dd',
 }: {
   entity: Entity;
   showGeolocationProperties: boolean;
+  locale?: string;
+  dateFormat?: string;
 }) => {
+  const store = createStore();
+  store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'], dateFormat });
+  store.set(templatesAtom, templates);
+  store.set(localeAtom, locale);
+
   //Storybook cannot understand relative paths to api/files
   const storyReadyEntity = useMemo<Entity>(() => {
     if (!entity.metadata) {
@@ -76,6 +81,8 @@ const Primary: Story = {
     <MetadataDisplayComponent
       entity={args.entity}
       showGeolocationProperties={args.showGeolocationProperties}
+      locale={args.locale}
+      dateFormat={args.dateFormat}
     />
   ),
 };
@@ -85,6 +92,8 @@ const Basic: Story = {
   args: {
     entity: apiEntity,
     showGeolocationProperties: true,
+    locale: 'en',
+    dateFormat: 'yyyy-MM-dd',
   },
 };
 

@@ -76,12 +76,12 @@ interface BaseMetadataProperty {
 interface SimpleMetadataProperty extends BaseMetadataProperty {
   // readonly type: 'text' | 'generatedid' | 'numeric' | 'markdown' | 'preview' | 'nested';
   readonly type: 'text' | 'generatedid' | 'numeric' | 'markdown';
-  readonly values: Array<{ value: string; source?: SourceValue }>;
+  readonly values: Array<{ value: string }>;
 }
 
 interface DateMetadataProperty extends BaseMetadataProperty {
   readonly type: 'date';
-  readonly values: Array<{ value: number; label: string; source?: SourceValue }>;
+  readonly values: Array<{ value: number }>;
 }
 
 interface MultiDateMetadataProperty extends Omit<DateMetadataProperty, 'type'> {
@@ -90,12 +90,9 @@ interface MultiDateMetadataProperty extends Omit<DateMetadataProperty, 'type'> {
 
 interface DateRangeMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'daterange';
-  readonly values: Array<
-    {
-      value: { from: number; to: number };
-      label: { from: string; to: string };
-    } & { source?: SourceValue }
-  >;
+  readonly values: Array<{
+    value: { from: number; to: number };
+  }>;
 }
 
 interface MultiDateRangeMetadataProperty extends Omit<DateRangeMetadataProperty, 'type'> {
@@ -204,16 +201,10 @@ interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, 'values'
 }
 
 interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
-  readonly type: 'relationship' | 'newRelationship';
-  readonly values:
-    | MetadataProperty
-    | Array<{
-        value: string;
-        label: string;
-        icon?: string;
-        url: string;
-      }>;
-  readonly properties?: ExtendedPropertyInfo;
+  readonly type: 'relationship';
+  readonly inhertiedValues: MetadataProperty;
+  readonly parentEntity: { _id: string; title: string; icon?: string };
+  // readonly properties?: ExtendedPropertyInfo;
 }
 
 type MetadataProperty =
@@ -232,4 +223,12 @@ type MetadataProperty =
   | LinkMetadataProperty
   | RelationshipMetadataProperty;
 
-export type { MetadataProperty, BaseMetadataProperty, SimpleMetadataProperty };
+export type {
+  MetadataProperty,
+  BaseMetadataProperty,
+  SimpleMetadataProperty,
+  DateMetadataProperty,
+  MultiDateMetadataProperty,
+  DateRangeMetadataProperty,
+  MultiDateRangeMetadataProperty,
+};

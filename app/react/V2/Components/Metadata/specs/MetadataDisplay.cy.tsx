@@ -2,7 +2,6 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
 import * as stories from '#app/stories/Metadata.stories.jsx';
 
 describe('Metadata Display', () => {
@@ -180,5 +179,35 @@ describe('Metadata Display', () => {
 
     //     checkProperties();
     //   });
+
+    describe('dates', () => {
+      it('renders dates with the story locale and format', () => {
+        Basic.args.locale = 'en';
+        Basic.args.dateFormat = 'dd/MM/yyyy';
+
+        mount(<Basic />);
+
+        cy.contains('dd', '1 Jan, 2024').should('exist');
+        cy.contains('dd', '2 Jan, 2024').should('exist');
+        cy.contains('dd', '3 Jan, 2024').should('exist');
+        cy.contains('dd', '2 Oct, 2025').should('exist');
+        cy.contains('dd', '13 Oct, 2025').should('exist');
+        cy.contains('dd', 'From 1 Jan, 2024 ~ To 2 Jan, 2024').should('exist');
+      });
+
+      it('renders dates with russian locale and yyyy-MM-dd format', () => {
+        Basic.args.locale = 'ru';
+        Basic.args.dateFormat = 'yyyy-MM-dd';
+
+        mount(<Basic />);
+
+        cy.contains('dd', '2024, янв. 1').should('exist');
+        cy.contains('dd', '2024, янв. 2').should('exist');
+        cy.contains('dd', '2024, янв. 3').should('exist');
+        cy.contains('dd', '2025, окт. 2').should('exist');
+        cy.contains('dd', '2025, окт. 13').should('exist');
+        cy.contains('dd', 'From 2024, янв. 1 ~ To 2024, янв. 2').should('exist');
+      });
+    });
   });
 });

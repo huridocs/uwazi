@@ -21,6 +21,8 @@ const formatSimpleProperty = (
     type: property.type,
     values: [{ value }],
     label: property.label,
+    inherited: property.inherited,
+    inheritedType: property.inheritedType,
   };
 };
 

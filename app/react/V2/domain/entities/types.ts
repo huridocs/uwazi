@@ -88,7 +88,7 @@ export interface SimpleMetadataProperty extends BaseMetadataProperty {
 
 export interface DateMetadataProperty extends BaseMetadataProperty {
   readonly type: 'date';
-  readonly values: Array<{ value: number; label: string; source?: SourceValue }>;
+  readonly values: Array<{ value: number }>;
 }
 
 export interface MultiDateMetadataProperty extends Omit<DateMetadataProperty, 'type'> {
@@ -97,12 +97,9 @@ export interface MultiDateMetadataProperty extends Omit<DateMetadataProperty, 't
 
 export interface DateRangeMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'daterange';
-  readonly values: Array<
-    {
-      value: { from: number; to: number };
-      label: { from: string; to: string };
-    } & { source?: SourceValue }
-  >;
+  readonly values: Array<{
+    value: { from: number; to: number };
+  }>;
 }
 
 export interface MultiDateRangeMetadataProperty extends Omit<DateRangeMetadataProperty, 'type'> {

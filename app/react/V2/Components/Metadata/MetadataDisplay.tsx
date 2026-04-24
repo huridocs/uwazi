@@ -6,7 +6,11 @@ import { Button } from '#V2/Components/UI/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { Date, SimpleValue, Title, MetadataCard, TemplateLabel } from './Components/index.js';
-import { formatSimpleProperty, formatMetadataFields } from './Formatters/index.js';
+import {
+  formatDateProperty,
+  formatSimpleProperty,
+  formatMetadataFields,
+} from './Formatters/index.js';
 import { BaseMetadataProperty } from './MetadataPropertiesType.js';
 
 type MetadataDisplayProps = {
@@ -46,16 +50,26 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         );
       }
 
-      // if (
-      //   data.type === 'date' ||
-      //   data.type === 'daterange' ||
-      //   data.type === 'multidate' ||
-      //   data.type === 'multidaterange'
-      // ) {
-      //   return (
-      //     <Date values={data.values} label={data.label} translationContext={translationContext} />
-      //   );
-      // }
+      if (
+        property.type === 'date' ||
+        property.type === 'daterange' ||
+        property.type === 'multidate' ||
+        property.type === 'multidaterange'
+      ) {
+        const dateProperty = formatDateProperty(property, entity.metadata);
+
+        if (!dateProperty) {
+          return undefined;
+        }
+
+        return (
+          <Date
+            values={dateProperty.values}
+            label={dateProperty.label}
+            translationContext={translationContext || ''}
+          />
+        );
+      }
 
       // if (data.type === 'geolocation') {
       //   return (
@@ -166,7 +180,6 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
               values={[
                 {
                   value: entity.creationDate,
-                  label: new globalThis.Date(entity.creationDate).toLocaleDateString(),
                 },
               ]}
               label="Creation Date"
@@ -179,7 +192,6 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
               values={[
                 {
                   value: entity.editDate,
-                  label: new globalThis.Date(entity.editDate).toLocaleDateString(),
                 },
               ]}
               label="Edit Date"
