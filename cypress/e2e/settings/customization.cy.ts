@@ -36,7 +36,6 @@ describe('customization', () => {
   it('should save the custom CSS', () => {
     cy.contains('button', 'Save').click();
     cy.contains('Saved successfully.');
-    cy.contains('button', 'Dismiss').click();
     cy.contains('button', 'Save').should('be.disabled');
   });
 
@@ -51,7 +50,6 @@ describe('customization', () => {
     });
     cy.contains('button', 'Save').click();
     cy.contains('Settings updated.');
-    cy.contains('button', 'Dismiss').click();
   });
 
   it('should add custom javascript', () => {

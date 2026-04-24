@@ -16,6 +16,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { UseCaseContext } from '#api/core/libs/UseCase.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
@@ -215,7 +216,9 @@ const createSut = (props: CreateSutProps = {}) => {
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
 
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+  const jobsDispatcher = new DispatcherAdapter(
+    DefaultDispatcher(tenants.current().name, transactionManager)
+  );
   const fileService = new FilesService({
     pathManager: new PathManager({ tenant: tenants.current() }),
     idGenerator,

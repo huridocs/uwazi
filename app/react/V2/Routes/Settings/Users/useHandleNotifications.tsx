@@ -1,16 +1,15 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useFetchers } from 'react-router';
-import { useSetAtom } from 'jotai';
 import last from 'lodash/last.js';
 
-import { Translate } from '#app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { FormIntent } from './types.js';
 
 const useHandleNotifications = () => {
   const fetchers = useFetchers();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const lastFetcherCall = last(fetchers) || fetchers[0];
   const intent = lastFetcherCall?.formData?.get('intent') as FormIntent;
@@ -21,68 +20,69 @@ const useHandleNotifications = () => {
 
     if (data instanceof FetchResponseError) {
       const message = data.json?.prettyMessage ? data.json.prettyMessage : data.message;
-
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: message || undefined,
-      });
-
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        message || undefined
+      );
       return;
     }
 
-    let text: React.ReactNode;
+    let title: string | undefined;
 
     switch (intent) {
       case 'new-user':
-        text = <Translate>Added new user</Translate>;
+        title = t('System', 'Added new user', null, false);
         break;
 
       case 'edit-user':
-        text = <Translate>User updated</Translate>;
+        title = t('System', 'User updated', null, false);
         break;
 
       case 'new-group':
-        text = <Translate>Group saved</Translate>;
+        title = t('System', 'Group saved', null, false);
         break;
 
       case 'edit-group':
-        text = <Translate>Group updated</Translate>;
+        title = t('System', 'Group updated', null, false);
         break;
 
       case 'delete-users':
-        text = <Translate>Deleted user</Translate>;
+        title = t('System', 'Deleted user', null, false);
         break;
 
       case 'delete-groups':
-        text = <Translate>Deleted user group</Translate>;
+        title = t('System', 'Deleted user group', null, false);
         break;
 
       case 'unlock-user':
-        text = <Translate>Account unlocked successfully</Translate>;
+        title = t('System', 'Account unlocked successfully', null, false);
         break;
 
       case 'reset-password':
       case 'bulk-reset-password':
-        text = <Translate>Instructions to reset the password were sent to the user</Translate>;
+        title = t(
+          'System',
+          'Instructions to reset the password were sent to the user',
+          null,
+          false
+        );
         break;
 
       case 'reset-2fa':
       case 'bulk-reset-2fa':
-        text = <Translate>Disabled 2FA</Translate>;
+        title = t('System', 'Disabled 2FA', null, false);
         break;
 
       default:
         break;
     }
 
-    if (text) {
-      setNotifications({
-        type: 'success',
-        text,
-      });
+    if (title) {
+      notify('success', title);
     }
-  }, [data, intent, setNotifications]);
+  }, [data, intent, notify]);
 };
 
 export { useHandleNotifications };

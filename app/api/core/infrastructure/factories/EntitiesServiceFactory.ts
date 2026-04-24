@@ -12,13 +12,15 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.j
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
     const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
 
     const dispatcher =
-      deps?.dispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
+      deps?.dispatcher ??
+      new DispatcherAdapter(DefaultDispatcher(tenants.current().name, transactionManager));
 
     const entitiesDS =
       deps?.entitiesDS ??
@@ -64,7 +66,9 @@ class EntitiesServiceFactory {
     const deps: EntitiesServiceDeps = {
       eventEmitter: EventEmitterFactory.forTesting(),
       templatesDS: TemplatesDataSourceFactory.forTesting(transactionManager),
-      dispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      dispatcher: new DispatcherAdapter(
+        DefaultDispatcher(tenants.current().name, transactionManager)
+      ),
       entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),

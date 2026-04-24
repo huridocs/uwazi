@@ -12,7 +12,8 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 import { tenants } from '#api/tenants/index.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
 import { UserSchema } from '#shared/types/userType.js';
 import {
@@ -32,7 +33,7 @@ import { ThesauriService } from '../ThesauriService.js';
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
   thesaurusTranslationService?: ThesaurusTranslationService;
-  jobsDispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
 };
 
 const createSut = (props?: CreateSutProps) => {
@@ -45,8 +46,8 @@ const createSut = (props?: CreateSutProps) => {
   };
 
   const transactionManager = TransactionManagerFactory.default();
-  const jobsDispatcher =
-    props?.jobsDispatcher ?? DefaultDispatcher(tenant.name, transactionManager);
+  const dispatcher =
+    props?.dispatcher ?? new DispatcherAdapter(DefaultDispatcher(tenant.name, transactionManager));
 
   const thesauriDS =
     props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
@@ -60,7 +61,7 @@ const createSut = (props?: CreateSutProps) => {
     });
 
   const thesauriService = new ThesauriService({
-    jobsDispatcher,
+    dispatcher,
     thesauriDS,
     thesaurusTranslationService,
   });
@@ -69,7 +70,6 @@ const createSut = (props?: CreateSutProps) => {
     {
       thesauriDS,
       thesaurusTranslationService,
-      jobsDispatcher,
       transactionManager,
       thesauriService,
     },
@@ -483,11 +483,11 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   it('should revert when delete of jobs fails', async () => {
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockRejectedValue(new Error('delete jobs error')),
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      denormalizeThesaurus: jest.fn().mockRejectedValue(new Error('delete jobs error')),
     });
 
-    const { sut } = createSut({ jobsDispatcher });
+    const { sut } = createSut({ dispatcher });
 
     const thesaurusBefore = await getThesaurusById(factory.id('countries'));
     const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
@@ -511,12 +511,11 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   it('should revert when dispatching of jobs fails', async () => {
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-      dispatch: jest.fn().mockRejectedValue(new Error('dispatch jobs error')),
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      denormalizeThesaurus: jest.fn().mockRejectedValue(new Error('dispatch jobs error')),
     });
 
-    const { sut } = createSut({ jobsDispatcher });
+    const { sut } = createSut({ dispatcher });
 
     const thesaurusBefore = await getThesaurusById(factory.id('countries'));
     const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
@@ -583,12 +582,11 @@ describe('UpdateThesaurusUseCase', () => {
       update: jest.fn().mockResolvedValue(undefined),
     });
 
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-      dispatch: jest.fn().mockResolvedValue(undefined),
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      denormalizeThesaurus: jest.fn().mockResolvedValue(undefined),
     });
 
-    const { sut } = createSut({ thesauriDS, thesaurusTranslationService, jobsDispatcher });
+    const { sut } = createSut({ thesauriDS, thesaurusTranslationService, dispatcher });
 
     await sut.execute({
       id: existing._id.toString(),
@@ -598,8 +596,7 @@ describe('UpdateThesaurusUseCase', () => {
 
     expect(thesauriDS.update).not.toHaveBeenCalled();
     expect(thesaurusTranslationService.update).not.toHaveBeenCalled();
-    expect(jobsDispatcher.deleteByParams).not.toHaveBeenCalled();
-    expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
+    expect(dispatcher.denormalizeThesaurus).not.toHaveBeenCalled();
   });
 
   it('should not allow updating a thesaurus name to an existing name', async () => {

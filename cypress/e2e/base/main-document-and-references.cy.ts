@@ -143,9 +143,6 @@ describe('text references', () => {
     cy.get('[data-testid=modal]').within(() => {
       cy.contains('Accept').click();
     });
-
-    cy.waitForLegacyNotifications();
-
     cy.get('.metadata-sidepanel.is-active').within(() => {
       cy.contains('Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016');
       cy.contains('Chile').should('not.exist');
@@ -174,7 +171,6 @@ describe('Entity with main documents', () => {
     cy.get('#pdf-upload-button').first().selectFile('./cypress/test_files/valid.pdf', {
       force: true,
     });
-    cy.waitForLegacyNotifications();
     cy.contains('.item-info', 'Mecanismo');
   });
 
@@ -186,7 +182,8 @@ describe('Entity with main documents', () => {
     cy.contains('.file-edit', 'Edit').click();
     cy.get('#language').select('English (English)');
     cy.contains('button', 'Save').click();
-    cy.contains('div.alert', 'File updated').should('be.visible');
+    cy.get('[data-testid="notification-flash"]').should('be.visible');
+    cy.get('[data-testid="notification-flash-title"]').should('contain', 'File updated');
     cy.get('.is-active .closeSidepanel').click();
   });
 
@@ -205,7 +202,6 @@ describe('Entity with main documents', () => {
       force: true,
     });
     saveEntity();
-    cy.waitForLegacyNotifications();
   });
 
   // eslint-disable-next-line max-statements
@@ -244,7 +240,6 @@ describe('Entity with main documents', () => {
       force: true,
     });
     saveEntity('Entity updated');
-    cy.waitForLegacyNotifications();
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('Conversion failed');
@@ -256,7 +251,6 @@ describe('Entity with main documents', () => {
     cy.get('.attachments-list > .attachment:nth-child(2) > button').click();
     cy.contains('button', 'Save').click();
     cy.contains('Entity updated');
-    cy.waitForLegacyNotifications();
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
     cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');
