@@ -4,6 +4,7 @@ import { ThesaurusTranslationService } from '#api/core/application/thesaurusTran
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { tenants } from '#api/tenants/index.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
@@ -24,7 +25,9 @@ class CreateThesaurusUseCaseFactory {
     const thesauriService = new ThesauriService({
       thesauriDS,
       thesaurusTranslationService,
-      jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      dispatcher: new DispatcherAdapter(
+        DefaultDispatcher(tenants.current().name, transactionManager)
+      ),
     });
 
     const useCase = new CreateThesaurusUseCase({

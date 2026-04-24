@@ -4,6 +4,7 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { UpdateThesaurusUseCase } from '#api/core/application/UpdateThesaurus.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
@@ -22,10 +23,12 @@ class UpdateThesaurusUseCaseFactory {
       translationsDS,
     });
 
-    const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+    const dispatcher = new DispatcherAdapter(
+      DefaultDispatcher(tenants.current().name, transactionManager)
+    );
 
     const thesauriService = new ThesauriService({
-      jobsDispatcher,
+      dispatcher,
       thesauriDS,
       thesaurusTranslationService,
     });
@@ -35,7 +38,6 @@ class UpdateThesaurusUseCaseFactory {
         transactionManager,
         thesauriDS,
         thesaurusTranslationService,
-        jobsDispatcher,
         thesauriService,
       },
       { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }

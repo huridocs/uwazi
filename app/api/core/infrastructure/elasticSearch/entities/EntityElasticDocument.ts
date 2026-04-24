@@ -1,5 +1,6 @@
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { Serialize } from '../../mongodb/common/Serialize.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type SlotValueByPrefix = {
   txt: string[];
@@ -46,12 +47,9 @@ type GeoPointValue = { lat: number; lon: number };
 type EntityElasticDocument = {
   tenantId: string;
   sharedId: string;
-  language: string;
   template: string;
 
-  title: string;
-
-  rawEntity: Serialize<EntityDBO>;
+  rawEntities: Partial<Record<LanguageISO6391, Serialize<EntityDBO>>>;
 
   metadata: SlottedMetadata;
 

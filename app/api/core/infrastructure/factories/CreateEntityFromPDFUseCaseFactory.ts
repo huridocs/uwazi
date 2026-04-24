@@ -12,6 +12,7 @@ import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 import { CreateEntityFromPDFUseCase } from '#api/core/application/CreateEntityFromPDF.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class CreateEntityFromPDFUseCaseFactory {
   static default(targetLanguage: LanguageISO6391) {
@@ -19,10 +20,11 @@ class CreateEntityFromPDFUseCaseFactory {
 
     const transactionManager = TransactionManagerFactory.default();
 
-    const jobsDispatcher =
+    const dispatcher = new DispatcherAdapter(
       process.env.NODE_ENV === 'test'
         ? NoOpDispatcher()
-        : DefaultDispatcher(tenant.name, transactionManager);
+        : DefaultDispatcher(tenant.name, transactionManager)
+    );
 
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
@@ -45,7 +47,7 @@ class CreateEntityFromPDFUseCaseFactory {
       eventBus,
       settingsDS,
       transactionManager,
-      dispatcher: jobsDispatcher,
+      dispatcher,
     });
 
     const useCase = new CreateEntityFromPDFUseCase(
