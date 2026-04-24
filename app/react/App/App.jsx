@@ -58,26 +58,44 @@ const App = ({ customParams }) => {
     setSettings(_settings);
   });
 
+  const appMainTree = (
+    <AppMainContext.Provider value={appContext}>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      <Confirm {...confirmOptions} />
+      <Outlet />
+      <GoogleAnalytics />
+      <Matomo />
+      <CleanInsights />
+    </AppMainContext.Provider>
+  );
+
   return (
     <div id="app" className={appClassName}>
       <Cookiepopup />
       <div className="content">
-        <ThemeProvider style={{ width: '100%', height: '100%' }}>
-          {shouldShowNewHeader ? <Header /> : <LegacyHeader />}
-          <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
-            <AppMainContext.Provider value={appContext}>
-              {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-              <Confirm {...confirmOptions} />
-              <Outlet />
-              <GoogleAnalytics />
-              <Matomo />
-              <CleanInsights />
-            </AppMainContext.Provider>
-          </main>
-        </ThemeProvider>
+        {shouldShowNewHeader ? (
+          <ThemeProvider style={{ width: '100%' }}>
+            <Header />
+          </ThemeProvider>
+        ) : (
+          <LegacyHeader />
+        )}
+        <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
+          {isV2Route ? (
+            <ThemeProvider style={{ width: '100%', height: '100%' }}>{appMainTree}</ThemeProvider>
+          ) : (
+            appMainTree
+          )}
+        </main>
       </div>
-      {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
-      <NotificationsPanel />
+      {inlineEditState.inlineEdit && inlineEditState.context && (
+        <ThemeProvider>
+          <TranslateModal />
+        </ThemeProvider>
+      )}
+      <ThemeProvider>
+        <NotificationsPanel />
+      </ThemeProvider>
     </div>
   );
 };
