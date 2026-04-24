@@ -45,9 +45,13 @@ const ToCPanel = ({
   const [isAllCollapsed, setIsAllCollapsed] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const mainPdfController = useAtomValue(pdfController);
+
+  // Initialize atom with prop data on mount and when toc prop changes
   useEffect(() => {
     setToc(toc);
   }, [toc, setToc]);
+
+  // Cleanup atom on unmount
   useEffect(
     () => () => {
       resetToc();
@@ -59,6 +63,7 @@ const ToCPanel = ({
     setIsAllExpanded(expanded);
     setIsAllCollapsed(collapsed);
   };
+
   const handleToCEntryClick = useCallback(
     (entry: ProcessedTocEntry) => {
       const pageNumber = getPageNumber(entry.entry);
@@ -68,7 +73,11 @@ const ToCPanel = ({
     },
     [mainPdfController]
   );
-  const handleEdit = () => setEditMode(true);
+
+  const handleEdit = () => {
+    setEditMode(true);
+  };
+
   const handleSave = async () => {
     if (!file || !file._id || !tocState.toc) {
       setEditMode(false);
@@ -77,6 +86,8 @@ const ToCPanel = ({
 
     setIsSaving(true);
     try {
+      // Sort entries before saving to match display order
+      // Note: selection rectangles are already normalized (scale=1) when entries are added
       const sortedToc = sortTocEntries(tocState.toc);
       const updatedFile: FileType = {
         ...file,
@@ -86,7 +97,9 @@ const ToCPanel = ({
 
       if (result instanceof FetchResponseError || result instanceof Error) {
         notify('error', t('System', 'Failed to save table of contents', null, false));
+        // Don't exit edit mode on error so user can retry
       } else {
+        // Success - invalidate cache and revalidate to get the latest data from the server
         if (file.entity) {
           entityLoaderCache.invalidateEntity(file.entity);
         }
@@ -94,16 +107,20 @@ const ToCPanel = ({
         notify('success', t('System', 'Table of contents saved successfully', null, false));
         setEditMode(false);
       }
-    } catch {
+    } catch (error) {
       notify('error', t('System', 'Failed to save table of contents', null, false));
+      // Don't exit edit mode on error so user can retry
     } finally {
       setIsSaving(false);
     }
   };
+
   const handleCancel = () => {
     setEditMode(false);
+    // Restore original toc
     setToc(toc);
   };
+
   const handleEntryUpdate = useCallback(
     (index: number, updates: Partial<TocSchema>) => {
       if (!tocState.toc) return;
@@ -111,12 +128,14 @@ const ToCPanel = ({
     },
     [tocState.toc, updateEntry]
   );
+
   const handleIndentationChange = useCallback(
     (index: number, newIndentation: number) => {
       handleEntryUpdate(index, { indentation: newIndentation });
     },
     [handleEntryUpdate]
   );
+
   const handleDelete = useCallback(
     (index: number) => {
       if (!tocState.toc) return;
@@ -124,6 +143,7 @@ const ToCPanel = ({
     },
     [tocState.toc, deleteEntry]
   );
+
   const handleLabelChange = useCallback(
     (index: number, newLabel: string) => {
       handleEntryUpdate(index, { label: newLabel });
@@ -142,6 +162,8 @@ const ToCPanel = ({
               </p>
               {generatedToc && (
                 <Tooltip
+                  // eslint-disable-next-line react/style-prop-object
+                  style="light"
                   arrow={false}
                   content="This table of contents was automatically created by the system."
                 >
@@ -193,8 +215,8 @@ const ToCPanel = ({
               title={<Translate>No Table of contents</Translate>}
               description={
                 <Translate>
-                  You can start by selecting text in the document and clicking the &quot;Add to
-                  ToC&quot; button.
+                  You can start by selecting text in the document and clicking the "Add to ToC"
+                  button.
                 </Translate>
               }
             />

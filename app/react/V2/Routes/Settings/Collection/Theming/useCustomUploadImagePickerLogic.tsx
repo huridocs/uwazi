@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRevalidator } from 'react-router';
 import { FileType } from '#shared/types/fileType.js';
 import { t } from '#app/I18N/index.js';
