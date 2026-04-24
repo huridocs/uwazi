@@ -87,7 +87,8 @@
     "cypress": "cypress open",
     "cy-components": "cypress run --component --config video=false --browser chrome",
     "cy-e2e": "cypress run --browser chrome",
-    "es:dev:bootstrap": "tsx scripts/elasticSearch/RebuildESIndex.ts"
+    "es:dev:bootstrap": "tsx scripts/elasticSearch/RebuildESIndex.ts",
+    "setup:dev": "yarn blank-state --force &&  yarn es:dev:bootstrap"
   },
   "jest": {
     "projects": [
