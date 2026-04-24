@@ -205,13 +205,18 @@ Known runtime work still executed during row import (post-preflight):
 4. Property-assignment creation path still calls service strategies that can query DS
    for relationship/select validations depending on template/property mix.
 
-Initial hypothesis ranking:
+Diagnosis status (Apr 2026 update):
 
-1. **Most likely:** accumulated `RelationshipSyncJob` pressure and shared DB contention
-   while import still writes entities/progress.
-2. Secondary: property-assignment service reads (`getLanguageKeys`, relationship/shared-id checks,
-   thesaurus/translations lookups) amplified by row count and template complexity.
-3. Secondary: queue/jobs collection churn and index contention under high per-row dispatch rates.
+- RelationshipSync-first hypothesis was tested and **falsified** via A/B diagnostics:
+  - disabling `RelationshipSyncJob` dispatch in CSV import diagnostics did not remove creep.
+- Confirmed dominant root cause:
+  - `MongoTransactionManager` commit/retry handler arrays accumulated across repeated `run()` calls
+    in the same manager instance, creating progressive per-transaction overhead.
+- Confirmation evidence:
+  - creeping runs showed monotonic growth in transaction-manager `onCommitHandlers` counts and
+    matching growth in `transactionOverheadMs`,
+  - temporary per-run handler reset in transaction manager removed the creep and restored stable
+    throughput in a full 1000-row run.
 
 Non-hypothesis note:
 
