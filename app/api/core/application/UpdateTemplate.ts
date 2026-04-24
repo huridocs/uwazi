@@ -42,7 +42,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
 
     const service = new TemplatePostProcessService({
       ...this.deps,
-      jobsDispatcher: this.jobsDispatcher,
+      dispatcher: this.dispatcher,
     });
 
     const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();

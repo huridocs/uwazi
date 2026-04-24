@@ -44,7 +44,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const service = new TemplatePostProcessService({
       ...this.deps,
-      jobsDispatcher: this.jobsDispatcher,
+      dispatcher: this.dispatcher,
       entitiesDS: this.deps.multiLanguageEntitiesDS,
     });
 

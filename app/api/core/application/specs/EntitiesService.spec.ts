@@ -12,16 +12,14 @@ import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { tenants } from '#api/tenants/index.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 
 const factory = getFixturesFactory();
@@ -49,17 +47,22 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
   const transactionManager = TransactionManagerFactory.default();
 
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-
-  jest.spyOn(jobsDispatcher, 'dispatch').mockResolvedValue();
-  jest.spyOn(jobsDispatcher, 'dispatchMany').mockImplementation(async callback => {
-    await callback(jest.fn());
+  const dispatcher = TestUtils.mockClass<Dispatcher>({
+    syncRelationships: jest.fn().mockResolvedValue(undefined),
+    cleanupEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
+    deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+        await callback(jest.fn());
+      }),
   });
 
   const sut = EntitiesServiceFactory.default({
     eventBus,
     transactionManager,
-    dispatcher: jobsDispatcher,
+    dispatcher,
     ...deps,
   });
 
@@ -67,7 +70,7 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
     sut,
     eventBus,
     transactionManager,
-    dispatcher: jobsDispatcher,
+    dispatcher,
   };
 };
 
@@ -176,13 +179,15 @@ describe('EntitiesService', () => {
         });
       });
 
-      expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
-        sharedId: entity.sharedId,
-        targetLanguage: entity.languages[0],
-        templateId: entity.template.id,
-        tenantName: 'tenantName',
-        userId: 'actorId',
-      });
+      expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
+        {
+          sharedId: entity.sharedId,
+          targetLanguage: entity.languages[0],
+          templateId: entity.template.id,
+          tenantName: 'tenantName',
+          userId: 'actorId',
+        },
+      ]);
     });
   });
 
@@ -217,11 +222,6 @@ describe('EntitiesService', () => {
       const entity2 = createEntitySample();
       const entity3 = createEntitySample();
 
-      const dispatchMock = jest.fn();
-      jest.spyOn(dispatcher, 'dispatchMany').mockImplementation(async callback => {
-        await callback(dispatchMock);
-      });
-
       await transactionManager.run(async () => {
         await sut.bulkInsert([entity1, entity2, entity3], {
           targetLanguage: 'en',
@@ -230,32 +230,30 @@ describe('EntitiesService', () => {
         });
       });
 
-      expect(dispatcher.dispatchMany).toHaveBeenCalledTimes(1);
-      expect(dispatchMock).toHaveBeenCalledTimes(3);
-
-      expect(dispatchMock).toHaveBeenCalledWith(RelationshipSyncJob, {
-        sharedId: entity1.sharedId,
-        targetLanguage: entity1.languages[0],
-        templateId: entity1.template.id,
-        tenantName: 'testTenant',
-        userId: 'testActor',
-      });
-
-      expect(dispatchMock).toHaveBeenCalledWith(RelationshipSyncJob, {
-        sharedId: entity2.sharedId,
-        targetLanguage: entity2.languages[0],
-        templateId: entity2.template.id,
-        tenantName: 'testTenant',
-        userId: 'testActor',
-      });
-
-      expect(dispatchMock).toHaveBeenCalledWith(RelationshipSyncJob, {
-        sharedId: entity3.sharedId,
-        targetLanguage: entity3.languages[0],
-        templateId: entity3.template.id,
-        tenantName: 'testTenant',
-        userId: 'testActor',
-      });
+      expect(dispatcher.syncRelationships).toHaveBeenCalledTimes(1);
+      expect(dispatcher.syncRelationships).toHaveBeenCalledWith([
+        {
+          sharedId: entity1.sharedId,
+          targetLanguage: entity1.languages[0],
+          templateId: entity1.template.id,
+          tenantName: 'testTenant',
+          userId: 'testActor',
+        },
+        {
+          sharedId: entity2.sharedId,
+          targetLanguage: entity2.languages[0],
+          templateId: entity2.template.id,
+          tenantName: 'testTenant',
+          userId: 'testActor',
+        },
+        {
+          sharedId: entity3.sharedId,
+          targetLanguage: entity3.languages[0],
+          templateId: entity3.template.id,
+          tenantName: 'testTenant',
+          userId: 'testActor',
+        },
+      ]);
     });
 
     it('should emit EntityCreatedEvent for each entity on commit', async () => {
@@ -321,7 +319,7 @@ describe('EntitiesService', () => {
       const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
       expect(entitiesCreated.length).toBe(0);
 
-      expect(dispatcher.dispatchMany).toHaveBeenCalledTimes(1);
+      expect(dispatcher.syncRelationships).toHaveBeenCalledTimes(1);
       expect(eventBus.emit).not.toHaveBeenCalled();
     });
   });

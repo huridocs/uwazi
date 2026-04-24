@@ -20,6 +20,6 @@ export interface JobsDispatcher {
         dispatchable: DispatchableClass<T>,
         params: Parameters<T['handleDispatch']>[1]
       ) => void
-    ) => Promise<void>
+    ) => void | Promise<void>
   ): Promise<void>;
 }

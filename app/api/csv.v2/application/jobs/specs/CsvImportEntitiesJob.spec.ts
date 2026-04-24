@@ -98,7 +98,11 @@ const buildUseCase = () => {
   const fileStorage = new FileSystemStorage(new PathManager({ tenant: tenants.current() }));
   const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
-    dispatchMany: jest.fn().mockResolvedValue(undefined),
+    dispatchMany: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: any) => Promise<void>) => {
+        await callback(jobsDispatcher.dispatch);
+      }),
   }) as jest.Mocked<JobsDispatcher>;
   const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } =
     CsvImportEntitiesJobFactory.build({

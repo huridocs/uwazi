@@ -99,7 +99,6 @@ const EntityIndexMappingDefinition: IndexDefinition = {
 
       // Used on all ES Entity documents
       template: { type: 'keyword' },
-      language: { type: 'keyword' },
       user: { type: 'keyword' },
       sharedId: { type: 'keyword' },
       permissionRefIds: { type: 'keyword' },
@@ -109,20 +108,7 @@ const EntityIndexMappingDefinition: IndexDefinition = {
       creationDate: { type: 'date', format: 'epoch_millis' },
       editDate: { type: 'date', format: 'epoch_millis' },
 
-      rawEntity: { type: 'object', enabled: false },
-
-      title: {
-        type: 'text',
-        analyzer: 'other',
-        fields: {
-          sort: {
-            type: 'keyword',
-            ignore_above: 1024,
-            normalizer: 'string_sorter_normalized',
-          },
-          sayt: { type: 'search_as_you_type' },
-        },
-      },
+      rawEntities: { type: 'object', enabled: false },
 
       metadata: {
         properties: { ...createEntityMetadataMapping() },
