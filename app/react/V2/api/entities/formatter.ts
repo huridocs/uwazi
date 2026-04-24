@@ -1,15 +1,15 @@
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import type { Entity } from './types.js';
 
 const update = (
-  entity: EntitySchema,
+  entity: Entity,
   data?: {
-    title?: EntitySchema['title'];
+    title?: Entity['title'];
     properties?: {
       [propertyName: string]: PropertyValueSchema | PropertyValueSchema[] | undefined;
     }[];
   }
-): EntitySchema => {
+): Entity => {
   const updatedEntity = { ...entity };
 
   if (!data) return entity;

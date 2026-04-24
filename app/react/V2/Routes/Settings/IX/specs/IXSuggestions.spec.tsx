@@ -15,7 +15,7 @@ import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
 jest.mock('#V2/api/entities', () => ({
   ...jest.requireActual('#V2/api/entities'),
   getById: jest.fn(),
-  save: jest.fn(),
+  update: jest.fn().mockRejectedValue([{}]),
 }));
 
 jest.mock('#V2/api/files', () => ({
