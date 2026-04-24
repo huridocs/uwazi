@@ -79,6 +79,25 @@ module.exports = {
       minWidth: {
         56: '14rem',
       },
+      keyframes: {
+        dotPulse: {
+          '0%, 55%, 100%': { transform: 'scale(1)' },
+          '27%': { transform: 'scale(1.5)' },
+        },
+        dotSpreadLeft: {
+          '0%': { transform: 'translateX(6px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        dotSpreadRight: {
+          '0%': { transform: 'translateX(-6px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+      },
+      animation: {
+        'dot-pulse': 'dotPulse 1.8s ease-in-out infinite',
+        'dot-spread-left': 'dotSpreadLeft 0.25s ease-out forwards',
+        'dot-spread-right': 'dotSpreadRight 0.25s ease-out forwards',
+      },
     },
   },
   corePlugins: {

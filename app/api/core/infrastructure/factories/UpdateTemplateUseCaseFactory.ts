@@ -13,11 +13,11 @@ import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/Te
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
 import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class UpdateTemplateUseCaseFactory {
   static async create() {
@@ -34,7 +34,7 @@ class UpdateTemplateUseCaseFactory {
     const filesDS = FilesDataSourceFactory.default(transactionManager);
     const relationshipsV1DS = new MongoRelationshipsV1DataSource(db, transactionManager);
 
-    let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
+    const jobsDispatcher = new SyncDispatcherForTests({
       TemplatePostProcessEntitiesJob: async () =>
         new TemplatePostProcessEntitiesJob({
           useCase: new TemplateUpdateDenormalizeEntitiesBatch({
@@ -48,9 +48,10 @@ class UpdateTemplateUseCaseFactory {
         }),
     });
 
-    if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-    }
+    const dispatcher =
+      process.env.NODE_ENV !== 'test'
+        ? new DispatcherAdapter(DefaultDispatcher(tenants.current().name, transactionManager))
+        : new DispatcherAdapter(jobsDispatcher);
 
     const useCase = new UpdateTemplateUseCase(
       {
@@ -63,7 +64,7 @@ class UpdateTemplateUseCaseFactory {
         translationService,
         settingsDS,
         relationshipTypesDS,
-        jobsDispatcher,
+        dispatcher,
       },
       { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
     );

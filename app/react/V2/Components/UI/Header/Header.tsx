@@ -4,6 +4,7 @@ import { BookOpenIcon, Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outlin
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { Translate } from '#app/I18N/index.js';
 import { userAtom, settingsAtom } from '../../../atoms/index.js';
+import { RequestStatus } from '../Notifications/RequestStatus.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
 
@@ -38,6 +39,7 @@ const Header = () => {
       <div className="flex items-center justify-between">
         <MenuLinks />
         <div className="flex items-center gap-2">
+          <RequestStatus />
           <LanguageDropdown />
 
           <div className="h-8 w-px bg-gray-200" aria-hidden="true" />
@@ -74,7 +76,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className="nprogress-container" />
     </header>
   );
 };

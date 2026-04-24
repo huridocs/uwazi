@@ -13,7 +13,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { elastic } from '#api/search/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -185,11 +185,16 @@ const createSut = (props?: CreateSutProps) => {
   const filesIO = TestUtils.mockClass<FileContentsIO>({});
   const pdfService = TestUtils.mockClass<PDFService>({});
 
-  const dispatchMock = jest.fn();
-  const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-    dispatchMany: async callback => {
-      await callback(dispatchMock);
-    },
+  const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
+    deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
+    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
+    syncRelationships: jest.fn().mockResolvedValue(undefined),
+    cleanupEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+        await callback(jest.fn());
+      }),
   });
 
   const filesService =
@@ -213,11 +218,10 @@ const createSut = (props?: CreateSutProps) => {
     idGenerator,
     transactionManager,
     eventBus,
-    jobsDispatcher,
     filesService,
   });
 
-  return { sut, eventBus, dispatchMock };
+  return { sut, eventBus, deleteDispatcher: jobsDispatcher };
 };
 
 describe('BulkCleanupEntityUseCase', () => {
@@ -328,7 +332,7 @@ describe('BulkCleanupEntityUseCase', () => {
       uploadedDocuments: '/tenant/uploads',
       attachments: '/tenant/uploads',
     });
-    const { sut, dispatchMock } = createSut();
+    const { sut, deleteDispatcher } = createSut();
 
     const input = {
       sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
@@ -342,7 +346,11 @@ describe('BulkCleanupEntityUseCase', () => {
       expect.objectContaining({ _id: factory.id('file_1_sharedId4'), entity: 'sharedId4' }),
     ]);
 
-    expect(dispatchMock).toHaveBeenCalledTimes(7);
+    expect(deleteDispatcher.deleteFilesFromStorage).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.any(String)])
+    );
+    const [paths] = (deleteDispatcher.deleteFilesFromStorage as jest.Mock).mock.calls[0];
+    expect(paths).toHaveLength(7);
   });
 
   it('should emit EntityDeletedEvent for each sharedId', async () => {

@@ -1,15 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { useAtomValue } from 'jotai';
+import { t, Translate } from '#app/I18N/index.js';
 import * as ThesauriAPI from '#V2/api/thesauri/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 import { ThesauriTable } from './components/ThesauriTable.js';
 import type { ThesauriRow } from './components/ThesauriTable.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -19,7 +20,7 @@ const thesauriLoader =
 const ThesauriList = () => {
   const revalidator = useRevalidator();
   const thesauri = useLoaderData() as ClientThesaurus[];
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const templates = useAtomValue(templatesAtom);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [currentThesauri, setCurrentThesauri] = useState<ThesauriRow[]>([]);
@@ -29,13 +30,13 @@ const ThesauriList = () => {
     setCurrentThesauri(
       thesauri.map(thesaurus => {
         const templatesUsingIt = templates
-          .map(t => {
-            const usingIt = t.properties?.some(
+          .map(templateItem => {
+            const usingIt = templateItem.properties?.some(
               (property: any) => property.content === thesaurus._id
             );
-            return usingIt ? t : null;
+            return usingIt ? templateItem : null;
           })
-          .filter(t => t) as Template[];
+          .filter(templateItem => templateItem) as Template[];
         return {
           ...thesaurus,
           rowId: thesaurus._id,
@@ -52,15 +53,9 @@ const ThesauriList = () => {
         ThesauriAPI.deleteThesauri({ _id: thesaurus._id })
       );
       await Promise.all(requests);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Thesauri deleted</Translate>,
-      });
+      notify('success', t('System', 'Thesauri deleted', null, false));
     } catch (e) {
-      setNotifications({
-        type: 'error',
-        text: e.message,
-      });
+      notify('error', t('System', 'An error occurred', null, false));
     } finally {
       await revalidator.revalidate();
       setShowConfirmationModal(false);

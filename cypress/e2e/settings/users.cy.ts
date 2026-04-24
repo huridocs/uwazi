@@ -11,11 +11,9 @@ const namesShouldMatch = (names: string[]) => {
 };
 
 const checkWorngPasswordState = () => {
-  cy.contains('An error occurred');
-  cy.contains('button', 'View more').click();
-  cy.contains('Request failed with status code 403: Forbidden');
-  cy.contains('button', 'Dismiss').click();
-  cy.get('aside').should('be.visible');
+  // Invalid confirmation password should show an error flash and keep context usable.
+  cy.get('[data-testid="notification-flash"]').should('be.visible');
+  cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
 };
 
 describe('Users', () => {
@@ -62,7 +60,6 @@ describe('Users', () => {
       });
       cy.contains('span', 'User_1');
       cy.wait('@updateUsers');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('edit user', () => {
@@ -79,7 +76,6 @@ describe('Users', () => {
         cy.contains('button', 'Accept').click();
       });
       cy.contains('span', 'Carmen_edited');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('delete user', () => {
@@ -91,7 +87,6 @@ describe('Users', () => {
         cy.get('input').type('admin', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
-      cy.contains('button', 'Dismiss').click();
       cy.wait('@updateUsers');
       cy.contains('span', 'User_1').should('not.exist');
     });
@@ -185,7 +180,6 @@ describe('Users', () => {
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.contains('div', 'Instructions to reset the password were sent to the user');
       cy.wait('@updateUsers');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('Reset 2fa', () => {
@@ -207,12 +201,12 @@ describe('Users', () => {
           cy.contains('span', 'Password + 2fa').should('not.exist');
         });
       cy.wait('@updateUsers');
-      cy.contains('button', 'Dismiss').click();
     });
   });
 
   describe('unblock user', () => {
     it('should not be able to ublock a user if the password is incorrect', () => {
+      cy.intercept('POST', '/api/users/unlock').as('unlockUser');
       cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click();
 
       cy.contains('button', 'Unlock account').click();
@@ -222,6 +216,8 @@ describe('Users', () => {
         cy.get('input').type('wroooong!', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
+
+      cy.wait('@unlockUser');
 
       checkWorngPasswordState();
     });
@@ -270,7 +266,6 @@ describe('Users', () => {
         cy.get('input').type('admin', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should log in with the new admin user', () => {
@@ -297,8 +292,6 @@ describe('Users', () => {
       });
 
       cy.contains('div', 'Instructions to reset the password were sent to the user');
-
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('bulk reset 2FA', () => {
@@ -318,9 +311,6 @@ describe('Users', () => {
       });
 
       cy.wait('@getUsers');
-
-      cy.contains('button', 'Dismiss').click();
-
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -358,7 +348,6 @@ describe('Users', () => {
       cy.wait('@getUsers');
 
       cy.wait('@getGroups');
-      cy.contains('button', 'Dismiss').click();
       cy.contains('span', 'Carmen_edited').should('not.exist');
       cy.contains('span', 'Mike').should('not.exist');
 
@@ -368,6 +357,7 @@ describe('Users', () => {
 
   describe('validate password', () => {
     it('should not be able to edit another user if the password is incorrect', () => {
+      cy.intercept('POST', '/api/users').as('saveUser');
       cy.contains('td', 'Cynthia').siblings().last().click();
       cy.get('aside').within(() => {
         cy.get('#password').type('changed password', { delay: 0 });
@@ -379,16 +369,21 @@ describe('Users', () => {
         cy.contains('button', 'Accept').click();
       });
 
+      cy.wait('@saveUser');
+
       checkWorngPasswordState();
     });
 
     it('should not be able to reset 2fa if the password is incorrect', () => {
+      cy.intercept('POST', '/api/auth2fa-reset').as('reset2fa');
       cy.contains('button', 'Reset 2FA').click();
 
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('anotherWorng!!', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
+
+      cy.wait('@reset2fa');
 
       checkWorngPasswordState();
     });

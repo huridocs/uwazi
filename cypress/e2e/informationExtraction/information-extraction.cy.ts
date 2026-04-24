@@ -16,8 +16,9 @@ const labelEntityTitle = (
   cy.get('textarea[name="documentViewer.sidepanel.metadata.title"]')
     .invoke('val')
     .should('eq', selectValue);
+  cy.intercept('POST', '/api/entities*').as('saveEntity');
   cy.get('button[type="submit"]').click();
-  cy.get('div.alert-success').click();
+  cy.wait('@saveEntity').its('response.statusCode').should('eq', 200);
 };
 
 const checkTemplatesList = (templates: string[]) => {
@@ -62,6 +63,7 @@ describe('Information Extraction', () => {
 
     it('should create an extractor', () => {
       cy.contains('button', 'Create Extractor').click();
+      cy.intercept('GET', '/api/ixextractors').as('fetchExtractors');
       cy.getByTestId('modal').within(() => {
         cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
 
@@ -75,8 +77,8 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Create').click();
       });
 
+      cy.wait('@fetchExtractors');
       cy.contains('td', 'Extractor 1');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should create another extractor selecting all templates', () => {
@@ -102,7 +104,6 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Create').click();
       });
       cy.contains('td', 'Titles from all templates');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should disable the button to select all templates if no property is selected', () => {
@@ -134,7 +135,6 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Create').click();
       });
       cy.contains('td', 'Fechas from relevant templates');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should edit Extractor 1', () => {
@@ -154,7 +154,6 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Update').click();
       });
       cy.contains('td', 'Extractor 1 edited');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should be able to filter templates', () => {
@@ -198,7 +197,6 @@ describe('Information Extraction', () => {
       });
 
       cy.contains('td', 'Titles from all templates').should('not.exist');
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('should check table display and accessibility', () => {
@@ -217,7 +215,6 @@ describe('Information Extraction', () => {
       });
 
       cy.contains('button', 'Create Extractor').should('have.attr', 'disabled');
-      cy.contains('button', 'Dismiss').click();
     });
   });
 
@@ -275,8 +272,6 @@ describe('Information Extraction', () => {
 
       cy.contains('Suggestions sent');
       cy.contains('Suggestions have been updated');
-      cy.contains('button', 'Dismiss').click();
-
       const titles = [
         '2023 (en)',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)',
@@ -362,7 +357,6 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Accept').click();
       });
       cy.contains('Saved successfully');
-      cy.contains('button', 'Dismiss').click();
       cy.get('aside').should('not.exist');
       cy.contains('tr', 'A title (en)').contains('Remove from training set');
     });

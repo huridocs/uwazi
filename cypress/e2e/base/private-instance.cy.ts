@@ -28,7 +28,6 @@ describe('Private instance', () => {
     });
     cy.contains('button', 'Save').realClick();
     cy.contains('div', 'Settings updated.');
-    cy.contains('button', 'Dismiss').realClick();
   });
 
   it('should logout and still be able to see the library', () => {
