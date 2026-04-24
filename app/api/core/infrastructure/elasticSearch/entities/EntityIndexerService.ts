@@ -20,15 +20,15 @@ class EntityIndexerService {
     }
 
     const slotMap = await this.deps.slotsDAO.getSlotMap();
-    const documents = EntityElasticDocumentMapper.toDocuments(entities, slotMap);
+    const grouped = EntityElasticDocumentMapper.toDocuments(entities, slotMap);
 
-    if (documents.length === 0) {
+    if (grouped.length === 0) {
       return;
     }
 
-    const operations = entities.map((entity, index) => ({
-      id: entity._id.toString(),
-      document: documents[index],
+    const operations = grouped.map(({ sharedId, document }) => ({
+      id: sharedId,
+      document,
     }));
 
     await this.deps.esClient.bulk({

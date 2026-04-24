@@ -15,7 +15,8 @@ export class EntityRepositoryImpl implements EntityRepository {
     },
     headers?: IncomingHttpHeaders
   ): Promise<EntitySchema[]> {
-    return entitiesApi.getBySharedId(options, headers);
+    const [entities] = await entitiesApi.getBySharedId(options, headers);
+    return entities as EntitySchema[];
   }
 
   async save(_entity: EntitySchema): Promise<EntitySchema> {
