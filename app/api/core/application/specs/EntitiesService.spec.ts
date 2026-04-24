@@ -17,7 +17,6 @@ import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/M
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { tenants } from '#api/tenants/index.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
@@ -53,7 +52,7 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
     cleanupEntities: jest.fn().mockResolvedValue(undefined),
     postProcessPDFs: jest.fn().mockResolvedValue(undefined),
     deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
-    postProcessTemplateEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest.fn().mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => { await callback(jest.fn()); }),
   });
 
   const sut = EntitiesServiceFactory.default({

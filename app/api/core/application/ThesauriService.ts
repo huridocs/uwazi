@@ -1,11 +1,10 @@
 import { Thesaurus } from '../domain/thesaurus/Thesaurus.js';
-import { DenormalizeThesaurusEntitiesHandler } from '../infrastructure/jobs/DenormalizeThesaurusEntitiesHandler.js';
-import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatcher } from './contracts/Dispatcher.js';
 import { ThesauriDataSource } from './contracts/ThesauriDataSource.js';
 import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService.js';
 
 type Deps = {
-  jobsDispatcher: JobsDispatcher;
+  dispatcher: Dispatcher;
   thesauriDS: ThesauriDataSource;
   thesaurusTranslationService: ThesaurusTranslationService;
 };
@@ -67,11 +66,7 @@ class ThesauriService {
 
     await this.deps.thesaurusTranslationService.update(diff);
 
-    await this.deps.jobsDispatcher.deleteByParams(DenormalizeThesaurusEntitiesHandler, {
-      thesaurusId: thesaurus.id,
-    });
-
-    await this.deps.jobsDispatcher.dispatch(DenormalizeThesaurusEntitiesHandler, {
+    await this.deps.dispatcher.denormalizeThesaurus({
       tenantName: context.tenantName,
       thesaurusId: thesaurus.id,
       userId: context.actorId,

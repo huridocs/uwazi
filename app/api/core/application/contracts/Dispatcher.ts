@@ -33,12 +33,21 @@ type TemplatePostProcessParams = {
   userId: string;
 };
 
+type DenormalizeThesaurusParams = {
+  tenantName: string;
+  thesaurusId: string;
+  userId: string;
+};
+
 interface Dispatcher {
   syncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
   cleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
   postProcessPDFs(items: PDFPostProcessParams[]): Promise<void>;
   deleteFilesFromStorage(paths: string[]): Promise<void>;
-  postProcessTemplateEntities(items: TemplatePostProcessParams[]): Promise<void>;
+  postProcessTemplateEntities(
+    callback: (dispatch: (params: TemplatePostProcessParams) => void) => void | Promise<void>
+  ): Promise<void>;
+  denormalizeThesaurus(params: DenormalizeThesaurusParams): Promise<void>;
 }
 
 export type {
@@ -47,4 +56,5 @@ export type {
   CleanupEntityParams,
   PDFPostProcessParams,
   TemplatePostProcessParams,
+  DenormalizeThesaurusParams,
 };

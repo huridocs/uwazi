@@ -51,7 +51,7 @@ const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
   postProcessPDFs: jest.fn().mockResolvedValue(undefined),
   syncRelationships: jest.fn().mockResolvedValue(undefined),
   cleanupEntities: jest.fn().mockResolvedValue(undefined),
-  postProcessTemplateEntities: jest.fn().mockResolvedValue(undefined),
+  postProcessTemplateEntities: jest.fn().mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => { await callback(jest.fn()); }),
 });
 
 const createService = (deps?: Partial<FilesServiceDeps>) => {

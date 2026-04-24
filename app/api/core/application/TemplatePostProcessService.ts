@@ -32,49 +32,46 @@ class TemplatePostProcessService {
 
   async createJobsForEntities({ before, after, context }: Input) {
     const diff = new TemplateDiff(before, after);
-    const items: TemplatePostProcessParams[] = [];
 
-    if (diff.hasAnyPostProcessChanges()) {
-      await this.collectPostProcessJobParams(
-        {
-          tenantName: context!.tenantName,
-          userId: context!.userId,
-          language: context!.language,
-          fullReindex: false,
-          diff,
-        },
-        items
-      );
-    }
-
-    if (context?.fullReindex) {
-      let templates = await this.deps.templatesDS.getAll().all();
+    await this.deps.dispatcher.postProcessTemplateEntities(async dispatch => {
       if (diff.hasAnyPostProcessChanges()) {
-        templates = templates.filter(t => t.id !== after.id);
+        await this.collectPostProcessJobParams(
+          {
+            tenantName: context!.tenantName,
+            userId: context!.userId,
+            language: context!.language,
+            fullReindex: false,
+            diff,
+          },
+          dispatch
+        );
       }
 
-      await ArrayUtils.sequentialFor(templates, async template =>
-        this.collectPostProcessJobParams(
-          {
-            language: context.language,
-            fullReindex: true,
-            userId: context.userId,
-            tenantName: context.tenantName,
-            diff: new TemplateDiff(template, template),
-          },
-          items
-        )
-      );
-    }
+      if (context?.fullReindex) {
+        let templates = await this.deps.templatesDS.getAll().all();
+        if (diff.hasAnyPostProcessChanges()) {
+          templates = templates.filter(t => t.id !== after.id);
+        }
 
-    if (items.length > 0) {
-      await this.deps.dispatcher.postProcessTemplateEntities(items);
-    }
+        await ArrayUtils.sequentialFor(templates, async template =>
+          this.collectPostProcessJobParams(
+            {
+              language: context.language,
+              fullReindex: true,
+              userId: context.userId,
+              tenantName: context.tenantName,
+              diff: new TemplateDiff(template, template),
+            },
+            dispatch
+          )
+        );
+      }
+    });
   }
 
   private async collectPostProcessJobParams(
     { diff, language, fullReindex, userId, tenantName }: CollectPostProcessJobProps,
-    items: TemplatePostProcessParams[]
+    dispatch: (params: TemplatePostProcessParams) => void
   ) {
     const limit = 50;
     const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(diff.templateId);
@@ -87,7 +84,7 @@ class TemplatePostProcessService {
 
     // eslint-disable-next-line no-await-in-loop
     while (await resultSet.hasNext()) {
-      items.push({
+      dispatch({
         // eslint-disable-next-line no-await-in-loop
         entitiesIds: await resultSet.nextBatch(limit),
         templateId: diff.templateId,

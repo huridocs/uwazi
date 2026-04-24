@@ -1,5 +1,4 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -17,7 +16,6 @@ interface UseCase<Input, Output, Args extends any[] = []> {
 type Deps<ExtendedDeps> = {
   transactionManager?: TransactionManager;
   eventBus?: EventsBus;
-  jobsDispatcher?: JobsDispatcher;
   dispatcher?: Dispatcher;
   idGenerator?: IdGenerator;
   logger?: Logger;
@@ -112,14 +110,6 @@ abstract class AbstractUseCase<
     }
 
     return this.deps.eventEmitter;
-  }
-
-  protected get jobsDispatcher(): JobsDispatcher {
-    if (!this.deps.jobsDispatcher) {
-      throw new Error('JobsDispatcher dependency not provided');
-    }
-
-    return this.deps.jobsDispatcher;
   }
 
   protected get dispatcher(): Dispatcher {
