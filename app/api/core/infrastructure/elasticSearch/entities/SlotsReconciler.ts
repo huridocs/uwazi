@@ -1,7 +1,5 @@
 import { MongoSlotsDAO } from './MongoSlotsDAO.js';
 import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import type { PropertyDescriptor } from '../../mongodb/template/MongoTemplatesDAO.js';
 
 type Deps = {
   slotsDAO: MongoSlotsDAO;
@@ -14,26 +12,23 @@ class SlotsReconciler {
   async execute(): Promise<void> {
     const snapshotVersion = await this.deps.slotsDAO.getSentinelVersion();
 
-    const allProperties = await this.deps.templatesDAO.getAllProperties();
-
-    const desired = new Map<string, PropertyDescriptor>();
-    allProperties.forEach(({ name, type, inheritedType }) =>
-      desired.set(name, { name, type, inheritedType })
-    );
+    const allProperties = await this.deps.templatesDAO.getAllFilterableProperties();
 
     const assignedSlots = await this.deps.slotsDAO.getSlotMap();
+    const assignedPropertyNames = new Set([...assignedSlots.values()].map(slot => slot.assignedTo));
 
-    await ArrayUtils.parallelFor(
-      [...desired.entries()],
-      async ([propertyName, { type, inheritedType }]) =>
-        assignedSlots.has(propertyName) ||
-        this.deps.slotsDAO.assignSlot({ propertyName, propertyType: type, inheritedType })
+    await this.deps.slotsDAO.assignSlots(
+      allProperties.map(({ type, inheritedType, name }) => ({
+        propertyName: name,
+        propertyType: type,
+        inheritedType,
+      }))
     );
 
-    await ArrayUtils.parallelFor(
-      [...assignedSlots.keys()],
-      async name => !desired.has(name) && this.deps.slotsDAO.unassignSlot(name)
+    const staleNames = [...assignedPropertyNames].filter(
+      name => !allProperties.some(p => p.name === name)
     );
+    await this.deps.slotsDAO.unassignSlots(staleNames);
 
     await this.deps.slotsDAO.touchSentinel(snapshotVersion);
   }

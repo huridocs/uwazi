@@ -43,6 +43,18 @@ class SlotTypeRegistry {
     ['geolocation', 'geolocation'],
   ]);
 
+  private static translatableSlotTypes = new Set<SlotType>([
+    'txt',
+    'select',
+    'relationship',
+    'relationship_txt',
+    'relationship_select',
+  ]);
+
+  static isTranslatable(slotType: SlotType): boolean {
+    return this.translatableSlotTypes.has(slotType);
+  }
+
   static toSlotType(
     propertyType: PropertyType,
     inheritedType?: PropertyType

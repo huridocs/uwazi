@@ -8,7 +8,6 @@ import { IndexNameResolver } from '../IndexNameResolver.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { FullTextIndexerService } from '../entities/FullTextIndexerService.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
-import type { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import type { FullTextElasticDocument } from '../entities/FullTextElasticDocument.js';
 import type { ProcessedPDFDBO } from '../../mongodb/files/schemas/filesTypes.js';
 
@@ -52,10 +51,10 @@ const createFile = (
   generatedToc: false,
 });
 
-const indexEntityParent = async (tenantId: string, entityId: ObjectId, sharedId: string) => {
+const indexEntityParent = async (tenantId: string, sharedId: string) => {
   await esClient.index({
     index: indexName,
-    id: `${tenantId}__${entityId.toString()}`,
+    id: `${tenantId}__${sharedId}`,
     routing: tenantId,
     body: { tenantId, sharedId, fullText: { name: 'entity' } },
     refresh: true,
@@ -70,31 +69,23 @@ const createSut = (tenantId = 'tenant-a') => {
 
   const tenantClient = new TenantAwareESClient({ client: esClient, resolver, tenantId });
 
-  const entityDAO = TestUtils.mockClass<MongoEntityDAO>({
-    getEntityIdsBySharedId: jest.fn(),
-  });
+  const sut = new FullTextIndexerService({ esClient: tenantClient });
 
-  const sut = new FullTextIndexerService({ esClient: tenantClient, entityDAO });
-
-  return { sut, tenantClient, entityDAO };
+  return { sut, tenantClient };
 };
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
-// Stable entity ObjectIds re-indexed into a fresh ES index on each beforeEach.
-const entityA = { _id: new ObjectId(), sharedId: 'shared-1' };
-const entityAVariant = { _id: new ObjectId(), sharedId: 'shared-1' };
-const entityADelete = { _id: new ObjectId(), sharedId: 'shared-delete' };
-const entityAKeep = { _id: new ObjectId(), sharedId: 'shared-keep' };
-const entityB = { _id: new ObjectId(), sharedId: 'shared-1' };
+const sharedId1 = 'shared-1';
+const sharedIdDelete = 'shared-delete';
+const sharedIdKeep = 'shared-keep';
 
 describe('FullTextIndexerService', () => {
   beforeEach(async () => {
     await recreateTestIndex();
-    await indexEntityParent('tenant-a', entityA._id, entityA.sharedId);
-    await indexEntityParent('tenant-a', entityAVariant._id, entityAVariant.sharedId);
-    await indexEntityParent('tenant-a', entityADelete._id, entityADelete.sharedId);
-    await indexEntityParent('tenant-a', entityAKeep._id, entityAKeep.sharedId);
-    await indexEntityParent('tenant-b', entityB._id, entityB.sharedId);
+    await indexEntityParent('tenant-a', sharedId1);
+    await indexEntityParent('tenant-a', sharedIdDelete);
+    await indexEntityParent('tenant-a', sharedIdKeep);
+    await indexEntityParent('tenant-b', sharedId1);
   });
 
   afterAll(async () => {
@@ -108,9 +99,8 @@ describe('FullTextIndexerService', () => {
 
   describe('index()', () => {
     it('indexes a fullText document with the correct structure', async () => {
-      const { sut, tenantClient, entityDAO } = createSut('tenant-a');
-      const file = createFile('shared-1');
-      (entityDAO.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA]);
+      const { sut, tenantClient } = createSut('tenant-a');
+      const file = createFile(sharedId1);
 
       await sut.index([file], true);
 
@@ -120,40 +110,38 @@ describe('FullTextIndexerService', () => {
       });
       expect(result.hits.hits).toHaveLength(1);
       const hit = result.hits.hits[0];
-      expect(hit._id).toBe(`tenant-a__${entityA._id.toString()}_${file._id.toString()}`);
+      expect(hit._id).toBe(`tenant-a__${sharedId1}_${file._id.toString()}`);
       expect(hit._routing).toBe('tenant-a');
       expect(hit._source).toMatchObject({
         tenantId: 'tenant-a',
         filename: 'test.pdf',
         fullText_english: 'hello world',
-        fullText: { name: 'fullText', parent: `tenant-a__${entityA._id.toString()}` },
+        fullText: { name: 'fullText', parent: `tenant-a__${sharedId1}` },
       });
     });
 
-    it('replicates a file across all entity language variants', async () => {
-      const { sut, tenantClient, entityDAO } = createSut('tenant-a');
-      const file = createFile('shared-1');
-      (entityDAO.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA, entityAVariant]);
+    it('two files for the same sharedId produce two fullText documents with the same parent', async () => {
+      const { sut, tenantClient } = createSut('tenant-a');
+      const file1 = createFile(sharedId1);
+      const file2 = createFile(sharedId1);
 
-      await sut.index([file], true);
+      await sut.index([file1, file2], true);
 
       const result = await tenantClient.search<FullTextElasticDocument>({
         alias: EntityIndexMappingDefinition.alias,
         query: { term: { fullText: 'fullText' } },
       });
-      const ids = result.hits.hits.map(h => h._id).sort();
-      expect(ids).toEqual(
-        [
-          `tenant-a__${entityA._id.toString()}_${file._id.toString()}`,
-          `tenant-a__${entityAVariant._id.toString()}_${file._id.toString()}`,
-        ].sort()
-      );
+      expect(result.hits.hits).toHaveLength(2);
+      for (const hit of result.hits.hits) {
+        expect(hit._source).toMatchObject({
+          fullText: { parent: `tenant-a__${sharedId1}` },
+        });
+      }
     });
 
     it('skips files with no fullText content', async () => {
-      const { sut, tenantClient, entityDAO } = createSut('tenant-a');
-      const file: ProcessedPDFDBO = { ...createFile('shared-1'), fullText: undefined };
-      (entityDAO.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA]);
+      const { sut, tenantClient } = createSut('tenant-a');
+      const file: ProcessedPDFDBO = { ...createFile(sharedId1), fullText: undefined };
 
       await sut.index([file], true);
 
@@ -165,9 +153,8 @@ describe('FullTextIndexerService', () => {
     });
 
     it('skips files whose fullText pages are all empty or whitespace', async () => {
-      const { sut, tenantClient, entityDAO } = createSut('tenant-a');
-      const file = createFile('shared-1', 'eng', { 1: '', 2: '   ' });
-      (entityDAO.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA]);
+      const { sut, tenantClient } = createSut('tenant-a');
+      const file = createFile(sharedId1, 'eng', { 1: '', 2: '   ' });
 
       await sut.index([file], true);
 
@@ -179,20 +166,17 @@ describe('FullTextIndexerService', () => {
     });
 
     it('is a no-op for empty input', async () => {
-      const { sut, entityDAO } = createSut('tenant-a');
+      const { sut } = createSut('tenant-a');
 
-      await sut.index([]);
-
-      expect(entityDAO.getEntityIdsBySharedId).not.toHaveBeenCalled();
+      await expect(sut.index([])).resolves.toBeUndefined();
     });
   });
 
   describe('deleteByFilenames()', () => {
     it('deletes fullText docs matching the given filenames', async () => {
-      const { sut, tenantClient, entityDAO } = createSut('tenant-a');
-      const fileDelete = createFile('shared-1', 'eng', { 1: 'hello world' }, 'delete.pdf');
-      const fileKeep = createFile('shared-1', 'eng', { 1: 'hello world' }, 'keep.pdf');
-      (entityDAO.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA]);
+      const { sut, tenantClient } = createSut('tenant-a');
+      const fileDelete = createFile(sharedId1, 'eng', { 1: 'hello world' }, 'delete.pdf');
+      const fileKeep = createFile(sharedId1, 'eng', { 1: 'hello world' }, 'keep.pdf');
       await sut.index([fileDelete, fileKeep], true);
 
       await sut.deleteByFilenames([fileDelete.filename], true);
@@ -206,11 +190,9 @@ describe('FullTextIndexerService', () => {
     });
 
     it('respects tenant isolation', async () => {
-      const { sut: sutA, entityDAO: entityDAOA } = createSut('tenant-a');
-      const { sut: sutB, tenantClient: tcB, entityDAO: entityDAOB } = createSut('tenant-b');
-      const file = createFile('shared-1');
-      (entityDAOA.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityA]);
-      (entityDAOB.getEntityIdsBySharedId as jest.Mock).mockResolvedValue([entityB]);
+      const { sut: sutA } = createSut('tenant-a');
+      const { sut: sutB, tenantClient: tcB } = createSut('tenant-b');
+      const file = createFile(sharedId1);
 
       await sutA.index([file], true);
       await sutB.index([file], true);

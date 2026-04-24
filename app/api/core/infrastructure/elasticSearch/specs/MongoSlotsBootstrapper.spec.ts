@@ -20,6 +20,7 @@ const expectedSlots = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
     type: slotType,
     slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
     assignedTo: null,
+    language: null,
   }))
 );
 
@@ -55,6 +56,7 @@ describe('MongoSlotsBootstrapper', () => {
         type: slot.type,
         slotName: slot.slotName,
         assignedTo: slot.assignedTo,
+        language: slot.language,
       }));
 
       expect(slots).toHaveLength(expectedSlotCount);
@@ -124,8 +126,8 @@ describe('MongoSlotsBootstrapper', () => {
         { v: 2, key: { slotName: 1 }, name: 'slotName_1', unique: true },
         {
           v: 2,
-          key: { assignedTo: 1 },
-          name: 'assignedTo_1',
+          key: { assignedTo: 1, language: 1 },
+          name: 'assignedTo_1_language_1',
           unique: true,
           partialFilterExpression: { assignedTo: { $type: 'string' } },
         },
@@ -151,8 +153,8 @@ describe('MongoSlotsBootstrapper', () => {
         { v: 2, key: { slotName: 1 }, name: 'slotName_1', unique: true },
         {
           v: 2,
-          key: { assignedTo: 1 },
-          name: 'assignedTo_1',
+          key: { assignedTo: 1, language: 1 },
+          name: 'assignedTo_1_language_1',
           unique: true,
           partialFilterExpression: { assignedTo: { $type: 'string' } },
         },
@@ -170,12 +172,58 @@ describe('MongoSlotsBootstrapper', () => {
 
       await slotsCollection().createIndex({ slotName: 1 }, { unique: true });
       await slotsCollection().createIndex(
-        { assignedTo: 1 },
+        { assignedTo: 1, language: 1 },
         { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
       );
       await slotsCollection().createIndex({ rand: 1 });
 
       await expect(sut.execute()).resolves.not.toThrow();
+    });
+
+    it('rejects two slots with the same assignedTo and same language', async () => {
+      const { sut } = createSut();
+      await sut.createIndexes();
+
+      await slotsCollection().insertOne({
+        type: 'txt',
+        slotName: 'txt_01',
+        assignedTo: 'my_prop',
+        language: 'en',
+        rand: 0.1,
+      });
+
+      await expect(
+        slotsCollection().insertOne({
+          type: 'txt',
+          slotName: 'txt_02',
+          assignedTo: 'my_prop',
+          language: 'en',
+          rand: 0.2,
+        })
+      ).rejects.toThrow();
+    });
+
+    it('allows two slots with the same assignedTo but different language values', async () => {
+      const { sut } = createSut();
+      await sut.createIndexes();
+
+      await slotsCollection().insertOne({
+        type: 'txt',
+        slotName: 'txt_01',
+        assignedTo: 'my_prop',
+        language: 'en',
+        rand: 0.1,
+      });
+
+      await expect(
+        slotsCollection().insertOne({
+          type: 'txt',
+          slotName: 'txt_02',
+          assignedTo: 'my_prop',
+          language: 'pt',
+          rand: 0.2,
+        })
+      ).resolves.not.toThrow();
     });
   });
 
