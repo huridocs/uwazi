@@ -6,6 +6,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -26,7 +27,9 @@ export class PXCreateParagraphsFactory {
     const thesauriDS = ThesauriDataSourceFactory.default(mongoTransactionManager);
     const translationsDS = DefaultTranslationsDataSource(mongoTransactionManager);
     const entitiesDS = EntitiesDataSourceFactory.default(mongoTransactionManager);
-    const jobsDispatcher = DefaultDispatcher(tenant.name, mongoTransactionManager);
+    const jobsDispatcher = new DispatcherAdapter(
+      DefaultDispatcher(tenant.name, mongoTransactionManager)
+    );
 
     const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
       entitiesDS,

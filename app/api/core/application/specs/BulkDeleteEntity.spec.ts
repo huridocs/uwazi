@@ -8,7 +8,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { tenants } from '#api/tenants/index.js';
 import { elastic, search } from '#api/search/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
@@ -108,7 +108,7 @@ const fixtures: DBFixture = {
 
 type CreateSutProps = {
   search?: typeof search;
-  dispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
   actor?: UserSchema;
   entitiesDS?: MultiLanguageEntityDataSource;
 };
@@ -238,8 +238,8 @@ describe('BulkDeleteEntityUseCase', () => {
   });
 
   it('should revert when dispatching of jobs fails', async () => {
-    const dispatcher = TestUtils.mockClass<JobsDispatcher>({
-      dispatchMany: jest.fn().mockRejectedValue(new Error('Dispatch failed')),
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      cleanupEntities: jest.fn().mockRejectedValue(new Error('Dispatch failed')),
     });
 
     const { sut } = createSut({ dispatcher });

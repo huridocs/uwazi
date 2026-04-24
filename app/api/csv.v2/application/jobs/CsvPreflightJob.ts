@@ -351,7 +351,7 @@ export class CsvPreflightJob extends CsvCleanupAwareJob<Input, Output, Deps> {
         if (await this.deps.csvImportsDS.isCancelled(importId)) {
           return;
         }
-        await this.jobsDispatcher.dispatch(CsvCreateThesauriValuesJobHandler, {
+        await this.deps.jobsDispatcher.dispatch(CsvCreateThesauriValuesJobHandler, {
           tenantName,
           userId,
           importId,
