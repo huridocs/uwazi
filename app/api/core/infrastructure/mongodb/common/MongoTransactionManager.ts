@@ -3,6 +3,9 @@ import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
 import { OptimisticLockError } from './OptimisticLockError.js';
 
+type CommitHandler = (returnValue: unknown) => Promise<void>;
+type RetryHandler = () => Promise<void>;
+
 export class MongoTransactionManager implements TransactionManager {
   private mongoClient: MongoClient;
 
@@ -10,25 +13,44 @@ export class MongoTransactionManager implements TransactionManager {
 
   private session?: ClientSession;
 
-  private onCommitHandlers: ((returnValue: any) => Promise<void>)[];
+  private persistentOnCommitHandlers: CommitHandler[];
 
-  private onRetryHandlers: (() => Promise<void>)[];
+  private persistentOnRetryHandlers: RetryHandler[];
+
+  private runOnCommitHandlers: CommitHandler[];
+
+  private runOnRetryHandlers: RetryHandler[];
 
   private finished = false;
 
   constructor(mongoClient: MongoClient, logger: Logger) {
-    this.onCommitHandlers = [];
-    this.onRetryHandlers = [];
+    this.persistentOnCommitHandlers = [];
+    this.persistentOnRetryHandlers = [];
+    this.runOnCommitHandlers = [];
+    this.runOnRetryHandlers = [];
     this.mongoClient = mongoClient;
     this.logger = logger;
   }
 
   async executeOnCommitHandlers(returnValue: unknown) {
-    return Promise.all(this.onCommitHandlers.map(async handler => handler(returnValue)));
+    return Promise.all(
+      [...this.persistentOnCommitHandlers, ...this.runOnCommitHandlers].map(async handler =>
+        handler(returnValue)
+      )
+    );
   }
 
   async executeOnRetryHandlers() {
-    return Promise.all(this.onRetryHandlers.map(async handler => handler()));
+    return Promise.all(
+      [...this.persistentOnRetryHandlers, ...this.runOnRetryHandlers].map(async handler =>
+        handler()
+      )
+    );
+  }
+
+  private clearRunHandlers() {
+    this.runOnCommitHandlers = [];
+    this.runOnRetryHandlers = [];
   }
 
   private validateState() {
@@ -80,24 +102,41 @@ export class MongoTransactionManager implements TransactionManager {
     }
   }
 
-  private isWriteConflict(error: unknown): boolean {
+  private static isWriteConflict(error: unknown): boolean {
     return error instanceof OptimisticLockError;
+  }
+
+  private static isTransientTransactionError(error: unknown): boolean {
+    const mongoError = error as { hasErrorLabel?: (label: string) => boolean };
+    return Boolean(
+      mongoError.hasErrorLabel && mongoError.hasErrorLabel('TransientTransactionError')
+    );
+  }
+
+  private static shouldRetry(error: unknown, retries: number): boolean {
+    return (
+      retries > 0 &&
+      (MongoTransactionManager.isTransientTransactionError(error) ||
+        MongoTransactionManager.isWriteConflict(error))
+    );
+  }
+
+  private async runRetry<T>(
+    callback: () => Promise<T>,
+    error: unknown,
+    retries: number
+  ): Promise<T> {
+    this.logger.debug(error as any);
+    await this.executeOnRetryHandlers();
+    return this.runWithRetry(callback, retries - 1);
   }
 
   private async runWithRetry<T>(callback: () => Promise<T>, retries = 3): Promise<T> {
     try {
       return await this.runInTransaction(callback);
     } catch (error) {
-      if (retries > 0 && error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
-        this.logger.debug(error);
-        await this.executeOnRetryHandlers();
-        return this.runWithRetry(callback, retries - 1);
-      }
-
-      if (retries > 0 && this.isWriteConflict(error)) {
-        this.logger.debug(error);
-        await this.executeOnRetryHandlers();
-        return this.runWithRetry(callback, retries - 1);
+      if (MongoTransactionManager.shouldRetry(error, retries)) {
+        return this.runRetry(callback, error, retries);
       }
 
       throw error;
@@ -116,28 +155,43 @@ export class MongoTransactionManager implements TransactionManager {
     return !!this.session?.inTransaction();
   }
 
-  async run<T>(callback: () => Promise<T>) {
+  private prepareRun() {
     this.validateState();
-
+    this.clearRunHandlers();
     this.session = this.mongoClient.startSession();
+  }
+
+  private async finishRun() {
+    this.clearRunHandlers();
+    await this.session!.endSession();
+    this.session = undefined;
+    this.finished = false;
+  }
+
+  private async executeRunCallback<T>(callback: () => Promise<T>) {
+    const returnValue = await this.runWithRetry(callback);
+    await this.executeOnCommitHandlers(returnValue);
+    return returnValue;
+  }
+
+  async run<T>(callback: () => Promise<T>) {
+    this.prepareRun();
 
     try {
-      const returnValue = await this.runWithRetry(callback);
-      await this.executeOnCommitHandlers(returnValue);
-      return returnValue;
+      return await this.executeRunCallback(callback);
     } finally {
-      await this.session.endSession();
-      this.session = undefined;
-      this.finished = false;
+      await this.finishRun();
     }
   }
 
   runHandlingOnCommitted<T>(callback: () => Promise<T>) {
     return {
-      onCommitted: async (handler: (returnValue: T) => Promise<void>) => {
-        this.onCommitHandlers.push(handler);
-        return this.run(callback);
-      },
+      onCommitted: async (handler: (returnValue: T) => Promise<void>) =>
+        this.run(async () => {
+          const returnValue = await callback();
+          this.runOnCommitHandlers.push(async () => handler(returnValue));
+          return returnValue;
+        }),
     };
   }
 
@@ -146,12 +200,20 @@ export class MongoTransactionManager implements TransactionManager {
   }
 
   onCommitted(handler: () => Promise<void>) {
-    this.onCommitHandlers.push(handler);
+    if (this.isRunning()) {
+      this.runOnCommitHandlers.push(handler);
+    } else {
+      this.persistentOnCommitHandlers.push(handler);
+    }
     return this;
   }
 
   onRetry(handler: () => Promise<void>) {
-    this.onRetryHandlers.push(handler);
+    if (this.isRunning()) {
+      this.runOnRetryHandlers.push(handler);
+    } else {
+      this.persistentOnRetryHandlers.push(handler);
+    }
     return this;
   }
 }
