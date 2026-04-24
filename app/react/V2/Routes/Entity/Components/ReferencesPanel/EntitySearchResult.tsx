@@ -1,10 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
-import { useAtomValue } from 'jotai';
 import { Entity } from '#V2/domain/index.js';
 import { Card } from '#V2/Components/UI/Card.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { FileType } from '#shared/types/fileType.js';
 import { LanguageUtils } from '#shared/language/index.js';
 
@@ -25,12 +23,6 @@ export const EntitySearchResult = ({
   selectedFile,
   onFileSelect,
 }: EntitySearchResultProps) => {
-  const templates = useAtomValue(templatesAtom);
-  const entityTemplate = useMemo(
-    () => templates.find(template => template._id === entity?.template?._id),
-    [entity?.template, templates]
-  );
-
   // Format date - try to get creationDate or editDate
   const dateProperty = entity.creationDate || entity.editDate;
   const dateValue = dateProperty?.values?.[0]?.value;
@@ -86,7 +78,7 @@ export const EntitySearchResult = ({
               <h3 className="text-sm text-gray-900 line-clamp-2">{entity.title || '-'}</h3>
               {formattedDate && <p className="text-xs text-gray-600 mt-1">{formattedDate}</p>}
             </div>
-            <TemplateLabel template={entityTemplate} />
+            <TemplateLabel templateId={entity.template?._id} />
           </div>
         </Card>
       </div>

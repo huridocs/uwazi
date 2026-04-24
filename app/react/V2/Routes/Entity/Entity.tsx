@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
-import { useAtomValue } from 'jotai';
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
@@ -27,7 +26,6 @@ import {
   FileList,
 } from './Components/index.js';
 import { LoaderResponse } from './types.js';
-import { templatesAtom } from '#app/V2/atoms/templatesAtom.js';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -60,11 +58,6 @@ const Entity = () => {
   const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
-  const templates = useAtomValue(templatesAtom);
-  const entityTemplate = useMemo(
-    () => templates.find(template => template._id === entity?.template?._id),
-    [entity?.template, templates]
-  );
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -76,7 +69,7 @@ const Entity = () => {
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView entity={entity} pagePlaintext={pagePlaintext} template={entityTemplate} />
+          <PDFView entity={entity} pagePlaintext={pagePlaintext} />
         </Tabs.Tab>
       );
     }

@@ -1,11 +1,18 @@
 import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Translate } from '#app/I18N/index.js';
-import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { getTextColor } from '../Formatters/index.js';
 
 const defaultColor = '#A4CAFE';
 
-const TemplateLabel = ({ template }: { template?: ClientTemplateSchema }) => {
+const TemplateLabel = ({ templateId }: { templateId?: String }) => {
+  const templates = useAtomValue(templatesAtom);
+  const template = useMemo(
+    () => templates.find(t => t._id === templateId),
+    [templateId, templates]
+  );
+
   const textColor = useMemo(() => getTextColor(template?.color || defaultColor), [template]);
 
   if (!template) {

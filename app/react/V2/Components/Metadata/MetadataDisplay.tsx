@@ -6,7 +6,7 @@ import { Button } from '#V2/Components/UI/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { Date, SimpleValue, Title, MetadataCard, TemplateLabel } from './Components/index.js';
-import { formatSimpleProperty, prepareMetadata } from './Formatters/index.js';
+import { formatSimpleProperty, formatMetadataFields } from './Formatters/index.js';
 import { BaseMetadataProperty } from './MetadataPropertiesType.js';
 
 type MetadataDisplayProps = {
@@ -20,10 +20,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
     [entity.template, templates]
   );
 
-  const metadata = useMemo(
-    () => prepareMetadata(entity.metadata, entityTemplate),
-    [entity.metadata, entityTemplate]
-  );
+  const metadataProperties = useMemo(() => formatMetadataFields(entityTemplate), [entityTemplate]);
 
   const renderMetadataProperty = useCallback(
     (property: BaseMetadataProperty) => {
@@ -155,7 +152,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
               <Translate>Template</Translate>
             </dt>
             <dd>
-              <TemplateLabel template={entityTemplate} />
+              <TemplateLabel templateId={entity.template} />
             </dd>
             <Title
               label="Title"
@@ -190,7 +187,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             />
           )}
 
-          {metadata.map((data, index) => (
+          {metadataProperties.map((data, index) => (
             <Fragment key={data?.name || data?.label || index}>
               {renderMetadataProperty(data)}
             </Fragment>
