@@ -46,7 +46,7 @@ describe('Collection', () => {
   });
 
   it('should save Whitelisted templates successfully', () => {
-    cy.get('[data-testid="settings-collection"]').scrollTo('center');
+    cy.get('[data-testid="settings-collection"]').parent().scrollTo('center');
     cy.get('[data-testid="multiselect"]')
       .eq(0)
       .within(() => {
@@ -125,7 +125,6 @@ describe('Collection', () => {
 
   it('should load the selected search as landing page ', () => {
     cy.contains('a', 'Library').click();
-    cy.get('.alert.alert-success [data-icon="times"]').click();
     cy.reload();
     cy.on('uncaught:exception', (err, _runnable) => {
       err.message.includes('Hydration failed');

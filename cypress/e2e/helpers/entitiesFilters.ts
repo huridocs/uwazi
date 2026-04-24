@@ -1,6 +1,11 @@
 const selectPublishedEntities = () => {
   cy.contains('Published', { timeout: 5000 });
   cy.intercept('GET', '/api/search*').as('librarySearch');
+  cy.get('aside.library-filters').then($sidePanel => {
+    if ($sidePanel.hasClass('is-hidden')) {
+      cy.contains('button', 'Filters').click({ force: true });
+    }
+  });
   cy.get('aside.library-filters').should('be.visible', { timeout: 5000 }).as('sidePanel');
 
   // Always ensure we're in the correct state and wait for API completion

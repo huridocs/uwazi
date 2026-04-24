@@ -11,6 +11,7 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { PDFService } from '../services/PDFService.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class FilesServiceFactory {
   static default(
@@ -19,9 +20,11 @@ class FilesServiceFactory {
   ) {
     const jobsDispatcher =
       deps.jobsDispatcher ||
-      (process.env.NODE_ENV === 'test'
-        ? NoOpDispatcher()
-        : DefaultDispatcher(tenants.current().name, transactionManager));
+      new DispatcherAdapter(
+        process.env.NODE_ENV === 'test'
+          ? NoOpDispatcher()
+          : DefaultDispatcher(tenants.current().name, transactionManager)
+      );
 
     return new FilesService({
       transactionManager,

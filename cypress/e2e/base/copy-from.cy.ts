@@ -110,7 +110,7 @@ describe('Copy from entity', () => {
     });
 
     it('should view the edited entity', () => {
-      cy.contains('Entity updated').click();
+      cy.contains('Entity updated');
       cy.contains('h2', 'Edited orden de la corte').click();
       cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
         cy.contains('a', 'View').click();

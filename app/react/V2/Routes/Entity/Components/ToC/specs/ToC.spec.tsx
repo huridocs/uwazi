@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { TocSchema } from '#shared/types/commonTypes.js';
+import type { TocSchema } from '#shared/types/commonTypes.js';
 import { ToC } from '../ToC.js';
 
 // Test data
