@@ -1,8 +1,9 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileDelete } from '#api/core/application/FileDelete.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory.js';
@@ -51,13 +52,17 @@ class FileDeleteController extends AbstractController {
 
   private useCase() {
     let transactionManager = TransactionManagerFactory.default();
-    let jobsDispatcher: JobsDispatcher = DefaultDispatcher(this.tenantName, transactionManager);
+    let jobsDispatcher: Dispatcher = new DispatcherAdapter(
+      DefaultDispatcher(this.tenantName, transactionManager)
+    );
     if (process.env.NODE_ENV === 'test') {
       transactionManager = TransactionManagerFactory.fake();
-      jobsDispatcher = new SyncDispatcherForTests({
-        DeleteFileFromStorageJobHandler: async () =>
-          new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),
-      });
+      jobsDispatcher = new DispatcherAdapter(
+        new SyncDispatcherForTests({
+          DeleteFileFromStorageJobHandler: async () =>
+            new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),
+        })
+      );
     }
 
     return new FileDelete(

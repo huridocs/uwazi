@@ -6,6 +6,7 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -66,7 +67,7 @@ const buildEntityServices = (
     settingsDS,
     templatesDS,
     entitiesDS,
-    dispatcher: jobsDispatcher,
+    dispatcher: new DispatcherAdapter(jobsDispatcher),
   });
 
   return {

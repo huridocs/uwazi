@@ -1,14 +1,14 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { availableLanguages } from '#shared/language/index.js';
-import { ClientEntitySchema } from '#app/istore.js';
+import { Entity } from '#V2/api/entities/types.js';
 import { Button, Sidepanel } from '#V2/Components/UI/index.js';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
 
 interface PDFSidepanelSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  entity?: ClientEntitySchema;
+  entity?: Entity;
 }
 
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, entity }: PDFSidepanelSidepanelProps) => {
