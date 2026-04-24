@@ -53,67 +53,75 @@ const formatProgress = (event: ProgressEvent): string => {
   }
 };
 
-(async () => {
+async function main() {
   await DB.connect(config.DBHOST, config.DBAUTH);
   await tenants.setupTenants();
 
   const start = process.hrtime();
 
-  await tenants.run(async () => {
-    const db = getConnection();
-    const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const logger = LoggerFactory.default();
+  try {
+    await tenants.run(async () => {
+      const db = getConnection();
+      const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
+      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const logger = LoggerFactory.default();
 
-    const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
-    const filesDAO = new MongoFilesDAO({ db, transactionManager });
+      const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
+      const filesDAO = new MongoFilesDAO({ db, transactionManager });
 
-    const slotsBootstrapper = new MongoSlotsBootstrapper({ database: db });
-    const templatesDAO = new MongoTemplatesDAO({ db, transactionManager });
-    const slotsDAO = new MongoSlotsDAO({
-      db,
-      transactionManager,
-      tenantName: tenant,
-      settingsDS,
-    });
-    const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
+      const slotsBootstrapper = new MongoSlotsBootstrapper({ database: db });
+      const templatesDAO = new MongoTemplatesDAO({ db, transactionManager });
+      const slotsDAO = new MongoSlotsDAO({
+        db,
+        transactionManager,
+        tenantName: tenant,
+        settingsDS,
+      });
+      const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
 
-    const esClient = ElasticSearchClientFactory.getInstance();
-    const tenantAwareClient = ElasticSearchClientFactory.tenantAware(tenant);
-    const esBootstrapper = new ElasticSearchBootstrapper({
-      client: esClient,
-      registry: IndexMappingRegistry,
-      logger,
-    });
-    const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
-    const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
+      const esClient = ElasticSearchClientFactory.getInstance();
+      const tenantAwareClient = ElasticSearchClientFactory.tenantAware(tenant);
+      const esBootstrapper = new ElasticSearchBootstrapper({
+        client: esClient,
+        registry: IndexMappingRegistry,
+        logger,
+      });
+      const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
+      const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
 
-    const rebuilder = new ESIndexRebuilder({
-      esClient,
-      esBootstrapper,
-      entityIndexer,
-      fullTextIndexer,
-      slotsBootstrapper,
-      slotsReconciler,
-      entityDAO,
-      filesDAO,
-      registry: IndexMappingRegistry,
-      logger,
-      onProgress: event => {
-        const message = formatProgress(event);
-        if (message) {
-          console.log(message);
-        }
-      },
-    });
+      const rebuilder = new ESIndexRebuilder({
+        esClient,
+        esBootstrapper,
+        entityIndexer,
+        fullTextIndexer,
+        slotsBootstrapper,
+        slotsReconciler,
+        entityDAO,
+        filesDAO,
+        registry: IndexMappingRegistry,
+        logger,
+        onProgress: event => {
+          const message = formatProgress(event);
+          if (message) {
+            console.log(message);
+          }
+        },
+      });
 
-    await rebuilder.execute();
-  }, tenant);
+      await rebuilder.execute();
+    }, tenant);
 
-  const [seconds, nanoseconds] = process.hrtime(start);
-  const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
-  console.log(`Done. Took ${elapsed}s`);
+    const [seconds, nanoseconds] = process.hrtime(start);
+    const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
+    console.log(`Done. Took ${elapsed}s`);
+  } catch (err) {
+    console.error('ES index rebuild failed:', err);
+    process.exitCode = 1;
+  } finally {
+    await ElasticSearchClientFactory.getInstance().close();
+    await tenants.model?.closeChangeStream();
+    await DB.disconnect();
+  }
+}
 
-  await tenants.model?.closeChangeStream();
-  await DB.disconnect();
-})();
+main();
