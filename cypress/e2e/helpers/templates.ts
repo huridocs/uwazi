@@ -1,9 +1,8 @@
 const saveTemplate = () => {
   cy.intercept('POST', 'api/templates').as('postTemplate');
   cy.contains('button', 'Save').click();
-  cy.wait('@postTemplate');
-  cy.contains('success').should('exist');
-  cy.contains('Dismiss').click();
+  cy.wait('@postTemplate').its('response.statusCode').should('eq', 200);
+  cy.get('[data-testid="notification-flash"]').should('be.visible');
 };
 
 const setColor = (color: string) => {

@@ -1,9 +1,4 @@
-import {
-  clearCookiesAndLogin,
-  saveEntity,
-  createTemplate,
-  waitForLegacyNotifications,
-} from '../helpers';
+import { clearCookiesAndLogin, saveEntity, createTemplate } from '../helpers';
 
 describe('Entity with main document', () => {
   let entitySharedId: string;
@@ -23,12 +18,8 @@ describe('Entity with main document', () => {
       createTemplate('Template for documents', ['Text', 'Date'], '00b894');
     });
 
-    it('should navigate to the library', () => {
-      cy.contains('a', 'Library').click();
-      cy.get('button').contains('Create entity').should('be.visible');
-    });
-
     it('should create an entity with a document', () => {
+      cy.visit('/en/library');
       cy.get('button').contains('Create entity').click();
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Entity with document 1', {
@@ -46,7 +37,6 @@ describe('Entity with main document', () => {
         .selectFile('./cypress/test_files/anotherPDF.pdf', { force: true });
 
       saveEntity();
-      waitForLegacyNotifications();
     });
 
     it('should check the entity was created and get the link for it', () => {

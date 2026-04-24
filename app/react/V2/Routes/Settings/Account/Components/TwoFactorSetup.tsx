@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '#app/utils/api.js';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { Button, Card, CopyValueInput, Sidepanel } from '#V2/Components/UI/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import loadable from '@loadable/component';
 import { InputField } from '#V2/Components/Forms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const QRCodeSVG = loadable(
   async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),
@@ -26,7 +25,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   const [token, setToken] = useState('');
   const [_secret, setSecret] = useState('');
   const [_otpauth, setOtpauth] = useState('');
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
   const [tokenError, setTokenError] = useState(false);
 
@@ -57,10 +56,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
       await api.post('auth2fa-enable', new RequestParams({ token }));
       await revalidator.revalidate();
       closePanel();
-      setNotifications({
-        type: 'success',
-        text: <Translate>2FA Enabled</Translate>,
-      });
+      notify('success', t('System', '2FA Enabled', null, false));
     } catch (error) {
       if (error.status === 409) {
         setTokenError(true);

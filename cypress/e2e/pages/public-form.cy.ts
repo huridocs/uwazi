@@ -22,7 +22,7 @@ describe('Public Form', () => {
     });
 
     it('should whitelist Mecanismo and Reporte', () => {
-      cy.get('[data-testid="settings-collection"]').scrollTo('center');
+      cy.get('[data-testid="settings-collection"]').parent().scrollTo('center');
       cy.get('[data-testid="multiselect"]')
         .eq(0)
         .within(() => {
@@ -32,7 +32,6 @@ describe('Public Form', () => {
         });
 
       cy.contains('button', 'Save').click();
-      cy.contains('Dismiss').click();
     });
   });
 
@@ -59,7 +58,6 @@ describe('Public Form', () => {
       cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
-      cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
       cy.contains('Basic').click();
 
@@ -75,7 +73,6 @@ describe('Public Form', () => {
         cy.getByTestId('menu-form-submit').click();
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
-        cy.contains('Dismiss').click();
         cy.get('[data-testid=modal]').should('not.exist');
         cy.wait('@fetchLinks');
       });
@@ -105,8 +102,9 @@ describe('Public Form', () => {
       );
       cy.contains('span', 'Bahamas').click();
       cy.get('.captcha input').type('42hf');
+      cy.intercept('POST', '/api/public*').as('submitPublicForm');
       cy.contains('button', 'Submit').click();
-      cy.get('.alert.alert-success').click();
+      cy.wait('@submitPublicForm').its('response.statusCode').should('eq', 200);
     });
   });
 
@@ -133,7 +131,6 @@ describe('Public Form', () => {
       cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
-      cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
       cy.wait('@fetchPage');
     });
