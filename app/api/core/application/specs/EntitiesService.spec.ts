@@ -52,7 +52,11 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
     cleanupEntities: jest.fn().mockResolvedValue(undefined),
     postProcessPDFs: jest.fn().mockResolvedValue(undefined),
     deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
-    postProcessTemplateEntities: jest.fn().mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => { await callback(jest.fn()); }),
+    postProcessTemplateEntities: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+        await callback(jest.fn());
+      }),
   });
 
   const sut = EntitiesServiceFactory.default({

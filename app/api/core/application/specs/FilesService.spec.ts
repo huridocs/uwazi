@@ -3,33 +3,34 @@ import { createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile } from 'fs/promises';
 
-/* eslint-disable max-statements */
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
-import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
-import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { DBFixture } from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { createHash } from 'crypto';
 import { ObjectId } from 'mongodb';
 import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { testingTenants } from '#api/utils/testingTenants.js';
+
+/* eslint-disable max-statements */
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-import { FilesServiceDeps } from '../FilesService.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { FilesDataSource } from '../contracts/FilesDataSource.js';
+import { FilesServiceDeps } from '../FilesService.js';
 
 const f = getFixturesFactory();
 
@@ -51,7 +52,11 @@ const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
   postProcessPDFs: jest.fn().mockResolvedValue(undefined),
   syncRelationships: jest.fn().mockResolvedValue(undefined),
   cleanupEntities: jest.fn().mockResolvedValue(undefined),
-  postProcessTemplateEntities: jest.fn().mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => { await callback(jest.fn()); }),
+  postProcessTemplateEntities: jest
+    .fn()
+    .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+      await callback(jest.fn());
+    }),
 });
 
 const createService = (deps?: Partial<FilesServiceDeps>) => {

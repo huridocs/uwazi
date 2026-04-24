@@ -44,7 +44,7 @@ class DispatcherAdapter implements Dispatcher {
   async postProcessTemplateEntities(
     callback: (dispatch: (params: TemplatePostProcessParams) => void) => void | Promise<void>
   ): Promise<void> {
-    await this.jobsDispatcher.dispatchMany(dispatch =>
+    await this.jobsDispatcher.dispatchMany(async dispatch =>
       callback(params => dispatch(TemplatePostProcessEntitiesJob, params))
     );
   }

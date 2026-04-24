@@ -190,7 +190,11 @@ const createSut = (props?: CreateSutProps) => {
     postProcessPDFs: jest.fn().mockResolvedValue(undefined),
     syncRelationships: jest.fn().mockResolvedValue(undefined),
     cleanupEntities: jest.fn().mockResolvedValue(undefined),
-    postProcessTemplateEntities: jest.fn().mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => { await callback(jest.fn()); }),
+    postProcessTemplateEntities: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+        await callback(jest.fn());
+      }),
   });
 
   const filesService =
