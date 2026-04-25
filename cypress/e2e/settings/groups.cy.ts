@@ -24,7 +24,27 @@ describe('Groups', () => {
   it('accesibility check', () => {
     cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Groups'));
     cy.checkA11y(undefined, undefined, logA11yViolations);
-    cy.getByTestId('settings-content').matchImageSnapshot('content');
+    cy.contains('button', 'Users').should('be.visible');
+    cy.contains('button', 'Groups').should('be.visible');
+    cy.get('table').matchImageSnapshot('content-table');
+    cy.get('table thead').within(() => {
+      cy.contains('th', 'Name');
+      cy.contains('th', 'Members');
+    });
+    cy.get('table tbody tr').should('have.length', 2);
+    cy.contains('tr', 'Activistas').within(() => {
+      cy.contains('span', 'admin');
+      cy.contains('span', 'editor');
+      cy.contains('span', 'Cynthia');
+      cy.contains('button', 'Edit');
+    });
+    cy.contains('tr', 'Asesores legales').within(() => {
+      cy.contains('span', 'editor');
+      cy.contains('span', 'colla');
+      cy.contains('span', 'Cynthia');
+      cy.contains('button', 'Edit');
+    });
+    cy.contains('button', 'Add group').should('be.visible');
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
     cy.checkA11y(undefined, undefined, logA11yViolations);
