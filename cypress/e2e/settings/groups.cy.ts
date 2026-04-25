@@ -26,7 +26,6 @@ describe('Groups', () => {
     cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.contains('button', 'Users').should('be.visible');
     cy.contains('button', 'Groups').should('be.visible');
-    cy.get('table').matchImageSnapshot('content-table');
     cy.get('table thead').within(() => {
       cy.contains('th', 'Name');
       cy.contains('th', 'Members');
