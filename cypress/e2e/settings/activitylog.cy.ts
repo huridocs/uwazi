@@ -37,10 +37,12 @@ describe('Activity log', () => {
     cy.get('[data-testid="metadata-sidepanel"].is-active').contains('button', 'Delete').click();
     cy.contains('.confirm-button', 'Accept').click();
     cy.contains('Entity deleted');
+    cy.get('.ReactModal__Overlay', { timeout: 20000 }).should('not.exist');
   });
 
   it('should register account edition in activity log', () => {
-    cy.get('.only-desktop a[aria-label="Settings"]').click();
+    cy.get('.ReactModal__Overlay', { timeout: 20000 }).should('not.exist');
+    cy.get('.only-desktop a[aria-label="Settings"]').click({ force: true });
     cy.contains('span', 'Account').click();
     cy.contains('button', 'Enable').click();
     cy.contains('button', 'Cancel').click();

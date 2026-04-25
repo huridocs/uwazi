@@ -8,7 +8,7 @@ import {
   SunIcon,
 } from '@heroicons/react/24/outline';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { SiteName } from '#app/App/SiteName.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
 import { settingsAtom, themeModeAtom, userAtom } from '../../../atoms/index.js';
@@ -80,6 +80,7 @@ const Header = () => {
               to={libraryUrl}
               className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors"
               activeClassname="header-bar-button-active"
+              aria-label={t('System', 'Library', null, false)}
             >
               <BookOpenIcon className="h-4 w-4" />
               {!isMobile ? <Translate>Library</Translate> : null}
@@ -90,6 +91,7 @@ const Header = () => {
               to="/settings/account"
               className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors"
               activeClassname="header-bar-button-active"
+              aria-label={t('System', 'Settings', null, false)}
             >
               <Cog6ToothIcon className="h-4 w-4" />
               {!isMobile ? <Translate>Settings</Translate> : null}

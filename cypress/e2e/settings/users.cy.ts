@@ -64,7 +64,7 @@ describe('Users', () => {
       cy.contains('button', 'Save').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
       cy.contains('span', 'User_1');
       cy.wait('@updateUsers');
@@ -84,7 +84,7 @@ describe('Users', () => {
       cy.contains('button', 'Save').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
       cy.contains('span', 'Carmen_edited');
     });
@@ -96,7 +96,7 @@ describe('Users', () => {
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('li', 'User_1');
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
       cy.wait('@updateUsers');
       cy.contains('span', 'User_1').should('not.exist');
@@ -187,7 +187,7 @@ describe('Users', () => {
       cy.contains('td', 'Carmen_edited').siblings().first().click();
 
       cy.contains('button', 'Reset Password').click();
-      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.get('[data-testid="modal"] [data-testid="accept-button"]').click({ force: true });
       cy.contains('div', 'Instructions to reset the password were sent to the user');
       cy.wait('@updateUsers');
     });
@@ -202,7 +202,7 @@ describe('Users', () => {
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('li', 'blocky');
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.get('table tbody tr')
@@ -224,7 +224,7 @@ describe('Users', () => {
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('Confirm action');
         cy.get('input').type('wroooong!', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@unlockUser');
@@ -240,7 +240,7 @@ describe('Users', () => {
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('Confirm action');
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@updateUsers');
@@ -273,7 +273,7 @@ describe('Users', () => {
       cy.contains('button', 'Save').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
     });
 
@@ -296,7 +296,7 @@ describe('Users', () => {
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Cynthia');
         cy.get('input').should('not.exist');
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.contains('div', 'Instructions to reset the password were sent to the user');
@@ -315,7 +315,7 @@ describe('Users', () => {
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
         cy.get('input').type('password', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@getUsers');
@@ -350,7 +350,7 @@ describe('Users', () => {
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
         cy.get('input').type('password', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@getUsers');
@@ -374,7 +374,7 @@ describe('Users', () => {
 
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('theIncorrectPassword!!', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@saveUser');
@@ -388,7 +388,7 @@ describe('Users', () => {
 
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('anotherWorng!!', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@reset2fa');

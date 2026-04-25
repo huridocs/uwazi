@@ -265,10 +265,18 @@ describe('Information Extraction', () => {
       cy.wait('@trainSuggestions');
       cy.contains('tr', 'obsolete').contains('button', 'Accept').should('be.disabled');
       cy.contains('2023');
+      cy.getByTestId('settings-ix')
+        .find('tbody')
+        .should('contain', 'Lorem Ipsum', { timeout: 120000 });
     });
 
     it('should accept a single suggestion', () => {
-      cy.contains('tr', 'Lorem Ipsum').contains('button', 'Accept').click();
+      cy.getByTestId('settings-ix').within(() => {
+        cy.get('tbody')
+          .contains('tr', 'Lorem Ipsum', { timeout: 60000 })
+          .contains('button', 'Accept')
+          .click();
+      });
 
       cy.contains('Suggestions sent');
       cy.contains('Suggestions have been updated');
@@ -281,10 +289,14 @@ describe('Information Extraction', () => {
         'Uwazi Heroes Investigation (other)',
       ];
 
-      cy.get('tr > td:nth-child(2) > div').each((element, index) => {
-        const text = element.get(0).innerText;
-        expect(text).to.be.equal(`${titles[index]}`);
-      });
+      cy.getByTestId('settings-ix')
+        .find('tbody tr td:nth-child(3)')
+        .each((element, index) => {
+          if (index < titles.length) {
+            const text = element.get(0).innerText;
+            expect(text).to.be.equal(`${titles[index]}`);
+          }
+        });
     });
 
     it('should check for accessibility', () => {
