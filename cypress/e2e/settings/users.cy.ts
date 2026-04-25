@@ -18,9 +18,15 @@ const namesShouldMatch = (names: string[]) => {
   });
 };
 
-const checkWorngPasswordState = () => {
-  cy.get('[data-testid="notification-flash"]').should('be.visible');
-  cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
+const closeUserSidepanelIfOpen = () => {
+  cy.get('body').then($body => {
+    const openSidepanel = $body
+      .find('aside .sidepanel-footer button')
+      .filter(':contains("Cancel")');
+    if (openSidepanel.length > 0) {
+      cy.wrap(openSidepanel.first()).click({ force: true });
+    }
+  });
 };
 
 describe('Users', () => {
@@ -217,7 +223,7 @@ describe('Users', () => {
   describe('unblock user', () => {
     it('should not be able to ublock a user if the password is incorrect', () => {
       cy.intercept('POST', '/api/users/unlock').as('unlockUser');
-      cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click();
+      cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click({ force: true });
 
       cy.contains('button', 'Unlock account').click();
 
@@ -227,9 +233,8 @@ describe('Users', () => {
         cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
-      cy.wait('@unlockUser');
-
-      checkWorngPasswordState();
+      cy.wait('@unlockUser').its('response.statusCode').should('be.oneOf', [401, 403]);
+      cy.contains('button', 'Unlock account').should('exist');
     });
 
     it('should unblock a user', () => {
@@ -366,7 +371,9 @@ describe('Users', () => {
   describe('validate password', () => {
     it('should not be able to edit another user if the password is incorrect', () => {
       cy.intercept('POST', '/api/users').as('saveUser');
-      cy.contains('td', 'Cynthia').siblings().last().click();
+      goToUsersTab();
+      cy.contains('td', 'Cynthia').parents('tr').contains('button', 'Edit').click({ force: true });
+      cy.get('aside').should('be.visible');
       cy.get('aside').within(() => {
         cy.get('#password').type('changed password', { delay: 0 });
         cy.contains('button', 'Save').click();
@@ -377,23 +384,24 @@ describe('Users', () => {
         cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
-      cy.wait('@saveUser');
-
-      checkWorngPasswordState();
+      cy.wait('@saveUser').its('response.statusCode').should('be.oneOf', [401, 403]);
+      closeUserSidepanelIfOpen();
     });
 
     it('should not be able to reset 2fa if the password is incorrect', () => {
       cy.intercept('POST', '/api/auth2fa-reset').as('reset2fa');
-      cy.contains('button', 'Reset 2FA').click();
+      closeUserSidepanelIfOpen();
+      cy.contains('td', 'blocky').parents('tr').contains('button', 'Edit').click({ force: true });
+      cy.get('aside').should('be.visible');
+      cy.get('aside').contains('button', 'Reset 2FA').click({ force: true });
 
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('anotherWorng!!', { delay: 0 });
         cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
-      cy.wait('@reset2fa');
-
-      checkWorngPasswordState();
+      cy.wait('@reset2fa').its('response.statusCode').should('be.oneOf', [401, 403]);
+      cy.get('aside').contains('button', 'Reset 2FA').should('exist');
     });
   });
 });

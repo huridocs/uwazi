@@ -53,6 +53,7 @@ const App = ({ customParams }) => {
 
   const isV2Route =
     location.pathname.includes('/entityv2') || location.pathname.includes('/settings');
+  const shouldUseThemeWrapper = shouldShowNewHeader || isV2Route;
 
   socket.on('updateSettings', _settings => {
     setSettings(_settings);
@@ -88,14 +89,22 @@ const App = ({ customParams }) => {
           )}
         </main>
       </div>
-      {inlineEditState.inlineEdit && inlineEditState.context && (
-        <ThemeProvider>
+      {inlineEditState.inlineEdit &&
+        inlineEditState.context &&
+        (shouldUseThemeWrapper ? (
+          <ThemeProvider>
+            <TranslateModal />
+          </ThemeProvider>
+        ) : (
           <TranslateModal />
+        ))}
+      {shouldUseThemeWrapper ? (
+        <ThemeProvider>
+          <NotificationsPanel />
         </ThemeProvider>
-      )}
-      <ThemeProvider>
+      ) : (
         <NotificationsPanel />
-      </ThemeProvider>
+      )}
     </div>
   );
 };
