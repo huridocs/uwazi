@@ -62,7 +62,7 @@ const DefaultButton =
         className={
           cell.row.original.default
             ? 'w-4 text-white'
-            : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
+            : 'w-4 [color:var(--color-theme-text-on-solid)] stroke-current [stroke:var(--color-theme-border-default)] stroke-2'
         }
       />
     </Button>
@@ -86,7 +86,7 @@ const SyncedTemplateCell = ({ cell }: CellContext<TemplateRow, boolean>) =>
   cell.getValue() ? (
     <Tooltip
       content={
-        <div className="text-xs text-gray-600">
+        <div className="text-xs [color:var(--color-theme-text-muted)]">
           <Translate>The source of this template is a sync.</Translate>
           <br />
           <Translate>All editing options will be disabled.</Translate>

@@ -19,11 +19,14 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
   const referenceText = reference.reference.text || '';
   const textColor = useMemo(() => getContrastTextColor(templateColor), [templateColor]);
 
+  const surface = '[background-color:var(--color-theme-surface-raised)]';
+  const borderIdle =
+    '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
+  const borderClass = isSelected ? 'border-2 border-primary-400' : borderIdle;
+
   return (
     <div
-      className={`w-full border rounded-xl shadow-sm p-4 bg-white flex flex-col gap-3 cursor-pointer transition-colors ${
-        isSelected ? 'border-primary-400 border-2' : 'border-gray-100'
-      }`}
+      className={`flex w-full cursor-pointer flex-col gap-3 rounded-xl border p-4 shadow-sm transition-colors ${surface} ${borderClass}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -35,11 +38,13 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
       }}
     >
       <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-bold text-gray-900">{entityTitle}</h3>
+        <h3 className="text-sm font-bold [color:var(--color-theme-text-primary)]">{entityTitle}</h3>
       </div>
 
       {referenceText && (
-        <p className="text-sm font-medium text-gray-900 leading-relaxed">{referenceText}</p>
+        <p className="text-sm font-medium leading-relaxed [color:var(--color-theme-text-primary)]">
+          {referenceText}
+        </p>
       )}
 
       {templateName && (

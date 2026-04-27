@@ -60,7 +60,10 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
     <Breadcrumb className="relative! p-1 flex right-0 bg-transparent! m-0 w-full! flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
         <Breadcrumb.Item key={key} className="max-w-xs">
-          <I18NLink to={value} activeClassname="font-medium text-gray-700 hover:text-gray-900">
+          <I18NLink
+            to={value}
+            activeClassname="font-medium [color:var(--color-theme-text-secondary)] hover:[color:var(--color-theme-text-primary)]"
+          >
             <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
           </I18NLink>
         </Breadcrumb.Item>
@@ -91,13 +94,14 @@ SettingsContent.Footer = ({
   highlighted = false,
 }: SettingsContentFooterProps) => (
   <div
-    className={`bottom-0 left-0 w-full px-4 py-3 border-t sticky z-1 ${className}`}
-    style={{
-      borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
-      backgroundColor: highlighted
-        ? 'var(--color-theme-feedback-info-tint)'
-        : 'var(--color-theme-surface-page, var(--color-theme-bg-primary))',
-    }}
+    className={[
+      'sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3',
+      '[border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]',
+      highlighted
+        ? '[background-color:var(--color-theme-feedback-info-tint)]'
+        : '[background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]',
+      className,
+    ].join(' ')}
     data-testid="settings-content-footer"
   >
     {children}

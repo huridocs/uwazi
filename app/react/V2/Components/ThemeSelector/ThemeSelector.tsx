@@ -29,6 +29,7 @@ type ThemeSelectorProps = {
   onThemeAssetsChange?: (value: ThemeAssets) => void;
   siteLogo?: string | undefined;
   favicon?: string | undefined;
+  panelOpen?: boolean;
 };
 
 const ThemeSelector = ({
@@ -38,12 +39,14 @@ const ThemeSelector = ({
   onThemeAssetsChange,
   siteLogo,
   favicon,
+  panelOpen,
 }: ThemeSelectorProps) => {
   const activeThemeMode = useAtomValue(effectiveThemeModeAtom);
   const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
   const selectedPreset = getPresetId(themeVars, true);
   const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
+  const wasPanelOpen = React.useRef(false);
   const previewLogo = getThemeAsset(themeAssets, themeVars, previewMode, 'siteLogo', siteLogo);
   const previewFavicon = getThemeAsset(themeAssets, themeVars, previewMode, 'favicon', favicon);
   const resolvedPreviewTheme = React.useMemo(
@@ -104,6 +107,14 @@ const ThemeSelector = ({
   React.useEffect(() => {
     setPreviewMode(activeThemeMode);
   }, [activeThemeMode]);
+
+  React.useEffect(() => {
+    if (panelOpen === undefined) return;
+    if (panelOpen && !wasPanelOpen.current) {
+      setPreviewMode(activeThemeMode);
+    }
+    wasPanelOpen.current = panelOpen;
+  }, [panelOpen, activeThemeMode]);
 
   return (
     <div className="flex flex-col gap-6">

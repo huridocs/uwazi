@@ -26,7 +26,7 @@ export const DefaultFilterField = ({ control }: { control: any }) => (
               )}
               placement="right"
             >
-              <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+              <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
             </Tooltip>
           </span>
         }

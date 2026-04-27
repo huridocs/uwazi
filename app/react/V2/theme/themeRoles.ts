@@ -52,9 +52,6 @@ type ThemeRoles = {
   };
 };
 
-const LEGACY_SETTINGS_RAIL_BG = '#fcfcfc';
-const LEGACY_SETTINGS_NAV_ITEM_ACTIVE_BG = '#e0e7ff';
-
 const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): ThemeRoles => {
   const actionPrimary = resolved['--color-theme-accent-primary'];
   const primaryFg = getAccessibleForegroundOnBackground(
@@ -109,12 +106,8 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       appBarActive: resolved['--color-theme-bg-muted'],
       appBarFg,
       separator: resolved['--color-theme-border-primary'],
-      settingsRailBg:
-        presetId === 'legacy' ? LEGACY_SETTINGS_RAIL_BG : resolved['--color-theme-bg-muted'],
-      settingsNavItemActiveBg:
-        presetId === 'legacy'
-          ? LEGACY_SETTINGS_NAV_ITEM_ACTIVE_BG
-          : resolved['--color-theme-bg-selected'],
+      settingsRailBg: resolved['--color-theme-bg-muted'],
+      settingsNavItemActiveBg: resolved['--color-theme-bg-selected'],
     },
   };
 };

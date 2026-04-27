@@ -3,6 +3,7 @@ import { getStore } from '#shared/atomStore/index.js';
 import { t } from '#app/I18N/index.js';
 import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
 import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { setConnected, endTask, notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { store } from '../store.js';
@@ -81,7 +82,7 @@ socket.on('templateDelete', payload => {
 
 socket.on('updateSettings', settings => {
   const atomStore = getStore();
-  atomStore.set(settingsAtom, settings);
+  atomStore.set(settingsAtom, prev => mergeClientSettings(prev, settings));
 });
 
 socket.on('thesauriChange', thesaurus => {

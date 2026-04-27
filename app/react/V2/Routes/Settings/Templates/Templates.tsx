@@ -102,7 +102,7 @@ const Templates = () => {
             enableSelections
             onSelect={({ selectedRows }) => setSelected(Object.keys(selectedRows))}
             defaultSorting={[{ id: 'name', desc: false }]}
-            className="bg-white"
+            className="[background-color:var(--color-theme-surface-raised,var(--color-theme-bg-surface))]"
           />
         </SettingsContent.Body>
         <SettingsContent.Footer>
@@ -119,7 +119,7 @@ const Templates = () => {
                 <Button variant="danger" onClick={handleDeleteClick}>
                   <Translate>Delete</Translate>
                 </Button>
-                <span className="text-gray-700">
+                <span className="[color:var(--color-theme-text-secondary)]">
                   <Translate>Selected</Translate> {selected.length} <Translate>of</Translate>{' '}
                   {templates.length}
                 </span>

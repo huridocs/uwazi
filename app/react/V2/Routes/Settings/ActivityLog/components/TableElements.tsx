@@ -138,7 +138,8 @@ const getActivityLogColumns = (setSelectedEntry: any) => [
     cell: ViewCell,
     meta: {
       action: setSelectedEntry,
-      headerClassName: 'sr-only invisible bg-gray-50 w-1/12',
+      headerClassName:
+        'sr-only invisible w-1/12 [background-color:var(--color-theme-surface-muted)]',
       contentClassName: 'text-center w-1/12',
     },
   }),

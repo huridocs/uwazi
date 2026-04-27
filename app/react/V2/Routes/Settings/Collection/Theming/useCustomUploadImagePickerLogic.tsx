@@ -6,6 +6,7 @@ import { notify } from '#V2/utils/notifyBridge.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import {
   assetUrl,
+  isImageFile,
   sizeRuleKey,
   type ImageFeedback,
   type ImageSizeRule,
@@ -13,6 +14,8 @@ import {
 import { useCustomUploadPickerBasics } from './useCustomUploadPickerBasics.js';
 import { useImageValidators } from './useImageValidators.js';
 import { useModalGridFilter } from './useModalGridFilter.js';
+
+const localFileKey = (file: File) => `${file.name}:${file.size}:${file.lastModified}`;
 
 type Args = {
   sizeRule: ImageSizeRule | undefined;
@@ -30,6 +33,9 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
   const [uploadProgress, setUploadProgress] = useState<{ filename?: string; progress?: number }>(
     {}
   );
+  const [uploadFileFeedback, setUploadFileFeedback] = useState<
+    Record<string, ImageFeedback | null>
+  >({});
   const { uploadService, images, imagesKey } = useCustomUploadPickerBasics(files);
   const { validateAssetUrl, validateFiles } = useImageValidators(sizeRule);
   const trimmed = value?.trim() ?? '';
@@ -80,6 +86,23 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     };
   }, [trimmed, ruleKey, sizeRule, validateAssetUrl]);
 
+  useEffect(() => {
+    if (!open) {
+      setFilesToUpload([]);
+      setUploadFileFeedback({});
+    }
+  }, [open]);
+
+  const handleDropzoneFiles = async (newFiles: File[]) => {
+    const result = await validateFiles(newFiles);
+    setFilesToUpload(result.acceptedFiles);
+    setUploadFileFeedback(
+      Object.fromEntries(result.perFile.map(({ file, feedback }) => [localFileKey(file), feedback]))
+    );
+  };
+
+  const getUploadFileFeedback = (file: File) => uploadFileFeedback[localFileKey(file)] ?? null;
+
   const notifyUploadResult = (responses: (FileType | FetchResponseError)[]) => {
     const hasErrors = responses.some(
       response => response instanceof FetchResponseError || !response._id
@@ -108,9 +131,7 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     const responses = await uploadService.upload([...filesToUpload]);
     const uploadedImage = responses.find(
       (response): response is FileType =>
-        !(response instanceof FetchResponseError) &&
-        Boolean(response._id) &&
-        Boolean(response.mimetype?.startsWith('image/'))
+        !(response instanceof FetchResponseError) && Boolean(response._id) && isImageFile(response)
     );
 
     notifyUploadResult(responses);
@@ -124,6 +145,7 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
 
       if (feedback?.type === 'error') {
         setFilesToUpload([]);
+        setUploadFileFeedback({});
         setUploadProgress({});
         setUploading(false);
         return;
@@ -133,6 +155,7 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     }
 
     setFilesToUpload([]);
+    setUploadFileFeedback({});
     setUploadProgress({});
     setUploading(false);
   };
@@ -151,6 +174,8 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     modalGridImages,
     modalGridPending,
     validateFiles,
+    handleDropzoneFiles,
+    getUploadFileFeedback,
     pick,
     handleUpload,
     sizeRule,

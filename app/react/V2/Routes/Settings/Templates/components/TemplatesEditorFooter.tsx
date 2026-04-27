@@ -40,7 +40,7 @@ export const TemplatesEditorFooter = ({
           <Button variant="danger" onClick={onDelete}>
             <Translate>Remove</Translate>
           </Button>
-          <span className="text-gray-700">
+          <span className="[color:var(--color-theme-text-secondary)]">
             <Translate>Selected</Translate> {selected.length}
           </span>
         </>

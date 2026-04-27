@@ -4,9 +4,9 @@ export const faviconImageSizeRule: ImageSizeRule = {
   policy: 'strict',
   assetLabel: 'favicon',
   minWidth: 16,
-  maxWidth: 512,
+  maxWidth: 2048,
   minHeight: 16,
-  maxHeight: 512,
+  maxHeight: 2048,
   square: true,
 };
 
@@ -16,6 +16,6 @@ export const themeLogotypeImageSizeRule: ImageSizeRule = {
   minWidth: 48,
   maxWidth: 800,
   minHeight: 16,
-  maxHeight: 120,
+  maxHeight: 256,
   square: false,
 };

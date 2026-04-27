@@ -3,8 +3,17 @@ import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { FileDropzone } from '#V2/Components/Forms/index.js';
-import { type ImageSizeRule } from './customUploadImagePickerLib.js';
+import type { ImageFeedback, ImageSizeRule } from './customUploadImagePickerLib.js';
 import { GallerySection } from './GallerySection.js';
+import { ImageValidationIconButton } from './ImageValidationIconButton.js';
+
+const uploadFileTrailing = (
+  file: File,
+  getFeedback: (f: File) => ImageFeedback | null
+): React.ReactNode => {
+  const fb = getFeedback(file);
+  return fb ? <ImageValidationIconButton feedback={fb} /> : null;
+};
 
 type CustomUploadImagePickerModalProps = {
   selectButtonTitle: React.ReactNode;
@@ -14,7 +23,7 @@ type CustomUploadImagePickerModalProps = {
   uploading: boolean;
   uploadProgress: { filename?: string; progress?: number };
   onUpload: () => void;
-  validationControl: React.ReactNode;
+  getUploadFileFeedback: (file: File) => ImageFeedback | null;
   images: FileType[];
   emptyGalleryHint: React.ReactNode;
   modalGridPending: boolean;
@@ -32,7 +41,7 @@ const CustomUploadImagePickerModal = ({
   uploading,
   uploadProgress,
   onUpload,
-  validationControl,
+  getUploadFileFeedback,
   images,
   emptyGalleryHint,
   modalGridPending,
@@ -54,6 +63,7 @@ const CustomUploadImagePickerModal = ({
           </p>
           <FileDropzone
             className="w-full min-w-0 max-w-full"
+            fileTrailing={file => uploadFileTrailing(file, getUploadFileFeedback)}
             onChange={newFiles => {
               Promise.resolve(onDropzoneFiles(newFiles)).catch(() => undefined);
             }}
@@ -77,8 +87,6 @@ const CustomUploadImagePickerModal = ({
             </Button>
           </div>
         </div>
-
-        {validationControl ? <div className="flex justify-end">{validationControl}</div> : null}
 
         <GallerySection
           images={images}

@@ -82,7 +82,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                   Download a third-party authenticator app from your mobile store.
                 </Translate>
                 &nbsp;
-                <span no-translate className="italic text-gray-500">
+                <span no-translate className="italic [color:var(--color-theme-text-muted)]">
                   (Google Authenticator, LastPass Authenticator, Microsoft Authenticator, Authy,
                   etc.)
                 </span>
@@ -95,7 +95,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
               </li>
             </ol>
             <p>
-              <Translate className="italic text-gray-500">
+              <Translate className="italic [color:var(--color-theme-text-muted)]">
                 Instructions on how to achieve this will vary according to the app used, please
                 refer to the app's documentation.
               </Translate>
@@ -124,7 +124,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                   <Translate className="block">
                     You can also enter this secret key into your Authenticator app.
                   </Translate>
-                  <Translate className="block italic text-gray-500">
+                  <Translate className="block italic [color:var(--color-theme-text-muted)]">
                     *please keep this key secret and don't share it.
                   </Translate>
                 </>

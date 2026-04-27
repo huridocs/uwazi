@@ -54,11 +54,15 @@ const ParagraphExtractorDashboard = () => {
               <Button variant="danger" type="button" onClick={() => setdeletedialogIsopen(true)}>
                 <Translate>Delete</Translate>
               </Button>
-              <div className="text-gray-500">
+              <div className="[color:var(--color-theme-text-muted)]">
                 <Translate>Selected</Translate>
-                <span className="font-semibold text-gray-900">{selected.length}</span>
+                <span className="font-semibold [color:var(--color-theme-text-primary)]">
+                  {selected.length}
+                </span>
                 <Translate>of</Translate>
-                <span className="font-semibold text-gray-900">{paragraphExtractorData.length}</span>
+                <span className="font-semibold [color:var(--color-theme-text-primary)]">
+                  {paragraphExtractorData.length}
+                </span>
               </div>
             </div>
           ) : (

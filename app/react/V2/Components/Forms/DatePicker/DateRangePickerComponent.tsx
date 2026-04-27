@@ -171,7 +171,7 @@ const DateRangePickerComponent = React.forwardRef(
             >
               <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                 <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
+                  className="z-3 h-4 w-4 [color:var(--color-theme-control-text-muted)]"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -204,7 +204,7 @@ const DateRangePickerComponent = React.forwardRef(
             <div className="relative">
               <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                 <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
+                  className="z-3 h-4 w-4 [color:var(--color-theme-control-text-muted)]"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"

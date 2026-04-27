@@ -99,7 +99,7 @@ const FiltersSidepanel = ({
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
         <Sidepanel.Body className="flex flex-col grow gap-4">
           <Card>
-            <div className="text-sm font-semibold text-gray-700 mb-2">
+            <div className="mb-2 text-sm font-semibold [color:var(--color-theme-text-secondary)]">
               <Translate>All data</Translate>
             </div>
             <div className="flex items-center gap-x-1">
@@ -110,7 +110,7 @@ const FiltersSidepanel = ({
                   checkOption(e, 'labeled');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.labeled}</div>
             </div>
             <div className="flex items-center gap-x-1">
@@ -121,7 +121,7 @@ const FiltersSidepanel = ({
                   checkOption(e, 'nonLabeled');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.nonLabeled}</div>
             </div>
             <div className="flex items-center gap-x-1">
@@ -132,13 +132,13 @@ const FiltersSidepanel = ({
                   checkOption(e, 'useForTraining');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.useForTraining}</div>
             </div>
           </Card>
 
           <Card>
-            <div className="text-sm font-semibold text-gray-700 mb-2">
+            <div className="mb-2 text-sm font-semibold [color:var(--color-theme-text-secondary)]">
               <Translate>Status</Translate>
             </div>
             <div className="flex items-center gap-x-1">
@@ -149,7 +149,7 @@ const FiltersSidepanel = ({
                   checkOption(e, 'nonProcessed');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.nonProcessed}</div>
             </div>
             <div className="flex items-center gap-x-1">
@@ -160,7 +160,7 @@ const FiltersSidepanel = ({
                   checkOption(e, 'obsolete');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.obsolete}</div>
             </div>
             <div className="flex items-center gap-x-1">
@@ -171,13 +171,13 @@ const FiltersSidepanel = ({
                   checkOption(e, 'error');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.error}</div>
             </div>
           </Card>
 
           <Card>
-            <div className="text-sm text-gray-700 mb-2">
+            <div className="mb-2 text-sm [color:var(--color-theme-text-secondary)]">
               <Translate className="font-semibold">Processed</Translate>
             </div>
             <div className="flex items-center gap-x-1">
@@ -188,7 +188,7 @@ const FiltersSidepanel = ({
                   checkOption(e, 'match');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.match}</div>
             </div>
             <div className="flex items-center gap-x-1">
@@ -199,7 +199,7 @@ const FiltersSidepanel = ({
                   checkOption(e, 'mismatch');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.mismatch}</div>
             </div>
             <div className="flex items-center gap-x-1">
@@ -210,23 +210,23 @@ const FiltersSidepanel = ({
                   checkOption(e, 'noContext');
                 }}
               />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <div className="flex-none font-mono font-bold">{aggregation.noContext}</div>
             </div>
           </Card>
 
           <Card>
-            <div className="text-sm font-semibold text-gray-700 mb-2">
+            <div className="mb-2 text-sm font-semibold [color:var(--color-theme-text-secondary)]">
               <Translate>Statistics</Translate>
             </div>
             <dl className="flex items-center gap-x-1" role="list">
               <div className="flex gap-2 items-center">
                 <StatsTooltip content="accuracy" />
-                <dt className="font-normal not-italic text-gray-900">
+                <dt className="font-normal not-italic [color:var(--color-theme-text-primary)]">
                   <Translate>Accuracy</Translate>
                 </dt>
               </div>
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-1 border-t border-dashed [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_50%,transparent)]" />
               <dd className="flex-none font-mono font-bold">{aggregation.accuracy}%</dd>
             </dl>
           </Card>

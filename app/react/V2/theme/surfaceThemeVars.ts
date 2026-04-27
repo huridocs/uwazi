@@ -47,17 +47,17 @@ const getControlThemeVars = (
   resolved: ResolvedThemeVars,
   roles: ThemeRoles = getThemeRoles(presetId, resolved)
 ): Record<string, string> => ({
-  [CONTROL_BG]: getPresetValue(presetId, '#F9FAFB', roles.surface.warm),
-  [CONTROL_BG_ERROR]: getPresetValue(presetId, '#FEF2F2', roles.feedback.dangerTint),
-  [CONTROL_BG_DISABLED]: getPresetValue(presetId, '#F9FAFB', roles.surface.warm),
+  [CONTROL_BG]: roles.surface.warm,
+  [CONTROL_BG_ERROR]: roles.feedback.dangerTint,
+  [CONTROL_BG_DISABLED]: roles.surface.warm,
   [CONTROL_BORDER]: roles.border.default,
   [CONTROL_BORDER_ERROR]: getPresetValue(presetId, '#FCA5A5', roles.feedback.danger),
   [CONTROL_BORDER_FOCUS]: roles.border.focus,
   [CONTROL_TEXT]: roles.text.primary,
   [CONTROL_TEXT_DISABLED]: getPresetValue(presetId, '#6B7280', roles.text.muted),
   [CONTROL_TEXT_ERROR]: getAccessibleForegroundOnBackground(
-    getPresetValue(presetId, '#FEF2F2', roles.feedback.dangerTint),
-    getPresetValue(presetId, '#991B1B', roles.feedback.danger)
+    roles.feedback.dangerTint,
+    roles.feedback.danger
   ).foreground,
   [CONTROL_TEXT_MUTED]: roles.text.muted,
   [CONTROL_PLACEHOLDER]: roles.text.muted,

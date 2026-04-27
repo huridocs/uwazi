@@ -12,6 +12,7 @@ import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
 import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
 import { Button, Card, Tooltip } from '#V2/Components/UI/index.js';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
@@ -137,7 +138,7 @@ const Collection = () => {
         response.message || undefined
       );
     } else {
-      setSettings(response);
+      setSettings(prev => mergeClientSettings(prev, response));
       notify('success', t('System', 'Settings updated', null, false));
     }
     await revalidator.revalidate();
@@ -208,7 +209,7 @@ const Collection = () => {
                     onChange={v => setValue('favicon', v, { shouldDirty: true })}
                     files={customUploadFiles}
                     selectButtonTitle={<Translate>Select favicon image</Translate>}
-                    recommendedSize="16x16 to 512x512 px (square)"
+                    recommendedSize="16x16 to 2048x2048 px (square)"
                     sizeRule={faviconImageSizeRule}
                     previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]"
                   />

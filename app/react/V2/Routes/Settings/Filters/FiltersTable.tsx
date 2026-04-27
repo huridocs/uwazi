@@ -7,6 +7,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { useSetAtom } from 'jotai';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
@@ -113,7 +114,7 @@ const FiltersTable = () => {
       );
       return;
     }
-    setSettings(response);
+    setSettings(prev => mergeClientSettings(prev, response));
     setDisabled(false);
     setHasChanges(false);
     await revalidator.revalidate();

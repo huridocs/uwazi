@@ -1,9 +1,10 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable max-statements */
+
 import { getStore } from '#shared/atomStore/index.js';
 import * as uploadActions from '#app/Uploads/actions/uploadsActions.js';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '#V2/atoms/index.js';
 import { socket } from '../../socket.js';
 import '../sockets.js';
@@ -210,8 +211,14 @@ describe('sockets', () => {
     });
 
     it('should emit a updateSettings event and update the store', () => {
-      socket._callbacks.$updateSettings[0]({ payload: 'new settings' });
-      expect(atomStore.set).toHaveBeenCalledWith(settingsAtom, { payload: 'new settings' });
+      const incoming = { payload: 'new settings' };
+      socket._callbacks.$updateSettings[0](incoming);
+      expect(atomStore.set).toHaveBeenCalledWith(settingsAtom, expect.any(Function));
+      const setCall = atomStore.set.mock.calls.find(call => call[0] === settingsAtom);
+      expect(setCall).toBeDefined();
+      const updater = setCall[1];
+      const prev = { key: 'value' };
+      expect(updater(prev)).toEqual(mergeClientSettings(prev, incoming));
     });
   });
 

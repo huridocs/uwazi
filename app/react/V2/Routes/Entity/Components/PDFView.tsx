@@ -170,7 +170,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
     <Panel className="gap-2">
       <Panel.Body>
         <div className="flex flex-col gap-2">
-          <div className="w-full p-4 rounded-md bg-gray-50">
+          <div className="w-full rounded-md p-4 [background-color:var(--color-theme-surface-muted)]">
             <div className="flex flex-row justify-between gap-2">
               <div>
                 <TemplateLabel
@@ -185,7 +185,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
                 </label>
                 <select
                   id="render-mode"
-                  className="bg-white rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800"
+                  className="rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800 [background-color:var(--color-theme-surface-raised)]"
                   value={isRaw ? 'raw' : 'normal'}
                   onChange={onDisplayModeChange}
                 >
@@ -195,7 +195,9 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
               </div>
             </div>
             <Truncate maxLength={80}>
-              <h2 className="font-bold text-gray-900 mt-2 text-lg">{originalname}</h2>
+              <h2 className="mt-2 text-lg font-bold [color:var(--color-theme-text-primary)]">
+                {originalname}
+              </h2>
             </Truncate>
           </div>
           <div className={`flex-1 min-h-0 ${isRaw ? 'hidden' : 'block'}`}>
@@ -255,7 +257,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
                 type="button"
                 onClick={() => handlePageNavigation('prev')}
                 disabled={pageNumber <= 1}
-                className="text-primary-700 disabled:text-gray-500"
+                className="text-primary-700 disabled:[color:var(--color-theme-text-muted)]"
               >
                 <Translate>Previous</Translate>
               </button>
@@ -266,7 +268,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
                 type="button"
                 onClick={() => handlePageNavigation('next')}
                 disabled={totalPages ? nextPage > totalPages : false}
-                className="text-primary-700 disabled:text-gray-500"
+                className="text-primary-700 disabled:[color:var(--color-theme-text-muted)]"
               >
                 <Translate>Next</Translate>
               </button>

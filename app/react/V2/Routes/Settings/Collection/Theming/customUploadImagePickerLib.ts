@@ -24,7 +24,13 @@ const assetUrl = (file: FileType): string => {
   return '';
 };
 
-const isImageFile = (file: FileType): boolean => Boolean(file.mimetype?.startsWith('image/'));
+const hasImageExtension = (value: string | undefined): boolean =>
+  /\.(avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i.test(value ?? '');
+
+const isImageFile = (file: FileType): boolean =>
+  Boolean(file.mimetype?.startsWith('image/')) ||
+  hasImageExtension(file.filename) ||
+  hasImageExtension(file.originalname);
 
 const loadImageDimensions = async (src: string): Promise<ImageDimensions> =>
   new Promise((resolve, reject) => {

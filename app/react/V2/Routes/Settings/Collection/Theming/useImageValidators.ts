@@ -24,7 +24,11 @@ export const useImageValidators = (sizeRule: ImageSizeRule | undefined) =>
 
     const validateFiles = async (newFiles: File[]) => {
       if (!sizeRule || newFiles.length === 0) {
-        return { acceptedFiles: newFiles, feedback: null as ImageFeedback | null };
+        return {
+          acceptedFiles: newFiles,
+          feedback: null as ImageFeedback | null,
+          perFile: newFiles.map(file => ({ file, feedback: null as ImageFeedback | null })),
+        };
       }
 
       const validations = await Promise.all(
@@ -41,13 +45,11 @@ export const useImageValidators = (sizeRule: ImageSizeRule | undefined) =>
       );
 
       return {
-        acceptedFiles:
-          sizeRule.policy === 'strict'
-            ? validations
-                .filter(validation => validation.feedback?.type !== 'error')
-                .map(validation => validation.file)
-            : newFiles,
+        acceptedFiles: validations
+          .filter(validation => validation.feedback === null)
+          .map(validation => validation.file),
         feedback: validations.find(validation => validation.feedback)?.feedback ?? null,
+        perFile: validations,
       };
     };
 

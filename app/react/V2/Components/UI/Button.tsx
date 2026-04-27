@@ -42,17 +42,17 @@ const Button = ({
     primary: {
       small: 'px-3 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
-      default: 'px-3 py-1.5 text-xs',
+      default: 'px-4 py-2 text-sm',
     },
     secondary: {
       small: 'px-3 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
-      default: 'px-3 py-1.5 text-xs',
+      default: 'px-4 py-2 text-sm',
     },
     danger: {
       small: 'px-3 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
-      default: 'px-3 py-1.5 text-xs',
+      default: 'px-4 py-2 text-sm',
     },
     ghost: {
       small: 'px-3 py-1.5 text-xs',
@@ -67,17 +67,17 @@ const Button = ({
     success: {
       small: 'px-3 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
-      default: 'px-3 py-1.5 text-xs',
+      default: 'px-4 py-2 text-sm',
     },
     dangerSecondary: {
       small: 'px-3 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
-      default: 'px-3 py-1.5 text-xs',
+      default: 'px-4 py-2 text-sm',
     },
     successSecondary: {
       small: 'px-3 py-1.5 text-xs',
       medium: 'px-4 py-2 text-sm',
-      default: 'px-3 py-1.5 text-xs',
+      default: 'px-4 py-2 text-sm',
     },
     dangerSubtle: {
       small: 'px-3 py-1.5 text-xs',
