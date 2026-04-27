@@ -3,6 +3,10 @@ name: E2E Playwright IX
 on:
   workflow_call:
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   e2e-playwright-ix:
     runs-on: ubuntu-24.04
