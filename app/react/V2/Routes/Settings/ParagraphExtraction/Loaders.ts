@@ -115,11 +115,14 @@ const PXParagraphLoader =
       page: { number: Number(page), size: PAGE_SIZE },
     };
 
-    const [paragraphs, [sourceEntity], templates] = await Promise.all([
+    const [paragraphs, entityResponse, templates] = await Promise.all([
       pxParagraphApi.getByParagraphExtractorId(query, headers),
       entitiesApi.getBySharedId({ sharedId, language: defaultLanguage?.key || '' }, headers),
       templatesApi.get(headers),
     ]);
+
+    const [entities] = entityResponse;
+    const [sourceEntity] = entities || [];
 
     const template = templates.find(temp => temp._id === extractor.targetTemplateId);
     const textProperty = template?.properties?.find(

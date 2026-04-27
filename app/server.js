@@ -39,13 +39,7 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
 import { serverSideRender } from './react/server.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
-import { ElasticSearchBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/ElasticSearchBootstrapper.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { IndexMappingRegistry } from '#api/core/infrastructure/elasticSearch/IndexMappingRegistry.js';
-import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -177,26 +171,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     });
 
     setupQueueWorker({ standAloneProcess: false });
-  }
-
-  if (config.defaultTenant.featureFlags.v2ElasticSearch) {
-    // ===========Bootstrap Elastic Search===========
-    const elasticSearchBootstrapper = new ElasticSearchBootstrapper({
-      client: ElasticSearchClientFactory.getInstance(),
-      logger: LoggerFactory.systemLogger(),
-      registry: IndexMappingRegistry,
-    });
-    await elasticSearchBootstrapper.execute();
-    // ==============================================
-
-    // ===========Bootstrap Mongo Slots (per-tenant)===========
-    await ArrayUtils.parallelFor(Object.keys(tenants.tenants), tenantName =>
-      tenants.run(async () => {
-        const slotsBootstrapper = new MongoSlotsBootstrapper({ database: getConnection() });
-        await slotsBootstrapper.execute();
-      }, tenantName)
-    );
-    // ========================================================
   }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];

@@ -1,5 +1,12 @@
+/* eslint-disable no-continue */
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { MetadataObjectSchema, MetadataSchema } from '#shared/types/commonTypes.js';
+import {
+  MetadataObjectSchema,
+  MetadataSchema,
+  LanguageISO6391,
+} from '#shared/types/commonTypes.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
 import { Serialize } from '../../mongodb/common/Serialize.js';
 import {
@@ -9,7 +16,13 @@ import {
   GeoPointValue,
   SlottedMetadata,
 } from './EntityElasticDocument.js';
+import { MongoSlotsDAO } from './MongoSlotsDAO.js';
 import type { SlotMap } from './MongoSlotsDAO.js';
+import { SlotTypeRegistry } from './SlotTypeRegistry.js';
+
+type MappedDocument = { sharedId: string; document: EntityElasticDocument };
+type RelationshipSlotFamily = (typeof relationshipSlotFamilies)[number] | 'relationship_';
+type InheritedValues = NonNullable<MetadataObjectSchema['inheritedValue']>;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -92,9 +105,6 @@ const relationshipSlotFamilies = [
   'relationship_geolocation_',
 ] as const;
 
-type RelationshipSlotFamily = (typeof relationshipSlotFamilies)[number] | 'relationship_';
-type InheritedValues = NonNullable<MetadataObjectSchema['inheritedValue']>;
-
 const getRelationshipSlotFamily = (slotName: string): RelationshipSlotFamily =>
   relationshipSlotFamilies.find(family => slotName.startsWith(family)) || 'relationship_';
 
@@ -156,77 +166,123 @@ const toRelationshipBySlot = (
 };
 
 class EntityElasticDocumentMapper {
-  static toDocuments(entities: EntityDBO[], slotMap: SlotMap): EntityElasticDocument[] {
-    return entities.map(entity => this.toDocument(entity, slotMap));
+  static toDocuments(entities: EntityDBO[], slotMap: SlotMap): MappedDocument[] {
+    const groups = new Map<string, EntityDBO[]>();
+    for (const entity of entities) {
+      const group = groups.get(entity.sharedId) ?? [];
+      group.push(entity);
+      groups.set(entity.sharedId, group);
+    }
+
+    return [...groups.entries()].map(([sharedId, variants]) => ({
+      sharedId,
+      document: this.buildDocument(sharedId, variants, slotMap),
+    }));
   }
 
-  private static toDocument(entity: EntityDBO, slotMap: SlotMap): EntityElasticDocument {
+  private static buildDocument(
+    sharedId: string,
+    variants: EntityDBO[],
+    slotMap: SlotMap
+  ): EntityElasticDocument {
+    const first = variants[0];
+
+    const rawEntities: Partial<Record<LanguageISO6391, Serialize<EntityDBO>>> = {};
+    for (const variant of variants) {
+      rawEntities[variant.language as LanguageISO6391] = variant as unknown as Serialize<EntityDBO>;
+    }
+
+    const slottedMetadata: Record<string, unknown> = {};
+
+    for (const variant of variants) {
+      const lang = variant.language as LanguageISO6391;
+
+      // Title (always translatable txt)
+      const titleSlotKey = MongoSlotsDAO.slotKey('title', lang);
+      const titleSlot = slotMap.get(titleSlotKey);
+      if (titleSlot) {
+        slottedMetadata[titleSlot.slotName] = [variant.title ?? ''];
+      }
+
+      const metadata = (variant.metadata as MetadataSchema) || {};
+
+      for (const [propertyName, entries] of Object.entries(metadata)) {
+        if (!entries) continue;
+
+        // Attempt translatable lookup first
+        const translatableKey = MongoSlotsDAO.slotKey(propertyName, lang);
+        const translatableSlot = slotMap.get(translatableKey);
+        if (translatableSlot) {
+          slottedMetadata[translatableSlot.slotName] = this.buildSlotValue(
+            translatableSlot.slotName,
+            translatableSlot.type,
+            entries
+          );
+          continue;
+        }
+
+        // Non-translatable: only process from first variant
+        if (variant !== first) continue;
+
+        const nonTranslatableSlot = slotMap.get(propertyName);
+        if (nonTranslatableSlot && !SlotTypeRegistry.isTranslatable(nonTranslatableSlot.type)) {
+          slottedMetadata[nonTranslatableSlot.slotName] = this.buildSlotValue(
+            nonTranslatableSlot.slotName,
+            nonTranslatableSlot.type,
+            entries
+          );
+        }
+      }
+    }
+
     return {
-      sharedId: entity.sharedId,
-      language: entity.language,
-      template: entity.template.toString(),
-      title: entity.title,
-      rawEntity: entity as unknown as Serialize<EntityDBO>,
-      metadata: this.buildSlottedMetadata((entity.metadata as MetadataSchema) || {}, slotMap),
-      published: entity.published,
-      permissionRefIds: this.buildPermissionRefIds(entity.permissions || []),
-      user: entity.user?.toString(),
-      creationDate: entity.creationDate,
-      editDate: entity.editDate,
+      sharedId,
+      template: first.template.toString(),
+      rawEntities,
+      metadata: slottedMetadata as SlottedMetadata,
+      published: first.published,
+      permissionRefIds: this.buildPermissionRefIds(first.permissions || []),
+      user: first.user?.toString(),
+      creationDate: first.creationDate,
+      editDate: first.editDate,
       fullText: { name: 'entity' },
     } as EntityElasticDocument;
   }
 
-  private static buildSlottedMetadata(metadata: MetadataSchema, slotMap: SlotMap): SlottedMetadata {
-    const slottedMetadata: Record<string, unknown> = {};
-
-    Object.entries(metadata).forEach(([propertyName, entries]) => {
-      const slot = slotMap.get(propertyName);
-
-      if (!entries || !slot) {
-        return;
-      }
-
-      const { slotName, type } = slot;
-
-      switch (type) {
-        case 'txt':
-          slottedMetadata[slotName] = entries.map(entry => toLinkValue(entry.value));
-          break;
-        case 'date':
-        case 'num':
-          slottedMetadata[slotName] = entries
-            .map(entry => toNumberValue(entry.value))
-            .filter((value): value is number => value !== null);
-          break;
-        case 'range':
-          slottedMetadata[slotName] = entries
-            .map(entry => toDateRangeValue(entry.value))
-            .filter((value): value is DateRange => value !== null);
-          break;
-        case 'select':
-          slottedMetadata[slotName] = entries.map(toSelectValue);
-          break;
-        case 'relationship':
-        case 'relationship_txt':
-        case 'relationship_num':
-        case 'relationship_date':
-        case 'relationship_range':
-        case 'relationship_select':
-        case 'relationship_geolocation':
-          slottedMetadata[slotName] = entries.map(entry => toRelationshipBySlot(slotName, entry));
-          break;
-        case 'geolocation':
-          slottedMetadata[slotName] = entries
-            .map(entry => toGeoPointValue(entry.value))
-            .filter((value): value is GeoPointValue => value !== null);
-          break;
-        default:
-          break;
-      }
-    });
-
-    return slottedMetadata as SlottedMetadata;
+  private static buildSlotValue(
+    slotName: string,
+    type: string,
+    entries: MetadataObjectSchema[]
+  ): unknown {
+    switch (type) {
+      case 'txt':
+        return entries.map(entry => toLinkValue(entry.value));
+      case 'date':
+      case 'num':
+        return entries
+          .map(entry => toNumberValue(entry.value))
+          .filter((value): value is number => value !== null);
+      case 'range':
+        return entries
+          .map(entry => toDateRangeValue(entry.value))
+          .filter((value): value is DateRange => value !== null);
+      case 'select':
+        return entries.map(toSelectValue);
+      case 'relationship':
+      case 'relationship_txt':
+      case 'relationship_num':
+      case 'relationship_date':
+      case 'relationship_range':
+      case 'relationship_select':
+      case 'relationship_geolocation':
+        return entries.map(entry => toRelationshipBySlot(slotName, entry));
+      case 'geolocation':
+        return entries
+          .map(entry => toGeoPointValue(entry.value))
+          .filter((value): value is GeoPointValue => value !== null);
+      default:
+        return undefined;
+    }
   }
 
   private static buildPermissionRefIds(permissions: PermissionSchema[]): string[] {
@@ -235,3 +291,4 @@ class EntityElasticDocumentMapper {
 }
 
 export { EntityElasticDocumentMapper };
+export type { MappedDocument };

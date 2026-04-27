@@ -10,6 +10,7 @@ import { EntityIndexerService } from '../entities/EntityIndexerService.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
 import type { MongoSlotsDAO, SlotMap } from '../entities/MongoSlotsDAO.js';
 import { EntityElasticDocument } from '../entities/EntityElasticDocument.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 const esClient = new ESClient({ node: config.elasticsearch.nodes });
 const indexName = `entity-indexer-service-test-${Date.now()}-${Math.random()}`;
@@ -53,19 +54,27 @@ const createEntity = (
   permissions: [],
 });
 
-const createSlotMap = (): SlotMap =>
-  new Map([
-    [
-      'indexedText',
+// Composite key (translatable): 'propertyName::language'
+const translatableSlotKey = (assignedTo: string, language: string) => `${assignedTo}::${language}`;
+
+/**
+ * Creates a SlotMap with translatable txt slots for `indexedText` keyed per language.
+ * Slot names are txt_01, txt_02, ... in the order languages are given.
+ */
+const createSlotMap = (languages: LanguageISO6391[] = ['en']): SlotMap =>
+  new Map(
+    languages.map((lang, i) => [
+      translatableSlotKey('indexedText', lang),
       {
         _id: new ObjectId(),
         assignedTo: 'indexedText',
-        slotName: 'txt_01',
-        type: 'txt',
+        slotName: `txt_0${i + 1}`,
+        type: 'txt' as const,
+        language: lang,
         rand: 0,
       },
-    ],
-  ]);
+    ])
+  );
 
 const queryBySharedId = async (tenantClient: TenantAwareESClient, sharedId: string) =>
   tenantClient.search<EntityElasticDocument>({
@@ -73,7 +82,7 @@ const queryBySharedId = async (tenantClient: TenantAwareESClient, sharedId: stri
     query: { term: { sharedId } },
   });
 
-const createSut = (tenantId = 'tenant-a') => {
+const createSut = (tenantId = 'tenant-a', slotMap: SlotMap = createSlotMap()) => {
   const resolver = TestUtils.mockClass<IndexNameResolver>({
     resolve: jest.fn().mockResolvedValue(indexName),
     invalidate: jest.fn(),
@@ -86,7 +95,7 @@ const createSut = (tenantId = 'tenant-a') => {
   });
 
   const slotsDAO = TestUtils.mockClass<MongoSlotsDAO>({
-    getSlotMap: jest.fn().mockResolvedValue(createSlotMap()),
+    getSlotMap: jest.fn().mockResolvedValue(slotMap),
   });
 
   const sut = new EntityIndexerService({
@@ -95,15 +104,6 @@ const createSut = (tenantId = 'tenant-a') => {
   });
 
   return { sut, slotsDAO, tenantClient };
-};
-
-const indexTwoLanguageVariants = async (sut: EntityIndexerService) => {
-  const entityEn = createEntity('shared-1', 'en', 'hello');
-  const entityEs = createEntity('shared-1', 'es', 'hola');
-
-  await sut.index([entityEn, entityEs], true);
-
-  return { entityEn, entityEs };
 };
 
 describe('EntityIndexerService', () => {
@@ -121,90 +121,105 @@ describe('EntityIndexerService', () => {
   });
 
   describe('index()', () => {
-    it('indexes entities using tenant routing and stamps tenant-scoped ids', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
-      const { entityEn, entityEs } = await indexTwoLanguageVariants(sut);
+    it('two variants of the same sharedId produce exactly one ES document', async () => {
+      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
 
-      const indexedEntities = await tenantClient.search<EntityElasticDocument>({
+      await sut.index(
+        [createEntity('shared-1', 'en', 'hello'), createEntity('shared-1', 'es', 'hola')],
+        true
+      );
+
+      const result = await tenantClient.search<EntityElasticDocument>({
         alias: EntityIndexMappingDefinition.alias,
         query: { match_all: {} },
       });
 
-      expect(indexedEntities.hits.hits.length).toBe(2);
+      expect(result.hits.hits).toHaveLength(1);
+    });
 
-      expect(indexedEntities.hits.hits).toEqual([
-        {
-          _index: indexName,
-          _id: `tenant-a__${entityEn._id.toString()}`,
-          _score: 1,
-          _routing: 'tenant-a',
-          _source: {
-            created_at: expect.any(String),
-            updated_at: expect.any(String),
-            sharedId: 'shared-1',
-            language: 'en',
-            template: entityEn.template.toString(),
-            title: 'Title en',
-            rawEntity: {
-              _id: entityEn._id.toString(),
-              sharedId: 'shared-1',
-              language: 'en',
-              template: entityEn.template.toString(),
-              title: 'Title en',
-              metadata: { indexedText: [{ value: 'hello' }] },
-              obsoleteMetadata: [],
-              published: true,
-              creationDate: 1000,
-              editDate: 2000,
-              user: entityEn.user?.toString(),
-              permissions: [],
-            },
-            metadata: { txt_01: ['hello'] },
-            published: true,
-            permissionRefIds: [],
-            user: entityEn.user?.toString(),
-            creationDate: 1000,
-            editDate: 2000,
-            fullText: { name: 'entity' },
-            tenantId: 'tenant-a',
-          },
-        },
-        {
-          _index: indexName,
-          _id: `tenant-a__${entityEs._id.toString()}`,
-          _score: 1,
-          _routing: 'tenant-a',
-          _source: {
-            created_at: expect.any(String),
-            updated_at: expect.any(String),
-            sharedId: 'shared-1',
-            language: 'es',
-            template: entityEs.template.toString(),
-            title: 'Title es',
-            rawEntity: {
-              _id: entityEs._id.toString(),
-              sharedId: 'shared-1',
-              language: 'es',
-              template: entityEs.template.toString(),
-              title: 'Title es',
-              metadata: { indexedText: [{ value: 'hola' }] },
-              obsoleteMetadata: [],
-              published: true,
-              creationDate: 1000,
-              editDate: 2000,
-              user: entityEs.user?.toString(),
-              permissions: [],
-            },
-            metadata: { txt_01: ['hola'] },
-            published: true,
-            permissionRefIds: [],
-            user: entityEs.user?.toString(),
-            creationDate: 1000,
-            editDate: 2000,
-            fullText: { name: 'entity' },
-            tenantId: 'tenant-a',
-          },
-        },
+    it('ES document is stored under id tenantId__sharedId with tenant routing', async () => {
+      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const entityEn = createEntity('shared-1', 'en', 'hello');
+      const entityEs = createEntity('shared-1', 'es', 'hola');
+
+      await sut.index([entityEn, entityEs], true);
+
+      const result = await tenantClient.search<EntityElasticDocument>({
+        alias: EntityIndexMappingDefinition.alias,
+        query: { match_all: {} },
+      });
+
+      expect(result.hits.hits[0]._id).toBe('tenant-a__shared-1');
+      expect(result.hits.hits[0]._routing).toBe('tenant-a');
+    });
+
+    it('rawEntities contains one entry per language variant', async () => {
+      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const templateId = new ObjectId();
+      const entityEn = createEntity('shared-1', 'en', 'hello', templateId);
+      const entityEs = createEntity('shared-1', 'es', 'hola', templateId);
+
+      await sut.index([entityEn, entityEs], true);
+
+      const [hit] = (
+        await tenantClient.search<EntityElasticDocument>({
+          alias: EntityIndexMappingDefinition.alias,
+          query: { match_all: {} },
+        })
+      ).hits.hits;
+
+      const source = hit._source as any;
+      expect(source.rawEntities).toMatchObject({
+        en: { sharedId: 'shared-1', language: 'en', title: 'Title en' },
+        es: { sharedId: 'shared-1', language: 'es', title: 'Title es' },
+      });
+      expect(source).not.toHaveProperty('rawEntity');
+      expect(source).not.toHaveProperty('language');
+      expect(source).not.toHaveProperty('title');
+    });
+
+    it('translatable metadata slots contain per-language values', async () => {
+      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+
+      await sut.index(
+        [createEntity('shared-1', 'en', 'hello'), createEntity('shared-1', 'es', 'hola')],
+        true
+      );
+
+      const [hit] = (
+        await tenantClient.search<EntityElasticDocument>({
+          alias: EntityIndexMappingDefinition.alias,
+          query: { match_all: {} },
+        })
+      ).hits.hits;
+
+      expect(hit._source!.metadata).toMatchObject({
+        txt_01: ['hello'],
+        txt_02: ['hola'],
+      });
+    });
+
+    it('flat input mixing two different sharedId values produces two ES documents', async () => {
+      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+
+      await sut.index(
+        [
+          createEntity('shared-aaa', 'en', 'foo'),
+          createEntity('shared-bbb', 'en', 'bar'),
+          createEntity('shared-aaa', 'es', 'fuu'),
+        ],
+        true
+      );
+
+      const result = await tenantClient.search<EntityElasticDocument>({
+        alias: EntityIndexMappingDefinition.alias,
+        query: { match_all: {} },
+      });
+
+      expect(result.hits.hits).toHaveLength(2);
+      expect(result.hits.hits.map(h => h._source!.sharedId).sort()).toEqual([
+        'shared-aaa',
+        'shared-bbb',
       ]);
     });
 
@@ -247,7 +262,7 @@ describe('EntityIndexerService', () => {
         expect(secondSource.updated_at).not.toBe(firstUpdatedAt);
       });
 
-      it('reflects updated field values', async () => {
+      it('reflects updated field values in rawEntities', async () => {
         const { sut, tenantClient } = createSut('tenant-a');
         const entity = createEntity('shared-update', 'en', 'original text');
 
@@ -256,7 +271,7 @@ describe('EntityIndexerService', () => {
 
         const result = await queryBySharedId(tenantClient, 'shared-update');
 
-        expect(result.hits.hits[0]._source!.title).toBe('Updated Title');
+        expect((result.hits.hits[0]._source as any).rawEntities.en.title).toBe('Updated Title');
       });
 
       it('removes metadata values no longer present in the entity', async () => {
@@ -277,7 +292,7 @@ describe('EntityIndexerService', () => {
 
   describe('deleteBySharedIds()', () => {
     it('issues tenant-routed deleteByQuery by sharedIds', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
+      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
 
       await sut.index(
         [
@@ -312,7 +327,7 @@ describe('EntityIndexerService', () => {
 
   describe('deleteByTemplateIds()', () => {
     it('issues tenant-routed deleteByQuery by templateIds', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
+      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
       const templateToDelete = new ObjectId();
       const templateToKeep = new ObjectId();
 
