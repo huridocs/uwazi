@@ -320,6 +320,17 @@ const fixtures: DBFixture = {
       openPublicEndpoint: true,
     },
   ],
+  segmentations: [
+    {
+      _id: db.id(),
+      fileID: uploadId,
+      filename: mainDocument1,
+      status: 'ready',
+      xmlname: 'english_testing_file.xml',
+      autoexpire: null,
+      segmentation: { page_height: 1, page_width: 1, paragraphs: [] },
+    },
+  ],
   users: [collabInGroupUser, collabUser, writerUser, adminUser, publicUser],
   groups: [
     {
