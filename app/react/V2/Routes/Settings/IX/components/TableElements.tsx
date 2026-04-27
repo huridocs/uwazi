@@ -200,6 +200,7 @@ const AcceptButton = ({
         icon={getIcon(color)}
         color={color}
         disabled={isDisabled}
+        data-testid="ix-accept-suggestion"
         onClick={async () => {
           setAccepted(prev => {
             const newSet = new Set(prev || []);
@@ -304,6 +305,7 @@ const UsedForTrainingCell = ({
     <button
       className="w-full flex justify-center disabled:cursor-not-allowed"
       disabled={disabled}
+      data-testid={usedForTraining ? 'ix-training-set-remove' : 'ix-training-set-add'}
       type="button"
       onClick={handleClick}
     >

@@ -87,6 +87,10 @@
     "cypress": "cypress open",
     "cy-components": "cypress run --component --config video=false --browser chrome",
     "cy-e2e": "cypress run --browser chrome",
+    "playwright:test": "playwright test",
+    "playwright:bootstrap": "playwright test playwright/e2e/bootstrap-state.spec.ts --workers=1",
+    "playwright:auth-contract": "playwright test playwright/e2e/auth-gate.contract.spec.ts --workers=1",
+    "playwright:ui": "playwright test --ui",
     "es:list": "tsx scripts/elasticSearch/ListIndexes.js",
     "es:migrate": "tsx scripts/elasticSearch/MigrateIndex.js"
   },
@@ -292,6 +296,7 @@
     "@eslint/compat": "^2.0.3",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.15.0",
+    "@playwright/test": "^1.54.2",
     "@simonsmith/cypress-image-snapshot": "^10.0.3",
     "@storybook/addon-docs": "10.3.0",
     "@storybook/addon-links": "10.3.0",

@@ -10,6 +10,7 @@ interface ButtonProps {
   className?: string;
   icon?: React.ReactNode;
   collapsed?: boolean;
+  'data-testid'?: string;
 }
 
 const EmbededButton = ({
@@ -22,6 +23,7 @@ const EmbededButton = ({
   icon,
   collapsed,
   className = '',
+  'data-testid': dataTestid = 'embeded-button',
 }: ButtonProps) => {
   let buttonColor = 'green';
   let childrenBaseStyle = 'text-sm';
@@ -60,6 +62,7 @@ const EmbededButton = ({
       disabled={disabled}
       className={`${className} ${buttonColor} ${collapsed || disabled ? '' : 'border'} px-2 py-[2px] text-xs disabled:cursor-not-allowed font-medium rounded-[4px] focus:outline-hidden`}
       form={form}
+      data-testid={dataTestid}
     >
       <div className="flex flex-row gap-1 justify-center items-center">
         <div className="w-3 h-3 text-sm">{icon}</div>

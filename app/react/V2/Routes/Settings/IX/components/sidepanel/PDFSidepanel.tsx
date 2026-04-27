@@ -186,6 +186,7 @@ const PDFSidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       size="large"
+      testId="ix-pdf-sidepanel"
       title={<Truncate maxLength={80}>{entity?.title}</Truncate>}
       closeSidepanelFunction={handleClose}
     >

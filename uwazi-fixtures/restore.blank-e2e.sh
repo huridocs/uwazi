@@ -12,6 +12,7 @@ mongorestore -h "$HOST" "uwazi-fixtures/dump/blank_e2e/" --db="$DB"
 
 echo "Resetting uploaded docs..."
 rm -rf ./uploaded_documents/*
+cp ./uwazi-fixtures/uploaded_documents/blank_e2e/* ./uploaded_documents/ 2>/dev/null || true
 
 echo "Running migrations..."
 if [ "$TRANSPILED" = true ]; then
