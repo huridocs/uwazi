@@ -69,8 +69,6 @@ describe('formatGeolocationProperty', () => {
           color: '#ff0000',
         },
       ],
-      inherited: undefined,
-      inheritedType: undefined,
     });
   });
 
@@ -88,8 +86,6 @@ describe('formatGeolocationProperty', () => {
       label: 'Missing Location',
       type: 'geolocation',
       values: [],
-      inherited: undefined,
-      inheritedType: undefined,
     });
   });
 });

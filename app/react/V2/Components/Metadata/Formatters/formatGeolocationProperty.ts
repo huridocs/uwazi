@@ -23,7 +23,7 @@ const formatGeolocationProperty = (
       const latitude = coordinate?.lat;
       const longitude = coordinate?.lon;
 
-      if (!latitude || !longitude) {
+      if (typeof latitude !== 'number' || typeof longitude !== 'number') {
         return [];
       }
 
@@ -31,7 +31,7 @@ const formatGeolocationProperty = (
         {
           value: { latitude, longitude },
           label: metadataValue?.label || label,
-          ...(metadataValue?.color ?? { color: metadataValue.color as string }),
+          ...(typeof metadataValue?.color === 'string' && { color: metadataValue.color }),
         },
       ];
     })
@@ -43,8 +43,6 @@ const formatGeolocationProperty = (
     label: property.label,
     type: 'geolocation',
     values,
-    inherited: property.inherited,
-    inheritedType: property.inheritedType,
   };
 };
 

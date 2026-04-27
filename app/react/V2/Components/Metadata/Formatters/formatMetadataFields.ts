@@ -3,7 +3,7 @@ import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
 
 const formatMetadataFields = (
   template?: ClientTemplateSchema,
-  groupGeolocationProperties = false
+  options?: { groupGeolocationProperties?: boolean }
 ): BaseMetadataProperty[] => {
   if (!template?.properties) {
     return [];
@@ -24,9 +24,12 @@ const formatMetadataFields = (
         type: property.type,
         inherited: Boolean(property.inherit),
         inheritedType: property.inherit?.type,
+        ...(property.type === 'relationship' && {
+          relationShipTarget: property.content || '',
+        }),
       };
 
-      if (groupGeolocationProperties && property.type === 'geolocation') {
+      if (options?.groupGeolocationProperties && property.type === 'geolocation') {
         const propertyGroup = [{ name: property.name, label: property.label }];
 
         for (let nextIndex = index + 1; nextIndex < templateProperties.length; nextIndex += 1) {

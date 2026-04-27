@@ -1,18 +1,28 @@
 import React from 'react';
 import { I18NLinkV2 } from '#app/I18N/index.js';
-import { RelationshipMetadataProperty } from '#V2/domain/entities/types.js';
-import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
-import { MetadataFieldProps } from '../types.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { MetadataFieldProps } from './MetadataFieldPropsType.js';
+import { RelationshipMetadataProperty } from '../MetadataPropertiesType.js';
+
+const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
 
 type RelationshipProps = MetadataFieldProps & {
-  values: Extract<RelationshipMetadataProperty['values'], Array<any>>;
+  values: RelationshipMetadataProperty['values'];
 };
 
+const isEntityRelationshipValue = (
+  value: RelationshipMetadataProperty['values'][number]
+): value is {
+  _id: string;
+  title: string;
+  templateId?: string;
+  icon?: { _id: string; label?: string };
+} => 'title' in value;
+
 const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => {
-  if (!values?.length) {
+  if (!Array.isArray(values) || !values.length || !values.every(isEntityRelationshipValue)) {
     return null;
   }
 
@@ -27,18 +37,18 @@ const Relationship = ({ label, translationContext, hideLabel, values }: Relation
       </dt>
       <dd className="flex flex-col gap-1">
         {values.map((value, index) => {
-          const itemKey = value.value || value.url || value.label || `${label}-${index}`;
+          const itemKey = value._id || `${label}-${index}`;
           return (
             <span key={itemKey} className="flex flex-row flex-nowrap gap-2 align-middle">
-              {value.icon && <CountryFlag id={value.icon} />}
+              {value.icon?._id && <CountryFlag id={value.icon._id} />}
               <I18NLinkV2
                 className="underline"
-                to={value.url || `${DEFAULT_ENTITY_BASE_PATH}${value.value}`}
+                to={`${DEFAULT_ENTITY_BASE_PATH}${value._id}`}
                 target="_blank"
                 rel="noreferrer"
                 localized={false}
               >
-                {value.label}
+                {value.title}
               </I18NLinkV2>
             </span>
           );

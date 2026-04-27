@@ -49,16 +49,16 @@ describe('Metadata Display', () => {
       cy.contains('span', 'Grouped verbs: verb1').should('exist');
     });
 
-    //   it('renders relationship links with correct hrefs', () => {
-    //     cy.contains('dt', 'Relationship with inheritance').should('exist');
-    //     cy.contains('a.underline', 'Traffic Accident - Main Street')
-    //       .should('have.attr', 'href', `${DEFAULT_ENTITY_BASE_PATH}entity4`)
-    //       .should('have.attr', 'target', '_blank');
-    //     cy.contains('a.underline', 'Traffic Accident - Main Street')
-    //       .parent()
-    //       .find('span[role="img"]')
-    //       .should('exist');
-    //   });
+    it('renders relationship links with correct hrefs', () => {
+      cy.contains('dt', 'Relationship with inheritance').should('exist');
+      cy.contains('a.underline', 'Traffic Accident - Main Street')
+        .should('have.attr', 'href', '/entityv2/entity4')
+        .should('have.attr', 'target', '_blank');
+      cy.contains('a.underline', 'Traffic Accident - Main Street')
+        .parent()
+        .find('span[role="img"]')
+        .should('exist');
+    });
 
     //   it('renders external link property as anchor with correct href', () => {
     //     cy.contains('dt', 'External link').should('exist');

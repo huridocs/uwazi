@@ -9,6 +9,7 @@ const templateA = {
       name: 'sourceA',
       label: 'Source A',
       type: 'relationship',
+      content: 'templateA',
       inherit: { property: 'x', type: 'text' },
     },
   ],
@@ -22,6 +23,7 @@ const templateB = {
       name: 'sourceB',
       label: 'Source B',
       type: 'relationship',
+      content: 'templateB',
       inherit: { property: 'y', type: 'date' },
     },
   ],
@@ -49,6 +51,7 @@ describe('formatMetadataFields ', () => {
         type: 'relationship',
         inherited: true,
         inheritedType: 'text',
+        relationShipTarget: 'templateA',
       },
     ]);
 
@@ -68,6 +71,7 @@ describe('formatMetadataFields ', () => {
         type: 'relationship',
         inherited: true,
         inheritedType: 'date',
+        relationShipTarget: 'templateB',
       },
     ]);
   });
@@ -81,6 +85,7 @@ describe('formatMetadataFields ', () => {
           label: 'From Template',
           type: 'relationship',
           inherit: { property: 'z', type: 'text' },
+          content: 'someId',
         },
       ],
     } as ClientTemplateSchema;
@@ -93,6 +98,7 @@ describe('formatMetadataFields ', () => {
         type: 'relationship',
         inherited: true,
         inheritedType: 'text',
+        relationShipTarget: 'someId',
       },
     ]);
   });
@@ -107,7 +113,7 @@ describe('formatMetadataFields ', () => {
       ],
     } as ClientTemplateSchema;
 
-    expect(formatMetadataFields(template, true)).toEqual([
+    expect(formatMetadataFields(template, { groupGeolocationProperties: true })).toEqual([
       {
         _id: 'group1',
         name: '__group1',
@@ -135,6 +141,31 @@ describe('formatMetadataFields ', () => {
         type: 'geolocation',
         inherited: false,
         inheritedType: undefined,
+      },
+    ]);
+  });
+
+  it('should format inheritedTarget for relationship properties from content', () => {
+    const template = {
+      properties: [
+        {
+          _id: 'rel-target',
+          name: 'related_people',
+          label: 'Related People',
+          type: 'relationship',
+          content: 'template-people',
+        },
+      ],
+    } as ClientTemplateSchema;
+
+    expect(formatMetadataFields(template)).toEqual([
+      {
+        _id: 'rel-target',
+        name: 'related_people',
+        label: 'Related People',
+        type: 'relationship',
+        inherited: false,
+        relationShipTarget: 'template-people',
       },
     ]);
   });

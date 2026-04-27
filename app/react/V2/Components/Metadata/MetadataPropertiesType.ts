@@ -31,38 +31,6 @@ type AllowedPropertyTypes =
   | 'nested'
   | 'newRelationship';
 
-interface SourceValue {
-  value: string;
-  label: string;
-  color?: string;
-  icon?: string;
-  url?: string;
-}
-
-interface InheritedPropertyInfo {
-  type: AllowedPropertyTypes;
-  name: string;
-  label: string;
-  translatedLabel?: string;
-}
-
-interface ExtendedPropertyInfo {
-  _id: string;
-  template?: {
-    _id: string;
-    name: string;
-    label: string;
-    color: string;
-  };
-  inherited: boolean;
-  inheritedProperty?: InheritedPropertyInfo;
-  content?: string;
-  options?: SelectMetadataProperty['values'];
-  hideLabel?: boolean;
-  showInCard?: boolean;
-  style?: string;
-}
-
 interface BaseMetadataProperty {
   readonly _id: string;
   readonly name: string;
@@ -71,11 +39,10 @@ interface BaseMetadataProperty {
   readonly propertyGroup?: Array<{ name: string; label: string }>;
   readonly inherited?: boolean;
   readonly inheritedType?: PropertyTypeSchema;
-  // readonly properties?: ExtendedPropertyInfo;
+  readonly relationShipTarget?: string;
 }
 
 interface SimpleMetadataProperty extends BaseMetadataProperty {
-  // readonly type: 'text' | 'generatedid' | 'numeric' | 'markdown' | 'preview' | 'nested';
   readonly type: 'text' | 'generatedid' | 'numeric' | 'markdown';
   readonly values: Array<{ value: string }>;
 }
@@ -122,7 +89,6 @@ interface MediaMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
     timelinks?: Timelink[];
     mimetype?: string;
     fileType?: string;
-    source?: SourceValue;
   }>;
 }
 
@@ -131,7 +97,6 @@ interface ImageMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly values: Array<{
     value: string;
     alt?: string;
-    source?: SourceValue;
   }>;
 }
 
@@ -140,7 +105,6 @@ interface PreviewMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly values: Array<{
     value: string;
     alt: string;
-    source?: SourceValue;
   }>;
 }
 interface MarkdownMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
@@ -148,7 +112,6 @@ interface MarkdownMetadataProperty extends Omit<BaseMetadataProperty, 'values'> 
   readonly values: Array<{
     value: string;
     label: string;
-    source?: SourceValue;
   }>;
 }
 interface SelectMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
@@ -163,7 +126,6 @@ interface SelectMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
       translatedLabel?: string;
       value: string;
     };
-    source?: SourceValue;
   }>;
 }
 
@@ -176,34 +138,31 @@ interface LinkMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
   readonly values: Array<{
     value: string;
     label?: string;
-    source?: SourceValue;
   }>;
 }
 
-interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, 'values' | 'type'> {
-  readonly type: 'permissions';
-  readonly values: Array<{
-    value: {
-      refId: string;
-      permissions: Array<{
-        type: 'user' | 'group';
-        refId: string;
-        level: 'read' | 'write' | 'mixed';
-      }>;
-      isPublic: boolean;
-      isRestricted: boolean;
-      currentUserAccess: 'read' | 'write' | 'admin' | 'none';
-    };
-    label?: string;
-  }>;
+interface RelationshipEntityValue {
+  readonly _id: string;
+  readonly title: string;
+  readonly templateId?: string;
+  readonly icon?: { _id: string; label?: string };
 }
 
-interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
+interface RelatedRelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'relationship';
-  readonly inhertiedValues: MetadataProperty;
-  readonly parentEntity: { _id: string; title: string; icon?: string };
-  // readonly properties?: ExtendedPropertyInfo;
+  readonly mode: 'related';
+  readonly values: RelationshipEntityValue[];
 }
+
+interface InheritedRelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
+  readonly type: 'relationship';
+  readonly mode: 'inherited';
+  readonly values: MetadataProperty[];
+}
+
+type RelationshipMetadataProperty =
+  | RelatedRelationshipMetadataProperty
+  | InheritedRelationshipMetadataProperty;
 
 type MetadataProperty =
   | SimpleMetadataProperty
@@ -232,4 +191,5 @@ export type {
   SelectMetadataProperty,
   MultiSelectMetadataProperty,
   GeolocationMetadataProperty,
+  RelationshipMetadataProperty,
 };
