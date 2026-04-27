@@ -249,4 +249,51 @@ describe('MongoSlotsBootstrapper', () => {
       expect(sentinel?.version).toBe(42);
     });
   });
+
+  describe('reset()', () => {
+    it('re-seeds all slots after wiping, matching expected count and names', async () => {
+      const { sut } = createSut();
+      await sut.execute();
+
+      await sut.reset();
+
+      const slots = await slotsCollection()
+        .find({ _id: { $ne: MongoSlotsDAO.sentinelId as any } })
+        .toArray();
+      const slotNames = slots.map(slot => slot.slotName).sort();
+
+      expect(slots).toHaveLength(expectedSlotCount);
+      expect(slotNames).toEqual(expectedSlotNames);
+    });
+
+    it('clears stale slot assignments from a previous run', async () => {
+      const { sut } = createSut();
+      await sut.execute();
+      await slotsCollection().updateOne(
+        { slotName: SlotBootstrapDefinitions.createSlotName('txt', 1) },
+        { $set: { assignedTo: 'some_prop', language: null } }
+      );
+
+      await sut.reset();
+
+      const assigned = await slotsCollection()
+        .find({ assignedTo: { $ne: null }, _id: { $ne: MongoSlotsDAO.sentinelId as any } })
+        .toArray();
+      expect(assigned).toHaveLength(0);
+    });
+
+    it('works on first run when the collection does not yet exist', async () => {
+      const { sut } = createSut();
+      await slotsCollection()
+        .drop()
+        .catch(() => {});
+
+      await expect(sut.reset()).resolves.not.toThrow();
+
+      const count = await slotsCollection()
+        .find({ _id: { $ne: MongoSlotsDAO.sentinelId as any } })
+        .toArray();
+      expect(count).toHaveLength(expectedSlotCount);
+    });
+  });
 });
