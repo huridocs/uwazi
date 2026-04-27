@@ -95,6 +95,23 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
       .find({ sharedId: { $in: sharedIds } }, { projection: { _id: 1, sharedId: 1 } })
       .toArray();
   }
+
+  async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
+    await this.getCollection()
+      .aggregate([
+        { $match: { language: from } },
+        { $project: { _id: 0 } },
+        { $set: { language: to } },
+        {
+          $merge: {
+            into: 'entities',
+            whenNotMatched: 'insert',
+            whenMatched: 'keepExisting',
+          },
+        },
+      ])
+      .toArray();
+  }
 }
 
 export { MongoEntityDAO };

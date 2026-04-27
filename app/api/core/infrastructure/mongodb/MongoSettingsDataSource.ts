@@ -11,6 +11,13 @@ export class MongoSettingsDataSource
 {
   protected collectionName = 'settings';
 
+  async addLanguage(language: LanguageSchema): Promise<void> {
+    const settings = await this.readSettings();
+    const exists = settings?.languages?.some(l => l.key === language.key);
+    if (exists) return;
+    await this.getCollection().updateOne({}, { $push: { languages: language } });
+  }
+
   async getInstalledLanguages(): Promise<LanguagesListSchema> {
     const settings = await this.readSettings();
     if (!settings?.languages) {

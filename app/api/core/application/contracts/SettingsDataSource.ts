@@ -1,8 +1,9 @@
-import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 
 export interface SettingsDataSource {
   getLanguageKeys(): Promise<LanguageISO6391[]>;
+  addLanguage(language: LanguageSchema): Promise<void>;
   getDefaultLanguageKey(): Promise<LanguageISO6391>;
   readNewRelationshipsAllowed(): Promise<boolean>;
   readFilterUnauthorizedRelated(): Promise<boolean>;

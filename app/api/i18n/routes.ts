@@ -16,6 +16,7 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
 
@@ -251,11 +252,23 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      addLanguages(languages, req).catch((error: Error) => {
-        req.emitToSessionSocket('translationsInstallError', error.message);
-        // eslint-disable-next-line no-console
-        console.error(error);
-      });
+
+      if (tenants.current().featureFlags?.v2AddLanguage) {
+        AddLanguageUseCaseFactory.create()
+          .execute({ languages })
+          .catch((error: Error) => {
+            req.emitToSessionSocket('translationsInstallError', error.message);
+            // eslint-disable-next-line no-console
+            console.error(error);
+          });
+      } else {
+        addLanguages(languages, req).catch((error: Error) => {
+          req.emitToSessionSocket('translationsInstallError', error.message);
+          // eslint-disable-next-line no-console
+          console.error(error);
+        });
+      }
+
       res.status(204).json('ok');
     }
   );

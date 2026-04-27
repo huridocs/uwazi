@@ -5,9 +5,11 @@ import {
   PDFPostProcessParams,
   TemplatePostProcessParams,
   DenormalizeThesaurusParams,
+  CloneLanguageEntitiesParams,
 } from '#api/core/application/contracts/Dispatcher.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { BulkCleanupEntityJob } from './BulkCleanupEntityJob.js';
+import { CloneLanguageEntitiesJob } from './CloneLanguageEntitiesJob.js';
 import { DeleteFileFromStorageJobHandler } from './DeleteFileFromStorageJobHandler.js';
 import { DenormalizeThesaurusEntitiesHandler } from './DenormalizeThesaurusEntitiesHandler.js';
 import { PDFPostProcessJobHandler } from './PDFPostProcessJobHandler.js';
@@ -54,6 +56,12 @@ class DispatcherAdapter implements Dispatcher {
       thesaurusId: params.thesaurusId,
     });
     await this.jobsDispatcher.dispatch(DenormalizeThesaurusEntitiesHandler, params);
+  }
+
+  async cloneLanguageEntities(items: CloneLanguageEntitiesParams[]): Promise<void> {
+    await this.jobsDispatcher.dispatchMany(dispatch => {
+      items.forEach(p => dispatch(CloneLanguageEntitiesJob, p));
+    });
   }
 }
 

@@ -6,6 +6,7 @@ import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factor
 import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { EntityPreviewBatchHandlerFactory } from '#api/core/infrastructure/factories/EntityPreviewBatchFactory.js';
+import { CloneLanguageEntitiesJobFactory } from '#api/core/infrastructure/factories/CloneLanguageEntitiesJobFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -17,11 +18,13 @@ import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/D
 import { DenormalizeThesaurusEntitiesChunkHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesChunkHandler.js';
 import { DenormalizeThesaurusEntitiesHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesHandler.js';
 import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
+import { CloneLanguageEntitiesJob } from '#api/core/infrastructure/jobs/CloneLanguageEntitiesJob.js';
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
+import { AddLanguageListener } from '#api/core/infrastructure/listeners/AddLanguageListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
@@ -253,6 +256,8 @@ export function registerJobs(register: Register) {
 
   register(EntityPreviewBatchHandler, async () => EntityPreviewBatchHandlerFactory.default());
 
+  register(CloneLanguageEntitiesJob, async () => CloneLanguageEntitiesJobFactory.default());
+
   register(
     BulkCleanupEntityJob,
     async () => new BulkCleanupEntityJob({ BulkCleanupEntityUseCaseFactory })
@@ -291,4 +296,6 @@ export function registerJobs(register: Register) {
     ProcessRelationshipAfterEntityUpdatedListener.asJob(),
     async () => new ProcessRelationshipAfterEntityUpdatedListener({})
   );
+
+  register(AddLanguageListener.asJob(), async () => new AddLanguageListener({}));
 }

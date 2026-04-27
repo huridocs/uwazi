@@ -39,6 +39,11 @@ type DenormalizeThesaurusParams = {
   userId: string;
 };
 
+type CloneLanguageEntitiesParams = {
+  from: LanguageISO6391;
+  to: LanguageISO6391;
+};
+
 interface Dispatcher {
   syncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
   cleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
@@ -48,6 +53,7 @@ interface Dispatcher {
     callback: (dispatch: (params: TemplatePostProcessParams) => void) => void | Promise<void>
   ): Promise<void>;
   denormalizeThesaurus(params: DenormalizeThesaurusParams): Promise<void>;
+  cloneLanguageEntities(items: CloneLanguageEntitiesParams[]): Promise<void>;
 }
 
 export type {
@@ -57,4 +63,5 @@ export type {
   PDFPostProcessParams,
   TemplatePostProcessParams,
   DenormalizeThesaurusParams,
+  CloneLanguageEntitiesParams,
 };
