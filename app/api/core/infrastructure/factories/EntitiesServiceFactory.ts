@@ -1,9 +1,10 @@
 import { EntitiesService, EntitiesServiceDeps } from '#api/core/application/EntitiesService.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
 import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { search } from '#api/search/index.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
@@ -21,7 +22,7 @@ class EntitiesServiceFactory {
 
     return new EntitiesService({
       eventEmitter: EventEmitterFactory.default(),
-      dispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+      dispatcher: ExecutionContext.jobsDispatcher,
       entitiesDS: EntitiesDataSourceFactory.default(transactionManager as MongoTransactionManager),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),

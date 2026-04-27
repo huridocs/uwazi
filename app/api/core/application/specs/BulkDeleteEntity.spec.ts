@@ -4,16 +4,15 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import { elastic, search } from '#api/search/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { UserSchema } from '#shared/types/userType.js';
+import { User } from '#api/users.v2/model/User.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity.js';
+import { BulkDeleteEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory.js';
+import { BulkDeleteEntityInput } from '../BulkDeleteEntity.js';
 
 const factory = getFixturesFactory();
 
@@ -109,40 +108,31 @@ const fixtures: DBFixture = {
 type CreateSutProps = {
   search?: typeof search;
   dispatcher?: JobsDispatcher;
-  actor?: UserSchema;
+  actor?: User;
   entitiesDS?: MultiLanguageEntityDataSource;
 };
 
 const createSut = (props?: CreateSutProps) => {
-  const transactionManager = TransactionManagerFactory.default();
-
-  const entitiesService = EntitiesServiceFactory.default({ ...props, transactionManager });
-
   const actor =
     props?.actor ??
-    ({
-      _id: new ObjectId(),
-      role: 'admin',
-      groups: [],
-      email: 'email@email.com',
-      username: 'username',
-    } as UserSchema);
+    User.createFrom({ _id: new ObjectId(), role: 'admin', groups: [], email: '', username: '' });
 
-  const sut = new BulkDeleteEntityUseCase(
-    {
-      transactionManager,
-      entitiesService,
-    },
+  const { sut } = testingEnvironment.runWithContext(
+    () => ({
+      sut: BulkDeleteEntityUseCaseFactory.default({
+        ...(props?.search !== undefined ? { search: props.search } : {}),
+        ...(props?.entitiesDS !== undefined ? { entitiesDS: props.entitiesDS } : {}),
+      }),
+    }),
     {
       actor,
-      tenant: tenants.current(),
+      ...(props?.dispatcher
+        ? { factories: { jobsDispatcher: () => props.dispatcher! } }
+        : undefined),
     }
   );
 
-  return {
-    sut,
-    actor,
-  };
+  return { sut, actor };
 };
 
 describe('BulkDeleteEntityUseCase', () => {
@@ -443,13 +433,11 @@ describe('BulkDeleteEntityUseCase', () => {
 
     describe('Admin role', () => {
       it('should delete all entities regardless of permissions', async () => {
-        const adminUser: UserSchema = {
+        const adminUser = User.createFrom({
           _id: new ObjectId(),
           role: 'admin',
           groups: [],
-          email: 'admin@test.com',
-          username: 'admin',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: adminUser });
 
@@ -483,13 +471,11 @@ describe('BulkDeleteEntityUseCase', () => {
 
     describe('Editor role', () => {
       it('should delete all entities regardless of permissions', async () => {
-        const editorUser: UserSchema = {
+        const editorUser = User.createFrom({
           _id: factory.id('editor'),
           role: 'editor',
           groups: [],
-          email: 'editor@test.com',
-          username: 'editor',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: editorUser });
 
@@ -523,13 +509,11 @@ describe('BulkDeleteEntityUseCase', () => {
 
     describe('Collaborator role', () => {
       it('should only delete entities where collaborator has write permission via user', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: collaboratorUser });
 
@@ -550,13 +534,11 @@ describe('BulkDeleteEntityUseCase', () => {
       });
 
       it('should only delete entities where collaborator has write permission via group', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
-          groups: [{ _id: group1Id, name: 'group1' }] as any,
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+          groups: [{ _id: group1Id }],
+        });
 
         const { sut } = createSut({ actor: collaboratorUser });
 
@@ -578,13 +560,11 @@ describe('BulkDeleteEntityUseCase', () => {
       });
 
       it('should not delete entities where collaborator only has read permission', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: collaboratorUser });
 
@@ -603,13 +583,11 @@ describe('BulkDeleteEntityUseCase', () => {
       });
 
       it('should not delete published entities without explicit write permissions', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: collaboratorUser });
 
@@ -628,13 +606,11 @@ describe('BulkDeleteEntityUseCase', () => {
       });
 
       it('should not delete unpublished entities without permissions', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: collaboratorUser });
 
@@ -653,13 +629,11 @@ describe('BulkDeleteEntityUseCase', () => {
       });
 
       it('should handle mixed permissions - delete only permitted entities', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
-          groups: [{ _id: group1Id, name: 'group1' }] as any,
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+          groups: [{ _id: group1Id }],
+        });
 
         const { sut } = createSut({ actor: collaboratorUser });
 
@@ -696,13 +670,11 @@ describe('BulkDeleteEntityUseCase', () => {
           bulkDeleteBySharedId: jest.fn().mockResolvedValue(undefined),
         });
 
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: collaboratorUser, search: mockedSearch });
 
@@ -739,13 +711,11 @@ describe('BulkDeleteEntityUseCase', () => {
           bulkDeleteBySharedId: jest.fn().mockResolvedValue(undefined),
         });
 
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut({ actor: collaboratorUser, search: mockedSearch });
 
@@ -785,16 +755,11 @@ describe('BulkDeleteEntityUseCase', () => {
         await testingEnvironment.setFixtures(entitiesWithMultipleGroups);
         await testingEnvironment.setElastic('bulk_delete_entity_use_case');
 
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
-          groups: [
-            { _id: group1Id, name: 'group1' },
-            { _id: group2Id, name: 'group2' },
-          ] as any,
-          email: 'collaborator@test.com',
-          username: 'collaborator',
-        } as UserSchema;
+          groups: [{ _id: group1Id }, { _id: group2Id }],
+        });
 
         const { sut } = createSut({ actor: collaboratorUser });
 

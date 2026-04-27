@@ -54,7 +54,7 @@ class MultiUpdateEntityUseCaseFactory {
         entityPermissionChecker,
         transactionManager,
       },
-      { actor: ExecutionContext.actor as any, tenant }
+      { actor: ExecutionContext.actor, tenant }
     );
 
     return useCase;
