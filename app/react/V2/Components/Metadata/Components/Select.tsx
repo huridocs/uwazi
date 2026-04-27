@@ -1,15 +1,15 @@
 import React from 'react';
 import { SelectMetadataProperty, MultiSelectMetadataProperty } from '#V2/domain/entities/types.js';
-import { MetadataFieldProps } from '../types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 
 type SelectProps = MetadataFieldProps & {
-  values: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'];
+  values: SelectMetadataProperty | MultiSelectMetadataProperty;
 };
 
 const formatSelectValue = (
-  value: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'][0]
+  value: SelectMetadataProperty['values'][0] | MultiSelectMetadataProperty['values'][0]
 ) => {
   let displayValue = value.label || value.value;
 
@@ -22,7 +22,7 @@ const formatSelectValue = (
 };
 
 const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => {
-  if (!values?.length) {
+  if (!values?.values?.length) {
     return null;
   }
 
@@ -36,7 +36,7 @@ const Select = ({ label, translationContext, values, hideLabel }: SelectProps) =
         />
       </dt>
       <dd className="flex flex-col gap-1">
-        {values.map(value => {
+        {values.values.map(value => {
           const formatted = formatSelectValue(value);
           return (
             <span key={formatted} className="font-medium text-gray-900">

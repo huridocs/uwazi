@@ -165,14 +165,10 @@ export interface SelectMetadataProperty extends Omit<BaseMetadataProperty, 'valu
   readonly values: Array<{
     value: string;
     label?: string;
-    translatedLabel?: string;
-    selected?: boolean;
     parent?: {
       label: string;
-      translatedLabel?: string;
       value: string;
     };
-    source?: SourceValue;
   }>;
 }
 

@@ -5,13 +5,21 @@ import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { Date, SimpleValue, Title, MetadataCard, TemplateLabel } from './Components/index.js';
+import {
+  Date,
+  SimpleValue,
+  Title,
+  MetadataCard,
+  TemplateLabel,
+  Select,
+} from './Components/index.js';
 import {
   formatDateProperty,
   formatSimpleProperty,
   formatMetadataFields,
 } from './Formatters/index.js';
 import { BaseMetadataProperty } from './MetadataPropertiesType.js';
+import { formatSelectProperty } from './Formatters/formatSelectProperty.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
@@ -108,11 +116,21 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       //   );
       // }
 
-      // if (data.type === 'select' || data.type === 'multiselect') {
-      //   return (
-      //     <Select values={data.values} label={data.label} translationContext={translationContext} />
-      //   );
-      // }
+      if (property.type === 'select' || property.type === 'multiselect') {
+        const selectProperty = formatSelectProperty(property, entity.metadata);
+
+        if (!selectProperty) {
+          return undefined;
+        }
+
+        return (
+          <Select
+            values={selectProperty}
+            label={property.label}
+            translationContext={translationContext || ''}
+          />
+        );
+      }
 
       // if (data.type === 'link') {
       //   return (
@@ -171,6 +189,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             <Title
               label="Title"
               title={entity.title}
+              iconId={entity.icon?._id}
               translationContext={entityTemplate._id || ''}
             />
           </MetadataCard>

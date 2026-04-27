@@ -20,6 +20,11 @@ interface Entity extends Omit<
   documents?: FileType[];
   attachments?: FileType[];
   metadata?: MetadataSchema;
+  icon?: {
+    _id: string;
+    type: string;
+    label: string;
+  };
 }
 
 export type { Entity, MetadataSchema, MetadataObjectSchema };

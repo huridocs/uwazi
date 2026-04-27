@@ -231,4 +231,6 @@ export type {
   MultiDateMetadataProperty,
   DateRangeMetadataProperty,
   MultiDateRangeMetadataProperty,
+  SelectMetadataProperty,
+  MultiSelectMetadataProperty,
 };

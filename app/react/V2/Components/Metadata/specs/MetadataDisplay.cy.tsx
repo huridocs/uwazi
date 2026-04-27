@@ -13,11 +13,11 @@ describe('Metadata Display', () => {
       mount(<Basic />);
     });
 
-    //   it('renders the entity title with the icon', () => {
-    //     cy.contains('dt', 'Title').find('.sr-only').should('exist');
-    //     cy.contains('dd', 'Title of the displayed entity').should('exist');
-    //     cy.contains('dd', 'Title of the displayed entity').find('span[role="img"]').should('exist');
-    //   });
+    it('renders the entity title with the icon', () => {
+      cy.contains('dt', 'Title').find('.sr-only').should('exist');
+      cy.contains('dd', 'Title of the displayed entity').should('exist');
+      cy.contains('dd', 'Title of the displayed entity').find('span[role="img"]').should('exist');
+    });
 
     it('renders a simple text metadata value', () => {
       cy.contains('dt', 'A basic simple text').should('exist');
@@ -41,13 +41,13 @@ describe('Metadata Display', () => {
     //     });
     //   });
 
-    //   it('renders select and multiselect labels including parent prefix', () => {
-    //     cy.contains('dt', 'Single select').should('exist');
-    //     cy.contains('dt', 'Multiple selector').should('exist');
-    //     cy.contains('span', 'Again').should('exist');
-    //     cy.contains('span', 'Acknowledging').should('exist');
-    //     cy.contains('span', 'Grouped verbs: verb1').should('exist');
-    //   });
+    it('renders select and multiselect labels including parent prefix', () => {
+      cy.contains('dt', 'Single select').should('exist');
+      cy.contains('dt', 'Multiple selector').should('exist');
+      cy.contains('span', 'Again').should('exist');
+      cy.contains('span', 'Acknowledging').should('exist');
+      cy.contains('span', 'Grouped verbs: verb1').should('exist');
+    });
 
     //   it('renders relationship links with correct hrefs', () => {
     //     cy.contains('dt', 'Relationship with inheritance').should('exist');
