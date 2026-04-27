@@ -92,7 +92,7 @@
     "playwright:auth-contract": "playwright test playwright/e2e/auth-gate.contract.spec.ts --workers=1",
     "playwright:ui": "playwright test --ui",
     "es:list": "tsx scripts/elasticSearch/ListIndexes.js",
-    "es:migrate": "tsx scripts/elasticSearch/MigrateIndex.js"
+    "es:migrate": "tsx scripts/elasticSearch/MigrateIndex.js",
     "es:dev:bootstrap": "tsx scripts/elasticSearch/RebuildESIndex.ts",
     "setup:dev": "yarn blank-state --force &&  yarn es:dev:bootstrap"
   },
