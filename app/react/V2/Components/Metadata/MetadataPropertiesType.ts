@@ -68,6 +68,7 @@ interface BaseMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: AllowedPropertyTypes;
+  readonly propertyGroup?: Array<{ name: string; label: string }>;
   readonly inherited?: boolean;
   readonly inheritedType?: PropertyTypeSchema;
   // readonly properties?: ExtendedPropertyInfo;
@@ -103,16 +104,13 @@ interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 'values
   readonly values: Array<{
     value: { latitude: number; longitude: number };
     label?: string;
-    properties?: {
-      color?: string;
-      entity?: {
-        _id: string;
-        label: string;
-        icon?: string;
-        url?: string;
-      };
+    color?: string;
+    entity?: {
+      _id: string;
+      label: string;
+      icon?: { _id: string; label: string };
+      url?: string;
     };
-    source?: SourceValue;
   }>;
 }
 
@@ -233,4 +231,5 @@ export type {
   MultiDateRangeMetadataProperty,
   SelectMetadataProperty,
   MultiSelectMetadataProperty,
+  GeolocationMetadataProperty,
 };

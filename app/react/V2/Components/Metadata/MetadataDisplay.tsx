@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
@@ -12,11 +13,13 @@ import {
   MetadataCard,
   TemplateLabel,
   Select,
+  Geolocation,
 } from './Components/index.js';
 import {
   formatDateProperty,
   formatSimpleProperty,
   formatMetadataFields,
+  formatGeolocationProperty,
 } from './Formatters/index.js';
 import { BaseMetadataProperty } from './MetadataPropertiesType.js';
 import { formatSelectProperty } from './Formatters/formatSelectProperty.js';
@@ -33,8 +36,8 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   );
 
   const metadataProperties = useMemo(() => formatMetadataFields(entityTemplate), [entityTemplate]);
-
   const renderMetadataProperty = useCallback(
+    // eslint-disable-next-line max-statements
     (property: BaseMetadataProperty) => {
       const translationContext = entityTemplate?._id;
 
@@ -79,15 +82,21 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         );
       }
 
-      // if (data.type === 'geolocation') {
-      //   return (
-      //     <Geolocation
-      //       markers={data.values}
-      //       label={data.label}
-      //       translationContext={translationContext}
-      //     />
-      //   );
-      // }
+      if (property.type === 'geolocation') {
+        const geolocationProperty = formatGeolocationProperty(property, entity.metadata);
+
+        if (!geolocationProperty) {
+          return undefined;
+        }
+
+        return (
+          <Geolocation
+            markers={geolocationProperty.values}
+            label={geolocationProperty.label}
+            translationContext={translationContext || ''}
+          />
+        );
+      }
 
       // if (data.type === 'media') {
       //   return (
