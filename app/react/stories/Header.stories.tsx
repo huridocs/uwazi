@@ -16,7 +16,6 @@ import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import {
   ACCENT_PRIMARY_KEY,
   appliedTheme,
-  getPresetPair,
   SEMANTIC_VAR_LABELS,
   THEME_PALETTE,
 } from '#V2/theme/themes.js';
@@ -174,41 +173,4 @@ const Unauthenticated: Story = {
   args: { themeVarsKey: THEME_NONE, authenticated: false },
 };
 
-const WithNamedTheme: Story = {
-  render: (_args, context) => (
-    <HeaderWithTheme
-      themeVars={{ ...buildStorybookThemeVars('default'), ...getPresetPair('default').light }}
-      authenticated={true}
-      themeMode={normalizeStorybookThemeMode(context.globals.uwaziThemeMode)}
-      themePreset={normalizeStorybookThemePreset(context.globals.uwaziThemePreset)}
-    />
-  ),
-};
-
-const WithSiteLogo: Story = {
-  render: () => {
-    const store = createStore();
-    const user: ClientUserSchema = { _id: '1', username: 'admin', role: 'admin', email: 'a@b.c' };
-    store.set(userAtom, user);
-    store.set(settingsAtom, {
-      ...baseSettings,
-      themeCustomization: true,
-      themeVars: buildStorybookThemeVars('default'),
-      site_logo: 'https://via.placeholder.com/120x32',
-    });
-    store.set(themeModeAtom, 'light');
-    store.set(localeAtom, 'en');
-    store.set(translationsAtom, []);
-    return (
-      <ReduxProvider store={reduxStore}>
-        <Provider store={store}>
-          <ThemeProvider controlledMode="light">
-            <Header />
-          </ThemeProvider>
-        </Provider>
-      </ReduxProvider>
-    );
-  },
-};
-
-export { Default, WithThemeSelector, Unauthenticated, WithNamedTheme, WithSiteLogo };
+export { Default, WithThemeSelector, Unauthenticated };
