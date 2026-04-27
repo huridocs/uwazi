@@ -6,12 +6,12 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import isUndefined from 'lodash/isUndefined.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { useSetAtom } from 'jotai';
 import * as FilesAPI from '#V2/api/files/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
 import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
 import { Button, Card, Tooltip } from '#V2/Components/UI/index.js';
-import { useSetAtom } from 'jotai';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
@@ -19,11 +19,12 @@ import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
-import { CustomUploadImagePicker } from './CustomUploadImagePicker.js';
+import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
-import { ThemeSettingsSidepanel } from './ThemeSettingsSidepanel.js';
+import { ThemeSettingsSidepanel } from './Theming/ThemeSettingsSidepanel.js';
 import { ACCENT_PRIMARY_KEY, appliedTheme, getPresetId, NAMED_THEMES } from '#V2/theme/themes.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -207,13 +208,8 @@ const Collection = () => {
                     onChange={v => setValue('favicon', v, { shouldDirty: true })}
                     files={customUploadFiles}
                     selectButtonTitle={<Translate>Select favicon image</Translate>}
-                    recommendedSize="64x64 px"
-                    sizeRule={{
-                      width: 64,
-                      height: 64,
-                      policy: 'strict',
-                      assetLabel: 'favicon',
-                    }}
+                    recommendedSize="16x16 to 512x512 px (square)"
+                    sizeRule={faviconImageSizeRule}
                     previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]"
                   />
                 ) : null}
