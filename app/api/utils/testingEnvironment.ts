@@ -15,7 +15,10 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import {
+  DefaultDispatcher,
+  DefaultTestingQueueAdapter,
+} from '#api/core/libs/queue/configuration/factories.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
@@ -192,7 +195,13 @@ const testingEnvironment = {
     const defaultFactories: ExecutionContextDeps['factories'] = {
       transactionManager: TransactionManagerFactory.default,
       eventEmitter: EventEmitterFactory.forTesting,
-      jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
+      jobsDispatcher: () =>
+        DefaultDispatcher(
+          tenant.name,
+          ExecutionContext.transactionManager,
+          undefined,
+          DefaultTestingQueueAdapter(ExecutionContext.transactionManager)
+        ),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
       elasticClient: () => {

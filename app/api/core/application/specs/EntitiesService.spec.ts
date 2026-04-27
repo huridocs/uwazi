@@ -112,7 +112,7 @@ describe('EntitiesService', () => {
   };
 
   beforeAll(async () => {
-    await testingEnvironment.setUp({}, true);
+    await testingEnvironment.setUp({});
   });
 
   beforeEach(async () => testingEnvironment.setFixtures(fixtures));

@@ -1,7 +1,6 @@
 import { EntitiesService, EntitiesServiceDeps } from '#api/core/application/EntitiesService.js';
 import { tenants } from '#api/tenants/index.js';
 import { applicationEventsBus, EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { search } from '#api/search/index.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
@@ -18,8 +17,6 @@ class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
     const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
 
-    const searchInstance = deps?.search ?? search;
-
     return new EntitiesService({
       eventEmitter: EventEmitterFactory.default(),
       dispatcher: deps?.dispatcher ?? ExecutionContext.jobsDispatcher,
@@ -29,7 +26,6 @@ class EntitiesServiceFactory {
         transactionManager as MongoTransactionManager
       ),
       eventBus: applicationEventsBus,
-      search: searchInstance,
       settingsDS: SettingsDataSourceFactory.default(transactionManager as MongoTransactionManager),
       templatesDS: TemplatesDataSourceFactory.default(
         transactionManager as MongoTransactionManager
@@ -56,7 +52,6 @@ class EntitiesServiceFactory {
         emit: jest.fn(),
         on: jest.fn(),
       }),
-      search,
       settingsDS: SettingsDataSourceFactory.default(transactionManager),
       transactionManager,
       ..._deps,

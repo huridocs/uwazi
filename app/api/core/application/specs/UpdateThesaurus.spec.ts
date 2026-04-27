@@ -4,10 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2.js';
-import {
-  getConnection,
-  getSharedConnection,
-} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { tenants } from '#api/tenants/index.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
@@ -84,7 +81,7 @@ const createSut = (props?: CreateSutProps) =>
   );
 
 describe('UpdateThesaurusUseCase', () => {
-  const getJobs = async () => getSharedConnection().collection('jobs').find().toArray();
+  const getJobs = async () => getConnection().collection('jobs').find().toArray();
   const getThesaurusById = async (_id: ObjectId) =>
     testingEnvironment.db!.getCollection('dictionaries')!.findOne({
       _id,
@@ -96,7 +93,7 @@ describe('UpdateThesaurusUseCase', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setFixtures(fixtures);
-    await getSharedConnection().collection('jobs').deleteMany({});
+    await getConnection().collection('jobs').deleteMany({});
   });
 
   afterAll(async () => {
@@ -330,7 +327,7 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   it('should delete and re-dispatch denormalization jobs for the updated thesaurus', async () => {
-    await getSharedConnection()
+    await getConnection()
       .collection<JobDBO>('jobs')
       .insertMany([
         {
