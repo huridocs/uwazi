@@ -93,12 +93,12 @@ describe('SlotBootstrapDefinitions', () => {
   });
 
   describe('AmountPerSlotType', () => {
-    it('has 100 slots for txt', () => {
-      expect(AmountPerSlotType.txt).toBe(100);
+    it('has 150 slots for txt', () => {
+      expect(AmountPerSlotType.txt).toBe(150);
     });
 
-    it('has 100 slots for relationship_txt', () => {
-      expect(AmountPerSlotType.relationship_txt).toBe(100);
+    it('has 150 slots for relationship_txt', () => {
+      expect(AmountPerSlotType.relationship_txt).toBe(150);
     });
 
     it('has 50 slots for date', () => {

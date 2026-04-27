@@ -87,8 +87,8 @@
     "cypress": "cypress open",
     "cy-components": "cypress run --component --config video=false --browser chrome",
     "cy-e2e": "cypress run --browser chrome",
-    "es:list": "tsx scripts/elasticSearch/ListIndexes.js",
-    "es:migrate": "tsx scripts/elasticSearch/MigrateIndex.js"
+    "es:dev:bootstrap": "tsx scripts/elasticSearch/RebuildESIndex.ts",
+    "setup:dev": "yarn blank-state --force &&  yarn es:dev:bootstrap"
   },
   "jest": {
     "projects": [
