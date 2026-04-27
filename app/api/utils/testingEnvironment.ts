@@ -172,12 +172,14 @@ const testingEnvironment = {
       factories?: Partial<ExecutionContextDeps['factories']>;
     }
   ): T {
-    const tenant = testingTenants.createTenant({
-      name: testingDB.dbName || 'defaultDB',
-      dbName: testingDB.dbName || 'defaultDB',
-      indexName: 'index',
-      domain: '127.0.0.1',
-    }) as ReturnType<typeof testingTenants.createTenant> & { domain: string };
+    const tenant =
+      testingTenants.current() ||
+      (testingTenants.createTenant({
+        name: testingDB.dbName || 'defaultDB',
+        dbName: testingDB.dbName || 'defaultDB',
+        indexName: 'index',
+        domain: '127.0.0.1',
+      }) as ReturnType<typeof testingTenants.createTenant> & { domain: string });
 
     const defaultActor = User.createFrom({
       _id: new ObjectId(),
@@ -190,8 +192,7 @@ const testingEnvironment = {
     const defaultFactories: ExecutionContextDeps['factories'] = {
       transactionManager: TransactionManagerFactory.default,
       eventEmitter: EventEmitterFactory.forTesting,
-      jobsDispatcher: () =>
-        DefaultDispatcher(ExecutionContext.tenant.name, ExecutionContext.transactionManager),
+      jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
       elasticClient: () => {

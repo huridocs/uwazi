@@ -1,10 +1,9 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileDelete } from '#api/core/application/FileDelete.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
 import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
@@ -60,12 +59,12 @@ class FileDeleteController extends AbstractController {
 
     return new FileDelete(
       {
-        filesDS: FilesDataSourceFactory.default(transactionManager),
-        filesService: FilesServiceFactory.default(transactionManager, { jobsDispatcher }),
+        filesDS: FilesDataSourceFactory.default(),
+        filesService: FilesServiceFactory.default({ jobsDispatcher }),
         entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
         transactionManager,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+      { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
     );
   }
 }

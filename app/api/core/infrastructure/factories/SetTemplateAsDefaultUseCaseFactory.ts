@@ -3,13 +3,13 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SetTemplateAsDefaultUseCase } from '#api/core/application/SetTemplateAsDefault.js';
 
 class SetTemplateAsDefaultUseCaseFactory {
-  static create() {
+  static default(
+    overrides?: Partial<ConstructorParameters<typeof SetTemplateAsDefaultUseCase>[0]>
+  ) {
     const transactionManager = TransactionManagerFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
 
-    const useCase = new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager });
-
-    return useCase;
+    return new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager, ...overrides });
   }
 }
 

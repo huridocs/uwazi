@@ -14,6 +14,7 @@ import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraph
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {
@@ -33,7 +34,7 @@ export class PXExtractParagraphsFromEntityFactory {
       connection,
       mongoTransactionManager,
     });
-    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default();
     const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
     const fileStorage = FileStorageFactory.default();
     const idGenerator = MongoIdHandler;
@@ -60,7 +61,7 @@ export class PXExtractParagraphsFromEntityFactory {
         logger,
         tenantName,
       },
-      { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+      { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
     );
 
     return extractParagraphsFromEntity;

@@ -1,32 +1,29 @@
 import { CreateEntityUseCase } from '#api/core/application/CreateEntity.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { DefaultDispatcher, NoOpDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 
 class CreateEntityUseCaseFactory {
-  static default(targetLanguage: LanguageISO6391) {
-    const tenant = tenants.current();
+  static default(
+    overrides: Partial<ConstructorParameters<typeof CreateEntityUseCase>[0]> & {
+      targetLanguage?: LanguageISO6391;
+    } = {}
+  ) {
+    const { targetLanguage = 'en', ...depsOverrides } = overrides;
 
-    const transactionManager = TransactionManagerFactory.default();
+    const tenant = ExecutionContext.tenant;
+    const actor = ExecutionContext.actor;
 
-    const jobsDispatcher =
-      process.env.NODE_ENV === 'test'
-        ? NoOpDispatcher()
-        : DefaultDispatcher(tenant.name, transactionManager);
-
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
-    const eventBus = applicationEventsBus;
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
@@ -41,29 +38,21 @@ class CreateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = EntitiesServiceFactory.default({
-      entitiesDS,
-      eventBus,
-      settingsDS,
-      transactionManager,
-      dispatcher: jobsDispatcher,
-    });
+    const entitiesService = EntitiesServiceFactory.default({ transactionManager });
 
-    const fileService = FilesServiceFactory.default(transactionManager, { jobsDispatcher });
+    const fileService = FilesServiceFactory.default();
 
-    const useCase = new CreateEntityUseCase(
+    return new CreateEntityUseCase(
       {
         entitiesService,
         propertyAssignmentCreatorServiceStrategy,
         fileService,
         idGenerator,
         transactionManager,
-        eventBus,
+        ...depsOverrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant, targetLanguage }
+      { actor, tenant, targetLanguage }
     );
-
-    return useCase;
   }
 }
 

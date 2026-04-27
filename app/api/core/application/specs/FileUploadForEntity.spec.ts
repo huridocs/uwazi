@@ -5,12 +5,12 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { FileUploadForEntityFactory } from '#api/core/infrastructure/factories/FileUploadForEntityFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { fileExistsOnPath } from '#api/files/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
@@ -35,6 +35,7 @@ describe('FileUploadForEntity', () => {
   let result: any;
   let eventBus: EventsBus;
   let pathManager: PathManager;
+  let tenantName: string;
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, true);
@@ -49,16 +50,17 @@ describe('FileUploadForEntity', () => {
 
     pathManager = new PathManager({ tenant: tenants.current() });
 
-    const transactionManager = TransactionManagerFactory.default();
-
-    const filesService = FilesServiceFactory.default(transactionManager, {
-      jobsDispatcher,
-      eventBus,
-    });
-
-    const useCase = FileUploadForEntityFactory.default(transactionManager, {
-      filesService,
-      eventBus,
+    const { useCase } = testingEnvironment.runWithContext(() => {
+      tenantName = ExecutionContext.tenant.name;
+      const transactionManager = ExecutionContext.transactionManager;
+      const filesService = FilesServiceFactory.default({ jobsDispatcher, eventBus });
+      return {
+        useCase: FileUploadForEntityFactory.default({
+          transactionManager,
+          filesService,
+          eventBus,
+        }),
+      };
     });
 
     result = await useCase.execute({
@@ -99,7 +101,7 @@ describe('FileUploadForEntity', () => {
     expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJobHandler, {
       documentId: result._id,
       userId: permissionsContext.getUserInContext()?._id?.toString(),
-      tenantName: tenants.current().name,
+      tenantName,
     });
   });
 

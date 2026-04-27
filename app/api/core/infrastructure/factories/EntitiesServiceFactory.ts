@@ -22,7 +22,7 @@ class EntitiesServiceFactory {
 
     return new EntitiesService({
       eventEmitter: EventEmitterFactory.default(),
-      dispatcher: ExecutionContext.jobsDispatcher,
+      dispatcher: deps?.dispatcher ?? ExecutionContext.jobsDispatcher,
       entitiesDS: EntitiesDataSourceFactory.default(transactionManager as MongoTransactionManager),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),

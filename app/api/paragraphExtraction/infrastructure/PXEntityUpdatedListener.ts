@@ -49,7 +49,7 @@ export class PXEntityUpdatedListener {
       mongoTransactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default();
 
     const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
 

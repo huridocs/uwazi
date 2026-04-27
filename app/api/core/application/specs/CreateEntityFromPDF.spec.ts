@@ -4,21 +4,11 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
 import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { UseCaseContext } from '#api/core/libs/UseCase.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { tenants } from '#api/tenants/index.js';
-import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { CreateEntityFromPDFUseCase } from '../CreateEntityFromPDF.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { User } from '#api/users.v2/model/User.js';
+import { CreateEntityFromPDFUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityFromPDFUseCaseFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -41,44 +31,28 @@ const fixtures: DBFixture = {
 };
 
 type CreateSutProps = {
-  context?: UseCaseContext;
+  actor?: User;
+  targetLanguage?: LanguageISO6391;
 };
 
 const createSut = (props: CreateSutProps = {}) => {
-  const { context } = props;
-  const transactionManager = TransactionManagerFactory.default();
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
+  const actor =
+    props.actor ??
+    User.createFrom({
+      _id: new ObjectId(),
+      role: 'admin',
+      groups: [],
+      email: '',
+      username: '',
+    });
 
-  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
-
-  const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-
-  const entitiesService = EntitiesServiceFactory.default({
-    entitiesDS,
-    eventBus,
-    settingsDS,
-    transactionManager,
-    dispatcher: jobsDispatcher,
-  });
-
-  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
-    entitiesDS,
-    settingsDS,
-    thesauriDS,
-    translationsDS,
-  });
-
-  const sut = new CreateEntityFromPDFUseCase(
-    {
-      transactionManager,
-      entitiesService,
-      propertyAssignmentCreatorServiceStrategy,
-    },
-    context
+  const { sut } = testingEnvironment.runWithContext(
+    () => ({
+      sut: CreateEntityFromPDFUseCaseFactory.default({
+        targetLanguage: props.targetLanguage ?? 'en',
+      }),
+    }),
+    { actor }
   );
 
   return { sut };
@@ -96,18 +70,14 @@ describe('CreateEntityFromPDFUseCase', () => {
   });
 
   it('should create a basic entity from PDF', async () => {
-    const { sut } = createSut({
-      context: {
-        targetLanguage: 'en',
-        actor: {
-          _id: factory.id('user1'),
-          username: 'username',
-          email: 'email@email.com',
-          role: 'collaborator',
-        },
-        tenant: tenants.current(),
-      },
+    const actor = User.createFrom({
+      _id: factory.id('user1').toString(),
+      username: 'username',
+      email: 'email@email.com',
+      role: 'collaborator',
     });
+
+    const { sut } = createSut({ actor, targetLanguage: 'en' });
 
     const entity = await sut.execute({
       templateId: factory.id('PDF Document').toHexString(),
@@ -161,18 +131,14 @@ describe('CreateEntityFromPDFUseCase', () => {
   });
 
   it('should NOT validate required properties', async () => {
-    const { sut } = createSut({
-      context: {
-        targetLanguage: 'en',
-        actor: {
-          _id: factory.id('user1'),
-          username: 'username',
-          email: 'email@email.com',
-          role: 'collaborator',
-        },
-        tenant: tenants.current(),
-      },
+    const actor = User.createFrom({
+      _id: factory.id('user1').toString(),
+      username: 'username',
+      email: 'email@email.com',
+      role: 'collaborator',
     });
+
+    const { sut } = createSut({ actor, targetLanguage: 'en' });
 
     // The required_field property is marked as required, but we don't provide a value
     // This use case should NOT throw an error - it's a permissive operation for PDF creation

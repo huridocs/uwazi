@@ -19,7 +19,7 @@ const setupUseCase = () => {
   const connection = getConnection();
 
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+  const filesDS = FilesDataSourceFactory.default();
 
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
     connection,

@@ -67,6 +67,8 @@ import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -187,11 +189,11 @@ export function registerJobs(register: Register) {
       useCase: new PDFPostProcessJob({
         eventBus: applicationEventsBus,
         transactionManager,
-        filesDS: FilesDataSourceFactory.default(transactionManager),
+        filesDS: FilesDataSourceFactory.default(),
         fileStorage: FileStorageFactory.default(),
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
-        filesService: FilesServiceFactory.default(transactionManager),
+        filesService: FilesServiceFactory.default(),
       }),
       wSockets: new V1WebSocketsWrapper(),
     });
@@ -205,13 +207,13 @@ export function registerJobs(register: Register) {
   });
 
   register(TemplatePostProcessEntitiesJob, async () => {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
     return new TemplatePostProcessEntitiesJob({
       templatesDS: TemplatesDataSourceFactory.default(transactionManager),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
         entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
-        filesDS: FilesDataSourceFactory.default(transactionManager),
+        filesDS: FilesDataSourceFactory.default(),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
         templatesDS: TemplatesDataSourceFactory.default(transactionManager),
         transactionManager,

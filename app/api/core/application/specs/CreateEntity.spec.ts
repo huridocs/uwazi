@@ -7,28 +7,13 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
 import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { UseCaseContext } from '#api/core/libs/UseCase.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { tenants } from '#api/tenants/index.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { CreateEntityUseCase } from '../CreateEntity.js';
-import { FilesService } from '../FilesService.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { User } from '#api/users.v2/model/User.js';
+import { CreateEntityUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityUseCaseFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -198,65 +183,40 @@ const fixtures: DBFixture = {
 };
 
 type CreateSutProps = {
-  context?: UseCaseContext;
+  actor?: User;
+  targetLanguage?: LanguageISO6391;
 };
 
 const createSut = (props: CreateSutProps = {}) => {
-  const { context } = props;
-  const transactionManager = TransactionManagerFactory.default();
-  const idGenerator = IdGeneratorFactory.default();
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-
-  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
-
-  const filesDS = FilesDataSourceFactory.default(transactionManager);
-
-  const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
-
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-  const fileService = new FilesService({
-    pathManager: new PathManager({ tenant: tenants.current() }),
-    idGenerator,
-    fileStorage,
-    filesDS,
-    jobsDispatcher,
-    filesIO: new FileContentsIO(),
-    pdfService: new PDFService(),
-    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-    transactionManager,
-    eventBus: applicationEventsBus,
-  });
-
-  const [entitiesService, deps] = EntitiesServiceFactory.forTesting({
-    transactionManager,
-  });
-
-  const propertyAssignmentCreatorServiceStrategy =
-    PropertyAssignmentCreatorServiceStrategy.createWithRequired({
-      entitiesDS,
-      settingsDS,
-      thesauriDS,
-      translationsDS,
+  const actor =
+    props.actor ??
+    User.createFrom({
+      _id: new ObjectId(),
+      role: 'admin',
+      groups: [],
+      email: '',
+      username: '',
     });
 
-  jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
-  jest.spyOn(fileService, 'insert').mockResolvedValue();
+  const { sut, fileService } = testingEnvironment.runWithContext(
+    () => {
+      const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
+      const _fileService = FilesServiceFactory.default({ fileStorage });
+      jest.spyOn(_fileService, 'storeFiles').mockResolvedValue();
+      jest.spyOn(_fileService, 'insert').mockResolvedValue();
 
-  const sut = new CreateEntityUseCase(
-    {
-      fileService,
-      transactionManager,
-      idGenerator,
-      entitiesService,
-      eventBus: deps.eventBus,
-      propertyAssignmentCreatorServiceStrategy,
+      return {
+        sut: CreateEntityUseCaseFactory.default({
+          targetLanguage: props.targetLanguage ?? 'en',
+          fileService: _fileService,
+        }),
+        fileService: _fileService,
+      };
     },
-    context
+    { actor }
   );
 
-  return { sut, fileService, eventBus: deps.eventBus };
+  return { sut, fileService };
 };
 
 describe('CreateEntityUseCase', () => {
@@ -271,18 +231,14 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should create an Entity', async () => {
-    const { sut, fileService } = createSut({
-      context: {
-        targetLanguage: 'en',
-        actor: {
-          _id: factory.id('user1'),
-          username: 'username',
-          email: 'email@email.com',
-          role: 'collaborator',
-        },
-        tenant: tenants.current(),
-      },
+    const actor = User.createFrom({
+      _id: factory.id('user1').toString(),
+      username: 'username',
+      email: 'email@email.com',
+      role: 'collaborator',
     });
+
+    const { sut, fileService } = createSut({ actor, targetLanguage: 'en' });
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
@@ -544,18 +500,14 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should add grant access when actor is present', async () => {
-    const { sut } = createSut({
-      context: {
-        targetLanguage: 'en',
-        actor: {
-          _id: factory.id('user1'),
-          username: 'username',
-          email: 'email@email.com',
-          role: 'collaborator',
-        },
-        tenant: tenants.current(),
-      },
+    const actor = User.createFrom({
+      _id: factory.id('user1'),
+      username: 'username',
+      email: 'email@email.com',
+      role: 'collaborator',
     });
+
+    const { sut } = createSut({ actor });
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
@@ -587,27 +539,25 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should emit EntityCreatedEvent with request target language', async () => {
-    const { sut, eventBus } = createSut({
-      context: {
-        targetLanguage: 'es',
-        actor: {
-          _id: factory.id('user1'),
-          username: 'username',
-          email: 'email@email.com',
-          role: 'collaborator',
-        },
-        tenant: tenants.current(),
-      },
+    const actor = User.createFrom({
+      _id: factory.id('user1'),
+      username: 'username',
+      email: 'email@email.com',
+      role: 'collaborator',
     });
+
+    const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
+
+    const { sut } = createSut({ actor, targetLanguage: 'es' });
 
     await sut.execute({
       templateId: factory.id('Document').toHexString(),
       propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
     });
 
-    expect(eventBus.emit).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalled();
 
-    const emittedArg = (eventBus.emit as jest.Mock).mock.calls.find(
+    const emittedArg = (emitSpy as jest.SpyInstance).mock.calls.find(
       c => c && c[0] && typeof c[0].getData === 'function'
     )?.[0];
 

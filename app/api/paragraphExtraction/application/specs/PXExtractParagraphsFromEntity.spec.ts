@@ -58,6 +58,7 @@ import {
   userId,
 } from './fixtures.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -90,7 +91,7 @@ const setUpUseCase = () => {
   const mongoTransactionManager = TransactionManagerFactory.default();
   const entitiesDS = EntitiesDataSourceFactory.forTesting(mongoTransactionManager);
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+  const filesDS = FilesDataSourceFactory.default();
 
   const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
@@ -126,7 +127,7 @@ const setUpUseCase = () => {
       logger: createMockLogger(),
       tenantName,
     },
-    { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+    { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
   );
 
   return {

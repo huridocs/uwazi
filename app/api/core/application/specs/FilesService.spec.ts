@@ -59,11 +59,16 @@ const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
 
 const createService = (deps?: Partial<FilesServiceDeps>) => {
   const transactionManager = TransactionManagerFactory.fake();
-  const service = FilesServiceFactory.default(transactionManager, {
-    fileStorage,
-    jobsDispatcher,
-    ...deps,
-  });
+  const service = testingEnvironment.runWithContext(
+    () =>
+      FilesServiceFactory.default({
+        fileStorage,
+        jobsDispatcher,
+        transactionManager,
+        ...deps,
+      }),
+    { factories: { transactionManager: () => transactionManager } }
+  );
 
   return { service, transactionManager };
 };

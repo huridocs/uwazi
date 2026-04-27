@@ -90,8 +90,7 @@ class DownloadFileController extends AbstractController {
   }
 
   private async getFile(filename: string) {
-    const transactionManager = TransactionManagerFactory.default();
-    const filesDS = FilesDataSourceFactory.default(transactionManager);
+    const filesDS = FilesDataSourceFactory.default();
 
     const fileResult = await filesDS.getByFilename(filename, this.typesAllowed);
 

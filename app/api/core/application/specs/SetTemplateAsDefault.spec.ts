@@ -26,7 +26,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       templates: [factory.template('templateA', []), factory.template('templateB', [])],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     const output = await sut.execute({ templateId: idA });
 
@@ -55,7 +55,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       ],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     const output = await sut.execute({ templateId: newId });
 
@@ -78,7 +78,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       templates: [factory.template('onlyOne', [])],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     await expect(sut.execute({ templateId: '000000000000000000000000' })).rejects.toThrow(
       TemplateDoesNotExistError
@@ -95,7 +95,7 @@ describe('SetTemplateAsDefaultUseCase', () => {
       ],
     });
 
-    const sut = SetTemplateAsDefaultUseCaseFactory.create();
+    const sut = SetTemplateAsDefaultUseCaseFactory.default();
 
     await expect(sut.execute({ templateId: id })).rejects.toThrow(DefaultTemplateConflictError);
   });

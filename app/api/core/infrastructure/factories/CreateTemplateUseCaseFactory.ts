@@ -10,7 +10,7 @@ import { LegacyPageService } from '../mongodb/page/LegacyPageService.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 
 class CreateTemplateUseCaseFactory {
-  static create() {
+  static default(overrides?: Partial<ConstructorParameters<typeof CreateTemplateUseCase>[0]>) {
     const transactionManager = TransactionManagerFactory.default();
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
@@ -20,7 +20,7 @@ class CreateTemplateUseCaseFactory {
     const pageService = new LegacyPageService();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
 
-    const useCase = new CreateTemplateUseCase({
+    return new CreateTemplateUseCase({
       idGenerator,
       templatesDS,
       thesauriDS,
@@ -29,9 +29,8 @@ class CreateTemplateUseCaseFactory {
       relationshipTypesDS,
       transactionManager,
       pageService,
+      ...overrides,
     });
-
-    return useCase;
   }
 }
 

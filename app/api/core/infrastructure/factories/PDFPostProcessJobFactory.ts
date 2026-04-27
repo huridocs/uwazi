@@ -14,8 +14,8 @@ class PDFPostProcessJobFactory {
   ) {
     return new PDFPostProcessJob({
       transactionManager,
-      filesDS: FilesDataSourceFactory.default(transactionManager),
-      filesService: FilesServiceFactory.default(transactionManager),
+      filesDS: FilesDataSourceFactory.default(),
+      filesService: FilesServiceFactory.default(),
       eventBus: applicationEventsBus,
       fileStorage: FileStorageFactory.default(),
       pdfService: new PDFService(),

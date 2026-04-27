@@ -11,7 +11,6 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { Result } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
@@ -27,6 +26,7 @@ import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/erro
 import { FileMappers } from './FilesMappers.js';
 import { SegmentationMapper } from './SegmentationMapper.js';
 import { ProcessedPDFDBO, fileDBO } from './schemas/filesTypes.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetDocumentsForEntityQuery = {
   entity: string;
@@ -57,7 +57,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   constructor(
     db: Db,
-    transactionManager: MongoTransactionManager,
+    transactionManager: TransactionManager,
     fileStorage: FileStorage,
     options: MongoFilesDataSourceOptions
   ) {

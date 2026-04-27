@@ -1,6 +1,15 @@
 /* eslint-disable max-statements */
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import entities from '#api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
@@ -57,7 +66,32 @@ afterAll(async () => {
 
 async function updateTemplate(template: TemplateSchema, fullReindex = false) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-  return templates.save(template, 'en', true, fullReindex);
+
+  const transactionManager = TransactionManagerFactory.default();
+  const jobsDispatcher = new SyncDispatcherForTests({
+    TemplatePostProcessEntitiesJob: async () =>
+      new TemplatePostProcessEntitiesJob({
+        useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+          entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
+          relationshipsV1DS: new MongoRelationshipsV1DataSource(
+            getConnection(),
+            transactionManager
+          ),
+          templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+          transactionManager,
+          filesDS: FilesDataSourceFactory.default(),
+        }),
+        templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+      }),
+  });
+  return testingEnvironment.runWithContext(
+    async () => templates.save(template, 'en', true, fullReindex),
+    {
+      factories: {
+        jobsDispatcher: () => jobsDispatcher,
+      },
+    }
+  );
 }
 
 const elasticIndex = 'templates_denorm_flow';
@@ -700,7 +734,9 @@ describe('Templates Update', () => {
       propertyWithNameChanged,
     ]);
 
-    await expect(async () => templates.save(template, 'en')).rejects.toEqual(
+    await expect(async () =>
+      testingEnvironment.runWithContext(async () => templates.save(template, 'en'))
+    ).rejects.toEqual(
       new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
       ])

@@ -6,21 +6,13 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS.js';
-import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 
 class UpdateTemplateUseCaseFactory {
-  static async create() {
+  static default(overrides?: Partial<ConstructorParameters<typeof UpdateTemplateUseCase>[0]>) {
     const transactionManager = TransactionManagerFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const db = getConnection();
@@ -31,28 +23,8 @@ class UpdateTemplateUseCaseFactory {
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
-    const filesDS = FilesDataSourceFactory.default(transactionManager);
-    const relationshipsV1DS = new MongoRelationshipsV1DataSource(db, transactionManager);
 
-    let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
-      TemplatePostProcessEntitiesJob: async () =>
-        new TemplatePostProcessEntitiesJob({
-          useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-            entitiesDS,
-            relationshipsV1DS,
-            templatesDS,
-            transactionManager,
-            filesDS,
-          }),
-          templatesDS,
-        }),
-    });
-
-    if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-    }
-
-    const useCase = new UpdateTemplateUseCase(
+    return new UpdateTemplateUseCase(
       {
         idGenerator,
         eventBus,
@@ -63,12 +35,11 @@ class UpdateTemplateUseCaseFactory {
         translationService,
         settingsDS,
         relationshipTypesDS,
-        jobsDispatcher,
+        jobsDispatcher: ExecutionContext.jobsDispatcher,
+        ...overrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+      { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
     );
-
-    return useCase;
   }
 }
 

@@ -8,13 +8,11 @@ import {
   getConnection,
   getSharedConnection,
 } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { tenants } from '#api/tenants/index.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
-import { UserSchema } from '#shared/types/userType.js';
 import {
   ThesaurusNotFoundError,
   ThesaurusNameAlreadyExistsError,
@@ -28,6 +26,9 @@ import { ThesaurusTranslationService } from '../thesaurusTranslationService/Thes
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import { factory, fixtures } from './UpdateThesaurusFixtures.js';
 import { ThesauriService } from '../ThesauriService.js';
+import { User } from '#api/users.v2/model/User.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
@@ -35,49 +36,52 @@ type CreateSutProps = {
   jobsDispatcher?: JobsDispatcher;
 };
 
-const createSut = (props?: CreateSutProps) => {
-  const tenant = tenants.current();
-  const actor: UserSchema = {
-    _id: factory.id('user1'),
-    username: 'username',
-    email: 'email@email.com',
-    role: 'admin',
-  };
+const createSut = (props?: CreateSutProps) =>
+  testingEnvironment.runWithContext(
+    () => {
+      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+      const jobsDispatcher = props?.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
 
-  const transactionManager = TransactionManagerFactory.default();
-  const jobsDispatcher =
-    props?.jobsDispatcher ?? DefaultDispatcher(tenant.name, transactionManager);
+      const thesauriDS =
+        props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const thesaurusTranslationService =
+        props?.thesaurusTranslationService ??
+        new ThesaurusTranslationService({
+          settingsDS,
+          translationsDS,
+        });
 
-  const thesauriDS =
-    props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesaurusTranslationService =
-    props?.thesaurusTranslationService ??
-    new ThesaurusTranslationService({
-      settingsDS,
-      translationsDS,
-    });
+      const thesauriService = new ThesauriService({
+        jobsDispatcher,
+        thesauriDS,
+        thesaurusTranslationService,
+      });
 
-  const thesauriService = new ThesauriService({
-    jobsDispatcher,
-    thesauriDS,
-    thesaurusTranslationService,
-  });
+      const sut = new UpdateThesaurusUseCase(
+        {
+          thesauriDS,
+          thesaurusTranslationService,
+          jobsDispatcher,
+          transactionManager,
+          thesauriService,
+        },
+        { tenant: ExecutionContext.tenant, actor: ExecutionContext.actor }
+      );
 
-  const sut = new UpdateThesaurusUseCase(
-    {
-      thesauriDS,
-      thesaurusTranslationService,
-      jobsDispatcher,
-      transactionManager,
-      thesauriService,
+      return { sut };
     },
-    { tenant, actor }
+    {
+      actor: User.createFrom({
+        _id: factory.id('user1'),
+        username: 'username',
+        email: 'email@email.com',
+        role: 'admin',
+        groups: [],
+      }),
+    }
   );
-
-  return { sut };
-};
 
 describe('UpdateThesaurusUseCase', () => {
   const getJobs = async () => getSharedConnection().collection('jobs').find().toArray();

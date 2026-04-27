@@ -17,11 +17,47 @@ import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateD
 import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import { TemplateInUseError } from '#api/core/domain/template/errors.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+
+const createSut = () =>
+  testingEnvironment.runWithContext(() => DeleteTemplateUseCaseFactory.default(), {
+    factories: {
+      jobsDispatcher: () => {
+        const tm = ExecutionContext.transactionManager as MongoTransactionManager;
+        const templatesDS = TemplatesDataSourceFactory.default(tm);
+        const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default(tm);
+        const filesDS = FilesDataSourceFactory.default();
+        const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), tm);
+        return new SyncDispatcherForTests({
+          TemplatePostProcessEntitiesJob: async () =>
+            new TemplatePostProcessEntitiesJob({
+              useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+                entitiesDS: multiLanguageEntitiesDS,
+                relationshipsV1DS,
+                templatesDS,
+                transactionManager: tm,
+                filesDS,
+              }),
+              templatesDS,
+            }),
+        });
+      },
+    },
+  });
 
 describe('DeleteTemplateUseCase', () => {
   beforeEach(async () => {
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(fixtures, 'delete_template_use_case');
   });
 
   afterAll(async () => {
@@ -29,9 +65,7 @@ describe('DeleteTemplateUseCase', () => {
   });
 
   it('should delete properties of other templates using this template as select/relationship', async () => {
-    await (
-      await DeleteTemplateUseCaseFactory.create()
-    ).execute({ templateId: templateToBeDeleted.toString() });
+    await createSut().execute({ templateId: templateToBeDeleted.toString() });
 
     const [template1] = await templates.get({ name: 'thesauri template' });
 
@@ -49,9 +83,7 @@ describe('DeleteTemplateUseCase', () => {
   });
 
   it('should remove the related metadata from entities using this template as a select/relationship, from all languages', async () => {
-    await (
-      await DeleteTemplateUseCaseFactory.create()
-    ).execute({ templateId: templateToBeDeleted.toString() });
+    await createSut().execute({ templateId: templateToBeDeleted.toString() });
 
     const relatedEntities = await db.mongodb
       ?.collection('entities')
@@ -90,9 +122,7 @@ describe('DeleteTemplateUseCase', () => {
   it('should delete a template when no document is using it', async () => {
     jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
 
-    const response = await (
-      await DeleteTemplateUseCaseFactory.create()
-    ).execute({ templateId: templateToBeDeleted.toString() });
+    const response = await createSut().execute({ templateId: templateToBeDeleted.toString() });
 
     expect(response).toEqual({ templateId: templateToBeDeleted.toString() });
 
@@ -105,9 +135,7 @@ describe('DeleteTemplateUseCase', () => {
   it('should delete the template translation', async () => {
     jest.spyOn(documents, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
 
-    await (
-      await DeleteTemplateUseCaseFactory.create()
-    ).execute({ templateId: templateToBeDeleted.toString() });
+    await createSut().execute({ templateId: templateToBeDeleted.toString() });
     const translation = await testingEnvironment.db
       .getCollection('translationsV2')
       ?.findOne({ 'context.id': templateToBeDeleted });
@@ -118,9 +146,7 @@ describe('DeleteTemplateUseCase', () => {
   it(`should emit a ${TemplateDeletedEvent.name} event`, async () => {
     const emitSpy = spyOnEmit();
 
-    await (
-      await DeleteTemplateUseCaseFactory.create()
-    ).execute({ templateId: templateToBeDeleted.toString() });
+    await createSut().execute({ templateId: templateToBeDeleted.toString() });
 
     emitSpy.expectToEmitEvent(TemplateDeletedEvent);
   });
@@ -140,9 +166,7 @@ describe('DeleteTemplateUseCase', () => {
     });
 
     try {
-      await (
-        await DeleteTemplateUseCaseFactory.create()
-      ).execute({ templateId: templateToBeDeleted.toString() });
+      await createSut().execute({ templateId: templateToBeDeleted.toString() });
       throw new Error(
         'should not delete the template and throw an error because there is some documents associated with the template'
       );
@@ -153,9 +177,7 @@ describe('DeleteTemplateUseCase', () => {
 
   it('should handle a non existing template', async () => {
     try {
-      await (
-        await DeleteTemplateUseCaseFactory.create()
-      ).execute({ templateId: new ObjectId().toString() });
+      await createSut().execute({ templateId: new ObjectId().toString() });
     } catch (error) {
       throw new Error(
         'should not delete the template and throw an error because it is the default template'
@@ -165,9 +187,7 @@ describe('DeleteTemplateUseCase', () => {
 
   it('should throw an error when the template is the default template', async () => {
     try {
-      await (
-        await DeleteTemplateUseCaseFactory.create()
-      ).execute({ templateId: templateToBeEditedId.toString() });
+      await createSut().execute({ templateId: templateToBeEditedId.toString() });
       throw new Error(
         'should not delete the template and throw an error because it is the default template'
       );
