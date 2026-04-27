@@ -1,6 +1,11 @@
-import React from 'react';
-import { useAtom, useAtomValue } from 'jotai';
-import { getEffectiveThemeMode, settingsAtom, themeModeAtom } from '#V2/atoms/index.js';
+import React, { useLayoutEffect } from 'react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import {
+  getEffectiveThemeMode,
+  settingsAtom,
+  themeControlledModeAtom,
+  themeModeAtom,
+} from '#V2/atoms/index.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { appliedTheme, getPresetId, type ThemeMode } from '#V2/theme/themes.js';
 
@@ -8,18 +13,36 @@ type ThemeProviderProps = React.PropsWithChildren<{
   className?: string;
   controlledMode?: ThemeMode;
   style?: React.CSSProperties & Record<string, string>;
+  /** Use legacy token preset only; still follows light/dark when customization is on. */
+  legacyChrome?: boolean;
 }>;
 
-const ThemeProvider = ({ children, className, controlledMode, style }: ThemeProviderProps) => {
+const ThemeProvider = ({
+  children,
+  className,
+  controlledMode,
+  style,
+  legacyChrome = false,
+}: ThemeProviderProps) => {
   const settings = useAtomValue(settingsAtom);
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
+  const setThemeControlledMode = useSetAtom(themeControlledModeAtom);
   const themeVars = settings.themeVars ?? undefined;
-  const enabled = Boolean(settings.themeCustomization);
-  const effectiveThemeMode = getEffectiveThemeMode(enabled, themeMode, controlledMode);
-  const presetId = React.useMemo(() => getPresetId(themeVars, enabled), [enabled, themeVars]);
+  const customizationOn = Boolean(settings.themeCustomization);
+  const resolutionEnabled = customizationOn && !legacyChrome;
+  const effectiveThemeMode = getEffectiveThemeMode(customizationOn, themeMode, controlledMode);
+
+  useLayoutEffect(() => {
+    setThemeControlledMode(controlledMode);
+  }, [controlledMode, setThemeControlledMode]);
+
+  const presetId = React.useMemo(
+    () => (legacyChrome ? 'legacy' : getPresetId(themeVars, customizationOn)),
+    [legacyChrome, customizationOn, themeVars]
+  );
   const resolved = React.useMemo(
-    () => appliedTheme(themeVars, effectiveThemeMode, enabled),
-    [enabled, effectiveThemeMode, themeVars]
+    () => appliedTheme(themeVars, effectiveThemeMode, resolutionEnabled),
+    [resolutionEnabled, effectiveThemeMode, themeVars]
   );
   const themeVarsStyle = React.useMemo<React.CSSProperties & Record<string, string>>(
     () => getScopedThemeVars(presetId, resolved),
@@ -42,7 +65,7 @@ const ThemeProvider = ({ children, className, controlledMode, style }: ThemeProv
   return (
     <div
       className={mergedClassName}
-      data-theme-custom={enabled ? true : undefined}
+      data-theme-custom={resolutionEnabled ? true : undefined}
       data-theme-mode={effectiveThemeMode}
       style={{ colorScheme: effectiveThemeMode, ...themeVarsStyle, ...style }}
     >

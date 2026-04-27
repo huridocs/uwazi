@@ -224,6 +224,7 @@ const FiltersTable = () => {
                 </Button>
                 <Button
                   variant="success"
+                  size="medium"
                   onClick={async () => handleSave()}
                   disabled={!hasChanges || disabled}
                 >

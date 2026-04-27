@@ -238,7 +238,13 @@ const MenuForm = ({ closePanel, submit, linkToEdit, links = [] }: MenuFormProps)
         >
           <Translate>Cancel</Translate>
         </Button>
-        <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
+        <Button
+          className="grow"
+          type="submit"
+          size="medium"
+          form="menu-form"
+          data-testid="menu-form-submit"
+        >
           {linkToEdit?.title ? <Translate>Update</Translate> : <Translate>Add</Translate>}
         </Button>
       </div>

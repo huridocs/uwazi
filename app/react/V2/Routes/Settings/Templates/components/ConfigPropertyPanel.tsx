@@ -302,7 +302,12 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
             <Button type="button" variant="secondary" onClick={onClose}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button type="submit" variant="success" disabled={!validateMatchingProperties()}>
+            <Button
+              type="submit"
+              size="medium"
+              variant="success"
+              disabled={!validateMatchingProperties()}
+            >
               <Translate>{propertyToEdit ? 'Save' : 'Add property'}</Translate>
             </Button>
           </Sidepanel.Footer>

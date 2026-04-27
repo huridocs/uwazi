@@ -519,7 +519,7 @@ const Collection = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <div className="flex gap-2">
-            <Button type="submit" form="collection-form">
+            <Button type="submit" form="collection-form" size="medium">
               <Translate>Save</Translate>
             </Button>
           </div>

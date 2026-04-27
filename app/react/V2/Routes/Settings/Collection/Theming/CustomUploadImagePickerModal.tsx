@@ -79,6 +79,7 @@ const CustomUploadImagePickerModal = ({
             </div>
             <Button
               type="button"
+              size="medium"
               className="w-full shrink-0 sm:w-auto"
               onClick={onUpload}
               disabled={uploading || filesToUpload.length === 0}

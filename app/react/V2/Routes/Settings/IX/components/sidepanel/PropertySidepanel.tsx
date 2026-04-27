@@ -233,7 +233,7 @@ const PropertySidepanel = ({
                     />
                   )}
                 />
-                <Button type="submit" disabled={isSubmitting} variant="success">
+                <Button type="submit" size="medium" disabled={isSubmitting} variant="success">
                   <Translate>Accept</Translate>
                 </Button>
               </div>

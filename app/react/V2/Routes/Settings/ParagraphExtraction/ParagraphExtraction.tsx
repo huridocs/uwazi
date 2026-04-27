@@ -66,7 +66,12 @@ const ParagraphExtractorDashboard = () => {
               </div>
             </div>
           ) : (
-            <Button type="button" onClick={() => setCreateDialogIsopen(true)} disabled={isSaving}>
+            <Button
+              type="button"
+              size="medium"
+              onClick={() => setCreateDialogIsopen(true)}
+              disabled={isSaving}
+            >
               <Translate>Add extractor</Translate>
             </Button>
           )}

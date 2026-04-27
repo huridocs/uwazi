@@ -138,7 +138,7 @@ const GroupFormSidepanel = ({
             <Button className="grow" type="button" variant="secondary" onClick={closeSidepanel}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="grow" type="submit">
+            <Button className="grow" type="submit" size="medium">
               <Translate>Save</Translate>
             </Button>
           </div>

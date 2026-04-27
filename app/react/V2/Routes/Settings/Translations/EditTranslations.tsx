@@ -417,7 +417,7 @@ const EditTranslations = () => {
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
-            <Button type="submit" disabled={isSubmitting} form="edit-translations">
+            <Button type="submit" size="medium" disabled={isSubmitting} form="edit-translations">
               <Translate>Save</Translate>
             </Button>
           </div>

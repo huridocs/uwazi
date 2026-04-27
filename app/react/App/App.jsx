@@ -109,14 +109,14 @@ const App = ({ customParams }) => {
       {inlineEditState.inlineEdit &&
         inlineEditState.context &&
         (shouldUseThemeWrapper ? (
-          <ThemeProvider>
+          <ThemeProvider legacyChrome>
             <TranslateModal />
           </ThemeProvider>
         ) : (
           <TranslateModal />
         ))}
       {shouldUseThemeWrapper ? (
-        <ThemeProvider>
+        <ThemeProvider legacyChrome>
           <NotificationsPanel />
         </ThemeProvider>
       ) : (

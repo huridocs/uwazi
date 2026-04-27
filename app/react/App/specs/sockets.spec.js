@@ -214,7 +214,9 @@ describe('sockets', () => {
       const incoming = { payload: 'new settings' };
       socket._callbacks.$updateSettings[0](incoming);
       expect(atomStore.set).toHaveBeenCalledWith(settingsAtom, expect.any(Function));
-      const setCall = atomStore.set.mock.calls.find(call => call[0] === settingsAtom);
+      const setCall = atomStore.set.mock.calls.find(
+        call => call[0] === settingsAtom && typeof call[1] === 'function'
+      );
       expect(setCall).toBeDefined();
       const updater = setCall[1];
       const prev = { key: 'value' };

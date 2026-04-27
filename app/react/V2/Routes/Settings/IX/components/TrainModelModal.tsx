@@ -159,7 +159,13 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         >
           <Translate>Cancel</Translate>
         </Button>
-        <Button disabled={isSubmitting} type="submit" form="train-form" className="grow">
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          size="medium"
+          form="train-form"
+          className="grow"
+        >
           <Translate>Train</Translate>
         </Button>
       </Modal.Footer>

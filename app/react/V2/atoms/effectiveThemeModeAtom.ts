@@ -8,8 +8,14 @@ const getEffectiveThemeMode = (
   controlled?: ThemeMode
 ): ThemeMode => (customizationEnabled ? (controlled ?? stored) : 'light');
 
+const themeControlledModeAtom = atom<ThemeMode | undefined>(undefined);
+
 const effectiveThemeModeAtom = atom(get =>
-  getEffectiveThemeMode(Boolean(get(settingsAtom).themeCustomization), get(themeModeAtom))
+  getEffectiveThemeMode(
+    Boolean(get(settingsAtom).themeCustomization),
+    get(themeModeAtom),
+    get(themeControlledModeAtom)
+  )
 );
 
-export { effectiveThemeModeAtom, getEffectiveThemeMode };
+export { effectiveThemeModeAtom, getEffectiveThemeMode, themeControlledModeAtom };

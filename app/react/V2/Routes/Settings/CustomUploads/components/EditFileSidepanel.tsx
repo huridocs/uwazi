@@ -74,7 +74,13 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
           <Button className="grow" variant="ghost" disabled={isSubmitting} onClick={closeSidepanel}>
             <Translate>Cancel</Translate>
           </Button>
-          <Button className="grow" type="submit" disabled={isSubmitting} form="file-edit-form">
+          <Button
+            className="grow"
+            type="submit"
+            size="medium"
+            disabled={isSubmitting}
+            form="file-edit-form"
+          >
             <Translate>Save</Translate>
           </Button>
         </div>

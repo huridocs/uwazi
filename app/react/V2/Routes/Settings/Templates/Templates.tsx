@@ -109,7 +109,7 @@ const Templates = () => {
           <div className="flex justify-between w-full">
             {selected.length === 0 && (
               <I18NLink to="/settings/templates/new">
-                <Button variant="primary">
+                <Button variant="primary" size="medium">
                   <Translate>Add template</Translate>
                 </Button>
               </I18NLink>

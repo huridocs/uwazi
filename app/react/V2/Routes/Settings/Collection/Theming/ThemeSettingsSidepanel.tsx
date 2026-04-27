@@ -130,7 +130,7 @@ const ThemeSettingsSidepanel = ({
 
       <Sidepanel.Footer className="border-t px-4 py-3 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
         <div className="flex justify-end">
-          <Button type="button" variant="primary" onClick={onClose}>
+          <Button type="button" variant="primary" size="medium" onClick={onClose}>
             <Translate>Done</Translate>
           </Button>
         </div>

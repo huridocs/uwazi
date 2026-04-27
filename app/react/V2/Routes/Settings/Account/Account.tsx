@@ -197,6 +197,7 @@ const Account = () => {
 
             <Button
               type="button"
+              size="medium"
               onClick={async () => {
                 const validation = await trigger();
                 if (validation) {
