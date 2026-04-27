@@ -8,7 +8,7 @@ import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { tenants } from '#api/tenants/index.js';
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DependenciesContext } from '../../DependenciesContext.js';
+import { ExecutionContext } from '../../ExecutionContext.js';
 import { JobInfo } from '../../queue/application/contracts/Dispatchable.js';
 import { AsyncEventEmitter } from '../AsyncEventEmitter.js';
 import { Event } from '../Event.js';
@@ -23,7 +23,7 @@ const createSut = () => {
   const sut = new AsyncEventEmitter();
 
   const runInContext = async (callback: () => Promise<void>, transactional = true) =>
-    DependenciesContext.run(
+    ExecutionContext.run(
       {
         factories: {
           transactionManager: () => transactionManager,

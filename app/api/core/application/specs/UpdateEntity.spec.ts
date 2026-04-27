@@ -16,7 +16,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -81,7 +81,7 @@ const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
     { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
   );
 
-  DependenciesContext.attachContext(sut, 'execute', {
+  ExecutionContext.attachContext(sut, 'execute', {
     factories: {
       transactionManager: () => transactionManager,
       idGenerator: () => idGenerator,

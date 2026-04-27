@@ -29,7 +29,7 @@ import { registerJobs } from './queueRegistry.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 
 type Props = {
@@ -60,7 +60,7 @@ function register<T extends Dispatchable>(
     const deps = {
       factories: {
         transactionManager: TransactionManagerFactory.default,
-        jobsDispatcher: () => DefaultDispatcher(namespace, DependenciesContext.transactionManager),
+        jobsDispatcher: () => DefaultDispatcher(namespace, ExecutionContext.transactionManager),
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
@@ -72,10 +72,10 @@ function register<T extends Dispatchable>(
 
     let instance!: T;
     await tenants.run(async () => {
-      instance = await DependenciesContext.run(deps, async () => factory(namespace));
+      instance = await ExecutionContext.run(deps, async () => factory(namespace));
     }, namespace);
 
-    DependenciesContext.attachContext(instance, 'handleDispatch', deps);
+    ExecutionContext.attachContext(instance, 'handleDispatch', deps);
 
     return instance;
   });

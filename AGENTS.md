@@ -75,6 +75,10 @@ Three tiers of tests apply in V2:
 
 2. **Use case tests (integration)** — end-to-end correctness of application actions, side effects, and business flows. Should be independent of the database where possible; assertions use domain models. The only exception is the action output (DTO).
 
+tests are going to use the factory defaults instead of a forTesting variant factory mostly (defaults should accept partial overrides and be suitable for testing). This is to avoid having two sets of factories to maintain and to encourage using realistic data in tests.
+
+DependencyContext should only be used at the outer most layer (factories), the only exception is the asyncEvent emitter for technical reasons.
+
 Examples: 
  - app/api/core/application/specs/DeleteTemplate.spec.ts
  - app/api/core/application/specs/MultiUpdateEntity.spec.ts

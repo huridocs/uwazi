@@ -10,12 +10,19 @@ import {
   setupTestUploadedPaths,
 } from '#api/files/index.js';
 import { FileType } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/types.js';
+import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
+import { ObjectId } from 'mongodb';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -138,6 +145,9 @@ const testingEnvironment = {
     }
   },
 
+  /**
+   * @deprecated Use runWithContext instead, which includes tenant and actor in the ExecutionContext.
+   */
   setPermissions(user?: UserSchema) {
     if (!user) {
       this.userInContextMockFactory.mockEditorUser();
@@ -148,6 +158,54 @@ const testingEnvironment = {
 
   resetPermissions() {
     this.userInContextMockFactory.restore();
+  },
+
+  /**
+   * Runs `fn` inside an ExecutionContext populated with test defaults.
+   * Defaults: editor actor, tenant derived from testingDB, standard factory stubs.
+   * Any field in `overrides` is deeply merged: `factories` keys are merged individually.
+   */
+  runWithContext<T>(fn: () => T, overrides?: Partial<ExecutionContextDeps>): T {
+    const tenant = testingTenants.createTenant({
+      name: testingDB.dbName || 'defaultDB',
+      dbName: testingDB.dbName || 'defaultDB',
+      indexName: 'index',
+      domain: '127.0.0.1',
+    }) as ReturnType<typeof testingTenants.createTenant> & { domain: string };
+
+    const defaultActor = User.createFrom({
+      _id: new ObjectId(),
+      role: 'editor',
+      groups: [],
+      email: 'editor@test.com',
+      username: 'editorUser',
+    });
+
+    const defaultFactories: ExecutionContextDeps['factories'] = {
+      transactionManager: TransactionManagerFactory.default,
+      eventEmitter: EventEmitterFactory.forTesting,
+      jobsDispatcher: () => {
+        throw new Error('ExecutionContext: jobsDispatcher not implemented in test context');
+      },
+      idGenerator: IdGeneratorFactory.default,
+      logger: LoggerFactory.default,
+      elasticClient: () => {
+        throw new Error('ExecutionContext: elasticClient not implemented in test context');
+      },
+      authorizedEntityESClient: () => {
+        throw new Error(
+          'ExecutionContext: authorizedEntityESClient not implemented in test context'
+        );
+      },
+    };
+
+    const context: ExecutionContextDeps = {
+      tenant: overrides?.tenant ?? tenant,
+      actor: overrides?.actor ?? defaultActor,
+      factories: { ...defaultFactories, ...overrides?.factories },
+    };
+
+    return ExecutionContext.run(context, fn);
   },
 
   setRequestId(requestId: string = '1234') {

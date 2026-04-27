@@ -1,62 +1,22 @@
 /* eslint-disable max-statements */
 import { MultiUpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/MultiUpdateEntityUseCaseFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UserSchema } from '#shared/types/userType.js';
+import { User } from '#api/users.v2/model/User.js';
 import { ObjectId } from 'mongodb';
-import { MultiUpdateEntityDeps } from '../MultiUpdateEntity.js';
 import { factory, fixtures, permissionsFixtures } from './MultiUpdateEntityFixtures.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
-const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) => {
-  const defaultActor: UserSchema = {
-    _id: new ObjectId(),
-    role: 'admin',
-    groups: [],
-    email: 'admin@test.com',
-    username: 'admin',
-  };
-
-  testingEnvironment.setPermissions(actor ?? defaultActor);
-
-  const sut = DependenciesContext.run(
-    {
-      factories: {
-        transactionManager: TransactionManagerFactory.default,
-        eventEmitter: EventEmitterFactory.forTesting,
-
-        jobsDispatcher: () => {
-          throw new Error('Not implemented jobs dispatcher');
-        },
-        idGenerator: IdGeneratorFactory.default,
-        logger: LoggerFactory.default,
-        elasticClient: () => {
-          throw new Error('Not implemented elastic client');
-        },
-        authorizedEntityESClient: () => {
-          throw new Error('Not implemented elastic');
-        },
-      },
-    },
-    () => MultiUpdateEntityUseCaseFactory.default()
+const createSut = (actor?: User) =>
+  testingEnvironment.runWithContext(
+    () => ({ sut: MultiUpdateEntityUseCaseFactory.default() }),
+    actor ? { actor } : undefined
   );
-
-  return { sut };
-};
 
 const getAllDocs = async (sharedId: string) =>
   testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
 
 describe('MultiUpdateEntity', () => {
-  beforeAll(async () => {
-    await testingEnvironment.setUp({});
-  });
-
   beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
@@ -271,13 +231,13 @@ describe('MultiUpdateEntity', () => {
 
     describe('Admin role', () => {
       it('should update all entities regardless of permissions', async () => {
-        const adminUser: UserSchema = {
+        const adminUser = User.createFrom({
           _id: new ObjectId(),
           role: 'admin',
           groups: [],
           email: 'admin@test.com',
           username: 'admin',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(adminUser);
 
@@ -300,13 +260,13 @@ describe('MultiUpdateEntity', () => {
 
     describe('Editor role', () => {
       it('should update all entities regardless of permissions', async () => {
-        const editorUser: UserSchema = {
+        const editorUser = User.createFrom({
           _id: factory.id('editor'),
           role: 'editor',
           groups: [],
           email: 'editor@test.com',
           username: 'editor',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(editorUser);
 
@@ -333,13 +293,13 @@ describe('MultiUpdateEntity', () => {
       const collaboratorId = factory.id('collaborator');
 
       it('should update only entities with write permission via user', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
           email: 'collaborator@test.com',
           username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(collaboratorUser);
 
@@ -365,13 +325,13 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should update only entities with write permission via group', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
-          groups: [{ _id: factory.id('group1'), name: 'group1' }] as any,
+          groups: [{ _id: factory.id('group1'), name: 'group1' }],
           email: 'collaborator@test.com',
           username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(collaboratorUser);
 
@@ -393,13 +353,13 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should return empty array and write nothing when no entities are permitted', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
           email: 'collaborator@test.com',
           username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(collaboratorUser);
 

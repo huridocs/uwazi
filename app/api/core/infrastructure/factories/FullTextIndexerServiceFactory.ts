@@ -1,6 +1,6 @@
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FullTextIndexerService } from '../elasticSearch/entities/FullTextIndexerService.js';
 import { MongoEntityDAO } from '../mongodb/entity/MongoEntityDAO.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
@@ -21,10 +21,10 @@ export class FullTextIndexerServiceFactory {
     const user = permissionsContext.getUserInContext() || null;
 
     const db = getConnection();
-    const esClient = DependenciesContext.elasticClient;
+    const esClient = ExecutionContext.elasticClient;
     const entityDAO = new MongoEntityDAO(
       db,
-      DependenciesContext.transactionManager,
+      ExecutionContext.transactionManager,
       User.createFrom(user)
     );
 

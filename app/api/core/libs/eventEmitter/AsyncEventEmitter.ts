@@ -1,4 +1,4 @@
-import { DependenciesContext } from '../DependenciesContext.js';
+import { ExecutionContext } from '../ExecutionContext.js';
 import { Event } from './Event.js';
 import { EventEmitter } from './EventEmitter.js';
 import { Listener } from './Listener.js';
@@ -21,11 +21,11 @@ class AsyncEventEmitter implements EventEmitter {
       throw new Error(`There are no listeners for event ${event.constructor.name}`);
     }
 
-    if (!DependenciesContext.transactionManager.isRunning()) {
+    if (!ExecutionContext.transactionManager.isRunning()) {
       throw new Error('Cannot emit events outside of a transaction');
     }
 
-    await DependenciesContext.jobsDispatcher.dispatchMany(async dispatch =>
+    await ExecutionContext.jobsDispatcher.dispatchMany(async dispatch =>
       listeners.forEach(listener => dispatch(listener.asJob(), event.payload))
     );
   }

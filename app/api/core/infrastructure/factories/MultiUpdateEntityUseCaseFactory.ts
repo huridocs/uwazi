@@ -1,10 +1,8 @@
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
@@ -15,10 +13,10 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.j
 
 class MultiUpdateEntityUseCaseFactory {
   static default() {
-    const tenant = tenants.current();
+    const tenant = ExecutionContext.tenant;
 
-    const transactionManager = DependenciesContext.transactionManager as MongoTransactionManager;
-    const { eventEmitter } = DependenciesContext;
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { eventEmitter } = ExecutionContext;
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
@@ -56,7 +54,7 @@ class MultiUpdateEntityUseCaseFactory {
         entityPermissionChecker,
         transactionManager,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant }
+      { actor: ExecutionContext.actor as any, tenant }
     );
 
     return useCase;

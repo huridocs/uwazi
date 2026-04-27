@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
@@ -19,22 +19,21 @@ const dependenciesContextMiddleware = (
   }
 
   const tenant = tenants.current();
+  const actor = User.createFrom(request.user);
 
-  return DependenciesContext.run(
+  return ExecutionContext.run(
     {
+      tenant,
+      actor,
       factories: {
         transactionManager: TransactionManagerFactory.default,
-        jobsDispatcher: () =>
-          DefaultDispatcher(tenant.name, DependenciesContext.transactionManager),
+        jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
         elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),
         authorizedEntityESClient: () =>
-          ElasticSearchClientFactory.authorizedEntityClient(
-            tenant.name,
-            User.createFrom(request.user)
-          ),
+          ElasticSearchClientFactory.authorizedEntityClient(tenant.name, actor),
       },
     },
     next

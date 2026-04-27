@@ -1,4 +1,6 @@
 import { AsyncLocalStorage } from 'async_hooks';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
@@ -23,18 +25,20 @@ type Dependencies = {
 
 type Context = {
   factories: DependencyFactories;
-  instances?: Dependencies;
+  instances?: Partial<Dependencies>;
+  tenant?: Tenant;
+  actor?: User;
 };
 
-class DependenciesContext extends AsyncLocalStorage<Context> {
+class ExecutionContext extends AsyncLocalStorage<Context> {
   private getOrInitialize<K extends keyof DependencyFactories>(key: K): Dependencies[K] {
     const store = this.getStore();
     if (!store) {
-      throw new Error('DependenciesContext is not initialized');
+      throw new Error('ExecutionContext is not initialized');
     }
 
     if (typeof store.instances === 'undefined') {
-      store.instances = {} as Dependencies;
+      store.instances = {};
     }
 
     if (!store.instances?.[key]) {
@@ -72,6 +76,18 @@ class DependenciesContext extends AsyncLocalStorage<Context> {
     return this.getOrInitialize('eventEmitter');
   }
 
+  get tenant(): Tenant {
+    const store = this.getStore();
+    if (!store?.tenant) {
+      throw new Error('ExecutionContext: tenant is not set');
+    }
+    return store.tenant;
+  }
+
+  get actor(): User | undefined {
+    return this.getStore()?.actor;
+  }
+
   attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {
     const originalMethod = (anInstance[method] as any).bind(anInstance);
 
@@ -81,7 +97,7 @@ class DependenciesContext extends AsyncLocalStorage<Context> {
   }
 }
 
-const dependenciesContext = new DependenciesContext();
+const executionContext = new ExecutionContext();
 
-export { dependenciesContext as DependenciesContext };
-export type { Context as ContextDependencies };
+export { executionContext as ExecutionContext };
+export type { Context as ExecutionContextDeps };

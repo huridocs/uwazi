@@ -4,7 +4,7 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { UpdateEntityUseCase } from '#api/core/application/UpdateEntity.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
@@ -17,8 +17,8 @@ class UpdateEntityUseCaseFactory {
   static default() {
     const tenant = tenants.current();
 
-    const transactionManager = DependenciesContext.transactionManager as MongoTransactionManager;
-    const { idGenerator, eventEmitter } = DependenciesContext;
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { idGenerator, eventEmitter } = ExecutionContext;
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);

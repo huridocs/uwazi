@@ -2,7 +2,7 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 
 export class EntityIndexerServiceFactory {
@@ -17,7 +17,7 @@ export class EntityIndexerServiceFactory {
       });
     }
 
-    const esClient = DependenciesContext.elasticClient;
+    const esClient = ExecutionContext.elasticClient;
     const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
     const entityIndexerService = new EntityIndexerService({ esClient, slotsDAO });
 
