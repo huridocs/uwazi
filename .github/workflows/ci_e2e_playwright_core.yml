@@ -1,0 +1,158 @@
+name: E2E Playwright Core
+
+on:
+  workflow_call:
+
+jobs:
+  e2e-playwright-core:
+    runs-on: ubuntu-24.04
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
+        ports:
+          - 9200/tcp
+        options: >-
+          --memory=2g
+          --memory-swap=2g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
+          --health-cmd="curl -f http://localhost:9200"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
+      redis:
+        image: redis:6.0-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Install MongoDB tools
+        run: |
+          if [ ! -f /etc/apt/sources.list.d/mongodb-org-7.0.list ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y wget gnupg
+            wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
+            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.12.1
+        with:
+          mongodb-version: 7.0
+          mongodb-replica-set: test-rs
+
+      - uses: actions/checkout@v4
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('patches/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: install dependencies
+        run: yarn install
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Wait For and Download Artifact
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y jq unzip
+          i=1
+          while [ $i -le 60 ]; do
+            echo "Attempt $i: Checking for artifact..."
+            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
+            if [ -n "$ARTIFACT_URL" ]; then
+              mkdir -p ./prod
+              curl -s -L -o artifact.zip \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "$ARTIFACT_URL"
+              unzip -q artifact.zip -d ./prod
+              echo "Artifact downloaded and unzipped successfully."
+              exit 0
+            fi
+            sleep 20
+            i=$(expr $i + 1)
+          done
+          echo "Timed out waiting for artifact."
+          exit 1
+        timeout-minutes: 6
+
+      - name: start Uwazi
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+        run: .github/scripts/start-uwazi.sh
+
+      - name: Run Playwright core specs
+        run: |
+          yarn playwright test \
+            playwright/e2e/auth-gate.contract.spec.ts \
+            playwright/e2e/settings-core.contract.spec.ts \
+            playwright/e2e/public-form.contract.spec.ts \
+            playwright/e2e/entity-crud.contract.spec.ts \
+            --workers=1
+        timeout-minutes: 35
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          TRANSPILED: true
+
+      - name: Upload Playwright test-results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-core-test-results
+          path: test-results/
+          if-no-files-found: ignore
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-core-report
+          path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload Uwazi logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-core-logs
+          path: .github/logs/
+          if-no-files-found: ignore
