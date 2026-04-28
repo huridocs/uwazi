@@ -42,24 +42,10 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: Install MongoDB tools
-        run: |
-          if [ ! -f /etc/apt/sources.list.d/mongodb-org-7.0.list ]; then
-            apt-get update -qq
-            apt-get install -y wget gnupg
-            wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | apt-key add -
-            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-          fi
-          apt-get update -qq
-          apt-get install -y mongodb-mongosh mongodb-org-tools
-
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.12.1
-        with:
-          mongodb-version: 7.0
-          mongodb-replica-set: test-rs
-
       - uses: actions/checkout@v4
+
+      - name: Start MongoDB replica set
+        run: /usr/local/bin/setup-mongo-replica.sh
 
       - name: Setup Nodejs
         uses: actions/setup-node@v4
@@ -105,6 +91,56 @@ jobs:
           sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
         working-directory: dummy_extractor_services
 
+      - name: Forward ports for container networking
+        run: |
+          echo "Setting up port forwarding for container networking..."
+
+          if ! command -v socat >/dev/null 2>&1; then
+            echo "Installing socat..."
+            apt-get update -qq && apt-get install -y socat
+          fi
+
+          REDIS_IP=""
+          ELASTICSEARCH_IP=""
+
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 6379 2>/dev/null; then
+                REDIS_IP="$test_ip"
+                echo "Found Redis at $REDIS_IP:6379"
+                break
+              fi
+            fi
+          done
+
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 9200 2>/dev/null; then
+                ELASTICSEARCH_IP="$test_ip"
+                echo "Found Elasticsearch at $ELASTICSEARCH_IP:9200"
+                break
+              fi
+            fi
+          done
+
+          if [ -n "$REDIS_IP" ]; then
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:$REDIS_IP:6379 > socat-redis.log 2>&1 &
+          else
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
+          fi
+
+          if [ -n "$ELASTICSEARCH_IP" ]; then
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:$ELASTICSEARCH_IP:9200 > socat-elasticsearch.log 2>&1 &
+          else
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
+          fi
+
+          sleep 2
+          nc -z localhost 6379
+          curl -s --connect-timeout 5 http://localhost:9200/_cluster/health >/dev/null
+
       - name: Wait For and Download Artifact
         run: |
           apt-get update -qq && apt-get install -y jq unzip
@@ -141,7 +177,7 @@ jobs:
       - name: start Uwazi
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           EXTERNAL_SERVICES: true
@@ -159,7 +195,7 @@ jobs:
         timeout-minutes: 45
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           EXTERNAL_SERVICES: true
