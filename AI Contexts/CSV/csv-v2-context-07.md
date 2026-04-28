@@ -1362,7 +1362,22 @@ Required scope:
 - Cancel semantics (cooperative stop, no rollback/cleanup of already-applied work).
 - Troubleshooting section for common import failures and recovery steps.
 
-### 20) Priority order (agreed, Mar 2026; updated after index migration completion)
+### 20) TODO — Optional preflight creation toggle (thesauri + relationships)
+
+Add an import-start option controlled by a single user-facing checkbox:
+
+- `create thesaurus and related entities`
+
+Behavior requirements:
+
+- When checked: keep current behavior (preflight creates missing thesaurus values and
+  relationship entities as needed).
+- When not checked: preflight must not create missing thesaurus values or relationship
+  entities.
+- In the unchecked mode, rows that reference missing thesaurus values or missing
+  relationship entities must fail and report the missing asset explicitly.
+
+### 21) Priority order (agreed, Mar 2026; updated after index migration completion)
 
 The following order is explicitly agreed and should drive upcoming iterations.
 
