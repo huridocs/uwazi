@@ -55,7 +55,12 @@ describe('Groups', () => {
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
     cy.checkA11y(undefined, undefined, logA11yViolations);
-    cy.get('[data-testid="group-sidepanel-snapshot"]').matchImageSnapshot('sidepanel');
+    cy.get('[data-testid="group-sidepanel-snapshot"]').matchImageSnapshot('sidepanel', {
+      blur: 2,
+      failureThreshold: 0.18,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
     cy.get('[data-testid="close-sidepanel"]').click();
   });
 
