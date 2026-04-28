@@ -24,7 +24,7 @@ const ViewParagraphSidePanel = ({
       setIsSidePanelOpen(false);
     }}
     title={
-      <span className="text-base font-semibold uppercase leading-6 [color:var(--color-theme-text-muted)]">
+      <span className="text-base font-semibold uppercase leading-6 [color:var(--color-theme-text-secondary)]">
         <Translate>Entity</Translate>
       </span>
     }

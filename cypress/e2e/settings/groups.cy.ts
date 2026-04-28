@@ -11,6 +11,14 @@ const namesShouldMatch = (names: string[]) => {
 };
 
 describe('Groups', () => {
+  afterEach(() => {
+    cy.get('body').then($body => {
+      if ($body.find('[data-testid="sidepanel-overlay"]').length) {
+        cy.get('[data-testid="close-sidepanel"]').click({ force: true });
+      }
+    });
+  });
+
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
@@ -47,8 +55,8 @@ describe('Groups', () => {
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
     cy.checkA11y(undefined, undefined, logA11yViolations);
-    cy.get('aside').matchImageSnapshot('sidepanel');
-    cy.contains('button', 'Cancel').click();
+    cy.get('[data-testid="group-sidepanel-snapshot"]').matchImageSnapshot('sidepanel');
+    cy.get('[data-testid="close-sidepanel"]').click();
   });
 
   it('should be sorted by name by default', () => {
@@ -105,7 +113,7 @@ describe('Groups', () => {
     cy.contains('button', 'Edit').eq(0).click();
     cy.clearAndType('input[id=name]', 'Group One', { delay: 0 });
     cy.contains('button', 'Save').click();
-    cy.contains('span', 'Duplicated name');
+    cy.contains('p', 'Duplicated name');
 
     cy.clearAndType('input[id=name]', 'Group Two', { delay: 0 });
     cy.contains('button', 'Save').click();

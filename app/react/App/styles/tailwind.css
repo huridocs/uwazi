@@ -556,7 +556,7 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
-  color: var(--color-theme-text-secondary);
+  color: var(--color-theme-text-primary);
 }
 .tw-content nav[aria-label='Settings navigation'] .settings-nav-link:hover {
   color: var(--color-theme-text-primary);

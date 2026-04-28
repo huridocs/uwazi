@@ -24,7 +24,7 @@ const SettingsNavigation = () => {
       className="h-full flex flex-col gap-6 text-sm overflow-y-auto"
     >
       <section className="p-4">
-        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
+        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-primary)]">
           <Translate>Settings</Translate>
         </h2>
         <ul className="flex flex-col gap-4">
@@ -45,7 +45,7 @@ const SettingsNavigation = () => {
       </section>
       <section className="border-t border-solid [border-top-width:1px] p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
         <NeedAuthorization roles={['admin', 'editor']}>
-          <h2 className="mb-2 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
+          <h2 className="mb-2 text-sm font-bold tracking-wider [color:var(--color-theme-text-primary)]">
             <Translate>Metadata</Translate>
           </h2>
         </NeedAuthorization>
@@ -83,7 +83,7 @@ const SettingsNavigation = () => {
         </ul>
       </section>
       <section className="border-t border-solid [border-top-width:1px] p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
-        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-muted)]">
+        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-primary)]">
           <Translate>Tools</Translate>
         </h2>
         <ul className="flex flex-col gap-4">

@@ -106,7 +106,7 @@ Modal.CloseButton = ({
     className={[
       className,
       'ml-auto inline-flex shrink-0 items-center rounded-lg bg-transparent p-1.5 text-sm',
-      '[color:var(--color-theme-text-muted)]',
+      '[color:var(--color-theme-text-secondary)]',
       'enabled:hover:[background-color:var(--color-theme-surface-muted)]',
       'disabled:hover:bg-transparent',
     ].join(' ')}

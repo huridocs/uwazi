@@ -34,7 +34,7 @@ HTMLCollection [
             Animals
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]"
           >
             <span
               class="translation "
@@ -97,7 +97,7 @@ HTMLCollection [
             Colors
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]"
           >
             <span
               class="translation "
@@ -161,7 +161,7 @@ HTMLCollection [
             Names
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]"
           >
             <span
               class="translation "
@@ -212,7 +212,7 @@ HTMLCollection [
 
 exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
 <div
-  class="bottom-0 left-0 w-full px-4 py-3 border-t sticky z-1 bg-primary-50"
+  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] [background-color:var(--color-theme-feedback-info-tint)] bg-primary-50"
   data-testid="settings-content-footer"
 >
   <div

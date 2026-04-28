@@ -93,7 +93,7 @@ const GroupFormSidepanel = ({
     >
       <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
         <Sidepanel.Body>
-          <div className="flex flex-col grow gap-4">
+          <div data-testid="group-sidepanel-snapshot" className="flex flex-col gap-4">
             <Card title={<Translate>Group Options</Translate>}>
               <div>
                 <InputField

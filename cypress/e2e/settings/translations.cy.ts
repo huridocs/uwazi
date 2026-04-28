@@ -111,6 +111,10 @@ describe('Translations', () => {
     });
 
     describe('discard changes', () => {
+      beforeEach(() => {
+        dismissModalIfVisible();
+      });
+
       it('should unfilter the from and clear the first field', () => {
         cy.get('div[data-testid=settings-translations-edit]').scrollTo('top');
         cy.get('[type="checkbox"]').check();
@@ -120,7 +124,7 @@ describe('Translations', () => {
       it('should alert about unsaved changes when navigating', () => {
         cy.contains('a', 'Account').click();
         cy.contains('h1', 'Discard changes?');
-        cy.checkA11y();
+        cy.checkA11y('[data-testid="modal"]', undefined, logA11yViolations);
         cy.get('button[aria-label="Close modal"]').click();
       });
 

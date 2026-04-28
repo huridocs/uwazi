@@ -79,7 +79,7 @@ const ConfirmationModal = ({
         </div>
       )}
       <Modal.Body>
-        <span className="[color:var(--color-theme-text-muted)]">{renderChild(body)}</span>
+        <span className="[color:var(--color-theme-text-secondary)]">{renderChild(body)}</span>
         {confirmWord && (
           <div className="py-4">
             <span className="block mb-2 text-md font-medium [color:var(--color-theme-text-primary)]">
