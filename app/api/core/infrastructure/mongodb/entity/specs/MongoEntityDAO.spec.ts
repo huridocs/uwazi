@@ -247,6 +247,27 @@ describe('MongoEntityDAO', () => {
       expect(returnedSharedIds).toEqual([...returnedSharedIds].sort());
     });
 
+    it('with afterSharedId returns only entities whose sharedId is lexically after the checkpoint', async () => {
+      const dao = new MongoEntityDAO(
+        getConnection(),
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await dao.streamAll({ afterSharedId: 'entity_3' }).toArray();
+      const sharedIds = [...new Set(entities.map(e => e.sharedId))].sort();
+      expect(sharedIds).toEqual(['entity_4', 'entity_5']);
+    });
+
+    it('with afterSharedId returns empty cursor when no entities follow the checkpoint', async () => {
+      const dao = new MongoEntityDAO(
+        getConnection(),
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await dao.streamAll({ afterSharedId: 'entity_5' }).toArray();
+      expect(entities).toHaveLength(0);
+    });
+
     describe('when collection is empty', () => {
       beforeAll(async () => {
         await testingEnvironment.setUp({ entities: [] });
@@ -261,6 +282,70 @@ describe('MongoEntityDAO', () => {
         const result = await dao.streamAll().toArray();
         expect(result).toHaveLength(0);
       });
+    });
+  });
+
+  describe('streamModifiedSince()', () => {
+    const past = new Date('2020-01-01T00:00:00Z');
+    const cutoff = new Date('2025-06-01T00:00:00Z');
+    const recent = new Date('2025-06-02T00:00:00Z');
+    const onCutoff = new Date('2025-06-01T00:00:00Z');
+
+    beforeAll(async () => {
+      await testingEnvironment.setUp({
+        entities: [
+          factory.entity(
+            'old_entity',
+            'template_1',
+            {},
+            { language: 'en', updatedAt: past as any }
+          ),
+          factory.entity(
+            'recent_entity',
+            'template_1',
+            {},
+            { language: 'en', updatedAt: recent as any }
+          ),
+          factory.entity(
+            'boundary_entity',
+            'template_1',
+            {},
+            { language: 'en', updatedAt: onCutoff as any }
+          ),
+        ],
+      });
+    });
+
+    it('returns only entities whose updatedAt is >= the given date', async () => {
+      const dao = new MongoEntityDAO(
+        getConnection(),
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await dao.streamModifiedSince(cutoff).toArray();
+      const sharedIds = entities.map(e => e.sharedId).sort();
+      expect(sharedIds).toEqual(['boundary_entity', 'recent_entity']);
+    });
+
+    it('excludes entities updated strictly before the given date', async () => {
+      const dao = new MongoEntityDAO(
+        getConnection(),
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await dao.streamModifiedSince(cutoff).toArray();
+      expect(entities.every(e => (e.updatedAt as any) >= cutoff)).toBe(true);
+    });
+
+    it('returns results sorted by sharedId', async () => {
+      const dao = new MongoEntityDAO(
+        getConnection(),
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await dao.streamModifiedSince(past).toArray();
+      const returnedSharedIds = entities.map(e => e.sharedId);
+      expect(returnedSharedIds).toEqual([...returnedSharedIds].sort());
     });
   });
 });

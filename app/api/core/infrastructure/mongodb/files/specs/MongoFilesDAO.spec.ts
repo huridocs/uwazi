@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -80,6 +81,27 @@ describe('MongoFilesDAO', () => {
       const files = await sut.streamProcessedDocs().toArray();
       const docWithFullText = files.find(f => f.filename === 'ready_doc_1');
       expect(docWithFullText?.fullText).toEqual({ 1: 'page content here' });
+    });
+
+    it('with afterId returns only files whose _id is greater than the checkpoint', async () => {
+      const sut = createSut();
+      const allFiles = await sut.streamProcessedDocs().toArray();
+      expect(allFiles).toHaveLength(2);
+
+      const checkpointId = allFiles[0]._id as unknown as ObjectId;
+      const resumed = await sut.streamProcessedDocs({ afterId: checkpointId }).toArray();
+
+      expect(resumed).toHaveLength(1);
+      expect(resumed[0]._id).not.toEqual(checkpointId);
+    });
+
+    it('with afterId returns empty cursor when no files follow the checkpoint', async () => {
+      const sut = createSut();
+      const allFiles = await sut.streamProcessedDocs().toArray();
+      const lastId = allFiles[allFiles.length - 1]._id as unknown as ObjectId;
+
+      const resumed = await sut.streamProcessedDocs({ afterId: lastId }).toArray();
+      expect(resumed).toHaveLength(0);
     });
 
     describe('when no processed documents exist', () => {

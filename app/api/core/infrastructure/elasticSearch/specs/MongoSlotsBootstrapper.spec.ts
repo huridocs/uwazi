@@ -1,5 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { config } from '#api/config.js';
 import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import {
   AmountPerSlotType,
@@ -294,6 +295,26 @@ describe('MongoSlotsBootstrapper', () => {
         .find({ _id: { $ne: MongoSlotsDAO.sentinelId as any } })
         .toArray();
       expect(count).toHaveLength(expectedSlotCount);
+    });
+  });
+
+  describe('production guard', () => {
+    let originalEnvironment: string;
+
+    beforeEach(() => {
+      originalEnvironment = config.ENVIRONMENT;
+    });
+
+    afterEach(() => {
+      (config as any).ENVIRONMENT = originalEnvironment;
+    });
+
+    it('reset() throws if ENVIRONMENT is production', async () => {
+      (config as any).ENVIRONMENT = 'production';
+      const { sut } = createSut();
+      await expect(sut.reset()).rejects.toThrow(
+        'MongoSlotsBootstrapper.reset() is not allowed in production'
+      );
     });
   });
 });

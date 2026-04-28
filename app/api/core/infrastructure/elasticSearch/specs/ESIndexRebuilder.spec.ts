@@ -299,4 +299,24 @@ describe('ESIndexRebuilder', () => {
       expect(source?.rawEntities?.pt).toBeDefined();
     });
   });
+
+  describe('production guard', () => {
+    let originalEnvironment: string;
+
+    beforeEach(() => {
+      originalEnvironment = config.ENVIRONMENT;
+    });
+
+    afterEach(() => {
+      (config as any).ENVIRONMENT = originalEnvironment;
+    });
+
+    it('execute() throws if ENVIRONMENT is production', async () => {
+      (config as any).ENVIRONMENT = 'production';
+      const { sut } = createSut();
+      await expect(sut.execute()).rejects.toThrow(
+        'ESIndexRebuilder.execute() is not allowed in production'
+      );
+    });
+  });
 });

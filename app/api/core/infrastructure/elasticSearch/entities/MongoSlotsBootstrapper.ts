@@ -1,6 +1,7 @@
 import { Db, MongoServerError } from 'mongodb';
 import { MongoSlotsDAO, SlotDocument } from './MongoSlotsDAO.js';
 import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
+import { config } from '#api/config.js';
 
 type Deps = {
   database: Db;
@@ -78,6 +79,10 @@ class MongoSlotsBootstrapper {
   }
 
   async reset(): Promise<void> {
+    if (config.ENVIRONMENT === 'production') {
+      throw new Error('MongoSlotsBootstrapper.reset() is not allowed in production');
+    }
+
     await this.collection.drop().catch(err => {
       if (err?.codeName !== 'NamespaceNotFound') throw err;
     });

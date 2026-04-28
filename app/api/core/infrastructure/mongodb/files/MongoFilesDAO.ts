@@ -1,4 +1,4 @@
-import { Db, FindCursor } from 'mongodb';
+import { Db, FindCursor, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
 import { ProcessedPDFDBO } from './schemas/filesTypes.js';
@@ -15,8 +15,10 @@ class MongoFilesDAO extends MongoDataSource<ProcessedPDFDBO> {
     super(deps.db, deps.transactionManager);
   }
 
-  streamProcessedDocs(): FindCursor<ProcessedPDFDBO> {
-    return this.getCollection().find({ type: 'document', status: 'ready' });
+  streamProcessedDocs(options?: { afterId?: ObjectId }): FindCursor<ProcessedPDFDBO> {
+    const filter: Record<string, unknown> = { type: 'document', status: 'ready' };
+    if (options?.afterId) filter._id = { $gt: options.afterId };
+    return this.getCollection().find(filter);
   }
 }
 
