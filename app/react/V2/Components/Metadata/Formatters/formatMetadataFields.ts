@@ -1,3 +1,4 @@
+import { PropertySchema } from '#shared/types/commonTypes.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
 
@@ -14,7 +15,10 @@ const formatMetadataFields = (
   let groupedGeolocationIndex = 1;
 
   for (let index = 0; index < templateProperties.length; index += 1) {
-    const property = templateProperties[index];
+    const property = templateProperties[index] as PropertySchema;
+
+    const isGeolocationProperty =
+      property.type === 'geolocation' || property.inherit?.type === 'geolocation';
 
     if (property?._id) {
       const formattedProperty: BaseMetadataProperty = {
@@ -29,19 +33,27 @@ const formatMetadataFields = (
         }),
       };
 
-      if (options?.groupGeolocationProperties && property.type === 'geolocation') {
+      if (options?.groupGeolocationProperties && isGeolocationProperty) {
         const propertyGroup = [{ name: property.name, label: property.label }];
 
         for (let nextIndex = index + 1; nextIndex < templateProperties.length; nextIndex += 1) {
-          const adjacentProperty = templateProperties[nextIndex];
+          const adjacentProperty = templateProperties[nextIndex] as PropertySchema;
+          const adjacentGeolocationProperty =
+            adjacentProperty?.type === 'geolocation' ||
+            adjacentProperty?.inherit?.type === 'geolocation';
 
-          if (adjacentProperty?.type !== 'geolocation') {
+          if (!adjacentGeolocationProperty) {
             break;
           }
 
           propertyGroup.push({
             name: adjacentProperty.name,
             label: adjacentProperty.label,
+            ...(adjacentProperty.inherit?.type === 'geolocation' && {
+              inherited: true,
+              content: adjacentProperty.content,
+              property: adjacentProperty.inherit.property,
+            }),
           });
           index = nextIndex;
         }
@@ -58,6 +70,7 @@ const formatMetadataFields = (
             inherited: false,
             inheritedType: undefined,
           });
+
           groupedGeolocationIndex += 1;
         } else {
           formattedProperties.push(formattedProperty);

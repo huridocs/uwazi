@@ -15,6 +15,7 @@ type GeolocationProps = MetadataFieldProps & {
   renderPopupInfo?: MapProps['renderPopupInfo'];
   layers?: MapProps['layers'];
   zoom?: MapProps['zoom'];
+  isGroup?: boolean;
 };
 
 const formatMarkers = (
@@ -42,6 +43,7 @@ const Geolocation = ({
   renderPopupInfo,
   layers,
   zoom,
+  isGroup,
   height = 500,
 }: GeolocationProps) => {
   if (!markers?.length) {
@@ -51,11 +53,19 @@ const Geolocation = ({
   return (
     <MetadataCard>
       <dt>
-        <PropertyLabel
-          label={label}
-          translationContext={translationContext}
-          hideLabel={hideLabel}
-        />
+        {isGroup ? (
+          <PropertyLabel
+            label="Grouped geolocation properties"
+            translationContext="System"
+            hideLabel={hideLabel}
+          />
+        ) : (
+          <PropertyLabel
+            label={label}
+            translationContext={translationContext}
+            hideLabel={hideLabel}
+          />
+        )}
       </dt>
       <dd>
         <Map

@@ -130,6 +130,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
               <Geolocation
                 markers={data.values}
                 label={data.label}
+                isGroup={Boolean(data.propertyGroup?.length)}
                 translationContext={translationContext}
               />
             </Fragment>

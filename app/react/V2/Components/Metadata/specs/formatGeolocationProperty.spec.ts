@@ -3,13 +3,52 @@ import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
 import { formatGeolocationProperty } from '../Formatters/formatGeolocationProperty.js';
 
 describe('formatGeolocationProperty', () => {
-  const metadata = {
+  const metadataA = {
     locationA: [
       { value: { lat: 10, lon: 20 }, label: 'Point A' },
       { value: { lat: 11, lon: 21 } },
       { value: { lat: null, lon: 0 } },
     ],
     locationB: [{ value: { lat: -5, lon: -6 }, label: 'Point B', color: '#ff0000' }],
+  } as Entity['metadata'];
+
+  const metadataB = {
+    locationB: [{ value: { lat: -5, lon: -6 }, label: 'Point B', color: '#ff0000' }],
+    rel_1: [
+      {
+        value: '1',
+        label: 'Location 1',
+        type: 'entity',
+        inheritedType: 'geolocation',
+        inheritedValue: [
+          {
+            value: {
+              lat: 10,
+              lon: 20,
+            },
+          },
+        ],
+        icon: {
+          _id: 'star',
+          type: 'Icons',
+          label: 'Star',
+        },
+      },
+      {
+        value: '2',
+        label: 'Location 2',
+        type: 'entity',
+        inheritedType: 'geolocation',
+        inheritedValue: [
+          {
+            value: {
+              lat: 11,
+              lon: 21,
+            },
+          },
+        ],
+      },
+    ],
   } as Entity['metadata'];
 
   it('should return null for non-geolocation properties', () => {
@@ -20,7 +59,7 @@ describe('formatGeolocationProperty', () => {
       type: 'text',
     } as BaseMetadataProperty;
 
-    expect(formatGeolocationProperty(property, metadata)).toBeNull();
+    expect(formatGeolocationProperty(property, metadataA)).toBeNull();
   });
 
   it('should format a simple geolocation property', () => {
@@ -31,7 +70,7 @@ describe('formatGeolocationProperty', () => {
       type: 'geolocation',
     } as BaseMetadataProperty;
 
-    expect(formatGeolocationProperty(property, metadata)).toEqual({
+    expect(formatGeolocationProperty(property, metadataA)).toEqual({
       _id: 'geo1',
       name: 'locationA',
       label: 'Location A',
@@ -55,7 +94,7 @@ describe('formatGeolocationProperty', () => {
       ],
     } as BaseMetadataProperty;
 
-    expect(formatGeolocationProperty(property, metadata)).toEqual({
+    expect(formatGeolocationProperty(property, metadataA)).toEqual({
       _id: 'group1',
       name: 'group1',
       label: 'group1',
@@ -69,6 +108,70 @@ describe('formatGeolocationProperty', () => {
           color: '#ff0000',
         },
       ],
+      propertyGroup: [
+        { name: 'locationA', label: 'Location A' },
+        { name: 'locationB', label: 'Location B' },
+      ],
+    });
+  });
+
+  it('should format grouped geolocations with inherited values', () => {
+    const property = {
+      _id: 'group1',
+      name: '__group1',
+      label: '__group1',
+      type: 'geolocation',
+      inherited: false,
+      inheritedType: undefined,
+      propertyGroup: [
+        { name: 'locationB', label: 'Location B' },
+        {
+          name: 'rel_1',
+          label: 'Rel 1',
+          inherited: true,
+          content: '69f0a4ac62c282d87ef5970f',
+          property: 'x',
+        },
+      ],
+    } as BaseMetadataProperty;
+
+    expect(formatGeolocationProperty(property, metadataB)).toEqual({
+      _id: 'group1',
+      name: '__group1',
+      label: '__group1',
+      type: 'geolocation',
+      propertyGroup: [
+        { name: 'locationB', label: 'Location B' },
+        {
+          name: 'rel_1',
+          label: 'Rel 1',
+          inherited: true,
+          content: '69f0a4ac62c282d87ef5970f',
+          property: 'x',
+        },
+      ],
+      values: [
+        {
+          value: { latitude: -5, longitude: -6 },
+          label: 'Point B',
+          color: '#ff0000',
+        },
+        {
+          value: { latitude: 10, longitude: 20 },
+          label: 'Location 1',
+          entity: {
+            _id: '1',
+            icon: { _id: 'star', label: 'Star' },
+          },
+        },
+        {
+          value: { latitude: 11, longitude: 21 },
+          label: 'Location 2',
+          entity: {
+            _id: '2',
+          },
+        },
+      ],
     });
   });
 
@@ -80,7 +183,7 @@ describe('formatGeolocationProperty', () => {
       type: 'geolocation',
     } as BaseMetadataProperty;
 
-    expect(formatGeolocationProperty(property, metadata)).toEqual({
+    expect(formatGeolocationProperty(property, metadataA)).toEqual({
       _id: 'geo2',
       name: 'missingLocation',
       label: 'Missing Location',

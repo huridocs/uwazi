@@ -36,7 +36,13 @@ interface BaseMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: AllowedPropertyTypes;
-  readonly propertyGroup?: Array<{ name: string; label: string }>;
+  readonly propertyGroup?: Array<{
+    name: string;
+    label: string;
+    inhertied?: boolean;
+    content?: string;
+    property?: string;
+  }>;
   readonly inherited?: boolean;
   readonly inheritedType?: PropertyTypeSchema;
   readonly relationShipTarget?: string;
@@ -74,9 +80,7 @@ interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 'values
     color?: string;
     entity?: {
       _id: string;
-      label: string;
       icon?: { _id: string; label: string };
-      url?: string;
     };
   }>;
 }

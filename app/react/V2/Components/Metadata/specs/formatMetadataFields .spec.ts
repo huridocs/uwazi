@@ -103,70 +103,87 @@ describe('formatMetadataFields ', () => {
     ]);
   });
 
-  it('should group adjacent geolocation properties when groupGeolocationProperties is true', () => {
-    const template = {
-      properties: [
-        { _id: 'geo-a', name: 'locationA', label: 'Location A', type: 'geolocation' },
-        { _id: 'geo-b', name: 'locationB', label: 'Location B', type: 'geolocation' },
-        { _id: 'txt-a', name: 'summary', label: 'Summary', type: 'text' },
-        { _id: 'geo-c', name: 'locationC', label: 'Location C', type: 'geolocation' },
-      ],
-    } as ClientTemplateSchema;
-
-    expect(formatMetadataFields(template, { groupGeolocationProperties: true })).toEqual([
-      {
-        _id: 'group1',
-        name: '__group1',
-        label: '__group1',
-        type: 'geolocation',
-        propertyGroup: [
-          { name: 'locationA', label: 'Location A' },
-          { name: 'locationB', label: 'Location B' },
+  describe('geolocation properties', () => {
+    it('should group adjacent geolocation properties when groupGeolocationProperties is true', () => {
+      const template = {
+        properties: [
+          { _id: 'geo-a', name: 'locationA', label: 'Location A', type: 'geolocation' },
+          { _id: 'geo-b', name: 'locationB', label: 'Location B', type: 'geolocation' },
+          { _id: 'txt-a', name: 'summary', label: 'Summary', type: 'text' },
+          { _id: 'geo-c', name: 'locationC', label: 'Location C', type: 'geolocation' },
         ],
-        inherited: false,
-        inheritedType: undefined,
-      },
-      {
-        _id: 'txt-a',
-        name: 'summary',
-        label: 'Summary',
-        type: 'text',
-        inherited: false,
-        inheritedType: undefined,
-      },
-      {
-        _id: 'geo-c',
-        name: 'locationC',
-        label: 'Location C',
-        type: 'geolocation',
-        inherited: false,
-        inheritedType: undefined,
-      },
-    ]);
-  });
+      } as ClientTemplateSchema;
 
-  it('should format inheritedTarget for relationship properties from content', () => {
-    const template = {
-      properties: [
+      expect(formatMetadataFields(template, { groupGeolocationProperties: true })).toEqual([
         {
-          _id: 'rel-target',
-          name: 'related_people',
-          label: 'Related People',
-          type: 'relationship',
-          content: 'template-people',
+          _id: 'group1',
+          name: '__group1',
+          label: '__group1',
+          type: 'geolocation',
+          propertyGroup: [
+            { name: 'locationA', label: 'Location A' },
+            { name: 'locationB', label: 'Location B' },
+          ],
+          inherited: false,
+          inheritedType: undefined,
         },
-      ],
-    } as ClientTemplateSchema;
+        {
+          _id: 'txt-a',
+          name: 'summary',
+          label: 'Summary',
+          type: 'text',
+          inherited: false,
+          inheritedType: undefined,
+        },
+        {
+          _id: 'geo-c',
+          name: 'locationC',
+          label: 'Location C',
+          type: 'geolocation',
+          inherited: false,
+          inheritedType: undefined,
+        },
+      ]);
+    });
 
-    expect(formatMetadataFields(template)).toEqual([
-      {
-        _id: 'rel-target',
-        name: 'related_people',
-        label: 'Related People',
-        type: 'relationship',
-        inherited: false,
-        relationShipTarget: 'template-people',
-      },
-    ]);
+    it('should include relationships with geolocation inheritance into the groups', () => {
+      const template = {
+        properties: [
+          { _id: 'geo-a', name: 'locationA', label: 'Location A', type: 'geolocation' },
+          {
+            _id: 'rel1',
+            type: 'relationship',
+            label: 'Rel 1',
+            name: 'rel_1',
+            content: '69f0a4ac62c282d87ef5970f',
+            inherit: {
+              property: 'x',
+              type: 'geolocation',
+            },
+          },
+        ],
+      } as ClientTemplateSchema;
+
+      expect(formatMetadataFields(template, { groupGeolocationProperties: true })).toEqual([
+        {
+          _id: 'group1',
+          name: '__group1',
+          label: '__group1',
+          type: 'geolocation',
+          inherited: false,
+          inheritedType: undefined,
+          propertyGroup: [
+            { name: 'locationA', label: 'Location A' },
+            {
+              name: 'rel_1',
+              label: 'Rel 1',
+              inherited: true,
+              content: '69f0a4ac62c282d87ef5970f',
+              property: 'x',
+            },
+          ],
+        },
+      ]);
+    });
   });
 });

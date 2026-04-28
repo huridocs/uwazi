@@ -569,7 +569,14 @@ const apiEntity: Entity = {
         label: 'Reporter Location - John Smith',
         icon: '',
         type: 'entity',
-        inheritedValue: [],
+        inheritedValue: [
+          {
+            value: {
+              lat: 42.80157978110818,
+              lon: 9.49267578125,
+            },
+          },
+        ],
         inheritedType: 'geolocation',
       },
     ],

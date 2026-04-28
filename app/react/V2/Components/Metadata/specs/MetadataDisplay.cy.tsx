@@ -24,22 +24,22 @@ describe('Metadata Display', () => {
       cy.contains('dd', 'Emergency incident report from downtown area').should('exist');
     });
 
-    //   it('renders markdown (html) content and link', () => {
-    //     cy.contains('dt', 'Markdown field using sanitized HTML tags').should('exist');
-    //     cy.contains('div', 'This Markdown field includes').should('exist');
-    //     cy.contains('dd', 'This Markdown field includes').within(() => {
-    //       cy.get('a[href="https://example.com"]').should('have.attr', 'target', '_blank');
-    //     });
+    // it('renders markdown (html) content and link', () => {
+    //   cy.contains('dt', 'Markdown field using sanitized HTML tags').should('exist');
+    //   cy.contains('div', 'This Markdown field includes').should('exist');
+    //   cy.contains('dd', 'This Markdown field includes').within(() => {
+    //     cy.get('a[href="https://example.com"]').should('have.attr', 'target', '_blank');
     //   });
+    // });
 
-    //   it('renders markdown syntax (bold/italic) content', () => {
-    //     cy.contains('dt', 'Markdown field using standard markdown syntax').should('exist');
-    //     cy.contains('strong', 'Bold text').should('exist');
-    //     cy.contains('em', 'italic text').should('exist');
-    //     cy.contains('dd', 'italic text').within(() => {
-    //       cy.get('a[href="https://example.com"]');
-    //     });
+    // it('renders markdown syntax (bold/italic) content', () => {
+    //   cy.contains('dt', 'Markdown field using standard markdown syntax').should('exist');
+    //   cy.contains('strong', 'Bold text').should('exist');
+    //   cy.contains('em', 'italic text').should('exist');
+    //   cy.contains('dd', 'italic text').within(() => {
+    //     cy.get('a[href="https://example.com"]');
     //   });
+    // });
 
     it('renders select and multiselect labels including parent prefix', () => {
       cy.contains('dt', 'Single select').should('exist');
