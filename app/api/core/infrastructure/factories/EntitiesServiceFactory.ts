@@ -15,11 +15,14 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
-    const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
+    const eventEmitter = EventEmitterFactory.default({
+      transactionManager,
+    });
 
     return new EntitiesService({
-      eventEmitter: EventEmitterFactory.default(),
-      dispatcher: deps?.dispatcher ?? ExecutionContext.jobsDispatcher,
+      eventEmitter,
+      dispatcher: ExecutionContext.jobsDispatcher,
       entitiesDS: EntitiesDataSourceFactory.default(transactionManager as MongoTransactionManager),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),

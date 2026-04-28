@@ -1,19 +1,14 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { EntityIcon } from '#api/core/domain/entity/Entity.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { UpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntityUseCaseFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
 const createSut = () => {
@@ -22,34 +17,12 @@ const createSut = () => {
 
   return testingEnvironment.runWithContext(
     () => {
-      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-      const tenant = ExecutionContext.tenant;
-      const actor = ExecutionContext.actor;
-
       const fs = FilesServiceFactory.default({ fileStorage, eventBus });
       jest.spyOn(fs, 'storeFiles').mockResolvedValue();
       jest.spyOn(fs, 'insert').mockResolvedValue();
       jest.spyOn(fs, 'delete');
 
       const sut = UpdateEntityUseCaseFactory.default({ fileService: fs });
-
-      ExecutionContext.attachContext(sut, 'execute', {
-        tenant,
-        actor,
-        factories: {
-          transactionManager: () => transactionManager,
-          jobsDispatcher: () => DefaultDispatcher(tenant.name, transactionManager),
-          eventEmitter: () => EventEmitterFactory.default(),
-          idGenerator: IdGeneratorFactory.default,
-          logger: LoggerFactory.default,
-          elasticClient: () => {
-            throw new Error('not needed');
-          },
-          authorizedEntityESClient: () => {
-            throw new Error('not needed');
-          },
-        },
-      });
 
       return { sut, fileService: fs };
     },
@@ -66,12 +39,12 @@ describe('UpdateEntityUseCase', () => {
   const getAllFiles = async (entity: string) =>
     testingEnvironment.db.getCollection('files')!.find({ entity }).toArray();
 
-  const getAllJobs = async () => getSharedConnection().collection('jobs').find().toArray();
-  const clearJobs = async () => getSharedConnection().collection('jobs').deleteMany({});
+  const getAllJobs = async () => getConnection().collection('jobs').find().toArray();
+  const clearJobs = async () => getConnection().collection('jobs').deleteMany({});
 
   beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
-    EventEmitterFactory.default().listen(SampleListener);
+    EventEmitterFactory.registry.register(SampleListener);
   });
 
   beforeEach(async () => {
@@ -81,7 +54,7 @@ describe('UpdateEntityUseCase', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-    EventEmitterFactory.default().reset();
+    EventEmitterFactory.registry.reset();
   });
 
   it('should update basic entity data', async () => {

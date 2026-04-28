@@ -39,6 +39,6 @@ class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdat
   }
 }
 
-EventEmitterFactory.default().listen(ProcessRelationshipAfterEntityUpdatedListener);
+EventEmitterFactory.registry.register(ProcessRelationshipAfterEntityUpdatedListener);
 
 export { ProcessRelationshipAfterEntityUpdatedListener };

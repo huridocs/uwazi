@@ -28,7 +28,7 @@ const dependenciesContextMiddleware = (
       factories: {
         transactionManager: TransactionManagerFactory.default,
         jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
-        eventEmitter: EventEmitterFactory.default,
+        eventEmitter: () => EventEmitterFactory.default(),
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
         elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),

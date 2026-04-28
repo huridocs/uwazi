@@ -23,6 +23,7 @@ import { tenants } from '#api/tenants/index.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const factory = getFixturesFactory();
 
@@ -46,21 +47,27 @@ const fixtures: DBFixture = {
 };
 
 const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
-  const transactionManager = TransactionManagerFactory.default();
-
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+
+  const { sut, transactionManager, jobsDispatcher } = testingEnvironment.runWithContext(() => {
+    const dispatcher = DefaultDispatcher(
+      tenants.current().name,
+      ExecutionContext.transactionManager
+    );
+    return {
+      sut: EntitiesServiceFactory.default({
+        eventBus,
+        dispatcher,
+        ...deps,
+      }),
+      transactionManager: ExecutionContext.transactionManager,
+      jobsDispatcher: dispatcher,
+    };
+  });
 
   jest.spyOn(jobsDispatcher, 'dispatch').mockResolvedValue();
   jest.spyOn(jobsDispatcher, 'dispatchMany').mockImplementation(async callback => {
     await callback(jest.fn());
-  });
-
-  const sut = EntitiesServiceFactory.default({
-    eventBus,
-    transactionManager,
-    dispatcher: jobsDispatcher,
-    ...deps,
   });
 
   return {

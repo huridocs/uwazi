@@ -113,7 +113,7 @@ describe('updateExtractedMetadataProperties', () => {
       ],
     };
 
-    await updateTemplate(templateToUpdate, 'en');
+    await updateTemplate(templateToUpdate);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
@@ -191,7 +191,7 @@ describe('updateExtractedMetadataProperties', () => {
       ],
     };
 
-    await updateTemplate(templateWithRenamedProps, 'en');
+    await updateTemplate(templateWithRenamedProps);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',

@@ -21,7 +21,6 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { search } from '#api/search/index.js';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity.js';
 import {
   defaultTemplate,
@@ -107,9 +106,6 @@ const setUpUseCase = () => {
 
   const entitiesService = EntitiesServiceFactory.default({
     transactionManager: mongoTransactionManager,
-    search: TestUtils.mockClass<typeof search>({
-      bulkDeleteBySharedId: jest.fn(),
-    }),
   });
 
   const extractParagraphs = new PXExtractParagraphsFromEntity(
