@@ -17,35 +17,41 @@ async function gotoWithRetry(url: string, page: import('@playwright/test').Page)
 }
 
 test('settings core contract persists collection name', async ({ page }) => {
-  execSync('yarn blank-e2e-fixtures', {
-    cwd: process.cwd(),
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      DATABASE_NAME: 'uwazi_e2e',
-      INDEX_NAME: 'uwazi_e2e',
-    },
+  await test.step('Restore blank fixtures', async () => {
+    execSync('yarn blank-e2e-fixtures', {
+      cwd: process.cwd(),
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        DATABASE_NAME: 'uwazi_e2e',
+        INDEX_NAME: 'uwazi_e2e',
+      },
+    });
   });
 
   const collectionName = `Playwright Core ${Date.now()}`;
+  await test.step('Login and open collection settings', async () => {
+    await loginAsAdmin(page);
+    await gotoWithRetry('/settings/collection', page);
+    await expect(page).toHaveURL(/\/(en\/)?settings\/collection/);
+  });
 
-  await loginAsAdmin(page);
-  await gotoWithRetry('/settings/collection', page);
-  await expect(page).toHaveURL(/\/(en\/)?settings\/collection/);
+  await test.step('Update collection name and save', async () => {
+    const collectionInput = page.locator('#collection-name');
+    await expect(collectionInput).toBeVisible();
+    await collectionInput.fill(collectionName);
+    const saveResponse = page.waitForResponse(
+      response =>
+        response.url().includes('/api/settings') &&
+        response.request().method() === 'POST' &&
+        response.status() === 200
+    );
+    await page.getByRole('button', { name: 'Save' }).click();
+    await saveResponse;
+  });
 
-  const collectionInput = page.locator('#collection-name');
-  await expect(collectionInput).toBeVisible();
-  await collectionInput.fill(collectionName);
-
-  const saveResponse = page.waitForResponse(
-    response =>
-      response.url().includes('/api/settings') &&
-      response.request().method() === 'POST' &&
-      response.status() === 200
-  );
-  await page.getByRole('button', { name: 'Save' }).click();
-  await saveResponse;
-
-  await page.reload();
-  await expect(page.locator('#collection-name')).toHaveValue(collectionName);
+  await test.step('Reload and verify persisted value', async () => {
+    await page.reload();
+    await expect(page.locator('#collection-name')).toHaveValue(collectionName);
+  });
 });

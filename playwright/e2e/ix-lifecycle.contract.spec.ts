@@ -58,17 +58,18 @@ function waitForMongoSegmentationsReady(timeoutMs = 180000) {
 test('ix lifecycle contract from UI', async ({ page }) => {
   test.setTimeout(6 * 60 * 1000);
 
-  execSync('yarn e2e-fixtures', {
-    cwd: process.cwd(),
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      DATABASE_NAME: 'uwazi_e2e',
-      INDEX_NAME: 'uwazi_e2e',
-    },
+  await test.step('Restore seeded fixtures and login', async () => {
+    execSync('yarn e2e-fixtures', {
+      cwd: process.cwd(),
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        DATABASE_NAME: 'uwazi_e2e',
+        INDEX_NAME: 'uwazi_e2e',
+      },
+    });
+    await loginAsAdmin(page);
   });
-
-  await loginAsAdmin(page);
   const extractorName = `IX Heroes BIO ${Date.now()}`;
 
   const templatesResponse = await page.request.get('/api/templates');
@@ -79,7 +80,6 @@ test('ix lifecycle contract from UI', async ({ page }) => {
     (t: any) => `${t?.name || ''}`.toLowerCase() === 'heroes' || `${t?.label || ''}`.toLowerCase() === 'heroes'
   );
   expect(heroesTemplate?._id).toBeTruthy();
-
   const bioProperty = (heroesTemplate?.properties || []).find(
     (p: any) =>
       `${p?.label || ''}`.toLowerCase() === 'bio' ||
@@ -88,69 +88,72 @@ test('ix lifecycle contract from UI', async ({ page }) => {
   );
   expect(bioProperty?.name).toBeTruthy();
 
-  await gotoWithRetry('/settings/metadata_extraction', page);
-  await page.getByRole('button', { name: 'Create Extractor' }).click();
-  const createModal = page.getByTestId('modal');
-  await expect(createModal).toBeVisible();
-  await createModal.locator('#extractor-name').fill(extractorName);
-  const heroesItem = createModal.locator('li', { hasText: /Heroes/i }).first();
-  await expect(heroesItem).toBeVisible();
-  if (await heroesItem.getByRole('button', { name: 'Group' }).isVisible().catch(() => false)) {
-    await heroesItem.getByRole('button', { name: 'Group' }).click();
-  }
-  await heroesItem.getByText(new RegExp(`${bioProperty.label || 'Bio'}`, 'i')).click();
-  await createModal.getByRole('button', { name: 'Next' }).click();
-  await createModal.getByRole('button', { name: 'Create' }).click();
-  await page.waitForTimeout(2000);
-
-  await expect(page.getByRole('cell', { name: extractorName })).toBeVisible({ timeout: 30000 });
-  const createdRow = page.getByRole('row', { name: new RegExp(extractorName) });
-  await createdRow.getByRole('button', { name: 'Review' }).click();
-
-  const trainingButtons = page.getByTestId('ix-training-set-add');
-  await expect(trainingButtons.first()).toBeVisible({ timeout: 120000 });
-  const trainingCount = await trainingButtons.count();
-  expect(trainingCount).toBeGreaterThan(1);
-  await trainingButtons.nth(0).click();
-  await trainingButtons.nth(1).click();
-
-  const readySegmentations = waitForMongoSegmentationsReady(180000);
-  expect(readySegmentations).toBeGreaterThan(0);
-
-  await expect(page.getByRole('button', { name: 'Train model' })).toBeVisible();
-  await page.getByRole('button', { name: 'Train model' }).click();
-  const trainModal = page.getByTestId('modal');
-  await expect(trainModal).toBeVisible();
-  const findAfterTrainingLabel = trainModal.getByText('Find suggestions after training');
-  await expect(findAfterTrainingLabel).toBeVisible();
-  await findAfterTrainingLabel.click();
-  if (
-    await trainModal
-      .locator('label[for="find.samplePolicy_marked_plus_labeled"]')
-      .isVisible()
-      .catch(() => false)
-  ) {
-    await trainModal.locator('label[for="find.samplePolicy_marked_plus_labeled"]').click();
-  }
-  await trainModal.getByRole('button', { name: /^Train$/ }).click();
-
-  const extractorResponse = await page.request.get('/api/ixextractors');
-  expect(extractorResponse.ok()).toBeTruthy();
-  const extractorPayload = await extractorResponse.json();
-  const extractors = Array.isArray(extractorPayload) ? extractorPayload : extractorPayload.rows;
-  const createdExtractor = extractors.find((item: any) => item.name === extractorName);
-  expect(createdExtractor?._id).toBeTruthy();
-
-  await waitForSuggestionsStatusReady(page, createdExtractor._id, 180000);
-  const openModal = page.getByTestId('modal');
-  if (await openModal.isVisible().catch(() => false)) {
-    const closeButton = openModal.getByRole('button', { name: /Close|Cancel|Done/i });
-    if (await closeButton.first().isVisible().catch(() => false)) {
-      await closeButton.first().click();
-    } else {
-      await page.keyboard.press('Escape');
+  await test.step('Create metadata extractor from UI', async () => {
+    await gotoWithRetry('/settings/metadata_extraction', page);
+    await page.getByRole('button', { name: 'Create Extractor' }).click();
+    const createModal = page.getByTestId('modal');
+    await expect(createModal).toBeVisible();
+    await createModal.locator('#extractor-name').fill(extractorName);
+    const heroesItem = createModal.locator('li', { hasText: /Heroes/i }).first();
+    await expect(heroesItem).toBeVisible();
+    if (await heroesItem.getByRole('button', { name: 'Group' }).isVisible().catch(() => false)) {
+      await heroesItem.getByRole('button', { name: 'Group' }).click();
     }
-  }
+    await heroesItem.getByText(new RegExp(`${bioProperty.label || 'Bio'}`, 'i')).click();
+    await createModal.getByRole('button', { name: 'Next' }).click();
+    await createModal.getByRole('button', { name: 'Create' }).click();
+    await page.waitForTimeout(2000);
+  });
+
+  await test.step('Select training entities and wait for segmentations', async () => {
+    await expect(page.getByRole('cell', { name: extractorName })).toBeVisible({ timeout: 30000 });
+    const createdRow = page.getByRole('row', { name: new RegExp(extractorName) });
+    await createdRow.getByRole('button', { name: 'Review' }).click();
+    const trainingButtons = page.getByTestId('ix-training-set-add');
+    await expect(trainingButtons.first()).toBeVisible({ timeout: 120000 });
+    const trainingCount = await trainingButtons.count();
+    expect(trainingCount).toBeGreaterThan(1);
+    await trainingButtons.nth(0).click();
+    await trainingButtons.nth(1).click();
+    const readySegmentations = waitForMongoSegmentationsReady(180000);
+    expect(readySegmentations).toBeGreaterThan(0);
+  });
+
+  await test.step('Train model and wait for ready status', async () => {
+    await expect(page.getByRole('button', { name: 'Train model' })).toBeVisible();
+    await page.getByRole('button', { name: 'Train model' }).click();
+    const trainModal = page.getByTestId('modal');
+    await expect(trainModal).toBeVisible();
+    const findAfterTrainingLabel = trainModal.getByText('Find suggestions after training');
+    await expect(findAfterTrainingLabel).toBeVisible();
+    await findAfterTrainingLabel.click();
+    if (
+      await trainModal
+        .locator('label[for="find.samplePolicy_marked_plus_labeled"]')
+        .isVisible()
+        .catch(() => false)
+    ) {
+      await trainModal.locator('label[for="find.samplePolicy_marked_plus_labeled"]').click();
+    }
+    await trainModal.getByRole('button', { name: /^Train$/ }).click();
+
+    const extractorResponse = await page.request.get('/api/ixextractors');
+    expect(extractorResponse.ok()).toBeTruthy();
+    const extractorPayload = await extractorResponse.json();
+    const extractors = Array.isArray(extractorPayload) ? extractorPayload : extractorPayload.rows;
+    const createdExtractor = extractors.find((item: any) => item.name === extractorName);
+    expect(createdExtractor?._id).toBeTruthy();
+    await waitForSuggestionsStatusReady(page, createdExtractor._id, 180000);
+    const openModal = page.getByTestId('modal');
+    if (await openModal.isVisible().catch(() => false)) {
+      const closeButton = openModal.getByRole('button', { name: /Close|Cancel|Done/i });
+      if (await closeButton.first().isVisible().catch(() => false)) {
+        await closeButton.first().click();
+      } else {
+        await page.keyboard.press('Escape');
+      }
+    }
+  });
 
   const targetEntityLabel = 'Aqua Sentinel (en)';
   const targetRow = page
@@ -184,9 +187,9 @@ test('ix lifecycle contract from UI', async ({ page }) => {
   await acceptButton.click();
   await acceptResponsePromise;
   //wait for suggestions updated message
-  await expect(
-    page.getByTestId('notification-flash-title').filter({ hasText: /^Suggestions updated$/i })
-  ).toBeVisible({ timeout: 30000 });
+  await expect(page.getByTestId('notification-flash-title').filter({ hasText: /^Suggestions updated$/i })).toBeVisible({
+    timeout: 30000,
+  });
 
   const openButtonAfterAccept = targetRow.getByRole('button', { name: 'Open' }).first();
   await expect(openButtonAfterAccept).toBeVisible();
