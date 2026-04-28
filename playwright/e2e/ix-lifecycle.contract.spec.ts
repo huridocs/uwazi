@@ -11,6 +11,10 @@ type EntityRow = {
   properties?: Array<{ name: string; label: string; type: string }>;
 };
 
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 async function gotoWithRetry(url: string, page: Page) {
   try {
     await page.goto(url, { waitUntil: 'domcontentloaded' });
@@ -157,7 +161,7 @@ test('ix lifecycle contract from UI', async ({ page }) => {
 
   const targetEntityLabel = 'Aqua Sentinel (en)';
   const targetRow = page
-    .locator('tbody tr', { hasText: new RegExp(targetEntityLabel.replace(/[()]/g, '\\$&')) })
+    .locator('tbody tr', { hasText: new RegExp(escapeRegExp(targetEntityLabel)) })
     .first();
   await expect(targetRow).toBeVisible();
 
