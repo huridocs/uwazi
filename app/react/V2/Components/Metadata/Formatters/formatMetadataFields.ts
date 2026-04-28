@@ -31,6 +31,7 @@ const formatMetadataFields = (
         ...(property.type === 'relationship' && {
           relationShipTarget: property.content || '',
         }),
+        hideLabel: property.noLabel,
       };
 
       if (options?.groupGeolocationProperties && isGeolocationProperty) {

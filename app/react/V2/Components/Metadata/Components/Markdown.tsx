@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import MarkdownIt from 'markdown-it';
-import { MetadataFieldProps } from '../types.js';
+import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
 

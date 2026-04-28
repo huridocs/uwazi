@@ -46,6 +46,7 @@ interface BaseMetadataProperty {
   readonly inherited?: boolean;
   readonly inheritedType?: PropertyTypeSchema;
   readonly relationShipTarget?: string;
+  readonly hideLabel?: boolean;
 }
 
 interface SimpleMetadataProperty extends BaseMetadataProperty {
@@ -111,13 +112,7 @@ interface PreviewMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
     alt: string;
   }>;
 }
-interface MarkdownMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
-  readonly type: 'markdown';
-  readonly values: Array<{
-    value: string;
-    label: string;
-  }>;
-}
+
 interface SelectMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'select';
   readonly values: Array<{
@@ -178,7 +173,6 @@ type MetadataProperty =
   | MediaMetadataProperty
   | ImageMetadataProperty
   | PreviewMetadataProperty
-  | MarkdownMetadataProperty
   | SelectMetadataProperty
   | MultiSelectMetadataProperty
   | LinkMetadataProperty
@@ -196,4 +190,5 @@ export type {
   MultiSelectMetadataProperty,
   GeolocationMetadataProperty,
   RelationshipMetadataProperty,
+  LinkMetadataProperty,
 };

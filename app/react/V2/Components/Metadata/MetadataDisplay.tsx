@@ -14,6 +14,8 @@ import {
   Select,
   Geolocation,
   Relationship,
+  Markdown,
+  LinkProperty,
 } from './Components/index.js';
 import {
   formatDateProperty,
@@ -49,7 +51,12 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             return formatRelationshipProperty(field, entity.metadata);
           }
 
-          if (field.type === 'text' || field.type === 'generatedid' || field.type === 'numeric') {
+          if (
+            field.type === 'text' ||
+            field.type === 'generatedid' ||
+            field.type === 'numeric' ||
+            field.type === 'markdown'
+          ) {
             return formatSimpleProperty(field, entity.metadata);
           }
 
@@ -90,6 +97,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
                 values={data.values}
                 label={data.label}
                 translationContext={translationContext}
+                hideLabel={data.hideLabel}
               />
             </Fragment>
           );
@@ -102,6 +110,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
                 values={data.values}
                 label={data.label}
                 translationContext={translationContext}
+                hideLabel={data.hideLabel}
               />
             </Fragment>
           );
@@ -119,19 +128,22 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
                 values={data.values}
                 label={data.label}
                 translationContext={translationContext}
+                hideLabel={data.hideLabel}
               />
             </Fragment>
           );
         }
 
         if (data.type === 'geolocation') {
+          const isGroup = Boolean(data.propertyGroup?.length);
           return (
             <Fragment key={key}>
               <Geolocation
                 markers={data.values}
                 label={data.label}
-                isGroup={Boolean(data.propertyGroup?.length)}
+                isGroup={isGroup}
                 translationContext={translationContext}
+                hideLabel={!isGroup && data.hideLabel}
               />
             </Fragment>
           );
@@ -140,10 +152,62 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         if (data.type === 'select' || data.type === 'multiselect') {
           return (
             <Fragment key={key}>
-              <Select values={data} label={data.label} translationContext={translationContext} />
+              <Select
+                values={data}
+                label={data.label}
+                translationContext={translationContext}
+                hideLabel={data.hideLabel}
+              />
             </Fragment>
           );
         }
+
+        if (data.type === 'markdown') {
+          return (
+            <Fragment key={key}>
+              <Markdown
+                values={data.values}
+                label={data.label}
+                translationContext={translationContext}
+                hideLabel={data.hideLabel}
+              />
+            </Fragment>
+          );
+        }
+
+        if (data.type === 'link') {
+          return (
+            <LinkProperty
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+            />
+          );
+        }
+
+        // if (data.type === 'media') {
+        //   return (
+        //     <Media
+        //       values={data.values}
+        //       label={data.label}
+        //       translationContext={translationContext}
+        // hideLabel={data.hideLabel}
+        //     />
+        //   );
+        // }
+
+        // if (data.type === 'image' || data.type === 'preview') {
+        //   return (
+        //     <Image
+        //       values={data.values}
+        //       label={data.label}
+        //       translationContext={translationContext}
+        //       imageStyle={data.properties?.style === 'contain' ? 'contain' : 'cover'}
+        // hideLabel={data.hideLabel}
+        //     />
+        //   );
+        // }
 
         return <Fragment key={key} />;
       });

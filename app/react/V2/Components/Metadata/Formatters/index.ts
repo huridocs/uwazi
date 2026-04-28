@@ -4,3 +4,4 @@ export { formatDateProperty } from './formatDateProperty.js';
 export { formatSimpleProperty } from './formatSimpleProperty.js';
 export { formatGeolocationProperty } from './formatGeolocationProperty.js';
 export { formatRelationshipProperty } from './formatRelationshipProperty.js';
+export { formatLinkProperty } from './formatLinkProperty.js';
