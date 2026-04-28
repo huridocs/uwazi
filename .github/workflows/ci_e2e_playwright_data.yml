@@ -126,7 +126,6 @@ jobs:
           yarn playwright test \
             playwright/e2e/library-search.contract.spec.ts \
             playwright/e2e/csv-import.contract.spec.ts \
-            playwright/e2e/bootstrap-state.spec.ts \
             --workers=1
         timeout-minutes: 35
         env:

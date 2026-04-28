@@ -16,7 +16,7 @@ This Playwright test creates a deterministic dataset from `blank-e2e-fixtures` f
   - Shadow Runner
   - Aqua Sentinel
 - Uploads 3 PDFs per hero (`english`, `spanish`, `arabic`) from:
-  - `/home/konz/Sites/pdf-test/pdfs`
+  - `playwright/fixtures/pdfs`
 
 ## Run
 

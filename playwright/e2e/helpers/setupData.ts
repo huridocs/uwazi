@@ -14,7 +14,7 @@ type TemplateProperty = {
 
 let cachedCommonProperties: any[] | null = null;
 
-const pdfRoot = '/home/konz/Sites/pdf-test/pdfs';
+const pdfRoot = path.resolve(process.cwd(), 'playwright/fixtures/pdfs');
 
 const heroes = [
   { name: 'Midnight Guardian', docSet: 1, power: 'Stealth', side: 'The Good Ones' },
