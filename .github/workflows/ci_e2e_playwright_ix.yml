@@ -95,9 +95,9 @@ jobs:
         run: |
           echo "Setting up port forwarding for container networking..."
 
-          if ! command -v socat >/dev/null 2>&1; then
-            echo "Installing socat..."
-            apt-get update -qq && apt-get install -y socat
+          if ! command -v socat >/dev/null 2>&1 || ! command -v nc >/dev/null 2>&1; then
+            echo "Installing socat and netcat..."
+            apt-get update -qq && apt-get install -y socat netcat-openbsd
           fi
 
           REDIS_IP=""
