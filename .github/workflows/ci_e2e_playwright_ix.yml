@@ -3,6 +3,10 @@ name: E2E Playwright IX
 on:
   workflow_call:
 
+env:
+  REGISTRY: ghcr.io
+  CYPRESS_IMAGE_NAME: ${{ github.repository }}-cypress-e2e
+
 permissions:
   contents: read
   actions: read
@@ -10,6 +14,9 @@ permissions:
 jobs:
   e2e-playwright-ix:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/${{ github.repository }}-cypress-e2e:latest
+      options: --ipc=host
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
@@ -38,13 +45,13 @@ jobs:
       - name: Install MongoDB tools
         run: |
           if [ ! -f /etc/apt/sources.list.d/mongodb-org-7.0.list ]; then
-            sudo apt-get update -qq
-            sudo apt-get install -y wget gnupg
-            wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
-            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+            apt-get update -qq
+            apt-get install -y wget gnupg
+            wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | apt-key add -
+            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
           fi
-          sudo apt-get update -qq
-          sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+          apt-get update -qq
+          apt-get install -y mongodb-mongosh mongodb-org-tools
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.12.1
@@ -100,7 +107,7 @@ jobs:
 
       - name: Wait For and Download Artifact
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y jq unzip
+          apt-get update -qq && apt-get install -y jq unzip
           i=1
           while [ $i -le 60 ]; do
             echo "Attempt $i: Checking for artifact..."
