@@ -90,6 +90,11 @@ jobs:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
 
+      - name: Install Python 3.11
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y python3.11 python3.11-venv
+
       - name: Setup dummy services
         run: |
           python3.11 -m venv .venv
