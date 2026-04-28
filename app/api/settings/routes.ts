@@ -65,7 +65,10 @@ export default (app: Application) => {
   app.post('/api/settings', needsAuthorization(), (req, res, next) => {
     settings
       .save(req.body)
-      .then(response => res.json(response))
+      .then(response => {
+        req.sockets.emitToCurrentTenant('updateSettings', response);
+        res.json(response);
+      })
       .catch(next);
   });
 
@@ -80,7 +83,10 @@ export default (app: Application) => {
   app.post('/api/settings/links', needsAuthorization(), (req, res, next) => {
     settings
       .save({ links: req.body })
-      .then(response => res.json(response))
+      .then(response => {
+        req.sockets.emitToCurrentTenant('updateSettings', response);
+        res.json(response);
+      })
       .catch(next);
   });
 };

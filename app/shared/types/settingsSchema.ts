@@ -349,7 +349,11 @@ const settingsSchema = {
         },
       },
     },
-    themeVars: { type: 'object', additionalProperties: { type: 'string' } },
+    themeVars: {
+      type: 'object',
+      propertyNames: { type: 'string', maxLength: 128 },
+      additionalProperties: { type: 'string', maxLength: 512 },
+    },
     contactEmail: { type: 'string' },
     senderEmail: { type: 'string' },
     home_page: { type: 'string' },

@@ -1,18 +1,4 @@
 import { getAccessibleForegroundOnBackground } from '#shared/utils/contrast.js';
-import type { ResolvedThemeVars, ThemePresetId } from '#V2/theme/themes.js';
-
-function getPresetValue<T>(presetId: ThemePresetId, legacy: T, current: T) {
-  return presetId === 'legacy' ? legacy : current;
-}
-
-function getPresetResolvedValue<K extends keyof ResolvedThemeVars>(
-  presetId: ThemePresetId,
-  resolved: ResolvedThemeVars,
-  legacy: string,
-  key: K
-) {
-  return getPresetValue(presetId, legacy, resolved[key]);
-}
 
 function getAccessibleForeground(background: string, foreground: string, minimumContrast?: number) {
   return getAccessibleForegroundOnBackground(background, foreground, minimumContrast).foreground;
@@ -36,4 +22,4 @@ const LEGACY_BUTTON_VALUES = {
   dangerTint: '#FEE2E2',
 } as const;
 
-export { LEGACY_BUTTON_VALUES, getAccessibleForeground, getPresetResolvedValue, getPresetValue };
+export { LEGACY_BUTTON_VALUES, getAccessibleForeground };

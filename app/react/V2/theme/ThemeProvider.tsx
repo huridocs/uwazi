@@ -29,7 +29,7 @@ const ThemeProvider = ({
   const setThemeControlledMode = useSetAtom(themeControlledModeAtom);
   const themeVars = settings.themeVars ?? undefined;
   const customizationOn = Boolean(settings.themeCustomization);
-  const resolutionEnabled = customizationOn && !legacyChrome;
+  const useCustomizationPipeline = customizationOn && !legacyChrome;
   const effectiveThemeMode = getEffectiveThemeMode(customizationOn, themeMode, controlledMode);
 
   useLayoutEffect(() => {
@@ -41,8 +41,8 @@ const ThemeProvider = ({
     [legacyChrome, customizationOn, themeVars]
   );
   const resolved = React.useMemo(
-    () => appliedTheme(themeVars, effectiveThemeMode, resolutionEnabled),
-    [resolutionEnabled, effectiveThemeMode, themeVars]
+    () => appliedTheme(themeVars, effectiveThemeMode, useCustomizationPipeline),
+    [useCustomizationPipeline, effectiveThemeMode, themeVars]
   );
   const themeVarsStyle = React.useMemo<React.CSSProperties & Record<string, string>>(
     () => getScopedThemeVars(presetId, resolved),
@@ -65,7 +65,7 @@ const ThemeProvider = ({
   return (
     <div
       className={mergedClassName}
-      data-theme-custom={resolutionEnabled ? true : undefined}
+      data-theme-custom={useCustomizationPipeline ? true : undefined}
       data-theme-mode={effectiveThemeMode}
       style={{ colorScheme: effectiveThemeMode, ...themeVarsStyle, ...style }}
     >

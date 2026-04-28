@@ -1,4 +1,6 @@
 import { getAccessibleForegroundOnBackground } from '#shared/utils/contrast.js';
+import { setRolePairVars, setRoleTripletVars } from '#V2/theme/themeRoleVarSetters.js';
+import { getPresetValue } from '#V2/theme/themePresetUtils.js';
 import { getThemeRoles, type ThemeRoles } from '#V2/theme/themeRoles.js';
 import type { ResolvedThemeVars, ThemePresetId } from '#V2/theme/themes.js';
 import {
@@ -37,10 +39,6 @@ import {
   WARNING_BANNER_BORDER,
   WARNING_BANNER_FG,
 } from '#V2/theme/roleTokens.js';
-
-function getPresetValue<T>(presetId: ThemePresetId, legacy: T, current: T) {
-  return presetId === 'legacy' ? legacy : current;
-}
 
 const getControlThemeVars = (
   presetId: ThemePresetId,
@@ -87,41 +85,61 @@ const getCardThemeVars = (
   presetId: ThemePresetId,
   resolved: ResolvedThemeVars,
   roles: ThemeRoles = getThemeRoles(presetId, resolved)
-): Record<string, string> => ({
-  [CARD_HEADER_DEFAULT_BG]: roles.surface.warm,
-  [CARD_HEADER_DEFAULT_FG]: getPresetValue(presetId, roles.action.primary, roles.text.primary),
-  [CARD_HEADER_BLACK_BG]: roles.surface.warm,
-  [CARD_HEADER_BLACK_FG]: roles.text.primary,
-  [CARD_HEADER_YELLOW_BG]: getPresetValue(
-    presetId,
-    '#FEF3C7',
-    resolved['--color-theme-highlight-yellow']
-  ),
-  [CARD_HEADER_YELLOW_FG]: getPresetValue(
-    presetId,
-    getAccessibleForegroundOnBackground('#FEF3C7', '#92400E').foreground,
-    roles.text.primary
-  ),
-});
+): Record<string, string> => {
+  const vars: Record<string, string> = {};
+
+  setRolePairVars(vars, CARD_HEADER_DEFAULT_BG, CARD_HEADER_DEFAULT_FG, {
+    bg: roles.surface.warm,
+    fg: getPresetValue(presetId, roles.action.primary, roles.text.primary),
+  });
+
+  setRolePairVars(vars, CARD_HEADER_BLACK_BG, CARD_HEADER_BLACK_FG, {
+    bg: roles.surface.warm,
+    fg: roles.text.primary,
+  });
+
+  setRolePairVars(vars, CARD_HEADER_YELLOW_BG, CARD_HEADER_YELLOW_FG, {
+    bg: getPresetValue(presetId, '#FEF3C7', resolved['--color-theme-highlight-yellow']),
+    fg: getPresetValue(
+      presetId,
+      getAccessibleForegroundOnBackground('#FEF3C7', '#92400E').foreground,
+      roles.text.primary
+    ),
+  });
+
+  return vars;
+};
 
 const getBannerThemeVars = (
   presetId: ThemePresetId,
   resolved: ResolvedThemeVars,
   roles: ThemeRoles = getThemeRoles(presetId, resolved)
-): Record<string, string> => ({
-  [INFO_BANNER_BG]: getPresetValue(presetId, '#E0E7FF', roles.feedback.infoTint),
-  [INFO_BANNER_FG]: getPresetValue(presetId, roles.action.primary, roles.text.primary),
-  [INFO_BANNER_BORDER]: getPresetValue(presetId, '#A5B4FC', roles.feedback.info),
-  [WARNING_BANNER_BG]: getPresetValue(presetId, '#FEF3C7', roles.feedback.warningTint),
-  [WARNING_BANNER_FG]: getPresetValue(
-    presetId,
-    '#B45309',
-    getAccessibleForegroundOnBackground(roles.feedback.warningTint, roles.feedback.warning)
-      .foreground
-  ),
-  [WARNING_BANNER_BORDER]: getPresetValue(presetId, '#FCD34D', roles.feedback.warning),
-  [SECTION_HEADER_BG]: roles.surface.warm,
-  [SECTION_HEADER_FG]: getPresetValue(presetId, roles.text.secondary, roles.text.primary),
-});
+): Record<string, string> => {
+  const vars: Record<string, string> = {};
+
+  setRoleTripletVars(vars, INFO_BANNER_BORDER, INFO_BANNER_BG, INFO_BANNER_FG, {
+    border: getPresetValue(presetId, '#A5B4FC', roles.feedback.info),
+    bg: getPresetValue(presetId, '#E0E7FF', roles.feedback.infoTint),
+    fg: getPresetValue(presetId, roles.action.primary, roles.text.primary),
+  });
+
+  setRoleTripletVars(vars, WARNING_BANNER_BORDER, WARNING_BANNER_BG, WARNING_BANNER_FG, {
+    border: getPresetValue(presetId, '#FCD34D', roles.feedback.warning),
+    bg: getPresetValue(presetId, '#FEF3C7', roles.feedback.warningTint),
+    fg: getPresetValue(
+      presetId,
+      '#B45309',
+      getAccessibleForegroundOnBackground(roles.feedback.warningTint, roles.feedback.warning)
+        .foreground
+    ),
+  });
+
+  setRolePairVars(vars, SECTION_HEADER_BG, SECTION_HEADER_FG, {
+    bg: roles.surface.warm,
+    fg: getPresetValue(presetId, roles.text.secondary, roles.text.primary),
+  });
+
+  return vars;
+};
 
 export { getBannerThemeVars, getCardThemeVars, getControlThemeVars, getSurfaceThemeVars };

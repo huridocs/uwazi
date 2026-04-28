@@ -1,9 +1,6 @@
 import { getAccessibleColorPair, mixHex } from '#shared/utils/contrast.js';
-import {
-  LEGACY_BUTTON_VALUES,
-  getAccessibleForeground,
-  getPresetValue,
-} from '#V2/theme/buttonThemeShared.js';
+import { LEGACY_BUTTON_VALUES, getAccessibleForeground } from '#V2/theme/buttonThemeShared.js';
+import { getPresetValue } from '#V2/theme/themePresetUtils.js';
 import type { ThemeRoles } from '#V2/theme/themeRoles.js';
 import type { ThemePresetId } from '#V2/theme/themes.js';
 

@@ -225,6 +225,12 @@ const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableTheme
   ) as EditableThemeVars,
 });
 
+/**
+ * Builds the resolved palette for `mode`. When `themeCustomizationEnabled` is false, stored
+ * `themeVars` are ignored and `getPresetId` resolves to `legacy`; keep this flag aligned with
+ * `ThemeProvider`'s `useCustomizationPipeline` (`themeCustomization && !legacyChrome`) and with
+ * how `presetId` is chosen when `legacyChrome` forces legacy.
+ */
 const appliedTheme = (
   themeVars: ThemeVarsInput,
   mode: ThemeMode,
