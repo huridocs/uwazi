@@ -51,6 +51,43 @@ describe('formatGeolocationProperty', () => {
     ],
   } as Entity['metadata'];
 
+  const metadataC = {
+    locationB: [{ value: { lat: -5, lon: -6 }, label: 'Point B', color: '#ff0000' }],
+    rel_nested: [
+      {
+        value: '3',
+        label: 'Location 3',
+        type: 'entity',
+        inheritedType: 'relationship',
+        inheritedValue: [
+          {
+            value: 'level-1',
+            inheritedType: 'relationship',
+            inheritedValue: [
+              {
+                value: 'level-2',
+                inheritedType: 'relationship',
+                inheritedValue: [
+                  {
+                    value: 'level-3',
+                    inheritedType: 'relationship',
+                    inheritedValue: [
+                      {
+                        value: 'leaf',
+                        inheritedType: 'geolocation',
+                        inheritedValue: [{ value: { lat: 48.8566, lon: 2.3522 } }],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  } as Entity['metadata'];
+
   it('should return null for non-geolocation properties', () => {
     const property = {
       _id: 'text1',
@@ -189,6 +226,56 @@ describe('formatGeolocationProperty', () => {
       label: 'Missing Location',
       type: 'geolocation',
       values: [],
+    });
+  });
+
+  it('should format grouped geolocations when one property is deeply nested relationship inheritance', () => {
+    const property = {
+      _id: 'group2',
+      name: '__group2',
+      label: '__group2',
+      type: 'geolocation',
+      propertyGroup: [
+        { name: 'locationB', label: 'Location B' },
+        {
+          name: 'rel_nested',
+          label: 'Rel Nested',
+          inherited: true,
+          content: '69f0a4ac62c282d87ef5970f',
+          property: 'y',
+        },
+      ],
+    } as BaseMetadataProperty;
+
+    expect(formatGeolocationProperty(property, metadataC)).toEqual({
+      _id: 'group2',
+      name: '__group2',
+      label: '__group2',
+      type: 'geolocation',
+      propertyGroup: [
+        { name: 'locationB', label: 'Location B' },
+        {
+          name: 'rel_nested',
+          label: 'Rel Nested',
+          inherited: true,
+          content: '69f0a4ac62c282d87ef5970f',
+          property: 'y',
+        },
+      ],
+      values: [
+        {
+          value: { latitude: -5, longitude: -6 },
+          label: 'Point B',
+          color: '#ff0000',
+        },
+        {
+          value: { latitude: 48.8566, longitude: 2.3522 },
+          label: 'Location 3',
+          entity: {
+            _id: '3',
+          },
+        },
+      ],
     });
   });
 });

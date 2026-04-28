@@ -91,4 +91,4 @@ const formatRelationshipProperty = (
   };
 };
 
-export { formatRelationshipProperty };
+export { formatRelationshipProperty, resolveInheritedRelationship };

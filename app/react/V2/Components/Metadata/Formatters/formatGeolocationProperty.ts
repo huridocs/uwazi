@@ -1,5 +1,42 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { BaseMetadataProperty, GeolocationMetadataProperty } from '../MetadataPropertiesType.js';
+import { resolveInheritedRelationship } from './formatRelationshipProperty.js';
+
+type Coordinate = {
+  lat?: number;
+  lon?: number;
+};
+
+type GeolocationMetadataValue = {
+  value?: unknown;
+  inheritedValue?: GeolocationMetadataValue[];
+  inheritedType?: string;
+  type?: string;
+  label?: string;
+  color?: string;
+  icon?: unknown;
+};
+
+const getCoordinateFromMetadataValue = (metadataValue: GeolocationMetadataValue) => {
+  if (!metadataValue.inheritedValue) {
+    return metadataValue?.value as Coordinate;
+  }
+
+  const inheritedRelationship = resolveInheritedRelationship(
+    [metadataValue as unknown as Parameters<typeof resolveInheritedRelationship>[0][number]],
+    'geolocation'
+  );
+
+  const inheritedCoordinate =
+    inheritedRelationship.values.find(
+      item =>
+        item?.value &&
+        typeof (item.value as Coordinate)?.lat === 'number' &&
+        typeof (item.value as Coordinate)?.lon === 'number'
+    )?.value || inheritedRelationship.values[0]?.value;
+
+  return inheritedCoordinate as Coordinate;
+};
 
 const formatGeolocationProperty = (
   property: BaseMetadataProperty,
@@ -14,15 +51,9 @@ const formatGeolocationProperty = (
     : [{ name: property.name, label: property.label }];
 
   const values = groupedProperties.flatMap(({ name, label }) =>
-    (metadata?.[name] ?? []).flatMap(metadataValue => {
-      let coordinate = metadataValue?.value as {
-        lat?: number;
-        lon?: number;
-      };
-
-      if (metadataValue.inheritedValue) {
-        coordinate = metadataValue.inheritedValue[0]?.value as { lat?: number; lon?: number };
-      }
+    (metadata?.[name] ?? []).flatMap(rawMetadataValue => {
+      const metadataValue = rawMetadataValue as GeolocationMetadataValue;
+      const coordinate = getCoordinateFromMetadataValue(metadataValue);
 
       const latitude = coordinate?.lat;
       const longitude = coordinate?.lon;
