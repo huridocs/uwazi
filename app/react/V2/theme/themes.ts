@@ -5,7 +5,6 @@ import {
   SEMANTIC_VAR_KEYS,
   SEMANTIC_VAR_LABELS,
   THEME_MODES,
-  THEME_PALETTE,
 } from './tokens.js';
 import type {
   EditableThemeVars,
@@ -14,6 +13,9 @@ import type {
   ThemeMode,
   ThemePresetId,
 } from './tokens.js';
+import { THEME_PALETTE } from './themePaletteList.js';
+import { isValidHex, normalizeHex, sortPaletteHexColors } from './themePaletteSort.js';
+export { colorPaletteFromHex } from './colorPaletteFromHex.js';
 
 const THEME_PRESET_KEY = '__preset' as const;
 
@@ -71,9 +73,6 @@ type CompatibilityVarKey =
   | '--color-text-secondary'
   | '--color-text-muted'
   | '--color-border-primary';
-
-const isValidHex = (s: string) => /^#([0-9a-fA-F]{6})$/.test(s);
-const normalizeHex = (s: string) => (s.startsWith('#') ? s : `#${s}`).slice(0, 7);
 
 const THEME_ASSET_PRESETS: Record<
   ThemeAssetPresetId,
@@ -324,6 +323,7 @@ export {
   THEME_PALETTE,
   isValidHex,
   normalizeHex,
+  sortPaletteHexColors,
   NAMED_THEMES,
   appliedTheme,
   getPresetPair,

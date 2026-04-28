@@ -22,8 +22,7 @@ import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
 import { FileType } from '#shared/types/fileType.js';
-import { ThemeSettingsSidepanel } from './Theming/ThemeSettingsSidepanel.js';
-import { ACCENT_PRIMARY_KEY, appliedTheme, getPresetId, NAMED_THEMES } from '#V2/theme/themes.js';
+import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
 
@@ -94,7 +93,6 @@ const Collection = () => {
     customUploadFiles: FileType[];
   };
   const { links, custom, ...formData } = settings;
-  const [showThemeSidepanel, setShowThemeSidepanel] = React.useState(false);
 
   const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
@@ -175,14 +173,9 @@ const Collection = () => {
   ];
 
   const watchedThemeVars = watch('themeVars') ?? {};
-  const selectedTheme = NAMED_THEMES.find(
-    theme => theme.id === getPresetId(watchedThemeVars, true)
-  );
-  const hasThemeOverrides = Object.keys(watchedThemeVars).some(
-    key => key !== '__preset' && key !== '__assetPreset'
-  );
-  const lightAccent = appliedTheme(watchedThemeVars, 'light', true)[ACCENT_PRIMARY_KEY];
-  const darkAccent = appliedTheme(watchedThemeVars, 'dark', true)[ACCENT_PRIMARY_KEY];
+  const watchedThemeAssets = watch('themeAssets') ?? {};
+  const watchedSiteLogo = watch('site_logo');
+  const watchedFavicon = watch('favicon');
 
   return (
     <div className="w-full h-full" data-testid="settings-collection">
@@ -209,101 +202,21 @@ const Collection = () => {
                     onChange={v => setValue('favicon', v, { shouldDirty: true })}
                     files={customUploadFiles}
                     selectButtonTitle={<Translate>Select favicon image</Translate>}
-                    recommendedSize="16x16 to 2048x2048 px (square)"
+                    recommendedSize="16x16 to 512x512 px (square)"
                     sizeRule={faviconImageSizeRule}
                     previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]"
                   />
                 ) : null}
                 {themeCustomization && (
-                  <>
-                    <div className="sm:col-span-2">
-                      <div
-                        className="rounded-xl p-4"
-                        style={{
-                          border:
-                            '1px solid color-mix(in srgb, var(--color-theme-border-default) 60%, transparent)',
-                          backgroundColor: 'var(--color-theme-surface-muted)',
-                        }}
-                      >
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                          <div className="min-w-0">
-                            <p
-                              className="text-sm font-medium"
-                              style={{ color: 'var(--color-theme-text-primary)' }}
-                            >
-                              <Translate>Theme and branding</Translate>
-                            </p>
-                            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                              <span
-                                className="rounded-full px-2.5 py-1 font-medium"
-                                style={{
-                                  backgroundColor: 'var(--color-theme-surface-raised)',
-                                  color: 'var(--color-theme-text-secondary)',
-                                  boxShadow:
-                                    'inset 0 0 0 1px color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
-                                }}
-                              >
-                                {selectedTheme?.label}
-                              </span>
-                              {hasThemeOverrides ? (
-                                <span
-                                  className="rounded-full px-2.5 py-1 font-medium"
-                                  style={{
-                                    backgroundColor: 'var(--color-theme-feedback-info-tint)',
-                                    color: 'var(--color-theme-action-primary)',
-                                    boxShadow:
-                                      'inset 0 0 0 1px color-mix(in srgb, var(--color-theme-feedback-info) 35%, transparent)',
-                                  }}
-                                >
-                                  <Translate>Customized</Translate>
-                                </span>
-                              ) : null}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-4">
-                            <div
-                              className="overflow-hidden rounded-lg"
-                              style={{
-                                border:
-                                  '1px solid color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
-                              }}
-                            >
-                              <div className="flex">
-                                <span
-                                  className="h-8 w-12"
-                                  style={{ backgroundColor: lightAccent }}
-                                />
-                                <span
-                                  className="h-8 w-12"
-                                  style={{ backgroundColor: darkAccent }}
-                                />
-                              </div>
-                            </div>
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              onClick={() => setShowThemeSidepanel(true)}
-                            >
-                              <Translate>Edit theme</Translate>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <ThemeSettingsSidepanel
-                      isOpen={showThemeSidepanel}
-                      onClose={() => setShowThemeSidepanel(false)}
-                      themeVars={watchedThemeVars}
-                      onThemeChange={v => setValue('themeVars', v, { shouldDirty: true })}
-                      themeAssets={watch('themeAssets') ?? {}}
-                      onThemeAssetsChange={v => setValue('themeAssets', v, { shouldDirty: true })}
-                      siteLogo={watch('site_logo')}
-                      favicon={watch('favicon')}
-                      customUploadFiles={customUploadFiles}
-                    />
-                  </>
+                  <ThemeSelectionCard
+                    themeVars={watchedThemeVars}
+                    onThemeChange={v => setValue('themeVars', v, { shouldDirty: true })}
+                    themeAssets={watchedThemeAssets}
+                    onThemeAssetsChange={v => setValue('themeAssets', v, { shouldDirty: true })}
+                    siteLogo={watchedSiteLogo}
+                    favicon={watchedFavicon}
+                    customUploadFiles={customUploadFiles}
+                  />
                 )}
                 <div className="sm:col-span-1">
                   <Select

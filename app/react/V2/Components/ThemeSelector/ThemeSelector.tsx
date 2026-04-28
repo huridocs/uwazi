@@ -11,6 +11,7 @@ import {
   isValidHex,
   NAMED_THEMES,
   SEMANTIC_VAR_KEYS,
+  THEME_PALETTE,
   THEME_MODES,
   themeStorageKey,
   toCanonicalThemeVars,
@@ -58,6 +59,7 @@ const ThemeSelector = ({
       Array.from(
         new Set(
           [
+            ...THEME_PALETTE.map(entry => entry.hex),
             ...NAMED_THEMES.flatMap(theme =>
               THEME_MODES.flatMap(mode => SEMANTIC_VAR_KEYS.map(key => theme.modes[mode][key]))
             ),

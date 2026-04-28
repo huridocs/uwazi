@@ -107,10 +107,10 @@ const ColorPicker = ({
                 color: 'var(--color-theme-text-primary)',
               }}
               {...attributes.popper}
-              className="z-20 flex w-56 flex-col gap-2 rounded-xl border p-2 shadow-lg"
+              className="z-50 flex w-56 flex-col gap-2 rounded-xl border p-2 shadow-lg"
             >
               <ul
-                className="grid grid-cols-5 grid-rows-2 gap-2 p-2"
+                className="grid max-h-44 grid-cols-5 gap-2 overflow-y-auto p-2"
                 data-testid="colorpicker-popover"
               >
                 {options.map((color: string) => (

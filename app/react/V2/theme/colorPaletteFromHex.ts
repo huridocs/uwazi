@@ -8,7 +8,7 @@ import {
 } from './colorSpaceForPalette.js';
 
 const pushNeutralRamp = (h0: number, add: (h: number, s: number, l: number) => void) => {
-  for (let L = 4; L <= 96; L += 4) add(h0, 0, L);
+  for (let l = 4; l <= 96; l += 4) add(h0, 0, l);
 };
 
 const pushChromaticRing = (

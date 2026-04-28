@@ -114,7 +114,7 @@ const ThemeSettingsSidepanel = ({
                         }
                         files={customUploadFiles}
                         selectButtonTitle={<Translate>Select favicon image</Translate>}
-                        recommendedSize="16x16 to 2048x2048 px (square)"
+                        recommendedSize="16x16 to 512x512 px (square)"
                         sizeRule={faviconImageSizeRule}
                         emptyGalleryHint={<Translate>Favicon no images hint</Translate>}
                         previewWrapperClassName={`${assetPreviewWrapperClassName} h-14 w-14`}
