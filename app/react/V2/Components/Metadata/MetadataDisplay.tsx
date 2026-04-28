@@ -23,6 +23,7 @@ import {
   formatMetadataFields,
   formatGeolocationProperty,
   formatRelationshipProperty,
+  formatLinkProperty,
 } from './Formatters/index.js';
 import { BaseMetadataProperty, MetadataProperty } from './MetadataPropertiesType.js';
 import { formatSelectProperty } from './Formatters/formatSelectProperty.js';
@@ -75,6 +76,10 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
 
           if (field.type === 'select' || field.type === 'multiselect') {
             return formatSelectProperty(field, entity.metadata);
+          }
+
+          if (field.type === 'link') {
+            return formatLinkProperty(field, entity.metadata);
           }
 
           return undefined;

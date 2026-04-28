@@ -60,13 +60,13 @@ describe('Metadata Display', () => {
         .should('exist');
     });
 
-    //   it('renders external link property as anchor with correct href', () => {
-    //     cy.contains('dt', 'External link').should('exist');
-    //     cy.contains('dd', 'Police Report')
-    //       .find('a')
-    //       .should('have.attr', 'href', 'https://police.gov/reports/incident-2024-001')
-    //       .should('have.attr', 'target', '_blank');
-    //   });
+    it('renders external link property as anchor with correct href', () => {
+      cy.contains('dt', 'External link').should('exist');
+      cy.contains('dd', 'Police Report')
+        .find('a')
+        .should('have.attr', 'href', 'https://police.gov/reports/incident-2024-001')
+        .should('have.attr', 'target', '_blank');
+    });
 
     //   it('renders images with provided src and alt', () => {
     //     cy.contains('dt', 'Media with an image').should('exist');

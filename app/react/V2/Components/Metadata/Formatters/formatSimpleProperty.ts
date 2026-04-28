@@ -2,7 +2,7 @@ import { Entity } from '#V2/api/entities/types.js';
 import { BaseMetadataProperty, SimpleMetadataProperty } from '../MetadataPropertiesType.js';
 
 const isSimpleType = (type: BaseMetadataProperty['type']) =>
-  type === 'text' || type === 'generatedid' || type === 'numeric';
+  type === 'text' || type === 'generatedid' || type === 'numeric' || type === 'markdown';
 
 const formatSimpleProperty = (
   property: BaseMetadataProperty,
