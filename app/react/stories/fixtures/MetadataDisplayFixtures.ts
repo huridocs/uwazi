@@ -509,20 +509,17 @@ const apiEntity: Entity = {
     selected_image: [
       {
         value: '/short-video-thumbnail.jpg',
-        alt: 'Alternative text for image',
       },
     ],
     preview_document: [
       {
         value: '/batman.jpg',
-        alt: 'Alternative text pdf preview',
       },
     ],
     video_of_event: [
       {
         value:
           '(/short-video.mp4, {"timelinks":{"00:00:02":"Timelink 1","00:00:04": "Timelink 2"}})',
-        alt: 'Alternative text',
       },
     ],
     incident_location: [

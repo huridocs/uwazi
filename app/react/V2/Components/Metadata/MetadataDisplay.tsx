@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
@@ -16,6 +17,7 @@ import {
   Relationship,
   Markdown,
   LinkProperty,
+  Media,
 } from './Components/index.js';
 import {
   formatDateProperty,
@@ -24,6 +26,7 @@ import {
   formatGeolocationProperty,
   formatRelationshipProperty,
   formatLinkProperty,
+  formatMediaProperty,
 } from './Formatters/index.js';
 import { BaseMetadataProperty, MetadataProperty } from './MetadataPropertiesType.js';
 import { formatSelectProperty } from './Formatters/formatSelectProperty.js';
@@ -80,6 +83,10 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
 
           if (field.type === 'link') {
             return formatLinkProperty(field, entity.metadata);
+          }
+
+          if (field.type === 'media') {
+            return formatMediaProperty(field, entity.metadata);
           }
 
           return undefined;
@@ -191,16 +198,16 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           );
         }
 
-        // if (data.type === 'media') {
-        //   return (
-        //     <Media
-        //       values={data.values}
-        //       label={data.label}
-        //       translationContext={translationContext}
-        // hideLabel={data.hideLabel}
-        //     />
-        //   );
-        // }
+        if (data.type === 'media') {
+          return (
+            <Media
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+            />
+          );
+        }
 
         // if (data.type === 'image' || data.type === 'preview') {
         //   return (

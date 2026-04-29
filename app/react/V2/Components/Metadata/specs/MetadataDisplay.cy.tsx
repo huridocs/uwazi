@@ -81,133 +81,132 @@ describe('Metadata Display', () => {
     //     cy.get('img[alt="Annoying rich kid.pdf"]').should('have.attr', 'src', '/batman.jpg');
     //   });
 
-    //   it('renders media timelinks as buttons', () => {
-    //     cy.contains('dt', 'Media video with timelinks').should('exist');
-    //     cy.contains('Timelink 1').should('exist');
-    //     cy.contains('Timelink 2').should('exist');
-    //   });
-    // });
+    it('renders media timelinks as buttons', () => {
+      cy.contains('dt', 'Media video with timelinks').should('exist');
+      cy.contains('Timelink 1').should('exist');
+      cy.contains('Timelink 2').should('exist');
+    });
+  });
 
-    // describe('accessibility', () => {
-    //   it('should be accessible', () => {
-    //     Basic.args.showGeolocationProperties = true;
-    //     cy.injectAxe();
-    //     mount(<Basic />);
-    //     cy.get('div[data-testid="map-container"]').should('exist');
-    //     cy.checkA11y();
-    //   });
-    // });
+  // describe('accessibility', () => {
+  //   it('should be accessible', () => {
+  //     Basic.args.showGeolocationProperties = true;
+  //     cy.injectAxe();
+  //     mount(<Basic />);
+  //     cy.get('div[data-testid="map-container"]').should('exist');
+  //     cy.checkA11y();
+  //   });
+  // });
 
-    // describe('Empty metadata fields', () => {
-    //   const checkProperties = () => {
-    //     cy.contains('dd', 'Title of the displayed entity');
-    //     cy.contains('dd', 'Oct 2, 2025');
-    //     cy.contains('dd', 'Oct 13, 2025');
+  // describe('Empty metadata fields', () => {
+  //   const checkProperties = () => {
+  //     cy.contains('dd', 'Title of the displayed entity');
+  //     cy.contains('dd', 'Oct 2, 2025');
+  //     cy.contains('dd', 'Oct 13, 2025');
 
-    //     cy.contains('dt', 'A basic simple text').should('not.exist');
-    //     cy.contains('dt', 'Single Date').should('not.exist');
-    //     cy.contains('dt', 'Markdown field using sanitized HTML tags').should('not.exist');
-    //     cy.contains('dt', 'Media with an image').should('not.exist');
-    //     cy.contains('dt', 'Grouped geolocation 1').should('not.exist');
-    //     cy.contains('dt', 'External link').should('not.exist');
-    //     cy.contains('dt', 'Single select').should('not.exist');
-    //     cy.contains('dt', 'Relationship with inheritance').should('not.exist');
-    //   };
+  //     cy.contains('dt', 'A basic simple text').should('not.exist');
+  //     cy.contains('dt', 'Single Date').should('not.exist');
+  //     cy.contains('dt', 'Markdown field using sanitized HTML tags').should('not.exist');
+  //     cy.contains('dt', 'Media with an image').should('not.exist');
+  //     cy.contains('dt', 'Grouped geolocation 1').should('not.exist');
+  //     cy.contains('dt', 'External link').should('not.exist');
+  //     cy.contains('dt', 'Single select').should('not.exist');
+  //     cy.contains('dt', 'Relationship with inheritance').should('not.exist');
+  //   };
 
-    //   it('should not render empty metadata fields', () => {
-    //     Basic.args.dbEntity = {
-    //       _id: '1',
-    //       language: 'en',
-    //       mongoLanguage: 'en',
-    //       sharedId: 'shared1',
-    //       title: 'Title of the displayed entity',
-    //       template: 'template1',
-    //       creationDate: 1759374706197, // Oct 2, 2025
-    //       editDate: 1760366924144, // Oct 13, 2025
-    //       metadata: {
-    //         simple_text: [
-    //           {
-    //             value: '',
-    //           },
-    //         ],
-    //         markdown_html: [
-    //           {
-    //             value: '',
-    //           },
-    //         ],
-    //         single_date: [],
-    //         multiple_dates: [],
-    //         date_range: [],
-    //         multiple_date_ranges: [],
-    //         selected_image: [
-    //           {
-    //             value: '',
-    //             alt: '',
-    //           },
-    //         ],
-    //         incident_location: [],
-    //         external_link: [
-    //           {
-    //             value: null,
-    //           },
-    //         ],
-    //         status_selection: [],
-    //         related_people: [],
-    //         video_of_event: [{ value: '' }],
-    //       },
-    //     };
+  //   it('should not render empty metadata fields', () => {
+  //     Basic.args.dbEntity = {
+  //       _id: '1',
+  //       language: 'en',
+  //       mongoLanguage: 'en',
+  //       sharedId: 'shared1',
+  //       title: 'Title of the displayed entity',
+  //       template: 'template1',
+  //       creationDate: 1759374706197, // Oct 2, 2025
+  //       editDate: 1760366924144, // Oct 13, 2025
+  //       metadata: {
+  //         simple_text: [
+  //           {
+  //             value: '',
+  //           },
+  //         ],
+  //         markdown_html: [
+  //           {
+  //             value: '',
+  //           },
+  //         ],
+  //         single_date: [],
+  //         multiple_dates: [],
+  //         date_range: [],
+  //         multiple_date_ranges: [],
+  //         selected_image: [
+  //           {
+  //             value: '',
+  //             alt: '',
+  //           },
+  //         ],
+  //         incident_location: [],
+  //         external_link: [
+  //           {
+  //             value: null,
+  //           },
+  //         ],
+  //         status_selection: [],
+  //         related_people: [],
+  //         video_of_event: [{ value: '' }],
+  //       },
+  //     };
 
-    //     mount(<Basic />);
+  //     mount(<Basic />);
 
-    //     checkProperties();
-    //   });
+  //     checkProperties();
+  //   });
 
-    //   it('should not render missing metadata fields', () => {
-    //     Basic.args.dbEntity = {
-    //       _id: '1',
-    //       language: 'en',
-    //       mongoLanguage: 'en',
-    //       sharedId: 'shared1',
-    //       title: 'Title of the displayed entity',
-    //       template: 'template1',
-    //       creationDate: 1759374706197, // Oct 2, 2025
-    //       editDate: 1760366924144, // Oct 13, 2025
-    //       metadata: {},
-    //     };
+  //   it('should not render missing metadata fields', () => {
+  //     Basic.args.dbEntity = {
+  //       _id: '1',
+  //       language: 'en',
+  //       mongoLanguage: 'en',
+  //       sharedId: 'shared1',
+  //       title: 'Title of the displayed entity',
+  //       template: 'template1',
+  //       creationDate: 1759374706197, // Oct 2, 2025
+  //       editDate: 1760366924144, // Oct 13, 2025
+  //       metadata: {},
+  //     };
 
-    //     mount(<Basic />);
+  //     mount(<Basic />);
 
-    //     checkProperties();
-    //   });
+  //     checkProperties();
+  //   });
 
-    describe('dates', () => {
-      it('renders dates with the story locale and format', () => {
-        Basic.args.locale = 'en';
-        Basic.args.dateFormat = 'dd/MM/yyyy';
+  describe('dates', () => {
+    it('renders dates with the story locale and format', () => {
+      Basic.args.locale = 'en';
+      Basic.args.dateFormat = 'dd/MM/yyyy';
 
-        mount(<Basic />);
+      mount(<Basic />);
 
-        cy.contains('dd', '1 Jan, 2024').should('exist');
-        cy.contains('dd', '2 Jan, 2024').should('exist');
-        cy.contains('dd', '3 Jan, 2024').should('exist');
-        cy.contains('dd', '2 Oct, 2025').should('exist');
-        cy.contains('dd', '13 Oct, 2025').should('exist');
-        cy.contains('dd', 'From 1 Jan, 2024 ~ To 2 Jan, 2024').should('exist');
-      });
+      cy.contains('dd', '1 Jan, 2024').should('exist');
+      cy.contains('dd', '2 Jan, 2024').should('exist');
+      cy.contains('dd', '3 Jan, 2024').should('exist');
+      cy.contains('dd', '2 Oct, 2025').should('exist');
+      cy.contains('dd', '13 Oct, 2025').should('exist');
+      cy.contains('dd', 'From 1 Jan, 2024 ~ To 2 Jan, 2024').should('exist');
+    });
 
-      it('renders dates with russian locale and yyyy-MM-dd format', () => {
-        Basic.args.locale = 'ru';
-        Basic.args.dateFormat = 'yyyy-MM-dd';
+    it('renders dates with russian locale and yyyy-MM-dd format', () => {
+      Basic.args.locale = 'ru';
+      Basic.args.dateFormat = 'yyyy-MM-dd';
 
-        mount(<Basic />);
+      mount(<Basic />);
 
-        cy.contains('dd', '2024, янв. 1').should('exist');
-        cy.contains('dd', '2024, янв. 2').should('exist');
-        cy.contains('dd', '2024, янв. 3').should('exist');
-        cy.contains('dd', '2025, окт. 2').should('exist');
-        cy.contains('dd', '2025, окт. 13').should('exist');
-        cy.contains('dd', 'From 2024, янв. 1 ~ To 2024, янв. 2').should('exist');
-      });
+      cy.contains('dd', '2024, янв. 1').should('exist');
+      cy.contains('dd', '2024, янв. 2').should('exist');
+      cy.contains('dd', '2024, янв. 3').should('exist');
+      cy.contains('dd', '2025, окт. 2').should('exist');
+      cy.contains('dd', '2025, окт. 13').should('exist');
+      cy.contains('dd', 'From 2024, янв. 1 ~ To 2024, янв. 2').should('exist');
     });
   });
 });

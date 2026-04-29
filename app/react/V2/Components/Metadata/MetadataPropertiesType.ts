@@ -191,4 +191,6 @@ export type {
   GeolocationMetadataProperty,
   RelationshipMetadataProperty,
   LinkMetadataProperty,
+  MediaMetadataProperty,
+  Timelink,
 };
