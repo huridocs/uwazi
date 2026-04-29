@@ -165,7 +165,6 @@ const MenuConfig = () => {
                   type="button"
                   onClick={save}
                   variant="success"
-                  size="medium"
                   disabled={areEqual}
                   data-testid="menu-save"
                 >

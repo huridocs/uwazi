@@ -147,12 +147,7 @@ const ThesauriValueFormSidepanel = ({
             >
               <Translate>Cancel</Translate>
             </Button>
-            <Button
-              className="grow"
-              type="submit"
-              size="medium"
-              data-testid="thesaurus-form-submit"
-            >
+            <Button className="grow" type="submit" data-testid="thesaurus-form-submit">
               {!editMode && <Translate>Add</Translate>}
               {editMode && <Translate>Edit</Translate>}
             </Button>
