@@ -18,7 +18,8 @@ class MongoFilesDAO extends MongoDataSource<ProcessedPDFDBO> {
   streamProcessedDocs(options?: { afterId?: ObjectId }): FindCursor<ProcessedPDFDBO> {
     const filter: Record<string, unknown> = { type: 'document', status: 'ready' };
     if (options?.afterId) filter._id = { $gt: options.afterId };
-    return this.getCollection().find(filter);
+
+    return this.getCollection().find(filter).sort({ _id: 1 });
   }
 }
 
