@@ -54,7 +54,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
   return (
     <Modal size="md">
       <Modal.Header>
-        <h1 className="text-xl font-medium text-gray-900">
+        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
           <Translate>Add relationship type</Translate>
         </h1>
         <Modal.CloseButton onClick={handleClose} />
@@ -76,10 +76,10 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
             }
           />
           <div className="flex justify-end gap-2">
-            <Button styling="outline" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button color="success" onClick={handleSave} disabled={isSaving || !name.trim()}>
+            <Button variant="success" onClick={handleSave} disabled={isSaving || !name.trim()}>
               <Translate>Save</Translate>
             </Button>
           </div>

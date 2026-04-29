@@ -72,7 +72,7 @@ const ProcessForm = ({ submit }: { submit: (values: FormData) => Promise<void> }
             rules={{ min: 1 }}
             render={({ field }) => (
               <div className="flex gap-2 items-center">
-                <label htmlFor={field.name} className="text-gray-900">
+                <label htmlFor={field.name} className="[color:var(--color-theme-text-primary)]">
                   <Translate>Amount</Translate> :
                 </label>
                 <InputField
@@ -356,7 +356,12 @@ const ProcessExtractorModal = ({ close, onTrain, selected }: ProcessExtractorMod
         </FormProvider>
       </Modal.Body>
       <Modal.Footer className="flex justify-between gap-2">
-        <Button disabled={isSubmitting} onClick={() => close()} styling="outline" className="grow">
+        <Button
+          disabled={isSubmitting}
+          onClick={() => close()}
+          variant="secondary"
+          className="grow"
+        >
           <Translate>Cancel</Translate>
         </Button>
         <Button

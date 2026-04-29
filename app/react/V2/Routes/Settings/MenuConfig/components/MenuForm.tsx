@@ -162,7 +162,14 @@ const MenuForm = ({ closePanel, submit, linkToEdit, links = [] }: MenuFormProps)
 
   return (
     <div className="relative h-full">
-      <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-md bg-primary-100 text-primary-700">
+      <div
+        className="mb-4 rounded-md border p-4 shadow-md"
+        style={{
+          backgroundColor: 'var(--color-theme-info-banner-bg)',
+          borderColor: 'var(--color-theme-info-banner-border)',
+          color: 'var(--color-theme-info-banner-fg)',
+        }}
+      >
         <div className="flex gap-1 items-center w-full text-base font-semibold">
           <div className="w-5 h-5 text-sm">
             <CheckCircleIcon />
@@ -224,14 +231,20 @@ const MenuForm = ({ closePanel, submit, linkToEdit, links = [] }: MenuFormProps)
       </form>
       <div className="flex absolute bottom-0 gap-2 px-4 py-3 w-full">
         <Button
-          styling="light"
+          variant="ghost"
           onClick={closePanel}
           className="grow"
           data-testid="menu-form-cancel"
         >
           <Translate>Cancel</Translate>
         </Button>
-        <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
+        <Button
+          className="grow"
+          type="submit"
+          size="medium"
+          form="menu-form"
+          data-testid="menu-form-submit"
+        >
           {linkToEdit?.title ? <Translate>Update</Translate> : <Translate>Add</Translate>}
         </Button>
       </div>

@@ -1,11 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Tooltip } from 'flowbite-react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { UserPlusIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
-import { Button, Modal, Table } from '#app/V2/Components/UI/index.js';
+import { Button, Modal, Table, Tooltip } from '#app/V2/Components/UI/index.js';
 
 type Level = 'none' | 'partial' | 'full';
 
@@ -149,15 +148,13 @@ const LevelCell = ({ cell }: CellContext<PermissionByRole, Level>) => {
             null,
             false
           )}
-          // eslint-disable-next-line react/style-prop-object
-          style="light"
         >
           <UserPlusIcon className="w-6 text-alert-400" />
         </Tooltip>
       );
 
     default:
-      return <XMarkIcon className="w-6 text-pink-600" />;
+      return <XMarkIcon className="w-6 text-error-600" />;
   }
 };
 
@@ -197,14 +194,16 @@ const PermissionsListModal = ({ showModal, closeModal }: PermissionsListModalPro
   showModal ? (
     <Modal size="xxxl">
       <Modal.Header>
-        <Translate className="text-xl font-medium text-gray-900">Permissions</Translate>
+        <Translate className="text-xl font-medium [color:var(--color-theme-text-primary)]">
+          Permissions
+        </Translate>
         <Modal.CloseButton onClick={closeModal} />
       </Modal.Header>
       <Modal.Body className="max-w-[100vw]">
         <Table data={permissionsByRole} columns={tableColumns} />
       </Modal.Body>
       <Modal.Footer>
-        <Button className="grow" styling="light" onClick={closeModal}>
+        <Button className="grow" variant="ghost" onClick={closeModal}>
           <Translate>Close</Translate>
         </Button>
       </Modal.Footer>

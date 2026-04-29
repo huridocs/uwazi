@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState, useId } from 'react';
+import React, { useEffect, useRef, useState, useId } from 'react';
 import Dropzone, { DropzoneOptions } from 'react-dropzone-esm';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
@@ -14,6 +14,7 @@ type FileDropzoneProps = {
   multiple?: boolean;
   message?: React.ReactNode;
   maxSize?: number;
+  fileTrailing?: (file: File, index: number) => React.ReactNode;
 };
 
 const FileDropzone = ({
@@ -24,10 +25,13 @@ const FileDropzone = ({
   message,
   multiple = true,
   maxSize = undefined,
+  fileTrailing,
 }: FileDropzoneProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [totalSize, setTotalSize] = useState<number>(0);
   const inputId = useId();
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   useEffect(() => {
     let result = 0;
@@ -37,11 +41,8 @@ const FileDropzone = ({
     });
 
     setTotalSize(result);
-
-    if (onChange) {
-      onChange(files);
-    }
-  }, [files, onChange]);
+    onChangeRef.current?.(files);
+  }, [files]);
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_file, i) => i !== index));
@@ -66,7 +67,13 @@ const FileDropzone = ({
     <Dropzone onDrop={handleOnDrop} multiple={multiple} accept={acceptedFiles} maxSize={maxSize}>
       {({ getRootProps, getInputProps }) => (
         <section
-          className={`p-4 bg-gray-50 rounded-sm border border-gray-300 border-dashed ${className}`}
+          className={[
+            'rounded-sm border border-dashed p-4',
+            '[background-color:var(--color-theme-control-bg)]',
+            '[border-color:var(--color-theme-control-border)]',
+            '[color:var(--color-theme-control-text)]',
+            className,
+          ].join(' ')}
         >
           <div {...getRootProps()}>
             <label className="sr-only" htmlFor={inputId}>
@@ -74,7 +81,7 @@ const FileDropzone = ({
             </label>
             <input {...getInputProps()} id={inputId} />
             <div className="flex flex-col gap-4">
-              <CloudArrowUpIcon className="m-auto w-auto text-gray-900 max-w-14" />
+              <CloudArrowUpIcon className="m-auto w-auto max-w-14 [color:var(--color-theme-control-text)]" />
               <div className="leading-6 text-center">
                 <Translate className="font-semibold border-b-2 border-black cursor-pointer">
                   Browse files to upload
@@ -90,11 +97,16 @@ const FileDropzone = ({
               <div
                 // eslint-disable-next-line react/no-array-index-key
                 key={`${file.name}-${index}`}
-                className="text-sm border border-gray-300 bg-gray-100 px-0.5 rounded-sm flex flex-nowrap gap-1 align-middle"
+                className={[
+                  'flex flex-nowrap gap-1 rounded-sm border border-solid px-0.5 text-sm align-middle',
+                  '[border-color:var(--color-theme-control-border)]',
+                  '[background-color:var(--color-theme-surface-muted)]',
+                ].join(' ')}
               >
                 <span className="truncate max-w-32">{file.name}</span>
                 <span>-</span>
                 <span className="whitespace-nowrap">{formatBytes(file.size)}</span>
+                {fileTrailing?.(file, index)}
                 <button type="button" onClick={() => removeFile(index)}>
                   <Translate className="sr-only">Delete</Translate>
                   <XMarkIcon className="w-4" />

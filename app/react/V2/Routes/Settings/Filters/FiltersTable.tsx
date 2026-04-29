@@ -7,6 +7,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { useSetAtom } from 'jotai';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
@@ -113,7 +114,7 @@ const FiltersTable = () => {
       );
       return;
     }
-    setSettings(response);
+    setSettings(prev => mergeClientSettings(prev, response));
     setDisabled(false);
     setHasChanges(false);
     await revalidator.revalidate();
@@ -141,7 +142,14 @@ const FiltersTable = () => {
       <SettingsContent>
         <SettingsContent.Header title="Filters" />
         <SettingsContent.Body>
-          <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-md bg-primary-100 text-primary-700">
+          <div
+            className="mb-4 rounded-md border p-4 shadow-md"
+            style={{
+              backgroundColor: 'var(--color-theme-info-banner-bg)',
+              borderColor: 'var(--color-theme-info-banner-border)',
+              color: 'var(--color-theme-info-banner-fg)',
+            }}
+          >
             <div className="flex gap-2 items-center w-full text-base font-semibold">
               <div className="w-5 h-5">
                 <CheckCircleIcon />
@@ -179,7 +187,7 @@ const FiltersTable = () => {
             columns={createColumns(setShowSidepanel)}
             data={filters}
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                 Filters
               </Translate>
             }
@@ -187,18 +195,17 @@ const FiltersTable = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
           {Object.keys(selectedFilters).length ? (
-            <Button styling="solid" color="error" onClick={() => handleDelete()}>
+            <Button variant="danger" onClick={() => handleDelete()}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
             <>
               <div className="flex gap-2 md:flex-wrap">
-                <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
                   <Translate className="text-nowrap">Add entity type</Translate>
                 </Button>
                 <Button
-                  styling="solid"
-                  color="primary"
+                  variant="primary"
                   onClick={() => {
                     setShowSidepanel(true);
                     setAtom(undefined);
@@ -209,16 +216,15 @@ const FiltersTable = () => {
               </div>
               <div className="flex gap-2 md:flex-wrap">
                 <Button
-                  styling="outline"
-                  color="primary"
+                  variant="secondary"
                   onClick={() => cancel()}
                   disabled={!hasChanges || disabled}
                 >
                   <Translate>Cancel</Translate>
                 </Button>
                 <Button
-                  styling="solid"
-                  color="success"
+                  variant="success"
+                  size="medium"
                   onClick={async () => handleSave()}
                   disabled={!hasChanges || disabled}
                 >

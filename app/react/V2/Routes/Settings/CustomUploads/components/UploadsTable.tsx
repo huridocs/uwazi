@@ -37,16 +37,14 @@ const ActionCell = ({ cell }: CellContext<CustomUpload, any>) => {
   return (
     <div className="flex flex-nowrap gap-2">
       <Button
-        styling="outline"
-        color="primary"
+        variant="secondary"
         className="leading-3"
         onClick={() => actions.edit(cell.row.original)}
       >
         <Translate>Edit</Translate>
       </Button>
       <Button
-        styling="outline"
-        color="error"
+        variant="dangerSecondary"
         className="leading-3 text-error-900"
         onClick={() => actions.delete(cell.row.original)}
       >

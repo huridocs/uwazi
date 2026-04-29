@@ -22,7 +22,7 @@ describe('Sidepanel', () => {
     cy.contains('h1', 'My sidepanel').should('not.exist');
   });
 
-  it('shuld close the sidepanel using the button on top of the sidepanel', () => {
+  it('should close the sidepanel using the button on top of the sidepanel', () => {
     mount(<Basic />);
     cy.contains('button', 'Open/Close sidepanel').click();
     cy.getByTestId('close-sidepanel').click();
@@ -42,8 +42,8 @@ describe('Sidepanel', () => {
     });
 
     it('should close the sidepanel when clicking outside', () => {
-      cy.get('.bg-gray-900.opacity-50').click();
-      cy.get('.bg-gray-900').should('not.exist');
+      cy.getByTestId('sidepanel-overlay').click();
+      cy.getByTestId('sidepanel-overlay').should('not.exist');
       cy.contains('h1', 'My sidepanel').should('not.exist');
     });
   });

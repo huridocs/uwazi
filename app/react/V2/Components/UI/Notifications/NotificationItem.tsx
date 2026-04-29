@@ -21,14 +21,14 @@ interface NotificationItemProps {
 const iconMap: Record<NotificationType, React.ReactNode> = {
   success: <CheckCircleIcon className="w-5 h-5 text-green-500 shrink-0" />,
   warning: <ExclamationTriangleIcon className="w-5 h-5 text-yellow-400 shrink-0" />,
-  error: <XCircleIcon className="w-5 h-5 text-pink-500 shrink-0" />,
+  error: <XCircleIcon className="w-5 h-5 text-error-500 shrink-0" />,
   info: <InformationCircleIcon className="w-5 h-5 text-indigo-500 shrink-0" />,
 };
 
 const borderMap: Record<NotificationType, string> = {
   success: 'border-green-200 bg-green-50',
   warning: 'border-yellow-200 bg-yellow-50',
-  error: 'border-pink-200 bg-pink-50',
+  error: 'border-error-200 bg-error-50',
   info: 'border-indigo-200 bg-indigo-50',
 };
 
