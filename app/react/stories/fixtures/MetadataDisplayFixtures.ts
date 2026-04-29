@@ -95,13 +95,6 @@ const templates: Template[] = [
         name: 'single_date',
       },
       {
-        _id: '1.4',
-        type: 'geolocation',
-        label: 'Single geolocation property',
-        noLabel: false,
-        name: 'location_of_interest',
-      },
-      {
         _id: '1.5',
         type: 'multidate',
         label: 'Multiple single dates',
@@ -191,18 +184,11 @@ const templates: Template[] = [
         name: 'video_of_event',
       },
       {
-        _id: '1.16',
-        type: 'geolocation',
-        label: 'Grouped geolocation 1',
-        noLabel: false,
-        name: 'incident_location',
-      },
-      {
         _id: '1.17',
         type: 'geolocation',
-        label: 'Grouped geolocation 2',
+        label: 'Grouped geolocation 1 (own)',
         noLabel: false,
-        name: 'secondary_location',
+        name: 'own_geolocation',
       },
       {
         _id: '1.18',
@@ -252,6 +238,7 @@ const templates: Template[] = [
   {
     _id: 'template2',
     name: 'Event Report',
+    color: '#AF4323',
     commonProperties: [
       {
         _id: '2.1',
@@ -285,19 +272,12 @@ const templates: Template[] = [
         noLabel: false,
         name: 'multiselect',
       },
-      {
-        _id: '2.5',
-        type: 'geolocation',
-        label: 'Geolocation from events',
-        noLabel: false,
-        name: 'geolocationd_geolocation',
-      },
     ],
-    color: '#16bdca',
   },
   {
     _id: 'template3',
     name: 'Geolocated data',
+    color: '10FF65',
     commonProperties: [
       {
         _id: '3.1',
@@ -331,7 +311,6 @@ const templates: Template[] = [
         name: 'geolocationd_geolocation',
       },
     ],
-    color: '#Ad11e0',
   },
 ];
 
@@ -522,21 +501,11 @@ const apiEntity: Entity = {
           '(/short-video.mp4, {"timelinks":{"00:00:02":"Timelink 1","00:00:04": "Timelink 2"}})',
       },
     ],
-    incident_location: [
+    own_geolocation: [
       {
         value: {
-          lat: 44.33301685687683,
-          lon: 5.998535156250001,
-          label: 'some label',
-        },
-      },
-    ],
-    secondary_location: [
-      {
-        value: {
-          lat: 62.58069554111894,
-          lon: 15.468750000000002,
-          label: 'some label',
+          lat: 40.7128,
+          lon: -74.006,
         },
       },
     ],

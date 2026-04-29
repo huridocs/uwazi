@@ -76,7 +76,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           }
 
           if (field.type === 'geolocation') {
-            return formatGeolocationProperty(field, entity.metadata);
+            return formatGeolocationProperty(field, entity, templates);
           }
 
           if (field.type === 'select' || field.type === 'multiselect') {
@@ -98,7 +98,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           return undefined;
         })
         .filter(m => m) as MetadataProperty[],
-    [entity, metadataFields, entityTemplate]
+    [entity, metadataFields, entityTemplate, templates]
   );
 
   const renderMetadataFields = useCallback(

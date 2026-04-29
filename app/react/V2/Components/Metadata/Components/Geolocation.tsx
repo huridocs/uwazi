@@ -1,10 +1,10 @@
 import React from 'react';
 import { Map } from '#app/Map/index.js';
 import { MapProps } from '#app/Map/MapContainer.js';
-import { GeolocationMetadataProperty } from '#V2/domain/entities/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
+import { GeolocationMetadataProperty } from '../MetadataPropertiesType.js';
 
 type GeolocationProps = MetadataFieldProps & {
   markers: GeolocationMetadataProperty['values'];
@@ -18,17 +18,14 @@ type GeolocationProps = MetadataFieldProps & {
   isGroup?: boolean;
 };
 
-const formatMarkers = (
-  points: GeolocationProps['markers'],
-  fallbackLabel: string
-): MapProps['markers'] =>
+const formatMarkers = (points: GeolocationProps['markers']): MapProps['markers'] =>
   points.map(point => ({
     latitude: point.value.latitude,
     longitude: point.value.longitude,
     properties: {
-      label: point.source?.label || point.label || point.value.label,
-      color: point.source?.color,
-      info: point.source?.label || point.label || point.value.label || fallbackLabel,
+      label: point.label,
+      color: point.color,
+      info: point.label,
     },
   }));
 
@@ -70,7 +67,7 @@ const Geolocation = ({
       <dd>
         <Map
           height={height}
-          markers={formatMarkers(markers, label)}
+          markers={formatMarkers(markers)}
           clickOnMarker={clickOnMarker}
           onClick={onClick}
           showControls={showControls}

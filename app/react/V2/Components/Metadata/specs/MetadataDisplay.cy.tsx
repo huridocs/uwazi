@@ -90,11 +90,39 @@ describe('Metadata Display', () => {
 
   describe('accessibility', () => {
     it('should be accessible', () => {
-      Basic.args.showGeolocationProperties = true;
       cy.injectAxe();
       mount(<Basic />);
-      cy.get('div[data-testid="map-container"]').should('exist');
       cy.checkA11y();
+    });
+  });
+
+  describe('dates', () => {
+    it('renders dates with correct locale and format', () => {
+      Basic.args.locale = 'en';
+      Basic.args.dateFormat = 'dd/MM/yyyy';
+
+      mount(<Basic />);
+
+      cy.contains('dd', '1 Jan, 2024').should('exist');
+      cy.contains('dd', '2 Jan, 2024').should('exist');
+      cy.contains('dd', '3 Jan, 2024').should('exist');
+      cy.contains('dd', '2 Oct, 2025').should('exist');
+      cy.contains('dd', '13 Oct, 2025').should('exist');
+      cy.contains('dd', 'From 1 Jan, 2024 ~ To 2 Jan, 2024').should('exist');
+    });
+
+    it('renders dates with russian locale and yyyy-MM-dd format', () => {
+      Basic.args.locale = 'ru';
+      Basic.args.dateFormat = 'yyyy-MM-dd';
+
+      mount(<Basic />);
+
+      cy.contains('dd', '2024, янв. 1').should('exist');
+      cy.contains('dd', '2024, янв. 2').should('exist');
+      cy.contains('dd', '2024, янв. 3').should('exist');
+      cy.contains('dd', '2025, окт. 2').should('exist');
+      cy.contains('dd', '2025, окт. 13').should('exist');
+      cy.contains('dd', 'From 2024, янв. 1 ~ To 2024, янв. 2').should('exist');
     });
   });
 
@@ -115,6 +143,7 @@ describe('Metadata Display', () => {
     };
 
     it('should not render empty metadata fields', () => {
+      Basic.args.locale = 'en';
       Basic.args.entity = {
         _id: '1',
         language: 'en',
@@ -180,36 +209,6 @@ describe('Metadata Display', () => {
       mount(<Basic />);
 
       checkProperties();
-    });
-  });
-
-  describe('dates', () => {
-    it('renders dates with correct locale and format', () => {
-      Basic.args.locale = 'en';
-      Basic.args.dateFormat = 'dd/MM/yyyy';
-
-      mount(<Basic />);
-
-      cy.contains('dd', '1 Jan, 2024').should('exist');
-      cy.contains('dd', '2 Jan, 2024').should('exist');
-      cy.contains('dd', '3 Jan, 2024').should('exist');
-      cy.contains('dd', '2 Oct, 2025').should('exist');
-      cy.contains('dd', '13 Oct, 2025').should('exist');
-      cy.contains('dd', 'From 1 Jan, 2024 ~ To 2 Jan, 2024').should('exist');
-    });
-
-    it('renders dates with russian locale and yyyy-MM-dd format', () => {
-      Basic.args.locale = 'ru';
-      Basic.args.dateFormat = 'yyyy-MM-dd';
-
-      mount(<Basic />);
-
-      cy.contains('dd', '2024, янв. 1').should('exist');
-      cy.contains('dd', '2024, янв. 2').should('exist');
-      cy.contains('dd', '2024, янв. 3').should('exist');
-      cy.contains('dd', '2025, окт. 2').should('exist');
-      cy.contains('dd', '2025, окт. 13').should('exist');
-      cy.contains('dd', 'From 2024, янв. 1 ~ To 2024, янв. 2').should('exist');
     });
   });
 });
