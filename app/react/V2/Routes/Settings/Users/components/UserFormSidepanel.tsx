@@ -328,7 +328,6 @@ const UserFormSidepanel = ({
                 <Button
                   className="grow"
                   type="button"
-                  size="medium"
                   onClick={async () => {
                     const valid = await trigger();
                     if (valid) {

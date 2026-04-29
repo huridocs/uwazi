@@ -39,7 +39,11 @@ const getStatusButtonContext = (
   secondaryBackground: string,
   roles: ThemeRoles
 ): ButtonStatusContext => {
-  const successSolidBackground = roles.feedback.success;
+  const successSolidBackground = getPresetValue(
+    presetId,
+    LEGACY_BUTTON_VALUES.success,
+    roles.feedback.success
+  );
   const successSolidForeground = getAccessibleForeground(
     successSolidBackground,
     roles.text.onSolid
@@ -71,7 +75,7 @@ const getStatusButtonContext = (
     successDisabledBackground,
     successDisabledForeground: getPresetValue(
       presetId,
-      LEGACY_BUTTON_VALUES.surface,
+      LEGACY_BUTTON_VALUES.successHover,
       getAccessibleForeground(successDisabledBackground, successSolidForeground)
     ),
     successSecondaryBackground: secondaryBackground,

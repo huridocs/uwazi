@@ -166,12 +166,7 @@ const ThesauriGroupFormSidepanel = ({
             >
               <Translate>Cancel</Translate>
             </Button>
-            <Button
-              className="grow"
-              type="submit"
-              size="medium"
-              data-testid="thesaurus-form-submit"
-            >
+            <Button className="grow" type="submit" data-testid="thesaurus-form-submit">
               {!editMode ? <Translate>Add group</Translate> : <Translate>Edit group</Translate>}
             </Button>
           </div>

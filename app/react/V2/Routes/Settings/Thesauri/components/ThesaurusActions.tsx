@@ -37,7 +37,7 @@ const ThesaurusActions = ({ disabled }: { disabled: boolean }) => (
         <Translate>Cancel</Translate>
       </Button>
     </Link>
-    <Button variant="success" type="submit" size="medium" form="edit-thesaurus" disabled={disabled}>
+    <Button variant="success" type="submit" form="edit-thesaurus" disabled={disabled}>
       <Translate>Save</Translate>
     </Button>
   </div>
