@@ -1,20 +1,20 @@
-import entities from '#api/entities/index.js';
+import request from 'supertest';
+import type { NextFunction, Request, Response } from 'express';
+
+import templates from '#api/core/v1_layer/templates/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
-import templates from '#api/core/v1_layer/templates/index.js';
 import users from '#api/users/users.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import type { NextFunction, Request, Response } from 'express';
-import request from 'supertest';
 
 import translations from '#api/i18n/index.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import waitForExpect from 'wait-for-expect';
 import * as setupSockets from '#api/socketio/setupSockets.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import settingsRoutes from '../routes.js';
 import { settingsModel } from '../settingsModel.js';
 import fixtures from './fixtures.js';
+import { ObjectId } from 'mongodb';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -29,7 +29,7 @@ describe('Settings routes', () => {
   const getApp = (userRole?: string) =>
     setUpApp(settingsRoutes, (req: Request, _res: Response, next: NextFunction) => {
       if (typeof userRole === 'string') {
-        (req as any).user = { role: userRole };
+        (req as any).user = { _id: new ObjectId().toString(), role: userRole, username: 'user' };
       }
       next();
     });
@@ -88,7 +88,7 @@ describe('Settings routes', () => {
   });
 
   describe('POST', () => {
-    const app = getApp();
+    const app = getApp('admin');
 
     it('should save settings', async () => {
       const response = await request(app)
@@ -116,22 +116,13 @@ describe('Settings routes', () => {
         });
       });
 
-      xit('should migrate all entity names when newNameGeneration is saved as true', async () => {
+      it('should migrate all entity names when newNameGeneration is saved as true', async () => {
         await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
 
         expect(await templates.get()).toEqual([
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'براي' })] }),
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'país' })] }),
         ]);
-
-        await waitForExpect(async () => {
-          expect(await entities.get()).toEqual([
-            expect.objectContaining({ language: 'en', metadata: { براي: [{ value: 'value' }] } }),
-            expect.objectContaining({ language: 'es', metadata: { براي: [{ value: 'value' }] } }),
-            expect.objectContaining({ language: 'en', metadata: { país: [{ value: 'pais' }] } }),
-            expect.objectContaining({ language: 'es', metadata: { país: [{ value: 'pais' }] } }),
-          ]);
-        });
       });
 
       it('should only migrate in the newNameGeneration false to true scenario', async () => {

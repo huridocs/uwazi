@@ -1,3 +1,8 @@
+import mimetypes from 'mime-types';
+import { ObjectId } from 'mongodb';
+import path from 'path';
+import qs from 'qs';
+import { Readable } from 'stream';
 import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
@@ -11,6 +16,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
@@ -19,16 +25,11 @@ import thesauri from '#api/thesauri/index.js';
 import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import users from '#api/users/users.js';
 import { newThesauriId } from '#api/utils/templateUtils.js';
-import mimetypes from 'mime-types';
-import { ObjectId } from 'mongodb';
-import path from 'path';
-import qs from 'qs';
 import request from '#shared/JSONRequest.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { PreserveConfig } from '#shared/types/settingsType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { Readable } from 'stream';
 import { preserveSyncModel } from './preserveSyncModel.js';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
@@ -226,12 +227,12 @@ const preserveSync = {
   async syncAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
-      return tenants.run(async () => {
+      return runInJobContext(tenantName, async () => {
         const { features } = await settings.get({}, 'features.preserve');
         if (features?.preserve) {
           await this.sync(features.preserve);
         }
-      }, tenantName);
+      });
     }, Promise.resolve());
   },
 

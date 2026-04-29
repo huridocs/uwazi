@@ -64,8 +64,11 @@ abstract class AbstractUseCase<
   }
 
   protected get actorId() {
-    if (!this.context?.actor?._id) {
+    if (!this.context?.actor) {
       throw new Error(`Actor was not found. ${JSON.stringify(this.context)}`);
+    }
+    if (this.context.actor.isAnonymous()) {
+      throw new Error(`Actor is anonymous (not logged in). ${JSON.stringify(this.context)}`);
     }
 
     return this.context.actor._id.toString();

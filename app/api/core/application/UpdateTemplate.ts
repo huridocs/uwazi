@@ -15,7 +15,6 @@ import { UpdateTemplateDTO } from './TemplateDTOs.js';
 import { TemplatePostProcessService } from './TemplatePostProcessService.js';
 import { Template } from '../domain/template/Template.js';
 import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { inspect } from 'util';
 
 type Input = UpdateTemplateDTO;
 type Output = Template;

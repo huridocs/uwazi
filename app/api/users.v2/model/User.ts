@@ -24,13 +24,13 @@ const Schema = z
   .passthrough();
 
 class User {
-  readonly _id: string | null;
+  readonly _id: string;
 
   readonly role: UserRole;
 
   readonly groups: string[];
 
-  constructor(_id: string | null, role: UserRole, groups: string[]) {
+  constructor(_id: string, role: UserRole, groups: string[]) {
     this._id = _id;
     this.role = role;
     this.groups = groups;
@@ -41,11 +41,11 @@ class User {
   }
 
   isAnonymous() {
-    return this._id === null;
+    return this._id === '__anonymous__';
   }
 
   private static anonymous() {
-    return new User(null, 'collaborator', []);
+    return new User('__anonymous__', 'collaborator', []);
   }
 
   static createFrom(props: { [key: string]: any } | null): User {

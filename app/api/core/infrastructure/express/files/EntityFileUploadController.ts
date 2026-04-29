@@ -92,7 +92,7 @@ class EntityFileUploadController extends AbstractController {
 
     return FileUploadForEntityFactory.default({
       transactionManager,
-      filesService: FilesServiceFactory.default({ jobsDispatcher }),
+      filesService: FilesServiceFactory.default({ jobsDispatcher, transactionManager }),
     });
   }
 }

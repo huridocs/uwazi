@@ -5,19 +5,18 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 export class FileUploadForEntityFactory {
   static default(overrides: Partial<ConstructorParameters<typeof FileUploadForEntity>[0]> = {}) {
-    const transactionManager =
-      (overrides.transactionManager as MongoTransactionManager | undefined) ??
-      TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
 
     return new FileUploadForEntity(
       {
         transactionManager,
         idGenerator: IdGeneratorFactory.default(),
-        entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default(
+          transactionManager as MongoTransactionManager
+        ),
         filesService: FilesServiceFactory.default(),
         eventBus: applicationEventsBus,
         ...overrides,

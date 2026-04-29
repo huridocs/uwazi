@@ -7,7 +7,6 @@ import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/Sync
 import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '../../files/FileStorageFactory.js';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
 import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker.js';

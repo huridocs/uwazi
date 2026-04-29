@@ -36,7 +36,7 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   },
 }));
 
-let user: { username: string; role: string } | undefined;
+let user: { _id: string; username: string; role: string } | undefined;
 const getUser = () => user;
 
 beforeEach(async () => {
