@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Truncate } from '#V2/Components/UI/index.js';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import sanitizeHtml from 'sanitize-html';
-import { Tooltip } from 'flowbite-react';
+import { Tooltip, Truncate } from '#V2/Components/UI/index.js';
 import {
   BASE_CONTEXT,
   extractTextContent,
@@ -13,10 +12,10 @@ import {
 } from '../helpers/contextHelpers.js';
 
 const ixContextClassnames: { [key: string]: string } = {
-  ix_paragraph: 'ix_paragraph text-gray-500',
-  ix_adjacent_paragraph: 'ix_adjacent_paragraph text-gray-700',
-  ix_matching_paragraph: 'ix_matching_paragraph text-black px-1',
-  ix_match: 'ix_match bg-[#FFE29A] text-black',
+  ix_paragraph: 'ix_paragraph [color:var(--color-theme-text-muted)]',
+  ix_adjacent_paragraph: 'ix_adjacent_paragraph [color:var(--color-theme-text-secondary)]',
+  ix_matching_paragraph: 'ix_matching_paragraph px-1 [color:var(--color-theme-text-primary)]',
+  ix_match: 'ix_match bg-[#FFE29A] [color:var(--color-theme-text-primary)]',
 };
 
 const truncateMatching = (matchingParagraph: React.ReactElement) => {
@@ -296,7 +295,7 @@ const ContextCell = ({ text }: { text: string }) => {
       <Truncate
         maxLength={100}
         ellipsisPosition="center"
-        tooltipClassname="text-xs text-gray-700 inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal"
+        tooltipClassname="text-xs inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal [color:var(--color-theme-text-secondary)]"
       >
         {text}
       </Truncate>
@@ -307,14 +306,12 @@ const ContextCell = ({ text }: { text: string }) => {
     return (
       <Tooltip
         content={
-          <div className="text-xs text-gray-700 inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal">
+          <div className="text-xs inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal [color:var(--color-theme-text-secondary)]">
             {fullHTML}
           </div>
         }
         arrow
         animation="duration-100"
-        // eslint-disable-next-line react/style-prop-object
-        style="light"
         className="shadow-xl z-[9999]"
       >
         <div className="pointer-events-auto cursor-pointer">{truncatedHTML}</div>

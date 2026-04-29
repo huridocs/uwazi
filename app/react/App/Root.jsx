@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
 
 import { availableLanguages } from '#shared/language/index.js';
+import { getThemeAsset } from '#V2/theme/themes.js';
 
 const determineHotAssets = query => ({
   JS: [
@@ -54,12 +55,56 @@ const googelFonts = (
 
 const getFaviconURL = reduxData => {
   const favicon = reduxData.settings.collection.get('favicon');
+  const themeAssets = reduxData.settings.collection.get('themeAssets');
+  const themeVars = reduxData.settings.collection.get('themeVars');
+  const themeCustomization = reduxData.settings.collection.get('themeCustomization');
+  return getThemeAsset(
+    themeAssets,
+    themeVars,
+    'light',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
+};
 
-  if (!favicon || favicon === '') {
-    return '/public/favicon.ico';
+const getFaviconLinks = reduxData => {
+  const favicon = reduxData.settings.collection.get('favicon');
+  const themeAssets = reduxData.settings.collection.get('themeAssets');
+  const themeVars = reduxData.settings.collection.get('themeVars');
+  const themeCustomization = reduxData.settings.collection.get('themeCustomization');
+
+  if (!themeCustomization) {
+    return [<link key="favicon-default" rel="shortcut icon" href={getFaviconURL(reduxData)} />];
   }
 
-  return favicon;
+  const lightFavicon = getThemeAsset(
+    themeAssets,
+    themeVars,
+    'light',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
+  const darkFavicon = getThemeAsset(
+    themeAssets,
+    themeVars,
+    'dark',
+    'favicon',
+    favicon || '',
+    Boolean(themeCustomization)
+  );
+
+  return [
+    <link
+      key="favicon-light"
+      rel="icon"
+      href={lightFavicon}
+      media="(prefers-color-scheme: light)"
+    />,
+    <link key="favicon-dark" rel="icon" href={darkFavicon} media="(prefers-color-scheme: dark)" />,
+    <link key="favicon-shortcut" rel="shortcut icon" href={getFaviconURL(reduxData)} />,
+  ];
 };
 
 const safeHelmet = result => {
@@ -86,7 +131,7 @@ const headTag = (head, CSS, reduxData) => (
       <script dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }} />
     )}
     {googelFonts}
-    <link rel="shortcut icon" href={getFaviconURL(reduxData)} />
+    {getFaviconLinks(reduxData)}
   </head>
 );
 

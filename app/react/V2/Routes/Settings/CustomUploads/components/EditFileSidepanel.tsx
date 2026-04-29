@@ -71,10 +71,16 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
       </form>
       <Sidepanel.Footer>
         <div className="flex gap-2 w-full">
-          <Button className="grow" styling="light" disabled={isSubmitting} onClick={closeSidepanel}>
+          <Button className="grow" variant="ghost" disabled={isSubmitting} onClick={closeSidepanel}>
             <Translate>Cancel</Translate>
           </Button>
-          <Button className="grow" type="submit" disabled={isSubmitting} form="file-edit-form">
+          <Button
+            className="grow"
+            type="submit"
+            size="medium"
+            disabled={isSubmitting}
+            form="file-edit-form"
+          >
             <Translate>Save</Translate>
           </Button>
         </div>

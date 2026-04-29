@@ -10,7 +10,9 @@ const SearchHintsModal = () => {
   return showModal ? (
     <Modal size="xl">
       <Modal.Header>
-        <Translate className="text-xl font-medium text-gray-900">Search Tips</Translate>
+        <Translate className="text-xl font-medium [color:var(--color-theme-text-primary)]">
+          Search Tips
+        </Translate>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
       <Modal.Body className="max-w-[100vw]">
@@ -26,7 +28,7 @@ const SearchHintsModal = () => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button className="grow" styling="light" onClick={() => setShowModal(false)}>
+        <Button className="grow" variant="ghost" onClick={() => setShowModal(false)}>
           <Translate>Close</Translate>
         </Button>
       </Modal.Footer>

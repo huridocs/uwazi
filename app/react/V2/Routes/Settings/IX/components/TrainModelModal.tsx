@@ -1,9 +1,8 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Tooltip } from 'flowbite-react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Modal, Button } from '#V2/Components/UI/index.js';
+import { Modal, Button, Tooltip } from '#V2/Components/UI/index.js';
 import { Checkbox, InputField, RadioSelect } from '#V2/Components/Forms/index.js';
 
 type TrainModelModalProps = {
@@ -48,7 +47,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         <Modal.CloseButton onClick={() => close()} />
       </Modal.Header>
       <Modal.Body>
-        <div className="text-primary-700 border-primary-300 bg-primary-100 p-4">
+        <div className="border p-4 [background-color:var(--color-theme-info-banner-bg)] [border-color:var(--color-theme-info-banner-border)] [color:var(--color-theme-info-banner-fg)]">
           <Translate translationKey="Train model description">
             Training machine learning models may take from minutes up to a couple of hours depending
             on the amount of labeled data and the difficulty of the task.
@@ -62,10 +61,11 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               control={control}
               render={({ field }) => (
                 <div>
-                  <label htmlFor={field.name} className="text-gray-900 pb-4">
+                  <label
+                    htmlFor={field.name}
+                    className="pb-4 [color:var(--color-theme-text-primary)]"
+                  >
                     <Tooltip
-                      // eslint-disable-next-line react/style-prop-object
-                      style="light"
                       content={
                         <div>
                           <Translate>Choose which data to use for training</Translate> :
@@ -132,7 +132,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               disabled={disableAmountField}
               render={({ field }) => (
                 <div className="flex gap-2 items-center">
-                  <label htmlFor={field.name} className="text-gray-900">
+                  <label htmlFor={field.name} className="[color:var(--color-theme-text-primary)]">
                     <Translate>Amount</Translate> :
                   </label>
                   <InputField
@@ -151,10 +151,21 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         </form>
       </Modal.Body>
       <Modal.Footer className="flex justify-between gap-2">
-        <Button disabled={isSubmitting} onClick={() => close()} styling="outline" className="grow">
+        <Button
+          disabled={isSubmitting}
+          onClick={() => close()}
+          variant="secondary"
+          className="grow"
+        >
           <Translate>Cancel</Translate>
         </Button>
-        <Button disabled={isSubmitting} type="submit" form="train-form" className="grow">
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          size="medium"
+          form="train-form"
+          className="grow"
+        >
           <Translate>Train</Translate>
         </Button>
       </Modal.Footer>

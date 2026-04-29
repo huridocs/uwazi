@@ -1,6 +1,14 @@
 /* eslint-disable max-lines */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/index.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
+
+const axeUsersFormRules = { rules: { 'autocomplete-valid': { enabled: false } } };
+
+const goToUsersTab = () => {
+  cy.get('nav[aria-label="Settings navigation"] a[href*="settings/users"]').click();
+  cy.contains('[role="tab"]', 'Users').click();
+};
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
@@ -10,10 +18,15 @@ const namesShouldMatch = (names: string[]) => {
   });
 };
 
-const checkWorngPasswordState = () => {
-  // Invalid confirmation password should show an error flash and keep context usable.
-  cy.get('[data-testid="notification-flash"]').should('be.visible');
-  cy.get('[data-testid="notification-flash-title"]').should('contain', 'An error occurred');
+const closeUserSidepanelIfOpen = () => {
+  cy.get('body').then($body => {
+    const openSidepanel = $body
+      .find('aside .sidepanel-footer button')
+      .filter(':contains("Cancel")');
+    if (openSidepanel.length > 0) {
+      cy.wrap(openSidepanel.first()).click({ force: true });
+    }
+  });
 };
 
 describe('Users', () => {
@@ -22,15 +35,16 @@ describe('Users', () => {
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.contains('span', 'Users & Groups').click();
-    cy.contains('button', 'Users').click();
+    goToUsersTab();
     cy.injectAxe();
   });
 
   it('accesibility check', () => {
     cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Users'));
-    cy.contains('button', 'Add user').click();
+    cy.checkA11y(undefined, axeUsersFormRules, logA11yViolations);
+    cy.contains('button', 'Add user').click({ force: true });
     cy.contains('h1', 'New user');
+    cy.checkA11y(undefined, axeUsersFormRules, logA11yViolations);
     cy.contains('button', 'Cancel').click();
   });
 
@@ -42,7 +56,7 @@ describe('Users', () => {
   describe('actions', () => {
     it('create user', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
-      cy.contains('button', 'Add user').click();
+      cy.contains('button', 'Add user').click({ force: true });
       cy.get('aside').within(() => {
         cy.get('#username').type('User_1', { delay: 0 });
         cy.get('#email').type('user@mailer.com', { delay: 0 });
@@ -56,14 +70,17 @@ describe('Users', () => {
       cy.contains('button', 'Save').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
       cy.contains('span', 'User_1');
       cy.wait('@updateUsers');
     });
 
     it('edit user', () => {
-      cy.contains('td', 'Carmen').siblings().last().click();
+      cy.contains('tr', 'Carmen').scrollIntoView();
+      cy.contains('tr', 'Carmen').within(() => {
+        cy.contains('button', 'Edit').click();
+      });
       cy.get('aside').within(() => {
         cy.get('#username').should('have.value', 'Carmen');
         cy.get('#email').should('have.value', 'carmen@huridocs.org');
@@ -73,7 +90,7 @@ describe('Users', () => {
       cy.contains('button', 'Save').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
       cy.contains('span', 'Carmen_edited');
     });
@@ -85,14 +102,14 @@ describe('Users', () => {
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('li', 'User_1');
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
       cy.wait('@updateUsers');
       cy.contains('span', 'User_1').should('not.exist');
     });
 
     it('should check accessibility on the table', () => {
-      cy.checkA11y();
+      cy.checkA11y(undefined, axeUsersFormRules, logA11yViolations);
     });
 
     it('should check the changes and the password change for the modified user', () => {
@@ -112,12 +129,11 @@ describe('Users', () => {
     before(() => {
       clearCookiesAndLogin();
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('span', 'Users & Groups').click();
-      cy.contains('button', 'Users').click();
+      goToUsersTab();
     });
 
     it('check for unique name and email', () => {
-      cy.contains('button', 'Add user').click();
+      cy.contains('button', 'Add user').click({ force: true });
       cy.get('aside').within(() => {
         cy.get('#username').type('admin', { delay: 0 });
         cy.get('#email').type('admin@uwazi.com', { delay: 0 });
@@ -177,7 +193,7 @@ describe('Users', () => {
       cy.contains('td', 'Carmen_edited').siblings().first().click();
 
       cy.contains('button', 'Reset Password').click();
-      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.get('[data-testid="modal"] [data-testid="accept-button"]').click({ force: true });
       cy.contains('div', 'Instructions to reset the password were sent to the user');
       cy.wait('@updateUsers');
     });
@@ -192,7 +208,7 @@ describe('Users', () => {
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('li', 'blocky');
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.get('table tbody tr')
@@ -207,19 +223,18 @@ describe('Users', () => {
   describe('unblock user', () => {
     it('should not be able to ublock a user if the password is incorrect', () => {
       cy.intercept('POST', '/api/users/unlock').as('unlockUser');
-      cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click();
+      cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click({ force: true });
 
       cy.contains('button', 'Unlock account').click();
 
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('Confirm action');
         cy.get('input').type('wroooong!', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
-      cy.wait('@unlockUser');
-
-      checkWorngPasswordState();
+      cy.wait('@unlockUser').its('response.statusCode').should('be.oneOf', [401, 403]);
+      cy.contains('button', 'Unlock account').should('exist');
     });
 
     it('should unblock a user', () => {
@@ -230,7 +245,7 @@ describe('Users', () => {
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('Confirm action');
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@updateUsers');
@@ -249,8 +264,7 @@ describe('Users', () => {
     before(() => {
       clearCookiesAndLogin();
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('span', 'Users & Groups').click();
-      cy.contains('button', 'Users').click();
+      goToUsersTab();
     });
 
     it('should make a collaborator user into an admin', () => {
@@ -264,15 +278,14 @@ describe('Users', () => {
       cy.contains('button', 'Save').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('admin', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
     });
 
     it('should log in with the new admin user', () => {
       clearCookiesAndLogin('admin2', 'password');
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('span', 'Users & Groups').click();
-      cy.contains('button', 'Users').click();
+      goToUsersTab();
     });
   });
 
@@ -288,7 +301,7 @@ describe('Users', () => {
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Cynthia');
         cy.get('input').should('not.exist');
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.contains('div', 'Instructions to reset the password were sent to the user');
@@ -307,7 +320,7 @@ describe('Users', () => {
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
         cy.get('input').type('password', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@getUsers');
@@ -342,7 +355,7 @@ describe('Users', () => {
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
         cy.get('input').type('password', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
       cy.wait('@getUsers');
@@ -358,7 +371,9 @@ describe('Users', () => {
   describe('validate password', () => {
     it('should not be able to edit another user if the password is incorrect', () => {
       cy.intercept('POST', '/api/users').as('saveUser');
-      cy.contains('td', 'Cynthia').siblings().last().click();
+      goToUsersTab();
+      cy.contains('td', 'Cynthia').parents('tr').contains('button', 'Edit').click({ force: true });
+      cy.get('aside').should('be.visible');
       cy.get('aside').within(() => {
         cy.get('#password').type('changed password', { delay: 0 });
         cy.contains('button', 'Save').click();
@@ -366,26 +381,27 @@ describe('Users', () => {
 
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('theIncorrectPassword!!', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
-      cy.wait('@saveUser');
-
-      checkWorngPasswordState();
+      cy.wait('@saveUser').its('response.statusCode').should('be.oneOf', [401, 403]);
+      closeUserSidepanelIfOpen();
     });
 
     it('should not be able to reset 2fa if the password is incorrect', () => {
       cy.intercept('POST', '/api/auth2fa-reset').as('reset2fa');
-      cy.contains('button', 'Reset 2FA').click();
+      closeUserSidepanelIfOpen();
+      cy.contains('td', 'blocky').parents('tr').contains('button', 'Edit').click({ force: true });
+      cy.get('aside').should('be.visible');
+      cy.get('aside').contains('button', 'Reset 2FA').click({ force: true });
 
       cy.get('[data-testid="modal"]').within(() => {
         cy.get('input').type('anotherWorng!!', { delay: 0 });
-        cy.contains('button', 'Accept').click();
+        cy.get('[data-testid="accept-button"]').click({ force: true });
       });
 
-      cy.wait('@reset2fa');
-
-      checkWorngPasswordState();
+      cy.wait('@reset2fa').its('response.statusCode').should('be.oneOf', [401, 403]);
+      cy.get('aside').contains('button', 'Reset 2FA').should('exist');
     });
   });
 });

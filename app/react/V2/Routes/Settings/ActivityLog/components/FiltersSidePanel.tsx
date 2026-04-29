@@ -146,7 +146,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
             <Button
               className="grow"
               type="button"
-              styling="outline"
+              variant="secondary"
               onClick={() => {
                 setCurrentFilters({
                   ...currentFilters,
@@ -163,7 +163,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
             >
               <Translate>Clear all</Translate>
             </Button>
-            <Button className="grow" type="submit">
+            <Button className="grow" type="submit" size="medium">
               <Translate>Apply</Translate>
             </Button>
           </div>

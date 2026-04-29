@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
 
 const getTextColor = (backgroundHex: string): string => {
   if (!backgroundHex) {
@@ -107,7 +109,13 @@ const TemplateLabel = ({
   templateId?: string;
   color?: string;
 }) => {
-  const textColor = useMemo(() => getTextColor(color), [color]);
+  const templates = useAtomValue(templatesAtom);
+  const effectiveColor = useMemo(() => {
+    const templateColor = templates.find(template => template._id === templateId)?.color;
+    if (templateColor) return templateColor;
+    return color;
+  }, [color, templateId, templates]);
+  const textColor = useMemo(() => getTextColor(effectiveColor), [effectiveColor]);
 
   if (!label) {
     return undefined;
@@ -116,7 +124,7 @@ const TemplateLabel = ({
   return (
     <div
       className="text-xs font-medium px-2 py-1 rounded-sm w-fit"
-      style={{ backgroundColor: color, color: textColor }}
+      style={{ backgroundColor: effectiveColor, color: textColor }}
     >
       <Translate context={templateId}>{label}</Translate>
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
+import React, { CSSProperties, useEffect, Ref, useRef, useImperativeHandle } from 'react';
 import { Info } from 'luxon';
 //Module has no types
 //@ts-ignore
@@ -101,10 +101,21 @@ const DatePickerComponent = React.forwardRef(
     const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
     useImperativeHandle(forwardedRef, () => ref.current);
 
-    const fieldStyles = !(hasErrors || errorMessage)
-      ? // eslint-disable-next-line max-len
-        `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
-      : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+    const showError = Boolean(hasErrors || errorMessage);
+    const fieldStyles = showError
+      ? `${inputClassName || ''} border-2 rounded-lg`
+      : `${inputClassName || ''} rounded-lg`;
+    const fieldStyle: CSSProperties = {
+      borderColor: showError
+        ? 'var(--color-theme-control-border-error)'
+        : 'var(--color-theme-control-border)',
+      backgroundColor: showError
+        ? 'var(--color-theme-control-bg-error)'
+        : 'var(--color-theme-control-bg)',
+      color: showError
+        ? 'var(--color-theme-control-text-error)'
+        : 'var(--color-theme-control-text)',
+    };
 
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language);
@@ -185,14 +196,19 @@ const DatePickerComponent = React.forwardRef(
               name={name}
               ref={ref}
               disabled={disabled}
-              className={`block flex-1 w-full text-sm ${fieldStyles} disabled:text-gray-500`}
+              className={`block w-full flex-1 border p-2.5 text-sm placeholder:[color:var(--color-theme-control-placeholder)] focus:outline-hidden ${
+                showError
+                  ? 'focus:[border-color:var(--color-theme-control-border-error)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+                  : 'focus:[border-color:var(--color-theme-control-border-focus)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+              } ${fieldStyles} disabled:[color:var(--color-theme-control-text-disabled)]`}
+              style={fieldStyle}
               placeholder={placeholder}
               autoComplete={autoComplete}
             />
             <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
               <svg
                 aria-hidden="true"
-                className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                className="h-5 w-5 [color:var(--color-theme-control-text-muted)]"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

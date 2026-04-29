@@ -138,10 +138,9 @@ describe('PDF', () => {
 
     const pageContainer = document.querySelector('#page-1-container');
     expect(pageContainer?.className).toContain('mb-4');
-    expect(pageContainer?.className).toContain('border-gray-200');
+    await expect(pageContainer?.className).toMatch(/border-color|--color-theme-border/);
     expect(pageContainer?.className).toContain('relative');
-    const pageStyle = pageContainer?.getAttribute('style') || '';
-    expect(pageStyle).toContain('border-width: 1px');
+    await expect(pageContainer?.className).toMatch(/\[border-width:1px\]/);
   });
 
   it('should dispatch renderpage for the first page on mount', async () => {

@@ -1,12 +1,11 @@
-/* eslint-disable import/no-named-as-default */
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { Cookiepopup } from '#app/App/Cookiepopup.js';
-import { socket } from '#app/socket.js';
 import { Matomo, CleanInsights } from '#app/V2/Components/Analitycs/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { TranslateModal } from '#app/I18N/index.js';
 import { inlineEditAtom } from '#V2/atoms/index.js';
 import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
@@ -26,7 +25,7 @@ import './scss/styles.scss';
 const App = ({ customParams }) => {
   const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
-  const [settings, setSettings] = useAtom(settingsAtom);
+  const settings = useAtomValue(settingsAtom);
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
@@ -53,35 +52,76 @@ const App = ({ customParams }) => {
 
   const isV2Route =
     location.pathname.includes('/entityv2') || location.pathname.includes('/settings');
+  const shouldUseThemeWrapper = shouldShowNewHeader || isV2Route;
+  const shellSharedTheme = shouldShowNewHeader && isV2Route;
 
-  socket.on('updateSettings', _settings => {
-    setSettings(_settings);
-  });
+  const appMainTree = (
+    <AppMainContext.Provider value={appContext}>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      <Confirm {...confirmOptions} />
+      <Outlet />
+      <GoogleAnalytics />
+      <Matomo />
+      <CleanInsights />
+    </AppMainContext.Provider>
+  );
 
   return (
     <div id="app" className={appClassName}>
       <Cookiepopup />
       <div className="content">
-        {shouldShowNewHeader ? (
-          <div className="tw-content">
+        {shellSharedTheme ? (
+          <ThemeProvider
+            style={{
+              flex: 1,
+              minHeight: 0,
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             <Header />
-          </div>
+            <main id="main" className="app-content" style={{ flex: 1, minHeight: 0 }}>
+              {appMainTree}
+            </main>
+          </ThemeProvider>
         ) : (
-          <LegacyHeader />
+          <>
+            {shouldShowNewHeader ? (
+              <ThemeProvider style={{ width: '100%' }}>
+                <Header />
+              </ThemeProvider>
+            ) : (
+              <LegacyHeader />
+            )}
+            <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
+              {isV2Route ? (
+                <ThemeProvider style={{ width: '100%', height: '100%' }}>
+                  {appMainTree}
+                </ThemeProvider>
+              ) : (
+                appMainTree
+              )}
+            </main>
+          </>
         )}
-        <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
-          <AppMainContext.Provider value={appContext}>
-            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-            <Confirm {...confirmOptions} />
-            <Outlet />
-            <GoogleAnalytics />
-            <Matomo />
-            <CleanInsights />
-          </AppMainContext.Provider>
-        </main>
       </div>
-      {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
-      <NotificationsPanel />
+      {inlineEditState.inlineEdit &&
+        inlineEditState.context &&
+        (shouldUseThemeWrapper ? (
+          <ThemeProvider legacyChrome>
+            <TranslateModal />
+          </ThemeProvider>
+        ) : (
+          <TranslateModal />
+        ))}
+      {shouldUseThemeWrapper ? (
+        <ThemeProvider legacyChrome>
+          <NotificationsPanel />
+        </ThemeProvider>
+      ) : (
+        <NotificationsPanel />
+      )}
     </div>
   );
 };

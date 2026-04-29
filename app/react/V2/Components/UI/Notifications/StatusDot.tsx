@@ -17,7 +17,7 @@ interface StatusDotProps {
 const dotColorMap: Record<Exclude<OverallStatus, 'loading'>, string> = {
   success: 'bg-green-500',
   warning: 'bg-yellow-400',
-  error: 'bg-pink-500',
+  error: 'bg-error-500',
 };
 
 // Injected directly so the animation always works regardless of Tailwind JIT cache state.
