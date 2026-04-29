@@ -527,7 +527,7 @@ const apiEntity: Entity = {
         value: {
           lat: 44.33301685687683,
           lon: 5.998535156250001,
-          label: '',
+          label: 'some label',
         },
       },
     ],
@@ -536,7 +536,7 @@ const apiEntity: Entity = {
         value: {
           lat: 62.58069554111894,
           lon: 15.468750000000002,
-          label: '',
+          label: 'some label',
         },
       },
     ],
@@ -571,6 +571,7 @@ const apiEntity: Entity = {
             value: {
               lat: 42.80157978110818,
               lon: 9.49267578125,
+              label: 'Reporter Home Address',
             },
           },
         ],

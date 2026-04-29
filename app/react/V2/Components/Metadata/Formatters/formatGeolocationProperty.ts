@@ -5,6 +5,7 @@ import { resolveInheritedRelationship } from './formatRelationshipProperty.js';
 type Coordinate = {
   lat?: number;
   lon?: number;
+  label?: string;
 };
 
 type GeolocationMetadataValue = {
@@ -68,7 +69,7 @@ const formatGeolocationProperty = (
 
       return [
         {
-          value: { latitude, longitude },
+          value: { latitude, longitude, label },
           label: metadataValue?.label || label,
           ...(typeof metadataValue?.color === 'string' && { color: metadataValue.color }),
           ...(entity?._id && {

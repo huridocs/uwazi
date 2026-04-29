@@ -99,6 +99,7 @@ interface MediaMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
 
 interface ImageMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'image';
+  readonly style: 'contain' | 'cover';
   readonly values: Array<{
     value: string;
     alt?: string;
@@ -107,6 +108,7 @@ interface ImageMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
 
 interface PreviewMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'preview';
+  readonly style: 'contain' | 'cover';
   readonly values: Array<{
     value: string;
     alt: string;
@@ -193,4 +195,6 @@ export type {
   LinkMetadataProperty,
   MediaMetadataProperty,
   Timelink,
+  ImageMetadataProperty,
+  PreviewMetadataProperty,
 };

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
@@ -17,6 +17,7 @@ import {
   Relationship,
   Markdown,
   LinkProperty,
+  Image,
   Media,
 } from './Components/index.js';
 import {
@@ -27,6 +28,7 @@ import {
   formatRelationshipProperty,
   formatLinkProperty,
   formatMediaProperty,
+  formatImageProperty,
 } from './Formatters/index.js';
 import { BaseMetadataProperty, MetadataProperty } from './MetadataPropertiesType.js';
 import { formatSelectProperty } from './Formatters/formatSelectProperty.js';
@@ -47,10 +49,10 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
     [entityTemplate]
   );
 
-  const metadata = useMemo(
+  const metadata: MetadataProperty[] = useMemo(
     () =>
       metadataFields
-        .flatMap(field => {
+        .map(field => {
           if (field.type === 'relationship') {
             return formatRelationshipProperty(field, entity.metadata);
           }
@@ -89,42 +91,40 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             return formatMediaProperty(field, entity.metadata);
           }
 
+          if (field.type === 'image' || field.type === 'preview') {
+            return formatImageProperty(field, entity.metadata, entityTemplate);
+          }
+
           return undefined;
         })
-        .filter(f => f) as MetadataProperty[],
-    [entity.metadata, metadataFields]
+        .filter(m => m) as MetadataProperty[],
+    [entity, metadataFields, entityTemplate]
   );
 
   const renderMetadataFields = useCallback(
     (fields: MetadataProperty[]) => {
       const translationContext = entityTemplate?._id || '';
 
-      return fields.map((data, index) => {
-        const key = data?.name || data?.label || index;
-
+      return fields.map(data => {
         if (data.type === 'relationship') {
           return (
-            <Fragment key={key}>
-              <Relationship
-                values={data.values}
-                label={data.label}
-                translationContext={translationContext}
-                hideLabel={data.hideLabel}
-              />
-            </Fragment>
+            <Relationship
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+            />
           );
         }
 
         if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
           return (
-            <Fragment key={key}>
-              <SimpleValue
-                values={data.values}
-                label={data.label}
-                translationContext={translationContext}
-                hideLabel={data.hideLabel}
-              />
-            </Fragment>
+            <SimpleValue
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+            />
           );
         }
 
@@ -135,55 +135,47 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           data.type === 'multidaterange'
         ) {
           return (
-            <Fragment key={key}>
-              <Date
-                values={data.values}
-                label={data.label}
-                translationContext={translationContext}
-                hideLabel={data.hideLabel}
-              />
-            </Fragment>
+            <Date
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+            />
           );
         }
 
         if (data.type === 'geolocation') {
           const isGroup = Boolean(data.propertyGroup?.length);
           return (
-            <Fragment key={key}>
-              <Geolocation
-                markers={data.values}
-                label={data.label}
-                isGroup={isGroup}
-                translationContext={translationContext}
-                hideLabel={!isGroup && data.hideLabel}
-              />
-            </Fragment>
+            <Geolocation
+              markers={data.values}
+              label={data.label}
+              isGroup={isGroup}
+              translationContext={translationContext}
+              hideLabel={!isGroup && data.hideLabel}
+            />
           );
         }
 
         if (data.type === 'select' || data.type === 'multiselect') {
           return (
-            <Fragment key={key}>
-              <Select
-                values={data}
-                label={data.label}
-                translationContext={translationContext}
-                hideLabel={data.hideLabel}
-              />
-            </Fragment>
+            <Select
+              values={data}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+            />
           );
         }
 
         if (data.type === 'markdown') {
           return (
-            <Fragment key={key}>
-              <Markdown
-                values={data.values}
-                label={data.label}
-                translationContext={translationContext}
-                hideLabel={data.hideLabel}
-              />
-            </Fragment>
+            <Markdown
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              hideLabel={data.hideLabel}
+            />
           );
         }
 
@@ -209,19 +201,19 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           );
         }
 
-        // if (data.type === 'image' || data.type === 'preview') {
-        //   return (
-        //     <Image
-        //       values={data.values}
-        //       label={data.label}
-        //       translationContext={translationContext}
-        //       imageStyle={data.properties?.style === 'contain' ? 'contain' : 'cover'}
-        // hideLabel={data.hideLabel}
-        //     />
-        //   );
-        // }
+        if (data.type === 'image' || data.type === 'preview') {
+          return (
+            <Image
+              values={data.values}
+              label={data.label}
+              translationContext={translationContext}
+              imageStyle={data.style}
+              hideLabel={data.hideLabel}
+            />
+          );
+        }
 
-        return <Fragment key={key} />;
+        return undefined;
       });
     },
     [entityTemplate?._id]

@@ -113,8 +113,8 @@ describe('formatGeolocationProperty', () => {
       label: 'Location A',
       type: 'geolocation',
       values: [
-        { value: { latitude: 10, longitude: 20 }, label: 'Point A' },
-        { value: { latitude: 11, longitude: 21 }, label: 'Location A' },
+        { value: { latitude: 10, longitude: 20, label: 'Location A' }, label: 'Point A' },
+        { value: { latitude: 11, longitude: 21, label: 'Location A' }, label: 'Location A' },
       ],
     });
   });
@@ -137,10 +137,10 @@ describe('formatGeolocationProperty', () => {
       label: 'group1',
       type: 'geolocation',
       values: [
-        { value: { latitude: 10, longitude: 20 }, label: 'Point A' },
-        { value: { latitude: 11, longitude: 21 }, label: 'Location A' },
+        { value: { latitude: 10, longitude: 20, label: 'Location A' }, label: 'Point A' },
+        { value: { latitude: 11, longitude: 21, label: 'Location A' }, label: 'Location A' },
         {
-          value: { latitude: -5, longitude: -6 },
+          value: { latitude: -5, longitude: -6, label: 'Location B' },
           label: 'Point B',
           color: '#ff0000',
         },
@@ -189,12 +189,12 @@ describe('formatGeolocationProperty', () => {
       ],
       values: [
         {
-          value: { latitude: -5, longitude: -6 },
+          value: { latitude: -5, longitude: -6, label: 'Location B' },
           label: 'Point B',
           color: '#ff0000',
         },
         {
-          value: { latitude: 10, longitude: 20 },
+          value: { latitude: 10, longitude: 20, label: 'Rel 1' },
           label: 'Location 1',
           entity: {
             _id: '1',
@@ -202,7 +202,7 @@ describe('formatGeolocationProperty', () => {
           },
         },
         {
-          value: { latitude: 11, longitude: 21 },
+          value: { latitude: 11, longitude: 21, label: 'Rel 1' },
           label: 'Location 2',
           entity: {
             _id: '2',
@@ -264,12 +264,12 @@ describe('formatGeolocationProperty', () => {
       ],
       values: [
         {
-          value: { latitude: -5, longitude: -6 },
+          value: { latitude: -5, longitude: -6, label: 'Location B' },
           label: 'Point B',
           color: '#ff0000',
         },
         {
-          value: { latitude: 48.8566, longitude: 2.3522 },
+          value: { latitude: 48.8566, longitude: 2.3522, label: 'Rel Nested' },
           label: 'Location 3',
           entity: {
             _id: '3',

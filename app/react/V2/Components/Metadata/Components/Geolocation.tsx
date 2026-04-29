@@ -26,9 +26,9 @@ const formatMarkers = (
     latitude: point.value.latitude,
     longitude: point.value.longitude,
     properties: {
-      label: point.source?.label || point.label,
+      label: point.source?.label || point.label || point.value.label,
       color: point.source?.color,
-      info: point.source?.label || point.label || fallbackLabel,
+      info: point.source?.label || point.label || point.value.label || fallbackLabel,
     },
   }));
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { LinkMetadataProperty } from '#V2/domain/entities/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
@@ -9,7 +9,12 @@ type LinkPropertyProps = MetadataFieldProps & {
 };
 
 const LinkProperty = ({ values, label, translationContext, hideLabel }: LinkPropertyProps) => {
-  if (!values?.length) {
+  const noValues = useMemo(
+    () => values.every(value => value.value && value.value !== ''),
+    [values]
+  );
+
+  if (!noValues) {
     return null;
   }
 

@@ -108,7 +108,7 @@ export interface MultiDateRangeMetadataProperty extends Omit<DateRangeMetadataPr
 export interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'geolocation';
   readonly values: Array<{
-    value: { latitude: number; longitude: number };
+    value: { latitude: number; longitude: number; label?: string };
     label?: string;
     properties?: {
       color?: string;
