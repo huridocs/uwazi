@@ -136,7 +136,7 @@ const FiltersSidepanel = ({
           >
             <Translate>Cancel</Translate>
           </Button>
-          <Button className="grow" type="submit" size="medium" form="group-edit-form">
+          <Button className="grow" type="submit" form="group-edit-form">
             {filter?.id ? <Translate>Update</Translate> : <Translate>Add</Translate>}
           </Button>
         </div>
