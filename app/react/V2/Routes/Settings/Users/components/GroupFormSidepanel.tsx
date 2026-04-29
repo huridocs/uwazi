@@ -93,7 +93,7 @@ const GroupFormSidepanel = ({
     >
       <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
         <Sidepanel.Body>
-          <div className="flex flex-col grow gap-4">
+          <div data-testid="group-sidepanel-snapshot" className="flex flex-col gap-4">
             <Card title={<Translate>Group Options</Translate>}>
               <div>
                 <InputField
@@ -112,12 +112,10 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 rounded-md border border-gray-50 shadow-md">
+            <div className="mb-5 rounded-md border shadow-md [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] [background-color:var(--color-theme-surface-raised)]">
               <MultiSelect
                 label={
-                  <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
-                    Members
-                  </Translate>
+                  <Translate className="block w-full text-base font-semibold">Members</Translate>
                 }
                 onChange={selected =>
                   setValue(
@@ -137,7 +135,7 @@ const GroupFormSidepanel = ({
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
+            <Button className="grow" type="button" variant="secondary" onClick={closeSidepanel}>
               <Translate>Cancel</Translate>
             </Button>
             <Button className="grow" type="submit">

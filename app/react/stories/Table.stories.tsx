@@ -28,7 +28,7 @@ const ActionCell = ({ cell }: { cell: Cell<BasicData, any> }) => {
     : () => {};
 
   return (
-    <Button type="button" styling="light" onClick={() => actionFn(cell.row.id)}>
+    <Button type="button" variant="ghost" onClick={() => actionFn(cell.row.id)}>
       Action
     </Button>
   );
@@ -105,7 +105,7 @@ const StoryComponent = ({
   const actions = (
     <div className="flex gap-2">
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState([
             ...currentDataState.current,
@@ -122,7 +122,7 @@ const StoryComponent = ({
         Add new item
       </Button>
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState(currentDataState.current.slice(0, dataState.length - 1));
         }}
@@ -130,7 +130,7 @@ const StoryComponent = ({
         Remove last item
       </Button>
       <Button
-        styling="outline"
+        variant="secondary"
         onClick={() => {
           setDataState(tableData);
         }}
@@ -138,7 +138,7 @@ const StoryComponent = ({
         Reset data
       </Button>
       <Button
-        styling="solid"
+        variant="primary"
         onClick={() => {
           setDataState(currentDataState.current);
           setSelected(currentSelections.current);

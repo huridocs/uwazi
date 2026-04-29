@@ -220,7 +220,7 @@ const PDFSidepanel = ({
           />
         )}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="sticky bg-white border-t border-gray-200 shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)]">
+      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] ![background-color:var(--color-theme-surface-raised)]">
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...formContext}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -229,7 +229,7 @@ const PDFSidepanel = ({
               title={
                 <div className="flex gap-4 items-center">
                   <Translate
-                    className={`font-semibold uppercase ${selectionError ? 'text-pink-600' : 'text-gray-500'}`}
+                    className={`font-semibold uppercase ${selectionError ? '[color:var(--color-theme-feedback-danger)]' : '[color:var(--color-theme-text-muted)]'}`}
                     context={templateId}
                   >
                     {property?.label}
@@ -239,12 +239,16 @@ const PDFSidepanel = ({
                       size="small"
                       onToggle={() => setSelectAndSearch(!selectAndSearch)}
                     >
-                      <Translate className="font-medium text-xs text-gray-900">
+                      <Translate className="text-xs font-medium [color:var(--color-theme-text-primary)]">
                         Select & Search
                       </Translate>
                     </ToggleButton>
                   )}
-                  {selectionError && <span className="text-pink-600">{selectionError}</span>}
+                  {selectionError && (
+                    <span className="[color:var(--color-theme-feedback-danger)]">
+                      {selectionError}
+                    </span>
+                  )}
                 </div>
               }
             >
@@ -257,7 +261,7 @@ const PDFSidepanel = ({
                   <div className="sm:text-right" data-testid="ix-clear-button-container">
                     <Button
                       type="button"
-                      styling="outline"
+                      variant="secondary"
                       disabled={Boolean(!highlights) || isSubmitting}
                       onClick={() => {
                         setHighlights(undefined);
@@ -275,8 +279,13 @@ const PDFSidepanel = ({
                 }
               />
             </VerticalDrawer>
-            <div className="flex justify-between gap-2 px-4 py-2 border-t border-gray-200">
-              <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
+            <div className="flex justify-between gap-2 border-t px-4 py-2 [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isSubmitting}
+                onClick={handleClose}
+              >
                 <Translate>Cancel</Translate>
               </Button>
               <div className="flex flex-row gap-2 items-center">
@@ -294,7 +303,7 @@ const PDFSidepanel = ({
                     />
                   )}
                 />
-                <Button type="submit" disabled={isSubmitting} color="success">
+                <Button type="submit" disabled={isSubmitting} variant="success">
                   <Translate>Accept</Translate>
                 </Button>
               </div>

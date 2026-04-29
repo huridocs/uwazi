@@ -17,8 +17,6 @@ const ToggleButton = ({
   className = '',
   size = 'regular',
 }: ToggleButtonProps) => {
-  const checkedColor = disabled ? 'peer-checked:bg-primary-300' : 'peer-checked:bg-primary-600';
-
   const sizeClasses = {
     regular: {
       container: 'w-11 h-6',
@@ -43,9 +41,21 @@ const ToggleButton = ({
         data-testid="toggle"
       />
       <div
-        className={`${checkedColor} ${className} ${currentSize.container} bg-gray-200 rounded-full peer peer-checked:after:translate-x-full
-        peer-checked:after:border-white after:content-[''] after:absolute
-        after:bg-white after:border-gray-300 after:border after:rounded-full ${currentSize.thumb} after:transition-all`}
+        className={`${className} ${currentSize.container} rounded-full peer
+        peer-checked:[background-color:var(--toggle-track-active)] peer-checked:after:translate-x-full
+        after:content-[''] after:absolute after:rounded-full after:border
+        after:[background-color:var(--toggle-thumb-bg)] after:[border-color:var(--toggle-thumb-border)]
+        ${currentSize.thumb} after:transition-all`}
+        style={
+          {
+            backgroundColor: 'var(--color-theme-toggle-track-bg)',
+            ['--toggle-track-active' as string]: disabled
+              ? 'var(--color-theme-toggle-track-disabled-active-bg)'
+              : 'var(--color-theme-toggle-track-active-bg)',
+            ['--toggle-thumb-bg' as string]: 'var(--color-theme-toggle-thumb-bg)',
+            ['--toggle-thumb-border' as string]: 'var(--color-theme-toggle-thumb-border)',
+          } as React.CSSProperties
+        }
       />
       {children}
     </label>

@@ -55,12 +55,12 @@ const Footer = () => {
 
   return (
     <>
-      <Button styling="light" onClick={() => setStep(2)} className="grow">
+      <Button variant="ghost" onClick={() => setStep(2)} className="grow">
         <Translate>Back</Translate>
       </Button>
       <Button
         className="grow disabled:opacity-50"
-        color="success"
+        variant="success"
         onClick={async () => handleSubmit()}
         disabled={isDisabled}
       >

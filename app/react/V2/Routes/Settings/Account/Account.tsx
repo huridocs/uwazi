@@ -148,7 +148,7 @@ const Account = () => {
                 color="default"
               >
                 <div className="flex gap-6 items-center">
-                  <Button color="success" disabled className="flex-none">
+                  <Button variant="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
                   <div className="flex-1 grow">
@@ -166,7 +166,7 @@ const Account = () => {
               >
                 <div className="flex gap-6 items-center">
                   <Button
-                    styling="outline"
+                    variant="secondary"
                     className="flex-none"
                     onClick={() => setIsSidepanelOpen(true)}
                   >

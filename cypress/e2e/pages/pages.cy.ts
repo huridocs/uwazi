@@ -53,7 +53,9 @@ describe('Pages', () => {
       cy.contains('[role="tab"]', 'Basic').click();
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(600);
-      cy.contains('button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
       cy.get('input[id="page-url"]')
         .should('have.prop', 'value')
@@ -112,8 +114,8 @@ describe('Pages', () => {
   describe('Page edition', () => {
     it('should display existing code in an editor', () => {
       dismissModalIfVisible();
-      cy.contains('a', 'Settings').click();
-      cy.contains('a', 'Pages').click();
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+      cy.get('nav[aria-label="Settings navigation"]').contains('a', 'Pages').click();
       cy.contains('Country page')
         .parent()
         .within(() => {
@@ -146,8 +148,10 @@ describe('Pages', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.get('input[name="title"]').clear();
-      cy.contains('button.bg-success-700', 'Save').click();
-      cy.get('label[for="title"].text-error-700').siblings().contains('This field is required');
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
+      cy.contains('p', 'This field is required');
     });
 
     it('should confirm exit if there are unsaved changes', () => {
@@ -162,7 +166,7 @@ describe('Pages', () => {
 
   describe('entity view', () => {
     it('should create a page as an entity view', () => {
-      cy.contains('Add page').click();
+      cy.get('[data-testid="settings-pages"]').contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'My entity view page', { delay: 0 });
       cy.contains('Activate').click();
       cy.contains('Markdown').click();
@@ -171,7 +175,9 @@ describe('Pages', () => {
       typeInEditor('javascript', script, false, 'currentEntitySharedId', true);
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
-      cy.contains('button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully').as('expectedMessage');
       cy.get('@expectedMessage').should('not.exist');
     });
@@ -190,12 +196,15 @@ describe('Pages', () => {
       dismissModalIfVisible();
       cy.contains('a', 'Library').click();
       dismissModalIfVisible();
-      cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Medida Provisional', {
-        timeout: 12000,
-      }).click();
+      cy.get('#filtersForm .documentTypes-selector', { timeout: 12000 })
+        .contains('Medida Provisional')
+        .click();
       cy.contains('Acevedo Jaramillo', { timeout: 12000 });
       cy.contains('.item-document .item-name', 'Acevedo Jaramillo', { timeout: 12000 }).click();
-      cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
+      cy.get('[data-testid="metadata-sidepanel"].is-active')
+        .find('.sidepanel-footer')
+        .contains('a', 'View')
+        .click();
       cy.get('.page-viewer.document-viewer').matchImageSnapshot('entity view 1');
       cy.get('#entity-datasets-value').scrollIntoView();
       cy.get('.page-viewer.document-viewer').matchImageSnapshot('entity view 2');

@@ -273,14 +273,14 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       <Panel.Footer>
         <div className="flex flex-row items-center justify-between w-full">
           <div className="flex gap-2">
-            <Button styling="outline">
+            <Button variant="secondary">
               <Translate>Edit</Translate>
             </Button>
-            <Button styling="outline">
+            <Button variant="secondary">
               <Translate>Share</Translate>
             </Button>
           </div>
-          <Button styling="solid" color="error">
+          <Button variant="danger">
             <Translate>Delete</Translate>
           </Button>
         </div>

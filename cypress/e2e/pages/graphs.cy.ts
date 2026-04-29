@@ -24,7 +24,7 @@ const insertChart = (chart: string, chartName: string) => {
 };
 
 const savePage = () => {
-  cy.contains('button.bg-success-700', 'Save').click();
+  cy.get('[data-testid="settings-content-footer"]').contains('button', 'Save').click();
   cy.contains('Saved successfully');
 };
 
@@ -52,8 +52,8 @@ const takeSnapshot = () => {
     }
   });
   cy.get('.markdown-viewer', { timeout: 30000 }).should('be.visible');
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.get('.markdown-viewer').wait(2000).matchImageSnapshot();
+  cy.waitForMarkdownChartSettled();
+  cy.get('.markdown-viewer').matchImageSnapshot();
 };
 
 const testChart = (chart: string, name: string) => {
@@ -106,7 +106,9 @@ describe('Graphs in Page ', () => {
       cy.contains('[role="tab"]', 'Javascript').click();
       cy.get('#panel-Advanced .monaco-editor textarea', { timeout: 10000 }).should('exist');
       typeInEditor('javascript', updateDatasetScript, true, 'updatePageDatasets', true);
-      cy.contains('button.bg-success-700', 'Save').should('not.be.disabled');
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', 'Save')
+        .should('not.be.disabled');
       savePage();
       visitPage();
       takeSnapshot();

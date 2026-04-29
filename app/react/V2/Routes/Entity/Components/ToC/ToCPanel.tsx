@@ -157,7 +157,7 @@ const ToCPanel = ({
         <div className="flex flex-col gap-2 h-full">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 py-2">
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-sm font-bold [color:var(--color-theme-text-primary)]">
                 <Translate>Table of contents</Translate>
               </p>
               {generatedToc && (
@@ -180,7 +180,7 @@ const ToCPanel = ({
                   type="button"
                   onClick={expandAll}
                   disabled={isAllExpanded}
-                  className="text-sm font-medium text-gray-900 hover:text-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                  className="text-sm font-medium transition [color:var(--color-theme-text-primary)] hover:[color:var(--color-theme-text-secondary)] disabled:cursor-not-allowed disabled:[color:var(--color-theme-text-muted)]"
                 >
                   <Translate>Expand All</Translate>
                 </button>
@@ -188,7 +188,7 @@ const ToCPanel = ({
                   type="button"
                   onClick={collapseAll}
                   disabled={isAllCollapsed}
-                  className="text-sm font-medium text-gray-900 hover:text-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                  className="text-sm font-medium transition [color:var(--color-theme-text-primary)] hover:[color:var(--color-theme-text-secondary)] disabled:cursor-not-allowed disabled:[color:var(--color-theme-text-muted)]"
                 >
                   <Translate>Collapse All</Translate>
                 </button>
@@ -210,7 +210,7 @@ const ToCPanel = ({
           ) : (
             <BlankState
               icon={
-                <ListBulletIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+                <ListBulletIcon className="h-7 w-7 rounded-full p-1 [background-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] [color:var(--color-theme-text-primary)]" />
               }
               title={<Translate>No Table of contents</Translate>}
               description={
@@ -229,22 +229,22 @@ const ToCPanel = ({
           {!tocState.isEditMode ? (
             <>
               <NeedAuthorization roles={['admin', 'editor']}>
-                <Button styling="outline" onClick={handleEdit}>
+                <Button variant="secondary" onClick={handleEdit}>
                   <Translate>Edit</Translate>
                 </Button>
               </NeedAuthorization>
               <NeedAuthorization roles={['admin', 'editor']}>
-                <Button styling="outline">
+                <Button variant="secondary">
                   <Translate>Mark as reviewed</Translate>
                 </Button>
               </NeedAuthorization>
             </>
           ) : (
             <>
-              <Button color="success" onClick={handleSave} disabled={isSaving}>
+              <Button variant="success" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? <Translate>Saving...</Translate> : <Translate>Save</Translate>}
               </Button>
-              <Button styling="outline" onClick={handleCancel}>
+              <Button variant="secondary" onClick={handleCancel}>
                 <Translate>Cancel</Translate>
               </Button>
             </>

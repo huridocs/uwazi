@@ -29,10 +29,10 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, entity }: PDFSidepanelS
         {mainDocument && <PDF fileUrl={`/api/files/${mainDocument.filename}`} />}
       </Sidepanel.Body>
       <Sidepanel.Footer>
-        <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t">
+        <div className="sticky bottom-0 flex justify-end gap-2 border border-b-0 border-l-0 border-r-0 border-t px-4 py-2 [background-color:var(--color-theme-surface-raised)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
           <Button
             type="button"
-            styling="outline"
+            variant="secondary"
             onClick={() => {
               setShowSidepanel(false);
             }}

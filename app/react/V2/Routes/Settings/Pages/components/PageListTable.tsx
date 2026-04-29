@@ -20,12 +20,12 @@ const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
   return (
     <div className="flex justify-end gap-2">
       <I18NLink to={`/${pageUrl}`} target="_blank" aria-disabled={isEntityView}>
-        <Button styling="light" disabled={isEntityView}>
+        <Button variant="ghost" disabled={isEntityView}>
           <Translate>View</Translate>
         </Button>
       </I18NLink>
       <I18NLink to={`/settings/pages/edit/${cell.getValue()}`}>
-        <Button styling="light">
+        <Button variant="ghost">
           <Translate>Edit</Translate>
         </Button>
       </I18NLink>
