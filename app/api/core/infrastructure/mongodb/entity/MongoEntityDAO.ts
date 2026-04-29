@@ -95,7 +95,7 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
 
   streamModifiedSince(date: Date): FindCursor<EntityDBO> {
     return this.getCollection()
-      .find({ updatedAt: { $gte: date } })
+      .find({ editDate: { $gte: date.getTime() } })
       .sort({ sharedId: 1 });
   }
 

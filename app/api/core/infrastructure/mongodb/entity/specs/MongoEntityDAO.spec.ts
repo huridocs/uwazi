@@ -16,6 +16,10 @@ const collaboratorUser = new User(factory.id('collab_user').toString(), 'collabo
 const otherCollaborator = new User(factory.id('other_collab').toString(), 'collaborator', []);
 const publicUser = User.createFrom(null);
 
+const pastDate = new Date('2020-01-01T00:00:00Z');
+const cutoffDate = new Date('2025-06-01T00:00:00Z');
+const recentDate = new Date('2025-06-02T00:00:00Z');
+
 const fixtures: DBFixture = {
   settings: [
     {
@@ -86,6 +90,26 @@ const fixtures: DBFixture = {
         published: true,
       }
     ),
+
+    // entities for streamModifiedSince tests
+    factory.entity(
+      'old_entity',
+      'template_1',
+      {},
+      { language: 'en', editDate: pastDate.getTime() }
+    ),
+    factory.entity(
+      'recent_entity',
+      'template_1',
+      {},
+      { language: 'en', editDate: recentDate.getTime() }
+    ),
+    factory.entity(
+      'boundary_entity',
+      'template_1',
+      {},
+      { language: 'en', editDate: cutoffDate.getTime() }
+    ),
   ],
 
   files: [
@@ -125,18 +149,17 @@ const fixtures: DBFixture = {
   ],
 };
 
-beforeAll(async () => {
-  await testingEnvironment.setUp(fixtures);
-});
-
-afterAll(async () => {
-  await testingEnvironment.tearDown();
-});
-
 const createSut = (user: User = adminUser) =>
   new MongoEntityDAO(getConnection(), TransactionManagerFactory.default(), user);
 
 describe('MongoEntityDAO', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
   describe('getWithFiles()', () => {
     // eslint-disable-next-line max-statements
     it('should return entity with files separated as documents and attachments', async () => {
@@ -286,64 +309,22 @@ describe('MongoEntityDAO', () => {
   });
 
   describe('streamModifiedSince()', () => {
-    const past = new Date('2020-01-01T00:00:00Z');
-    const cutoff = new Date('2025-06-01T00:00:00Z');
-    const recent = new Date('2025-06-02T00:00:00Z');
-    const onCutoff = new Date('2025-06-01T00:00:00Z');
-
-    beforeAll(async () => {
-      await testingEnvironment.setUp({
-        entities: [
-          factory.entity(
-            'old_entity',
-            'template_1',
-            {},
-            { language: 'en', updatedAt: past as any }
-          ),
-          factory.entity(
-            'recent_entity',
-            'template_1',
-            {},
-            { language: 'en', updatedAt: recent as any }
-          ),
-          factory.entity(
-            'boundary_entity',
-            'template_1',
-            {},
-            { language: 'en', updatedAt: onCutoff as any }
-          ),
-        ],
-      });
-    });
-
-    it('returns only entities whose updatedAt is >= the given date', async () => {
-      const dao = new MongoEntityDAO(
-        getConnection(),
-        TransactionManagerFactory.default(),
-        User.createFrom(null)
-      );
-      const entities = await dao.streamModifiedSince(cutoff).toArray();
+    it('returns only entities whose editDate is >= the given date', async () => {
+      const dao = createSut();
+      const entities = await dao.streamModifiedSince(cutoffDate).toArray();
       const sharedIds = entities.map(e => e.sharedId).sort();
       expect(sharedIds).toEqual(['boundary_entity', 'recent_entity']);
     });
 
     it('excludes entities updated strictly before the given date', async () => {
-      const dao = new MongoEntityDAO(
-        getConnection(),
-        TransactionManagerFactory.default(),
-        User.createFrom(null)
-      );
-      const entities = await dao.streamModifiedSince(cutoff).toArray();
-      expect(entities.every(e => (e.updatedAt as any) >= cutoff)).toBe(true);
+      const dao = createSut();
+      const entities = await dao.streamModifiedSince(cutoffDate).toArray();
+      expect(entities.every(e => e.editDate >= cutoffDate.getTime())).toBe(true);
     });
 
     it('returns results sorted by sharedId', async () => {
-      const dao = new MongoEntityDAO(
-        getConnection(),
-        TransactionManagerFactory.default(),
-        User.createFrom(null)
-      );
-      const entities = await dao.streamModifiedSince(past).toArray();
+      const dao = createSut();
+      const entities = await dao.streamModifiedSince(pastDate).toArray();
       const returnedSharedIds = entities.map(e => e.sharedId);
       expect(returnedSharedIds).toEqual([...returnedSharedIds].sort());
     });
