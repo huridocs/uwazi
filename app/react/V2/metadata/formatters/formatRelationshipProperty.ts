@@ -1,9 +1,5 @@
 import { Entity } from '#V2/api/entities/types.js';
-import {
-  BaseMetadataProperty,
-  MetadataProperty,
-  RelationshipMetadataProperty,
-} from '../MetadataPropertiesType';
+import { BaseMetadataProperty, MetadataProperty, RelationshipMetadataProperty } from '../types';
 
 type MetadataValue = {
   value?: unknown;

@@ -1,6 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
-import { formatMediaProperty } from '../Formatters/formatMediaProperty.js';
+import { BaseMetadataProperty } from '../../types.js';
+import { formatMediaProperty } from '../formatMediaProperty.js';
 
 describe('formatMediaProperty', () => {
   const mediaProperty = {

@@ -4,7 +4,7 @@ import { CountryFlag } from '../../CustomIcons/index.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
-import { RelationshipMetadataProperty } from '../MetadataPropertiesType.js';
+import { RelationshipMetadataProperty } from '#V2/metadata/types.js';
 
 const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
 

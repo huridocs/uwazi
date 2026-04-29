@@ -20,18 +20,18 @@ import {
   Image,
   Media,
 } from './Components/index.js';
+import { BaseMetadataProperty, MetadataProperty } from '#V2/metadata/types.js';
 import {
-  formatDateProperty,
-  formatSimpleProperty,
-  formatMetadataFields,
-  formatGeolocationProperty,
   formatRelationshipProperty,
+  formatSimpleProperty,
+  formatDateProperty,
+  formatGeolocationProperty,
   formatLinkProperty,
   formatMediaProperty,
   formatImageProperty,
-} from './Formatters/index.js';
-import { BaseMetadataProperty, MetadataProperty } from './MetadataPropertiesType.js';
-import { formatSelectProperty } from './Formatters/formatSelectProperty.js';
+  formatMetadataFields,
+  formatSelectProperty,
+} from '#V2/metadata/index.js';
 
 type MetadataDisplayProps = {
   entity: Entity;

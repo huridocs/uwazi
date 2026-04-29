@@ -5,7 +5,7 @@ import {
   DateRangeMetadataProperty,
   MultiDateMetadataProperty,
   MultiDateRangeMetadataProperty,
-} from '../MetadataPropertiesType.js';
+} from '../types.js';
 
 const isDateType = (type: BaseMetadataProperty['type']) =>
   type === 'date' || type === 'multidate' || type === 'daterange' || type === 'multidaterange';

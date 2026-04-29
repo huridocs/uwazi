@@ -1,6 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
-import { formatSelectProperty } from '../Formatters/formatSelectProperty.js';
+import { BaseMetadataProperty } from '../../types.js';
+import { formatSelectProperty } from '../formatSelectProperty.js';
 
 describe('formatSelectProperty', () => {
   const metadata = {

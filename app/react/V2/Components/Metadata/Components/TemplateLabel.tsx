@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Translate } from '#app/I18N/index.js';
-import { getTextColor } from '../Formatters/index.js';
+import { getTextColor } from '../helpers/getTextColor';
 
 const defaultColor = '#A4CAFE';
 
@@ -29,4 +29,4 @@ const TemplateLabel = ({ templateId }: { templateId?: String }) => {
   );
 };
 
-export { TemplateLabel, getTextColor };
+export { TemplateLabel };

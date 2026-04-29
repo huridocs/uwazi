@@ -1,5 +1,5 @@
 import type { Entity } from '#V2/api/entities/types.js';
-import type { BaseMetadataProperty, LinkMetadataProperty } from '../MetadataPropertiesType';
+import type { BaseMetadataProperty, LinkMetadataProperty } from '../types';
 
 const isLinkType = (type: BaseMetadataProperty['type']) => type === 'link';
 

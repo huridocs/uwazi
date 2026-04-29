@@ -1,5 +1,5 @@
 import React from 'react';
-import { SimpleMetadataProperty } from '#app/V2/domain/entities/types.js';
+import { SimpleMetadataProperty } from '#V2/metadata/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { MetadataCard } from './MetadataCard.js';

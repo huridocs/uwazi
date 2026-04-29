@@ -1,6 +1,6 @@
 import type { Entity } from '#app/V2/api/entities/types.js';
-import { formatLinkProperty } from '../Formatters';
-import { BaseMetadataProperty } from '../MetadataPropertiesType';
+import { formatLinkProperty } from '../formatLinkProperty';
+import { BaseMetadataProperty } from '../../types';
 
 describe('formatLinkProperty', () => {
   const metadata = {

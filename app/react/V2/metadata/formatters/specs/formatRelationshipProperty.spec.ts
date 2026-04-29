@@ -1,6 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
-import { formatRelationshipProperty } from '../Formatters/index.js';
+import { BaseMetadataProperty } from '../../types.js';
+import { formatRelationshipProperty } from '../formatRelationshipProperty.js';
 
 describe('formatRelationshipProperty', () => {
   const metadata = {

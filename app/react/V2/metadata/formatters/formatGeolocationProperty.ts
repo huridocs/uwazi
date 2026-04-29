@@ -1,6 +1,6 @@
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { BaseMetadataProperty, GeolocationMetadataProperty } from '../MetadataPropertiesType.js';
+import { BaseMetadataProperty, GeolocationMetadataProperty } from '../types.js';
 import { resolveInheritedRelationship } from './formatRelationshipProperty.js';
 
 type Coordinate = {

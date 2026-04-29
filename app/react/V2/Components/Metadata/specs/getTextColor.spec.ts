@@ -1,4 +1,4 @@
-import { getTextColor } from '../Formatters/getTextColor';
+import { getTextColor } from '../helpers/getTextColor';
 
 describe('getTextColor', () => {
   it('should return black for empty/falsy input', () => {

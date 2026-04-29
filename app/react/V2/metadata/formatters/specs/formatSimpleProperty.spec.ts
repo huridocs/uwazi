@@ -1,6 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
-import { formatSimpleProperty } from '../Formatters/formatSimpleProperty.js';
+import { BaseMetadataProperty } from '../../types.js';
+import { formatSimpleProperty } from '../formatSimpleProperty.js';
 
 describe('formatSimpleProperty', () => {
   const metadata = {

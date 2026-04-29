@@ -1,7 +1,7 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
-import { formatImageProperty } from '../Formatters/formatImageProperty.js';
+import { BaseMetadataProperty } from '../../types.js';
+import { formatImageProperty } from '../formatImageProperty.js';
 
 describe('formatImageProperty', () => {
   it('should format preview property with alt and cover style when fullWidth is enabled', () => {

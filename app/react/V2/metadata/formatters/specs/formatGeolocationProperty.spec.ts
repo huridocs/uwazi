@@ -1,7 +1,7 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
-import { formatGeolocationProperty } from '../Formatters/formatGeolocationProperty.js';
+import { BaseMetadataProperty } from '../../types.js';
+import { formatGeolocationProperty } from '../formatGeolocationProperty.js';
 
 describe('formatGeolocationProperty', () => {
   const templates = [

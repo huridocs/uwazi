@@ -1,6 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
-import { formatDateProperty } from '../Formatters/formatDateProperty.js';
+import { BaseMetadataProperty } from '../../types.js';
+import { formatDateProperty } from '../formatDateProperty.js';
 
 describe('formatDateProperty', () => {
   const metadata = {

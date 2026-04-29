@@ -1,5 +1,5 @@
 import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { formatMetadataFields } from '../Formatters/index.js';
+import { formatMetadataFields } from '../formatMetadataFields.js';
 
 const templateA = {
   properties: [

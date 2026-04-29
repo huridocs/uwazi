@@ -1,10 +1,6 @@
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import type {
-  BaseMetadataProperty,
-  MediaMetadataProperty,
-  Timelink,
-} from '../MetadataPropertiesType';
+import type { BaseMetadataProperty, MediaMetadataProperty, Timelink } from '../types';
 
 const isMediaType = (type: BaseMetadataProperty['type']) => type === 'media';
 

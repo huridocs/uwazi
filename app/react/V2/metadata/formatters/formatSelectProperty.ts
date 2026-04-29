@@ -3,7 +3,7 @@ import {
   BaseMetadataProperty,
   MultiSelectMetadataProperty,
   SelectMetadataProperty,
-} from '../MetadataPropertiesType';
+} from '../types';
 
 const isSelectType = (type: BaseMetadataProperty['type']) =>
   type === 'select' || type === 'multiselect';

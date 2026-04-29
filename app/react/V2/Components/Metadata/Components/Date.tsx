@@ -12,7 +12,7 @@ import {
   DateRangeMetadataProperty,
   MultiDateMetadataProperty,
   MultiDateRangeMetadataProperty,
-} from '../MetadataPropertiesType.js';
+} from '#V2/metadata/types.js';
 
 type DateProps = MetadataFieldProps & {
   values:

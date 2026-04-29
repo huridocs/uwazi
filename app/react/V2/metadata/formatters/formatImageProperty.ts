@@ -1,10 +1,6 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
-import {
-  BaseMetadataProperty,
-  ImageMetadataProperty,
-  PreviewMetadataProperty,
-} from '../MetadataPropertiesType';
+import { BaseMetadataProperty, ImageMetadataProperty, PreviewMetadataProperty } from '../types';
 
 const isImageType = (type: BaseMetadataProperty['type']) => type === 'image' || type === 'preview';
 

@@ -4,7 +4,7 @@ import { MapProps } from '#app/Map/MapContainer.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
-import { GeolocationMetadataProperty } from '../MetadataPropertiesType.js';
+import { GeolocationMetadataProperty } from '#V2/metadata/types.js';
 
 type GeolocationProps = MetadataFieldProps & {
   markers: GeolocationMetadataProperty['values'];

@@ -1,6 +1,6 @@
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { BaseMetadataProperty } from '../MetadataPropertiesType.js';
+import { BaseMetadataProperty } from '../types.js';
 
 const formatMetadataFields = (
   template?: ClientTemplateSchema,
