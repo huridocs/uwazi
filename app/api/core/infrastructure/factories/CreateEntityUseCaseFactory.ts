@@ -12,7 +12,6 @@ import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { User } from '#api/users.v2/model/User.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class CreateEntityUseCaseFactory {
   static default(

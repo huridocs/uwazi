@@ -9,7 +9,7 @@ class EntityPreviewBatchHandlerFactory {
     const transactionManager = TransactionManagerFactory.default();
     return new EntityPreviewBatchHandler({
       transactionManager,
-      filesDS: FilesDataSourceFactory.default(transactionManager),
+      filesDS: FilesDataSourceFactory.default(),
       entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
       settingsDS: SettingsDataSourceFactory.default(transactionManager),
     });

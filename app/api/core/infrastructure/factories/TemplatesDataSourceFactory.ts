@@ -1,4 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
@@ -7,38 +8,41 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '../elasticSearch/entities/SlotsReconciler.js';
 
 export class TemplatesDataSourceFactory {
-  static default(transactionManager: MongoTransactionManager) {
+  static default(transactionManager: TransactionManager) {
     const db = getConnection();
+    const mongoTM = transactionManager as MongoTransactionManager;
 
     const slotsReconciler = SlotsReconcilerFactory.default(transactionManager);
 
     return new MongoTemplatesDataSource({
       db,
-      transactionManager,
+      transactionManager: mongoTM,
       slotsReconciler,
     });
   }
 
-  static cached(transactionManager: MongoTransactionManager) {
+  static cached(transactionManager: TransactionManager) {
     const db = getConnection();
+    const mongoTM = transactionManager as MongoTransactionManager;
 
     const slotsReconciler = SlotsReconcilerFactory.default(transactionManager);
 
     return new CachedMongoTemplatesDataSource({
       db,
-      transactionManager,
+      transactionManager: mongoTM,
       slotsReconciler,
     });
   }
 
-  static forTesting(transactionManager: MongoTransactionManager) {
+  static forTesting(transactionManager: TransactionManager) {
     const db = getConnection();
+    const mongoTM = transactionManager as MongoTransactionManager;
 
     const slotsReconciler = TestUtils.mockClass<SlotsReconciler>({});
 
     return new MongoTemplatesDataSource({
       db,
-      transactionManager,
+      transactionManager: mongoTM,
       slotsReconciler,
     });
   }

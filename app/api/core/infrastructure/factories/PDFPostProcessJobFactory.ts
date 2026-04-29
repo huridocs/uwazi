@@ -1,8 +1,8 @@
 import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { PDFService } from '../services/PDFService.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
@@ -11,7 +11,7 @@ import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 class PDFPostProcessJobFactory {
   static default(
-    transactionManager: MongoTransactionManager,
+    transactionManager: TransactionManager,
     deps: Partial<ConstructorParameters<typeof PDFPostProcessJob>[0]> = {}
   ) {
     return new PDFPostProcessJob({

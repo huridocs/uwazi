@@ -1,4 +1,4 @@
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
@@ -6,7 +6,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 
 export class EntityIndexerServiceFactory {
-  static default(transactionManager: MongoTransactionManager): EntityIndexerService {
+  static default(transactionManager: TransactionManager): EntityIndexerService {
     const tenant = tenants.current();
 
     if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
