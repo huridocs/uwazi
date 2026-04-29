@@ -236,7 +236,7 @@ const FiltersSidepanel = ({
             <Button className="grow" type="button" variant="secondary" onClick={clearFilters}>
               <Translate>Clear all</Translate>
             </Button>
-            <Button className="grow" type="submit" size="medium">
+            <Button className="grow" type="submit">
               <Translate>Apply</Translate>
             </Button>
           </div>
