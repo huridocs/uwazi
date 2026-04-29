@@ -34,6 +34,8 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 4. Improve integration coverage (full chain + import batch/report/failure-threshold scenarios).
 5. Stabilize test infrastructure behavior for CI-like parallel execution.
 6. Publish user-facing import guidance (ReadTheDocs scope in section 19).
+7. **Import progress/lock safety (new priority):** align progress checkpoint durability with row-import transaction scope and ensure heartbeat cadence does not depend on very large import batches.
+8. **Entities import time-creep diagnosis (new):** investigate progressive slowdown during long imports (early batches fast, late batches significantly slower) despite preflight.
 
 ### 1.1) Critical working rule (highest priority)
 
@@ -87,6 +89,9 @@ Use this snapshot first; companion docs provide deeper implementation detail.
 - Entities import job now has a basic integration test (single-row happy path).
   Still missing tests for batch processing, row errors report, stop thresholds,
   and files/attachments integration (see 6.10).
+- TODO (post-v1 removal): once legacy `/api/import` is retired, remove remaining
+  v1 CSV route tests from `app/api/files/specs/uploadRoutes.spec.ts` and keep CSV
+  route coverage only under `app/api/csv.v2/**`.
 
 #### 3.5 Retention and cleanup
 
@@ -108,8 +113,14 @@ Use this snapshot first; companion docs provide deeper implementation detail.
   - List rows include `status` as a first-class field for UX list rendering.
 - **TODO (next iteration):**
   - Extend detail with explicit row-errors summary/report-path projection if UI needs a narrowed shape.
-  - Add dedicated failed-rows report download endpoint for CSV v2
-    (for `rowErrors.reportPath`, admin-only, import-scoped authorization).
+  - ✅ `GET /api/csvImportEntities/imports/:id` now includes:
+    - `rowErrors`: array populated from `csv_import_row_errors` for the given import id.
+    - `rowErrorsSummary`: summary/report pointer from `csv_imports.rowErrors` (when present).
+  - **Nice to Have:** paginate `rowErrors` in import detail responses for very large failed-row sets.
+  - ✅ Added dedicated failed-rows report download endpoint for CSV v2:
+    - `GET /api/csvImportEntities/imports/:id/failed-rows-csv`
+    - admin-only
+    - returns `404` when report artifact is unavailable.
   - **Nice to Have:** paginate `GET /api/csvImportEntities/imports` results to keep large
     collections performant and improve UX load times.
   - Include already-persisted extraction metadata in the detail response so UX can render
@@ -128,6 +139,97 @@ Use this snapshot first; companion docs provide deeper implementation detail.
   with cached settings/templates data sources (mirrors PX pattern) to avoid repeated DB reads.
 - Ensure progress callbacks/heartbeats are emitted per batch (not only at end) for long runs.
 
+#### 3.9 Import progress durability + long-running lock renewal (critical)
+
+Production testing surfaced a critical mismatch in entities import behavior:
+
+- A 1000-row CSV can remain at `progress: null` for a long interval, then jump from `0%` to `100%`.
+- In multi-worker production, the same import produced duplicated entities (for example 2000 created
+  from 1000 source rows), while local single-worker environments masked this issue.
+
+Root causes identified in current implementation:
+
+1. **Progress checkpoint durability is coarser than write durability.**
+   - Entity creation commits per row transaction, but progress is persisted at the end of a larger
+     batch checkpoint.
+   - If rows commit and the worker crashes/retries before checkpoint persistence, replay can re-run
+     committed rows.
+2. **Heartbeat renewal is coupled to progress callback cadence.**
+   - If progress emits only at large batch boundaries, lock renewal can be too sparse for long runs.
+   - With multi-worker queue consumers, expired lock windows allow the same job to be picked again.
+
+Required direction (must implement in CSV v2 scope):
+
+- Progress advancement durability must match the import write durability boundary.
+  - If writes are per-row transactions, progress checkpoints must be persisted per-row (or in the
+    exact same micro-batch transaction as those writes).
+- Heartbeat cadence must be independent from very large batch checkpoints.
+  - Target frequent renewals/progress emission (for example every ~10 rows) so long imports do not
+    rely on single coarse callbacks.
+- Endpoint polling (`GET /imports/:id`) and socket events must expose intermediate progress for large runs.
+- Add integration coverage for:
+  - long-running import with lock-window pressure,
+  - restart/retry between committed rows and checkpoint persistence,
+  - multi-worker no-duplicate guarantee in the supported concurrency model.
+
+Current implementation progress (Apr 2026):
+
+- Entities import default batch size changed from `1000` to `10` in `CsvImportEntitiesJob`.
+- Progress durability is now aligned to row processing:
+  - success path: entity/file insert + import progress update in the same transaction boundary for each row,
+  - failure path: row error insert + import progress update in the same transaction boundary for each failed row.
+- Result: import progress sockets/endpoints now emit and persist intermediate progress every batch of 10 rows (instead of 0->100 jump for 1000-row imports).
+- Focused integration verification passed:
+  - `app/api/csv.v2/application/jobs/specs/CsvImportEntitiesJob.spec.ts` (7/7).
+
+#### 3.10 Entities import time-creep under long runs (new, critical)
+
+Observed behavior after the batching/progress fix:
+
+- Import progress emits regularly every 10 rows (expected), but throughput degrades as the run advances.
+- Example from production-style run:
+  - around rows `710..810`, each 10-row batch took roughly `~8-11s`,
+  - user observation: early batches (`1..5`) were much faster than late batches (`80+`).
+- This indicates **progressive cost growth** (time creep), not a constant per-row cost.
+- Additional confirmation (rerun signal):
+  - Re-running the same CSV against a collection that already contains the previously imported entities
+    still starts fast on early batches and slows again on late batches within that run.
+  - This strongly suggests a **run-local accumulating bottleneck** rather than a simple baseline
+    “collection already large” read penalty.
+
+Known runtime work still executed during row import (post-preflight):
+
+1. Per-row `EntitiesService.insert(...)` transaction.
+2. Per-row dispatch of `RelationshipSyncJob` from `EntitiesService.insert(...)`.
+3. Per-row `csv_imports` progress update (intentional durability fix).
+4. Property-assignment creation path still calls service strategies that can query DS
+   for relationship/select validations depending on template/property mix.
+
+Diagnosis status (Apr 2026 update):
+
+- RelationshipSync-first hypothesis was tested and **falsified** via A/B diagnostics:
+  - disabling `RelationshipSyncJob` dispatch in CSV import diagnostics did not remove creep.
+- Confirmed dominant root cause:
+  - `MongoTransactionManager` commit/retry handler arrays accumulated across repeated `run()` calls
+    in the same manager instance, creating progressive per-transaction overhead.
+- Confirmation evidence:
+  - creeping runs showed monotonic growth in transaction-manager `onCommitHandlers` counts and
+    matching growth in `transactionOverheadMs`,
+  - temporary per-run handler reset in transaction manager removed the creep and restored stable
+    throughput in a full 1000-row run.
+
+Non-hypothesis note:
+
+- Socket `2` / `3` frames seen in logs are transport ping/pong and are not import-stage work.
+
+Handoff requirement:
+
+- Next agent must perform focused diagnosis (no speculative refactor first) and isolate where
+  batch wall-time increases:
+  - import row transaction time vs
+  - progress-update writes vs
+  - relationship-sync enqueue/processing latency vs
+  - downstream relationship write/search metadata updates.
 ### 4) Immediate next steps (agreed direction)
 
 1. **Keep future work scoped**
@@ -335,7 +437,7 @@ is confusing and inconsistent with thesauri preflight behavior.
   - resolves row files outside transactions,
   - uses `PropertyAssignmentCreatorServiceStrategy.bulkCreate(...)` to produce assignments,
   - stores files via `FilesService.storeFiles(...)` outside the DB transaction,
-  - inserts entity + file records inside a per-row transaction (`entitiesDS.create` +
+  - inserts entity + file records inside a per-row transaction (`EntitiesService.insert` +
     `FilesService.insert`).
 - Queue wiring updated to inject `FilesService`, `PropertyAssignmentCreatorServiceStrategy`,
   and `IdGenerator` into `CsvImportEntitiesJob`.
@@ -362,28 +464,12 @@ is confusing and inconsistent with thesauri preflight behavior.
   (job still updates status and dispatches the next stage).
 - Spec coverage added for the **no-relationships** path (no progress emit, stats set to zero).
 
-13. **V1 socket-compat layer (Mar 2026)**
+13. **V1 socket-compat layer removal (Apr 2026)**
 
-- Added a removable, handler-only compat emitter to reuse the v1 UI socket footprint while the
-  v2 UI is under construction.
-- Emits **tenant-admin** events only (no session propagation), to avoid polluting use cases.
-- Feature-flagged via `featureFlags.v1CSVImportCompat` (default `false`).
-- Events:
-  - `IMPORT_CSV_START`: emitted from extract job start.
-  - `IMPORT_CSV_PROGRESS`: emitted from entities-import batches (cumulative entities created).
-  - `IMPORT_CSV_ROW_EXCEPTIONS`: emitted once on entities-import success, built from
-    `csv_import_row_errors` and grouped by error message.
-  - `IMPORT_CSV_ERROR`: emitted from any stage failure (extract, preflight, thesauri, relationships, import).
-  - `IMPORT_CSV_END`: emitted after entities-import success (after row exceptions).
-- Implementation:
-  - `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`
-  - wired in queue worker registration (`app/queueRegistry.ts`)
-  - used in job handlers:
-    - `CsvExtractUploadedZipJobHandler`
-    - `CsvPreflightJobHandler`
-    - `CsvCreateThesauriValuesJobHandler`
-    - `CsvCreateRelationshipEntitiesJobHandler`
-    - `CsvImportEntitiesJobHandler`
+- Removed temporary V1 socket compatibility bridge from CSV v2 flow.
+- Removed `featureFlags.v1CSVImportCompat` and `CsvV1CompatEmitter`.
+- CSV v2 handlers now emit only the native `csvImport:*` tenant-admin events.
+- Legacy `IMPORT_CSV_*` socket stats continue to be emitted only by the V1 `/api/import` route flow.
 
 14. **Extraction metadata persisted on imports (Feb 2026)**
 
@@ -404,15 +490,15 @@ is confusing and inconsistent with thesauri preflight behavior.
 - UX data inventory doc added:
   - `AI Contexts/CSV/csv-v2-ux-data-inventory.md`
 
-#### How to remove v1 compat (when v2 UI is ready)
+#### V1 compat removal checklist (completed Apr 2026)
 
-1. Delete `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`.
-2. Remove `v1CSVImportCompat` from:
+1. Deleted `app/api/csv.v2/infrastructure/services/CsvV1CompatEmitter.ts`.
+2. Removed `v1CSVImportCompat` from:
    - `app/api/tenants/tenantContext.ts`
    - `app/api/config.ts`
-3. Remove `CsvV1CompatEmitter` wiring in `app/queueRegistry.ts`.
-4. Remove optional `v1Compat` usage from CSV job handlers listed above.
-5. Delete any v1 compat references in docs/tests (if added).
+3. Removed compat wiring from `app/queueRegistry.ts`.
+4. Removed optional `v1Compat` usage from CSV v2 job handlers.
+5. Updated docs to reflect the bridge retirement.
 
 ### 7) Agent-specific notes (handoff)
 
@@ -429,6 +515,9 @@ is confusing and inconsistent with thesauri preflight behavior.
 - **Queue test-pollution companion:** For queue isolation/cleanup hardening in CSV v2 specs,
   read and maintain
   `AI Contexts/CSV/csv-v2-context-07-queue-test-pollution.md` together with this file.
+- **Performance-creep companion:** For entities-import throughput degradation findings, measurements,
+  and diagnosis checklist, read and maintain
+  `AI Contexts/CSV/csv-v2-context-07-performance-creep.md` together with this file.
 - **Use CSV v2 job factories** for job wiring **and tests**. Do not hand-wire dependencies
   in specs; rely on the factories and override only where a test needs a specific stub.
 - **Always pass `tenantName` + `userId` into job dispatch params.**
@@ -474,9 +563,16 @@ and avoid leaking internal exceptions directly to users.
 Policy clarification (agreed):
 
 - Preserve row index fidelity for analysis/import traceability.
+- Row-error persistence cardinality is currently one error per failed row (first encountered failure).
+- Multi-error per row is not part of the current write model and would require explicit design work.
 - Malformed rows are true failures and must remain visible in row errors and failed-rows CSV.
-- Empty source lines are the exception: they should not be surfaced as row errors and should not
-  produce blank entries in failed-rows CSV.
+- Empty source lines are explicit failures in row errors (to keep traceability), but must be
+  classified as `ROW_EMPTY_OR_MALFORMED` with message `Empty line.` (never generic `INTERNAL_ERROR`).
+- Empty-line row errors are counted in `stats.rowsFailed`.
+- `failed_rows.csv` is a filtered artifact: empty-line failures are excluded from exported CSV rows.
+- `file` column misuse with multiple values (e.g. `fileA.pdf|fileB.jpg`) must not report
+  misleading `file not found`; it should return an explicit validation error instructing users
+  to use `files` for multi-document input.
 
 Source of truth for this track:
 
@@ -763,6 +859,10 @@ Use this as a strict gate before, during, and after implementation.
   - completed progress remains visible,
   - status remains `cancelled`,
   - no downstream stage is dispatched.
+- Include at least one scenario where import processing is interrupted after a subset of row writes and verify:
+  - persisted progress does not lag behind committed row writes,
+  - retries do not duplicate entities from already committed rows,
+  - lock renewal remains active during long-running imports.
 
 #### 17.7 Escalation rule
 
@@ -1064,15 +1164,13 @@ Implementation simplifications performed:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/csv.v2/application/services/specs/PendingThesauriValuesApplier.spec.ts app/api/csv.v2/application/jobs/specs/CsvCreateThesauriValuesJob.spec.ts`
   - result: pass (2 suites, 4 tests).
 
-#### 18.13 Boundary-cleanup status checkpoint (Mar 2026, latest)
+#### 18.13 Boundary-cleanup status checkpoint (Apr 2026 update)
 
 - CSV-local thesauri/translations adapters are removed and covered by focused tests.
 - Remaining v1 compatibility bridges are identified and documented in:
   - `AI Contexts/CSV/csv-v2-context-07-v1-dependencies.md`
-- **Current decision:** bridge removal (`v1` fallback route + `CsvV1CompatEmitter`) is explicitly deferred for now and should not be executed in the next slice unless re-prioritized by user/team.
-- Handoff rule for next agent:
-  - use the current bridge-preserving baseline as the starting point,
-  - proceed with the next approved task, not compat bridge removal by default.
+- `CsvV1CompatEmitter` bridge was removed.
+- Current remaining compatibility bridge is only the v1 `/api/import` route path.
 
 #### 18.14 Cleanup workstream context split (Mar 2026)
 
@@ -1226,12 +1324,30 @@ Implementation simplifications performed:
   - middleware: V2 `UploadMiddleware` (request-time instantiation)
   - handler: `RegisterCsvImportController`
 - Compatibility route remains:
-  - `POST /api/import` still supports V1/V2 flag-based behavior for transition/testing.
+  - `POST /api/import` is V1-only for transition/testing while V2 uses `POST /api/csvImportEntities`.
 - Frontend handoff doc updated to make V2 endpoint primary:
   - `AI Contexts/CSV/csv-v2-front-end-notes.md`
 - Verification:
   - `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest app/api/files/specs/uploadRoutes.spec.ts`
   - result: pass (includes new `POST /api/csvImportEntities` test).
+
+#### 18.23 Relationship sync regression in entities import (Apr 2026)
+
+- Manual/frontend validation surfaced a critical regression:
+  - relationship metadata values were persisted on imported rows,
+  - but actual relationship links were not created.
+- Root cause:
+  - `CsvImportEntitiesBatchProcessor` inserted entities via low-level
+    `entitiesDS.create(...)`, bypassing the Entities module side-effects.
+  - This skipped `RelationshipSyncJob` dispatch from `EntitiesService.insert(...)`.
+- Fix implemented:
+  - CSV v2 row import now persists entities through `EntitiesService.insert(...)`
+    inside the per-row transaction, then inserts files via `FilesService.insert(...)`.
+  - `CsvImportEntitiesJobFactory` now wires `EntitiesService` into the import job and
+    uses the same dispatcher instance so relationship sync dispatch is observable/testable.
+- Test coverage added:
+  - `CsvImportEntitiesJob.spec.ts` now asserts `RelationshipSyncJob` dispatch for
+    relationship-bearing imported rows.
 
 ### 19) TODO — Document ReadTheDocs import instructions
 
@@ -1246,7 +1362,22 @@ Required scope:
 - Cancel semantics (cooperative stop, no rollback/cleanup of already-applied work).
 - Troubleshooting section for common import failures and recovery steps.
 
-### 20) Priority order (agreed, Mar 2026; updated after index migration completion)
+### 20) TODO — Optional preflight creation toggle (thesauri + relationships)
+
+Add an import-start option controlled by a single user-facing checkbox:
+
+- `create thesaurus and related entities`
+
+Behavior requirements:
+
+- When checked: keep current behavior (preflight creates missing thesaurus values and
+  relationship entities as needed).
+- When not checked: preflight must not create missing thesaurus values or relationship
+  entities.
+- In the unchecked mode, rows that reference missing thesaurus values or missing
+  relationship entities must fail and report the missing asset explicitly.
+
+### 21) Priority order (agreed, Mar 2026; updated after index migration completion)
 
 The following order is explicitly agreed and should drive upcoming iterations.
 

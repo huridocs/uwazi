@@ -8,6 +8,7 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CsvImportRow } from '../../../domain/CsvImportRow.js';
@@ -40,6 +41,9 @@ const fixtures = {
     ]),
     fixturesFactory.template('relatedAnyTemplate', [
       fixturesFactory.property('description', 'text'),
+    ]),
+    fixturesFactory.template('csvImportDateTemplate', [
+      fixturesFactory.property('published_date', 'date'),
     ]),
   ],
 };
@@ -94,7 +98,11 @@ const buildUseCase = () => {
   const fileStorage = new FileSystemStorage(new PathManager({ tenant: tenants.current() }));
   const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
-    dispatchMany: jest.fn().mockResolvedValue(undefined),
+    dispatchMany: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: any) => Promise<void>) => {
+        await callback(jobsDispatcher.dispatch);
+      }),
   }) as jest.Mocked<JobsDispatcher>;
 
   return testingEnvironment.runWithContext(() => {
@@ -106,7 +114,7 @@ const buildUseCase = () => {
         jobsDispatcher,
       });
 
-    return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS };
+    return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher };
   });
 };
 
@@ -189,6 +197,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   const template = fixtures.templates[0];
   const templateId = template._id.toString();
   const relatedTemplateId = fixtures.templates[1]._id.toString();
+  const dateTemplateId = fixtures.templates[2]._id.toString();
   const createdImportIds: string[] = [];
 
   beforeAll(async () => {
@@ -247,7 +256,8 @@ describe('CsvImportEntitiesJob (integration)', () => {
   });
 
   it('should import rows with any-template relationship when there is a unique match', async () => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher } =
+      buildUseCase();
     const importId = fixturesFactory.idString('import-entities-any-relationship');
     createdImportIds.push(importId);
     const userId = fixturesFactory.idString('import-entities-any-user');
@@ -317,6 +327,16 @@ describe('CsvImportEntitiesJob (integration)', () => {
     expect(translation.getValue('rel_any').value).toEqual([
       expect.objectContaining({ value: relatedSharedId }),
     ]);
+    expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(
+      RelationshipSyncJob,
+      expect.objectContaining({
+        tenantName: tenants.current().name,
+        userId,
+        templateId,
+        targetLanguage: 'en',
+        sharedId: expect.any(String),
+      })
+    );
   });
 
   it('should import rows with multiple any-template relationships separated by pipe', async () => {
@@ -504,5 +524,90 @@ describe('CsvImportEntitiesJob (integration)', () => {
         },
       ],
     });
+
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(updatedImport.rowErrors).toEqual(
+      expect.objectContaining({
+        failedRows: 1,
+        reportPath: `csv-imports/${importId}/reports/failed_rows.csv`,
+      })
+    );
+  });
+
+  it('classifies empty lines as row errors and excludes them from failed-rows report artifact', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-empty-line');
+    createdImportIds.push(importId);
+    const userId = fixturesFactory.idString('import-entities-empty-line-user');
+
+    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+      importId,
+      templateId: '',
+      values: [],
+      createdAt: Date.now(),
+    });
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title,description\nMy Title,Some description\n,',
+    });
+
+    const callbacks = createCallbacks();
+    await useCase.execute({ importId, callbacks });
+
+    const persistedErrors = await rowErrorsDS.getByImport(importId);
+    expect(persistedErrors).toHaveLength(1);
+    expect(persistedErrors[0].code).toBe(RowErrorCode.RowEmptyOrMalformed);
+    expect(persistedErrors[0].message).toBe('Empty line.');
+
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(updatedImport.stats).toEqual(
+      expect.objectContaining({
+        rowsProcessed: 2,
+        rowsFailed: 1,
+      })
+    );
+    expect(updatedImport.rowErrors ?? undefined).toBeUndefined();
+  });
+
+  it('persists VALUE_INVALID_FORMAT for existing entity validation errors', async () => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    const importId = fixturesFactory.idString('import-entities-date-validation-failure');
+    createdImportIds.push(importId);
+    const userId = fixturesFactory.idString('import-entities-date-validation-failure-user');
+
+    await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+      importId,
+      templateId: '',
+      values: [],
+      createdAt: Date.now(),
+    });
+
+    await insertImport(csvImportsDS, {
+      importId,
+      templateId: dateTemplateId,
+      userId,
+    });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title,published_date\nMy Title,not-a-date',
+    });
+
+    const callbacks = createCallbacks();
+    await useCase.execute({ importId, callbacks });
+
+    const persistedErrors = await rowErrorsDS.getByImport(importId);
+    expect(persistedErrors).toHaveLength(1);
+
+    const [error] = persistedErrors;
+    expect(error.code).toBe(RowErrorCode.ValueInvalidFormat);
+    expect(error.property).toBe('published_date');
+    expect(error.rawValue).toBe('not-a-date');
+    expect(error.message).toContain('Invalid value for "published_date".');
   });
 });

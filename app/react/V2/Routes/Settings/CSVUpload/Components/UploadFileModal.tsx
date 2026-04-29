@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import { FileDropzone, Select } from '#V2/Components/Forms/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { create } from '#V2/api/csv/index.js';
-import { templatesAtom, notificationAtom } from '#V2/atoms/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 
 type DropzoneModalProps = {
@@ -18,7 +19,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   const [templateId, setTemplateId] = useState<string | undefined>();
   const [uploading, setIsUploading] = useState(false);
   const templates = useAtomValue(templatesAtom);
-  const setNotification = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const onProgress = (completed: number) => {
     setProgress(completed);
@@ -37,10 +38,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       const response = await create(fileToUpload, templateId, onProgress);
       if ('error' in response) {
         reportErrorToSentry(new Error(response.error), 'Error uploading file (CSV V2)');
-        setNotification({
-          type: 'error',
-          text: t('System', 'An error occurred', null, false),
-        });
+        notify('error', t('System', 'An error occurred', null, false));
       }
       handleClose();
     }
@@ -84,7 +82,11 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
               'text/csv': ['.csv'],
               'application/zip': ['.zip'],
             }}
-            message={<Translate className="text-gray-500 italic">CSV or ZIP up to 50MB</Translate>}
+            message={
+              <Translate className="italic [color:var(--color-theme-text-muted)]">
+                CSV or ZIP up to 50MB
+              </Translate>
+            }
             maxSize={52428800}
           />
           <Select
@@ -100,7 +102,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
         <div className="flex gap-4 w-full">
           <Button
             className="w-1/2"
-            styling="outline"
+            variant="secondary"
             onClick={() => {
               handleClose();
             }}

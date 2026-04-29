@@ -1,10 +1,10 @@
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
+import { Dispatcher } from '../application/contracts/Dispatcher.js';
 import { Logger } from './logger/contracts/Logger.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 
@@ -15,7 +15,7 @@ interface UseCase<Input, Output, Args extends any[] = []> {
 type Deps<ExtendedDeps> = {
   transactionManager?: TransactionManager;
   eventBus?: EventsBus;
-  jobsDispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
   idGenerator?: IdGenerator;
   logger?: Logger;
   eventEmitter?: EventEmitter;
@@ -114,12 +114,12 @@ abstract class AbstractUseCase<
     return this.deps.eventEmitter;
   }
 
-  protected get jobsDispatcher(): JobsDispatcher {
-    if (!this.deps.jobsDispatcher) {
-      throw new Error('JobsDispatcher dependency not provided');
+  protected get dispatcher(): Dispatcher {
+    if (!this.deps.dispatcher) {
+      throw new Error('Dispatcher dependency not provided');
     }
 
-    return this.deps.jobsDispatcher;
+    return this.deps.dispatcher;
   }
 
   abstract execute(input: Input, ...args: Args): Promise<Output>;

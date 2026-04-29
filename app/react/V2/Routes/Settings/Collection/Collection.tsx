@@ -4,15 +4,15 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
 import isUndefined from 'lodash/isUndefined.js';
-import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { useSetAtom } from 'jotai';
+import * as FilesAPI from '#V2/api/files/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import * as TemplatesAPI from '#V2/api/templates/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { InputField, Select, MultiSelect, Geolocation } from '#V2/Components/Forms/index.js';
-import { Button, Card } from '#V2/Components/UI/index.js';
+import { Button, Card, Tooltip } from '#V2/Components/UI/index.js';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
@@ -20,13 +20,31 @@ import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
+import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
+import { FileType } from '#shared/types/fileType.js';
+import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
+
+type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const settings = await SettingsAPI.get(headers);
-    const templates = await TemplatesAPI.get(headers);
-    return { settings, templates };
+    const raw = await SettingsAPI.get(headers);
+    const { themeCustomization: themeCustomizationFlag, ...settings } =
+      raw as SettingsWithThemeFlag;
+    const [templates, customFilesRaw] = await Promise.all([
+      TemplatesAPI.get(headers),
+      FilesAPI.getByType('custom', headers),
+    ]);
+    const customUploadFiles = Array.isArray(customFilesRaw) ? customFilesRaw : [];
+    return {
+      settings,
+      templates,
+      themeCustomization: themeCustomizationFlag ?? false,
+      customUploadFiles,
+    };
   };
 
 const dateOptions = () => {
@@ -68,13 +86,15 @@ const dateOptions = () => {
 };
 
 const Collection = () => {
-  const { settings, templates } = useLoaderData() as {
+  const { settings, templates, themeCustomization, customUploadFiles } = useLoaderData() as {
     settings: ClientSettings;
     templates: Template[];
+    themeCustomization: boolean;
+    customUploadFiles: FileType[];
   };
   const { links, custom, ...formData } = settings;
 
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
   formData.private = !formData.private;
@@ -87,7 +107,11 @@ const Collection = () => {
     clearErrors,
     formState: { errors },
   } = useForm<ClientSettings>({
-    defaultValues: formData,
+    defaultValues: {
+      ...formData,
+      themeAssets: formData.themeAssets ?? {},
+      themeVars: formData.themeVars ?? {},
+    },
     mode: 'onSubmit',
   });
 
@@ -95,20 +119,25 @@ const Collection = () => {
     if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
       delete data.newNameGeneration;
     }
+    if (themeCustomization) {
+      const lightLogo = data.themeAssets?.siteLogo?.light?.trim();
+      const lightFavicon = data.themeAssets?.favicon?.light?.trim();
+      if (lightLogo) data.site_logo = lightLogo;
+      if (lightFavicon) data.favicon = lightFavicon;
+    }
     data.private = !data.private;
-    const response = await SettingsAPI.save(data);
+    const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
+    const response = await SettingsAPI.save(rest);
     if (response instanceof FetchResponseError) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: response.message || undefined,
-      });
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        response.message || undefined
+      );
     } else {
-      setSettings(response);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Settings updated</Translate>,
-      });
+      setSettings(prev => mergeClientSettings(prev, response));
+      notify('success', t('System', 'Settings updated', null, false));
     }
     await revalidator.revalidate();
   };
@@ -116,13 +145,8 @@ const Collection = () => {
   const labelWithTip = (label: React.ReactNode, tip: React.ReactNode) => (
     <span className="flex gap-4">
       {label}
-      <Tooltip
-        // eslint-disable-next-line react/style-prop-object
-        style="light"
-        content={tip}
-        placement="right"
-      >
-        <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+      <Tooltip content={tip} placement="right">
+        <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
       </Tooltip>
     </span>
   );
@@ -148,8 +172,13 @@ const Collection = () => {
     },
   ];
 
+  const watchedThemeVars = watch('themeVars') ?? {};
+  const watchedThemeAssets = watch('themeAssets') ?? {};
+  const watchedSiteLogo = watch('site_logo');
+  const watchedFavicon = watch('favicon');
+
   return (
-    <div className="w-full h-full overflow-y-auto" data-testid="settings-collection">
+    <div className="w-full h-full" data-testid="settings-collection">
       <SettingsContent>
         <SettingsContent.Header title="Collection" />
         <SettingsContent.Body>
@@ -164,14 +193,31 @@ const Collection = () => {
                     {...register('site_name', { required: true })}
                   />
                 </div>
-                <div className="sm:col-span-1">
-                  <InputField
+                {!themeCustomization ? (
+                  <CustomUploadImagePicker
                     id="favicon"
-                    type="text"
-                    label={<Translate>Custom Favicon</Translate>}
-                    {...register('favicon')}
+                    label={labelWithTip(<Translate>Custom Favicon</Translate>, tips.customFavIcon)}
+                    registerProps={register('favicon')}
+                    value={watch('favicon')}
+                    onChange={v => setValue('favicon', v, { shouldDirty: true })}
+                    files={customUploadFiles}
+                    selectButtonTitle={<Translate>Select favicon image</Translate>}
+                    recommendedSize="16x16 to 512x512 px (square)"
+                    sizeRule={faviconImageSizeRule}
+                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]"
                   />
-                </div>
+                ) : null}
+                {themeCustomization && (
+                  <ThemeSelectionCard
+                    themeVars={watchedThemeVars}
+                    onThemeChange={v => setValue('themeVars', v, { shouldDirty: true })}
+                    themeAssets={watchedThemeAssets}
+                    onThemeAssetsChange={v => setValue('themeAssets', v, { shouldDirty: true })}
+                    siteLogo={watchedSiteLogo}
+                    favicon={watchedFavicon}
+                    customUploadFiles={customUploadFiles}
+                  />
+                )}
                 <div className="sm:col-span-1">
                   <Select
                     label={<Translate>Default View</Translate>}
@@ -240,13 +286,8 @@ const Collection = () => {
               title={
                 <span className="flex gap-4">
                   <Translate>Analytics</Translate>
-                  <Tooltip
-                    // eslint-disable-next-line react/style-prop-object
-                    style="light"
-                    content={tips.analytics}
-                    placement="right"
-                  >
-                    <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+                  <Tooltip content={tips.analytics} placement="right">
+                    <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
                   </Tooltip>
                 </span>
               }

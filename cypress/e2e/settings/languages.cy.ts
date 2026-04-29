@@ -50,14 +50,13 @@ describe('Languages', () => {
       addLanguages();
 
       cy.wait('@addLanguage');
-      cy.contains('Dismiss').click();
       cy.contains('tr', 'Spanish', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('tr', 'French', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
-      cy.contains('Languages installed successfully').click();
+      cy.contains('Languages installed');
     });
 
     it('should render the list of installed languages', () => {
-      cy.get('[data-testid=settings-languages]').matchImageSnapshot();
+      cy.get('[data-testid=languages]').matchImageSnapshot();
       cy.contains('tr', 'English');
       cy.contains('tr', 'Spanish');
       cy.contains('tr', 'French');
@@ -83,8 +82,7 @@ describe('Languages', () => {
       cy.contains('[data-testid=modal] button', 'Uninstall').click();
 
       cy.wait('@deleteLanguage');
-      cy.contains('Dismiss').click();
-      cy.contains('Language uninstalled successfully').click();
+      cy.contains('Language uninstalled');
       cy.contains('French').should('not.exist');
     });
   });
@@ -95,7 +93,6 @@ describe('Languages', () => {
       cy.contains('tr', 'Spanish').contains('button', 'Default').click();
       cy.wait('@setDefault');
       cy.contains('tr', 'Spanish').contains('Uninstall').should('not.exist');
-      cy.contains('Dismiss').click();
     });
     it('should use the default language if there is not specified locale', () => {
       cy.clearAllCookies();

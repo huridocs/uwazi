@@ -1,19 +1,20 @@
+import { ObjectId } from 'mongodb';
+
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
-import { ObjectId } from 'mongodb';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { ThesaurusNameAlreadyExistsError } from '#api/core/domain/thesaurus/errors.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
 import { ThesauriService } from '../ThesauriService.js';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
 
 const factory = getFixturesFactory();
 
@@ -64,7 +65,7 @@ const createSut = (props?: CreateProps) =>
     const thesauriService = new ThesauriService({
       thesauriDS,
       thesaurusTranslationService,
-      jobsDispatcher: ExecutionContext.jobsDispatcher,
+      dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
     });
 
     const sut = new CreateThesaurusUseCase({

@@ -13,8 +13,7 @@ import {
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { ClientTranslationSchema } from '#app/istore.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
@@ -34,11 +33,11 @@ const RenderIfVisible = resolveDefaultExport<React.ComponentType<{ children: Rea
 );
 import * as translationsAPI from '#V2/api/translations/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { Settings } from '#shared/types/settingsType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { LanguagePill } from './components/LanguagePill.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -195,7 +194,7 @@ const EditTranslations = () => {
   const fetcher = useFetcher<ClientTranslationSchema[] | FetchResponseError>();
   const [hideTranslated, setHideTranslated] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
@@ -231,31 +230,27 @@ const EditTranslations = () => {
   useEffect(() => {
     switch (true) {
       case fetcher.data instanceof FetchResponseError:
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
-        });
+        notify(
+          'error',
+          t('System', 'An error occurred', null, false),
+          undefined,
+          fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined
+        );
         break;
 
       case fetcher.formData?.get('intent') === 'form-submit':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Translations saved</Translate>,
-        });
+        notify('success', t('System', 'Translations saved', null, false));
         break;
 
       case fetcher.formData?.get('intent') === 'file-upload':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Translations imported.</Translate>,
-        });
+        notify('success', t('System', 'Translations imported.', null, false));
         break;
 
       default:
         break;
     }
-  }, [fetcher.data, fetcher.formData, setNotifications]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.data, fetcher.formData]);
 
   useEffect(() => {
     if (fetcher.data) {
@@ -300,7 +295,7 @@ const EditTranslations = () => {
                 className="px-5 pt-5"
                 onToggle={() => setHideTranslated(!hideTranslated)}
               >
-                <div className="pl-1 text-sm text-gray-700">
+                <div className="pl-1 text-sm [color:var(--color-theme-text-secondary)]">
                   <Translate>Untranslated Terms</Translate>
                 </div>
               </ToggleButton>
@@ -315,14 +310,14 @@ const EditTranslations = () => {
                   const values = tableData[title];
                   return (
                     <RenderIfVisible key={title}>
-                      <div className="relative w-full mb-4 border rounded-md shadow-md border-gray-50">
+                      <div className="relative mb-4 w-full rounded-md border shadow-md [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
                         <table className="w-full text-sm text-left" data-testid="table">
                           {title && (
-                            <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
+                            <caption className="p-4 text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                               {title}
                             </caption>
                           )}
-                          <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                          <thead className="text-xs uppercase [color:var(--color-theme-text-muted)] [background-color:var(--color-theme-surface-muted)]">
                             <tr className="border-b">
                               <th scope="col" className="px-6 py-3">
                                 <div className="inline-flex">
@@ -384,9 +379,9 @@ const EditTranslations = () => {
                   );
                 })
               ) : (
-                <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
-                  <InformationCircleIcon className="w-10 text-primary-800" />
-                  <span className="text-primary-800">
+                <div className="flex items-center gap-2 rounded-md border p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] [background-color:var(--color-theme-feedback-info-tint)]">
+                  <InformationCircleIcon className="w-10 [color:var(--color-theme-action-primary)]" />
+                  <span className="[color:var(--color-theme-action-primary)]">
                     <Translate>There are no untranslated terms</Translate>
                   </span>
                 </div>
@@ -400,7 +395,7 @@ const EditTranslations = () => {
               {contextId === 'System' && (
                 <>
                   <Button
-                    styling="light"
+                    variant="ghost"
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => fileInputRef.current?.click()}
@@ -418,7 +413,7 @@ const EditTranslations = () => {
               )}
             </div>
             <Link to="/settings/translations">
-              <Button styling="light" type="button" disabled={isSubmitting}>
+              <Button variant="ghost" type="button" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>
               </Button>
             </Link>

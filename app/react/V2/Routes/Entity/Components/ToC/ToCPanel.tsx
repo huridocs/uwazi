@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { TocSchema } from '#shared/types/commonTypes.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { update as updateFile } from '#V2/api/files/index.js';
@@ -11,12 +11,12 @@ import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { NeedAuthorization, BlankState } from '#V2/Components/UI/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { useToc, useTocActions } from './tocAtom.js';
 import { getPageNumber } from './utils.js';
 import { pdfController } from '../atoms.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const ToCPanel = ({
   toc,
@@ -28,7 +28,7 @@ const ToCPanel = ({
   file?: FileType;
 }) => {
   const revalidator = useRevalidator();
-  const setNotification = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const tocState = useToc();
   const {
     setToc,
@@ -96,10 +96,7 @@ const ToCPanel = ({
       const result = await updateFile(updatedFile);
 
       if (result instanceof FetchResponseError || result instanceof Error) {
-        setNotification({
-          type: 'error',
-          text: <Translate>Failed to save table of contents</Translate>,
-        });
+        notify('error', t('System', 'Failed to save table of contents', null, false));
         // Don't exit edit mode on error so user can retry
       } else {
         // Success - invalidate cache and revalidate to get the latest data from the server
@@ -107,17 +104,11 @@ const ToCPanel = ({
           entityLoaderCache.invalidateEntity(file.entity);
         }
         await revalidator.revalidate();
-        setNotification({
-          type: 'success',
-          text: <Translate>Table of contents saved successfully</Translate>,
-        });
+        notify('success', t('System', 'Table of contents saved successfully', null, false));
         setEditMode(false);
       }
     } catch (error) {
-      setNotification({
-        type: 'error',
-        text: <Translate>Failed to save table of contents</Translate>,
-      });
+      notify('error', t('System', 'Failed to save table of contents', null, false));
       // Don't exit edit mode on error so user can retry
     } finally {
       setIsSaving(false);
@@ -166,7 +157,7 @@ const ToCPanel = ({
         <div className="flex flex-col gap-2 h-full">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 py-2">
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-sm font-bold [color:var(--color-theme-text-primary)]">
                 <Translate>Table of contents</Translate>
               </p>
               {generatedToc && (
@@ -189,7 +180,7 @@ const ToCPanel = ({
                   type="button"
                   onClick={expandAll}
                   disabled={isAllExpanded}
-                  className="text-sm font-medium text-gray-900 hover:text-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                  className="text-sm font-medium transition [color:var(--color-theme-text-primary)] hover:[color:var(--color-theme-text-secondary)] disabled:cursor-not-allowed disabled:[color:var(--color-theme-text-muted)]"
                 >
                   <Translate>Expand All</Translate>
                 </button>
@@ -197,7 +188,7 @@ const ToCPanel = ({
                   type="button"
                   onClick={collapseAll}
                   disabled={isAllCollapsed}
-                  className="text-sm font-medium text-gray-900 hover:text-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                  className="text-sm font-medium transition [color:var(--color-theme-text-primary)] hover:[color:var(--color-theme-text-secondary)] disabled:cursor-not-allowed disabled:[color:var(--color-theme-text-muted)]"
                 >
                   <Translate>Collapse All</Translate>
                 </button>
@@ -219,7 +210,7 @@ const ToCPanel = ({
           ) : (
             <BlankState
               icon={
-                <ListBulletIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+                <ListBulletIcon className="h-7 w-7 rounded-full p-1 [background-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] [color:var(--color-theme-text-primary)]" />
               }
               title={<Translate>No Table of contents</Translate>}
               description={
@@ -238,22 +229,22 @@ const ToCPanel = ({
           {!tocState.isEditMode ? (
             <>
               <NeedAuthorization roles={['admin', 'editor']}>
-                <Button styling="outline" onClick={handleEdit}>
+                <Button variant="secondary" onClick={handleEdit}>
                   <Translate>Edit</Translate>
                 </Button>
               </NeedAuthorization>
               <NeedAuthorization roles={['admin', 'editor']}>
-                <Button styling="outline">
+                <Button variant="secondary">
                   <Translate>Mark as reviewed</Translate>
                 </Button>
               </NeedAuthorization>
             </>
           ) : (
             <>
-              <Button color="success" onClick={handleSave} disabled={isSaving}>
+              <Button variant="success" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? <Translate>Saving...</Translate> : <Translate>Save</Translate>}
               </Button>
-              <Button styling="outline" onClick={handleCancel}>
+              <Button variant="secondary" onClick={handleCancel}>
                 <Translate>Cancel</Translate>
               </Button>
             </>

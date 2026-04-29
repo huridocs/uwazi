@@ -129,7 +129,7 @@ const FiltersSidepanel = ({
           <Button
             className="grow"
             type="button"
-            styling="outline"
+            variant="secondary"
             onClick={() => {
               closeSidepanel();
             }}

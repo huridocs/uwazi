@@ -22,6 +22,7 @@ const {
   ENVIRONMENT,
   FEATURE_FLAG_FILE_CACHE_HEADERS,
   FEATURE_FLAG_PARAGRAPH_EXTRACTION,
+  FEATURE_FLAG_THEME_CUSTOMIZATION,
   DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
   JSON_LOGS,
@@ -32,6 +33,7 @@ const {
   SENTRY_API_DSN,
   UPLOADS_FOLDER,
   USER_SESSION_SECRET,
+  NEW_HEADER,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -119,15 +121,16 @@ export const config = {
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
+      themeCustomization: FEATURE_FLAG_THEME_CUSTOMIZATION === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,
       v2UpdateEntity: false,
       v2CSVImport: false,
       v2UpdateThesaurus: false,
-      v1CSVImportCompat: false,
       v2GetEntity: false,
       v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,
       v2DeleteEntity: false,
+      newHeader: NEW_HEADER === 'true' || false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

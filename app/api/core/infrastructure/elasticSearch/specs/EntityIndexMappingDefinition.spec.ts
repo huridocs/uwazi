@@ -86,5 +86,21 @@ describe('EntityIndexMappingDefinition', () => {
     it('declares fileId as keyword', () => {
       expect(properties.fileId).toEqual({ type: 'keyword' });
     });
+
+    it('does not include a language field', () => {
+      expect(properties.language).toBeUndefined();
+    });
+
+    it('does not include a title field at root level', () => {
+      expect(properties.title).toBeUndefined();
+    });
+
+    it('declares rawEntities as a non-indexed object', () => {
+      expect(properties.rawEntities).toEqual({ type: 'object', enabled: false });
+    });
+
+    it('does not include the old rawEntity field', () => {
+      expect(properties.rawEntity).toBeUndefined();
+    });
   });
 });

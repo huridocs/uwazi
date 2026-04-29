@@ -402,8 +402,8 @@ const getRoutes = (
 ) => {
   const descriptor = getIndexDescriptor(settings, userId);
   const indexElement = buildIndexElement(descriptor, indexComponents);
-  const parameters = descriptor.parameters;
-  const defaultToLibrary = descriptor.defaultToLibrary;
+  const { parameters } = descriptor;
+  const { defaultToLibrary } = descriptor;
   const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(

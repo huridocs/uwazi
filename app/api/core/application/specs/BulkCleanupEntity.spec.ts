@@ -4,14 +4,14 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { elastic } from '#api/search/index.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
 import { FilesService } from '../FilesService.js';
 
 const factory = getFixturesFactory();
@@ -160,30 +160,33 @@ type CreateSutProps = {
 
 const createSut = (props?: CreateSutProps) => {
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-  const dispatchMock = jest.fn();
-  const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-    dispatchMany: async callback => {
-      await callback(dispatchMock);
-    },
+  const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
+    deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
+    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
+    syncRelationships: jest.fn().mockResolvedValue(undefined),
+    cleanupEntities: jest.fn().mockResolvedValue(undefined),
+    postProcessTemplateEntities: jest
+      .fn()
+      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+        await callback(jest.fn());
+      }),
   });
 
-  const { sut } = testingEnvironment.runWithContext(
-    () => {
-      const defaultFilesService = FilesServiceFactory.default({
+  const { sut } = testingEnvironment.runWithContext(() => {
+    const defaultFilesService = FilesServiceFactory.default({
+      eventBus,
+      jobsDispatcher,
+    });
+    return {
+      sut: BulkCleanupEntityUseCaseFactory.default({
+        filesService: defaultFilesService,
         eventBus,
-      });
-      return {
-        sut: BulkCleanupEntityUseCaseFactory.default({
-          filesService: defaultFilesService,
-          eventBus,
-          ...props,
-        }),
-      };
-    },
-    { factories: { jobsDispatcher: () => jobsDispatcher } }
-  );
+        ...props,
+      }),
+    };
+  });
 
-  return { sut, eventBus, dispatchMock };
+  return { sut, eventBus, jobsDispatcher };
 };
 
 describe('BulkCleanupEntityUseCase', () => {
@@ -290,7 +293,7 @@ describe('BulkCleanupEntityUseCase', () => {
   });
 
   it('should delete files associated with the deleted entities', async () => {
-    const { sut, dispatchMock } = createSut();
+    const { sut, jobsDispatcher } = createSut();
 
     const input = {
       sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
@@ -304,7 +307,11 @@ describe('BulkCleanupEntityUseCase', () => {
       expect.objectContaining({ _id: factory.id('file_1_sharedId4'), entity: 'sharedId4' }),
     ]);
 
-    expect(dispatchMock).toHaveBeenCalledTimes(7);
+    expect(jobsDispatcher.deleteFilesFromStorage).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.any(String)])
+    );
+    const [paths] = (jobsDispatcher.deleteFilesFromStorage as jest.Mock).mock.calls[0];
+    expect(paths).toHaveLength(7);
   });
 
   it('should emit EntityDeletedEvent for each sharedId', async () => {

@@ -1,5 +1,4 @@
 Key,Korean
-% of sentences above threshold,임계값 이상 문장 비율
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -12,6 +11,7 @@ A valid email is required,이메일이 필요합니다.
 Accept,수락
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
+Accessibility checks need attention,Accessibility checks need attention
 Account,계정
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -68,9 +68,11 @@ Adding items to the thesauri,Adding items to the thesauri
 Admin,관리자
 Administrators and Editors,관리자 및 편집자
 Admins,Admins
+Advanced colors,Advanced colors
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
+All clear,All clear
 All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
@@ -82,6 +84,8 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
@@ -124,6 +128,7 @@ cancel csv import,Cancel the import process. This will stop the creation of new 
 Canceling,Canceling
 Canceling...,Canceling...
 Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Cannot find extractor
 Captcha,보안 문자
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
@@ -132,6 +137,7 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,카드
 Cards view,카드 뷰
+Change,Change
 Change password,비밀번호 변경
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
@@ -140,6 +146,8 @@ Character support description,This option enhances support for non-Latin languag
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,Choose which data to use for training
 Clear,Clear
 Clear all,Clear all
@@ -220,7 +228,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,사용자 맞춤 구성 오류
@@ -230,7 +238,10 @@ Custom JS,Custom JS
 Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,사용자 맞춤 업로드
+Customize,Customize
+Customized,Customized
 Dark,Dark
+Dark Theme,Dark Theme
 Dashboard,Dashboard
 Date,Date
 Date added,추가한 날짜
@@ -286,6 +297,7 @@ Documentation,기록
 documents,문서
 Documents,문서
 documents.,문서
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -293,6 +305,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,다운로드
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,이 창에 파일을 드래그 앤 드롭해 업로드합니다.
 Drag row,Drag row
 Drop your files here to upload or,여기에 파일을 드롭해 업로드합니다.
@@ -302,12 +315,12 @@ Duplicated name,중복된 이름
 Duplicated username,사용자 이름 중복
 Duration,Duration
 Edit,편집
-Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
+Edit theme,Edit theme
 Edit user,Edit user
 Editor,편집자
 editor,편집자
@@ -342,7 +355,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,탐색
 Export CSV,CSV 추출
 Exporting entities to CSV,엔티티를 CSV 로 추출
 Extension Token,Extension Token
@@ -361,10 +373,10 @@ Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
-1. Upload your icon in Custom Uploads.
-2. Copy its URL.
-3. Choose ""Custom Icon"" and paste the URL in the indicated field.
-4. Reload the page to see your favicon in action."
+1. Upload your icon in Custom Uploads if needed.
+2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
+3. Reload the page to see your favicon in action."
+Favicon no images hint,Favicon no images hint
 FEATURED,선택 필터
 File,파일
 File deleted,File deleted
@@ -387,7 +399,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,미세 조정
 Fit,맞추기
 Flag,깃발
 for,for
@@ -414,8 +425,10 @@ Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
 Groups,그룹
+Header and button preview,Header and button preview
 help,도움말
 here,here
+Hide,Hide
 Hide actions,Hide actions
 Hide label,라벨 숨기기
 Hide toolbar,Hide toolbar
@@ -430,6 +443,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",외부 URL 인 경우 전체 경로 (http://www. 부터 시작하는 전체 URL) 를 넣으십시오.
 "If you want to continue, please type",계속하려면 다음을 입력하십시오:
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,업로드
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -456,6 +470,7 @@ Input,Input
 Install,Install
 Install Language(s),Install Language(s)
 Install the browser extension.,Install the browser extension.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -485,9 +500,7 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,언어
 Language Code,Language Code
 Language deleted,언어가 삭제되었습니다.
-Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
 Language reset success,Language reset success
-Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
 Language(s),Language(s)
 Language:,Language:
@@ -502,8 +515,11 @@ Library,라이브러리
 library list view,라이브러리 리스트 뷰
 library map view,라이브러리 지도 뷰
 library table view,라이브러리 테이블 뷰
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,링크 완료
+Live preview,Live preview
 Live translate,Live translate
 Loading,Loading
 Login,로그인
@@ -599,6 +615,7 @@ No icon / flag,아이콘/플래그 없음
 No items available,No items available
 No Label,라벨 없음
 No label,No label
+No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,검색된 옵션 없음
 No property,속성 없음
@@ -614,6 +631,7 @@ No table of contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음
 No text match description,You can type something different in the search box to get some results.
 No type,유형 없음
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
 No value,값 없음
 No Value,값 없음
@@ -625,7 +643,7 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,임계값 이상 문장 수
+Notifications,Notifications
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR (광학 문자 인식)
@@ -658,7 +676,6 @@ Other,기타
 other,기타
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,out of
 Page,페이지
 Page not found,Page not found
 Pages,페이지
@@ -688,7 +705,6 @@ Plain text,일반 텍스트
 Please contact an admin for details.,자세한 내용은 관리자에게 문의하십시오.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,이미지에 있는 문자와 숫자를 입력해 추출을 시작하십시오.
-Precision,정확도
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -698,6 +714,7 @@ Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link 
 Press enter to add,Enter 키를 눌러 추가
 Preview,미리보기
 Previous,이전
+Primary button,Primary button
 Primary Documents,기본 문서
 Priority sorting,우선순위 정렬
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -749,9 +766,11 @@ RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,수신 이메일 주소
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Recommended,Recommended
 Reference,Reference
 References,참고문헌
 Reject,거부
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,연결
 Relationship Type,Relationship Type
@@ -809,7 +828,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,검색
 Search item,아이템 검색
-Search not found,검색 결과 없음
 Search related entities or documents,연결된 엔티티 및 문서 검색
 Search relevance,관련성 검색
 Search text,텍스트 검색
@@ -821,14 +839,18 @@ Search Tips: one char wildcard,검색 팁: one char wildcard
 Search Tips: proximity,검색 팁: 근접성
 Search Tips: wildcard,검색 팁: wildcard
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
 Select all,전체 선택
+Select an existing image,Select an existing image
+Select favicon image,Select favicon image
 Select files on your device,기기에서 파일을 선택하십시오.
 Select from computer,Select from computer
 Select relationship type,연결 유형 선택
+Select site logo image,Select site logo image
 Select target paragraph,대상 단락 선택
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
@@ -838,18 +860,11 @@ selected,선택 완료
 selected of,~ 중 선택됨
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,시맨틱 서치
-Semantic Search,시맨틱 서치
-Semantic search minimum sentences help,시맨틱 서치를 위한 최소 문장 팁
-Semantic search overview,시맨틱 서치 개요
-Semantic search results,시맨틱 서치 결과
-Semantic search threshold help,시맨틱 서치 임계값 도움말
 Send,전송
 Send recovery email,복구 이메일 전송
 Sending email,발신 이메일 주소
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,임계값 이상 문장
 Services,Services
 Set as default,기본으로 설정
 Set default language,Set default language
@@ -874,6 +889,11 @@ Showing,Showing
 shown of,/
 Sign in,로그인
 Single relationships must have a hub,Single relationships must have a hub
+Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
+Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,크기
 Skip to main content,Skip to main content
 Something went wrong,오류
@@ -922,6 +942,7 @@ Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Tasks,Tasks
 Template,템플릿
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template color,Template color
@@ -947,6 +968,11 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,엔티티 뷰가 활성화된 페이지가 없습니다.
 There are no untranslated terms,There are no untranslated terms
 Thesauri,시소러스
@@ -955,8 +981,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name
@@ -985,7 +1011,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,임계점
 Time,시간
 Timelinks,Timelinks
 Timestamp,Timestamp
@@ -1027,11 +1052,13 @@ Two-factor verification failed,이중 인증 절차 실패
 Two-step verification,이중 인증
 Two-step verification token required,Two-step verification token required
 Type,유형
+U,U
 "Unable to save, failed response","Unable to save, failed response"
 Unauthorized,권한 없음
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Uninstalling language,Uninstalling language
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,OCR 지원되지 않는 언어
@@ -1048,9 +1075,11 @@ Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,ZIP 혹은 CSV 파일 업로드
 Upload and select file,업로드 및 파일 선택
 Upload from computer,컴퓨터에서 업로드
+Upload image,Upload image
 Upload PDF,PDF 업로드
 Upload PDF(s) to create,PDF 업로드해 엔티티 생성
 Uploaded attachment,Uploaded attachment
@@ -1078,6 +1107,7 @@ Users,사용자
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi 제작 및 개발:
 Uwazi UI,Uwazi UI
 Validating,Validating
@@ -1092,8 +1122,6 @@ view,보기
 View entities,View entities
 View entity,View entity
 View in library,라이브러리에서 보기
-View less,View less
-View more,View more
 View page,페이지 보기
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,경고: 여러 엔티티 동시에 편집

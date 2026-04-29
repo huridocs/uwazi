@@ -1,14 +1,13 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
+
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
 import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { User } from '#api/users.v2/model/User.js';
 import { CreateEntityFromPDFUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityFromPDFUseCaseFactory.js';
+import { User } from '#api/users.v2/model/User.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 const factory = getFixturesFactory();
 

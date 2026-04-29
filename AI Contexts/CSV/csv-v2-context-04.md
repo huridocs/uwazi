@@ -33,10 +33,10 @@
   - Queue dispatchers under `app/api/csv.v2/infrastructure/queue/*JobDispatcher.ts`.
   - Specs and fixtures under `app/api/csv.v2/specs/**` and `app/api/csv.v2/application/jobs/specs/**`.
 
-- **Route**:
-  - `POST /api/import` is still the entrypoint.
-  - `app/api/csv.v2/routes/routes.ts` owns the route when `v2CSVImport` feature flag is enabled (see `app/api/api.js` + `app/api/config`).
-  - V1 (`app/api/csv/csvLoader.ts` via `v1Import`) remains as a fallback path behind the feature flag for backward compatibility.
+- **Route (current baseline, Apr 2026)**:
+  - `POST /api/csvImportEntities` is the V2 entrypoint.
+  - `POST /api/import` remains the legacy V1 route.
+  - Backend does not switch V1/V2 via `v2CSVImport`; that flag is client-facing only.
 
 #### 2.2 Registration (`CsvImportEntities`)
 

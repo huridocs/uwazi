@@ -1,5 +1,4 @@
 Key,Ukrainian
-% of sentences above threshold,"% пропозицій, що перевищують поріг"
 *please keep this key secret and don't share it.,"*будь ласка, зберігайте цей ключ у таємниці та не передавайте його нікому."
 + click to select multiple cards.,"(+) натисніть, щоб вибрати декілька карток"
 2FA,2FA
@@ -12,6 +11,7 @@ A valid email is required,Потрібна дійсна електронна а�
 Accept,Прийняти
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
 Accepting suggestions,Прийняття пропозицій
+Accessibility checks need attention,Accessibility checks need attention
 Account,Акаунт
 Account locked,Обліковий запис заблоковано
 Account unlocked successfully,Обліковий запис успішно розблоковано
@@ -68,9 +68,11 @@ Adding items to the thesauri,Додавання елементів до теза
 Admin,Адмін
 Administrators and Editors,Адміністратори та Редактори
 Admins,Адміни
+Advanced colors,Advanced colors
 ALL,ВСІ
 All,ВСІ
 "All changes will be lost, are you sure you want to proceed?","Усі зміни будуть втрачені, ви впевнені, що хочете продовжити?"
+All clear,All clear
 All data,Всі дані
 All editing options will be disabled.,Всі опції редагування будуть вимкнені.
 All of the paragraphs will be deleted,Всі абзаци будуть видалені
@@ -78,10 +80,12 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Дозволити обхід капчі
 Already exists,Вже існує
 Amount,Сума
-An error has occured while deleting a language:,Виникла помилка при видаленні мови:
-An error has occured while installing languages:,Виникла помилка під час встановлення мов:
+An error has occured while deleting a language:,An error has occured while deleting a language:
+An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Виникла помилка
 An error has occurred during data export,Під час експорту даних сталася помилка
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,Виникла помилка
 Analytics,Аналітика
 Analytics description,"Якщо ви хочете відстежувати аналітику, пов'язану з відвідуваннями вашої колекції, Uwazi підтримує як Google Analytics, так і Matomo."
@@ -124,6 +128,7 @@ cancel csv import,Cancel the import process. This will stop the creation of new 
 Canceling,Скасування
 Canceling...,Скасування...
 Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Не вдається знайти екстрактор
 Captcha,Captcha
 Captcha bypass,"Увімкнувши цю опцію, ви можете дозволити користувачам надсилати заявки до ваших шаблонів з білого списку без необхідності заповнювати CAPTCHA.
@@ -132,6 +137,7 @@ Captcha bypass,"Увімкнувши цю опцію, ви можете дозв
 шкідливим контентом."
 Cards,Картки
 Cards view,Вид карток
+Change,Change
 Change password,Змінити пароль
 Change Password,Змінити пароль
 Changes in the thesaurus will impact all the entities using these values.,"Зміни в тезаурусі вплинуть на всіх суб'єктів, які використовують ці значення."
@@ -142,6 +148,8 @@ Character support description,"Цей параметр покращує підт
 Character support process warning,"Цей процес може зайняти кілька хвилин і, ймовірно, змінить URL-адреси на фільтри бібліотек. Якщо у вас є меню або посилання, що використовують такі URL-адреси, вони, ймовірно, перестануть працювати після оновлення. Вам потрібно буде оновити їх вручну."
 Character support revert warning,"Вибравши цю опцію, ви не зможете повернутися до використання старих імен властивостей. Якщо у вас немає проблем з іменами властивостей шаблону, ми рекомендуємо не позначати цю опцію."
 Check to make this instance public (non-logged in users can see public documents and entities),"Установіть прапорець, щоб зробити цей екземпляр загальнодоступним (неавторизовані користувачі можуть бачити загальнодоступні документи та сутності)"
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,"Виберіть, які дані використовувати для навчання"
 Clear,Чисто
 Clear all,Зачистити все.
@@ -179,7 +187,7 @@ Connect to a paragraph,З'єднати з абзацом
 Connect to an entity,Підключіться до організації
 Connect to document,Connect to document
 Connect to paragraph,Connect to paragraph
-Connected to server,Підключено до сервера
+Connected to server,Connected to server
 Connection type,Тип зв'язку
 Contact email description,"Тут ви можете налаштувати контактний email та email, який з'являється, коли Uwazi надсилає сповіщення користувачеві"
 Contact Form,Форма зворотнього зв'язку
@@ -222,7 +230,7 @@ Created user group,Створена група користувачів
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
@@ -232,7 +240,10 @@ Custom JS,Спеціальний JS
 Custom landing page,Налаштована цільова сторінка
 custom page error warning,"На цій кастомній сторінці сталася несподівана помилка, вона може не працювати належним чином. Будь ласка, зв'яжіться з адміністратором для уточнення деталей."
 Custom Uploads,Персоналізовані завантаження
+Customize,Customize
+Customized,Customized
 Dark,Темний
+Dark Theme,Dark Theme
 Dashboard,Приладова панель
 Date,Date
 Date added,Дата додавання
@@ -288,6 +299,7 @@ Documentation,Документація
 documents,документи
 Documents,Документи
 documents.,документи.
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -295,6 +307,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,Завантажити
 Download a third-party authenticator app from your mobile store.,Завантажте сторонній додаток-автентифікатор з вашого мобільного магазину.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
 Drag row,Перетягування рядка
 Drop your files here to upload or,"Опустіть свої файли сюди, щоб завантажити або"
@@ -304,12 +317,12 @@ Duplicated name,Дубльоване ім'я
 Duplicated username,Продубльоване ім'я користувача
 Duration,Duration
 Edit,Редагувати
-Edit all documents matching this criteria,"Відредагуйте всі документи, які відповідають цим критеріям"
 Edit Extractor,Редагувати витягач
 Edit File,Редагувати файл
 Edit group,Група редагування
 Edit item,Редагувати елемент
 Edit metadata of entities,Редагування метаданих сутностей
+Edit theme,Edit theme
 Edit user,Редагувати користувача
 Editor,Редактор
 editor,Редактор
@@ -344,7 +357,6 @@ Error setting default template,Помилка встановлення шабл�
 Error updating thesauri.,Помилка оновлення тезаурусів.
 Expand all,Розгорнути все
 Expand All,Expand All
-Exploration,Вивчення
 Export CSV,Експортувати CSV
 Exporting entities to CSV,Експортувати об'єкти до CSV
 Extension Token,Токен розширення
@@ -363,10 +375,10 @@ Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Іконка - це невелика піктограма, яка представляє вашу колекцію у вкладках та закладках браузера. За замовчуванням це логотип Uwazi. Ви можете використовувати свій власний:
 
-1. Завантажте свою іконку в Користувацькі завантаження.
-2. Скопіюйте її URL-адресу.
-3. Виберіть ""Користувацька іконка"" і вставте URL-адресу у вказане поле.
-4. Перезавантажте сторінку, щоб побачити вашу іконку в дії."
+1. За потреби завантажте свою іконку в Користувацькі завантаження.
+2. Натисніть ""Вибрати зображення фавікону"" і оберіть файл (лише зображення з Користувацьких завантажень).
+3. Перезавантажте сторінку, щоб побачити вашу іконку в дії."
+Favicon no images hint,Favicon no images hint
 FEATURED,ОБРАНІ
 File,Файл
 File deleted,Файл видалено
@@ -389,7 +401,6 @@ Find suggestions after training,Знайдіть пропозиції після
 Find suggestions for,Знайдіть пропозиції для
 Find suggestions for selected,Знайдіть пропозиції для обраних
 Finding suggestions,Пошук пропозицій
-Fine tune,Тонке налаштування
 Fit,Пристосувати
 Flag,Прапорець
 for,за
@@ -416,8 +427,10 @@ Group Options,Параметри групи
 Group saved,Групу збережено
 Group updated,Групу оновлено
 Groups,Групи
+Header and button preview,Header and button preview
 help,допомога
 here,тут.
+Hide,Hide
 Hide actions,Приховати дії
 Hide label,Приховати мітку
 Hide toolbar,Приховати панель інструментів
@@ -432,6 +445,7 @@ ID:,ПОСВІДЧЕННЯ ОСОБИ:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Якщо це зовнішній URL, використовуйте повністю сформований URL. Тобто http://www.uwazi.io."
 "If you want to continue, please type","Якщо ви хочете продовжити, будь ласка, введіть"
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,Імпортувати
 Import asset,Імпортний актив
 Import completed,Імпорт завершено. Кількість створених сутностей:
@@ -458,6 +472,7 @@ Input,Вхідні дані
 Install,Встановити
 Install Language(s),Мову(и) інсталяції
 Install the browser extension.,Встановіть розширення для браузера.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Інструкції про те, як цього досягти, залежать від програми, яку ви використовуєте, будь ласка, зверніться до документації програми."
 Instructions to reset password,"Якщо вказана адреса електронної пошти правильна, ми надішлемо інструкції щодо зміни пароля."
 Instructions to reset the password were sent to the user,Користувачеві надіслано інструкцію зі скидання пароля
@@ -487,14 +502,12 @@ Landing page description,"Цільова сторінка - це перша ст
 Language,Мова
 Language Code,Код мови
 Language deleted,Мову видалено
-Language Install Start Message,"Розпочато процес інсталяції мови. Це може зайняти кілька хвилин, залежно від розміру колекції. Будь ласка, зачекайте, поки процес інсталяції завершиться."
 Language reset success,Успішне перезавантаження мови
-Language Uninstall Start Message,"Розпочато процес видалення мови. Залежно від розміру колекції це може зайняти кілька хвилин.  Будь ласка, дочекайтеся завершення процесу видалення."
-Language uninstalled successfully,Мову успішно видалено
+Language uninstalled successfully,Language uninstalled successfully
 Language(s),Мова(и)
 Language:,Мова:
 Languages,Мови
-Languages installed successfully,Мови встановлено успішно
+Languages installed successfully,Languages installed successfully
 Last updated,Останнє оновлення
 Latitude,Широта
 Learn more,Дізнатися більше
@@ -504,8 +517,11 @@ Library,Бібліотека
 library list view,перегляд бібліотеки у вигляді списку
 library map view,перегляд бібліотеки у вигляді карти
 library table view,перегляд бібліотеки у табличному вигляді
+Light,Light
+Light Theme,Light Theme
 Link,Посилання
 linked,пов'язаний
+Live preview,Live preview
 Live translate,Прямий переклад
 Loading,Завантаження
 Login,Увійти
@@ -601,6 +617,7 @@ No icon / flag,Немає піктограми / прапорця
 No items available,Немає товарів у наявності
 No Label,Немає мітки
 No label,Без етикетки
+No notifications or active tasks.,No notifications or active tasks.
 No options,Без варіантів
 No options found,Варіантів не знайдено
 No property,Товар не має цієї властивості
@@ -616,6 +633,7 @@ No table of contents description,Ви можете почати з виділе�
 No text match,"Немає тексту, що збігається"
 No text match description,"Ви можете ввести щось інше в поле пошуку, щоб отримати деякі результати."
 No type,Немає типу
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Відсутній правильний шаблон цілі
 No value,Немає значення
 No Value,Немає значення
@@ -627,7 +645,7 @@ Not already been use as source template in another extractor,Не викорис
 Not already been use as target template,Ще не використовувався як цільовий шаблон
 Not Found,Не знайдено
 Nothing selected,Нічого не вибрано
-Number of sentences above threshold,Кількість пропозицій перевищує поріг
+Notifications,Notifications
 Obsolete,Застарілий
 obsolete,застарілий
 OCR,Оптичне розпізнавання символів
@@ -660,7 +678,6 @@ Other,Інший
 other,Інший
 Other users will be affected by this action!,Ця дія вплине на інших користувачів!
 Others,Інші
-out of,з
 Page,Сторінка
 Page not found,Сторінку не знайдено
 Pages,Сторінки
@@ -690,7 +707,6 @@ Plain text,Звичайний текст
 Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
 Please type in,"Будь ласка, введіть"
 Please type in letters and numbers from the image to start the export.,"Будь ласка, введіть літери та цифри з зображення, щоб розпочати експорт."
-Precision,Точність
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -700,6 +716,7 @@ Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOK
 Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
 Previous,Попередній
+Primary button,Primary button
 Primary Documents,Основні документи
 Priority sorting,Пріоритетне сортування
 Priority sorting description,"Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
@@ -751,9 +768,11 @@ RAW,RAW
 Re-uploaded document,Перезавантажений документ
 Receiving email,Електронна пошта одержувача
 Receiving email description,"Якщо у вас є контактна форма, це адреса електронної пошти, на яку ви будете отримувати відповіді."
+Recommended,Recommended
 Reference,Посилання
 References,Посилання
 Reject,Відхилити
+Related entities created,Related entities created
 Relation type,Тип відношення
 Relationship,Взаємозв'язок
 Relationship Type,Тип взаємозв'язків
@@ -811,7 +830,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,Шукати
 Search item,Шукати предмет
-Search not found,Пошук нічого не виявив
 Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
 Search relevance,Релевантність пошуку
 Search text,Пошук за текстом
@@ -823,14 +841,18 @@ Search Tips: one char wildcard,"? для одного символу підст�
 Search Tips: proximity,"~ для близького пошуку. Тобто: ""статус""~5 знайде все, що має ""статус"" і ""статус"" на відстані 5 слів, наприклад, ""процесуальний статус"", ""особливий правовий статус""."
 Search Tips: wildcard,"Використовуйте * для пошуку за шаблоном. Наприклад: ""juris*"" буде відповідати таким словам, як юрисдикція, юрисдикційний, юристи, юриспруденція тощо."
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Секретні ключі
 Security,Безпека
 Select,Виберіть
 Select & Search,Вибір та пошук
 Select all,Вибрати все
+Select an existing image,Select an existing image
+Select favicon image,Вибрати зображення фавікону
 Select files on your device,Вибрати файли на вашому пристрої
 Select from computer,Виберіть з комп'ютера
 Select relationship type,Виберіть тип взаємозв'язків
+Select site logo image,Вибрати зображення логотипу сайту
 Select target paragraph,Виберіть цільовий абзац
 Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
 Select the template with the source documents.,Виберіть шаблон з вихідними документами.
@@ -840,18 +862,11 @@ selected,вибраний
 selected of,вибраний із
 Selected or suggested,Вибрані або запропоновані
 Selected templates,Вибрані шаблони
-Semantic search,Семантичний пошук
-Semantic Search,Семантичний пошук
-Semantic search minimum sentences help,"Семантичний пошук застосовується до кожного речення в документі. Відфільтруйте документи за мінімальною кількістю речень, що перевищують поріг."
-Semantic search overview,"Семантичний пошук - це метод отримання контекстних результатів. Його здатність фіксувати концепції та асоціації слів у людській мові дозволяє знаходити пов'язану інформацію, таку як синоніми, пов'язані категорії або сутності тощо."
-Semantic search results,Результати семантичного пошуку
-Semantic search threshold help,"Поріг визначає, наскільки близько результати відповідають концепції пошуку. Перемістіть повзунок вправо, щоб звузити концепцію пошукового запиту. Отримані результати будуть більш точними. Перемістіть повзунок вліво, щоб розширити концепцію і дослідити пов'язаний контент."
 Send,Відправити
 Send recovery email,Відправити лист для відновлення на електронну пошту
 Sending email,Електронна пошта відправника
 Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
 Sending labeled data,Відправлення маркованих даних
-Sentences above threshold,Пропозиції перевищують поріг
 Services,Послуги
 Set as default,Встановити за замовчуванням
 Set default language,Встановити мову за замовчуванням
@@ -876,6 +891,11 @@ Showing,Показати
 shown of,показано від
 Sign in,Увійти
 Single relationships must have a hub,Одинокі стосунки повинні мати центр
+Site logo description,"Логотип відображається у верхній панелі поруч із назвою вашої колекції (близько 200×32 пікселів).
+
+1. За потреби завантажте зображення в Користувацькі завантаження.
+2. Натисніть ""Вибрати зображення логотипу сайту"" і оберіть файл; показуються лише зображення з Користувацьких завантажень."
+Site logo no images hint,"Поки немає файлів зображень у Користувацьких завантаженнях. Спочатку додайте зображення PNG, SVG або JPEG."
 Size,Розмір
 Skip to main content,Перейти до основного змісту
 Something went wrong,Щось пішло не так
@@ -924,6 +944,7 @@ Target relationship type,Тип цільового зв'язку
 Target Template,Шаблон цілі
 Target template,Шаблон цілі
 Target's role in the relationship Source-Target.,Роль мішені у відносинах Джерело-Ціль.
+Tasks,Tasks
 Template,Шаблон
 Template changes are being applied to all related entities.,Зміни шаблону застосовуються до всіх пов'язаних сутностей.
 Template color,Template color
@@ -949,6 +970,11 @@ The request could not be processed.,Запит не вдалося оброби�
 The source of this template is a sync.,Джерелом цього шаблону є синхронізація.
 The token does not validate against the secret key,Токен не перевіряється за допомогою секретного ключа
 The token does not validate against the secret key!,Токен не перевіряється за допомогою секретного ключа!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,"Немає сторінок з можливостями, які надаються для перегляду об'єкта"
 There are no untranslated terms,Немає неперекладених термінів
 Thesauri,Предметний покажчик
@@ -957,8 +983,8 @@ Thesauri deleted,Тезауруси видалено
 Thesauri name,Назва тезаурусу
 thesauri new group desc,тезауруси нова група спуск
 thesauri new item desc,тезауруси новий елемент desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Оновлені тезауруси.
+Thesauri values created,Thesauri values created
 Thesaurus,Тезаурус
 Thesaurus created successfully.,Тезаурус створено успішно.
 Thesaurus name,Назва тезауруса
@@ -987,7 +1013,6 @@ This property will be the default filter in the library for this template.,Ця 
 This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
-Threshold,Поріг
 Time,Час
 Timelinks,Тимчасові посилання
 Timestamp,Відмітка часу
@@ -1029,11 +1054,13 @@ Two-factor verification failed,Двохетапна перевірка не вд
 Two-step verification,Двохетапна перевірка
 Two-step verification token required,Потрібен токен з двоетапною верифікацією
 Type,Тип
+U,U
 "Unable to save, failed response","Не вдалося врятувати, не вдалося відповісти"
 Unauthorized,Несанкціонований
 Unexpected error,Неочікувана помилка
 Uninstall,Видалити
 Uninstall language,Видалити мову
+Uninstalling language,Uninstalling language
 Unlink,Роз'єднати зв'язок.
 Unlock account,Розблокувати обліковий запис
 Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
@@ -1050,9 +1077,11 @@ Updated settings,Оновлені налаштування
 Updated translations,Оновлені переклади
 Updated user,Оновлений користувач
 Updating template properties across,Оновлення властивостей шаблону в усіх
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Завантажити ZIP або CSV файл.
 Upload and select file,Завантажити й вибрати файл
 Upload from computer,Завантажити з комп'ютера
+Upload image,Upload image
 Upload PDF,Завантажити PDF
 Upload PDF(s) to create,"Завантажити PDF, щоб створити"
 Uploaded attachment,Завантажено вкладення
@@ -1080,6 +1109,7 @@ Users,Користувачі
 Users & Groups,Користувачі та групи
 Using Authenticator,Використання автентифікатора
 Using URLs,Використання URL-адрес
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi розроблений
 Uwazi UI,Uwazi UI
 Validating,Validating
@@ -1094,8 +1124,6 @@ view,переглянути
 View entities,Перегляд сутностей
 View entity,Переглянути сутність
 View in library,Переглянути в бібліотеці
-View less,Переглянути менше
-View more,Переглянути більше
 View page,Переглянути сторінку
 WARNING,ПОПЕРЕДЖЕННЯ
 Warning: you are editing multiple entities. Fields marked with a,"Попередження: ви редагуєте декілька об'єктів. Поля, позначені"

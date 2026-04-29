@@ -58,7 +58,7 @@ const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
 const ActionsCell =
   (handleEditProperty: (property: PropertyRow) => void) =>
   ({ cell }: CellContext<PropertyRow, any>) => (
-    <Button size="small" styling="light" onClick={() => handleEditProperty(cell.row.original)}>
+    <Button size="small" variant="ghost" onClick={() => handleEditProperty(cell.row.original)}>
       <Translate>Edit</Translate>
     </Button>
   );

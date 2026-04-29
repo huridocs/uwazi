@@ -20,7 +20,7 @@ class CreateEntityFromPDFUseCaseFactory {
   ) {
     const { targetLanguage = 'en', ...depsOverrides } = overrides;
 
-    const tenant = ExecutionContext.tenant;
+    const { tenant } = ExecutionContext;
 
     let actor: User | undefined;
     try {
@@ -46,7 +46,7 @@ class CreateEntityFromPDFUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = EntitiesServiceFactory.default({ transactionManager });
+    const entitiesService = EntitiesServiceFactory.default();
 
     return new CreateEntityFromPDFUseCase(
       {

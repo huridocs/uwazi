@@ -1,4 +1,3 @@
-import { Tenant } from '#api/tenants/tenantContext.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { SettingsLinkSchema } from '#shared/types/settingsType.js';
 import { Property, Template } from '#app/apiResponseTypes.js';
@@ -59,9 +58,12 @@ enum ItemTypes {
   ROW = 'row',
 }
 
-type FeatureFlags = Tenant['featureFlags'] & {};
-
-type ClientFeatureFlags = Pick<FeatureFlags, 'paragraphExtraction' | 'v2CSVImport'>;
+export type ClientFeatureFlags = {
+  paragraphExtraction?: boolean;
+  themeCustomization?: boolean;
+  v2CSVImport?: boolean;
+  newHeader?: boolean;
+};
 
 type ClientProperty = Property & {
   _id?: string;
@@ -82,7 +84,6 @@ export type {
   DraggableValue,
   Page,
   TranslationValue,
-  ClientFeatureFlags,
   ClientTemplateSchema,
   ClientProperty,
 };

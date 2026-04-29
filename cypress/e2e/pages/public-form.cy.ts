@@ -22,7 +22,7 @@ describe('Public Form', () => {
     });
 
     it('should whitelist Mecanismo and Reporte', () => {
-      cy.get('[data-testid="settings-collection"]').scrollTo('center');
+      cy.get('[data-testid="settings-collection"]').parent().scrollTo('center');
       cy.get('[data-testid="multiselect"]')
         .eq(0)
         .within(() => {
@@ -32,7 +32,6 @@ describe('Public Form', () => {
         });
 
       cy.contains('button', 'Save').click();
-      cy.contains('Dismiss').click();
     });
   });
 
@@ -57,9 +56,10 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');
-      cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
-      cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
       cy.contains('Basic').click();
 
@@ -69,13 +69,13 @@ describe('Public Form', () => {
       cy.get('input[id="page-url"]').then(url => {
         cy.contains('a', 'Menu').click();
         cy.contains('button', 'Add link').click();
-        cy.get('#link-title').click();
-        cy.get('#link-title').type('Public Form Link', { delay: 0 });
-        cy.get('#link-url').type(url.val() as string);
+        cy.get('#link-title').scrollIntoView();
+        cy.clearAndType('#link-title', 'Public Form Link', { delay: 0, force: true });
+        cy.get('#link-url').scrollIntoView();
+        cy.clearAndType('#link-url', url.val() as string, { delay: 0, force: true });
         cy.getByTestId('menu-form-submit').click();
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
-        cy.contains('Dismiss').click();
         cy.get('[data-testid=modal]').should('not.exist');
         cy.wait('@fetchLinks');
       });
@@ -105,8 +105,9 @@ describe('Public Form', () => {
       );
       cy.contains('span', 'Bahamas').click();
       cy.get('.captcha input').type('42hf');
+      cy.intercept('POST', '/api/public*').as('submitPublicForm');
       cy.contains('button', 'Submit').click();
-      cy.get('.alert.alert-success').click();
+      cy.wait('@submitPublicForm').its('response.statusCode').should('eq', 200);
     });
   });
 
@@ -131,9 +132,10 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.intercept('GET', '/api/page*').as('fetchPage');
-      cy.contains('button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
-      cy.contains('Dismiss').click();
       cy.get('[data-testid=modal]').should('not.exist');
       cy.wait('@fetchPage');
     });
@@ -254,7 +256,9 @@ describe('Public Form', () => {
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
-      cy.contains('button.bg-success-700', 'Save').click();
+      cy.get('[data-testid="settings-content-footer"]')
+        .contains('button', /^Save$/)
+        .click();
       cy.contains('Saved successfully');
       cy.contains('Basic').click();
       cy.get('input[id="page-url"]').then(url => {

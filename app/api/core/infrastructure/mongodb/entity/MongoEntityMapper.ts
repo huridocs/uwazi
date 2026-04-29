@@ -48,6 +48,7 @@ class MongoEntityLanguageMapper {
       id: dbo._id.toHexString(),
       language: dbo.language as LanguageISO6391,
       metadata,
+      preview: dbo.preview,
     };
   }
 }
@@ -94,6 +95,7 @@ class MongoEntityMapper {
       icon,
       published,
       permissions,
+      preview: translation.preview,
       metadata: Object.entries(translation.properties).reduce(
         (acc, [key, propertyValue]) => ({ ...acc, [key]: propertyValue.value }),
         {}

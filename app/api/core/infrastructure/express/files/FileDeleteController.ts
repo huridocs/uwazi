@@ -1,16 +1,20 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { FileDelete } from '#api/core/application/FileDelete.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { EntitiesDataSourceFactory } from '../../factories/EntitiesDataSourceFactory.js';
 import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
+import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
 import { FileStorageFactory } from '../../files/FileStorageFactory.js';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
-import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker.js';
+import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
+import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker.js';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -46,14 +50,17 @@ class FileDeleteController extends AbstractController {
   }
 
   private useCase() {
-    let { transactionManager } = ExecutionContext;
-    let jobsDispatcher: JobsDispatcher = DefaultDispatcher(this.tenantName, transactionManager);
+    const { transactionManager } = ExecutionContext;
+    let jobsDispatcher: Dispatcher = new DispatcherAdapter(
+      DefaultDispatcher(this.tenantName, transactionManager)
+    );
     if (process.env.NODE_ENV === 'test') {
-      // transactionManager = TransactionManagerFactory.fake();
-      jobsDispatcher = new SyncDispatcherForTests({
-        DeleteFileFromStorageJobHandler: async () =>
-          new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),
-      });
+      jobsDispatcher = new DispatcherAdapter(
+        new SyncDispatcherForTests({
+          DeleteFileFromStorageJobHandler: async () =>
+            new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),
+        })
+      );
     }
 
     return new FileDelete(
@@ -61,6 +68,12 @@ class FileDeleteController extends AbstractController {
         filesDS: FilesDataSourceFactory.default(),
         filesService: FilesServiceFactory.default({ jobsDispatcher }),
         entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default(
+          transactionManager as MongoTransactionManager
+        ),
+        settingsDS: SettingsDataSourceFactory.default(
+          transactionManager as MongoTransactionManager
+        ),
         transactionManager,
       },
       { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }

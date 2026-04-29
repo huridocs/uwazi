@@ -9,10 +9,12 @@ import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1D
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { PDFService } from '../services/PDFService.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 
 class FilesServiceFactory {
   static default(deps: Partial<FilesServiceDeps> = {}) {
     const { transactionManager } = ExecutionContext;
+
     return new FilesService({
       transactionManager,
       filesDS: FilesDataSourceFactory.default(),
@@ -20,7 +22,7 @@ class FilesServiceFactory {
       pathManager: new PathManager({ tenant: ExecutionContext.tenant }),
       idGenerator: IdGeneratorFactory.default(),
       fileStorage: FileStorageFactory.default(),
-      jobsDispatcher: ExecutionContext.jobsDispatcher,
+      jobsDispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
       pdfService: new PDFService(),
       filesIO: new FileContentsIO(),
       eventBus: applicationEventsBus,

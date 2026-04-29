@@ -4,8 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { useSetAtom } from 'jotai';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { FileType } from '#shared/types/fileType.js';
 import { getByType, remove, UploadService } from '#V2/api/files/index.js';
@@ -16,7 +15,7 @@ import {
   ConfirmNavigationModal,
 } from '#V2/Components/UI/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import {
   createColumns,
   FileList,
@@ -38,7 +37,7 @@ const uploadService = new UploadService('custom');
 
 const CustomUploads = () => {
   const files = useLoaderData() as CustomUpload[];
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
   const [selectedRows, setSelectedRows] = useState<CustomUpload[]>([]);
   const [fileToEdit, setFileToEdit] = useState<CustomUpload>();
@@ -66,7 +65,7 @@ const CustomUploads = () => {
     }
   }, [blocker, setConfirmNavigationModal]);
 
-  const notify = (responses: (FileType | FetchResponseError)[], message: React.ReactNode) => {
+  const handleUploadResult = (responses: (FileType | FetchResponseError)[], message: string) => {
     const hasErrors = responses.find(
       response => response instanceof FetchResponseError || !response._id
     );
@@ -75,17 +74,11 @@ const CustomUploads = () => {
     );
 
     if (didUploadFiles) {
-      setNotifications({
-        type: 'success',
-        text: message,
-      });
+      notify('success', message);
     }
 
     if (hasErrors) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-      });
+      notify('error', t('System', 'An error occurred', null, false));
     }
   };
 
@@ -96,7 +89,7 @@ const CustomUploads = () => {
       action: async () => {
         setConfirmationModal(false);
         const response = await remove(file._id);
-        notify([response], <Translate>Deleted custom file</Translate>);
+        handleUploadResult([response], t('System', 'Deleted custom file', null, false));
         await revalidator.revalidate();
       },
     });
@@ -107,7 +100,7 @@ const CustomUploads = () => {
     setConfirmationModal(false);
     setSelectedRows([]);
     const responses = await Promise.all(filesToDelete.map(async fileId => remove(fileId)));
-    notify(responses, <Translate>Deleted custom file</Translate>);
+    handleUploadResult(responses, t('System', 'Deleted custom file', null, false));
     await revalidator.revalidate();
   };
 
@@ -128,7 +121,7 @@ const CustomUploads = () => {
             }}
             enableSelections
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                 Custom Uploads
               </Translate>
             }
@@ -139,8 +132,7 @@ const CustomUploads = () => {
           <UploadProgress queueLength={uploadService.getFilesInQueue().length} />
           {selectedRows.length > 0 && (
             <Button
-              styling="solid"
-              color="error"
+              variant="danger"
               onClick={() => {
                 setConfirmationModal(true);
                 setModalProps({ items: selectedRows, action: deleteMultiple });
@@ -149,7 +141,7 @@ const CustomUploads = () => {
               <Translate>Delete</Translate>
             </Button>
           )}
-          <Button styling="solid" color="primary" onClick={async () => setShowUploadsModal(true)}>
+          <Button variant="primary" onClick={async () => setShowUploadsModal(true)}>
             <Translate>Import asset</Translate>
           </Button>
         </SettingsContent.Footer>
@@ -159,7 +151,7 @@ const CustomUploads = () => {
         isOpen={showUploadsModal}
         setIsOpen={setShowUploadsModal}
         uploadService={uploadService}
-        notify={notify}
+        notify={handleUploadResult}
       />
 
       {confirmationModal && (

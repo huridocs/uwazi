@@ -211,6 +211,47 @@ Cypress.Commands.add('blankState', () => {
   });
 });
 
+Cypress.Commands.add('waitForRequestStatusIdle', options => {
+  const { timeout = 12000, stabilityMs = 250, log = true } = options || {};
+  const startedAt = Date.now();
+
+  const readStatus = () =>
+    cy.window({ log, timeout }).then(win => {
+      const status = win.__uwaziRequestStatus;
+
+      if (!status) {
+        throw new Error(
+          'Request status bridge is not available on window.__uwaziRequestStatus. Make sure RequestStatus is mounted.'
+        );
+      }
+
+      if (status.isIdle) {
+        return cy
+          .wait(stabilityMs, { log: false })
+          .window({ log: false, timeout })
+          .then(recheckWin => {
+            const recheckStatus = recheckWin.__uwaziRequestStatus;
+            if (recheckStatus?.isIdle) return;
+            return readStatus();
+          });
+      }
+
+      if (Date.now() - startedAt >= timeout) {
+        throw new Error(
+          `Timed out waiting for RequestStatus to become idle after ${timeout}ms. Last state: ${JSON.stringify(
+            status
+          )}`
+        );
+      }
+
+      return cy
+        .then({ log: false }, () => new Cypress.Promise(resolve => setTimeout(resolve, 100)))
+        .then(readStatus);
+    });
+
+  return readStatus();
+});
+
 Cypress.Commands.add('realDragAndDrop', (subject, target) => {
   subject
     .realMouseDown({ button: 'left', position: 'center' })
@@ -233,9 +274,53 @@ Cypress.Commands.add('realDrag', (subject, distanceX, distanceY) => {
   });
 });
 
-Cypress.Commands.add('waitForLegacyNotifications', () => {
-  cy.get('.alert-wrapper').each(element => {
-    cy.wrap(element).should('be.empty');
+Cypress.Commands.add('waitForMarkdownChartSettled', () => {
+  cy.get('.markdown-viewer', { timeout: 30000 }).should('be.visible');
+  cy.get('.markdown-viewer .recharts-surface, .markdown-viewer .ListChart', {
+    timeout: 20000,
+  }).should('exist');
+  cy.window().then({ timeout: 25000 }, win => {
+    return new Cypress.Promise((resolve, reject) => {
+      const root = win.document.querySelector('.markdown-viewer');
+      if (!root) {
+        win.setTimeout(resolve, 2000);
+        return;
+      }
+      const bars = root.querySelectorAll('.recharts-bar-rectangle');
+      if (bars.length === 0) {
+        win.setTimeout(resolve, 2000);
+        return;
+      }
+      const deadline = Date.now() + 20000;
+      let lastSig = '';
+      let stableMs = 0;
+      const tick = () => {
+        const list = win.document.querySelectorAll('.markdown-viewer .recharts-bar-rectangle');
+        if (list.length === 0) {
+          resolve();
+          return;
+        }
+        const sig = Array.from(list)
+          .map(r => r.getBoundingClientRect().height.toFixed(3))
+          .join('|');
+        if (Date.now() > deadline) {
+          reject(new Error('waitForMarkdownChartSettled: bar heights did not stabilize in time'));
+          return;
+        }
+        if (sig === lastSig) {
+          stableMs += 50;
+          if (stableMs >= 400) {
+            resolve();
+            return;
+          }
+        } else {
+          lastSig = sig;
+          stableMs = 0;
+        }
+        win.setTimeout(tick, 50);
+      };
+      tick();
+    });
   });
 });
 

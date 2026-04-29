@@ -146,7 +146,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
             <Button
               className="grow"
               type="button"
-              styling="outline"
+              variant="secondary"
               onClick={() => {
                 setCurrentFilters({
                   ...currentFilters,

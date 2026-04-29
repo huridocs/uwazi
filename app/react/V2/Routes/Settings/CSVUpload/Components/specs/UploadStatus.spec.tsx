@@ -11,7 +11,7 @@ import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js'
 import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
 import { csvImportsList, templates, translations } from './fixtures.js';
 import { UploadStatus } from '../../UploadStatus.js';
-import { CsvImportListRow } from '#app/V2/api/csv/index.js';
+import type { CsvImportListRow } from '#app/V2/api/csv/index.js';
 import { csvImportEvents } from '#app/V2/api/csv/events.js';
 
 describe('CSV import status view', () => {
@@ -82,8 +82,32 @@ describe('CSV import status view', () => {
     expectStatistic('Entities created', '44');
     expectStatistic('Rows processed', '48');
     expectStatistic('Rows failed', '1');
-    expectStatistic('Thesauri touched', '-');
-    expectStatistic('Relationships', '-');
+    expectStatistic('Thesauri values created', '-');
+    expectStatistic('Related entities created', '-');
+  });
+
+  it('should render errors table with the correct row error details', async () => {
+    await renderComponent(csvImportsList[3]);
+
+    const errorsTable = screen.getByRole('table');
+
+    expect(within(errorsTable).getByRole('columnheader', { name: 'Row' })).toBeInTheDocument();
+    expect(within(errorsTable).getByRole('columnheader', { name: 'Property' })).toBeInTheDocument();
+    expect(within(errorsTable).getByRole('columnheader', { name: 'Message' })).toBeInTheDocument();
+
+    const [, ...errorRows] = within(errorsTable).getAllByRole('row');
+
+    expect(errorRows).toHaveLength(2);
+
+    expect(errorRows[0]).toHaveTextContent('18');
+    expect(errorRows[0]).toHaveTextContent('related_case');
+    expect(errorRows[0]).toHaveTextContent(
+      'Relationship value could not be resolved to an existing entity.'
+    );
+
+    expect(errorRows[1]).toHaveTextContent('19');
+    expect(errorRows[1]).toHaveTextContent('file');
+    expect(errorRows[1]).toHaveTextContent('Referenced file was not found in the import package.');
   });
 
   it('should revalidate once on different events', async () => {

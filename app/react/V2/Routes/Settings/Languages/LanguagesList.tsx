@@ -10,9 +10,11 @@ import values from 'lodash/values.js';
 import { Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi, t } from '#app/I18N/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
 import { Button, Table, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { useApiCaller } from '#V2/CustomHooks/useApiCaller.js';
+import { registerTask, notify as bridgeNotify } from '#V2/utils/notifyBridge.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal.js';
@@ -55,7 +57,7 @@ const LanguagesList = () => {
 
   const handleAction =
     (
-      successMessage: React.ReactNode,
+      successMessage: string,
       action: { (requestParams: RequestParams): Promise<Response> },
       key: string,
       currentLanguage?: LanguageSchema
@@ -95,7 +97,7 @@ const LanguagesList = () => {
       'You are about to reset a language.',
       'Reset',
       handleAction(
-        <Translate>Language reset success</Translate>,
+        t('System', 'Language reset success', null, false),
         I18NApi.populateTranslations,
         'locale',
         row.original as LanguageSchema
@@ -105,7 +107,7 @@ const LanguagesList = () => {
 
   const setDefaultLanguage = async (row: Row<LanguageSchema>) => {
     await handleAction(
-      <Translate>Default language change success</Translate>,
+      t('System', 'Default language change success', null, false),
       I18NApi.setDefaultLanguage,
       'key',
       row.original as LanguageSchema
@@ -113,20 +115,16 @@ const LanguagesList = () => {
   };
 
   const uninstallModal = (row: Row<LanguageSchema>) => {
-    confirmAction(
-      'You are about to uninstall a language.',
-      'Uninstall',
-      handleAction(
-        <Translate translationKey="Language Uninstall Start Message">
-          Language uninstallation process initiated. It may take several minutes to complete
-          depending on the size of the collection. Please wait until the uninstallation process is
-          finished.
-        </Translate>,
-        I18NApi.deleteLanguage,
-        'key',
-        row.original as LanguageSchema
-      )
-    );
+    confirmAction('You are about to uninstall a language.', 'Uninstall', async () => {
+      setShowModal(false);
+      const language = row.original as LanguageSchema;
+      const response = await I18NApi.deleteLanguage(new RequestParams({ key: language.key }));
+      if (response instanceof FetchResponseError) {
+        bridgeNotify(t('System', 'An error occurred', null, false), 'error', response.message);
+      } else {
+        registerTask('language-uninstall', t('System', 'Uninstalling language', null, false));
+      }
+    });
   };
 
   const columns = [
@@ -166,7 +164,7 @@ const LanguagesList = () => {
               columns={columns}
               data={languages}
               header={
-                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                   Active languages
                 </Translate>
               }

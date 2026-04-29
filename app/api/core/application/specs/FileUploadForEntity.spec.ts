@@ -6,8 +6,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { FileUploadForEntityFactory } from '#api/core/infrastructure/factories/FileUploadForEntityFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { fileExistsOnPath } from '#api/files/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -25,25 +24,18 @@ const fixtures: DBFixture = {
   entities: [f.entity('entity1', 'template')],
 };
 
-const dispatchedJobs: Array<{ job: any; params: any }> = [];
-
-const dispatchMock = jest.fn().mockImplementation((job, params) => {
-  dispatchedJobs.push({ job, params });
-});
+const schedulePDFPostProcessMock = jest.fn().mockResolvedValue(undefined);
 
 describe('FileUploadForEntity', () => {
   let result: any;
   let eventBus: EventsBus;
   let pathManager: PathManager;
-  let tenantName: string;
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, true);
 
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      dispatchMany: async callback => {
-        await callback(dispatchMock);
-      },
+    const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
+      postProcessPDFs: schedulePDFPostProcessMock,
     });
 
     eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
@@ -51,8 +43,7 @@ describe('FileUploadForEntity', () => {
     pathManager = new PathManager({ tenant: tenants.current() });
 
     const { useCase } = testingEnvironment.runWithContext(() => {
-      tenantName = ExecutionContext.tenant.name;
-      const transactionManager = ExecutionContext.transactionManager;
+      const { transactionManager } = ExecutionContext;
       const filesService = FilesServiceFactory.default({ jobsDispatcher, eventBus });
       return {
         useCase: FileUploadForEntityFactory.default({
@@ -97,12 +88,14 @@ describe('FileUploadForEntity', () => {
   });
 
   it('should dispatch PDFPostProcessJobHandler for document files', () => {
-    expect(dispatchMock).toHaveBeenCalledTimes(1);
-    expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJobHandler, {
-      documentId: result._id,
-      userId: permissionsContext.getUserInContext()?._id?.toString(),
-      tenantName,
-    });
+    expect(schedulePDFPostProcessMock).toHaveBeenCalledTimes(1);
+    expect(schedulePDFPostProcessMock).toHaveBeenCalledWith([
+      {
+        documentId: result._id,
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
+      },
+    ]);
   });
 
   it('should store file in the correct directory on filesystem', async () => {

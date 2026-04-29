@@ -24,11 +24,12 @@ type Tenant = {
     fileCacheHeaders?: boolean;
     v2CSVImport?: boolean;
     v2UpdateThesaurus?: boolean;
-    v1CSVImportCompat?: boolean;
+    themeCustomization?: boolean;
     v2GetEntity?: boolean;
     v2ElasticSearch?: boolean;
     v2MultipleUpdateEntity?: boolean;
     v2DeleteEntity?: boolean;
+    newHeader?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

@@ -1,7 +1,8 @@
+/* eslint-disable max-lines */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { ArrowLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon, XMarkIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import throttle from 'lodash/throttle.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Card } from '#V2/Components/UI/index.js';
@@ -14,6 +15,7 @@ import { DateDisplay } from './Components/DateDisplay.js';
 import { Progress } from './Components/Progress.js';
 import { csvImportEvents } from '#app/V2/api/csv/events.js';
 import { CancelProcessModal } from './Components/CancelProcessModal.js';
+import { ErrorsTable } from './Components/ErrorsTable.js';
 
 const UploadStatus = () => {
   const revalidator = useRevalidator();
@@ -34,7 +36,6 @@ const UploadStatus = () => {
   );
 
   const statusMessage = entry ? statusMessages[entry.status] : undefined;
-
   const progressTotal = entry?.progress?.totalRows || 0;
   const progressCurrent = entry?.progress?.processedRows || 0;
   const completionPercent =
@@ -86,17 +87,36 @@ const UploadStatus = () => {
           title={fileName}
         />
         <SettingsContent.Body className="flex flex-col overflow-y-auto">
-          {entry ? (
+          {entry && (
             <>
-              <div className="flex flex-col gap-4 border-b pb-4">
+              <div
+                className="flex flex-col gap-4 border-b pb-4"
+                style={{
+                  borderColor:
+                    'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+                }}
+              >
                 <div className="flex flex-row gap-2 items-baseline">
                   <span className="text-xl font-semibold">{fileName}</span>
-                  <span className="px-1 border text-gray-500 rounded-md">
+                  <span
+                    className="rounded-md border px-1"
+                    style={{
+                      borderColor:
+                        'color-mix(in srgb, var(--color-theme-border-default) 60%, transparent)',
+                      color: 'var(--color-theme-text-secondary)',
+                      backgroundColor: 'var(--color-theme-surface-warm)',
+                    }}
+                  >
                     {statusMessage?.title}
                   </span>
                 </div>
-                <p className="text-gray-600">{statusMessage?.description}</p>
-                <div className="flex flex-row gap-10 items-center text-gray-500">
+                <p style={{ color: 'var(--color-theme-text-secondary)' }}>
+                  {statusMessage?.description}
+                </p>
+                <div
+                  className="flex flex-row items-center gap-10"
+                  style={{ color: 'var(--color-theme-text-muted)' }}
+                >
                   <div>
                     <Translate>Template</Translate>:{' '}
                     <Translate context={entry.templateId}>{templateName}</Translate>
@@ -113,7 +133,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Entities created</Translate>
-                    <span className="font-bold text-2xl text-gray-900">
+                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
                       {entry.stats?.entitiesCreated || '-'}
                     </span>
                   </div>
@@ -121,7 +141,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Rows processed</Translate>
-                    <span className="font-bold text-2xl text-gray-900">
+                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
                       {entry.stats?.rowsProcessed || '-'}
                     </span>
                   </div>
@@ -129,23 +149,23 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Rows failed</Translate>
-                    <span className="font-bold text-2xl text-gray-900">
+                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
                       {entry.stats?.rowsFailed || '-'}
                     </span>
                   </div>
                 </Card>
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
-                    <Translate>Thesauri touched</Translate>
-                    <span className="font-bold text-2xl text-gray-900">
-                      {entry.stats?.thesauriTouched || '-'}
+                    <Translate>Thesauri values created</Translate>
+                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                      {entry.stats?.thesaurusValuesCreated || '-'}
                     </span>
                   </div>
                 </Card>
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
-                    <Translate>Relationships</Translate>
-                    <span className="text-bold text-2xl text-gray-900">
+                    <Translate>Related entities created</Translate>
+                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
                       {entry.stats?.relationshipValuesCreated || '-'}
                     </span>
                   </div>
@@ -158,8 +178,13 @@ const UploadStatus = () => {
                   </Translate>
                   <Card>
                     <div className="flex flex-col gap-3">
-                      <div className="text-gray-900 font-medium">{entry.failure.message}</div>
-                      <div className="text-gray-600 text-sm flex flex-wrap gap-6">
+                      <div className="font-medium [color:var(--color-theme-text-primary)]">
+                        {entry.failure.message}
+                      </div>
+                      <div
+                        className="flex flex-wrap gap-6 text-sm"
+                        style={{ color: 'var(--color-theme-text-secondary)' }}
+                      >
                         <div>
                           <Translate>Stage</Translate>: {entry.failure.stage}
                         </div>
@@ -187,47 +212,60 @@ const UploadStatus = () => {
                   status={entry.status}
                   stats={entry.stats}
                 />
-                <p className="text-sm text-gray-600 pt-2">
+                <p className="pt-2 text-sm" style={{ color: 'var(--color-theme-text-secondary)' }}>
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
               </div>
+              {entry.rowErrors?.length ? (
+                <div className="pt-6">
+                  <ErrorsTable errors={entry.rowErrors} />
+                </div>
+              ) : undefined}
             </>
-          ) : (
-            <div>{fileName}</div>
           )}
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <I18NLinkV2 to="settings/csv" className="float-left">
-            <Button type="button" styling="outline" className="flex flex-row gap-2 items-center">
+            <Button type="button" variant="secondary" className="flex flex-row gap-2 items-center">
               <ArrowLeftIcon className="w-4 h-4" />
               <Translate>Back</Translate>
             </Button>
           </I18NLinkV2>
-          <Button
-            type="button"
-            color="error"
-            className="float-right flex flex-row gap-2 items-center"
-            onClick={() => {
-              setCancelModal(true);
-            }}
-            disabled={!canCancel}
-          >
-            <XMarkIcon className="w-4 h-4" />
-            <Translate>Cancel</Translate>
-          </Button>
+          <div className="float-right flex flex-wrap flex-row gap-2">
+            {entry?.rowErrors?.length ? (
+              <a
+                href={`/api/csvImportEntities/imports/${entry.id}/failed-rows-csv`}
+                target="_blank"
+                rel="noreferrer"
+                className="float-left"
+              >
+                <Button type="button" variant="ghost" className="flex flex-row gap-2 items-center">
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                  <Translate>Download failed rows</Translate>
+                </Button>
+              </a>
+            ) : undefined}
+            <Button
+              type="button"
+              variant="danger"
+              className="flex flex-row gap-2 items-center"
+              onClick={() => setCancelModal(true)}
+              disabled={!canCancel}
+            >
+              <XMarkIcon className="w-4 h-4" />
+              <Translate>Cancel</Translate>
+            </Button>
+          </div>
         </SettingsContent.Footer>
       </SettingsContent>
       {entry && (
         <CancelProcessModal
           isOpen={cancelModal}
-          onClose={() => {
-            setCancelModal(false);
-          }}
+          onClose={() => setCancelModal(false)}
           entryId={entry.id}
         />
       )}
     </div>
   );
 };
-
 export { UploadStatus };

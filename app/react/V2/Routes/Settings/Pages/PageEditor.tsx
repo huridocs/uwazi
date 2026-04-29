@@ -12,7 +12,6 @@ import {
   useRevalidator,
 } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
 import _ from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from '#app/I18N/index.js';
@@ -22,10 +21,10 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable.js';
 import { HTMLNotification, JSNotification } from './components/PageEditorComponents.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -44,7 +43,7 @@ const PageEditor = () => {
   const revalidator = useRevalidator();
   const navigate = useNavigate();
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
 
   const debouncedChangeHandler = useMemo(
     () => (handler: () => void) => _.debounce(handler, 500),
@@ -72,18 +71,18 @@ const PageEditor = () => {
     }
   }, [blocker, setShowConfirmationModal]);
 
-  const notify = (response: Page | FetchResponseError) => {
+  const handleSaveNotification = (response: Page | FetchResponseError) => {
     const hasErrors = response instanceof FetchResponseError;
-
-    setNotifications({
-      type: !hasErrors ? 'success' : 'error',
-      text: !hasErrors ? (
-        <Translate>Saved successfully.</Translate>
-      ) : (
-        <Translate>An error occurred</Translate>
-      ),
-      ...(hasErrors && { details: response.message }),
-    });
+    if (hasErrors) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        (response as FetchResponseError).message
+      );
+    } else {
+      notify('success', t('System', 'Saved successfully.', null, false));
+    }
   };
 
   const handleRevalidate = async (response: Page) => {
@@ -106,7 +105,7 @@ const PageEditor = () => {
     const response = await save(data);
     const hasErrors = response instanceof FetchResponseError;
 
-    notify(response);
+    handleSaveNotification(response);
 
     if (!hasErrors) {
       await handleRevalidate(response);
@@ -117,7 +116,7 @@ const PageEditor = () => {
     const response = await save(data);
     const hasErrors = response instanceof FetchResponseError;
 
-    notify(response);
+    handleSaveNotification(response);
 
     if (!hasErrors) {
       const pageUrl = getPageUrl(response.sharedId!, response.title);
@@ -235,26 +234,20 @@ const PageEditor = () => {
         <SettingsContent.Footer>
           <div className="flex justify-end gap-2">
             <Link to="/settings/pages">
-              <Button styling="light" disabled={isSubmitting}>
+              <Button variant="ghost" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
 
             <Button
-              styling="solid"
-              color="primary"
+              variant="primary"
               onClick={handleSubmit(handleSaveAndPreview)}
               disabled={getValues('entityView') || isSubmitting}
             >
               <Translate>Save & Preview</Translate>
             </Button>
 
-            <Button
-              styling="solid"
-              color="success"
-              onClick={handleSubmit(handleSave)}
-              disabled={isSubmitting}
-            >
+            <Button variant="success" onClick={handleSubmit(handleSave)} disabled={isSubmitting}>
               <Translate>Save</Translate>
             </Button>
           </div>

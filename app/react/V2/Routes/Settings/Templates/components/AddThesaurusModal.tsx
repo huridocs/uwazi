@@ -3,10 +3,11 @@ import { t, Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { save as saveThesauri } from '#V2/api/thesauri/index.js';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, thesauriAtom } from '#V2/atoms/index.js';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { thesauriAtom } from '#V2/atoms/index.js';
 import { sanitizeThesaurusName } from '#shared/sanitizationUtils.js';
 import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface AddThesaurusModalProps {
   onClose: () => void;
@@ -15,7 +16,7 @@ interface AddThesaurusModalProps {
 export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setThesauri = useSetAtom(thesauriAtom);
   const thesauri = useAtomValue(thesauriAtom);
   const [nameError, setNameError] = useState(false);
@@ -32,10 +33,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
     };
     const savedThesaurus = await saveThesauri(newThesaurus);
     setThesauri([...thesauri, savedThesaurus]);
-    setNotifications({
-      type: 'success',
-      text: <Translate>Thesaurus created successfully.</Translate>,
-    });
+    notify('success', t('System', 'Thesaurus created successfully.', null, false));
   };
 
   const handleSave = async () => {
@@ -62,7 +60,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
   return (
     <Modal size="md">
       <Modal.Header>
-        <h1 className="text-xl font-medium text-gray-900">
+        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
           <Translate>Add thesaurus</Translate>
         </h1>
         <Modal.CloseButton onClick={handleClose} />
@@ -84,11 +82,11 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
             }
           />
           <div className="flex justify-end gap-2">
-            <Button styling="outline" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose}>
               <Translate>Cancel</Translate>
             </Button>
             <Button
-              color="success"
+              variant="success"
               onClick={handleSave}
               disabled={isSaving || !sanitizeThesaurusName(name)}
             >

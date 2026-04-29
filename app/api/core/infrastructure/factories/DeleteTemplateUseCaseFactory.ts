@@ -1,17 +1,17 @@
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DeleteTemplateUseCase } from '#api/core/application/DeleteTemplate.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 
 class DeleteTemplateUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof DeleteTemplateUseCase>[0]>) {
-    const tenant = ExecutionContext.tenant;
-    const actor = ExecutionContext.actor;
+    const { tenant, actor } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const eventBus = applicationEventsBus;
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
@@ -29,7 +29,7 @@ class DeleteTemplateUseCaseFactory {
         settingsDS,
         translationsDS,
         multiLanguageEntitiesDS,
-        jobsDispatcher: ExecutionContext.jobsDispatcher,
+        dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
         ...overrides,
       },
       { actor, tenant }

@@ -1,5 +1,4 @@
 Key,Arabic
-% of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
@@ -12,6 +11,7 @@ A valid email is required,البريد الإلكتروني مطلوب
 Accept,قبول
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
+Accessibility checks need attention,Accessibility checks need attention
 Account,حساب
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -68,9 +68,11 @@ Adding items to the thesauri,Adding items to the thesauri
 Admin,مشرف
 Administrators and Editors,المشرفون (أو المسؤولون) والمحررون
 Admins,Admins
+Advanced colors,Advanced colors
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",ستحذف جميع التغييرات، هل أنت متأكد أنك تريد المتابعة؟
+All clear,All clear
 All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
@@ -82,6 +84,8 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
+An error has occurred while installing languages:,An error has occurred while installing languages:
+An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
@@ -124,11 +128,13 @@ cancel csv import,Cancel the import process. This will stop the creation of new 
 Canceling,Canceling
 Canceling...,Canceling...
 Cancelled,Cancelled
+Cannot connect to server,Cannot connect to server
 Cannot find extractor,Cannot find extractor
 Captcha,حروف التحقق
 Captcha bypass,تخطى كلمة التحقق (Captcha)
 Cards,بطاقات
 Cards view,معاينة البطاقات
+Change,Change
 Change password,تغيير كلمة المرور
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
@@ -139,6 +145,8 @@ You will need to update them manually. After selecting this option, you will not
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,Choose which data to use for training
 Clear,Clear
 Clear all,Clear all
@@ -219,7 +227,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Click "New Import" to get started.
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,خطأ في المكون المخصص
@@ -229,7 +237,10 @@ Custom JS,Custom JS
 Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,تحميل مخصص
+Customize,Customize
+Customized,Customized
 Dark,Dark
+Dark Theme,Dark Theme
 Dashboard,Dashboard
 Date,Date
 Date added,تم إضافة التاريخ
@@ -285,6 +296,7 @@ Documentation,توثيق
 documents,وثائق
 Documents,وثائق
 documents.,مستندات
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -292,6 +304,7 @@ Done extracting files,Done extracting files
 Done scanning,Done scanning
 Download,تحميل
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
+Download failed rows,Download failed rows
 Drag and drop file in this window to upload,اسحب الملف وأفلته في هذه النافذة للتحميل
 Drag row,Drag row
 Drop your files here to upload or,اسحب ملفاتك هنا للتحميل أو
@@ -301,12 +314,12 @@ Duplicated name,اسم مكرر
 Duplicated username,اسم المستخدم مكرر
 Duration,المدة
 Edit,تحرير
-Edit all documents matching this criteria,حرر جميع المستندات المستوفية لهذه المعايير
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
+Edit theme,Edit theme
 Edit user,Edit user
 Editor,محرر
 editor,محرر
@@ -341,7 +354,6 @@ Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Expand All,Expand All
-Exploration,استكشاف
 Export CSV,تصدير ملف القيم المفصولة بفواصل
 Exporting entities to CSV,تصدير كيانات (إدخالات) إلى ملف القيم المفصولة بفواصل
 Extension Token,Extension Token
@@ -360,10 +372,10 @@ Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
-1. Upload your icon in Custom Uploads.
-2. Copy its URL.
-3. Choose ""Custom Icon"" and paste the URL in the indicated field.
-4. Reload the page to see your favicon in action."
+1. Upload your icon in Custom Uploads if needed.
+2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
+3. Reload the page to see your favicon in action."
+Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ملف
 File deleted,File deleted
@@ -386,7 +398,6 @@ Find suggestions after training,Find suggestions after training
 Find suggestions for,Find suggestions for
 Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
-Fine tune,ضبط دقيق
 Fit,متوافق
 Flag,علم
 for,for
@@ -413,8 +424,10 @@ Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
 Groups,مجموعات
+Header and button preview,Header and button preview
 help,مساعدة
 here,here
+Hide,Hide
 Hide actions,Hide actions
 Hide label,إخفاء التسمية
 Hide toolbar,Hide toolbar
@@ -429,6 +442,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,استيراد
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -455,6 +469,7 @@ Input,Input
 Install,Install
 Install Language(s),Install Language(s)
 Install the browser extension.,Install the browser extension.
+Installing languages,Installing languages
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -484,9 +499,7 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,لغة
 Language Code,Language Code
 Language deleted,حذفت اللغة
-Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
 Language reset success,Language reset success
-Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
 Language(s),Language(s)
 Language:,Language:
@@ -501,8 +514,11 @@ Library,مكتبة
 library list view,معاينة القائمة المكتبية
 library map view,معاينة خريطة المكتبة
 library table view,معاينة جدول المكتبة
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,مرتبط
+Live preview,Live preview
 Live translate,Live translate
 Loading,Loading
 Login,تسجيل الدخول
@@ -598,6 +614,7 @@ No icon / flag,لا توجد أيقونة/ علامة
 No items available,No items available
 No Label,لا تسمية
 No label,No label
+No notifications or active tasks.,No notifications or active tasks.
 No options,No options
 No options found,لم يتم العثور على خيارات
 No property,هذه الخاصية غير متوفرة
@@ -613,6 +630,7 @@ No table of contents description,لا جدول محتويات الوصف
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
 No type,لا نوع
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
 No value,لا قيمة
 No Value,لا قيمة
@@ -624,7 +642,7 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Number of sentences above threshold,عدد الجمل أزيد من الحد
+Notifications,Notifications
 Obsolete,Obsolete
 obsolete,obsolete
 OCR,OCR
@@ -657,7 +675,6 @@ Other,آخر
 other,آخر
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
-out of,خارج
 Page,صفحة
 Page not found,لم يتم العثور على الصفحة
 Pages,الصفحات
@@ -687,7 +704,6 @@ Plain text,نص عادي
 Please contact an admin for details.,يرجى الاتصال بالمشرف (المسؤول) للحصول على التفاصيل.
 Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,يرجى كتابة الحروف والأرقام من الصورة لبدء التصدير.
-Precision,دقة
 Preflight scan completed.,Preflight scan completed.
 Preparing required relationships.,Preparing required relationships.
 Preparing required thesauri values.,Preparing required thesauri values.
@@ -697,6 +713,7 @@ Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link 
 Press enter to add,اضغط على مفتاح الإدخال لإضافة
 Preview,معاينة
 Previous,سابق
+Primary button,Primary button
 Primary Documents,المستندات الأولية
 Priority sorting,تصنيف حسب الأولوية
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -748,9 +765,11 @@ RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,البريد الالكتروني المستقبل
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Recommended,Recommended
 Reference,Reference
 References,مراجع
 Reject,رفض
+Related entities created,Related entities created
 Relation type,Relation type
 Relationship,صلة
 Relationship Type,Relationship Type
@@ -808,7 +827,6 @@ Scanning,Scanning
 Scanning rows before import.,Scanning rows before import.
 Search,ابحث
 Search item,البحث عن بند
-Search not found,البحث غير متوفر
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
 Search relevance,ملائمة البحث
 Search text,بحث النص
@@ -820,14 +838,18 @@ Search Tips: one char wildcard,نصائح البحث: واحد char wildcard
 Search Tips: proximity,بحث نصائح: القرب
 Search Tips: wildcard,نصائح البحث: Wildcard
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
 Select all,اختار الكل
+Select an existing image,Select an existing image
+Select favicon image,Select favicon image
 Select files on your device,اختر الملفات في جهازك
 Select from computer,Select from computer
 Select relationship type,اختر نوع العلاقة
+Select site logo image,Select site logo image
 Select target paragraph,اختر الفقرة المستهدفة
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
@@ -837,18 +859,11 @@ selected,المحدد
 selected of,مختار من
 Selected or suggested,Selected or suggested
 Selected templates,Selected templates
-Semantic search,البحث الدلالي
-Semantic Search,البحث الدلالي
-Semantic search minimum sentences help,المساعدة في البحث الدلالي بالحد الأدنى من الجمل
-Semantic search overview,نظرة عامة على البحث الدلالي
-Semantic search results,نتائج البحث الدلالي
-Semantic search threshold help,مساعدة البدء في البحث الدلالي
 Send,إرسال
 Send recovery email,إرسل بريد الكتروني للاستعادة
 Sending email,البريد الالكتروني المرسل
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
-Sentences above threshold,الجمل أزيد من الحد
 Services,Services
 Set as default,تعيين كافتراضي
 Set default language,Set default language
@@ -873,6 +888,11 @@ Showing,Showing
 shown of,مبين
 Sign in,تسجيل الدخول
 Single relationships must have a hub,Single relationships must have a hub
+Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
+Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,حجم
 Skip to main content,Skip to main content
 Something went wrong,حدث خطأ ما
@@ -921,6 +941,7 @@ Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
+Tasks,Tasks
 Template,قالب
 Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template color,Template color
@@ -946,6 +967,11 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,لا توجد صفحات ممكنة لمعاينة الكيان (الإدخال)
 There are no untranslated terms,There are no untranslated terms
 Thesauri,قائمة المفردات
@@ -954,8 +980,8 @@ Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
 thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
-Thesauri touched,Thesauri touched
 Thesauri updated.,Thesauri updated.
+Thesauri values created,Thesauri values created
 Thesaurus,Thesaurus
 Thesaurus created successfully.,Thesaurus created successfully.
 Thesaurus name,Thesaurus name
@@ -984,7 +1010,6 @@ This property will be the default filter in the library for this template.,This 
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Threshold,حد
 Time,زمن
 Timelinks,Timelinks
 Timestamp,Timestamp
@@ -1026,11 +1051,13 @@ Two-factor verification failed,فشل التحقق الثنائي (التحقق 
 Two-step verification,التحقق الثنائي (التحقق بخطوتين)
 Two-step verification token required,Two-step verification token required
 Type,نوع
+U,U
 "Unable to save, failed response","Unable to save, failed response"
 Unauthorized,غير مصرح
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Uninstalling language,Uninstalling language
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,لغة الOCR غير مدعومة
@@ -1047,9 +1074,11 @@ Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,حمل ملف مضطغوط بامتداد ZIP أو ملف القيم المفصولة بفواصل
 Upload and select file,حمل الملف واختره
 Upload from computer,حمل من الحاسوب
+Upload image,Upload image
 Upload PDF,تحميل ملف PDF
 Upload PDF(s) to create,حمل ملف (ملفات) PDF لإنشاء
 Uploaded attachment,Uploaded attachment
@@ -1077,6 +1106,7 @@ Users,المستخدمين
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
+Uwazi,Uwazi
 Uwazi is developed by,أوازي من إعداد:
 Uwazi UI,واجهة استخدام أوازي
 Validating,Validating
@@ -1091,8 +1121,6 @@ view,عرض
 View entities,View entities
 View entity,View entity
 View in library,عرض في المكتبة
-View less,View less
-View more,View more
 View page,عرض الصفحة
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,تنبيه: أنت تحرر كيانات (إدخالات) متعددة. الحقول تحمل علامة

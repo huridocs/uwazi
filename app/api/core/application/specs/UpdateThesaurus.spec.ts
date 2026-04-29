@@ -1,43 +1,46 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { tenants } from '#api/tenants/index.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
-import {
-  ThesaurusNotFoundError,
-  ThesaurusNameAlreadyExistsError,
-} from '#api/core/domain/thesaurus/errors.js';
-import { JobDBO } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { Result } from '#api/core/libs/Result.js';
-import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
-import { UpdateThesaurusUseCase } from '../UpdateThesaurus.js';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
-import { factory, fixtures } from './UpdateThesaurusFixtures.js';
-import { ThesauriService } from '../ThesauriService.js';
-import { User } from '#api/users.v2/model/User.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import {
+  ThesaurusNameAlreadyExistsError,
+  ThesaurusNotFoundError,
+} from '#api/core/domain/thesaurus/errors.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2.js';
+import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
+import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { Result } from '#api/core/libs/Result.js';
+import { JobDBO } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { tenants } from '#api/tenants/index.js';
+import { User } from '#api/users.v2/model/User.js';
+import { ThesauriService } from '../ThesauriService.js';
+import { UpdateThesaurusUseCase } from '../UpdateThesaurus.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
+import { factory, fixtures } from './UpdateThesaurusFixtures.js';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
   thesaurusTranslationService?: ThesaurusTranslationService;
-  jobsDispatcher?: JobsDispatcher;
+  dispatcher?: Dispatcher;
 };
 
 const createSut = (props?: CreateSutProps) =>
   testingEnvironment.runWithContext(
     () => {
       const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-      const jobsDispatcher = props?.jobsDispatcher ?? ExecutionContext.jobsDispatcher;
+
+      const dispatcher =
+        props?.dispatcher ?? new DispatcherAdapter(ExecutionContext.jobsDispatcher);
 
       const thesauriDS =
         props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
@@ -49,9 +52,8 @@ const createSut = (props?: CreateSutProps) =>
           settingsDS,
           translationsDS,
         });
-
       const thesauriService = new ThesauriService({
-        jobsDispatcher,
+        dispatcher,
         thesauriDS,
         thesaurusTranslationService,
       });
@@ -60,7 +62,7 @@ const createSut = (props?: CreateSutProps) =>
         {
           thesauriDS,
           thesaurusTranslationService,
-          jobsDispatcher,
+          dispatcher,
           transactionManager,
           thesauriService,
         },
@@ -484,11 +486,11 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   it('should revert when delete of jobs fails', async () => {
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockRejectedValue(new Error('delete jobs error')),
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      denormalizeThesaurus: jest.fn().mockRejectedValue(new Error('delete jobs error')),
     });
 
-    const { sut } = createSut({ jobsDispatcher });
+    const { sut } = createSut({ dispatcher });
 
     const thesaurusBefore = await getThesaurusById(factory.id('countries'));
     const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
@@ -512,12 +514,11 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   it('should revert when dispatching of jobs fails', async () => {
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-      dispatch: jest.fn().mockRejectedValue(new Error('dispatch jobs error')),
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      denormalizeThesaurus: jest.fn().mockRejectedValue(new Error('dispatch jobs error')),
     });
 
-    const { sut } = createSut({ jobsDispatcher });
+    const { sut } = createSut({ dispatcher });
 
     const thesaurusBefore = await getThesaurusById(factory.id('countries'));
     const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
@@ -540,6 +541,38 @@ describe('UpdateThesaurusUseCase', () => {
     expect(jobsAfter).toEqual(jobsBefore);
   });
 
+  it('should persist reordered values without triggering translations or denormalization jobs', async () => {
+    const { sut } = createSut();
+    const existing = await getThesaurusById(factory.id('countries'));
+    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+
+    const reorderedValues = [
+      {
+        ...existing.values[2],
+        values: [existing.values[2].values![1], existing.values[2].values![0]],
+      },
+      existing.values[0],
+      existing.values[1],
+    ];
+
+    await sut.execute({
+      id: existing._id.toString(),
+      name: existing.name,
+      values: reorderedValues,
+    });
+
+    const after = await getThesaurusById(factory.id('countries'));
+    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+    const jobs = await getJobs();
+
+    expect(after.values.map(value => value.id)).toEqual(reorderedValues.map(value => value.id));
+    expect(after.values[0].values!.map(value => value.id)).toEqual(
+      reorderedValues[0].values!.map(value => value.id)
+    );
+    expect(translationsAfter).toEqual(translationsBefore);
+    expect(jobs).toHaveLength(0);
+  });
+
   it('should do nothing when no changes are made', async () => {
     const existing = await getThesaurusById(factory.id('countries'));
 
@@ -552,12 +585,11 @@ describe('UpdateThesaurusUseCase', () => {
       update: jest.fn().mockResolvedValue(undefined),
     });
 
-    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
-      deleteByParams: jest.fn().mockResolvedValue(undefined),
-      dispatch: jest.fn().mockResolvedValue(undefined),
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      denormalizeThesaurus: jest.fn().mockResolvedValue(undefined),
     });
 
-    const { sut } = createSut({ thesauriDS, thesaurusTranslationService, jobsDispatcher });
+    const { sut } = createSut({ thesauriDS, thesaurusTranslationService, dispatcher });
 
     await sut.execute({
       id: existing._id.toString(),
@@ -567,8 +599,7 @@ describe('UpdateThesaurusUseCase', () => {
 
     expect(thesauriDS.update).not.toHaveBeenCalled();
     expect(thesaurusTranslationService.update).not.toHaveBeenCalled();
-    expect(jobsDispatcher.deleteByParams).not.toHaveBeenCalled();
-    expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
+    expect(dispatcher.denormalizeThesaurus).not.toHaveBeenCalled();
   });
 
   it('should not allow updating a thesaurus name to an existing name', async () => {

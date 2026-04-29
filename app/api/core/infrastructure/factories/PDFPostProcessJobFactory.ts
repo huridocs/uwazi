@@ -6,6 +6,8 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { PDFService } from '../services/PDFService.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 class PDFPostProcessJobFactory {
   static default(
@@ -20,6 +22,8 @@ class PDFPostProcessJobFactory {
       fileStorage: FileStorageFactory.default(),
       pdfService: new PDFService(),
       idGenerator: IdGeneratorFactory.default(),
+      entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
+      settingsDS: SettingsDataSourceFactory.default(transactionManager),
       ...deps,
     });
   }

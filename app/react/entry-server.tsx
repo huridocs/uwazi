@@ -36,7 +36,6 @@ import { CustomProvider } from './App/Provider.js';
 import { Root } from './App/Root.js';
 import { RouteHandler } from './App/RouteHandler.js';
 import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
-import { ClientFeatureFlags } from './V2/shared/types.js';
 import { hydrateAtomStore } from './V2/atoms/index.js';
 import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
@@ -184,6 +183,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
         ])
       : [];
 
+  const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
+  const settingsWithFlag = { ...settingsApiResponse, themeCustomization };
+
   const storeData = convertObjectIdsToStrings({
     reduxData: {
       user: userApiResponse,
@@ -192,12 +194,12 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       relationTypes: sortBy(relationTypesApiResponse, 'name'),
       translations: translationsApiResponse,
       settings: {
-        collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
+        collection: { ...settingsWithFlag, links: settingsWithFlag.links || [] },
       },
     },
     atomStoreData: {
       locale,
-      settings: settingsApiResponse,
+      settings: settingsWithFlag,
       thesauri: thesaurisApiResponse,
       templates: templatesApiResponse,
       user: userApiResponse,
@@ -369,13 +371,31 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     : req.language;
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
+  const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
+  const clientFeatureFlags = {
+    paragraphExtraction: featureFlags?.paragraphExtraction,
+    v2CSVImport: featureFlags?.v2CSVImport,
+    newHeader: featureFlags?.newHeader,
+    themeCustomization: featureFlags?.themeCustomization,
+  };
+  const settingsWithFeatureFlags = {
+    ...settings,
+    features: {
+      ...(settings.features || {}),
+      ...clientFeatureFlags,
+    },
+  };
 
   if (req.aborted) {
     logSSRAborted(req, 'Store data', ssrStart, routeName);
     return;
   }
 
-  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(req, settings, language);
+  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(
+    req,
+    settingsWithFeatureFlags,
+    language
+  );
 
   if (req.aborted) {
     logSSRAborted(req, 'Route data', ssrStart, routeName);
@@ -383,13 +403,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   }
 
   const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
-
-  const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
-
-  const clientFeatureFlags: ClientFeatureFlags = {
-    paragraphExtraction: featureFlags?.paragraphExtraction,
-    v2CSVImport: featureFlags?.v2CSVImport,
-  };
 
   if (req.aborted) {
     logSSRAborted(req, 'Before requestStates', ssrStart, routeName);

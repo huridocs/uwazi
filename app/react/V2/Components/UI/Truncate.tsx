@@ -1,5 +1,5 @@
 import React, { isValidElement } from 'react';
-import { Tooltip } from 'flowbite-react';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 
 type TruncateProps = {
   children: React.ReactNode;
@@ -73,8 +73,6 @@ const Truncate = ({
             content={<span className={tooltipClassname}>{text}</span>}
             arrow
             animation="duration-100"
-            // eslint-disable-next-line react/style-prop-object
-            style="light"
             className="shadow-xl"
           >
             <span className={`pointer-events-auto cursor-pointer px-1 ${childClassName}`}>...</span>
@@ -93,8 +91,6 @@ const Truncate = ({
           content={<span className={tooltipClassname}>{text}</span>}
           arrow
           animation="duration-100"
-          // eslint-disable-next-line react/style-prop-object
-          style="light"
           className="shadow-xl"
         >
           <span className={`pointer-events-auto cursor-pointer px-2 font-bold ${childClassName}`}>

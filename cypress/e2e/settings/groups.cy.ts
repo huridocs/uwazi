@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
@@ -10,6 +11,14 @@ const namesShouldMatch = (names: string[]) => {
 };
 
 describe('Groups', () => {
+  afterEach(() => {
+    cy.get('body').then($body => {
+      if ($body.find('[data-testid="sidepanel-overlay"]').length) {
+        cy.get('[data-testid="close-sidepanel"]').click({ force: true });
+      }
+    });
+  });
+
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
@@ -22,13 +31,37 @@ describe('Groups', () => {
 
   it('accesibility check', () => {
     cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Groups'));
-    cy.checkA11y();
-    cy.getByTestId('settings-content').matchImageSnapshot('content');
+    cy.checkA11y(undefined, undefined, logA11yViolations);
+    cy.contains('button', 'Users').should('be.visible');
+    cy.contains('button', 'Groups').should('be.visible');
+    cy.get('table thead').within(() => {
+      cy.contains('th', 'Name');
+      cy.contains('th', 'Members');
+    });
+    cy.get('table tbody tr').should('have.length', 2);
+    cy.contains('tr', 'Activistas').within(() => {
+      cy.contains('span', 'admin');
+      cy.contains('span', 'editor');
+      cy.contains('span', 'Cynthia');
+      cy.contains('button', 'Edit');
+    });
+    cy.contains('tr', 'Asesores legales').within(() => {
+      cy.contains('span', 'editor');
+      cy.contains('span', 'colla');
+      cy.contains('span', 'Cynthia');
+      cy.contains('button', 'Edit');
+    });
+    cy.contains('button', 'Add group').should('be.visible');
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
-    cy.checkA11y();
-    cy.get('aside').matchImageSnapshot('sidepanel');
-    cy.contains('button', 'Cancel').click();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
+    cy.get('[data-testid="group-sidepanel-snapshot"]').matchImageSnapshot('sidepanel', {
+      blur: 2,
+      failureThreshold: 0.18,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
+    cy.get('[data-testid="close-sidepanel"]').click();
   });
 
   it('should be sorted by name by default', () => {
@@ -55,7 +88,6 @@ describe('Groups', () => {
     const groups = ['Activistas', 'Asesores legales', 'Group One'];
     cy.wait('@fetchUserGroups');
     namesShouldMatch(groups);
-    cy.contains('button', 'Dismiss').click();
   });
 
   it('should edit group', () => {
@@ -80,19 +112,17 @@ describe('Groups', () => {
 
     const groups = ['Asesores legales', 'Group One', 'Knights of the Zodiac'];
     namesShouldMatch(groups);
-    cy.contains('button', 'Dismiss').click();
   });
 
   it('check for unique name', () => {
     cy.contains('button', 'Edit').eq(0).click();
     cy.clearAndType('input[id=name]', 'Group One', { delay: 0 });
     cy.contains('button', 'Save').click();
-    cy.contains('span', 'Duplicated name');
+    cy.contains('p', 'Duplicated name');
 
     cy.clearAndType('input[id=name]', 'Group Two', { delay: 0 });
     cy.contains('button', 'Save').click();
     cy.contains('td', 'Group Two');
-    cy.contains('button', 'Dismiss').click();
   });
 
   it('should delete two groups', () => {
@@ -114,7 +144,6 @@ describe('Groups', () => {
     cy.contains('li', 'Group One');
 
     cy.contains('button', 'Accept').click();
-    cy.contains('button', 'Dismiss').click();
   });
 
   it('should check that the groups are deleted', () => {

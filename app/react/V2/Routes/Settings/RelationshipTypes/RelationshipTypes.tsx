@@ -4,16 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { Row } from '@tanstack/react-table';
-import { useSetAtom, useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import * as relationshipTypesAPI from '#app/V2/api/relationshiptypes/index.js';
 import { Template } from '#app/apiResponseTypes.js';
-import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
 import { Button, Table, Sidepanel, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents.js';
 import { Form } from './components/Form.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const relationshipTypesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -26,7 +27,7 @@ const RelationshipTypes = () => {
 
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const setRelationshipTypes = useSetAtom(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
 
@@ -81,10 +82,7 @@ const RelationshipTypes = () => {
     const { rowId, ...data } = submitedData;
     try {
       await relationshipTypesAPI.save(data);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Updated</Translate>,
-      });
+      notify('success', t('System', 'Updated', null, false));
       setIsSidepanelOpen(false);
     } catch (error) {
       handleUnexpectedError(error, 'Error saving relationship type');
@@ -96,10 +94,7 @@ const RelationshipTypes = () => {
   const deleteSelected = async () => {
     try {
       await relationshipTypesAPI.deleteRelationtypes(selectedItems.map(item => item._id));
-      setNotifications({
-        type: 'success',
-        text: <Translate>Updated</Translate>,
-      });
+      notify('success', t('System', 'Updated', null, false));
       setShowConfirmationModal(false);
     } catch (error) {
       handleUnexpectedError(error, 'Error deleting relationship type');
@@ -118,7 +113,7 @@ const RelationshipTypes = () => {
             columns={columns({ edit })}
             data={tableRelationshipTypes}
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                 Relationship types
               </Translate>
             }
@@ -135,7 +130,7 @@ const RelationshipTypes = () => {
               <Button
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
-                color="error"
+                variant="danger"
                 data-testid="relationship-types-delete"
               >
                 <Translate>Delete</Translate>

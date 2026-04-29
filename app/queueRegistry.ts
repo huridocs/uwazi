@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */ /* eslint-disable max-statements */
 
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
 import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { EntityPreviewBatchHandlerFactory } from '#api/core/infrastructure/factories/EntityPreviewBatchFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -16,36 +16,35 @@ import { BulkCleanupEntityJob } from '#api/core/infrastructure/jobs/BulkCleanupE
 import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
 import { DenormalizeThesaurusEntitiesChunkHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesChunkHandler.js';
 import { DenormalizeThesaurusEntitiesHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesHandler.js';
+import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
-import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import {
   Dispatchable,
   HeartbeatCallback,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { CsvCleanupImportFilesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCleanupImportFilesJobFactory.js';
+import { CsvCreateRelationshipEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 import { CsvCreateThesauriValuesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
 import { CsvExtractUploadedZipJobFactory } from '#api/csv.v2/infrastructure/factories/CsvExtractUploadedZipJobFactory.js';
 import { CsvImportEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvImportEntitiesJobFactory.js';
 import { CsvPreflightJobFactory } from '#api/csv.v2/infrastructure/factories/CsvPreflightJobFactory.js';
-import { CsvCreateRelationshipEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
-import { CsvCleanupImportFilesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCleanupImportFilesJobFactory.js';
-import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
-import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
-import { CsvImportEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler.js';
-import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
-import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
-import { CsvCreateRelationshipEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
 import { CsvCleanupImportFilesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCleanupImportFilesJobHandler.js';
-import { CsvV1CompatEmitter } from '#api/csv.v2/infrastructure/services/CsvV1CompatEmitter.js';
+import { CsvCreateRelationshipEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
+import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
+import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
+import { CsvImportEntitiesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler.js';
+import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { denormalizeRelated } from '#api/entities/denormalize.js';
 import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
@@ -66,9 +65,6 @@ import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/Accept
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -185,16 +181,9 @@ export function registerJobs(register: Register) {
 
   register(PDFPostProcessJobHandler, async (_tenantName: string) => {
     const transactionManager = TransactionManagerFactory.default();
+
     return new PDFPostProcessJobHandler({
-      useCase: new PDFPostProcessJob({
-        eventBus: applicationEventsBus,
-        transactionManager,
-        filesDS: FilesDataSourceFactory.default(),
-        fileStorage: FileStorageFactory.default(),
-        pdfService: new PDFService(),
-        idGenerator: IdGeneratorFactory.default(),
-        filesService: FilesServiceFactory.default(),
-      }),
+      useCase: PDFPostProcessJobFactory.default(transactionManager),
       wSockets: new V1WebSocketsWrapper(),
     });
   });
@@ -232,44 +221,39 @@ export function registerJobs(register: Register) {
   register(CsvExtractUploadedZipJobHandler, async () => {
     const useCase = CsvExtractUploadedZipJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvExtractUploadedZipJobHandler({ useCase, sockets, v1Compat });
+    return new CsvExtractUploadedZipJobHandler({ useCase, sockets });
   });
 
   register(CsvPreflightJobHandler, async () => {
     const useCase = CsvPreflightJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvPreflightJobHandler({ useCase, sockets, v1Compat });
+    return new CsvPreflightJobHandler({ useCase, sockets });
   });
 
   register(CsvCreateThesauriValuesJobHandler, async () => {
     const useCase = CsvCreateThesauriValuesJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvCreateThesauriValuesJobHandler({ useCase, sockets, v1Compat });
+    return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
   });
 
   register(CsvCreateRelationshipEntitiesJobHandler, async () => {
     const useCase = CsvCreateRelationshipEntitiesJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const v1Compat = new CsvV1CompatEmitter({ sockets });
-    return new CsvCreateRelationshipEntitiesJobHandler({ useCase, sockets, v1Compat });
+    return new CsvCreateRelationshipEntitiesJobHandler({ useCase, sockets });
   });
 
   register(CsvImportEntitiesJobHandler, async () => {
     const useCase = CsvImportEntitiesJobFactory.default();
     const sockets = new V1WebSocketsWrapper();
-    const transactionManager = TransactionManagerFactory.default();
-    const rowErrorsDS = CSVImportEntitiesFactories.CSVImportRowErrorsDSDefault(transactionManager);
-    const v1Compat = new CsvV1CompatEmitter({ sockets, rowErrorsDS });
-    return new CsvImportEntitiesJobHandler({ useCase, sockets, v1Compat });
+    return new CsvImportEntitiesJobHandler({ useCase, sockets });
   });
 
   register(CsvCleanupImportFilesJobHandler, async () => {
     const useCase = CsvCleanupImportFilesJobFactory.default();
     return new CsvCleanupImportFilesJobHandler({ useCase });
   });
+
+  register(EntityPreviewBatchHandler, async () => EntityPreviewBatchHandlerFactory.default());
 
   register(
     BulkCleanupEntityJob,

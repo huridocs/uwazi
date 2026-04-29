@@ -10,7 +10,6 @@ import {
   useSearchParams,
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
-import { useSetAtom } from 'jotai';
 import isEmpty from 'lodash/isEmpty.js';
 import { FunnelIcon } from '@heroicons/react/24/solid';
 import * as extractorsAPI from '#V2/api/ix/extractors.js';
@@ -18,7 +17,6 @@ import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, PaginationState, Paginator, Table } from '#V2/Components/UI/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { ClientPropertySchema } from '#app/istore.js';
 import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
@@ -35,11 +33,14 @@ import {
   EntitySuggestion,
 } from './types.js';
 import { useEventHandler } from './hooks/useEventHandler.js';
+import { useSetAtom } from 'jotai';
 import { acceptedSuggestions } from './components/atoms/index.js';
 import { PDFSidepanel } from './components/sidepanel/PDFSidepanel.js';
 import { PropertySidepanel } from './components/sidepanel/PropertySidepanel.js';
 import { TrainModelModal } from './components/TrainModelModal.js';
 import { ProcessExtractorModal } from './components/ProcessExtractorModal.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { createIXTaskListenerSetup, initialTaskLabel } from './taskProgress.js';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
@@ -94,7 +95,7 @@ const IXSuggestions = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify, registerTask } = useRequestStatus();
   const setAcceptedSuggestionsAtom = useSetAtom(acceptedSuggestions);
 
   const filteredTemplates = () =>
@@ -128,10 +129,7 @@ const IXSuggestions = () => {
         return newSet;
       });
       setSelected([]);
-      setNotifications({
-        type: 'info',
-        text: <Translate>Suggestions sent</Translate>,
-      });
+      notify('info', t('System', 'Suggestions sent', null, false));
     } catch (error) {
       handleUnexpectedError(error, 'Error accepting suggestions');
     }
@@ -143,9 +141,25 @@ const IXSuggestions = () => {
   ) => {
     if (status.status === ixStatus.ready) {
       if (extractor._id) {
+        const extractorId = extractor._id;
+        const labels = {
+          trainingModel: t('System', 'Training model', null, false),
+          findingSuggestions: t('System', 'Finding suggestions', null, false),
+          acceptingSuggestions: t('System', 'Accepting suggestions', null, false),
+        };
+        registerTask(
+          extractorId,
+          initialTaskLabel({ taskType: 'train', extractorName: extractor.name, labels }),
+          createIXTaskListenerSetup({
+            extractorId,
+            extractorName: extractor.name,
+            taskType: 'train',
+            labels,
+          })
+        );
         try {
           await suggestionsAPI.findSuggestions({
-            extractorId: extractor._id,
+            extractorId,
             suggestionsToFind: findAmount,
             samplePolicy,
           });
@@ -176,8 +190,24 @@ const IXSuggestions = () => {
 
   const processExtractor = async (data: Omit<suggestionsAPI.ProcessParameters, 'extractorId'>) => {
     if (extractor._id) {
+      const extractorId = extractor._id;
+      const labels = {
+        trainingModel: t('System', 'Training model', null, false),
+        findingSuggestions: t('System', 'Finding suggestions', null, false),
+        acceptingSuggestions: t('System', 'Accepting suggestions', null, false),
+      };
+      registerTask(
+        extractorId,
+        initialTaskLabel({ taskType: 'process', extractorName: extractor.name, labels }),
+        createIXTaskListenerSetup({
+          extractorId,
+          extractorName: extractor.name,
+          taskType: 'process',
+          labels,
+        })
+      );
       try {
-        const params = { ...data, extractorId: extractor._id };
+        const params = { ...data, extractorId };
 
         const response = await suggestionsAPI.process(params);
 
@@ -318,9 +348,9 @@ const IXSuggestions = () => {
               <SuggestionsTitle property={extractor.property} templates={filteredTemplates()} />
             }
             actions={
-              <Button size="small" styling="light" onClick={() => setSidepanel('filters')}>
+              <Button size="small" variant="ghost" onClick={() => setSidepanel('filters')}>
                 <FunnelIcon
-                  className={`inline w-4 mr-2 ${activeFilters > 0 ? 'text-primary-900' : 'text-gray-800'} `}
+                  className={`mr-2 inline w-4 ${activeFilters > 0 ? '[color:var(--color-theme-action-primary)]' : '[color:var(--color-theme-text-secondary)]'} `}
                 />
                 <Translate>Stats & Filters</Translate>
                 {activeFilters > 0 && (
@@ -361,21 +391,21 @@ const IXSuggestions = () => {
               <Button
                 size="small"
                 type="button"
-                styling="solid"
+                variant="primary"
                 onClick={() => setModal('train')}
                 disabled={selected.length > 0}
               >
                 <Translate>Train model</Translate>
               </Button>
             ) : (
-              <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
+              <Button size="small" type="button" variant="secondary" onClick={cancelModelTrain}>
                 <Translate>Cancel</Translate>
               </Button>
             )}
             <Button
               size="small"
               type="button"
-              styling="solid"
+              variant="primary"
               onClick={() => setModal('process')}
               disabled={status.status !== ixStatus.ready}
             >
@@ -386,7 +416,7 @@ const IXSuggestions = () => {
               )}
             </Button>
             {status.status !== ixStatus.ready && (
-              <div className="text-sm font-semibold text-center text-gray-900">
+              <div className="text-center text-sm font-semibold [color:var(--color-theme-text-primary)]">
                 {ixmessages[status.status]}
                 {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
                 {status.data && (
@@ -397,14 +427,14 @@ const IXSuggestions = () => {
               </div>
             )}
             {selected.length > 0 && (
-              <div className="text-sm font-semibold text-center text-gray-900">
-                <span className="font-light text-gray-500">
+              <div className="text-center text-sm font-semibold [color:var(--color-theme-text-primary)]">
+                <span className="font-light [color:var(--color-theme-text-muted)]">
                   <Translate>Selected</Translate>
                 </span>
                 &nbsp;
                 {selected.length}
                 &nbsp;
-                <span className="font-light text-gray-500">
+                <span className="font-light [color:var(--color-theme-text-muted)]">
                   <Translate>of</Translate>
                 </span>
                 &nbsp;

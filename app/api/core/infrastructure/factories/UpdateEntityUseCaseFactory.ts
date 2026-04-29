@@ -13,7 +13,7 @@ import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class UpdateEntityUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof UpdateEntityUseCase>[0]>) {
-    const tenant = ExecutionContext.tenant;
+    const { tenant } = ExecutionContext;
 
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const { idGenerator, eventEmitter } = ExecutionContext;
@@ -55,6 +55,7 @@ class UpdateEntityUseCaseFactory {
         fileService,
         idGenerator,
         transactionManager,
+        settingsDS,
         ...overrides,
       },
       { actor: ExecutionContext.actor, tenant }

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '#app/utils/api.js';
 import { useRevalidator } from 'react-router';
-import { useSetAtom } from 'jotai';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { Button, Card, CopyValueInput, Sidepanel } from '#V2/Components/UI/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import loadable from '@loadable/component';
 import { InputField } from '#V2/Components/Forms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const QRCodeSVG = loadable(
   async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),
@@ -26,7 +25,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   const [token, setToken] = useState('');
   const [_secret, setSecret] = useState('');
   const [_otpauth, setOtpauth] = useState('');
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
   const [tokenError, setTokenError] = useState(false);
 
@@ -57,10 +56,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
       await api.post('auth2fa-enable', new RequestParams({ token }));
       await revalidator.revalidate();
       closePanel();
-      setNotifications({
-        type: 'success',
-        text: <Translate>2FA Enabled</Translate>,
-      });
+      notify('success', t('System', '2FA Enabled', null, false));
     } catch (error) {
       if (error.status === 409) {
         setTokenError(true);
@@ -86,7 +82,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                   Download a third-party authenticator app from your mobile store.
                 </Translate>
                 &nbsp;
-                <span no-translate className="italic text-gray-500">
+                <span no-translate className="italic [color:var(--color-theme-text-muted)]">
                   (Google Authenticator, LastPass Authenticator, Microsoft Authenticator, Authy,
                   etc.)
                 </span>
@@ -99,7 +95,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
               </li>
             </ol>
             <p>
-              <Translate className="italic text-gray-500">
+              <Translate className="italic [color:var(--color-theme-text-muted)]">
                 Instructions on how to achieve this will vary according to the app used, please
                 refer to the app's documentation.
               </Translate>
@@ -128,7 +124,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                   <Translate className="block">
                     You can also enter this secret key into your Authenticator app.
                   </Translate>
-                  <Translate className="block italic text-gray-500">
+                  <Translate className="block italic [color:var(--color-theme-text-muted)]">
                     *please keep this key secret and don't share it.
                   </Translate>
                 </>
@@ -158,7 +154,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3">
         <div className="flex w-full gap-2">
-          <Button styling="light" onClick={closePanel} className="grow">
+          <Button variant="ghost" onClick={closePanel} className="grow">
             <Translate>Cancel</Translate>
           </Button>
           <Button className="grow" disabled={!token} onClick={enable2fa}>

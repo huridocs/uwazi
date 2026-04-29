@@ -4,19 +4,20 @@ import React, { useState, useRef, useEffect } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router';
 import { Row, RowSelectionState } from '@tanstack/react-table';
-import { useSetAtom } from 'jotai';
 import cloneDeep from 'lodash/cloneDeep.js';
 import isEqual from 'lodash/isEqual.js';
 
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
+import { useSetAtom } from 'jotai';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { MenuForm } from './components/MenuForm.js';
 import { columns } from './components/TableComponents.js';
 import { Link, sanitizeIds } from './shared.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -40,7 +41,7 @@ const MenuConfig = () => {
   const prevLinks = useRef(cloneDeep(links));
   const [selectedLinks, setSelectedLinks] = useState<RowSelectionState>({});
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
   const [formValues, setFormValues] = useState<Link & { parentId?: string }>();
   const [showModal, setShowModal] = useState(false);
@@ -69,12 +70,9 @@ const MenuConfig = () => {
 
   const save = async () => {
     const settings = await SettingsAPI.saveLinks(linkState.map(sanitizeIds));
-    setSettings(settings);
+    setSettings(prev => mergeClientSettings(prev, settings));
     await revalidator.revalidate();
-    setNotifications({
-      type: 'success',
-      text: <Translate>Updated</Translate>,
-    });
+    notify('success', t('System', 'Updated', null, false));
   };
 
   const deleteSelected = () => {
@@ -125,7 +123,7 @@ const MenuConfig = () => {
               setLinkState(rows);
             }}
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                 Menu
               </Translate>
             }
@@ -139,7 +137,7 @@ const MenuConfig = () => {
               <Button
                 type="button"
                 onClick={deleteSelected}
-                color="error"
+                variant="danger"
                 data-testid="menu-delete-link"
               >
                 <Translate>Delete</Translate>
@@ -166,7 +164,7 @@ const MenuConfig = () => {
                 <Button
                   type="button"
                   onClick={save}
-                  color="success"
+                  variant="success"
                   disabled={areEqual}
                   data-testid="menu-save"
                 >

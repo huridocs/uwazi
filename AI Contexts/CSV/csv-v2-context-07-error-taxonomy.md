@@ -58,6 +58,8 @@ Primary path:
 
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesBatchProcessor.ts`
   - per-row exceptions are normalized through `CsvRowImportErrorFactory`.
+  - cardinality is **one persisted row error per failed row** (first thrown error wins for that row).
+  - importer does not persist a generic per-row array of multiple errors in current behavior.
 
 Representative error sources today:
 
@@ -164,6 +166,8 @@ Notes:
 - Keep `message` for human readability.
 - Add `code` as required for all newly persisted errors.
 - No legacy-row fallback logic is required (clean slate: no existing CSV v2 import records).
+- Current importer behavior is first-error-per-row (single persisted record per failed row); any
+  future multi-error collection would require explicit pipeline/model changes.
 
 ---
 
@@ -313,8 +317,21 @@ Keep this section as the actionable source of truth for next iterations.
    user-actionable failure class appears repeatedly and cannot be represented by existing codes.
 4. Preserve the factory-first rule: all new row-error sources must map through
    `CsvRowImportErrorFactory` rather than persisting ad-hoc messages.
+5. Empty source lines must not be surfaced as generic `INTERNAL_ERROR` with
+   `Row could not be imported due to an internal processing error.`:
+   - classify them as explicit row errors (`ROW_EMPTY_OR_MALFORMED`) with user-safe message
+     (`Empty line.`),
+   - keep them counted in `stats.rowsFailed`,
+   - preserve source index traceability while avoiding noisy/internal-looking row errors.
+6. Failed-rows report artifact (`failed_rows.csv`) is a filtered export:
+   - exclude rows whose only failure is `ROW_EMPTY_OR_MALFORMED`,
+   - keep `failedRows` counters based on persisted row errors (including empty lines).
+6. Improve file-column misuse diagnostics for `file` cells containing multiple values (e.g. `a.pdf|b.jpg`):
+   - avoid misleading `FILE_NOT_FOUND` against the full token,
+   - emit a clear user-facing error explaining `file` accepts only one value and multi-file input
+     must use the `files` column.
 
-### 13.1 TODO — Empty-line exception policy (agreed direction)
+### 13.1 Empty-line policy (agreed, Apr 2026)
 
 Policy alignment (explicit):
 
@@ -322,11 +339,27 @@ Policy alignment (explicit):
    - source-row positions must stay reconstructable for future imports/analysis.
 2. Malformed rows remain true failures:
    - malformed rows must continue to appear in row errors and failed-rows CSV.
-3. Empty source lines are the exception:
-   - empty lines should not be treated as row errors,
-   - empty lines should not inflate failed-rows CSV with blank records.
+3. Empty source lines are treated as explicit row errors:
+   - empty lines must persist as `ROW_EMPTY_OR_MALFORMED`,
+   - user-facing message should be `Empty line.`,
+   - empty-line failures are included in `stats.rowsFailed`,
+   - empty-line failures are excluded from `failed_rows.csv` artifact rows.
 
 Implementation note for future iteration:
 
 - Apply this as a reporting/error-policy decision, not by losing index traceability.
 - Preserve ability to map staged/imported rows back to original source row positions.
+
+### 13.2 TODO — `file` column multi-value validation error
+
+Current gap:
+
+- `file` cells with `|`-separated values currently flow into file lookup as a single token and can
+  fail with misleading `FILE_NOT_FOUND`.
+
+Required behavior:
+
+- Detect multi-value usage in `file` early and map to a deterministic, user-facing validation error
+  (message must instruct to use `files` for multiple documents).
+- Keep `files` as the only multi-document column and maintain v1-compatible `file` single-value
+  semantics.

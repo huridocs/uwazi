@@ -3,17 +3,16 @@ import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { validEmailFormat } from '#V2/shared/formatHelpers.js';
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { updateUser, getCurrentUser } from '#V2/api/users/index.js';
-import { notificationAtom } from '#V2/atoms/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { Button, Card, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -26,7 +25,7 @@ const Account = () => {
   const [confirmationModal, setConfirmationModal] = useState(false);
   const passwordConfirmation = useRef<string>();
   const formSubmit = useRef<HTMLButtonElement>(null);
-  const setNotifications = useSetAtom(notificationAtom);
+  const { notify } = useRequestStatus();
   const revalidator = useRevalidator();
 
   type AccountForm = ClientUserSchema & { passwordConfirm?: string };
@@ -51,16 +50,14 @@ const Account = () => {
 
     if (response instanceof FetchResponseError) {
       const message = response.json?.prettyMessage ? response.json.prettyMessage : response.message;
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: message || undefined,
-      });
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        message || undefined
+      );
     } else {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Account updated</Translate>,
-      });
+      notify('success', t('System', 'Account updated', null, false));
       await revalidator.revalidate();
     }
 
@@ -151,7 +148,7 @@ const Account = () => {
                 color="default"
               >
                 <div className="flex gap-6 items-center">
-                  <Button color="success" disabled className="flex-none">
+                  <Button variant="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
                   <div className="flex-1 grow">
@@ -169,7 +166,7 @@ const Account = () => {
               >
                 <div className="flex gap-6 items-center">
                   <Button
-                    styling="outline"
+                    variant="secondary"
                     className="flex-none"
                     onClick={() => setIsSidepanelOpen(true)}
                   >
