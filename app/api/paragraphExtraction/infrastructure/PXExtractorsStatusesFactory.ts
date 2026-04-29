@@ -25,7 +25,7 @@ export class PXExtractorsStatusesFactory {
       transactionManager,
     });
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const filesDS = FilesDataSourceFactory.default();
 
     return new PXGetExtractorStatuses({ extractorsQueryService, settingsDS, filesDS });

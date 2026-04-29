@@ -119,7 +119,7 @@ export function registerJobs(register: Register) {
       connection,
       transactionManager,
     });
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),
@@ -180,10 +180,8 @@ export function registerJobs(register: Register) {
   });
 
   register(PDFPostProcessJobHandler, async (_tenantName: string) => {
-    const transactionManager = TransactionManagerFactory.default();
-
     return new PDFPostProcessJobHandler({
-      useCase: PDFPostProcessJobFactory.default(transactionManager),
+      useCase: PDFPostProcessJobFactory.default(),
       wSockets: new V1WebSocketsWrapper(),
     });
   });
@@ -199,12 +197,12 @@ export function registerJobs(register: Register) {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
     return new TemplatePostProcessEntitiesJob({
-      templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
         filesDS: FilesDataSourceFactory.default(),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-        templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
         transactionManager,
       }),
     });
@@ -274,7 +272,7 @@ export function registerJobs(register: Register) {
   register(DenormalizeThesaurusEntitiesHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
 
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
 
     return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
@@ -285,7 +283,9 @@ export function registerJobs(register: Register) {
     async () =>
       new DenormalizeEntityUpdatedListener({
         denormalizeRelated,
-        templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+        templatesDS: TemplatesDataSourceFactory.default({
+          transactionManager: TransactionManagerFactory.default(),
+        }),
       })
   );
 

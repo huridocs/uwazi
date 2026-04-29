@@ -6,9 +6,12 @@ import { tenants } from '#api/tenants/index.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+
+type Overrides = { transactionManager?: TransactionManager };
 
 export class SlotsReconcilerFactory {
-  static default(transactionManager: TransactionManager): SlotsReconciler {
+  static default(overrides?: Overrides): SlotsReconciler {
     const tenant = tenants.current();
 
     if (!tenant.featureFlags?.v2ElasticSearch) {
@@ -18,9 +21,12 @@ export class SlotsReconcilerFactory {
     }
 
     const db = getConnection();
-    const mongoTM = transactionManager as MongoTransactionManager;
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
+    const slotsDAO = MongoSlotsDAOFactory.default({
+      transactionManager: overrides?.transactionManager,
+    });
 
     const templatesDAO = new MongoTemplatesDAO({
       db,

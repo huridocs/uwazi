@@ -11,9 +11,9 @@ import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 class UpdateThesaurusUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof UpdateThesaurusUseCase>[0]>) {
     const transactionManager = TransactionManagerFactory.default();
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
     const thesaurusTranslationService = new ThesaurusTranslationService({

@@ -33,9 +33,9 @@ class CreateEntityFromPDFUseCaseFactory {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =

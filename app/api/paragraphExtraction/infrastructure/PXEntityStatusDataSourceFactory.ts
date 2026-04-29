@@ -13,7 +13,9 @@ type Props = {
 
 export class PXEntitiesStatusDataSourceFactory {
   static createDefault(props: Props): MongoPXEntitiesStatusDataSource {
-    const settingsDS = SettingsDataSourceFactory.default(props.mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: props.mongoTransactionManager,
+    });
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection: props.connection,
       transactionManager: props.mongoTransactionManager,

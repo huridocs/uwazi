@@ -72,16 +72,16 @@ async function updateTemplate(template: TemplateSchema, fullReindex = false) {
     TemplatePostProcessEntitiesJob: async () =>
       new TemplatePostProcessEntitiesJob({
         useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-          entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
+          entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
           relationshipsV1DS: new MongoRelationshipsV1DataSource(
             getConnection(),
             transactionManager
           ),
-          templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+          templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
           transactionManager,
           filesDS: FilesDataSourceFactory.default(),
         }),
-        templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       }),
   });
   return testingEnvironment.runWithContext(

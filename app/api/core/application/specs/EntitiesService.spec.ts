@@ -97,7 +97,9 @@ const createEntitySample = () => {
 };
 
 const loadEntities = async (sharedIds: string[]) => {
-  const ds = EntitiesDataSourceFactory.forTesting(TransactionManagerFactory.default());
+  const ds = EntitiesDataSourceFactory.default({
+    transactionManager: TransactionManagerFactory.default(),
+  });
   return (await ds.getEntitiesBySharedIds(sharedIds)).all();
 };
 

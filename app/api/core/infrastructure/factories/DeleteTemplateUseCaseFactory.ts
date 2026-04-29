@@ -14,11 +14,11 @@ class DeleteTemplateUseCaseFactory {
     const { tenant, actor } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const eventBus = applicationEventsBus;
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default();
+    const settingsDS = SettingsDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-    const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default();
 
     return new DeleteTemplateUseCase(
       {

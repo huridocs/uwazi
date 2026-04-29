@@ -44,7 +44,7 @@ const createSut = (props?: CreateSutProps) =>
 
       const thesauriDS =
         props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
-      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const translationsDS = DefaultTranslationsDataSource(transactionManager);
       const thesaurusTranslationService =
         props?.thesaurusTranslationService ??

@@ -34,9 +34,9 @@ class CreateEntityUseCaseFactory {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =
@@ -47,7 +47,7 @@ class CreateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = EntitiesServiceFactory.default({ transactionManager });
+    const entitiesService = EntitiesServiceFactory.default();
 
     const fileService = FilesServiceFactory.default();
 

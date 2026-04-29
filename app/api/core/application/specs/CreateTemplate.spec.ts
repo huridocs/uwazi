@@ -19,9 +19,9 @@ import { CreateTemplateUseCase } from '../CreateTemplate.js';
 const createSut = () =>
   testingEnvironment.runWithContext(() => {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyTranslationService();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
     const pageService = new LegacyPageService();

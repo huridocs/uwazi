@@ -80,8 +80,12 @@ const createSUT = () =>
       new EntityPreviewBatchHandler({
         transactionManager: ExecutionContext.transactionManager,
         filesDS: FilesDataSourceFactory.default(),
-        entitiesDS: EntitiesDataSourceFactory.forTesting(ExecutionContext.transactionManager),
-        settingsDS: SettingsDataSourceFactory.default(ExecutionContext.transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default({
+          transactionManager: ExecutionContext.transactionManager,
+        }),
+        settingsDS: SettingsDataSourceFactory.default({
+          transactionManager: ExecutionContext.transactionManager,
+        }),
       })
   );
 

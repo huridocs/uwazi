@@ -8,7 +8,7 @@ import { CreateTemplateService as GenericCreateTemplateService } from './CreateT
 const CreateTemplateService = async () => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const templatesDataSource = TemplatesDataSourceFactory.default(transactionManager);
+  const templatesDataSource = TemplatesDataSourceFactory.default({ transactionManager });
   const relTypesDataSource = DefaultRelationshipTypesDataSource(transactionManager);
   const entitiesDataSource = DefaultEntitiesDataSource(transactionManager);
   const denormalizationService = await DenormalizationService(transactionManager);

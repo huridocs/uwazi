@@ -7,7 +7,7 @@ class SetTemplateAsDefaultUseCaseFactory {
     overrides?: Partial<ConstructorParameters<typeof SetTemplateAsDefaultUseCase>[0]>
   ) {
     const transactionManager = TransactionManagerFactory.default();
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
 
     return new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager, ...overrides });
   }

@@ -115,9 +115,9 @@ const saveEvidence =
 
       // Set up V2 services
       const transactionManager = TransactionManagerFactory.default();
-      const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
-      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-      const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+      const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+      const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
       const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
       const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({

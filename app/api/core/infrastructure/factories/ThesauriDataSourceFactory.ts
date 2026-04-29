@@ -4,15 +4,22 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { MongoThesauriDataSourceV2 } from '../mongodb/thesauri/MongoThesauriDataSourceV2.js';
 import { CachedMongoThesauriDataSource } from '../mongodb/thesauri/CachedMongoThesauriDataSource.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+
+type Overrides = { transactionManager?: TransactionManager };
 
 export class ThesauriDataSourceFactory {
-  static default(transactionManager: TransactionManager): ThesauriDataSource {
+  static default(overrides?: Overrides): ThesauriDataSource {
     const db = getConnection();
-    return new MongoThesauriDataSourceV2(db, transactionManager as MongoTransactionManager);
+    const tm = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
+    return new MongoThesauriDataSourceV2(db, tm);
   }
 
-  static cached(transactionManager: TransactionManager): ThesauriDataSource {
+  static cached(overrides?: Overrides): ThesauriDataSource {
     const db = getConnection();
-    return new CachedMongoThesauriDataSource(db, transactionManager as MongoTransactionManager);
+    const tm = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
+    return new CachedMongoThesauriDataSource(db, tm);
   }
 }

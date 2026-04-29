@@ -15,12 +15,12 @@ import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 class UpdateTemplateUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof UpdateTemplateUseCase>[0]>) {
     const transactionManager = TransactionManagerFactory.default();
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const db = getConnection();
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const thesauriDS = new MongoThesauriDataSource(db, transactionManager);
     const translationService = new LegacyTranslationService();
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;

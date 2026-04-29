@@ -33,8 +33,10 @@ const createSut = () =>
     factories: {
       jobsDispatcher: () => {
         const tm = ExecutionContext.transactionManager as MongoTransactionManager;
-        const templatesDS = TemplatesDataSourceFactory.default(tm);
-        const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default(tm);
+        const templatesDS = TemplatesDataSourceFactory.default({ transactionManager: tm });
+        const multiLanguageEntitiesDS = EntitiesDataSourceFactory.default({
+          transactionManager: tm,
+        });
         const filesDS = FilesDataSourceFactory.default();
         const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), tm);
         return new SyncDispatcherForTests({

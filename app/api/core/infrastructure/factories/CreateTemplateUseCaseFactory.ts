@@ -13,9 +13,9 @@ class CreateTemplateUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof CreateTemplateUseCase>[0]>) {
     const transactionManager = TransactionManagerFactory.default();
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyTranslationService();
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
     const pageService = new LegacyPageService();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);

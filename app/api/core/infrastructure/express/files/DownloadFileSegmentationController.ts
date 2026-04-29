@@ -35,7 +35,7 @@ class DownloadFileSegmentationController extends AbstractController {
     return new DownloadFileSegmentation({
       filesDS: FilesDataSourceFactory.default(),
       fileStorage: FileStorageFactory.default(),
-      settingsDS: SettingsDataSourceFactory.default(transactionManager),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
     });
   }
 

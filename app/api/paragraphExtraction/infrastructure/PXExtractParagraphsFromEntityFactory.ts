@@ -21,7 +21,9 @@ export class PXExtractParagraphsFromEntityFactory {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.default();
 
-    const entitiesDS = EntitiesDataSourceFactory.default(mongoTransactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
@@ -35,7 +37,9 @@ export class PXExtractParagraphsFromEntityFactory {
       mongoTransactionManager,
     });
     const filesDS = FilesDataSourceFactory.default();
-    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const fileStorage = FileStorageFactory.default();
     const idGenerator = MongoIdHandler;
     const logger = LoggerFactory.default();

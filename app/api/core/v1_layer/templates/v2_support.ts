@@ -10,7 +10,7 @@ import templates from './templates.js';
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const transactionManager = TransactionManagerFactory.default();
   if (
-    !(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())
+    !(await SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed())
   ) {
     return template;
   }
@@ -41,9 +41,9 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
 };
 
 const newRelationshipsAllowed = async () =>
-  SettingsDataSourceFactory.default(
-    TransactionManagerFactory.default()
-  ).readNewRelationshipsAllowed();
+  SettingsDataSourceFactory.default({
+    transactionManager: TransactionManagerFactory.default(),
+  }).readNewRelationshipsAllowed();
 
 const processNewRelationshipPropertiesOnUpdate = async (
   _oldTemplate: TemplateSchema,
@@ -51,7 +51,7 @@ const processNewRelationshipPropertiesOnUpdate = async (
 ) => {
   const transactionManager = TransactionManagerFactory.default();
   if (
-    !(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())
+    !(await SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed())
   ) {
     return _newTemplate;
   }
@@ -65,7 +65,7 @@ const processNewRelationshipPropertiesOnUpdate = async (
 const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSchema['_id']) => {
   const transactionManager = TransactionManagerFactory.default();
   if (
-    !(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())
+    !(await SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed())
   ) {
     return;
   }

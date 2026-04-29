@@ -13,7 +13,6 @@ import { FileStorageFactory } from '../../files/FileStorageFactory.js';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
 import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker.js';
 
 class FileDeleteController extends AbstractController {
@@ -68,12 +67,8 @@ class FileDeleteController extends AbstractController {
         filesDS: FilesDataSourceFactory.default(),
         filesService: FilesServiceFactory.default({ jobsDispatcher }),
         entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
-        entitiesDS: EntitiesDataSourceFactory.default(
-          transactionManager as MongoTransactionManager
-        ),
-        settingsDS: SettingsDataSourceFactory.default(
-          transactionManager as MongoTransactionManager
-        ),
+        entitiesDS: EntitiesDataSourceFactory.default(),
+        settingsDS: SettingsDataSourceFactory.default(),
         transactionManager,
       },
       { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }

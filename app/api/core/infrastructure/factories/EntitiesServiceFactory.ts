@@ -17,23 +17,19 @@ import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
     const { transactionManager } = ExecutionContext;
-    const eventEmitter = EventEmitterFactory.default({
-      transactionManager,
-    });
+    const eventEmitter = ExecutionContext.eventEmitter;
 
     return new EntitiesService({
       eventEmitter,
       dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
-      entitiesDS: EntitiesDataSourceFactory.default(transactionManager as MongoTransactionManager),
+      entitiesDS: EntitiesDataSourceFactory.default(),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),
         transactionManager as MongoTransactionManager
       ),
       eventBus: applicationEventsBus,
-      settingsDS: SettingsDataSourceFactory.default(transactionManager as MongoTransactionManager),
-      templatesDS: TemplatesDataSourceFactory.default(
-        transactionManager as MongoTransactionManager
-      ),
+      settingsDS: SettingsDataSourceFactory.default(),
+      templatesDS: TemplatesDataSourceFactory.default(),
       transactionManager,
       ...deps,
     });
@@ -44,21 +40,21 @@ class EntitiesServiceFactory {
 
     const deps: EntitiesServiceDeps = {
       eventEmitter: EventEmitterFactory.forTesting(),
-      templatesDS: TemplatesDataSourceFactory.forTesting(transactionManager),
+      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       dispatcher: new DispatcherAdapter(
         DefaultDispatcher(tenants.current().name, transactionManager)
       ),
-      entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),
-        transactionManager
+        transactionManager as MongoTransactionManager
       ),
       eventBus: TestUtils.mockClass<EventsBus>({
         clear: jest.fn(),
         emit: jest.fn(),
         on: jest.fn(),
       }),
-      settingsDS: SettingsDataSourceFactory.default(transactionManager),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
       transactionManager,
       ..._deps,
     };

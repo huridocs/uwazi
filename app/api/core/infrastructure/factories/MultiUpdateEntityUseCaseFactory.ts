@@ -18,13 +18,12 @@ class MultiUpdateEntityUseCaseFactory {
     const { tenant } = ExecutionContext;
 
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const { eventEmitter } = ExecutionContext;
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default();
 
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.createWithRequired({
@@ -34,13 +33,7 @@ class MultiUpdateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = EntitiesServiceFactory.default({
-      transactionManager,
-      entitiesDS,
-      eventEmitter,
-      settingsDS,
-      templatesDS,
-    });
+    const entitiesService = EntitiesServiceFactory.default();
 
     const entityPermissionChecker = new MongoEntityPermissionChecker(
       getConnection(),

@@ -31,8 +31,8 @@ const createSUT = () => {
         {
           transactionManager,
           filesDS: FilesDataSourceFactory.default(),
-          entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
-          settingsDS: SettingsDataSourceFactory.default(transactionManager),
+          entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+          settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
           filesService: FilesServiceFactory.default(),
           entityPermissions,
         },

@@ -28,7 +28,9 @@ export class PXCreateExtractorFactory {
         mongoTransactionManager,
       }),
       idGenerator: MongoIdHandler,
-      templatesDS: TemplatesDataSourceFactory.default(mongoTransactionManager),
+      templatesDS: TemplatesDataSourceFactory.default({
+        transactionManager: mongoTransactionManager,
+      }),
       transactionManager: mongoTransactionManager,
       dispatcher,
     });

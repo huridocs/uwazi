@@ -4,46 +4,58 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { MongoTemplatesDataSource } from '../mongodb/template/MongoTemplatesDataSource.js';
 import { CachedMongoTemplatesDataSource } from '../mongodb/template/CachedMongoTemplatesDataSource.js';
 import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { SlotsReconciler } from '../elasticSearch/entities/SlotsReconciler.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+
+type Overrides = Partial<
+  Omit<ConstructorParameters<typeof MongoTemplatesDataSource>[0], 'transactionManager'>
+> & {
+  transactionManager?: TransactionManager;
+};
 
 export class TemplatesDataSourceFactory {
-  static default(transactionManager: TransactionManager) {
+  static default(overrides?: Overrides) {
     const db = getConnection();
-    const mongoTM = transactionManager as MongoTransactionManager;
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    const slotsReconciler = SlotsReconcilerFactory.default(transactionManager);
+    const slotsReconciler =
+      overrides?.slotsReconciler ??
+      SlotsReconcilerFactory.default({ transactionManager: overrides?.transactionManager });
+
+    const {
+      transactionManager: _ignored,
+      slotsReconciler: _ignoredSR,
+      ...restOverrides
+    } = overrides ?? {};
 
     return new MongoTemplatesDataSource({
       db,
       transactionManager: mongoTM,
       slotsReconciler,
+      ...restOverrides,
     });
   }
 
-  static cached(transactionManager: TransactionManager) {
+  static cached(overrides?: Overrides) {
     const db = getConnection();
-    const mongoTM = transactionManager as MongoTransactionManager;
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    const slotsReconciler = SlotsReconcilerFactory.default(transactionManager);
+    const slotsReconciler =
+      overrides?.slotsReconciler ??
+      SlotsReconcilerFactory.default({ transactionManager: overrides?.transactionManager });
+
+    const {
+      transactionManager: _ignored,
+      slotsReconciler: _ignoredSR,
+      ...restOverrides
+    } = overrides ?? {};
 
     return new CachedMongoTemplatesDataSource({
       db,
       transactionManager: mongoTM,
       slotsReconciler,
-    });
-  }
-
-  static forTesting(transactionManager: TransactionManager) {
-    const db = getConnection();
-    const mongoTM = transactionManager as MongoTransactionManager;
-
-    const slotsReconciler = TestUtils.mockClass<SlotsReconciler>({});
-
-    return new MongoTemplatesDataSource({
-      db,
-      transactionManager: mongoTM,
-      slotsReconciler,
+      ...restOverrides,
     });
   }
 }

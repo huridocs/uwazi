@@ -52,8 +52,9 @@ const createSut = (props?: CreateProps) =>
   testingEnvironment.runWithContext(() => {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-    const thesauriDS = props?.thesauriDS ?? ThesauriDataSourceFactory.default(transactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const thesauriDS =
+      props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const thesaurusTranslationService =
       props?.thesaurusTranslationService ??

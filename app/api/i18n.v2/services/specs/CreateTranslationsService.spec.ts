@@ -21,7 +21,7 @@ const createService = () => {
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default(transactionManager)
+      SettingsDataSourceFactory.default({ transactionManager })
     ),
     transactionManager
   );

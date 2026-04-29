@@ -20,7 +20,7 @@ const createSut = () => {
   const transactionManger = TransactionManagerFactory.default();
 
   const sut = new RelationshipPropertyCreatorService({
-    templatesDS: TemplatesDataSourceFactory.default(transactionManger),
+    templatesDS: TemplatesDataSourceFactory.default({ transactionManager: transactionManger }),
     relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManger),
   });
 

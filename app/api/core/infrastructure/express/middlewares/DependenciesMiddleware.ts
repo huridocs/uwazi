@@ -18,30 +18,26 @@ const dependenciesContextMiddleware = (
     return next();
   }
 
-  try {
-    const tenant = tenants.current();
-    const actor = User.createFrom(request.user);
+  const tenant = tenants.current();
+  const actor = User.createFrom(request.user);
 
-    return ExecutionContext.run(
-      {
-        tenant,
-        actor,
-        factories: {
-          transactionManager: TransactionManagerFactory.default,
-          jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
-          eventEmitter: () => EventEmitterFactory.default(),
-          idGenerator: IdGeneratorFactory.default,
-          logger: LoggerFactory.default,
-          elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),
-          authorizedEntityESClient: () =>
-            ElasticSearchClientFactory.authorizedEntityClient(tenant.name, actor),
-        },
+  return ExecutionContext.run(
+    {
+      tenant,
+      actor,
+      factories: {
+        transactionManager: TransactionManagerFactory.default,
+        jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
+        eventEmitter: () => EventEmitterFactory.default(),
+        idGenerator: IdGeneratorFactory.default,
+        logger: LoggerFactory.default,
+        elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),
+        authorizedEntityESClient: () =>
+          ElasticSearchClientFactory.authorizedEntityClient(tenant.name, actor),
       },
-      next
-    );
-  } catch (error) {
-    console.log(error);
-  }
+    },
+    next
+  );
 };
 
 export { dependenciesContextMiddleware };

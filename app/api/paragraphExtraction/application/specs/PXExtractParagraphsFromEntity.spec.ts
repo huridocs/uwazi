@@ -89,8 +89,12 @@ const setUpUseCase = () =>
 
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.default();
-    const entitiesDS = EntitiesDataSourceFactory.forTesting(mongoTransactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const filesDS = FilesDataSourceFactory.default();
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({

@@ -94,8 +94,8 @@ const createUpdateStrategy = async (
 const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
+  const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
   const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
 
@@ -120,7 +120,7 @@ const GetRelationshipService = () => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
   const relationshipTypeDS = DefaultRelationshipTypesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
@@ -185,7 +185,7 @@ const MigrationService = () => {
   const transactionManager = TransactionManagerFactory.default();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericMigrationService(
@@ -210,7 +210,7 @@ const DeleteRelationshipMigrationFieldService = () => {
 const GetRelationshipMigrationFieldsService = () => {
   const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
   const service = new GenericGetRelationshipMigrationFieldsService(
     transactionManager,
     fieldDS,

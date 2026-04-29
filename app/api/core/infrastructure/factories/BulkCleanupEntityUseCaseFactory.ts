@@ -12,7 +12,7 @@ class BulkCleanupEntityUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof BulkCleanupEntityUseCase>[0]>) {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const relationshipsDS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
     const eventBus = applicationEventsBus;
     const filesService = FilesServiceFactory.default();
