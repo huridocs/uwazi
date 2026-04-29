@@ -61,7 +61,7 @@ export const SiteName: React.FC<SiteNameProps> = ({
             : undefined
         }
       />
-      <I18NLink className={linkClass} to="/">
+      <I18NLink className={linkClass} to="/" aria-label={siteName}>
         {showLogo ? (
           <img
             src={logoUrl}

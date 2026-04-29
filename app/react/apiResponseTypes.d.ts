@@ -62,13 +62,13 @@ export type Template = TemplateSchema & {
 
 export interface ClientSettings extends Omit<
   Settings,
-  '_id | filters | links | features | languages'
+  '_id' | 'filters' | 'links' | 'features' | 'languages'
 > {
   _id?: string;
   filters?: ClientSettingsFilterSchema[];
   languages?: ClientLanguageSchema[];
   links?: ClientSettingsLinkSchema[];
-  features?: Omit<Settings['features'], 'preserve | metadataExtraction'> & {
+  features?: Omit<Settings['features'], 'preserve' | 'metadataExtraction'> & {
     preserve?: ClientPreserveConfig;
     ocr?: { url: string };
     metadataExtraction?: {
@@ -84,8 +84,9 @@ export interface ClientSettings extends Omit<
   themeCustomization?: boolean;
 }
 
-export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id | values'> {
+export interface ClientThesaurus extends Omit<ThesaurusSchema, '_id' | 'name' | 'values'> {
   _id: string;
+  name: string;
   values: ClientThesaurusValue[];
 }
 

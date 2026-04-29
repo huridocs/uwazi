@@ -4,7 +4,7 @@ import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import users from '#api/users/users.js';
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
@@ -93,12 +93,36 @@ describe('Settings routes', () => {
     const app = getApp();
 
     it('should save settings', async () => {
+      iosocket.emit.mockClear();
+
       const response = await request(app)
         .post('/api/settings')
-        .send({ site_name: 'my new name' })
+        .send({
+          site_name: 'my new name',
+          mailerConfig: 'smtp://user:password@example.com',
+          contactEmail: 'contact@example.com',
+          senderEmail: 'sender@example.com',
+          features: { favorites: true },
+        })
         .expect(200);
 
-      expect(response.body).toEqual(expect.objectContaining({ site_name: 'my new name' }));
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          site_name: 'my new name',
+          mailerConfig: 'smtp://user:password@example.com',
+          features: { favorites: true },
+        })
+      );
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'updateSettings',
+        TestEmitSources.currentTenant,
+        expect.not.objectContaining({
+          features: expect.anything(),
+          mailerConfig: expect.anything(),
+          contactEmail: expect.anything(),
+          senderEmail: expect.anything(),
+        })
+      );
     });
 
     describe('newNameGeneration', () => {

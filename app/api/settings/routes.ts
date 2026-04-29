@@ -46,17 +46,21 @@ const pickPublicFields = (settingsData: Settings): Partial<Settings> => {
   return publicSettings;
 };
 
+const getPublicSettingsPayload = (settingsData: Settings) => ({
+  ...pickPublicFields(settingsData),
+  themeCustomization: tenants.current().featureFlags?.themeCustomization ?? false,
+});
+
 export default (app: Application) => {
   app.get('/api/settings', (req, res, next) => {
     const select = req.user && req.user.role === 'admin' ? '+publicFormDestination' : {};
     settings
       .get({}, select)
       .then(response => {
-        const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
         const payload =
           req.user?.role === 'admin'
-            ? { ...response, themeCustomization }
-            : { ...pickPublicFields(response), themeCustomization };
+            ? { ...response, ...getPublicSettingsPayload(response) }
+            : getPublicSettingsPayload(response);
         res.json(payload);
       })
       .catch(next);
@@ -66,7 +70,7 @@ export default (app: Application) => {
     settings
       .save(req.body)
       .then(response => {
-        req.sockets.emitToCurrentTenant('updateSettings', response);
+        req.sockets.emitToCurrentTenant('updateSettings', getPublicSettingsPayload(response));
         res.json(response);
       })
       .catch(next);
@@ -84,7 +88,7 @@ export default (app: Application) => {
     settings
       .save({ links: req.body })
       .then(response => {
-        req.sockets.emitToCurrentTenant('updateSettings', response);
+        req.sockets.emitToCurrentTenant('updateSettings', getPublicSettingsPayload(response));
         res.json(response);
       })
       .catch(next);
