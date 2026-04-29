@@ -76,63 +76,64 @@ const createFixtures = (): DBFixture => ({
   segmentations: [segmentation, segmentation2],
 });
 
-const setUpUseCase = () => {
-  const extractionService = {
-    extractParagraphs: jest.fn(),
-    getParagraphsResult: jest.fn(),
-  };
+const setUpUseCase = () =>
+  testingEnvironment.runWithContext(() => {
+    const extractionService = {
+      extractParagraphs: jest.fn(),
+      getParagraphsResult: jest.fn(),
+    };
 
-  const fileStorage = TestUtils.mockClass<FileStorage>({
-    getFile: jest.fn(),
-  });
+    const fileStorage = TestUtils.mockClass<FileStorage>({
+      getFile: jest.fn(),
+    });
 
-  const connection = getConnection();
-  const mongoTransactionManager = TransactionManagerFactory.default();
-  const entitiesDS = EntitiesDataSourceFactory.forTesting(mongoTransactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = FilesDataSourceFactory.default();
+    const connection = getConnection();
+    const mongoTransactionManager = TransactionManagerFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.forTesting(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default();
 
-  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
 
-  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-  const idGenerator = MongoIdHandler;
-  const tenantName = tenants.current().name;
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+    const idGenerator = MongoIdHandler;
+    const tenantName = tenants.current().name;
 
-  const entitiesService = EntitiesServiceFactory.default({
-    transactionManager: mongoTransactionManager,
-  });
-
-  const extractParagraphs = new PXExtractParagraphsFromEntity(
-    {
+    const entitiesService = EntitiesServiceFactory.default({
       transactionManager: mongoTransactionManager,
-      entitiesService,
-      entitiesDS,
-      extractorsDS,
-      filesDS,
-      settingsDS,
+    });
+
+    const extractParagraphs = new PXExtractParagraphsFromEntity(
+      {
+        transactionManager: mongoTransactionManager,
+        entitiesService,
+        entitiesDS,
+        extractorsDS,
+        filesDS,
+        settingsDS,
+        extractionService,
+        fileStorage,
+        entitiesStatusDS,
+        idGenerator,
+        logger: createMockLogger(),
+        tenantName,
+      },
+      { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
+    );
+
+    return {
+      tenantName,
       extractionService,
       fileStorage,
-      entitiesStatusDS,
-      idGenerator,
-      logger: createMockLogger(),
-      tenantName,
-    },
-    { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
-  );
-
-  return {
-    tenantName,
-    extractionService,
-    fileStorage,
-    extractParagraphs,
-  };
-};
+      extractParagraphs,
+    };
+  });
 
 describe('PXExtractParagraphsFromEntity', () => {
   beforeAll(async () =>

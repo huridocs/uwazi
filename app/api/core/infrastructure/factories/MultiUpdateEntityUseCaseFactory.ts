@@ -10,10 +10,12 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { User } from '#api/users.v2/model/User.js';
 
 class MultiUpdateEntityUseCaseFactory {
   static default() {
-    const tenant = ExecutionContext.tenant;
+    const { tenant } = ExecutionContext;
 
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const { eventEmitter } = ExecutionContext;
@@ -45,6 +47,14 @@ class MultiUpdateEntityUseCaseFactory {
       transactionManager
     );
 
+    let actor: User | undefined;
+    try {
+      actor = ExecutionContext.actor;
+    } catch {
+      // still needed for some backwards compat tests
+      actor = User.createFrom(permissionsContext.getUserInContext()!);
+    }
+
     const useCase = new MultiUpdateEntity(
       {
         entitiesDS,
@@ -54,7 +64,7 @@ class MultiUpdateEntityUseCaseFactory {
         entityPermissionChecker,
         transactionManager,
       },
-      { actor: ExecutionContext.actor, tenant }
+      { actor, tenant }
     );
 
     return useCase;

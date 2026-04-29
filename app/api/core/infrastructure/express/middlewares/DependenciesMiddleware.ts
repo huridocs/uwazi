@@ -14,30 +14,34 @@ const dependenciesContextMiddleware = (
   _response: Response,
   next: NextFunction
 ) => {
-  if (!/^\/api(\/|$)/.test(request.path)) {
+  if (!/^\/(api|files|assets)(\/|$)/.test(request.path)) {
     return next();
   }
 
-  const tenant = tenants.current();
-  const actor = User.createFrom(request.user);
+  try {
+    const tenant = tenants.current();
+    const actor = User.createFrom(request.user);
 
-  return ExecutionContext.run(
-    {
-      tenant,
-      actor,
-      factories: {
-        transactionManager: TransactionManagerFactory.default,
-        jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
-        eventEmitter: () => EventEmitterFactory.default(),
-        idGenerator: IdGeneratorFactory.default,
-        logger: LoggerFactory.default,
-        elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),
-        authorizedEntityESClient: () =>
-          ElasticSearchClientFactory.authorizedEntityClient(tenant.name, actor),
+    return ExecutionContext.run(
+      {
+        tenant,
+        actor,
+        factories: {
+          transactionManager: TransactionManagerFactory.default,
+          jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
+          eventEmitter: () => EventEmitterFactory.default(),
+          idGenerator: IdGeneratorFactory.default,
+          logger: LoggerFactory.default,
+          elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),
+          authorizedEntityESClient: () =>
+            ElasticSearchClientFactory.authorizedEntityClient(tenant.name, actor),
+        },
       },
-    },
-    next
-  );
+      next
+    );
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export { dependenciesContextMiddleware };

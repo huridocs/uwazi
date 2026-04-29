@@ -47,10 +47,10 @@ class FileDeleteController extends AbstractController {
   }
 
   private useCase() {
-    let transactionManager = TransactionManagerFactory.default();
+    let { transactionManager } = ExecutionContext;
     let jobsDispatcher: JobsDispatcher = DefaultDispatcher(this.tenantName, transactionManager);
     if (process.env.NODE_ENV === 'test') {
-      transactionManager = TransactionManagerFactory.fake();
+      // transactionManager = TransactionManagerFactory.fake();
       jobsDispatcher = new SyncDispatcherForTests({
         DeleteFileFromStorageJobHandler: async () =>
           new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),

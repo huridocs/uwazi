@@ -1,9 +1,11 @@
 /* eslint-disable max-statements */
-import request from 'supertest';
 import type { Application, NextFunction, Request, Response } from 'express';
+import request from 'supertest';
+import { ObjectId } from 'mongodb';
 
 import entities from '#api/entities/index.js';
 import { search } from '#api/search/index.js';
+import { suggestionsRoutes } from '#api/suggestions/routes.js';
 import {
   factory,
   fixtures,
@@ -11,7 +13,6 @@ import {
   stateFilterFixtures,
   suggestionSharedId6Title,
 } from '#api/suggestions/specs/fixtures.js';
-import { suggestionsRoutes } from '#api/suggestions/routes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import waitForExpect from 'wait-for-expect';
@@ -39,7 +40,7 @@ let user: { username: string; role: string } | undefined;
 const getUser = () => user;
 
 beforeEach(async () => {
-  user = { username: 'user 1', role: 'admin' };
+  user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
   jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
 });
 

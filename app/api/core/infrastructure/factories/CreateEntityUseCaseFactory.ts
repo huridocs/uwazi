@@ -10,6 +10,8 @@ import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { User } from '#api/users.v2/model/User.js';
 
 class CreateEntityUseCaseFactory {
   static default(
@@ -19,8 +21,15 @@ class CreateEntityUseCaseFactory {
   ) {
     const { targetLanguage = 'en', ...depsOverrides } = overrides;
 
-    const tenant = ExecutionContext.tenant;
-    const actor = ExecutionContext.actor;
+    const { tenant } = ExecutionContext;
+
+    let actor: User | undefined;
+    try {
+      actor = ExecutionContext.actor;
+    } catch {
+      // still needed for some backwards compat tests
+      actor = User.createFrom(permissionsContext.getUserInContext()!);
+    }
 
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();

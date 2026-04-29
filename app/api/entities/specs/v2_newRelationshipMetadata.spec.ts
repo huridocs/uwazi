@@ -219,13 +219,15 @@ describe('entities.save()', () => {
         title: 'new_entity',
         obsoleteMetadata: [],
       };
-      const saved = await entities.save(
-        {
-          template: factory.id('template1'),
-          title: 'new_entity',
-        },
-        { user: adminUser, language: 'en' }
-      );
+      const saved = await testingEnvironment.runWithContext(async () => {
+        return entities.save(
+          {
+            template: factory.id('template1'),
+            title: 'new_entity',
+          },
+          { user: adminUser, language: 'en' }
+        );
+      });
       expect(saved).toMatchObject(expected);
       const inDb = await db?.collection('entities').find({ title: 'new_entity' }).toArray();
       expect(inDb).toMatchObject([expected, expected]);
@@ -234,17 +236,19 @@ describe('entities.save()', () => {
     });
 
     it('should create relationships accordingly to the metadata', async () => {
-      await entities.save(
-        {
-          template: factory.id('template1'),
-          title: 'new_entity2',
-          language: 'en',
-          metadata: {
-            relProp: [{ value: 'entity2' }],
+      await testingEnvironment.runWithContext(async () => {
+        await entities.save(
+          {
+            template: factory.id('template1'),
+            title: 'new_entity2',
+            language: 'en',
+            metadata: {
+              relProp: [{ value: 'entity2' }],
+            },
           },
-        },
-        { user: adminUser, language: 'en' }
-      );
+          { user: adminUser, language: 'en' }
+        );
+      });
 
       const inDb = await db
         ?.collection('entities')
@@ -279,16 +283,18 @@ describe('entities.save()', () => {
   describe('when updating an entity', () => {
     it('should update the denormalized title in the related entities', async () => {
       jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-      await entities.save(
-        {
-          _id: factory.id('entity2-en'),
-          sharedId: 'entity2',
-          language: 'en',
-          template: factory.id('template1'),
-          title: 'entity2-en-renamed',
-        },
-        { user: adminUser, language: 'en' }
-      );
+      await testingEnvironment.runWithContext(async () => {
+        await entities.save(
+          {
+            _id: factory.id('entity2-en'),
+            sharedId: 'entity2',
+            language: 'en',
+            template: factory.id('template1'),
+            title: 'entity2-en-renamed',
+          },
+          { user: adminUser, language: 'en' }
+        );
+      });
       const inDb = await db?.collection('entities').find({ sharedId: 'entity1' }).toArray();
 
       expect(inDb).toMatchObject([
@@ -321,13 +327,15 @@ describe('entities.save()', () => {
 
   it('should create and delete the relationships accordingly and update the metadata', async () => {
     const [entity] = await entities.get({ sharedId: 'entity1', language: 'en' });
-    await entities.save(
-      {
-        ...entity,
-        metadata: { relProp: [{ value: 'entity2' }, { value: 'entity5' }] },
-      },
-      { user: adminUser, language: 'en' }
-    );
+    await testingEnvironment.runWithContext(async () => {
+      await entities.save(
+        {
+          ...entity,
+          metadata: { relProp: [{ value: 'entity2' }, { value: 'entity5' }] },
+        },
+        { user: adminUser, language: 'en' }
+      );
+    });
 
     const relsInDb = await db?.collection('relationships').find({}).toArray();
 

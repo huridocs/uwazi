@@ -131,7 +131,9 @@ describe('preserveSync', () => {
         const moreEvidences = [fakeEvidence(4, 'title of url4'), fakeEvidence(42, '')];
 
         await mockVault(moreEvidences, 'another-auth-token');
-        await preserveSync.syncAllTenants();
+        await testingEnvironment.runWithContext(async () => {
+          await preserveSync.syncAllTenants();
+        });
         const { lastImport } = (await preserveSyncModel.get({ token: 'auth-token' }))[0];
         await mockVault([fakeEvidence(3, 'title of url3')], 'auth-token', lastImport);
         const { lastImport: anotherLastImport } = (
@@ -144,7 +146,9 @@ describe('preserveSync', () => {
         );
       }, tenantName);
 
-      await preserveSync.syncAllTenants();
+      await testingEnvironment.runWithContext(async () => {
+        await preserveSync.syncAllTenants();
+      });
     });
 
     it('should create entities based on evidences PROCESSED status', async () => {

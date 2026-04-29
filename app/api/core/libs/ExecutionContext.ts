@@ -88,6 +88,14 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
     return this.getStore()?.actor;
   }
 
+  set actor(user: User) {
+    const store = this.getStore();
+    if (!store) {
+      throw new Error('ExecutionContext is not initialized');
+    }
+    store.actor = user;
+  }
+
   attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {
     const originalMethod = (anInstance[method] as any).bind(anInstance);
 

@@ -18,6 +18,7 @@ import { TransactionManagerFactory } from '../factories/TransactionManagerFactor
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
 import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 

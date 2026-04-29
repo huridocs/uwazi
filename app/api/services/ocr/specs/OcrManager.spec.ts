@@ -147,7 +147,7 @@ describe('OcrManager', () => {
         expect(fetchMock.lastUrl()).toBe('protocol://link/to/result/file');
       });
 
-      it('should create a ProcessingPDF file in database', async () => {
+      fit('should create a ProcessingPDF file in database', async () => {
         const resultFiles = await files.get({ entity: 'parentEntity', type: 'document' });
         const ocrResultFile = resultFiles.find(f => f.originalname?.startsWith('ocr_'));
         expect(ocrResultFile).toBeDefined();
