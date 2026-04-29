@@ -8,7 +8,7 @@ import { TableLanguages } from '../LanguagesList.js';
 
 const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) => (
   <Button
-    styling={cell.row.original.default ? 'solid' : 'light'}
+    variant={cell.row.original.default ? 'primary' : 'ghost'}
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >
@@ -16,7 +16,7 @@ const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) =
     <StarIcon
       className={`${
         !cell.row.original.default
-          ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
+          ? ' w-4 [color:var(--color-theme-text-on-solid)] stroke-current [stroke:var(--color-theme-border-default)] stroke-2'
           : 'w-4'
       }`}
     />
@@ -26,7 +26,7 @@ const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) =
 const UninstallButton = ({ cell, column }: CellContext<TableLanguages, string>) =>
   !cell.row.original.default ? (
     <Button
-      styling="light"
+      variant="ghost"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >
@@ -39,7 +39,7 @@ const UninstallButton = ({ cell, column }: CellContext<TableLanguages, string>) 
 const ResetButton = ({ cell, column }: CellContext<TableLanguages, string>) =>
   cell.row.original.translationAvailable ? (
     <Button
-      styling="light"
+      variant="ghost"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >

@@ -58,6 +58,13 @@ enum ItemTypes {
   ROW = 'row',
 }
 
+export type ClientFeatureFlags = {
+  paragraphExtraction?: boolean;
+  themeCustomization?: boolean;
+  v2CSVImport?: boolean;
+  newHeader?: boolean;
+};
+
 type ClientProperty = Property & {
   _id?: string;
 };

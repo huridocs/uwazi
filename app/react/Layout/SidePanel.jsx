@@ -4,8 +4,10 @@ import React, { Component } from 'react';
 export class SidePanel extends Component {
   render() {
     const propsClass = this.props.className || '';
+    const dataTestId = this.props['data-testid'];
     return (
       <aside
+        data-testid={dataTestId}
         className={`side-panel ${propsClass} ${this.props.open ? 'is-active' : 'is-hidden'} ${
           this.props.mode
         } `}
@@ -21,6 +23,7 @@ SidePanel.propTypes = {
   className: PropTypes.string,
   open: PropTypes.bool,
   mode: PropTypes.string,
+  'data-testid': PropTypes.string,
 };
 
 SidePanel.defaultProps = {

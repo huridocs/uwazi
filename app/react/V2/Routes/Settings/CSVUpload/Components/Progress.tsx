@@ -36,7 +36,7 @@ const Progress = ({
   return (
     <div className="flex flex-col gap-1 items-center">
       <ProgressBar progress={progress} color={color} />
-      <span className="text-gray-500">
+      <span className="[color:var(--color-theme-text-muted)]">
         {current}/{total}
       </span>
     </div>

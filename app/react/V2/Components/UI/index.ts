@@ -8,6 +8,8 @@ export { Tabs } from './Tabs.js';
 export { Sidepanel } from './Sidepanel.js';
 export { ConfirmationModal } from './ConfirmationModal.js';
 export { Card } from './Card.js';
+export { SurfacePanel, SectionHeading } from './SurfacePanel.js';
+export { Tooltip } from './Tooltip.js';
 export { CopyValueInput } from './CopyValueInput.js';
 export { Paginator } from './Paginator.js';
 export { PaginationState } from './PaginationState.js';
@@ -22,4 +24,5 @@ export { BlankState } from './BlankState.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';
+export type { TooltipProps } from './Tooltip.js';
 export type { ProgressBarProps } from './ProgressBar.js';

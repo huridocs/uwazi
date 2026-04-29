@@ -11,6 +11,7 @@ A valid email is required,အီးမေးလ် လိုအပ်သည်
 Accept,လက်ခံမည်
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
+Accessibility checks need attention,Accessibility checks need attention
 Account,အကောင့်
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -67,6 +68,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
 Admins,Admins
+Advanced colors,Advanced colors
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
@@ -135,6 +137,7 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,ကတ်များ
 Cards view,ကတ်မြင်ကွင်း
+Change,Change
 Change password,စကားဝှက် ပြောင်းရန်
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
@@ -143,6 +146,8 @@ Character support description,This option enhances support for non-Latin languag
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,Choose which data to use for training
 Clear,Clear
 Clear all,Clear all
@@ -233,7 +238,10 @@ Custom JS,Custom JS
 Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
+Customize,Customize
+Customized,Customized
 Dark,Dark
+Dark Theme,Dark Theme
 Dashboard,Dashboard
 Date,Date
 Date added,ဒေတာ ထည့်ပြီး
@@ -289,6 +297,7 @@ Documentation,စာရွက်စာတမ်း
 documents,စာရွက်စာတမ်းများ
 Documents,စာရွက်စာတမ်းများ
 documents.,စာရွက်စာတမ်းများ။
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -311,6 +320,7 @@ Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
+Edit theme,Edit theme
 Edit user,Edit user
 Editor,အယ်ဒီတာ
 editor,အယ်ဒီတာ
@@ -363,10 +373,10 @@ Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
-1. Upload your icon in Custom Uploads.
-2. Copy its URL.
-3. Choose ""Custom Icon"" and paste the URL in the indicated field.
-4. Reload the page to see your favicon in action."
+1. Upload your icon in Custom Uploads if needed.
+2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
+3. Reload the page to see your favicon in action."
+Favicon no images hint,Favicon no images hint
 FEATURED,FEATURED
 File,ဖိုင်
 File deleted,File deleted
@@ -415,8 +425,10 @@ Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
 Groups,အုပ်စုများ
+Header and button preview,Header and button preview
 help,အကူအညီ
 here,here
+Hide,Hide
 Hide actions,Hide actions
 Hide label,Hide label
 Hide toolbar,Hide toolbar
@@ -431,6 +443,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",ပြင်ပ URL ဖြစ်ပါက URL ပုံစံအပြည့်အစုံကို သုံးပါ။ ဥပမာ- http://www.uwazi.io။
 "If you want to continue, please type",ဆက်လက်ဆောင်ရွက်လိုပါက ကျေးဇူးပြု၍ စာရိုက်ပါ
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,ထည့်သွင်းရန်
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -502,8 +515,11 @@ Library,စာကြည့်တိုက်
 library list view,စာကြည့်တိုက် စာရင်း မြင်ကွင်း
 library map view,စာကြည့်တိုက် မြေပုံ မြင်ကွင်း
 library table view,စာကြည့်တိုက် ဇယား မြင်ကွင်း
+Light,Light
+Light Theme,Light Theme
 Link,Link
 linked,ချိတ်ဆက်ထားသော
+Live preview,Live preview
 Live translate,Live translate
 Loading,Loading
 Login,လော့ဂ်အင်ဝင်ရန်
@@ -615,6 +631,7 @@ No table of contents description,မာတိကာ ဖော်ပြချက�
 No text match,စာသား ကိုက်ညီမှု မရှိပါ
 No text match description,You can type something different in the search box to get some results.
 No type,အမျိုးအစား မရှိပါ
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,No valid target template available
 No value,တန်ဖိုးမရှိပါ
 No Value,တန်ဖိုးမရှိပါ
@@ -697,6 +714,7 @@ Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link 
 Press enter to add,ထည့်ရန် enter ကို နှိပ်ပါ
 Preview,ကြိုကြည့်ရန်
 Previous,ယခင်
+Primary button,Primary button
 Primary Documents,အဓိက စာရွက်စာတမ်းများ
 Priority sorting,ဦးစားပေးမှု ခွဲခြားခြင်း
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
@@ -748,6 +766,7 @@ RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Receiving email
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Recommended,Recommended
 Reference,Reference
 References,ကိုးကားချက်များ
 Reject,ငြင်းပယ်ရန်
@@ -820,14 +839,18 @@ Search Tips: one char wildcard,ရှာဖွေမှု အကြံပြု
 Search Tips: proximity,ရှာဖွေမှု အကြံပြုချက်များ- နီးစပ်မှု
 Search Tips: wildcard,ရှာဖွေမှု အကြံပြုချက်များ- ပါဝင်မှု
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Secret keys
 Security,Security
 Select,Select
 Select & Search,Select & Search
 Select all,အားလုံးကို ရွေးရန်
+Select an existing image,Select an existing image
+Select favicon image,Select favicon image
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
 Select from computer,Select from computer
 Select relationship type,ဆက်နွှယ်မှု အမျိုးအစား ရွေးချယ်ရန်
+Select site logo image,Select site logo image
 Select target paragraph,ပစ်မှတ်ထား စာပိုဒ်ကို ရွေးချယ်ရန်
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
@@ -866,6 +889,11 @@ Showing,Showing
 shown of,ပြသထားသည််
 Sign in,လက်မှတ်ထိုးဝင်ရန်
 Single relationships must have a hub,Single relationships must have a hub
+Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
+Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
 Size,အရွယ်အစား
 Skip to main content,Skip to main content
 Something went wrong,တစ်ခုခု မှားသွားသည်
@@ -940,6 +968,11 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,ဖြည့်သွင်းချက် မြင်ကွင်းအတွက် ဖွင့်ထားသော စာမျက်နှာများ မရှိပါ
 There are no untranslated terms,There are no untranslated terms
 Thesauri,ဝေါဟာရပဒေသာကျမ်းများ
@@ -1019,6 +1052,7 @@ Two-factor verification failed,နှစ်ဆင့်ခံ မှန်ကန
 Two-step verification,နှစ်ဆင့်ခံ မှန်ကန်ကြောင်းစစ်ဆေးမှု
 Two-step verification token required,Two-step verification token required
 Type,အမျိုးအစား
+U,U
 "Unable to save, failed response","Unable to save, failed response"
 Unauthorized,ခွင့်ပြုချက် မရှိပါ
 Unexpected error,Unexpected error
@@ -1041,9 +1075,11 @@ Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,ZIP သို့မဟုတ် CSV ဖိုင်တစ်ခု အပ်လုဒ်လုပ်ပါ။
 Upload and select file,အပ်လုဒ်လုပ်ပြီး ဖိုင်ရွေးချယ်ရန်
 Upload from computer,ကွန်ပျူတာမှ အပ်လုဒ်လုပ်ရန်
+Upload image,Upload image
 Upload PDF,PDF အပ်လုဒ်လုပ်ရန်
 Upload PDF(s) to create,PDF(များ) ဖန်တီးရန်အတွက် အပ်လုဒ်လုပ်ရန်
 Uploaded attachment,Uploaded attachment
@@ -1071,6 +1107,7 @@ Users,အသုံးပြုသူများ
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
 Uwazi UI,Uwazi UI
 Validating,Validating

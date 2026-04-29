@@ -348,9 +348,9 @@ const IXSuggestions = () => {
               <SuggestionsTitle property={extractor.property} templates={filteredTemplates()} />
             }
             actions={
-              <Button size="small" styling="light" onClick={() => setSidepanel('filters')}>
+              <Button size="small" variant="ghost" onClick={() => setSidepanel('filters')}>
                 <FunnelIcon
-                  className={`inline w-4 mr-2 ${activeFilters > 0 ? 'text-primary-900' : 'text-gray-800'} `}
+                  className={`mr-2 inline w-4 ${activeFilters > 0 ? '[color:var(--color-theme-action-primary)]' : '[color:var(--color-theme-text-secondary)]'} `}
                 />
                 <Translate>Stats & Filters</Translate>
                 {activeFilters > 0 && (
@@ -391,21 +391,21 @@ const IXSuggestions = () => {
               <Button
                 size="small"
                 type="button"
-                styling="solid"
+                variant="primary"
                 onClick={() => setModal('train')}
                 disabled={selected.length > 0}
               >
                 <Translate>Train model</Translate>
               </Button>
             ) : (
-              <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
+              <Button size="small" type="button" variant="secondary" onClick={cancelModelTrain}>
                 <Translate>Cancel</Translate>
               </Button>
             )}
             <Button
               size="small"
               type="button"
-              styling="solid"
+              variant="primary"
               onClick={() => setModal('process')}
               disabled={status.status !== ixStatus.ready}
             >
@@ -416,7 +416,7 @@ const IXSuggestions = () => {
               )}
             </Button>
             {status.status !== ixStatus.ready && (
-              <div className="text-sm font-semibold text-center text-gray-900">
+              <div className="text-center text-sm font-semibold [color:var(--color-theme-text-primary)]">
                 {ixmessages[status.status]}
                 {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
                 {status.data && (
@@ -427,14 +427,14 @@ const IXSuggestions = () => {
               </div>
             )}
             {selected.length > 0 && (
-              <div className="text-sm font-semibold text-center text-gray-900">
-                <span className="font-light text-gray-500">
+              <div className="text-center text-sm font-semibold [color:var(--color-theme-text-primary)]">
+                <span className="font-light [color:var(--color-theme-text-muted)]">
                   <Translate>Selected</Translate>
                 </span>
                 &nbsp;
                 {selected.length}
                 &nbsp;
-                <span className="font-light text-gray-500">
+                <span className="font-light [color:var(--color-theme-text-muted)]">
                   <Translate>of</Translate>
                 </span>
                 &nbsp;

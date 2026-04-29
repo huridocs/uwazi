@@ -27,7 +27,7 @@ const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps
   return (
     <Modal size="lg">
       <Modal.Header>
-        <h1 className="text-xl font-medium text-gray-900">
+        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
           <Translate>Add entity type</Translate>
         </h1>
         <Modal.CloseButton onClick={() => onCancel(false)} />
@@ -44,7 +44,7 @@ const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps
       <Modal.Footer>
         <div className="flex flex-col w-full">
           <div className="flex gap-2">
-            <Button styling="light" onClick={() => onCancel(false)} className="grow">
+            <Button variant="ghost" onClick={() => onCancel(false)} className="grow">
               <Translate>Cancel</Translate>
             </Button>
             <Button

@@ -167,182 +167,183 @@ const UserFormSidepanel = ({
     await fetcher.submit(formData, { method: 'post' });
   };
 
+  const blockSidepanelPointer = showConfirmationModal || showModal;
+
   return (
     <>
-      <Sidepanel
-        isOpen={showSidepanel}
-        withOverlay
-        closeSidepanelFunction={closeSidepanel}
-        title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
-      >
-        <form
-          onSubmit={handleSubmit(formSubmit)}
-          className="flex flex-col h-full"
-          autoComplete="off"
+      <div className={blockSidepanelPointer ? 'pointer-events-none' : undefined}>
+        <Sidepanel
+          isOpen={showSidepanel}
+          withOverlay
+          closeSidepanelFunction={closeSidepanel}
+          title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
         >
-          <Sidepanel.Body>
-            <div className="flex flex-col grow gap-4">
-              <Card title={<Translate>General Information</Translate>}>
-                <div className="mb-4">
+          <form
+            onSubmit={handleSubmit(formSubmit)}
+            className="flex flex-col h-full"
+            autoComplete="off"
+          >
+            <Sidepanel.Body>
+              <div className="flex flex-col grow gap-4">
+                <Card title={<Translate>General Information</Translate>}>
+                  <div className="mb-4">
+                    <InputField
+                      label={<Translate className="block mb-1 font-semibold">Username</Translate>}
+                      id="username"
+                      errorMessage={getFieldError('username', errors.username?.type)}
+                      //break autocomplete token for Chrome
+                      //@ts-expect-error
+                      autoComplete="new-username"
+                      className="mb-1"
+                      {...register('username', {
+                        required: true,
+                        validate: {
+                          isUnique: username => isUnique(username, selectedUser, users),
+                          noSpaces: username => !/\s/.test(username),
+                        },
+                        maxLength: 50,
+                        minLength: 3,
+                      })}
+                    />
+                  </div>
+
+                  <Select
+                    label={
+                      <div className="flex gap-2 mb-1 font-semibold align-middle">
+                        <Translate>User Role</Translate>
+                        <button type="button" onClick={() => setShowModal(true)}>
+                          <span className="sr-only">{t('System', 'Permission', null, false)}</span>
+                          <QuestionMarkCircleIcon className="w-5" />
+                        </button>
+                      </div>
+                    }
+                    className="mb-4"
+                    id="roles"
+                    options={userRoles}
+                    {...register('role')}
+                  />
+
+                  <div>
+                    <InputField
+                      label={<Translate className="block mb-1 font-semibold">Email</Translate>}
+                      type="email"
+                      //break autocomplete token for Chrome
+                      //@ts-expect-error
+                      autoComplete="new-email"
+                      id="email"
+                      className="mb-1"
+                      errorMessage={getFieldError('email', errors.email?.type)}
+                      {...register('email', {
+                        required: true,
+                        validate: {
+                          isUnique: email => isUnique(email, selectedUser, users),
+                          format: email => validEmailFormat(email),
+                        },
+                        maxLength: 256,
+                      })}
+                    />
+                  </div>
+                </Card>
+
+                <Card title={<Translate>Security</Translate>}>
                   <InputField
-                    label={<Translate className="block mb-1 font-semibold">Username</Translate>}
-                    id="username"
-                    errorMessage={getFieldError('username', errors.username?.type)}
+                    label={
+                      <span className="mb-1 font-semibold">
+                        <Translate>Password</Translate>
+                      </span>
+                    }
+                    id="password"
+                    type="password"
                     //break autocomplete token for Chrome
                     //@ts-expect-error
-                    autoComplete="new-username"
-                    className="mb-1"
-                    {...register('username', {
-                      required: true,
-                      validate: {
-                        isUnique: username => isUnique(username, selectedUser, users),
-                        noSpaces: username => !/\s/.test(username),
-                      },
-                      maxLength: 50,
-                      minLength: 3,
-                    })}
+                    autoComplete="new-password"
+                    errorMessage={getFieldError('password', errors.password?.type)}
+                    className="mb-4"
+                    {...register('password', { maxLength: 50 })}
                   />
-                </div>
 
-                <Select
-                  label={
-                    <div className="flex gap-2 mb-1 font-semibold align-middle">
-                      <Translate>User Role</Translate>
-                      <button type="button" onClick={() => setShowModal(true)}>
-                        <span className="sr-only">{t('System', 'Permission', null, false)}</span>
-                        <QuestionMarkCircleIcon className="w-5" />
-                      </button>
-                    </div>
-                  }
-                  className="mb-4"
-                  id="roles"
-                  options={userRoles}
-                  {...register('role')}
-                />
+                  <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
+                    {selectedUser?._id && (
+                      <>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={async () => {
+                            actionType.current = 'reset-password';
+                            await onClickSubmit();
+                          }}
+                        >
+                          <Translate>Reset Password</Translate>
+                        </Button>
 
-                <div>
-                  <InputField
-                    label={<Translate className="block mb-1 font-semibold">Email</Translate>}
-                    type="email"
-                    //break autocomplete token for Chrome
-                    //@ts-expect-error
-                    autoComplete="new-email"
-                    id="email"
-                    className="mb-1"
-                    errorMessage={getFieldError('email', errors.email?.type)}
-                    {...register('email', {
-                      required: true,
-                      validate: {
-                        isUnique: email => isUnique(email, selectedUser, users),
-                        format: email => validEmailFormat(email),
-                      },
-                      maxLength: 256,
-                    })}
-                  />
-                </div>
-              </Card>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            actionType.current = 'reset-2fa';
+                            setShowConfirmationModal(true);
+                          }}
+                        >
+                          <Translate>Reset 2FA</Translate>
+                        </Button>
+                      </>
+                    )}
 
-              <Card title={<Translate>Security</Translate>}>
-                <InputField
-                  label={
-                    <span className="mb-1 font-semibold">
-                      <Translate>Password</Translate>
-                    </span>
-                  }
-                  id="password"
-                  type="password"
-                  //break autocomplete token for Chrome
-                  //@ts-expect-error
-                  autoComplete="new-password"
-                  errorMessage={getFieldError('password', errors.password?.type)}
-                  className="mb-4"
-                  {...register('password', { maxLength: 50 })}
-                />
-
-                <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
-                  {selectedUser?._id && (
-                    <>
+                    {selectedUser?.accountLocked && (
                       <Button
                         type="button"
-                        styling="light"
-                        onClick={async () => {
-                          actionType.current = 'reset-password';
-                          await onClickSubmit();
-                        }}
-                      >
-                        <Translate>Reset Password</Translate>
-                      </Button>
-
-                      <Button
-                        type="button"
-                        styling="light"
+                        variant="dangerSecondary"
                         onClick={() => {
-                          actionType.current = 'reset-2fa';
+                          actionType.current = 'unlock-user';
                           setShowConfirmationModal(true);
                         }}
                       >
-                        <Translate>Reset 2FA</Translate>
+                        <Translate>Unlock account</Translate>
                       </Button>
-                    </>
-                  )}
+                    )}
+                  </div>
+                </Card>
 
-                  {selectedUser?.accountLocked && (
-                    <Button
-                      type="button"
-                      styling="light"
-                      color="error"
-                      onClick={() => {
-                        actionType.current = 'unlock-user';
-                        setShowConfirmationModal(true);
-                      }}
-                    >
-                      <Translate>Unlock account</Translate>
-                    </Button>
-                  )}
+                <div className="rounded-md border shadow-md [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] [background-color:var(--color-theme-surface-raised)]">
+                  <MultiSelect
+                    label={
+                      <Translate className="block w-full text-base font-semibold">Groups</Translate>
+                    }
+                    onChange={selectedGroups => {
+                      const values = calculateSelectedGroups(selectedGroups, groups);
+                      setValue('groups', values, { shouldDirty: true });
+                    }}
+                    options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
+                    value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
+                    placeholder={t('System', 'Nothing selected', null, false)}
+                  />
                 </div>
-              </Card>
-
-              <div className="rounded-md border border-gray-50 shadow-md">
-                <MultiSelect
-                  label={
-                    <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
-                      Groups
-                    </Translate>
-                  }
-                  onChange={selectedGroups => {
-                    const values = calculateSelectedGroups(selectedGroups, groups);
-                    setValue('groups', values, { shouldDirty: true });
-                  }}
-                  options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
-                  value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
-                  placeholder={t('System', 'Nothing selected', null, false)}
-                />
               </div>
-            </div>
-          </Sidepanel.Body>
-          <Sidepanel.Footer className="px-4 py-3">
-            <div className="flex gap-2">
-              <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
-                <Translate>Cancel</Translate>
-              </Button>
-              <Button
-                className="grow"
-                type="button"
-                onClick={async () => {
-                  const valid = await trigger();
-                  if (valid) {
-                    actionType.current = 'formSubmit';
-                    setShowConfirmationModal(true);
-                  }
-                }}
-              >
-                <Translate>Save</Translate>
-              </Button>
-            </div>
-          </Sidepanel.Footer>
-          <button type="submit" hidden aria-hidden="true" disabled ref={formSubmitRef} />
-        </form>
-      </Sidepanel>
+            </Sidepanel.Body>
+            <Sidepanel.Footer className="px-4 py-3">
+              <div className="flex gap-2">
+                <Button className="grow" type="button" variant="secondary" onClick={closeSidepanel}>
+                  <Translate>Cancel</Translate>
+                </Button>
+                <Button
+                  className="grow"
+                  type="button"
+                  onClick={async () => {
+                    const valid = await trigger();
+                    if (valid) {
+                      actionType.current = 'formSubmit';
+                      setShowConfirmationModal(true);
+                    }
+                  }}
+                >
+                  <Translate>Save</Translate>
+                </Button>
+              </div>
+            </Sidepanel.Footer>
+            <button type="submit" hidden aria-hidden="true" disabled ref={formSubmitRef} />
+          </form>
+        </Sidepanel>
+      </div>
       <PermissionsListModal showModal={showModal} closeModal={() => setShowModal(false)} />
       {showConfirmationModal && (
         <ConfirmationModal

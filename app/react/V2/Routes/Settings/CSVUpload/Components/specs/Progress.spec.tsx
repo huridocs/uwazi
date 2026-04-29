@@ -8,23 +8,29 @@ import { Progress } from '../Progress.js';
 
 describe('Progress', () => {
   const colorClassByName = {
-    gray: '.bg-gray-500',
-    success: '.bg-success-500',
-    warning: '.bg-warning-500',
-    error: '.bg-error-500',
+    gray: 'var(--color-theme-text-muted)',
+    success: 'var(--color-theme-feedback-success)',
+    warning: 'var(--color-theme-feedback-warning)',
+    error: 'var(--color-theme-feedback-danger)',
   } as const;
 
-  const assertOnlyColor = (container: HTMLElement, expectedColor: string) => {
-    Object.entries(colorClassByName).forEach(([colorName, selector]) => {
-      if (colorName === expectedColor) {
-        expect(container.querySelector(selector)).toBeInTheDocument();
-      } else {
-        expect(container.querySelector(selector)).not.toBeInTheDocument();
-      }
-    });
+  type CaseRow = {
+    title: string;
+    status: CsvImportStatus;
+    rowsFailed: number;
+    expectedColor: keyof typeof colorClassByName;
   };
 
-  it.each([
+  const assertOnlyColor = (
+    container: HTMLElement,
+    expectedColor: keyof typeof colorClassByName
+  ) => {
+    const root = container.firstElementChild as HTMLElement;
+    const fill = root.children[0]?.children[0] as HTMLElement | undefined;
+    expect(fill).toHaveStyle({ backgroundColor: colorClassByName[expectedColor] });
+  };
+
+  const cases: CaseRow[] = [
     {
       title: 'completed import with no failed rows should be success',
       status: CsvImportStatus.Completed,
@@ -61,11 +67,12 @@ describe('Progress', () => {
       rowsFailed: 4,
       expectedColor: 'error',
     },
-  ])('$title', ({ status, rowsFailed, expectedColor }) => {
+  ];
+
+  it.each(cases)('$title', ({ status, rowsFailed, expectedColor }) => {
     const { container } = render(
       <Progress current={25} total={100} status={status} stats={{ rowsFailed }} />
     );
-
     assertOnlyColor(container, expectedColor);
   });
 });

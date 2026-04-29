@@ -17,6 +17,7 @@ import {
 import { Loader } from '#app/components/Elements/Loader.js';
 import { arrayUtils } from '#app/Charts/index.js';
 import markdownDatasets from '../markdownDatasets.js';
+import { isMarkdownChartAnimationActive } from '../rechartsAnimationActive.js';
 
 const objectFlip = obj => {
   const flip = {};
@@ -95,7 +96,12 @@ class BarChartComponent extends Component {
                 return shortLabelsFlipped[value] || value;
               }}
             />
-            <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
+            <Bar
+              dataKey="results"
+              fill="rgb(30, 28, 138)"
+              stackId="unique"
+              isAnimationActive={isMarkdownChartAnimationActive()}
+            >
               {formattedData.map((_entry, index) => (
                 <Cell
                   // eslint-disable-next-line react/no-array-index-key

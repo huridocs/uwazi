@@ -113,7 +113,7 @@ const RelationshipTypes = () => {
             columns={columns({ edit })}
             data={tableRelationshipTypes}
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                 Relationship types
               </Translate>
             }
@@ -130,7 +130,7 @@ const RelationshipTypes = () => {
               <Button
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
-                color="error"
+                variant="danger"
                 data-testid="relationship-types-delete"
               >
                 <Translate>Delete</Translate>

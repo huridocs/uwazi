@@ -8,7 +8,7 @@ const Footer = () => {
   const { targetTemplateId, setStep, setShowModal } = useCreateExtractorContext();
   return (
     <>
-      <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+      <Button variant="ghost" onClick={() => setShowModal(false)} className="grow">
         <Translate>Cancel</Translate>
       </Button>
       <Button

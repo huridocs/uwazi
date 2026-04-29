@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
@@ -52,7 +51,7 @@ describe('Table', () => {
       cy.contains('th', 'Description').should(
         'have.attr',
         'class',
-        'p-4 text-sm text-gray-500 uppercase border-b bg-blue-700 text-white'
+        'border-b p-4 text-sm uppercase bg-blue-700 text-white'
       );
       cy.contains('td', 'Entity 2').should(
         'have.attr',

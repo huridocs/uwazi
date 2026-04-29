@@ -7,7 +7,7 @@ import { Link } from '../shared.js';
 
 const EditButton = ({ cell, column }: CellContext<Link, string>) => (
   <Button
-    styling="light"
+    variant="ghost"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >
