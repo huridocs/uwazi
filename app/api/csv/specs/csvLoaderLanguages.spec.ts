@@ -44,7 +44,10 @@ describe('csvLoader languages', () => {
     jest
       .spyOn(filesystem, 'generateFileName')
       .mockImplementation(file => `generatedLang${file.originalname}`);
-    await loader.load(csv, template1Id, { language: 'en', user: {} });
+
+    await testingEnvironment.runWithContext(async () => {
+      await loader.load(csv, template1Id, { language: 'en', user: {} });
+    });
 
     imported = await entities.get();
   });

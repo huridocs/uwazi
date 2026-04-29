@@ -25,19 +25,20 @@ const createSUT = () => {
     checkWritePermission: jest.fn().mockResolvedValue(Result.ok(true)),
   });
 
-  const useCase = new FileDelete(
-    {
-      transactionManager,
-      filesDS: FilesDataSourceFactory.default(transactionManager),
-      entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
-      settingsDS: SettingsDataSourceFactory.default(transactionManager),
-      filesService: FilesServiceFactory.default(transactionManager),
-      entityPermissions,
-    },
-    { actor: { _id: 'aaaaaaaaaaaa', role: 'admin' } as any, tenant: { name: 'test' } as any }
+  return testingEnvironment.runWithContext(
+    () =>
+      new FileDelete(
+        {
+          transactionManager,
+          filesDS: FilesDataSourceFactory.default(),
+          entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
+          settingsDS: SettingsDataSourceFactory.default(transactionManager),
+          filesService: FilesServiceFactory.default(),
+          entityPermissions,
+        },
+        { actor: { _id: 'aaaaaaaaaaaa', role: 'admin' } as any, tenant: { name: 'test' } as any }
+      )
   );
-
-  return useCase;
 };
 
 describe('FileDelete - setPreview (real DB)', () => {

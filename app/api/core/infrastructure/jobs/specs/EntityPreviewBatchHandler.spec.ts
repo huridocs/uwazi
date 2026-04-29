@@ -7,6 +7,7 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { EntityPreviewBatchHandler } from '../EntityPreviewBatchHandler.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const f = getFixturesFactory();
 
@@ -74,16 +75,16 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSUT = () => {
-  const transactionManager = TransactionManagerFactory.fake();
-  const handler = new EntityPreviewBatchHandler({
-    transactionManager,
-    filesDS: FilesDataSourceFactory.default(transactionManager),
-    entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
-    settingsDS: SettingsDataSourceFactory.default(transactionManager),
-  });
-  return handler;
-};
+const createSUT = () =>
+  testingEnvironment.runWithContext(
+    () =>
+      new EntityPreviewBatchHandler({
+        transactionManager: ExecutionContext.transactionManager,
+        filesDS: FilesDataSourceFactory.default(),
+        entitiesDS: EntitiesDataSourceFactory.forTesting(ExecutionContext.transactionManager),
+        settingsDS: SettingsDataSourceFactory.default(ExecutionContext.transactionManager),
+      })
+  );
 
 const heartbeat = jest.fn();
 

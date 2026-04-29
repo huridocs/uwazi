@@ -142,25 +142,27 @@ describe('processDocument', () => {
         size: 1024,
       } as any);
 
-      const upload = await files.save({
-        entity: sharedId,
-        type: 'document',
-        status: 'processing',
-        filename: 'doc.pdf',
-        originalname: 'doc.pdf',
-        mimetype: 'application/pdf',
-      });
+      await testingEnvironment.runWithContext(async () => {
+        const upload = await files.save({
+          entity: sharedId,
+          type: 'document',
+          status: 'processing',
+          filename: 'doc.pdf',
+          originalname: 'doc.pdf',
+          mimetype: 'application/pdf',
+        });
 
-      await new Promise<void>((resolve, reject) => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        convertPDF(
-          upload as any,
-          sharedId,
-          { filename: 'doc.pdf', destination: attachmentsPath('doc.pdf') },
-          false,
-          () => resolve(),
-          e => reject(e)
-        );
+        await new Promise<void>((resolve, reject) => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          convertPDF(
+            upload as any,
+            sharedId,
+            { filename: 'doc.pdf', destination: attachmentsPath('doc.pdf') },
+            false,
+            () => resolve(),
+            e => reject(e)
+          );
+        });
       });
 
       const entityRows = await entitiesModel.get({ sharedId });

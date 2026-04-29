@@ -49,18 +49,21 @@ const buildJob = (
   const fileStorage = TestUtils.mockClass<FileStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
-  return new PDFPostProcessJob(
-    {
-      transactionManager,
-      filesDS: FilesDataSourceFactory.default(transactionManager),
-      entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
-      settingsDS: SettingsDataSourceFactory.default(transactionManager),
-      filesService,
-      fileStorage,
-      pdfService: pdfService as any,
-      eventBus,
-    },
-    { tenant: { name: 'test' } as any }
+  return testingEnvironment.runWithContext(
+    () =>
+      new PDFPostProcessJob(
+        {
+          transactionManager,
+          filesDS: FilesDataSourceFactory.default(),
+          entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
+          settingsDS: SettingsDataSourceFactory.default(transactionManager),
+          filesService,
+          fileStorage,
+          pdfService: pdfService as any,
+          eventBus,
+        },
+        { tenant: { name: 'test' } as any }
+      )
   );
 };
 
