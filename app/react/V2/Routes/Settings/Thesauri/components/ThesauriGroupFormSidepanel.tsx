@@ -115,7 +115,14 @@ const ThesauriGroupFormSidepanel = ({
       >
         <Sidepanel.Body>
           {value && value.label === '' && (
-            <div className="p-4 mb-4 border rounded-md shadow-md border-gray-50 bg-primary-100 text-primary-700">
+            <div
+              className="mb-4 rounded-md border p-4 shadow-md"
+              style={{
+                backgroundColor: 'var(--color-theme-info-banner-bg)',
+                borderColor: 'var(--color-theme-info-banner-border)',
+                color: 'var(--color-theme-info-banner-fg)',
+              }}
+            >
               <div className="flex items-center w-full gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
                   <CheckCircleIcon />
@@ -152,14 +159,19 @@ const ThesauriGroupFormSidepanel = ({
         <Sidepanel.Footer className="bottom-0 px-4 py-3">
           <div className="flex gap-2">
             <Button
-              styling="light"
+              variant="ghost"
               onClick={closePanel}
               className="grow"
               data-testid="thesaurus-form-cancel"
             >
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="grow" type="submit" data-testid="thesaurus-form-submit">
+            <Button
+              className="grow"
+              type="submit"
+              size="medium"
+              data-testid="thesaurus-form-submit"
+            >
               {!editMode ? <Translate>Add group</Translate> : <Translate>Edit group</Translate>}
             </Button>
           </div>

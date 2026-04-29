@@ -11,6 +11,7 @@ A valid email is required,Απαιτείται έγκυρη διεύθυνση e
 Accept,Αποδοχή
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
 Accepting suggestions,Αποδοχή προτάσεων
+Accessibility checks need attention,Accessibility checks need attention
 Account,Λογαριασμός
 Account locked,Λογαριασμός κλειδωμένος
 Account unlocked successfully,Ο λογαριασμός ξεκλειδώθηκε επιτυχώς
@@ -67,6 +68,7 @@ Adding items to the thesauri,Προσθήκη στοιχείων στους θη
 Admin,Διαχειριστής
 Administrators and Editors,Διαχειριστές και επιμελητές
 Admins,Διαχειριστές
+Advanced colors,Advanced colors
 ALL,ΟΛΑ
 All,Όλα
 "All changes will be lost, are you sure you want to proceed?","Όλες οι αλλαγές θα χαθούν, είστε σίγουροι ότι θέλετε να προχωρήσετε;"
@@ -134,6 +136,7 @@ Captcha bypass,"Ενεργοποιώντας αυτήν την επιλογή μ
 κεφαλίδα ""Bypass-Captcha: true"". Αυτή η επιλογή είναι ανασφαλής και μπορεί να χρησιμοποιηθεί για να κατακλύσει την εγκατάστασή σας με ανεπιθύμητο ή επιβλαβές περιεχόμενο."
 Cards,Κάρτες
 Cards view,Προβολή καρτών
+Change,Change
 Change password,Αλλαγή κωδικού πρόσβασης
 Change Password,Αλλαγή κωδικού πρόσβασης
 Changes in the thesaurus will impact all the entities using these values.,Οι αλλαγές στο θησαυρό θα επηρεάσουν όλες τις οντότητες που χρησιμοποιούν αυτές τις τιμές.
@@ -144,6 +147,8 @@ Character support description,"Αυτή η επιλογή βελτιώνει τ�
 Character support process warning,"Η διαδικασία μπορεί να διαρκέσει αρκετά λεπτά και ενδέχεται να αλλάξει τα URL των φίλτρων της βιβλιοθήκης. Εάν έχετε μενού ή συνδέσμους που χρησιμοποιούν τέτοια URL, πιθανώς θα σταματήσουν να λειτουργούν μετά την ενημέρωση. Θα χρειαστεί να τα ενημερώσετε χειροκίνητα."
 Character support revert warning,"Μετά την ενεργοποίηση αυτής της επιλογής, δεν θα μπορείτε να επιστρέψετε στην παλαιότερη ονοματολογία ιδιοτήτων. Εάν δεν αντιμετωπίζετε προβλήματα με τα ονόματα των ιδιοτήτων των προτύπων σας, συνιστούμε να μην επιλέξετε αυτήν την επιλογή."
 Check to make this instance public (non-logged in users can see public documents and entities),Ενεργοποιήστε αυτή την επιλογή για να κάνετε αυτή την εγκατάσταση δημόσια (οι μη συνδεδεμένοι χρήστες μπορούν να δουν δημόσια έγγραφα και οντότητες)
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,Επιλέξτε ποια δεδομένα θα χρησιμοποιήσετε για την εκπαίδευση
 Clear,Εκκαθάριση
 Clear all,Εκκαθάριση όλων
@@ -234,7 +239,10 @@ Custom JS,Προσαρμοσμένο JS
 Custom landing page,Προσαρμοσμένη αρχική σελίδα
 custom page error warning,Παρουσιάστηκε απροσδόκητο σφάλμα σε αυτήν την προσαρμοσμένη σελίδα και ενδέχεται να μην λειτουργεί σωστά. Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Custom Uploads,Προσαρμοσμένες μεταφορτώσεις
+Customize,Customize
+Customized,Customized
 Dark,Σκούρο
+Dark Theme,Dark Theme
 Dashboard,Πίνακας ελέγχου
 Date,Date
 Date added,Ημερομηνία προσθήκης
@@ -290,6 +298,7 @@ Documentation,Τεκμηρίωση
 documents,έγγραφα
 Documents,Έγγραφα
 documents.,έγγραφα.
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -312,6 +321,7 @@ Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
 Edit item,Επεξεργασία στοιχείου
 Edit metadata of entities,Επεξεργασία μεταδεδομένων οντοτήτων
+Edit theme,Edit theme
 Edit user,Επεξεργασία χρήστη
 Editor,Επιμελητής
 editor,Επιμελητής
@@ -364,10 +374,10 @@ Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
 
-1. Μεταφορτώστε το εικονίδιό σας στις ""Προσαρμοσμένες μεταφορτώσεις"".
-2. Αντιγράψτε το URL του.
-3. Επιλέξτε ""Προσαρμοσμένο εικονίδιο"" και επικολλήστε το URL στο υποδεικνυόμενο πεδίο.
-4. Ανανεώστε τη σελίδα για να δείτε το favicon σας σε λειτουργία."
+1. Μεταφορτώστε το εικονίδιό σας στις ""Προσαρμοσμένες μεταφορτώσεις"" αν χρειάζεται.
+2. Κάντε κλικ στο ""Επιλογή εικόνας favicon"" και επιλέξτε αρχείο (μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις).
+3. Ανανεώστε τη σελίδα για να δείτε το favicon σας σε λειτουργία."
+Favicon no images hint,Favicon no images hint
 FEATURED,ΕΠΙΛΕΓΜΕΝΑ
 File,Αρχείο
 File deleted,Το αρχείο διαγράφηκε
@@ -416,8 +426,10 @@ Group Options,Επιλογές ομάδας
 Group saved,Η ομάδα αποθηκεύτηκε
 Group updated,Η ομάδα ενημερώθηκε
 Groups,Ομάδες
+Header and button preview,Header and button preview
 help,βοήθεια
 here,εδώ
+Hide,Hide
 Hide actions,Απόκρυψη ενεργειών
 Hide label,Απόκρυψη ετικέτας
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
@@ -432,6 +444,7 @@ ID:,ID:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Εάν πρόκειται για εξωτερική διεύθυνση URL, χρησιμοποιήστε μια πλήρως σχηματισμένη διεύθυνση URL. Δηλαδή: http://www.uwazi.io."
 "If you want to continue, please type","Αν θέλετε να συνεχίσετε, πληκτρολογήστε"
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,Εισαγωγή
 Import asset,Εισαγωγή αρχείου
 Import completed,Η εισαγωγή ολοκληρώθηκε. Αριθμός δημιουργημένων οντοτήτων:
@@ -503,8 +516,11 @@ Library,Βιβλιοθήκη
 library list view,προβολή λίστας βιβλιοθήκης
 library map view,προβολή χάρτη βιβλιοθήκης
 library table view,προβολή πίνακα βιβλιοθήκης
+Light,Light
+Light Theme,Light Theme
 Link,Σύνδεσμος
 linked,συνδεδεμένο
+Live preview,Live preview
 Live translate,Ζωντανή μετάφραση
 Loading,Φόρτωση
 Login,Σύνδεση
@@ -616,6 +632,7 @@ No table of contents description,"Ο πίνακας περιεχομένων ε�
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
 No type,Κανένας τύπος
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Δεν υπάρχει διαθέσιμο έγκυρο πρότυπο στόχου
 No value,Χωρίς τιμή
 No Value,Χωρίς τιμή
@@ -698,6 +715,7 @@ Preserve Setup Description,"Εάν γνωρίζετε το URL και το TOKEN
 Press enter to add,Πατήστε Enter για προσθήκη
 Preview,Προεπισκόπηση
 Previous,Προηγούμενο
+Primary button,Primary button
 Primary Documents,Κύρια έγγραφα
 Priority sorting,Ταξινόμηση προτεραιότητας
 Priority sorting description,"Οι ιδιότητες που έχουν επισημανθεί ως ταξινόμηση προτεραιότητας θα χρησιμοποιούνται ως προεπιλεγμένα κριτήρια ταξινόμησης. Εάν περισσότερες από μία ιδιότητες έχουν επισημανθεί ως ταξινόμηση προτεραιότητας, το σύστημα θα προσπαθήσει να επιλέξει την καταλληλότερη. Κατά την εμφάνιση μεικτών τύπων προτύπων, το σύστημα θα επιλέξει τον καλύτερο συνδυασμό ταξινόμησης προτεραιότητας."
@@ -749,6 +767,7 @@ RAW,RAW
 Re-uploaded document,Επαναφορτωμένο έγγραφο
 Receiving email,Λήψη email
 Receiving email description,"Εάν διαθέτετε φόρμα επικοινωνίας, αυτή είναι η διεύθυνση email στην οποία θα λαμβάνονται οι υποβολές της φόρμας."
+Recommended,Recommended
 Reference,Αναφορά
 References,Αναφορές
 Reject,Απόρριψη
@@ -821,14 +840,18 @@ Search Tips: one char wildcard,"? για μπαλαντέρ ενός χαρακ�
 Search Tips: proximity,"~ για αναζητήσεις εγγύτητας. Δηλαδή: ""the status""~5 θα βρει οτιδήποτε έχει ""the"" και ""status"" σε απόσταση 5 λέξεων, όπως ""the procedural status"", ""the specific legal status""."
 Search Tips: wildcard,"Χρησιμοποιήστε * για αναζήτηση με μπαλαντέρ. Δηλαδή: ""juris*"" θα αντιστοιχίσει λέξεις όπως jurisdiction, jurisdictional, jurists, jurisprudence, κ.λπ."
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Μυστικά κλειδιά
 Security,Ασφάλεια
 Select,Επιλογή
 Select & Search,Επιλογή & Αναζήτηση
 Select all,Επιλογή όλων
+Select an existing image,Select an existing image
+Select favicon image,Επιλογή εικόνας favicon
 Select files on your device,Επιλογή αρχείων στη συσκευή σας
 Select from computer,Επιλογή από τον υπολογιστή
 Select relationship type,Επιλογή τύπου σχέσης
+Select site logo image,Επιλογή εικόνας λογότυπου ιστότοπου
 Select target paragraph,Επιλογή παράγραφου-στόχου
 Select the template to store the extracted paragraphs.,Επιλέξτε το πρότυπο για την αποθήκευση των εξαγόμενων παραγράφων
 Select the template with the source documents.,Επιλέξτε το πρότυπο με τα έγγραφα προέλευσης.
@@ -867,6 +890,11 @@ Showing,Εμφάνιση
 shown of,εμφανιζόμενα από
 Sign in,Είσοδος
 Single relationships must have a hub,Οι μεμονωμένες σχέσεις πρέπει να έχουν έναν κόμβο
+Site logo description,"Το λογότυπο εμφανίζεται στη γραμμή επάνω δίπλα στο όνομα της συλλογής σας (περίπου 200×32 εικονοστοιχεία).
+
+1. Μεταφορτώστε εικόνες στις ""Προσαρμοσμένες μεταφορτώσεις"" αν χρειάζεται.
+2. Κάντε κλικ στο ""Επιλογή εικόνας λογότυπου ιστότοπου"" και επιλέξτε αρχείο· εμφανίζονται μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις."
+Site logo no images hint,"Δεν υπάρχουν ακόμα αρχεία εικόνας στις Προσαρμοσμένες μεταφορτώσεις. Προσθέστε πρώτα εικόνες PNG, SVG ή JPEG εκεί."
 Size,Μέγεθος
 Skip to main content,Μετάβαση στο κύριο περιεχόμενο
 Something went wrong,Κάτι πήγε στραβά
@@ -941,6 +969,11 @@ The request could not be processed.,Το αίτημα δεν μπόρεσε να
 The source of this template is a sync.,Η πηγή αυτού του προτύπου είναι συγχρονισμός.
 The token does not validate against the secret key,Το token δεν επικυρώνεται με το μυστικό κλειδί
 The token does not validate against the secret key!,Το token δεν επικυρώνεται με το μυστικό κλειδί!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,Δεν υπάρχουν σελίδες ενεργοποιημένες για την προβολή οντότητας
 There are no untranslated terms,Δεν υπάρχουν αμετάφραστοι όροι
 Thesauri,Θησαυροί
@@ -1020,6 +1053,7 @@ Two-factor verification failed,Η επαλήθευση δύο παραγόντω
 Two-step verification,Επαλήθευση δύο βημάτων
 Two-step verification token required,Απαιτείται token επαλήθευσης δύο βημάτων
 Type,Τύπος
+U,U
 "Unable to save, failed response","Αδυναμία αποθήκευσης, αποτυχημένη απάντηση"
 Unauthorized,Μη εξουσιοδοτημένο
 Unexpected error,Μη αναμενόμενο σφάλμα
@@ -1042,9 +1076,11 @@ Updated settings,Οι ρυθμίσεις ενημερώθηκαν
 Updated translations,Οι μεταφράσεις ενημερώθηκαν
 Updated user,Ο χρήστης ενημερώθηκε
 Updating template properties across,Ενημερώνονται ιδιότητες προτύπου σε
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Μεταφόρτωση αρχείου ZIP ή CSV.
 Upload and select file,Μεταφόρτωση και επιλογή αρχείου
 Upload from computer,Μεταφόρτωση από υπολογιστή
+Upload image,Upload image
 Upload PDF,Μεταφόρτωση PDF
 Upload PDF(s) to create,Ανεβάστε PDF(s) για να δημιουργήσετε
 Uploaded attachment,Το συνημμένο αρχείο μεταφορτώθηκε
@@ -1072,6 +1108,7 @@ Users,Χρήστες
 Users & Groups,Χρήστες & Ομάδες
 Using Authenticator,Χρήση της εφαρμογής πιστοποίησης ταυτότητας
 Using URLs,Χρήση URLs
+Uwazi,Uwazi
 Uwazi is developed by,Το Uwazi έχει αναπτυχθεί από
 Uwazi UI,Uwazi UI
 Validating,Validating

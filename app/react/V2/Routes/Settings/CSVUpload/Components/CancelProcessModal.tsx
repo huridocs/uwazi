@@ -45,14 +45,14 @@ const CancelProcessModal = ({ isOpen, onClose, entryId }: DropzoneModalProps) =>
         <div className="flex gap-4 w-full">
           <Button
             className="w-1/2"
-            styling="outline"
+            variant="secondary"
             onClick={() => {
               handleClose();
             }}
           >
             <Translate>Close</Translate>
           </Button>
-          <Button className="w-1/2" color="error" onClick={handleCancel}>
+          <Button className="w-1/2" variant="danger" onClick={handleCancel}>
             <Translate>Cancel</Translate>
           </Button>
         </div>

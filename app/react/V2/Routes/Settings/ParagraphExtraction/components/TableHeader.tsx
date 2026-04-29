@@ -2,10 +2,16 @@ import React from 'react';
 
 const TableHeader = ({
   children,
-  className = 'text-gray-500 font-semibold text-xs',
+  className = '',
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <span className={`${className}`}>{children}</span>;
+}) => (
+  <span
+    className={`font-semibold text-xs [color:var(--color-theme-text-secondary)] ${className}`.trim()}
+  >
+    {children}
+  </span>
+);
 
 export { TableHeader };

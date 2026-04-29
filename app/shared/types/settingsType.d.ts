@@ -56,6 +56,21 @@ export interface Settings {
   project?: string;
   site_name?: string;
   favicon?: string;
+  site_logo?: string;
+  themeAssets?: {
+    preset?: 'default' | 'legacy';
+    siteLogo?: {
+      light?: string;
+      dark?: string;
+    };
+    favicon?: {
+      light?: string;
+      dark?: string;
+    };
+  };
+  themeVars?: {
+    [k: string]: string | undefined;
+  };
   contactEmail?: string;
   senderEmail?: string;
   home_page?: string;

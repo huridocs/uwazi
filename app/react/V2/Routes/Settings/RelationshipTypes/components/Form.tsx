@@ -49,7 +49,7 @@ const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => 
       </form>
       <div className="flex absolute bottom-0 gap-2 px-4 py-3 w-full">
         <Button
-          styling="light"
+          variant="ghost"
           onClick={closePanel}
           className="grow"
           data-testid="relationship-type-form-cancel"

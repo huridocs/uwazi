@@ -15,7 +15,7 @@ interface TableRelationshipType extends Relationships {
 
 const EditButton = ({ cell, column }: CellContext<TableRelationshipType, string>) => (
   <Button
-    styling="light"
+    variant="ghost"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >

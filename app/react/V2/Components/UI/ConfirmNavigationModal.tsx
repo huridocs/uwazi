@@ -14,7 +14,7 @@ const ConfirmNavigationModal = ({
 }: confirmationModalType) => (
   <Modal size="md">
     <Modal.Header>
-      <h1 className="text-xl font-medium text-gray-900">
+      <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
         <Translate>Discard changes?</Translate>
       </h1>
       <Modal.CloseButton onClick={() => setShowModal(false)} />
@@ -23,7 +23,7 @@ const ConfirmNavigationModal = ({
       <Translate>You have unsaved changes. Do you want to continue?</Translate>
     </Modal.Body>
     <Modal.Footer>
-      <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+      <Button variant="ghost" onClick={() => setShowModal(false)} className="grow">
         <Translate>Cancel</Translate>
       </Button>
       <Button

@@ -434,7 +434,7 @@ const TextInput = ({
       <div>
         <Button
           type="button"
-          styling="outline"
+          variant="secondary"
           onClick={async () => handleClickToFill()}
           disabled={isSubmitting}
         >
@@ -493,7 +493,7 @@ const Markdown = ({
       <div>
         <Button
           type="button"
-          styling="outline"
+          variant="secondary"
           onClick={async () => handleClickToFill()}
           disabled={isSubmitting}
         >

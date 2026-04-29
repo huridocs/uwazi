@@ -1,9 +1,9 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { Checkbox } from '#V2/Components/Forms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { Tooltip } from 'flowbite-react';
-import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 
 export const FullWidthField = ({ control }: { control: any }) => (
   <Controller
@@ -18,8 +18,6 @@ export const FullWidthField = ({ control }: { control: any }) => (
           <span className="flex items-center gap-1">
             <Translate>Full width</Translate>{' '}
             <Tooltip
-              // eslint-disable-next-line react/style-prop-object
-              style="light"
               content={t(
                 'System',
                 'This property will be shown using all the width available.',
@@ -28,7 +26,7 @@ export const FullWidthField = ({ control }: { control: any }) => (
               )}
               placement="right"
             >
-              <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+              <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
             </Tooltip>
           </span>
         }

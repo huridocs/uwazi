@@ -29,6 +29,7 @@ const fixtures: DBFixture = {
       senderEmail: 'noreply@uwazi.com',
       publicFormDestination: 'http://example.com/submit',
       mapApiKey: 'testMapApiKey123',
+      site_logo: 'http://localhost:3000/assets/test-logo.png',
     },
   ],
   templates: [

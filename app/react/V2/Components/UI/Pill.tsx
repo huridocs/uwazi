@@ -9,10 +9,14 @@ interface PillProps {
 
 const Pill = ({ children, color = 'gray', className }: PillProps) => {
   let pillColors = '';
+  let pillStyle: React.CSSProperties | undefined;
 
   switch (color) {
     case 'gray':
-      pillColors = 'bg-gray-100';
+      pillStyle = {
+        backgroundColor: 'var(--color-theme-surface-warm)',
+        color: 'var(--color-theme-text-secondary)',
+      };
       break;
 
     case 'yellow':
@@ -38,6 +42,7 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
   return (
     <span
       className={`${className} ${pillColors} px-2.5 py-1 rounded-md text-xs `}
+      style={pillStyle}
       data-testid="pill-comp"
     >
       {children}

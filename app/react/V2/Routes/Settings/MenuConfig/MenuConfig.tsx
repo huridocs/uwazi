@@ -10,6 +10,7 @@ import isEqual from 'lodash/isEqual.js';
 import { t, Translate } from '#app/I18N/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
 import { useSetAtom } from 'jotai';
+import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
@@ -69,7 +70,7 @@ const MenuConfig = () => {
 
   const save = async () => {
     const settings = await SettingsAPI.saveLinks(linkState.map(sanitizeIds));
-    setSettings(settings);
+    setSettings(prev => mergeClientSettings(prev, settings));
     await revalidator.revalidate();
     notify('success', t('System', 'Updated', null, false));
   };
@@ -122,7 +123,7 @@ const MenuConfig = () => {
               setLinkState(rows);
             }}
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                 Menu
               </Translate>
             }
@@ -136,7 +137,7 @@ const MenuConfig = () => {
               <Button
                 type="button"
                 onClick={deleteSelected}
-                color="error"
+                variant="danger"
                 data-testid="menu-delete-link"
               >
                 <Translate>Delete</Translate>
@@ -163,7 +164,8 @@ const MenuConfig = () => {
                 <Button
                   type="button"
                   onClick={save}
-                  color="success"
+                  variant="success"
+                  size="medium"
                   disabled={areEqual}
                   data-testid="menu-save"
                 >

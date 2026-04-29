@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Menu configuration', () => {
   before(() => {
@@ -145,7 +146,7 @@ describe('Menu configuration', () => {
   });
 
   it('should have no detectable accessibility violations on load', () => {
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   it('should verify the changes impacted on the navigation bar', () => {

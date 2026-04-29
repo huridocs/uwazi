@@ -183,6 +183,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
         ])
       : [];
 
+  const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
+  const settingsWithFlag = { ...settingsApiResponse, themeCustomization };
+
   const storeData = convertObjectIdsToStrings({
     reduxData: {
       user: userApiResponse,
@@ -191,12 +194,12 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       relationTypes: sortBy(relationTypesApiResponse, 'name'),
       translations: translationsApiResponse,
       settings: {
-        collection: { ...settingsApiResponse, links: settingsApiResponse.links || [] },
+        collection: { ...settingsWithFlag, links: settingsWithFlag.links || [] },
       },
     },
     atomStoreData: {
       locale,
-      settings: settingsApiResponse,
+      settings: settingsWithFlag,
       thesauri: thesaurisApiResponse,
       templates: templatesApiResponse,
       user: userApiResponse,
@@ -373,6 +376,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     v2CSVImport: featureFlags?.v2CSVImport,
     newHeader: featureFlags?.newHeader,
+    themeCustomization: featureFlags?.themeCustomization,
   };
   const settingsWithFeatureFlags = {
     ...settings,

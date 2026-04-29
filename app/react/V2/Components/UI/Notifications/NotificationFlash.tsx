@@ -27,7 +27,7 @@ const NotificationFlash = ({ title, type, phase, color = 'black' }: Notification
 
   const iconByType: Record<NotificationType, React.ReactNode> = {
     success: <CheckCircleIcon className="w-4 h-4 bg-white rounded-full text-green-500" />,
-    error: <XCircleIcon className="w-4 h-4 bg-white rounded-full text-pink-500" />,
+    error: <XCircleIcon className="w-4 h-4 bg-white rounded-full text-error-500" />,
     warning: <ExclamationTriangleIcon className="w-4 h-4 text-yellow-500" />,
     info: <InformationCircleIcon className="w-4 h-4 bg-white rounded-full text-blue-500" />,
   };

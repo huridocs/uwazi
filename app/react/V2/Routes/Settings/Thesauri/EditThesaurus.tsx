@@ -141,7 +141,7 @@ const EditThesaurus = () => {
               <Button
                 type="button"
                 onClick={deleteSelected}
-                color="error"
+                variant="danger"
                 data-testid="thesauri-remove-button"
               >
                 <Translate>Remove</Translate>
@@ -156,10 +156,10 @@ const EditThesaurus = () => {
                 <Button onClick={addItem}>
                   <Translate>Add item</Translate>
                 </Button>
-                <Button styling="light" onClick={addGroup}>
+                <Button variant="ghost" onClick={addGroup}>
                   <Translate>Add group</Translate>
                 </Button>
-                <Button styling="light" onClick={sortValues(thesaurusValues, setThesaurusValues)}>
+                <Button variant="ghost" onClick={sortValues(thesaurusValues, setThesaurusValues)}>
                   <Translate>Sort</Translate>
                 </Button>
                 <ImportButton

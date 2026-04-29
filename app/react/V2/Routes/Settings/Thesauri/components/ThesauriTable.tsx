@@ -34,7 +34,7 @@ const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTablePr
       enableSelections
       header={
         <div className="flex flex-col items-start gap-1">
-          <h2 className="text-base font-semibold text-left text-gray-900 bg-white">
+          <h2 className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
             <Translate>Thesauri</Translate>
           </h2>
         </div>
