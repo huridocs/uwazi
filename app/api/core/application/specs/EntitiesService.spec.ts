@@ -1,25 +1,26 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
+
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
 import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
 import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 
 const factory = getFixturesFactory();
@@ -43,36 +44,31 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSut = (deps?: Partial<EntitiesServiceDeps>) => {
-  const transactionManager = TransactionManagerFactory.default();
-
-  const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-  const dispatcher = TestUtils.mockClass<Dispatcher>({
-    syncRelationships: jest.fn().mockResolvedValue(undefined),
-    cleanupEntities: jest.fn().mockResolvedValue(undefined),
-    postProcessPDFs: jest.fn().mockResolvedValue(undefined),
-    deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
-    postProcessTemplateEntities: jest
-      .fn()
-      .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
-        await callback(jest.fn());
+const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
+  testingEnvironment.runWithContext(() => {
+    const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
+    const dispatcher = TestUtils.mockClass<Dispatcher>({
+      syncRelationships: jest.fn().mockResolvedValue(undefined),
+      cleanupEntities: jest.fn().mockResolvedValue(undefined),
+      postProcessPDFs: jest.fn().mockResolvedValue(undefined),
+      deleteFilesFromStorage: jest.fn().mockResolvedValue(undefined),
+      postProcessTemplateEntities: jest
+        .fn()
+        .mockImplementation(async (callback: (dispatch: jest.Mock) => Promise<void>) => {
+          await callback(jest.fn());
+        }),
+    });
+    return {
+      sut: EntitiesServiceFactory.default({
+        eventBus,
+        dispatcher,
+        ...deps,
       }),
+      transactionManager: ExecutionContext.transactionManager,
+      dispatcher,
+      eventBus,
+    };
   });
-
-  const sut = EntitiesServiceFactory.default({
-    eventBus,
-    transactionManager,
-    dispatcher,
-    ...deps,
-  });
-
-  return {
-    sut,
-    eventBus,
-    transactionManager,
-    dispatcher,
-  };
-};
 
 const createSampleTemplate = () =>
   TemplateBuilder.aTemplate({ id: new ObjectId().toString() })
@@ -101,7 +97,9 @@ const createEntitySample = () => {
 };
 
 const loadEntities = async (sharedIds: string[]) => {
-  const ds = EntitiesDataSourceFactory.forTesting(TransactionManagerFactory.default());
+  const ds = EntitiesDataSourceFactory.default({
+    transactionManager: TransactionManagerFactory.default(),
+  });
   return (await ds.getEntitiesBySharedIds(sharedIds)).all();
 };
 
@@ -115,7 +113,7 @@ describe('EntitiesService', () => {
   };
 
   beforeAll(async () => {
-    await testingEnvironment.setUp({}, true);
+    await testingEnvironment.setUp({});
   });
 
   beforeEach(async () => testingEnvironment.setFixtures(fixtures));

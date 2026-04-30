@@ -124,12 +124,12 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
-const setUpUseCase = (batchSize?: number) => {
-  const createParagraphs = PXCreateParagraphsFactory.createDefault(batchSize);
-  (createParagraphs.createParagraphsBatch as any).dependencies.logger = createMockLogger();
-
-  return { createParagraphs };
-};
+const setUpUseCase = (batchSize?: number) =>
+  testingEnvironment.runWithContext(() => {
+    const createParagraphs = PXCreateParagraphsFactory.createDefault(batchSize);
+    (createParagraphs.createParagraphsBatch as any).dependencies.logger = createMockLogger();
+    return { createParagraphs };
+  });
 
 const filterAndSortParagraphs = (paragraphs: EntitySchema[], language: string) =>
   paragraphs

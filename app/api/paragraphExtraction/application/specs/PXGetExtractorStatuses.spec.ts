@@ -14,26 +14,27 @@ import { PXGetExtractorStatuses } from '../PXGetExtractorStatuses.js';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
-const setupUseCase = () => {
-  const mongoTransactionManager = TransactionManagerFactory.default();
-  const connection = getConnection();
+const setupUseCase = () =>
+  testingEnvironment.runWithContext(() => {
+    const mongoTransactionManager = TransactionManagerFactory.default();
+    const connection = getConnection();
 
-  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
+    const filesDS = FilesDataSourceFactory.default();
 
-  const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-    connection,
-    transactionManager: mongoTransactionManager,
+    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
+      connection,
+      transactionManager: mongoTransactionManager,
+    });
+
+    return new PXGetExtractorStatuses({
+      extractorsQueryService,
+      settingsDS,
+      filesDS,
+    });
   });
-
-  const getExtractorStatuses = new PXGetExtractorStatuses({
-    extractorsQueryService,
-    settingsDS,
-    filesDS,
-  });
-
-  return getExtractorStatuses;
-};
 
 describe('PXGetExtractorStatuses', () => {
   beforeEach(async () => {

@@ -22,11 +22,19 @@ export class PXCreateParagraphsFactory {
     const mongoTransactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
 
-    const settingsDS = SettingsDataSourceFactory.cached(mongoTransactionManager);
-    const templatesDS = TemplatesDataSourceFactory.cached(mongoTransactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.cached({
+      transactionManager: mongoTransactionManager,
+    });
+    const templatesDS = TemplatesDataSourceFactory.cached({
+      transactionManager: mongoTransactionManager,
+    });
+    const thesauriDS = ThesauriDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const translationsDS = DefaultTranslationsDataSource(mongoTransactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(mongoTransactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const jobsDispatcher = new DispatcherAdapter(
       DefaultDispatcher(tenant.name, mongoTransactionManager)
     );

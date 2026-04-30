@@ -40,8 +40,9 @@ class CsvPreflightJobFactory {
     const rowsDS =
       options.rowsDS ?? CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const templatesDS =
-      options.templatesDS ?? TemplatesDataSourceFactory.default(transactionManager);
-    const settingsDS = options.settingsDS ?? SettingsDataSourceFactory.default(transactionManager);
+      options.templatesDS ?? TemplatesDataSourceFactory.default({ transactionManager });
+    const settingsDS =
+      options.settingsDS ?? SettingsDataSourceFactory.default({ transactionManager });
     const thesauriDS =
       options.thesauriDS ?? new MongoThesauriDataSource(getConnection(), transactionManager);
     const thesauriValuesDS =

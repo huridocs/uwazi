@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { ObjectId } from 'mongodb';
 import type { Application, NextFunction, Request, Response } from 'express';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { permissionRoutes } from '#api/permissions/routes.js';
@@ -17,7 +18,7 @@ jest.mock(
 );
 
 describe('permissions routes', () => {
-  let user: { username: string; role: string } | undefined;
+  let user: { _id: string; username: string; role: string } | undefined;
 
   function getUser() {
     return user;
@@ -46,7 +47,7 @@ describe('permissions routes', () => {
         jest.spyOn(entitiesPermissions, 'set').mockImplementation(async () => Promise.resolve());
       });
       it('should save the permissions ', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
           permissions: [
@@ -61,7 +62,7 @@ describe('permissions routes', () => {
       });
 
       it('should invalidate if body does not fit the expected schema', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const permissionsData = { entities: [], permissions: [{}] };
         const response = await request(app).post('/api/entities/permissions').send(permissionsData);
         expect(response.status).toBe(400);
@@ -78,7 +79,7 @@ describe('permissions routes', () => {
       });
 
       it.each(['admin', 'editor', 'collaborator'])('should authorized the role %s', async role => {
-        user = { username: 'user 1', role };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role };
         const permissionsData = {
           ids: ['shared1'],
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
@@ -95,7 +96,7 @@ describe('permissions routes', () => {
         jest.spyOn(entitiesPermissions, 'set').mockImplementation(() => {
           throw new ErrorSample('error on save', 'error_code');
         });
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
           permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
@@ -108,7 +109,7 @@ describe('permissions routes', () => {
         jest.spyOn(entitiesPermissions, 'get').mockImplementation(() => {
           throw new ErrorSample('error on get', 'error_code');
         });
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const response = await request(app)
           .put('/api/entities/permissions')
           .send({ sharedIds: ['sharedId1', 'sharedId2'] });
@@ -119,7 +120,7 @@ describe('permissions routes', () => {
         jest.spyOn(collaborators, 'search').mockImplementation(() => {
           throw new ErrorSample('error on get', 'error_code');
         });
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         const response = await request(app)
           .get('/api/collaborators')
           .query({ filterTerm: 'username' });
@@ -130,7 +131,7 @@ describe('permissions routes', () => {
 
     describe('PUT', () => {
       it('should get the permissions by an array of entities ids', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
           Promise.resolve([
             {
@@ -147,7 +148,7 @@ describe('permissions routes', () => {
       });
 
       it('should invalidate if data is not valid', async () => {
-        user = { username: 'user 1', role: 'admin' };
+        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
           Promise.resolve([
             {

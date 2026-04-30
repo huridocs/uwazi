@@ -28,11 +28,11 @@ class CsvCreateRelationshipEntitiesJobFactory {
       CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
     const relationshipPendingValuesDS =
       CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const jobsDispatcher =
       options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
-    const settingsDS = SettingsDataSourceFactory.cached(transactionManager);
-    const templatesDS = TemplatesDataSourceFactory.cached(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.cached({ transactionManager });
+    const templatesDS = TemplatesDataSourceFactory.cached({ transactionManager });
     const entitiesService = EntitiesServiceFactory.default({
       transactionManager,
       settingsDS,

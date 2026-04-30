@@ -8,7 +8,7 @@ import { PreserveRoutes } from '../routes.js';
 import fixtures, { userId1, userId2 } from './fixtures.js';
 
 describe('entities get searchString', () => {
-  const user = { _id: userId2 };
+  const user = { _id: userId2.toString(), username: 'user', role: 'admin' as const };
   const app: Application = setUpApp(PreserveRoutes, (req, _res, next) => {
     req.user = user;
     next();
@@ -38,7 +38,7 @@ describe('entities get searchString', () => {
     });
 
     it('should request a token and config if config does not exist', async () => {
-      user._id = userId1;
+      user._id = userId1.toString();
       const { body } = await request(app).post('/api/preserve');
 
       expect(body.token).toBe('sometoken');

@@ -1,29 +1,35 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+
+type Overrides = Partial<
+  Omit<ConstructorParameters<typeof MongoMultiLanguageEntityDataSource>[0], 'transactionManager'>
+> & {
+  transactionManager?: TransactionManager;
+};
 
 export class EntitiesDataSourceFactory {
-  static default(transactionManager: MongoTransactionManager): MultiLanguageEntityDataSource {
+  static default(overrides?: Overrides): MultiLanguageEntityDataSource {
     const db = getConnection();
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    const entityIndexerService = EntityIndexerServiceFactory.default(transactionManager);
+    const entityIndexerService =
+      overrides?.entityIndexerService ??
+      EntityIndexerServiceFactory.default({
+        transactionManager: overrides?.transactionManager,
+      });
 
-    return new MongoMultiLanguageEntityDataSource({ db, transactionManager, entityIndexerService });
-  }
-
-  static forTesting(transactionManager: MongoTransactionManager): MultiLanguageEntityDataSource {
+    const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
     return new MongoMultiLanguageEntityDataSource({
-      db: getConnection(),
-      transactionManager,
-      entityIndexerService: TestUtils.mockClass<EntityIndexerService>({
-        index: jest.fn(),
-        deleteBySharedIds: jest.fn(),
-        deleteByTemplateIds: jest.fn(),
-      }),
+      db,
+      transactionManager: mongoTM,
+      entityIndexerService,
+      ...restOverrides,
     });
   }
 }

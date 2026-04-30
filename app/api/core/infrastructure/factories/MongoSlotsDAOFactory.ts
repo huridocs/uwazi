@@ -1,3 +1,4 @@
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO.js';
 import { tenants } from '#api/tenants/index.js';
@@ -5,9 +6,10 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.j
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 export class MongoSlotsDAOFactory {
-  static default(transactionManager: MongoTransactionManager): MongoSlotsDAO {
+  static default(overrides?: { transactionManager?: TransactionManager }): MongoSlotsDAO {
     const tenant = tenants.current();
 
     if (!tenant.featureFlags?.v2ElasticSearch) {
@@ -22,12 +24,14 @@ export class MongoSlotsDAOFactory {
     }
 
     const db = getConnection();
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
 
     const slotsDAO = new MongoSlotsDAO({
       db,
-      transactionManager,
+      transactionManager: mongoTM,
       tenantName: tenant.name,
-      settingsDS: SettingsDataSourceFactory.cached(transactionManager),
+      settingsDS: SettingsDataSourceFactory.cached(overrides),
     });
 
     return slotsDAO;

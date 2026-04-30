@@ -1,100 +1,33 @@
 /* eslint-disable max-statements */
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { UpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntityUseCaseFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { UpdateEntityUseCase, UpdateEntityUseCaseDeps } from '../UpdateEntity.js';
+import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
-const createSut = (_deps?: Partial<UpdateEntityUseCaseDeps>) => {
-  const transactionManager = TransactionManagerFactory.default();
-
-  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const idGenerator = IdGeneratorFactory.default();
-
-  const propertyAssignmentCreatorServiceStrategy =
-    PropertyAssignmentCreatorServiceStrategy.createWithRequired({
-      entitiesDS,
-      settingsDS,
-      thesauriDS,
-      translationsDS,
-    });
-
+const createSut = () => {
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
-  const filesDS = FilesDataSourceFactory.default(transactionManager);
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-  const eventEmitter = EventEmitterFactory.default();
-  const templatesDS = TemplatesDataSourceFactory.forTesting(transactionManager);
-  const fileService = FilesServiceFactory.default(transactionManager, {
-    fileStorage,
-    eventBus,
-    filesDS,
-  });
+  return testingEnvironment.runWithContext(
+    () => {
+      const fs = FilesServiceFactory.default({ fileStorage, eventBus });
+      jest.spyOn(fs, 'storeFiles').mockResolvedValue();
+      jest.spyOn(fs, 'insert').mockResolvedValue();
+      jest.spyOn(fs, 'delete');
 
-  const entitiesService = EntitiesServiceFactory.default({
-    transactionManager,
-    entitiesDS,
-    eventEmitter,
-    templatesDS,
-  });
+      const sut = UpdateEntityUseCaseFactory.default({ fileService: fs });
 
-  jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
-  jest.spyOn(fileService, 'insert').mockResolvedValue();
-  jest.spyOn(fileService, 'delete');
-
-  const sut = new UpdateEntityUseCase(
-    {
-      entitiesService,
-      filesDS,
-      templatesDS,
-      idGenerator,
-      fileService,
-      propertyAssignmentCreatorServiceStrategy,
-      entitiesDS,
-      transactionManager,
-      eventEmitter,
-      settingsDS,
+      return { sut, fileService: fs };
     },
-    { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+    { factories: { eventEmitter: () => EventEmitterFactory.default() } }
   );
-
-  DependenciesContext.attachContext(sut, 'execute', {
-    factories: {
-      transactionManager: () => transactionManager,
-      idGenerator: () => idGenerator,
-      eventEmitter: () => eventEmitter,
-      jobsDispatcher: () => jobsDispatcher,
-      logger: () => TestUtils.mockClass({}),
-      authorizedEntityESClient: () => TestUtils.mockClass({}),
-      elasticClient: () => TestUtils.mockClass({}),
-    },
-  });
-
-  return { sut, fileService };
 };
 
 describe('UpdateEntityUseCase', () => {
@@ -106,12 +39,12 @@ describe('UpdateEntityUseCase', () => {
   const getAllFiles = async (entity: string) =>
     testingEnvironment.db.getCollection('files')!.find({ entity }).toArray();
 
-  const getAllJobs = async () => getSharedConnection().collection('jobs').find().toArray();
-  const clearJobs = async () => getSharedConnection().collection('jobs').deleteMany({});
+  const getAllJobs = async () => getConnection().collection('jobs').find().toArray();
+  const clearJobs = async () => getConnection().collection('jobs').deleteMany({});
 
   beforeAll(async () => {
     await testingEnvironment.setUp({}, true);
-    EventEmitterFactory.default().listen(SampleListener);
+    EventEmitterFactory.registry.register(SampleListener);
   });
 
   beforeEach(async () => {
@@ -121,7 +54,7 @@ describe('UpdateEntityUseCase', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-    EventEmitterFactory.default().reset();
+    EventEmitterFactory.registry.reset();
   });
 
   it('should update basic entity data', async () => {

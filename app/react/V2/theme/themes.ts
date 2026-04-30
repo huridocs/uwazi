@@ -1,7 +1,9 @@
+/* eslint-disable max-lines */
 import {
   ACCENT_PRIMARY_KEY,
   NAMED_THEMES,
   PRESET_DEFINITIONS,
+  resolveThemeVars,
   SEMANTIC_VAR_KEYS,
   SEMANTIC_VAR_LABELS,
   THEME_MODES,
@@ -15,7 +17,6 @@ import type {
 } from './tokens.js';
 import { THEME_PALETTE } from './themePaletteList.js';
 import { isValidHex, normalizeHex, sortPaletteHexColors } from './themePaletteSort.js';
-export { colorPaletteFromHex } from './colorPaletteFromHex.js';
 
 const THEME_PRESET_KEY = '__preset' as const;
 
@@ -107,6 +108,12 @@ const LEGACY_THEME_KEY_MAP = {
   '--color-theme-accent-seal': '--color-theme-accent-emphasis',
   '--color-theme-accent-blue-tint': '--color-theme-accent-supporting-tint',
   '--color-theme-accent-seal-tint': '--color-theme-accent-emphasis-tint',
+  '--color-theme-bg-warm': '--color-theme-bg-muted',
+  '--color-theme-border-soft': '--color-theme-border-primary',
+  '--color-theme-danger': '--color-theme-accent-emphasis',
+  '--success': '--color-theme-success',
+  '--warning': '--color-theme-warning',
+  '--danger': '--color-theme-accent-emphasis',
 } as const satisfies Record<string, string>;
 
 const resolveLegacyKey = (key: string) =>
@@ -217,12 +224,8 @@ const getThemeAsset = (
 };
 
 const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableThemeVars> => ({
-  light: Object.fromEntries(
-    SEMANTIC_VAR_KEYS.map(key => [key, PRESET_DEFINITIONS[presetId].modes.light[key]])
-  ) as EditableThemeVars,
-  dark: Object.fromEntries(
-    SEMANTIC_VAR_KEYS.map(key => [key, PRESET_DEFINITIONS[presetId].modes.dark[key]])
-  ) as EditableThemeVars,
+  light: { ...PRESET_DEFINITIONS[presetId].sourceModes.light },
+  dark: { ...PRESET_DEFINITIONS[presetId].sourceModes.dark },
 });
 
 /**
@@ -238,14 +241,17 @@ const appliedTheme = (
 ): ResolvedThemeVars => {
   const effectiveThemeVars = getEffectiveThemeVars(themeVars, themeCustomizationEnabled);
   const presetId = getPresetId(effectiveThemeVars, themeCustomizationEnabled);
-  const base = { ...PRESET_DEFINITIONS[presetId].modes[mode] };
+  const presetSource = PRESET_DEFINITIONS[presetId].sourceModes[mode];
+  const base = { ...presetSource };
 
   SEMANTIC_VAR_KEYS.forEach(key => {
     const value = getThemeValue(effectiveThemeVars, mode, key);
     if (value) base[key] = value;
   });
 
-  return base;
+  return SEMANTIC_VAR_KEYS.some(key => base[key] !== presetSource[key])
+    ? resolveThemeVars(base)
+    : PRESET_DEFINITIONS[presetId].modes[mode];
 };
 
 const getPresetVars = (presetId: ThemePresetId): Record<string, string> => ({

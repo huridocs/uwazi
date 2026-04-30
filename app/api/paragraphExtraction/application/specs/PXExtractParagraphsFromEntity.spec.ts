@@ -21,7 +21,6 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { search } from '#api/search/index.js';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity.js';
 import {
   defaultTemplate,
@@ -58,6 +57,7 @@ import {
   userId,
 } from './fixtures.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -76,66 +76,68 @@ const createFixtures = (): DBFixture => ({
   segmentations: [segmentation, segmentation2],
 });
 
-const setUpUseCase = () => {
-  const extractionService = {
-    extractParagraphs: jest.fn(),
-    getParagraphsResult: jest.fn(),
-  };
+const setUpUseCase = () =>
+  testingEnvironment.runWithContext(() => {
+    const extractionService = {
+      extractParagraphs: jest.fn(),
+      getParagraphsResult: jest.fn(),
+    };
 
-  const fileStorage = TestUtils.mockClass<FileStorage>({
-    getFile: jest.fn(),
-  });
+    const fileStorage = TestUtils.mockClass<FileStorage>({
+      getFile: jest.fn(),
+    });
 
-  const connection = getConnection();
-  const mongoTransactionManager = TransactionManagerFactory.default();
-  const entitiesDS = EntitiesDataSourceFactory.forTesting(mongoTransactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
-
-  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-
-  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-  const idGenerator = MongoIdHandler;
-  const tenantName = tenants.current().name;
-
-  const entitiesService = EntitiesServiceFactory.default({
-    transactionManager: mongoTransactionManager,
-    search: TestUtils.mockClass<typeof search>({
-      bulkDeleteBySharedId: jest.fn(),
-    }),
-  });
-
-  const extractParagraphs = new PXExtractParagraphsFromEntity(
-    {
+    const connection = getConnection();
+    const mongoTransactionManager = TransactionManagerFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
-      entitiesService,
-      entitiesDS,
-      extractorsDS,
-      filesDS,
-      settingsDS,
+    });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
+    const filesDS = FilesDataSourceFactory.default();
+
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+    const idGenerator = MongoIdHandler;
+    const tenantName = tenants.current().name;
+
+    const entitiesService = EntitiesServiceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
+
+    const extractParagraphs = new PXExtractParagraphsFromEntity(
+      {
+        transactionManager: mongoTransactionManager,
+        entitiesService,
+        entitiesDS,
+        extractorsDS,
+        filesDS,
+        settingsDS,
+        extractionService,
+        fileStorage,
+        entitiesStatusDS,
+        idGenerator,
+        logger: createMockLogger(),
+        tenantName,
+      },
+      { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
+    );
+
+    return {
+      tenantName,
       extractionService,
       fileStorage,
-      entitiesStatusDS,
-      idGenerator,
-      logger: createMockLogger(),
-      tenantName,
-    },
-    { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
-  );
-
-  return {
-    tenantName,
-    extractionService,
-    fileStorage,
-    extractParagraphs,
-  };
-};
+      extractParagraphs,
+    };
+  });
 
 describe('PXExtractParagraphsFromEntity', () => {
   beforeAll(async () =>

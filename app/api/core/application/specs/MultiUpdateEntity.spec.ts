@@ -1,106 +1,22 @@
 /* eslint-disable max-statements */
-import { ObjectId } from 'mongodb';
+import { MultiUpdateEntityUseCaseFactory } from '#api/core/infrastructure/factories/MultiUpdateEntityUseCaseFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { tenants } from '#api/tenants/index.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
-import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { MultiUpdateEntity, MultiUpdateEntityDeps } from '../MultiUpdateEntity.js';
-import { UserSchema } from '#shared/types/userType.js';
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
-import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { User } from '#api/users.v2/model/User.js';
+import { ObjectId } from 'mongodb';
 import { factory, fixtures, permissionsFixtures } from './MultiUpdateEntityFixtures.js';
 
-const createSut = (actor?: UserSchema, _deps?: Partial<MultiUpdateEntityDeps>) => {
-  const transactionManager = TransactionManagerFactory.default();
-  const entitiesDS = EntitiesDataSourceFactory.forTesting(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.forTesting(transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const eventEmitter = EventEmitterFactory.forTesting();
-  const idGenerator = IdGeneratorFactory.default();
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
-  const entityPermissionChecker = new MongoEntityPermissionChecker(
-    getConnection(),
-    transactionManager
+const createSut = (actor?: User) =>
+  testingEnvironment.runWithContext(
+    () => ({ sut: MultiUpdateEntityUseCaseFactory.default() }),
+    actor ? { actor } : undefined
   );
-
-  const propertyAssignmentCreatorServiceStrategy =
-    PropertyAssignmentCreatorServiceStrategy.createWithRequired({
-      entitiesDS,
-      settingsDS,
-      thesauriDS,
-      translationsDS,
-    });
-
-  const entitiesService = EntitiesServiceFactory.default({
-    transactionManager,
-    entitiesDS,
-    eventEmitter,
-    settingsDS,
-    templatesDS,
-  });
-
-  const defaultActor: UserSchema = {
-    _id: new ObjectId(),
-    role: 'admin',
-    groups: [],
-    email: 'admin@test.com',
-    username: 'admin',
-  };
-
-  const sut = new MultiUpdateEntity(
-    {
-      entitiesDS,
-      entitiesService,
-      templatesDS,
-      propertyAssignmentCreatorServiceStrategy,
-      entityPermissionChecker,
-      transactionManager,
-      eventEmitter,
-      idGenerator,
-      ..._deps,
-    },
-    { actor: actor ?? defaultActor, tenant: tenants.current() }
-  );
-
-  DependenciesContext.attachContext(sut, 'execute', {
-    factories: {
-      transactionManager: () => transactionManager,
-      eventEmitter: () => eventEmitter,
-      idGenerator: () => idGenerator,
-      jobsDispatcher: () => jobsDispatcher,
-      logger: () => TestUtils.mockClass<Logger>({}),
-      authorizedEntityESClient: () => TestUtils.mockClass({}),
-      elasticClient: () => TestUtils.mockClass({}),
-    },
-  });
-
-  return { sut };
-};
 
 const getAllDocs = async (sharedId: string) =>
   testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
 
 describe('MultiUpdateEntity', () => {
-  beforeAll(async () => {
-    await testingEnvironment.setUp({});
-  });
-
   beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
@@ -315,13 +231,13 @@ describe('MultiUpdateEntity', () => {
 
     describe('Admin role', () => {
       it('should update all entities regardless of permissions', async () => {
-        const adminUser: UserSchema = {
+        const adminUser = User.createFrom({
           _id: new ObjectId(),
           role: 'admin',
           groups: [],
           email: 'admin@test.com',
           username: 'admin',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(adminUser);
 
@@ -344,13 +260,13 @@ describe('MultiUpdateEntity', () => {
 
     describe('Editor role', () => {
       it('should update all entities regardless of permissions', async () => {
-        const editorUser: UserSchema = {
+        const editorUser = User.createFrom({
           _id: factory.id('editor'),
           role: 'editor',
           groups: [],
           email: 'editor@test.com',
           username: 'editor',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(editorUser);
 
@@ -377,13 +293,13 @@ describe('MultiUpdateEntity', () => {
       const collaboratorId = factory.id('collaborator');
 
       it('should update only entities with write permission via user', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
           email: 'collaborator@test.com',
           username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(collaboratorUser);
 
@@ -409,13 +325,13 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should update only entities with write permission via group', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
-          groups: [{ _id: factory.id('group1'), name: 'group1' }] as any,
+          groups: [{ _id: factory.id('group1'), name: 'group1' }],
           email: 'collaborator@test.com',
           username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(collaboratorUser);
 
@@ -437,13 +353,13 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should return empty array and write nothing when no entities are permitted', async () => {
-        const collaboratorUser: UserSchema = {
+        const collaboratorUser = User.createFrom({
           _id: collaboratorId,
           role: 'collaborator',
           groups: [],
           email: 'collaborator@test.com',
           username: 'collaborator',
-        } as UserSchema;
+        });
 
         const { sut } = createSut(collaboratorUser);
 

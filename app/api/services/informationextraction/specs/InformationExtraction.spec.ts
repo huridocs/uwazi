@@ -178,7 +178,7 @@ describe('InformationExtraction', () => {
       uploadedDocuments: `${__dirname}/uploads/`,
     });
     IXExternalService.reset();
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     // eslint-disable-next-line no-empty-function
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });

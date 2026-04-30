@@ -78,7 +78,9 @@ describe('CsvCreateRelationshipEntitiesJob (integration)', () => {
       dispatchMany: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
     const { useCase, csvImportsDS, relationshipPendingValuesDS, entitiesDS } =
-      CsvCreateRelationshipEntitiesJobFactory.build({ jobsDispatcher });
+      testingEnvironment.runWithContext(() =>
+        CsvCreateRelationshipEntitiesJobFactory.build({ jobsDispatcher })
+      );
     const importId = fixturesFactory.idString('relationship-import');
     createdImportIds.push(importId);
     const user = fixtures.users[0];

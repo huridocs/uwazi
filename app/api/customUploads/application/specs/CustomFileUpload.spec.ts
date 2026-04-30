@@ -38,7 +38,9 @@ describe('CustomFileUpload', () => {
   let useCase: CustomFileUpload;
 
   beforeEach(() => {
-    useCase = CustomFileUploadFactory.default(TransactionManagerFactory.fake());
+    useCase = testingEnvironment.runWithContext(() =>
+      CustomFileUploadFactory.default(TransactionManagerFactory.fake())
+    );
   });
 
   it('should create a custom file upload', async () => {

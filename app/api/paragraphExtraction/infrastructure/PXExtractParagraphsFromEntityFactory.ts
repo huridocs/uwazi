@@ -14,13 +14,16 @@ import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraph
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory.js';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.js';
+import { User } from '#api/users.v2/model/User.js';
 
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.default();
 
-    const entitiesDS = EntitiesDataSourceFactory.default(mongoTransactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
@@ -33,8 +36,10 @@ export class PXExtractParagraphsFromEntityFactory {
       connection,
       mongoTransactionManager,
     });
-    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default();
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const fileStorage = FileStorageFactory.default();
     const idGenerator = MongoIdHandler;
     const logger = LoggerFactory.default();
@@ -60,7 +65,7 @@ export class PXExtractParagraphsFromEntityFactory {
         logger,
         tenantName,
       },
-      { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+      { tenant: tenants.current(), actor: User.createFrom(permissionsContext.getUserInContext()!) }
     );
 
     return extractParagraphsFromEntity;

@@ -7,7 +7,7 @@ import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateSer
 export const EntityRelationshipsUpdateService = (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
 
   return new GenericEntityRelationshipsUpdateService(entitiesDS, templatesDS, relationshipsDS);
 };

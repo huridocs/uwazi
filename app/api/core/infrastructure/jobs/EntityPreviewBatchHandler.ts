@@ -7,7 +7,7 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type Params = {
   languageKey: LanguageISO6391;
@@ -18,7 +18,7 @@ type JobDependencies = {
   filesDS: FilesDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
   settingsDS: SettingsDataSource;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 };
 
 export class EntityPreviewBatchHandler extends V1CompatTenantDispatchable<Params> {
