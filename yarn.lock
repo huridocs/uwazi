@@ -18126,10 +18126,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^8.0.2":
-  version: 8.0.2
-  resolution: "nodemailer@npm:8.0.2"
-  checksum: 10c0/e11a3c6cfd314cee61a9fbefa7f3d5c7caec783072e6aea277b718cf1d4f54a90b85eb32445e15cf63f92d70d7ac1c4b8e1de991ecce1907d8436193e0873189
+"nodemailer@npm:^8.0.5":
+  version: 8.0.7
+  resolution: "nodemailer@npm:8.0.7"
+  checksum: 10c0/f1580263ad7fba64a493c47c4d78f06679c0da9cc3becbe6b628311a16474c07286fc4e530006ea262537594ccc475dc569fd519275222fd01f99c315976aeac
   languageName: node
   linkType: hard
 
@@ -24065,7 +24065,7 @@ __metadata:
     multer: "npm:^2.1.1"
     node-polyfill-webpack-plugin: "npm:^4.1.0"
     node-uuid: "npm:^1.4.7"
-    nodemailer: "npm:^8.0.2"
+    nodemailer: "npm:^8.0.5"
     nodemon: "npm:^3.1.14"
     nprogress: "npm:^0.2.0"
     otplib: "npm:^11.0.1"
