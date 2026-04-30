@@ -75,7 +75,7 @@ describe('ExtractionUseCase', () => {
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
         connection,
         transactionManager,
-        SettingsDataSourceFactory.default(transactionManager),
+        SettingsDataSourceFactory.default({ transactionManager }),
         extractorsQueryService
       ),
     });

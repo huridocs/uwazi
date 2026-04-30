@@ -4,11 +4,10 @@ import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastruc
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { factory, fixtures } from './DenormalizeThesaurusEntitiesFixtures.js';
 
-const createSut = () => {
-  const sut = DenormalizeThesaurusEntitiesUseCaseFactory.default();
-
-  return { sut };
-};
+const createSut = () =>
+  testingEnvironment.runWithContext(() => ({
+    sut: DenormalizeThesaurusEntitiesUseCaseFactory.default(),
+  }));
 
 describe('DenormalizeThesaurusEntities', () => {
   beforeAll(async () => {

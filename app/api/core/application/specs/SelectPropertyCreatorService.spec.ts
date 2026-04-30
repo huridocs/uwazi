@@ -20,7 +20,9 @@ describe('SelectPropertyCreatorService', () => {
   it('should throw if Thesaurus does not exist', async () => {
     const sut = new SelectPropertyCreatorService({
       thesauriDS: new MongoThesauriDataSource(getConnection(), TransactionManagerFactory.default()),
-      templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+      templatesDS: TemplatesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      }),
     });
 
     await expect(

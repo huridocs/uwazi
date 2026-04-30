@@ -38,7 +38,9 @@ describe('csvLoader zip file', () => {
     jest
       .spyOn(filesystem, 'generateFileName')
       .mockImplementation(file => `generated${file.originalname}`);
-    await loader.load(zip, template1Id);
+    await testingEnvironment.runWithContext(async () => {
+      await loader.load(zip, template1Id);
+    });
     imported = await files.get({ type: 'document' }, '+fullText');
   });
 

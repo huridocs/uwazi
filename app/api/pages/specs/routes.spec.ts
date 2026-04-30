@@ -1,5 +1,6 @@
 import type { Application } from 'express';
 import request from 'supertest';
+import { ObjectId } from 'mongodb';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
@@ -7,7 +8,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import pagesRoutes from '../routes.js';
 import { fixtures } from './fixtures.js';
 
-const getUser = () => ({ _username: 'user 1', role: 'admin' });
+const getUser = () => ({ _id: new ObjectId().toString(), _username: 'user 1', role: 'admin' });
 
 const app: Application = setUpApp(pagesRoutes, (req, _res, next) => {
   (req as any).user = getUser();
@@ -32,7 +33,7 @@ describe('Pages Routes', () => {
         .set('content-language', 'en')
         .send(goodData);
 
-      expect(response.status).toBe(200);
+      expect(response).toHaveStatus(200);
     });
 
     it('should not validate with wrong structure', async () => {

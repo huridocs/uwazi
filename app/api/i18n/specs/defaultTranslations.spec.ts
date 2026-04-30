@@ -156,6 +156,7 @@ describe(`${TRANSLATION_FILES_DIR}`, () => {
 describe('translation files', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
     req.user = {
+      _id: 'admin',
       username: 'admin',
       role: UserRole.ADMIN,
       email: 'admin@test.com',

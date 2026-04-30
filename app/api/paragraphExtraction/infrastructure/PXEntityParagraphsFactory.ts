@@ -25,7 +25,9 @@ export class PXEntityParagraphsFactory {
       transactionManager: mongoTransactionManager,
     });
 
-    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,

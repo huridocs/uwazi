@@ -37,7 +37,10 @@ describe('templates', () => {
         factory.property('Generated_ID_new', 'generatedid'),
       ]);
 
-      const template = await templates.save(newTemplate, 'en');
+      const template = await testingEnvironment.runWithContext(async () =>
+        templates.save(newTemplate, 'en')
+      );
+
       expect(template._id).toBeDefined();
       expect(template.name).toBe('created_template');
       expect(template.properties[0].label).toEqual('fieldLabel');
@@ -214,7 +217,10 @@ describe('templates', () => {
 
     it('should remove denormalized type when removing inheritance', async () => {
       savedTemplate.properties![0]!.inherit!.property = '';
-      const resavedTemplate = await templates.save(savedTemplate, 'en', false);
+
+      const resavedTemplate = await testingEnvironment.runWithContext(async () =>
+        templates.save(savedTemplate, 'en')
+      );
       //@ts-ignore
       expect(resavedTemplate.properties?.[0].inherit).not.toBeDefined();
     });
