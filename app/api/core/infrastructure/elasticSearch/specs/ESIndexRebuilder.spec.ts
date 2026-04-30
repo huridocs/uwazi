@@ -25,7 +25,7 @@ import { IndexNameResolver } from '../IndexNameResolver.js';
 import { MongoTemplatesDAO } from '../../mongodb/template/MongoTemplatesDAO.js';
 import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
-import { ESIndexRebuilder, ESIndexRebuilderDeps } from '../ESIndexRebuilder.js';
+import { ESIndexRebuilder, ESIndexRebuilderDeps, ProgressEvent } from '../ESIndexRebuilder.js';
 import type { IndexDefinition } from '../Types.js';
 import { User } from '#api/users.v2/model/User.js';
 
@@ -110,12 +110,12 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
     tenantId: testTenantName,
   });
 
-  const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+  const entityWriter = new EntityESWriter({ esClient: tenantAwareClient });
   const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
   const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
   const filesDAO = new MongoFilesDAO({ db, transactionManager });
 
-  const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
+  const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO, slotsDAO });
   const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
 
   const esBootstrapper = new ElasticSearchBootstrapper({
@@ -300,6 +300,35 @@ describe('ESIndexRebuilder', () => {
       expect(source?.rawEntities?.en).toBeDefined();
       expect(source?.rawEntities?.es).toBeDefined();
       expect(source?.rawEntities?.pt).toBeDefined();
+    });
+  });
+
+  describe('progress events', () => {
+    it('emits a merged indexing event with both entity and fulltext counts', async () => {
+      const events: ProgressEvent[] = [];
+      const { sut } = createSut({ onProgress: e => events.push(e) });
+
+      await sut.execute();
+
+      const stages = events.map(e => e.stage);
+      expect(stages).toContain('reset-indexes');
+      expect(stages).toContain('reset-slots');
+      expect(stages).toContain('reconcile-slots');
+      expect(stages).toContain('indexing');
+      expect(stages).toContain('done');
+      expect(stages).not.toContain('index-entities');
+      expect(stages).not.toContain('index-fulltext');
+
+      const indexingEvents = events.filter(
+        (e): e is { stage: 'indexing'; entitiesIndexed: number; fullTextIndexed: number } =>
+          e.stage === 'indexing'
+      );
+      expect(indexingEvents.length).toBeGreaterThan(0);
+
+      const last = indexingEvents[indexingEvents.length - 1];
+      // fixtures: 2 entities, 1 ready fulltext doc
+      expect(last.entitiesIndexed).toBe(2);
+      expect(last.fullTextIndexed).toBe(1);
     });
   });
 

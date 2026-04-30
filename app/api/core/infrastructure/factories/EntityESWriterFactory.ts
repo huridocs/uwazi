@@ -1,7 +1,6 @@
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { EntityESWriter } from '../elasticSearch/entities/EntityESWriter.js';
 
@@ -18,8 +17,7 @@ export class EntityESWriterFactory {
     }
 
     const esClient = DependenciesContext.elasticClient;
-    const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
-    const entityESWriter = new EntityESWriter({ esClient, slotsDAO });
+    const entityESWriter = new EntityESWriter({ esClient });
 
     return entityESWriter;
   }

@@ -127,12 +127,12 @@ const createSut = (deps?: Partial<TenantOnboarderDeps>) => {
     tenantId: testTenantName,
   });
 
-  const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+  const entityWriter = new EntityESWriter({ esClient: tenantAwareClient });
   const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
   const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
   const filesDAO = new MongoFilesDAO({ db, transactionManager });
 
-  const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
+  const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO, slotsDAO });
   const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
 
   const sut = new TenantOnboarder({

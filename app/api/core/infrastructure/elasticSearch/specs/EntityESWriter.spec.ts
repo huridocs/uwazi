@@ -8,9 +8,11 @@ import { IndexNameResolver } from '../IndexNameResolver.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { EntityESWriter } from '../entities/EntityESWriter.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
-import type { MongoSlotsDAO, SlotMap } from '../entities/MongoSlotsDAO.js';
+import type { SlotMap } from '../entities/MongoSlotsDAO.js';
 import { EntityElasticDocument } from '../entities/EntityElasticDocument.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { EntityElasticDocumentMapper } from '../entities/EntityElasticDocumentMapper.js';
+import type { MappedDocument } from '../entities/EntityElasticDocumentMapper.js';
 
 const esClient = new ESClient({ node: config.elasticsearch.nodes });
 const indexName = `entity-indexer-service-test-${Date.now()}-${Math.random()}`;
@@ -82,7 +84,10 @@ const queryBySharedId = async (tenantClient: TenantAwareESClient, sharedId: stri
     query: { term: { sharedId } },
   });
 
-const createSut = (tenantId = 'tenant-a', slotMap: SlotMap = createSlotMap()) => {
+const toMapped = (entities: EntityDBO[], slotMap: SlotMap = createSlotMap()): MappedDocument[] =>
+  EntityElasticDocumentMapper.toDocuments(entities, slotMap);
+
+const createSut = (tenantId = 'tenant-a') => {
   const resolver = TestUtils.mockClass<IndexNameResolver>({
     resolve: jest.fn().mockResolvedValue(indexName),
     invalidate: jest.fn(),
@@ -94,16 +99,9 @@ const createSut = (tenantId = 'tenant-a', slotMap: SlotMap = createSlotMap()) =>
     tenantId,
   });
 
-  const slotsDAO = TestUtils.mockClass<MongoSlotsDAO>({
-    getSlotMap: jest.fn().mockResolvedValue(slotMap),
-  });
+  const sut = new EntityESWriter({ esClient: tenantClient });
 
-  const sut = new EntityESWriter({
-    esClient: tenantClient,
-    slotsDAO,
-  });
-
-  return { sut, slotsDAO, tenantClient };
+  return { sut, tenantClient };
 };
 
 describe('EntityESWriter', () => {
@@ -122,10 +120,13 @@ describe('EntityESWriter', () => {
 
   describe('index()', () => {
     it('two variants of the same sharedId produce exactly one ES document', async () => {
-      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const { sut, tenantClient } = createSut('tenant-a');
 
       await sut.index(
-        [createEntity('shared-1', 'en', 'hello'), createEntity('shared-1', 'es', 'hola')],
+        toMapped(
+          [createEntity('shared-1', 'en', 'hello'), createEntity('shared-1', 'es', 'hola')],
+          createSlotMap(['en', 'es'])
+        ),
         true
       );
 
@@ -138,11 +139,11 @@ describe('EntityESWriter', () => {
     });
 
     it('ES document is stored under id tenantId__sharedId with tenant routing', async () => {
-      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const { sut, tenantClient } = createSut('tenant-a');
       const entityEn = createEntity('shared-1', 'en', 'hello');
       const entityEs = createEntity('shared-1', 'es', 'hola');
 
-      await sut.index([entityEn, entityEs], true);
+      await sut.index(toMapped([entityEn, entityEs], createSlotMap(['en', 'es'])), true);
 
       const result = await tenantClient.search<EntityElasticDocument>({
         alias: EntityIndexMappingDefinition.alias,
@@ -154,12 +155,12 @@ describe('EntityESWriter', () => {
     });
 
     it('rawEntities contains one entry per language variant', async () => {
-      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const { sut, tenantClient } = createSut('tenant-a');
       const templateId = new ObjectId();
       const entityEn = createEntity('shared-1', 'en', 'hello', templateId);
       const entityEs = createEntity('shared-1', 'es', 'hola', templateId);
 
-      await sut.index([entityEn, entityEs], true);
+      await sut.index(toMapped([entityEn, entityEs], createSlotMap(['en', 'es'])), true);
 
       const [hit] = (
         await tenantClient.search<EntityElasticDocument>({
@@ -179,10 +180,13 @@ describe('EntityESWriter', () => {
     });
 
     it('translatable metadata slots contain per-language values', async () => {
-      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const { sut, tenantClient } = createSut('tenant-a');
 
       await sut.index(
-        [createEntity('shared-1', 'en', 'hello'), createEntity('shared-1', 'es', 'hola')],
+        toMapped(
+          [createEntity('shared-1', 'en', 'hello'), createEntity('shared-1', 'es', 'hola')],
+          createSlotMap(['en', 'es'])
+        ),
         true
       );
 
@@ -200,14 +204,17 @@ describe('EntityESWriter', () => {
     });
 
     it('flat input mixing two different sharedId values produces two ES documents', async () => {
-      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const { sut, tenantClient } = createSut('tenant-a');
 
       await sut.index(
-        [
-          createEntity('shared-aaa', 'en', 'foo'),
-          createEntity('shared-bbb', 'en', 'bar'),
-          createEntity('shared-aaa', 'es', 'fuu'),
-        ],
+        toMapped(
+          [
+            createEntity('shared-aaa', 'en', 'foo'),
+            createEntity('shared-bbb', 'en', 'bar'),
+            createEntity('shared-aaa', 'es', 'fuu'),
+          ],
+          createSlotMap(['en', 'es'])
+        ),
         true
       );
 
@@ -224,11 +231,9 @@ describe('EntityESWriter', () => {
     });
 
     it('is a no-op for empty input', async () => {
-      const { sut, slotsDAO } = createSut('tenant-a');
+      const { sut } = createSut('tenant-a');
 
       await sut.index([]);
-
-      expect(slotsDAO.getSlotMap).not.toHaveBeenCalled();
 
       const result = await esClient.search({
         index: indexName,
@@ -243,7 +248,7 @@ describe('EntityESWriter', () => {
         const { sut, tenantClient } = createSut('tenant-a');
         const entity = createEntity('shared-reindex', 'en', 'original');
 
-        await sut.index([entity], true);
+        await sut.index(toMapped([entity]), true);
 
         const first = await queryBySharedId(tenantClient, 'shared-reindex');
         const firstCreatedAt = first.hits.hits[0]._source!.created_at;
@@ -253,7 +258,7 @@ describe('EntityESWriter', () => {
         // eslint-disable-next-line no-promise-executor-return
         await new Promise(resolve => setTimeout(resolve, 200));
 
-        await sut.index([{ ...entity, title: 'Updated title' }], true);
+        await sut.index(toMapped([{ ...entity, title: 'Updated title' }]), true);
 
         const second = await queryBySharedId(tenantClient, 'shared-reindex');
         const secondSource = second.hits.hits[0]._source!;
@@ -266,8 +271,8 @@ describe('EntityESWriter', () => {
         const { sut, tenantClient } = createSut('tenant-a');
         const entity = createEntity('shared-update', 'en', 'original text');
 
-        await sut.index([entity], true);
-        await sut.index([{ ...entity, title: 'Updated Title' }], true);
+        await sut.index(toMapped([entity]), true);
+        await sut.index(toMapped([{ ...entity, title: 'Updated Title' }]), true);
 
         const result = await queryBySharedId(tenantClient, 'shared-update');
 
@@ -278,11 +283,11 @@ describe('EntityESWriter', () => {
         const { sut, tenantClient } = createSut('tenant-a');
         const entity = createEntity('shared-metadata-remove', 'en', 'to be removed');
 
-        await sut.index([entity], true);
+        await sut.index(toMapped([entity]), true);
         const before = await queryBySharedId(tenantClient, 'shared-metadata-remove');
         expect(before.hits.hits[0]._source!.metadata).toEqual({ txt_01: ['to be removed'] });
 
-        await sut.index([{ ...entity, metadata: {} }], true);
+        await sut.index(toMapped([{ ...entity, metadata: {} }]), true);
 
         const after = await queryBySharedId(tenantClient, 'shared-metadata-remove');
         expect(after.hits.hits[0]._source!.metadata).toEqual({});
@@ -292,14 +297,17 @@ describe('EntityESWriter', () => {
 
   describe('deleteBySharedIds()', () => {
     it('issues tenant-routed deleteByQuery by sharedIds', async () => {
-      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const { sut, tenantClient } = createSut('tenant-a');
 
       await sut.index(
-        [
-          createEntity('shared-delete', 'en', 'delete en'),
-          createEntity('shared-delete', 'es', 'delete es'),
-          createEntity('shared-keep', 'en', 'keep en'),
-        ],
+        toMapped(
+          [
+            createEntity('shared-delete', 'en', 'delete en'),
+            createEntity('shared-delete', 'es', 'delete es'),
+            createEntity('shared-keep', 'en', 'keep en'),
+          ],
+          createSlotMap(['en', 'es'])
+        ),
         true
       );
 
@@ -317,26 +325,26 @@ describe('EntityESWriter', () => {
     });
 
     it('is a no-op for empty input', async () => {
-      const { sut, slotsDAO } = createSut('tenant-a');
-
-      await sut.deleteBySharedIds([]);
-
-      expect(slotsDAO.getSlotMap).not.toHaveBeenCalled();
+      const { sut } = createSut('tenant-a');
+      await expect(sut.deleteBySharedIds([])).resolves.toBeUndefined();
     });
   });
 
   describe('deleteByTemplateIds()', () => {
     it('issues tenant-routed deleteByQuery by templateIds', async () => {
-      const { sut, tenantClient } = createSut('tenant-a', createSlotMap(['en', 'es']));
+      const { sut, tenantClient } = createSut('tenant-a');
       const templateToDelete = new ObjectId();
       const templateToKeep = new ObjectId();
 
       await sut.index(
-        [
-          createEntity('shared-1', 'en', 'delete en', templateToDelete),
-          createEntity('shared-1', 'es', 'delete es', templateToDelete),
-          createEntity('shared-2', 'en', 'keep en', templateToKeep),
-        ],
+        toMapped(
+          [
+            createEntity('shared-1', 'en', 'delete en', templateToDelete),
+            createEntity('shared-1', 'es', 'delete es', templateToDelete),
+            createEntity('shared-2', 'en', 'keep en', templateToKeep),
+          ],
+          createSlotMap(['en', 'es'])
+        ),
         true
       );
 
@@ -356,7 +364,7 @@ describe('EntityESWriter', () => {
     it('is a no-op for empty input', async () => {
       const { sut } = createSut('tenant-a');
 
-      await sut.index([createEntity('shared-1', 'en', 'keep en')], true);
+      await sut.index(toMapped([createEntity('shared-1', 'en', 'keep en')]), true);
 
       await sut.deleteByTemplateIds([], true);
 

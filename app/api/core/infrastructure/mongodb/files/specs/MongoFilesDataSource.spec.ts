@@ -15,7 +15,7 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { MongoFilesDataSource } from '../MongoFilesDataSource.js';
-import { FullTextESWriter } from '#api/core/infrastructure/elasticSearch/entities/FullTextESWriter.js';
+import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileMappers } from '../FilesMappers.js';
 
@@ -120,9 +120,9 @@ afterAll(async () => {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const fullTextIndexer = TestUtils.mockClass<FullTextESWriter>({
+  const fullTextIndexer = TestUtils.mockClass<FullTextIndexerService>({
     index: jest.fn().mockResolvedValue(undefined),
-    deleteByFilenames: jest.fn().mockResolvedValue(undefined),
+    remove: jest.fn().mockResolvedValue(undefined),
   });
   const ds = new MongoFilesDataSource(
     getConnection(),
@@ -608,7 +608,7 @@ describe('MongoFilesDataSource', () => {
       await ds.delete([processedPdf, attachment]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(fullTextIndexer.deleteByFilenames).toHaveBeenCalledWith([processedPdf.filename]);
+      expect(fullTextIndexer.remove).toHaveBeenCalledWith([processedPdf.filename]);
     });
   });
 });

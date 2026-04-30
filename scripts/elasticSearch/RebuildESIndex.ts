@@ -39,17 +39,15 @@ const { tenant } = yargs(hideBin(process.argv))
 const formatProgress = (event: ProgressEvent): string => {
   switch (event.stage) {
     case 'reset-indexes':
-      return '[1/5] Resetting ES indexes (delete + recreate)...';
+      return '[1/4] Resetting ES indexes (delete + recreate)...\n';
     case 'reset-slots':
-      return '[2/5] Wiping and re-seeding slot collection...';
+      return '[2/4] Wiping and re-seeding slot collection...\n';
     case 'reconcile-slots':
-      return '[3/5] Reconciling slots with templates...';
-    case 'index-entities':
-      return `[4/5] Indexing entities... ${event.indexed} indexed\r\n`;
-    case 'index-fulltext':
-      return `[5/5] Indexing full-text documents... ${event.indexed} indexed\r\n`;
+      return '[3/4] Reconciling slots with templates...\n';
+    case 'indexing':
+      return `[4/4] Entities: ${event.entitiesIndexed} | Full-text: ${event.fullTextIndexed} indexed\r`;
     case 'done':
-      return '';
+      return '\n';
     default:
       return '';
   }
@@ -88,10 +86,19 @@ async function main() {
         registry: IndexMappingRegistry,
         logger,
       });
-      const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+      const entityWriter = new EntityESWriter({ esClient: tenantAwareClient });
       const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
-      const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
-      const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
+      const entityIndexer = new EntityIndexerService({
+        writer: entityWriter,
+        entityDAO,
+        slotsDAO,
+        maxConcurrentWrites: 10,
+      });
+      const fullTextIndexer = new FullTextIndexerService({
+        writer: fullTextWriter,
+        filesDAO,
+        maxConcurrentWrites: 10,
+      });
 
       const rebuilder = new ESIndexRebuilder({
         esClient,
@@ -115,9 +122,9 @@ async function main() {
 
     const [seconds, nanoseconds] = process.hrtime(start);
     const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
-    process.stdout.write(`Done. Took ${elapsed}s`);
+    console.log(`Done. Took ${elapsed}s`);
   } catch (err) {
-    process.stdout.write('ES index rebuild failed:', err);
+    console.log('ES index rebuild failed:', err);
     process.exitCode = 1;
   } finally {
     await ElasticSearchClientFactory.getInstance().close();

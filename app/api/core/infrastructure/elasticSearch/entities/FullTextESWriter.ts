@@ -1,7 +1,6 @@
-import { ProcessedPDFDBO } from '../../mongodb/files/schemas/filesTypes.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition.js';
-import { FullTextElasticDocumentMapper } from './FullTextElasticDocumentMapper.js';
+import type { MappedDocument } from './FullTextElasticDocumentMapper.js';
 
 type FullTextESWriterDeps = {
   esClient: TenantAwareESClient;
@@ -12,23 +11,18 @@ class FullTextESWriter {
 
   constructor(private deps: FullTextESWriterDeps) {}
 
-  async index(files: ProcessedPDFDBO[], refresh = false): Promise<void> {
-    if (files.length === 0) {
-      return;
-    }
+  get tenantId(): string {
+    return this.deps.esClient.tenantId;
+  }
 
-    const operations = FullTextElasticDocumentMapper.toDocuments(
-      files,
-      this.deps.esClient.tenantId
-    );
-
-    if (operations.length === 0) {
+  async index(ops: MappedDocument[], refresh = false): Promise<void> {
+    if (ops.length === 0) {
       return;
     }
 
     await this.deps.esClient.bulk({
       alias: this.alias,
-      operations,
+      operations: ops,
       routing: this.deps.esClient.tenantId,
       refresh,
     });

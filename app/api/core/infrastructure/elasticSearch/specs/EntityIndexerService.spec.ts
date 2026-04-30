@@ -16,7 +16,6 @@ import type { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { EntityIndexerService, EntityBatchInfo } from '../entities/EntityIndexerService.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-
 const factory = getFixturesFactory();
 const rawESClient = new ESClient({ node: config.elasticsearch.nodes });
 
@@ -61,7 +60,7 @@ const createTestIndex = async () => {
 const deleteTestIndex = async () =>
   rawESClient.indices.delete({ index: testIndexName, ignore_unavailable: true });
 
-const createSut = (overrides?: { batchSize?: number }) => {
+const createSut = (overrides?: { batchSize?: number; maxConcurrentWrites?: number }) => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
 
@@ -80,11 +79,11 @@ const createSut = (overrides?: { batchSize?: number }) => {
     getSlotMap: jest.fn().mockResolvedValue(new Map()),
   });
 
-  const writer = new EntityESWriter({ esClient: tenantClient, slotsDAO });
+  const writer = new EntityESWriter({ esClient: tenantClient });
   const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
-  const sut = new EntityIndexerService({ writer, entityDAO, ...overrides });
+  const sut = new EntityIndexerService({ writer, entityDAO, slotsDAO, ...overrides });
 
-  return { sut, tenantClient };
+  return { sut, slotsDAO, tenantClient };
 };
 
 const searchAll = async (tenantClient: TenantAwareESClient) =>
@@ -118,6 +117,25 @@ describe('EntityIndexerService', () => {
       conflicts: 'proceed',
       body: { query: { match_all: {} } },
       refresh: true,
+    });
+  });
+
+  describe('index()', () => {
+    it('fetches slotMap, maps provided entities, and writes them to ES', async () => {
+      const { sut, slotsDAO, tenantClient } = createSut();
+      const db = getConnection();
+      const entityDAO = new MongoEntityDAO(
+        db,
+        TransactionManagerFactory.default(),
+        User.createFrom(null)
+      );
+      const entities = await entityDAO.findBySharedIds(['entity_b']);
+
+      await sut.index(entities, true);
+
+      expect(slotsDAO.getSlotMap).toHaveBeenCalledTimes(1);
+      const result = await searchBySharedId(tenantClient, 'entity_b');
+      expect(result.hits.hits).toHaveLength(1);
     });
   });
 
@@ -194,15 +212,15 @@ describe('EntityIndexerService', () => {
 
       await sut.syncAll({ onBatch: info => batches.push(info) }, true);
 
-      // entity_a has 2 Mongo docs (en+es), entity_b and entity_c have 1 each
-      // batchSize=1 flushes when sharedId changes:
-      //   flush entity_a (2 docs) → indexed=2, lastSharedId='entity_a'
-      //   flush entity_b (1 doc)  → indexed=3, lastSharedId='entity_b'
-      //   flush entity_c (1 doc)  → indexed=4, lastSharedId='entity_c'
+      // indexed counts ES documents (unique sharedIds), not Mongo rows.
+      // entity_a has 2 Mongo docs (en+es) but collapses into 1 ES doc.
+      //   flush entity_a → indexed=1, lastSharedId='entity_a'
+      //   flush entity_b → indexed=2, lastSharedId='entity_b'
+      //   flush entity_c → indexed=3, lastSharedId='entity_c'
       expect(batches).toHaveLength(3);
-      expect(batches[0]).toEqual({ indexed: 2, lastSharedId: 'entity_a' });
-      expect(batches[1]).toEqual({ indexed: 3, lastSharedId: 'entity_b' });
-      expect(batches[2]).toEqual({ indexed: 4, lastSharedId: 'entity_c' });
+      expect(batches[0]).toEqual({ indexed: 1, lastSharedId: 'entity_a' });
+      expect(batches[1]).toEqual({ indexed: 2, lastSharedId: 'entity_b' });
+      expect(batches[2]).toEqual({ indexed: 3, lastSharedId: 'entity_c' });
     });
 
     it('does not call onBatch when there are no entities', async () => {
@@ -247,6 +265,51 @@ describe('EntityIndexerService', () => {
         const keptResult = await searchBySharedId(tenantClient, sharedId);
         expect(keptResult.hits.hits).toHaveLength(1);
       });
+    });
+  });
+
+  describe('syncAll() — concurrent writes', () => {
+    it('indexes all entities correctly when using multiple concurrent writes', async () => {
+      const { sut, tenantClient } = createSut({ batchSize: 1, maxConcurrentWrites: 2 });
+
+      await sut.syncAll(undefined, true);
+
+      const result = await searchAll(tenantClient);
+      const sharedIds = result.hits.hits.map((h: any) => h._source?.sharedId).sort();
+      expect(sharedIds).toEqual(['entity_a', 'entity_b', 'entity_c']);
+    });
+
+    it('collects all write errors and throws after every in-flight write settles', async () => {
+      let batchNum = 0;
+      const writeOrder: number[] = [];
+
+      const mockWriter = {
+        deleteBySharedIds: jest.fn(),
+        deleteByTemplateIds: jest.fn(),
+        index: jest.fn().mockImplementation(async () => {
+          const num = ++batchNum;
+          writeOrder.push(num);
+          if (num === 1) throw new Error('batch 1 failed');
+        }),
+      } as unknown as EntityESWriter;
+
+      const db = getConnection();
+      const transactionManager = TransactionManagerFactory.default();
+      const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
+      const slotsDAO = TestUtils.mockClass<MongoSlotsDAO>({
+        getSlotMap: jest.fn().mockResolvedValue(new Map()),
+      });
+
+      const sut = new EntityIndexerService({
+        writer: mockWriter,
+        entityDAO,
+        slotsDAO,
+        batchSize: 1,
+        maxConcurrentWrites: 2,
+      });
+
+      await expect(sut.syncAll(undefined, false)).rejects.toThrow('batch 1 failed');
+      expect(writeOrder.sort()).toEqual([1, 2, 3]);
     });
   });
 });

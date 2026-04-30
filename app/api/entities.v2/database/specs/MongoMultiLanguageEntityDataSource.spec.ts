@@ -11,7 +11,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { EntityESWriter } from '#api/core/infrastructure/elasticSearch/entities/EntityESWriter.js';
+import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();
@@ -78,9 +78,9 @@ const createEntity = (languages: string[], template: Template, userId?: string) 
 const createSut = () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const entityIndexerService = TestUtils.mockClass<EntityESWriter>({
+  const entityIndexerService = TestUtils.mockClass<EntityIndexerService>({
     index: jest.fn().mockResolvedValue(undefined),
-    deleteBySharedIds: jest.fn().mockResolvedValue(undefined),
+    remove: jest.fn().mockResolvedValue(undefined),
   });
 
   const sut = new MongoMultiLanguageEntityDataSource({
@@ -529,8 +529,8 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkDelete([entity1.sharedId, entity2.sharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledWith(
+      expect(entityIndexerService.remove).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.remove).toHaveBeenCalledWith(
         expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });

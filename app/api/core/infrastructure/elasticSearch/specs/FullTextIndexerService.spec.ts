@@ -84,7 +84,7 @@ const indexEntityParent = async (sharedId: string) => {
   });
 };
 
-const createSut = (overrides?: { batchSize?: number }) => {
+const createSut = (overrides?: { byteThreshold?: number; maxConcurrentWrites?: number }) => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
 
@@ -189,8 +189,8 @@ describe('FullTextIndexerService', () => {
 
     it('calls onBatch with cumulative indexed count and lastFileId', async () => {
       const batches: FileBatchInfo[] = [];
-      // batchSize=1 so each file is its own batch
-      const { sut } = createSut({ batchSize: 1 });
+      // byteThreshold=1 so each file exceeds the threshold and is flushed individually
+      const { sut } = createSut({ byteThreshold: 1 });
 
       await sut.syncAll({ onBatch: info => batches.push(info) }, true);
 
@@ -230,6 +230,78 @@ describe('FullTextIndexerService', () => {
         const keptResult = await searchByFilename(tenantClient, filename);
         expect(keptResult.hits.hits).toHaveLength(1);
       });
+    });
+  });
+
+  describe('index()', () => {
+    it('maps provided files and writes them to ES', async () => {
+      const { sut, tenantClient } = createSut();
+
+      const db = getConnection();
+      const readyDocs = await db
+        .collection('files')
+        .find({ type: 'document', status: 'ready' })
+        .toArray();
+      const dbos = readyDocs.map(d => d as any);
+
+      await sut.index(dbos, true);
+
+      const result = await searchFulltextDocs(tenantClient);
+      expect(result.hits.hits).toHaveLength(3);
+    });
+
+    it('silently skips files rejected by the mapper (no fullText)', async () => {
+      const { sut, tenantClient } = createSut();
+
+      const db = getConnection();
+      const processingDoc = await db.collection('files').findOne({ filename: 'doc_processing' });
+
+      await sut.index([processingDoc as any], true);
+
+      const result = await searchFulltextDocs(tenantClient);
+      expect(result.hits.hits).toHaveLength(0);
+    });
+  });
+
+  describe('syncAll() — concurrent writes', () => {
+    it('indexes all documents correctly when using multiple concurrent writes', async () => {
+      const { sut, tenantClient } = createSut({ byteThreshold: 1, maxConcurrentWrites: 2 });
+
+      await sut.syncAll(undefined, true);
+
+      const result = await searchFulltextDocs(tenantClient);
+      const filenames = result.hits.hits.map((h: any) => h._source?.filename).sort();
+      expect(filenames).toEqual(['doc_a', 'doc_b', 'doc_c']);
+    });
+
+    it('collects all write errors and throws after every in-flight write settles', async () => {
+      let batchNum = 0;
+      const writeOrder: number[] = [];
+
+      const mockWriter = {
+        tenantId: testTenantId,
+        deleteByFilenames: jest.fn(),
+        index: jest.fn().mockImplementation(async () => {
+          const num = ++batchNum;
+          writeOrder.push(num);
+          if (num === 1) throw new Error('batch 1 failed');
+        }),
+      } as unknown as FullTextESWriter;
+
+      const db = getConnection();
+      const transactionManager = TransactionManagerFactory.default();
+      const filesDAO = new MongoFilesDAO({ db, transactionManager });
+
+      const sut = new FullTextIndexerService({
+        writer: mockWriter,
+        filesDAO,
+        byteThreshold: 1,
+        maxConcurrentWrites: 2,
+      });
+
+      await expect(sut.syncAll(undefined, false)).rejects.toThrow('batch 1 failed');
+      // All 3 batches were dispatched and settled despite the failure in batch 1
+      expect(writeOrder.sort()).toEqual([1, 2, 3]);
     });
   });
 });

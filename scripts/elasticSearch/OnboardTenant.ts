@@ -89,9 +89,9 @@ async function main() {
       const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
 
       const tenantAwareClient = ElasticSearchClientFactory.tenantAware(tenant);
-      const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+      const entityWriter = new EntityESWriter({ esClient: tenantAwareClient });
       const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
-      const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
+      const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO, slotsDAO });
       const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
 
       const onboarder = new TenantOnboarder({

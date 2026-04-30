@@ -1,12 +1,9 @@
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
-import { MongoSlotsDAO } from './MongoSlotsDAO.js';
-import { EntityElasticDocumentMapper } from './EntityElasticDocumentMapper.js';
 import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition.js';
+import type { MappedDocument } from './EntityElasticDocumentMapper.js';
 
 type EntityESWriterDeps = {
   esClient: TenantAwareESClient;
-  slotsDAO: MongoSlotsDAO;
 };
 
 class EntityESWriter {
@@ -14,19 +11,12 @@ class EntityESWriter {
 
   constructor(private deps: EntityESWriterDeps) {}
 
-  async index(entities: EntityDBO[], refresh = false): Promise<void> {
-    if (entities.length === 0) {
+  async index(ops: MappedDocument[], refresh = false): Promise<void> {
+    if (ops.length === 0) {
       return;
     }
 
-    const slotMap = await this.deps.slotsDAO.getSlotMap();
-    const grouped = EntityElasticDocumentMapper.toDocuments(entities, slotMap);
-
-    if (grouped.length === 0) {
-      return;
-    }
-
-    const operations = grouped.map(({ sharedId, document }) => ({
+    const operations = ops.map(({ sharedId, document }) => ({
       id: sharedId,
       document,
     }));
