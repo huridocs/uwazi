@@ -14,6 +14,8 @@ import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 import { SlotsReconciler } from '../entities/SlotsReconciler.js';
+import { EntityESWriter } from '../entities/EntityESWriter.js';
+import { FullTextESWriter } from '../entities/FullTextESWriter.js';
 import { EntityIndexerService } from '../entities/EntityIndexerService.js';
 import { FullTextIndexerService } from '../entities/FullTextIndexerService.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
@@ -108,10 +110,13 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
     tenantId: testTenantName,
   });
 
-  const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
-  const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
+  const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+  const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
   const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
   const filesDAO = new MongoFilesDAO({ db, transactionManager });
+
+  const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
+  const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
 
   const esBootstrapper = new ElasticSearchBootstrapper({
     client: rawESClient,
@@ -126,8 +131,6 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
     fullTextIndexer,
     slotsBootstrapper,
     slotsReconciler,
-    entityDAO,
-    filesDAO,
     registry: testRegistry,
     logger: TestUtils.mockClass<Logger>({ info: jest.fn() }),
     ...deps,
@@ -281,7 +284,7 @@ describe('ESIndexRebuilder', () => {
 
       MongoSlotsDAO.clearCache();
 
-      const { sut, tenantAwareClient } = createSut({ batchSize: 1 });
+      const { sut, tenantAwareClient } = createSut();
 
       await sut.execute();
       await refreshTestIndex();

@@ -329,4 +329,37 @@ describe('MongoEntityDAO', () => {
       expect(returnedSharedIds).toEqual([...returnedSharedIds].sort());
     });
   });
+
+  describe('findBySharedIds()', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('returns all language variants for the given sharedIds', async () => {
+      const dao = createSut();
+      const entities = await dao.findBySharedIds(['entity_1']);
+      const languages = entities.map(e => e.language).sort();
+      expect(languages).toEqual(['en', 'es']);
+      expect(entities.every(e => e.sharedId === 'entity_1')).toBe(true);
+    });
+
+    it('returns entities across multiple sharedIds', async () => {
+      const dao = createSut();
+      const entities = await dao.findBySharedIds(['entity_2', 'entity_5']);
+      const sharedIds = [...new Set(entities.map(e => e.sharedId))].sort();
+      expect(sharedIds).toEqual(['entity_2', 'entity_5']);
+    });
+
+    it('returns empty array when sharedIds is empty', async () => {
+      const dao = createSut();
+      const entities = await dao.findBySharedIds([]);
+      expect(entities).toHaveLength(0);
+    });
+
+    it('returns empty array when no entities match', async () => {
+      const dao = createSut();
+      const entities = await dao.findBySharedIds(['non_existent']);
+      expect(entities).toHaveLength(0);
+    });
+  });
 });

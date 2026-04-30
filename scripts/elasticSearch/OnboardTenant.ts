@@ -16,6 +16,8 @@ import { MongoSlotsDAO } from '#api/core/infrastructure/elasticSearch/entities/M
 import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
+import { EntityESWriter } from '#api/core/infrastructure/elasticSearch/entities/EntityESWriter.js';
+import { FullTextESWriter } from '#api/core/infrastructure/elasticSearch/entities/FullTextESWriter.js';
 import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import {
@@ -48,11 +50,11 @@ const formatProgress = (event: ProgressEvent): string => {
     case 'reconcile-slots':
       return '[reconcile-slots]';
     case 'index-entities':
-      return `[index-entities] indexed=${event.indexed}   checkpoint-entity=${event.lastSharedId}`;
+      return `[index-entities] indexed=${event.indexed}   checkpoint-entity=${event.lastSharedId}\r\n`;
     case 'index-fulltext':
-      return `[index-fulltext] indexed=${event.indexed}   checkpoint-file=${event.lastFileId}`;
+      return `[index-fulltext] indexed=${event.indexed}   checkpoint-file=${event.lastFileId}\r\n`;
     case 'catch-up':
-      return `[catch-up] indexed=${event.indexed}`;
+      return `[catch-up] indexed=${event.indexed}\r\n`;
     case 'done':
       return '[done]';
     default:
@@ -87,16 +89,16 @@ async function main() {
       const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
 
       const tenantAwareClient = ElasticSearchClientFactory.tenantAware(tenant);
-      const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
-      const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
+      const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+      const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
+      const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
+      const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
 
       const onboarder = new TenantOnboarder({
         entityIndexer,
         fullTextIndexer,
         slotsBootstrapper,
         slotsReconciler,
-        entityDAO,
-        filesDAO,
         transactionManager,
         logger,
         onProgress: event => {

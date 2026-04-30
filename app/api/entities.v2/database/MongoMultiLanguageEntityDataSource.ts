@@ -17,12 +17,12 @@ import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { Entity } from '../../core/domain/entity/Entity.js';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
+import { EntityESWriter } from '#api/core/infrastructure/elasticSearch/entities/EntityESWriter.js';
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
-  entityIndexerService: EntityIndexerService;
+  entityIndexerService: EntityESWriter;
   options?: MongoDSOptions;
 };
 
@@ -38,7 +38,7 @@ export class MongoMultiLanguageEntityDataSource
 
   private deletedEntities = new Set<string>();
 
-  private entityIndexerService: EntityIndexerService;
+  private entityIndexerService: EntityESWriter;
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager, deps.options);

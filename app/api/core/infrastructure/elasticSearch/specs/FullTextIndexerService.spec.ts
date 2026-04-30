@@ -1,24 +1,64 @@
-/* eslint-disable max-statements */
 import { Client as ESClient } from '@elastic/elasticsearch';
 import { ObjectId } from 'mongodb';
 import { config } from '#api/config.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IndexNameResolver } from '../IndexNameResolver.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
-import { FullTextIndexerService } from '../entities/FullTextIndexerService.js';
+import { FullTextESWriter } from '../entities/FullTextESWriter.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
-import type { FullTextElasticDocument } from '../entities/FullTextElasticDocument.js';
-import type { ProcessedPDFDBO } from '../../mongodb/files/schemas/filesTypes.js';
+import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
+import { FullTextIndexerService, FileBatchInfo } from '../entities/FullTextIndexerService.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-const esClient = new ESClient({ node: config.elasticsearch.nodes });
-const indexName = `fulltext-indexer-service-test-${Date.now()}-${Math.random()}`;
+const factory = getFixturesFactory();
+const rawESClient = new ESClient({ node: config.elasticsearch.nodes });
 
-const recreateTestIndex = async () => {
-  await esClient.indices.delete({ index: indexName, ignore_unavailable: true });
+const runId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+const testIndexName = `test_fulltext_indexer_${runId}`;
+const testTenantId = `test_tenant_fulltext_indexer_${runId}`;
 
-  await esClient.indices.create({
-    index: indexName,
+const fixtures: DBFixture = {
+  settings: [{ languages: [{ key: 'en' as LanguageISO6391, label: 'English', default: true }] }],
+  templates: [factory.template('template_a', [])],
+  entities: [
+    factory.entity('entity_a', 'template_a', {}, { language: 'en' }),
+    factory.entity('entity_b', 'template_a', {}, { language: 'en' }),
+    factory.entity('entity_c', 'template_a', {}, { language: 'en' }),
+  ],
+  files: [
+    factory.document('doc_a', {
+      entity: 'entity_a',
+      language: 'en',
+      status: 'ready',
+      fullText: { 1: 'content of doc_a' },
+    }),
+    factory.document('doc_b', {
+      entity: 'entity_b',
+      language: 'en',
+      status: 'ready',
+      fullText: { 1: 'content of doc_b' },
+    }),
+    factory.document('doc_c', {
+      entity: 'entity_c',
+      language: 'en',
+      status: 'ready',
+      fullText: { 1: 'content of doc_c' },
+    }),
+    // These should NOT be indexed (wrong status / wrong type)
+    factory.document('doc_processing', { entity: 'entity_a', status: 'processing' }),
+    factory.attachment('att_a', { entity: 'entity_a' }),
+  ],
+};
+
+const createTestIndex = async () => {
+  await rawESClient.indices.create({
+    index: testIndexName,
     body: {
       settings: {
         ...EntityIndexMappingDefinition.settings,
@@ -30,185 +70,166 @@ const recreateTestIndex = async () => {
   });
 };
 
-const createFile = (
-  sharedId: string,
-  language: LanguageISO6393 = 'eng',
-  fullText: ProcessedPDFDBO['fullText'] = { 1: 'hello world' },
-  filename = 'test.pdf'
-): ProcessedPDFDBO => ({
-  _id: new ObjectId(),
-  originalname: filename,
-  filename,
-  mimetype: 'application/pdf',
-  size: 1000,
-  creationDate: 1000,
-  type: 'document',
-  entity: sharedId,
-  totalPages: 1,
-  language,
-  status: 'ready',
-  fullText,
-  generatedToc: false,
-});
+const deleteTestIndex = async () =>
+  rawESClient.indices.delete({ index: testIndexName, ignore_unavailable: true });
 
-const indexEntityParent = async (tenantId: string, sharedId: string) => {
-  await esClient.index({
-    index: indexName,
-    id: `${tenantId}__${sharedId}`,
-    routing: tenantId,
-    body: { tenantId, sharedId, fullText: { name: 'entity' } },
+/** Pre-index a parent entity doc so fulltext child joins work correctly in ES. */
+const indexEntityParent = async (sharedId: string) => {
+  await rawESClient.index({
+    index: testIndexName,
+    id: `${testTenantId}__${sharedId}`,
+    routing: testTenantId,
+    body: { tenantId: testTenantId, sharedId, fullText: { name: 'entity' } },
     refresh: true,
   });
 };
 
-const createSut = (tenantId = 'tenant-a') => {
+const createSut = (overrides?: { batchSize?: number }) => {
+  const db = getConnection();
+  const transactionManager = TransactionManagerFactory.default();
+
   const resolver = TestUtils.mockClass<IndexNameResolver>({
-    resolve: jest.fn().mockResolvedValue(indexName),
+    resolve: jest.fn().mockResolvedValue(testIndexName),
     invalidate: jest.fn(),
   });
 
-  const tenantClient = new TenantAwareESClient({ client: esClient, resolver, tenantId });
+  const tenantClient = new TenantAwareESClient({
+    client: rawESClient,
+    resolver,
+    tenantId: testTenantId,
+  });
 
-  const sut = new FullTextIndexerService({ esClient: tenantClient });
+  const writer = new FullTextESWriter({ esClient: tenantClient });
+  const filesDAO = new MongoFilesDAO({ db, transactionManager });
+  const sut = new FullTextIndexerService({ writer, filesDAO, ...overrides });
 
   return { sut, tenantClient };
 };
 
-// ── Fixtures ──────────────────────────────────────────────────────────────────
-const sharedId1 = 'shared-1';
-const sharedIdDelete = 'shared-delete';
-const sharedIdKeep = 'shared-keep';
+const searchFulltextDocs = async (tenantClient: TenantAwareESClient) =>
+  tenantClient.search({
+    alias: EntityIndexMappingDefinition.alias,
+    query: { term: { fullText: 'fullText' } },
+  });
+
+const searchByFilename = async (tenantClient: TenantAwareESClient, filename: string) =>
+  tenantClient.search({
+    alias: EntityIndexMappingDefinition.alias,
+    query: {
+      bool: {
+        filter: [{ term: { filename } }, { term: { fullText: 'fullText' } }],
+      },
+    },
+  });
 
 describe('FullTextIndexerService', () => {
-  beforeEach(async () => {
-    await recreateTestIndex();
-    await indexEntityParent('tenant-a', sharedId1);
-    await indexEntityParent('tenant-a', sharedIdDelete);
-    await indexEntityParent('tenant-a', sharedIdKeep);
-    await indexEntityParent('tenant-b', sharedId1);
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures);
+    await createTestIndex();
+    // Parent entity docs must exist before fulltext children can be indexed
+    await ArrayUtils.parallelFor(['entity_a', 'entity_b', 'entity_c'], indexEntityParent);
   });
 
   afterAll(async () => {
-    try {
-      await esClient.indices.delete({ index: indexName, ignore_unavailable: true });
-    } catch (e) {
-      // Ignore cleanup errors
-    }
-    await esClient.close();
+    await deleteTestIndex();
+    await testingEnvironment.tearDown();
+    await rawESClient.close();
   });
 
-  describe('index()', () => {
-    it('indexes a fullText document with the correct structure', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
-      const file = createFile(sharedId1);
-
-      await sut.index([file], true);
-
-      const result = await tenantClient.search<FullTextElasticDocument>({
-        alias: EntityIndexMappingDefinition.alias,
-        query: { term: { fullText: 'fullText' } },
-      });
-      expect(result.hits.hits).toHaveLength(1);
-      const hit = result.hits.hits[0];
-      expect(hit._id).toBe(`tenant-a__${sharedId1}_${file._id.toString()}`);
-      expect(hit._routing).toBe('tenant-a');
-      expect(hit._source).toMatchObject({
-        tenantId: 'tenant-a',
-        filename: 'test.pdf',
-        fullText_english: 'hello world',
-        fullText: { name: 'fullText', parent: `tenant-a__${sharedId1}` },
-      });
-    });
-
-    it('two files for the same sharedId produce two fullText documents with the same parent', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
-      const file1 = createFile(sharedId1);
-      const file2 = createFile(sharedId1);
-
-      await sut.index([file1, file2], true);
-
-      const result = await tenantClient.search<FullTextElasticDocument>({
-        alias: EntityIndexMappingDefinition.alias,
-        query: { term: { fullText: 'fullText' } },
-      });
-      expect(result.hits.hits).toHaveLength(2);
-      for (const hit of result.hits.hits) {
-        expect(hit._source).toMatchObject({
-          fullText: { parent: `tenant-a__${sharedId1}` },
-        });
-      }
-    });
-
-    it('skips files with no fullText content', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
-      const file: ProcessedPDFDBO = { ...createFile(sharedId1), fullText: undefined };
-
-      await sut.index([file], true);
-
-      const result = await tenantClient.search<FullTextElasticDocument>({
-        alias: EntityIndexMappingDefinition.alias,
-        query: { term: { fullText: 'fullText' } },
-      });
-      expect(result.hits.hits).toHaveLength(0);
-    });
-
-    it('skips files whose fullText pages are all empty or whitespace', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
-      const file = createFile(sharedId1, 'eng', { 1: '', 2: '   ' });
-
-      await sut.index([file], true);
-
-      const result = await tenantClient.search<FullTextElasticDocument>({
-        alias: EntityIndexMappingDefinition.alias,
-        query: { term: { fullText: 'fullText' } },
-      });
-      expect(result.hits.hits).toHaveLength(0);
-    });
-
-    it('is a no-op for empty input', async () => {
-      const { sut } = createSut('tenant-a');
-
-      await expect(sut.index([])).resolves.toBeUndefined();
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+    await rawESClient.deleteByQuery({
+      index: testIndexName,
+      conflicts: 'proceed',
+      body: { query: { term: { fullText: 'fullText' } } },
+      refresh: true,
     });
   });
 
-  describe('deleteByFilenames()', () => {
-    it('deletes fullText docs matching the given filenames', async () => {
-      const { sut, tenantClient } = createSut('tenant-a');
-      const fileDelete = createFile(sharedId1, 'eng', { 1: 'hello world' }, 'delete.pdf');
-      const fileKeep = createFile(sharedId1, 'eng', { 1: 'hello world' }, 'keep.pdf');
-      await sut.index([fileDelete, fileKeep], true);
+  describe('syncAll()', () => {
+    it('indexes all ready document files from MongoDB', async () => {
+      const { sut, tenantClient } = createSut();
 
-      await sut.deleteByFilenames([fileDelete.filename], true);
+      await sut.syncAll(undefined, true);
 
-      const result = await tenantClient.search<FullTextElasticDocument>({
-        alias: EntityIndexMappingDefinition.alias,
-        query: { term: { fullText: 'fullText' } },
-      });
-      expect(result.hits.hits).toHaveLength(1);
-      expect(result.hits.hits[0]._source!.filename).toBe(fileKeep.filename);
+      const result = await searchFulltextDocs(tenantClient);
+      const filenames = result.hits.hits.map((h: any) => h._source?.filename).sort();
+      expect(filenames).toEqual(['doc_a', 'doc_b', 'doc_c']);
     });
 
-    it('respects tenant isolation', async () => {
-      const { sut: sutA } = createSut('tenant-a');
-      const { sut: sutB, tenantClient: tcB } = createSut('tenant-b');
-      const file = createFile(sharedId1);
+    it('does not index files with status processing or type attachment', async () => {
+      const { sut, tenantClient } = createSut();
 
-      await sutA.index([file], true);
-      await sutB.index([file], true);
-      await sutA.deleteByFilenames([file.filename], true);
+      await sut.syncAll(undefined, true);
 
-      const resultB = await tcB.search<FullTextElasticDocument>({
-        alias: EntityIndexMappingDefinition.alias,
-        query: { term: { fullText: 'fullText' } },
-      });
-      expect(resultB.hits.hits).toHaveLength(1);
-      expect(resultB.hits.hits[0]._source!.filename).toBe(file.filename);
+      const result = await searchFulltextDocs(tenantClient);
+      const filenames = result.hits.hits.map((h: any) => h._source?.filename);
+      expect(filenames).not.toContain('doc_processing');
+      expect(filenames).not.toContain('att_a');
     });
 
-    it('is a no-op for empty input', async () => {
-      const { sut } = createSut('tenant-a');
-      await expect(sut.deleteByFilenames([])).resolves.toBeUndefined();
+    it('with afterId skips files up to and including the checkpoint', async () => {
+      const readyFiles = await getConnection()
+        .collection('files')
+        .find({ type: 'document', status: 'ready' })
+        .sort({ _id: 1 })
+        .toArray();
+      expect(readyFiles.length).toBeGreaterThanOrEqual(2);
+      const firstFileId = readyFiles[0]._id as unknown as ObjectId;
+
+      const { sut, tenantClient } = createSut();
+      await sut.syncAll({ afterId: firstFileId }, true);
+
+      const result = await searchFulltextDocs(tenantClient);
+      // Only files after the first one are indexed
+      expect(result.hits.hits).toHaveLength(readyFiles.length - 1);
+      const filenames = result.hits.hits.map((h: any) => h._source?.filename);
+      expect(filenames).not.toContain(readyFiles[0].filename);
+    });
+
+    it('calls onBatch with cumulative indexed count and lastFileId', async () => {
+      const batches: FileBatchInfo[] = [];
+      // batchSize=1 so each file is its own batch
+      const { sut } = createSut({ batchSize: 1 });
+
+      await sut.syncAll({ onBatch: info => batches.push(info) }, true);
+
+      expect(batches).toHaveLength(3);
+      expect(batches[0].indexed).toBe(1);
+      expect(batches[1].indexed).toBe(2);
+      expect(batches[2].indexed).toBe(3);
+      batches.forEach(b => {
+        expect(typeof b.lastFileId).toBe('string');
+        expect(b.lastFileId.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('does not call onBatch when there are no ready documents', async () => {
+      await testingEnvironment.setFixtures({ ...fixtures, files: [] });
+
+      const batches: FileBatchInfo[] = [];
+      const { sut } = createSut();
+
+      await sut.syncAll({ onBatch: info => batches.push(info) }, true);
+
+      expect(batches).toHaveLength(0);
+    });
+  });
+
+  describe('remove()', () => {
+    it('removes indexed fulltext docs by filename and leaves others intact', async () => {
+      const { sut, tenantClient } = createSut();
+      await sut.syncAll(undefined, true);
+
+      await sut.remove(['doc_a'], true);
+
+      const removedResult = await searchByFilename(tenantClient, 'doc_a');
+      expect(removedResult.hits.hits).toHaveLength(0);
+
+      await ArrayUtils.parallelFor(['doc_b', 'doc_c'], async filename => {
+        const keptResult = await searchByFilename(tenantClient, filename);
+        expect(keptResult.hits.hits).toHaveLength(1);
+      });
     });
   });
 });

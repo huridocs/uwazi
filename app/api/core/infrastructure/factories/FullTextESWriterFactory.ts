@@ -1,14 +1,14 @@
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { FullTextIndexerService } from '../elasticSearch/entities/FullTextIndexerService.js';
+import { FullTextESWriter } from '../elasticSearch/entities/FullTextESWriter.js';
 
-export class FullTextIndexerServiceFactory {
-  static default(): FullTextIndexerService {
+export class FullTextESWriterFactory {
+  static default(): FullTextESWriter {
     const tenant = tenants.current();
 
     if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
-      return TestUtils.mockClass<FullTextIndexerService>({
+      return TestUtils.mockClass<FullTextESWriter>({
         deleteByFilenames: async () => Promise.resolve(),
         index: async () => Promise.resolve(),
       });
@@ -16,8 +16,8 @@ export class FullTextIndexerServiceFactory {
 
     const esClient = DependenciesContext.elasticClient;
 
-    const fullTextIndexer = new FullTextIndexerService({ esClient });
+    const fullTextESWriter = new FullTextESWriter({ esClient });
 
-    return fullTextIndexer;
+    return fullTextESWriter;
   }
 }

@@ -16,6 +16,8 @@ import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/e
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { ElasticSearchBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/ElasticSearchBootstrapper.js';
+import { EntityESWriter } from '#api/core/infrastructure/elasticSearch/entities/EntityESWriter.js';
+import { FullTextESWriter } from '#api/core/infrastructure/elasticSearch/entities/FullTextESWriter.js';
 import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
 import { IndexMappingRegistry } from '#api/core/infrastructure/elasticSearch/IndexMappingRegistry.js';
@@ -43,9 +45,9 @@ const formatProgress = (event: ProgressEvent): string => {
     case 'reconcile-slots':
       return '[3/5] Reconciling slots with templates...';
     case 'index-entities':
-      return `[4/5] Indexing entities... ${event.indexed} indexed`;
+      return `[4/5] Indexing entities... ${event.indexed} indexed\r\n`;
     case 'index-fulltext':
-      return `[5/5] Indexing full-text documents... ${event.indexed} indexed`;
+      return `[5/5] Indexing full-text documents... ${event.indexed} indexed\r\n`;
     case 'done':
       return '';
     default:
@@ -86,8 +88,10 @@ async function main() {
         registry: IndexMappingRegistry,
         logger,
       });
-      const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
-      const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
+      const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+      const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
+      const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
+      const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
 
       const rebuilder = new ESIndexRebuilder({
         esClient,
@@ -96,14 +100,12 @@ async function main() {
         fullTextIndexer,
         slotsBootstrapper,
         slotsReconciler,
-        entityDAO,
-        filesDAO,
         registry: IndexMappingRegistry,
         logger,
         onProgress: event => {
           const message = formatProgress(event);
           if (message) {
-            console.log(message);
+            process.stdout.write(message);
           }
         },
       });
@@ -113,9 +115,9 @@ async function main() {
 
     const [seconds, nanoseconds] = process.hrtime(start);
     const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
-    console.log(`Done. Took ${elapsed}s`);
+    process.stdout.write(`Done. Took ${elapsed}s`);
   } catch (err) {
-    console.error('ES index rebuild failed:', err);
+    process.stdout.write('ES index rebuild failed:', err);
     process.exitCode = 1;
   } finally {
     await ElasticSearchClientFactory.getInstance().close();

@@ -1,78 +1,80 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable max-statements */
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { TenantAwareESClient } from '../TenantAwareESClient.js';
-import { MongoSlotsDAO } from './MongoSlotsDAO.js';
-import { EntityElasticDocumentMapper } from './EntityElasticDocumentMapper.js';
-import { EntityIndexMappingDefinition } from './EntityIndexMappingDefinition.js';
+import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
+import { EntityESWriter } from './EntityESWriter.js';
 
 type EntityIndexerServiceDeps = {
-  esClient: TenantAwareESClient;
-  slotsDAO: MongoSlotsDAO;
+  writer: EntityESWriter;
+  entityDAO: MongoEntityDAO;
+  batchSize?: number;
+};
+
+type EntityBatchInfo = { indexed: number; lastSharedId: string };
+
+type EntitySyncAllOptions = {
+  afterSharedId?: string;
+  onBatch?: (info: EntityBatchInfo) => void;
 };
 
 class EntityIndexerService {
-  private alias = EntityIndexMappingDefinition.alias;
+  private static readonly DEFAULT_BATCH_SIZE = 500;
 
   constructor(private deps: EntityIndexerServiceDeps) {}
 
-  async index(entities: EntityDBO[], refresh = false): Promise<void> {
-    if (entities.length === 0) {
-      return;
-    }
+  private get batchSize(): number {
+    return this.deps.batchSize ?? EntityIndexerService.DEFAULT_BATCH_SIZE;
+  }
 
-    const slotMap = await this.deps.slotsDAO.getSlotMap();
-    const grouped = EntityElasticDocumentMapper.toDocuments(entities, slotMap);
+  async sync(sharedIds: string[], refresh = false): Promise<void> {
+    const chunks = ArrayUtils.splitInChunks(sharedIds, this.batchSize);
 
-    if (grouped.length === 0) {
-      return;
-    }
-
-    const operations = grouped.map(({ sharedId, document }) => ({
-      id: sharedId,
-      document,
-    }));
-
-    await this.deps.esClient.bulk({
-      alias: this.alias,
-      operations,
-      routing: this.deps.esClient.tenantId,
-      refresh,
+    await ArrayUtils.sequentialFor(chunks, async chunk => {
+      const entities = await this.deps.entityDAO.findBySharedIds(chunk);
+      await this.deps.writer.index(entities, refresh);
     });
   }
 
-  async deleteBySharedIds(sharedIds: string[], refresh = false): Promise<void> {
-    if (sharedIds.length === 0) {
-      return;
-    }
+  async syncAll(options?: EntitySyncAllOptions, refresh = false): Promise<void> {
+    const cursor = this.deps.entityDAO.streamAll({ afterSharedId: options?.afterSharedId });
+    let batch: EntityDBO[] = [];
+    let prevSharedId: string | undefined;
+    let totalIndexed = 0;
 
-    await this.deps.esClient.deleteByQuery({
-      alias: this.alias,
-      routing: this.deps.esClient.tenantId,
-      query: {
-        terms: {
-          sharedId: sharedIds,
-        },
-      },
-      refresh,
-    });
+    try {
+      while (await cursor.hasNext()) {
+        const entity = (await cursor.next())!;
+
+        if (entity.sharedId !== prevSharedId && batch.length >= this.batchSize) {
+          await this.deps.writer.index(batch, refresh);
+          totalIndexed += batch.length;
+          options?.onBatch?.({ indexed: totalIndexed, lastSharedId: prevSharedId! });
+          batch = [];
+        }
+
+        batch.push(entity);
+        prevSharedId = entity.sharedId;
+      }
+
+      if (batch.length > 0) {
+        await this.deps.writer.index(batch, refresh);
+        totalIndexed += batch.length;
+        options?.onBatch?.({ indexed: totalIndexed, lastSharedId: prevSharedId! });
+      }
+    } finally {
+      await cursor.close();
+    }
   }
 
-  async deleteByTemplateIds(templateIds: string[], refresh = false): Promise<void> {
-    if (templateIds.length === 0) {
-      return;
-    }
+  async remove(sharedIds: string[], refresh = false): Promise<void> {
+    await this.deps.writer.deleteBySharedIds(sharedIds, refresh);
+  }
 
-    await this.deps.esClient.deleteByQuery({
-      alias: this.alias,
-      routing: this.deps.esClient.tenantId,
-      query: {
-        terms: {
-          template: templateIds,
-        },
-      },
-      refresh,
-    });
+  async removeByTemplateIds(templateIds: string[], refresh = false): Promise<void> {
+    await this.deps.writer.deleteByTemplateIds(templateIds, refresh);
   }
 }
 
 export { EntityIndexerService };
-export type { EntityIndexerServiceDeps };
+export type { EntityIndexerServiceDeps, EntityBatchInfo, EntitySyncAllOptions };

@@ -3,14 +3,14 @@ import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
+import { EntityESWriter } from '../elasticSearch/entities/EntityESWriter.js';
 
-export class EntityIndexerServiceFactory {
-  static default(transactionManager: MongoTransactionManager): EntityIndexerService {
+export class EntityESWriterFactory {
+  static default(transactionManager: MongoTransactionManager): EntityESWriter {
     const tenant = tenants.current();
 
     if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
-      return TestUtils.mockClass<EntityIndexerService>({
+      return TestUtils.mockClass<EntityESWriter>({
         deleteBySharedIds: async () => Promise.resolve(),
         deleteByTemplateIds: async () => Promise.resolve(),
         index: async () => Promise.resolve(),
@@ -19,8 +19,8 @@ export class EntityIndexerServiceFactory {
 
     const esClient = DependenciesContext.elasticClient;
     const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
-    const entityIndexerService = new EntityIndexerService({ esClient, slotsDAO });
+    const entityESWriter = new EntityESWriter({ esClient, slotsDAO });
 
-    return entityIndexerService;
+    return entityESWriter;
   }
 }

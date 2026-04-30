@@ -15,7 +15,7 @@ import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoRes
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { Result } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
+import { FullTextESWriter } from '#api/core/infrastructure/elasticSearch/entities/FullTextESWriter.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import {
   FilesDataSource,
@@ -42,7 +42,7 @@ export type SegmentationDBO = SegmentationType & {
 };
 
 export type MongoFilesDataSourceOptions = MongoDSOptions & {
-  fullTextIndexer: FullTextIndexerService;
+  fullTextIndexer: FullTextESWriter;
 };
 
 export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
@@ -54,7 +54,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   protected fileStorage: FileStorage;
 
-  private fullTextIndexer: FullTextIndexerService;
+  private fullTextIndexer: FullTextESWriter;
 
   constructor(
     db: Db,

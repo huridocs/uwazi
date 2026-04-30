@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { Client } from '@elastic/elasticsearch';
@@ -15,6 +16,8 @@ import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 import { SlotsReconciler } from '../entities/SlotsReconciler.js';
+import { EntityESWriter } from '../entities/EntityESWriter.js';
+import { FullTextESWriter } from '../entities/FullTextESWriter.js';
 import { EntityIndexerService } from '../entities/EntityIndexerService.js';
 import { FullTextIndexerService } from '../entities/FullTextIndexerService.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
@@ -25,6 +28,7 @@ import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { MongoFilesDAO } from '../../mongodb/files/MongoFilesDAO.js';
 import { TenantOnboarder, TenantOnboarderDeps, ProgressEvent } from '../TenantOnboarder.js';
 import { User } from '#api/users.v2/model/User.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 const factory = getFixturesFactory();
 const rawESClient = new Client({ node: config.elasticsearch.nodes });
@@ -123,18 +127,19 @@ const createSut = (deps?: Partial<TenantOnboarderDeps>) => {
     tenantId: testTenantName,
   });
 
-  const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
-  const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
+  const entityWriter = new EntityESWriter({ esClient: tenantAwareClient, slotsDAO });
+  const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
   const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
   const filesDAO = new MongoFilesDAO({ db, transactionManager });
+
+  const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO });
+  const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
 
   const sut = new TenantOnboarder({
     entityIndexer,
     fullTextIndexer,
     slotsBootstrapper,
     slotsReconciler,
-    entityDAO,
-    filesDAO,
     transactionManager,
     logger: TestUtils.mockClass<Logger>({ info: jest.fn() }),
     ...deps,
@@ -291,7 +296,7 @@ describe('TenantOnboarder', () => {
 
     it('each index-entities event carries the lastSharedId of the last entity in that batch', async () => {
       const events: ProgressEvent[] = [];
-      const { sut } = createSut({ onProgress: e => events.push(e), batchSize: 1 });
+      const { sut } = createSut({ onProgress: e => events.push(e) });
       await sut.execute();
 
       const entityEvents = events.filter(e => e.stage === 'index-entities') as Extract<
@@ -373,13 +378,13 @@ describe('TenantOnboarder', () => {
         await refreshTestIndex();
 
         // All 3 entities must now be searchable
-        for (const sharedId of ['entity_a', 'entity_b', 'entity_c']) {
+        await ArrayUtils.parallelFor(['entity_a', 'entity_b', 'entity_c'], async sharedId => {
           const result = await tenantAwareClient.search({
             alias: testAlias,
             query: { term: { sharedId } },
           });
           expect(result.hits.hits).toHaveLength(1);
-        }
+        });
       });
     });
   });

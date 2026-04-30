@@ -106,6 +106,13 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
       .find({ sharedId: { $in: sharedIds } }, { projection: { _id: 1, sharedId: 1 } })
       .toArray();
   }
+
+  async findBySharedIds(sharedIds: string[]): Promise<EntityDBO[]> {
+    if (sharedIds.length === 0) return [];
+    return this.getCollection()
+      .find({ sharedId: { $in: sharedIds } })
+      .toArray();
+  }
 }
 
 export { MongoEntityDAO };
