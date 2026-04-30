@@ -49,9 +49,11 @@ export class PXEntityUpdatedListener {
       mongoTransactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
 
-    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
 
     this.dependencies = {
       entitiesStatusDS,

@@ -1,21 +1,25 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoFilesDataSource } from '../mongodb/files/MongoFilesDataSource.js';
 import { FileStorageFactory } from '../files/FileStorageFactory.js';
-import { FullTextESWriterFactory } from './FullTextESWriterFactory.js';
-import { FullTextIndexerService } from '../elasticSearch/entities/FullTextIndexerService.js';
-import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { FullTextIndexerServiceFactory } from './FullTextIndexerServiceFactory.js';
+
+type Overrides = {
+  transactionManager?: TransactionManager;
+};
 
 export class FilesDataSourceFactory {
-  static default(transactionManager: MongoTransactionManager) {
+  static default(overrides?: Overrides) {
     const db = getConnection();
 
-    const fullTextIndexer = new FullTextIndexerService({
-      writer: FullTextESWriterFactory.default(),
-      filesDAO: new MongoFilesDAO({ db, transactionManager }),
-    });
+    const mongoTM = (overrides?.transactionManager ??
+      ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    return new MongoFilesDataSource(db, transactionManager, FileStorageFactory.default(), {
+    const fullTextIndexer = FullTextIndexerServiceFactory.default();
+
+    return new MongoFilesDataSource(db, mongoTM, FileStorageFactory.default(), {
       fullTextIndexer,
     });
   }

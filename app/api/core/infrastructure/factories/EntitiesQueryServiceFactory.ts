@@ -24,8 +24,8 @@ class EntitiesQueryServiceFactory {
       entityPermissionChecker:
         deps?.entityPermissionChecker ??
         new MongoEntityPermissionChecker(getConnection(), transactionManager),
-      settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached(transactionManager),
-      templatesDS: deps?.templatesDS ?? TemplatesDataSourceFactory.cached(transactionManager),
+      settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached({ transactionManager }),
+      templatesDS: deps?.templatesDS ?? TemplatesDataSourceFactory.cached({ transactionManager }),
       entityDAO: deps?.entityDAO ?? new MongoEntityDAO(getConnection(), transactionManager, user),
       relationshipsDataSource:
         deps?.relationshipsDataSource ??

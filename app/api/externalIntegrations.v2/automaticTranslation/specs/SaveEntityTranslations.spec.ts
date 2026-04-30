@@ -31,7 +31,7 @@ describe('SaveEntityTranslations', () => {
     const transactionManager = TransactionManagerFactory.default();
     mockLogger = createMockLogger();
     saveEntityTranslations = new SaveEntityTranslations(
-      TemplatesDataSourceFactory.default(transactionManager),
+      TemplatesDataSourceFactory.default({ transactionManager }),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
       mockLogger

@@ -303,6 +303,7 @@ export class MongoMultiLanguageEntityDataSource
 
   async bulkDelete(sharedIds: string[]): Promise<void> {
     await this.getCollection().deleteMany({ sharedId: { $in: sharedIds } });
+    await search.bulkDeleteBySharedId(sharedIds);
 
     sharedIds.forEach(id => this.deletedEntities.add(id));
   }

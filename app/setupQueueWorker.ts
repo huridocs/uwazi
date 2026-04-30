@@ -29,8 +29,13 @@ import { registerJobs } from './queueRegistry.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
+import { UserSchema } from '#shared/types/userType.js';
+import users from '#api/users/users.js';
+import { User } from '#api/users.v2/model/User.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -54,28 +59,38 @@ const logger = LoggerFactory.systemLogger(
 function register<T extends Dispatchable>(
   this: QueueWorker,
   dispatchable: DispatchableClass<T>,
-  factory: (namespace: string) => Promise<T>
+  factory: (namespace: string, job: Job) => Promise<T>
 ) {
-  this.register(dispatchable, async namespace => {
-    const deps = {
-      factories: {
-        transactionManager: TransactionManagerFactory.default,
-        jobsDispatcher: () => DefaultDispatcher(namespace, DependenciesContext.transactionManager),
-        eventEmitter: EventEmitterFactory.default,
-        idGenerator: IdGeneratorFactory.default,
-        logger: LoggerFactory.default,
-        elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
-        authorizedEntityESClient: () =>
-          ElasticSearchClientFactory.authorizedEntityClient(namespace, null),
-      },
-    };
-
+  this.register(dispatchable, async (namespace, job) => {
+    let deps!: ExecutionContextDeps;
     let instance!: T;
     await tenants.run(async () => {
-      instance = await DependenciesContext.run(deps, async () => factory(namespace));
+      let actor: UserSchema | null = null;
+      if (job.params.userId) {
+        actor = await users.getById(job.params.userId, '-password', true);
+        if (actor) {
+          permissionsContext.setUserInContext(actor); // v1 backwards compatibility
+        }
+      }
+      deps = {
+        actor: User.createFrom(actor),
+        tenant: tenants.current(),
+        factories: {
+          transactionManager: TransactionManagerFactory.default,
+          jobsDispatcher: () => DefaultDispatcher(namespace, ExecutionContext.transactionManager),
+          eventEmitter: EventEmitterFactory.default,
+          idGenerator: IdGeneratorFactory.default,
+          logger: LoggerFactory.default,
+          elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
+          authorizedEntityESClient: () =>
+            ElasticSearchClientFactory.authorizedEntityClient(namespace, User.createFrom(actor)),
+        },
+      };
+      instance = await ExecutionContext.run(deps, async () => factory(namespace, job));
     }, namespace);
 
-    DependenciesContext.attachContext(instance, 'handleDispatch', deps);
+    // v1 backwards compatibility only (probably)
+    ExecutionContext.attachContext(instance, 'handleDispatch', deps);
 
     return instance;
   });

@@ -1,14 +1,10 @@
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
-import { EntityESWriter } from '../elasticSearch/entities/EntityESWriter.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { EntityESWriter, EntityESWriterDeps } from '../elasticSearch/entities/EntityESWriter.js';
 
 export class EntityESWriterFactory {
-  static default(transactionManager: MongoTransactionManager): EntityESWriter {
-    const tenant = tenants.current();
-
-    if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
+  static default(overrides?: EntityESWriterDeps): EntityESWriter {
+    if (!ExecutionContext.tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
       return TestUtils.mockClass<EntityESWriter>({
         deleteBySharedIds: async () => Promise.resolve(),
         deleteByTemplateIds: async () => Promise.resolve(),
@@ -16,8 +12,9 @@ export class EntityESWriterFactory {
       });
     }
 
-    const esClient = DependenciesContext.elasticClient;
-    const entityESWriter = new EntityESWriter({ esClient });
+    const esClient = ExecutionContext.elasticClient;
+
+    const entityESWriter = new EntityESWriter({ esClient, ...overrides });
 
     return entityESWriter;
   }

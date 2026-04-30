@@ -13,6 +13,7 @@ import proxy from 'express-http-proxy';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
 import { createError } from '../utils/index.js';
 import { User } from '#api/users.v2/model/User.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const getPublicUser = async () => {
   const usersModel = getConnection().collection('users');
@@ -71,6 +72,7 @@ const routes = app => {
         }
 
         permissionsContext.setUserInContext(userForContext);
+        ExecutionContext.actor = User.createFrom(userForContext);
 
         const result = await EntityFacade.create(entity, req.language, req.inputFiles);
 

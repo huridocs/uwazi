@@ -146,7 +146,9 @@ afterAll(async () => {
 
 describe('create relationships', () => {
   it('should transactionally create relationships and denormalize the related entities', async () => {
-    const createRelationshipService = await CreateRelationshipService();
+    const createRelationshipService = await testingEnvironment.runWithContext(async () =>
+      CreateRelationshipService()
+    );
     await createRelationshipService.create([
       {
         from: {

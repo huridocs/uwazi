@@ -27,7 +27,7 @@ const preprocessEntitiesToIndex = async entitiesToIndex => {
     return entitiesToIndex;
   }
 
-  const templateDS = TemplatesDataSourceFactory.default(transactionManager);
+  const templateDS = TemplatesDataSourceFactory.default({ transactionManager });
   const transformer = new ElasticEntityMapper(templateDS);
   return Promise.all(entitiesToIndex.map(e => transformer.toElastic(e)));
 };

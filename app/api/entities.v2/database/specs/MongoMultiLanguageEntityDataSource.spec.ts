@@ -534,5 +534,29 @@ describe('MongoMultiLanguageEntityDataSource', () => {
         expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });
+
+    it('calls search.bulkDeleteBySharedId during bulkDelete (legacy ES infra)', async () => {
+      const bulkDeleteBySharedIdSpy = jest
+        .spyOn(search, 'bulkDeleteBySharedId')
+        .mockResolvedValue(undefined);
+
+      const template = createSampleTemplate();
+      const entity1 = createEntity(['en'], template);
+      const entity2 = createEntity(['en', 'es'], template);
+
+      const { sut: setupSut, transactionManager: setupTm } = createSut();
+      await setupSut.bulkInsert([entity1, entity2]);
+      await setupTm.executeOnCommitHandlers(undefined);
+
+      const { sut } = createSut();
+      await sut.bulkDelete([entity1.sharedId, entity2.sharedId]);
+
+      expect(bulkDeleteBySharedIdSpy).toHaveBeenCalledTimes(1);
+      expect(bulkDeleteBySharedIdSpy).toHaveBeenCalledWith(
+        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
+      );
+
+      bulkDeleteBySharedIdSpy.mockRestore();
+    });
   });
 });

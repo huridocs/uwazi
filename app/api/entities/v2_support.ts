@@ -19,7 +19,7 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = TransactionManagerFactory.default();
-  return SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed();
+  return SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed();
 };
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {

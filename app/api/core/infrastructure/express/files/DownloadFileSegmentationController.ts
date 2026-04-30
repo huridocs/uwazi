@@ -33,9 +33,9 @@ class DownloadFileSegmentationController extends AbstractController {
   private useCase() {
     const transactionManager = TransactionManagerFactory.default();
     return new DownloadFileSegmentation({
-      filesDS: FilesDataSourceFactory.default(transactionManager),
+      filesDS: FilesDataSourceFactory.default(),
       fileStorage: FileStorageFactory.default(),
-      settingsDS: SettingsDataSourceFactory.default(transactionManager),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
     });
   }
 

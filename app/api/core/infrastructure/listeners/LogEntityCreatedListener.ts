@@ -13,6 +13,6 @@ class LogEntityCreatedListener extends Listener<EntityCreatedEvent> {
   }
 }
 
-EventEmitterFactory.default().listen(LogEntityCreatedListener);
+EventEmitterFactory.registry.register(LogEntityCreatedListener);
 
 export { LogEntityCreatedListener };

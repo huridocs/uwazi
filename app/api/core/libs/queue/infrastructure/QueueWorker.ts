@@ -22,7 +22,7 @@ const defaultPerformance = {
 };
 
 interface Registry {
-  [name: string]: (namespace: string) => Promise<Dispatchable>;
+  [name: string]: (namespace: string, job: Job) => Promise<Dispatchable>;
 }
 
 export type QueueWorkerErrorHandler = (error: Error, context?: { job: Job }) => void;
@@ -115,7 +115,7 @@ export class QueueWorker {
       throw new UnregisteredJobError(job.name);
     }
 
-    return this.registry[job.name](job.namespace);
+    return this.registry[job.name](job.namespace, job);
   }
 
   private async completeJob(job: Job) {
@@ -184,7 +184,7 @@ export class QueueWorker {
 
   register<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
-    factory: (namespace: string) => Promise<T>
+    factory: (namespace: string, job: Job) => Promise<T>
   ) {
     this.registry[dispatchable.name] = factory;
   }

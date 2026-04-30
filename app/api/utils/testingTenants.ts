@@ -12,6 +12,10 @@ const testingTenants = {
     tenants.current = () => <Tenant>mockedTenant;
   },
 
+  current() {
+    return mockedTenant as Tenant;
+  },
+
   changeCurrentTenant(changes: Partial<Tenant>) {
     mockedTenant = {
       ...mockedTenant,

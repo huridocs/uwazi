@@ -63,7 +63,7 @@ async function main() {
     await tenants.run(async () => {
       const db = getConnection();
       const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
-      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const logger = LoggerFactory.default();
 
       const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));

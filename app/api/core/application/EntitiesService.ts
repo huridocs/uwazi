@@ -1,6 +1,5 @@
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { search } from '#api/search/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -30,7 +29,6 @@ type Deps = {
   eventBus: EventsBus;
   transactionManager: TransactionManager;
   dispatcher: Dispatcher;
-  search: typeof search;
   entityPermissionChecker: EntityPermissionChecker;
   eventEmitter: EventEmitter;
 };
@@ -182,7 +180,6 @@ class EntitiesService {
     );
 
     await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
-    await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
 
     return grantedSharedIds;
   }

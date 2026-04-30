@@ -1,10 +1,8 @@
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { UpdateEntityUseCase } from '#api/core/application/UpdateEntity.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
@@ -14,17 +12,17 @@ import { FilesDataSourceFactory } from './FilesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class UpdateEntityUseCaseFactory {
-  static default() {
-    const tenant = tenants.current();
+  static default(overrides?: Partial<ConstructorParameters<typeof UpdateEntityUseCase>[0]>) {
+    const { tenant } = ExecutionContext;
 
-    const transactionManager = DependenciesContext.transactionManager as MongoTransactionManager;
-    const { idGenerator, eventEmitter } = DependenciesContext;
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { idGenerator, eventEmitter } = ExecutionContext;
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default();
 
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.createWithRequired({
@@ -34,20 +32,11 @@ class UpdateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const filesDS = FilesDataSourceFactory.default(transactionManager);
+    const filesDS = FilesDataSourceFactory.default();
 
-    const fileService = FilesServiceFactory.default(transactionManager, {
-      filesDS,
-      transactionManager,
-    });
+    const fileService = FilesServiceFactory.default({ filesDS });
 
-    const entitiesService = EntitiesServiceFactory.default({
-      transactionManager,
-      entitiesDS,
-      eventEmitter,
-      settingsDS,
-      templatesDS,
-    });
+    const entitiesService = EntitiesServiceFactory.default();
 
     const useCase = new UpdateEntityUseCase(
       {
@@ -61,8 +50,9 @@ class UpdateEntityUseCaseFactory {
         idGenerator,
         transactionManager,
         settingsDS,
+        ...overrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant }
+      { actor: ExecutionContext.actor, tenant }
     );
 
     return useCase;

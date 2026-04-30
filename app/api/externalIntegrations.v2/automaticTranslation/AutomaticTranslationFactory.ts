@@ -25,8 +25,8 @@ const AutomaticTranslationFactory = {
     return new MongoATConfigDataSource(
       db,
       transactionManager,
-      SettingsDataSourceFactory.default(transactionManager),
-      TemplatesDataSourceFactory.default(transactionManager),
+      SettingsDataSourceFactory.default({ transactionManager }),
+      TemplatesDataSourceFactory.default({ transactionManager }),
       new ATExternalAPI()
     );
   },
@@ -35,7 +35,7 @@ const AutomaticTranslationFactory = {
     const transactionManager = TransactionManagerFactory.default();
     return new GenerateAutomaticTranslationsCofig(
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
-      TemplatesDataSourceFactory.default(transactionManager),
+      TemplatesDataSourceFactory.default({ transactionManager }),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
   },
@@ -43,7 +43,7 @@ const AutomaticTranslationFactory = {
   defaultSaveEntityTranslations() {
     const transactionManager = TransactionManagerFactory.default();
     return new SaveEntityTranslations(
-      TemplatesDataSourceFactory.default(transactionManager),
+      TemplatesDataSourceFactory.default({ transactionManager }),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
       LoggerFactory.default()
