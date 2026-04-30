@@ -115,13 +115,9 @@ const App = ({ customParams }) => {
         ) : (
           <TranslateModal />
         ))}
-      {shouldUseThemeWrapper ? (
-        <ThemeProvider legacyChrome>
-          <NotificationsPanel />
-        </ThemeProvider>
-      ) : (
+      <ThemeProvider legacyChrome>
         <NotificationsPanel />
-      )}
+      </ThemeProvider>
     </div>
   );
 };
