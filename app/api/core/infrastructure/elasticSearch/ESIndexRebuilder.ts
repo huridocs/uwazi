@@ -8,6 +8,7 @@ import { FullTextIndexerService } from './entities/FullTextIndexerService.js';
 import { IndexDefinition } from './Types.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { config } from '#api/config.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type ProgressEvent =
   | { stage: 'reset-indexes' }
@@ -18,6 +19,7 @@ type ProgressEvent =
 
 type Deps = {
   esClient: Client;
+  transactionManager: TransactionManager;
   esBootstrapper: ElasticSearchBootstrapper;
   entityIndexer: EntityIndexerService;
   fullTextIndexer: FullTextIndexerService;
@@ -49,7 +51,7 @@ class ESIndexRebuilder {
     await this.deps.slotsBootstrapper.reset();
 
     this.notify({ stage: 'reconcile-slots' });
-    await this.deps.slotsReconciler.execute();
+    await this.deps.transactionManager.run(async () => this.deps.slotsReconciler.execute());
 
     let entitiesIndexed = 0;
     let fullTextIndexed = 0;

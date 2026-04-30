@@ -101,6 +101,7 @@ async function main() {
       });
 
       const rebuilder = new ESIndexRebuilder({
+        transactionManager,
         esClient,
         esBootstrapper,
         entityIndexer,

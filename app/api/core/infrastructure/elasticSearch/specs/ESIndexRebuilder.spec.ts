@@ -125,6 +125,7 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
   });
 
   const sut = new ESIndexRebuilder({
+    transactionManager,
     esClient: rawESClient,
     esBootstrapper,
     entityIndexer,

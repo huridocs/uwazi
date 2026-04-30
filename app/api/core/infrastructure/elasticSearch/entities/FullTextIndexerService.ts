@@ -23,7 +23,7 @@ type FileSyncAllOptions = {
 };
 
 class FullTextIndexerService {
-  private static readonly DEFAULT_BYTE_THRESHOLD = 80 * 1024 * 1024; // 80 MB
+  private static readonly DEFAULT_BYTE_THRESHOLD = 50 * 1024 * 1024; // 50 MB
 
   private static readonly DEFAULT_MAX_CONCURRENT_WRITES = 2;
 
