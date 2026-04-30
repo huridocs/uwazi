@@ -8,7 +8,9 @@ export const V2 = {
     const transactionManager = TransactionManagerFactory.default();
 
     if (
-      !(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())
+      !(await SettingsDataSourceFactory.default({
+        transactionManager,
+      }).readNewRelationshipsAllowed())
     ) {
       return;
     }

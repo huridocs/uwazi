@@ -27,7 +27,9 @@ const featureIsEnabled = async () => {
 const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
+    settingsDS: SettingsDataSourceFactory.default({
+      transactionManager: TransactionManagerFactory.default(),
+    }),
     logger: LoggerFactory.default(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
     processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
@@ -67,7 +69,9 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
+    settingsDS: SettingsDataSourceFactory.default({
+      transactionManager: TransactionManagerFactory.default(),
+    }),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
     logger: LoggerFactory.default(),
   })).start();

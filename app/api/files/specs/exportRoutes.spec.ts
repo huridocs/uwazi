@@ -83,7 +83,10 @@ describe('export routes', () => {
 
       const app = setUpApp(
         routes,
-        fakeRequestAugmenterMiddleware({ username: 'someuser' }, 'somelanguage')
+        fakeRequestAugmenterMiddleware(
+          { username: 'someuser', role: 'admin', _id: 'admin' },
+          'somelanguage'
+        )
       );
 
       const res = await request(app)
@@ -96,6 +99,8 @@ describe('export routes', () => {
       expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
       expect(search.search).toHaveBeenCalledWith(queryParams, 'somelanguage', {
         username: 'someuser',
+        role: 'admin',
+        _id: 'admin',
       });
       expect(exportMock.mock.calls[0]).toEqual([
         { rows: ['searchresults'] },

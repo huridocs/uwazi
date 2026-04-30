@@ -14,6 +14,7 @@ describe('entities countByTemplate V2 routes', () => {
 
   const app = setUpApp(entitiesRoutes, (req, _res, next) => {
     req.user = {
+      _id: 'admin',
       username: 'admin',
       role: UserRole.ADMIN,
       email: 'admin@test.com',

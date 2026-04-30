@@ -1,4 +1,5 @@
 import { ResultsMessage, Service, TaskManager } from '../TaskManager.js';
+import { runInJobContext } from '../runInJobContext.js';
 
 function mockTaskManagerImpl(taskManager: jest.Mock<TaskManager>) {
   const mock = {
@@ -7,7 +8,8 @@ function mockTaskManagerImpl(taskManager: jest.Mock<TaskManager>) {
     stop: jest.fn().mockImplementation(() => {}),
   };
   let _service: Service;
-  const trigger = async (result: ResultsMessage) => _service.processResults!(result);
+  const trigger = async (result: ResultsMessage) =>
+    runInJobContext(result.tenant, async () => _service.processResults!(result));
 
   taskManager.mockImplementation((service: Service) => {
     _service = service;

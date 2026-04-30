@@ -117,7 +117,7 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as ProcessingPDF;
 
   const transactionManager = TransactionManagerFactory.default();
-  const filesService = FilesServiceFactory.default(transactionManager);
+  const filesService = FilesServiceFactory.default();
 
   await filesService.storeFiles([processingPDF]);
 

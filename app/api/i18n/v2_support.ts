@@ -45,7 +45,7 @@ export const resultsToV1TranslationType = async (
   onlyLanguage?: LanguageISO6391
 ) => {
   const transactionManager = TransactionManagerFactory.default();
-  const settings = SettingsDataSourceFactory.default(transactionManager);
+  const settings = SettingsDataSourceFactory.default({ transactionManager });
   let languageKeys = await settings.getLanguageKeys();
   if (onlyLanguage) {
     languageKeys = [onlyLanguage];
@@ -104,7 +104,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default(transactionManager)
+      SettingsDataSourceFactory.default({ transactionManager })
     ),
     transactionManager
   ).create(flattenTranslations(translation));
@@ -114,10 +114,10 @@ export const upsertTranslationEntries = async (translations: CreateTranslationsD
   const transactionManager = TransactionManagerFactory.default();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
-    SettingsDataSourceFactory.default(transactionManager),
+    SettingsDataSourceFactory.default({ transactionManager }),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default(transactionManager)
+      SettingsDataSourceFactory.default({ transactionManager })
     ),
     transactionManager
   ).upsert(translations);
@@ -179,10 +179,10 @@ export const updateContextV2 = async (
   const transactionManager = TransactionManagerFactory.default();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
-    SettingsDataSourceFactory.default(transactionManager),
+    SettingsDataSourceFactory.default({ transactionManager }),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default(transactionManager)
+      SettingsDataSourceFactory.default({ transactionManager })
     ),
     transactionManager
   ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);

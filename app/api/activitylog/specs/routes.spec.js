@@ -1,5 +1,6 @@
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import request from 'supertest';
+import { ObjectId } from 'mongodb';
 import qs from 'qs';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -14,6 +15,7 @@ describe('Activitylog routes', () => {
   let currentUser;
 
   const adminUser = {
+    _id: new ObjectId().toString(),
     username: 'User 1',
     role: UserRole.ADMIN,
     email: 'user@test.com',

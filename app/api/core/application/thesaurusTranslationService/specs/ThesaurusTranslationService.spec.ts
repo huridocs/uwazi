@@ -167,7 +167,7 @@ describe('ThesaurusTranslationService', () => {
 
     const createDefaultSut = () => {
       const transactionManager = TransactionManagerFactory.default();
-      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
       const { sut } = createSut({ settingsDS, translationsDS });

@@ -132,13 +132,15 @@ describe('PXEntityUpdatedListener', () => {
 
       const { eventsBus } = createSut();
 
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1.map(e => ({ ...e, template: template._id })),
-          after: entity1,
-          targetLanguageKey: 'en',
-        })
-      );
+      await testingEnvironment.runWithContext(async () => {
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            before: entity1.map(e => ({ ...e, template: template._id })),
+            after: entity1,
+            targetLanguageKey: 'en',
+          })
+        );
+      });
 
       const entitiesStatus = await testingEnvironment.db.getAllFrom(
         mongoPXEntitiesStatusCollection
@@ -162,13 +164,15 @@ describe('PXEntityUpdatedListener', () => {
 
       const { eventsBus } = createSut();
 
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1,
-          after: entity1.map(e => ({ ...e, template: template._id })),
-          targetLanguageKey: 'en',
-        })
-      );
+      await testingEnvironment.runWithContext(async () => {
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            before: entity1,
+            after: entity1.map(e => ({ ...e, template: template._id })),
+            targetLanguageKey: 'en',
+          })
+        );
+      });
 
       const entitiesStatus = await testingEnvironment.db.getAllFrom(
         mongoPXEntitiesStatusCollection
@@ -187,13 +191,15 @@ describe('PXEntityUpdatedListener', () => {
 
       const { eventsBus } = createSut();
 
-      await eventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity1,
-          after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
-          targetLanguageKey: 'en',
-        })
-      );
+      await testingEnvironment.runWithContext(async () => {
+        await eventsBus.emit(
+          new EntityUpdatedEvent({
+            before: entity1,
+            after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
+            targetLanguageKey: 'en',
+          })
+        );
+      });
 
       const entitiesStatus = await testingEnvironment.db.getAllFrom(
         mongoPXEntitiesStatusCollection
