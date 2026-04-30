@@ -1,6 +1,8 @@
 import { tenants } from '#api/tenants/index.js';
 import users from '#api/users/users.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { User } from '#api/users.v2/model/User.js';
 
 import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable.js';
 
@@ -36,6 +38,7 @@ export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatcha
   private async setCurrentUser() {
     const user = await users.getById(this.userId, '-password', true);
     permissionsContext.setUserInContext(user);
+    ExecutionContext.actor = User.createFrom(user);
   }
 
   async handleDispatch(

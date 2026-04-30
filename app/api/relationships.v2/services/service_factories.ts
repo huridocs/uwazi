@@ -143,7 +143,7 @@ const CreateRelationshipService = async () => {
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const idGenerator = IdGeneratorFactory.default();
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
-  const filesDS = FilesDataSourceFactory.default();
+  const filesDS = FilesDataSourceFactory.default({ transactionManager });
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
   const denormalizationService = await DenormalizationService(transactionManager);

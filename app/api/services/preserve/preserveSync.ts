@@ -177,7 +177,7 @@ const saveEvidence =
       const { sharedId } = entity;
 
       const attachments: FileAttachment[] = [];
-      const filesService = FilesServiceFactory.default();
+      const filesService = FilesServiceFactory.default({ transactionManager });
 
       await Promise.all(
         evidence.attributes.downloads.map(async (download: any) => {

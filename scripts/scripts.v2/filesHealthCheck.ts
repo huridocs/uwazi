@@ -40,7 +40,7 @@ async function handleTenant(tenantName: string) {
 
     const filesHealthCheck = new FilesHealthCheck(
       new S3FileStorage(s3Client, new FileContentsIO(), tenants.current()),
-      FilesDataSourceFactory.default()
+      FilesDataSourceFactory.default({ transactionManager: TransactionManagerFactory.default() })
     );
 
     filesHealthCheck.onMissingInDB(file => {

@@ -57,7 +57,7 @@ export const convertPDF = async (
 
     const tm = TransactionManagerFactory.default();
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager: tm });
-    const filesDS = FilesDataSourceFactory.default();
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: tm });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager: tm });
 
     const entity = (await entitiesDS.getById(entitySharedId)).getDataOrThrow();

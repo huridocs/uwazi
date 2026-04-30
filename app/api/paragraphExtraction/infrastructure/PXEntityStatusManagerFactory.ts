@@ -27,7 +27,7 @@ export class PXEntityStatusManagerFactory {
       transactionManager: mongoTransactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default();
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
     const entitiesDS = DefaultEntitiesDataSource(mongoTransactionManager);
 
     return new PXEntityStatusManager({

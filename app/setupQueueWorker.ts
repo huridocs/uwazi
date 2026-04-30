@@ -29,7 +29,7 @@ import { registerJobs } from './queueRegistry.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 
 type Props = {
@@ -57,21 +57,22 @@ function register<T extends Dispatchable>(
   factory: (namespace: string) => Promise<T>
 ) {
   this.register(dispatchable, async namespace => {
-    const deps = {
-      factories: {
-        transactionManager: TransactionManagerFactory.default,
-        jobsDispatcher: () => DefaultDispatcher(namespace, ExecutionContext.transactionManager),
-        eventEmitter: EventEmitterFactory.default,
-        idGenerator: IdGeneratorFactory.default,
-        logger: LoggerFactory.default,
-        elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
-        authorizedEntityESClient: () =>
-          ElasticSearchClientFactory.authorizedEntityClient(namespace, null),
-      },
-    };
-
+    let deps!: ExecutionContextDeps;
     let instance!: T;
     await tenants.run(async () => {
+      deps = {
+        tenant: tenants.current(),
+        factories: {
+          transactionManager: TransactionManagerFactory.default,
+          jobsDispatcher: () => DefaultDispatcher(namespace, ExecutionContext.transactionManager),
+          eventEmitter: EventEmitterFactory.default,
+          idGenerator: IdGeneratorFactory.default,
+          logger: LoggerFactory.default,
+          elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
+          authorizedEntityESClient: () =>
+            ElasticSearchClientFactory.authorizedEntityClient(namespace, null),
+        },
+      };
       instance = await ExecutionContext.run(deps, async () => factory(namespace));
     }, namespace);
 

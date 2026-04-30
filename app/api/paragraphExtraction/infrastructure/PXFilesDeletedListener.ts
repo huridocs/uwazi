@@ -40,7 +40,7 @@ export class PXFilesDeletedListener {
       mongoTransactionManager,
     });
 
-    const filesDS = FilesDataSourceFactory.default();
+    const filesDS = FilesDataSourceFactory.default({ transactionManager: mongoTransactionManager });
     const settingsDS = SettingsDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
     });
