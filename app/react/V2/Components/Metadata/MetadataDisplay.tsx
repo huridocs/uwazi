@@ -20,7 +20,7 @@ import {
   Image,
   Media,
 } from './Components/index.js';
-import { BaseMetadataProperty, MetadataProperty } from '#V2/metadata/types.js';
+import { BaseMetadataProperty, MetadataProperty } from '#V2/formatters/types.js';
 import {
   formatRelationshipProperty,
   formatSimpleProperty,
@@ -31,7 +31,7 @@ import {
   formatImageProperty,
   formatMetadataFields,
   formatSelectProperty,
-} from '#V2/metadata/index.js';
+} from '#V2/formatters/index.js';
 
 type MetadataDisplayProps = {
   entity: Entity;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { I18NLinkV2 } from '#app/I18N/index.js';
+import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
-import { RelationshipMetadataProperty } from '#V2/metadata/types.js';
 
 const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
 

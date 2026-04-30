@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
-import { MediaMetadataProperty } from '#V2/metadata/types.js';
+import { MediaMetadataProperty } from '#V2/formatters/types.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MediaPlayer } from '../../UI/index.js';

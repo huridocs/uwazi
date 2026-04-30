@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { LinkMetadataProperty } from '#V2/domain/entities/types.js';
+import { LinkMetadataProperty } from '#V2/formatters/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { MetadataCard } from './MetadataCard.js';
