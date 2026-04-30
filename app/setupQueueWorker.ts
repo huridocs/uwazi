@@ -81,9 +81,8 @@ function register<T extends Dispatchable>(
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,
-          elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
-          authorizedEntityESClient: () =>
-            ElasticSearchClientFactory.authorizedEntityClient(namespace, User.createFrom(actor)),
+          elasticClient: ElasticSearchClientFactory.tenantAware,
+          authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
         },
       };
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));

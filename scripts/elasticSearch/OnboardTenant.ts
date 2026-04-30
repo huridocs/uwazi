@@ -4,27 +4,15 @@ import { ObjectId } from 'mongodb';
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
-import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
-import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
-import { MongoSlotsDAO } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsDAO.js';
-import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { EntityESWriter } from '#api/core/infrastructure/elasticSearch/entities/EntityESWriter.js';
-import { FullTextESWriter } from '#api/core/infrastructure/elasticSearch/entities/FullTextESWriter.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
-import {
-  TenantOnboarder,
-  ProgressEvent,
-} from '#api/core/infrastructure/elasticSearch/TenantOnboarder.js';
-import { User } from '#api/users.v2/model/User.js';
+import { ProgressEvent } from '#api/core/infrastructure/elasticSearch/TenantOnboarder.js';
+import { TenantOnboarderFactory } from '#api/core/infrastructure/factories/TenantOnboarderFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const { tenant, resumeFromEntity, resumeFromFile } = yargs(hideBin(process.argv))
   .option('tenant', {
@@ -70,37 +58,21 @@ async function main() {
 
   try {
     await tenants.run(async () => {
-      const db = getConnection();
-      const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
-      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-      const logger = LoggerFactory.default();
-
-      const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
-      const filesDAO = new MongoFilesDAO({ db, transactionManager });
-
-      const slotsBootstrapper = new MongoSlotsBootstrapper({ database: db });
-      const templatesDAO = new MongoTemplatesDAO({ db, transactionManager });
-      const slotsDAO = new MongoSlotsDAO({
-        db,
-        transactionManager,
-        tenantName: tenant,
-        settingsDS,
+      ExecutionContext.attachSyncContext(TenantOnboarderFactory, 'default', {
+        tenant: tenants.current(),
+        factories: {
+          transactionManager: TransactionManagerFactory.default,
+          jobsDispatcher: () =>
+            DefaultDispatcher(ExecutionContext.tenant.name, ExecutionContext.transactionManager),
+          eventEmitter: EventEmitterFactory.default,
+          idGenerator: IdGeneratorFactory.default,
+          logger: LoggerFactory.default,
+          elasticClient: ElasticSearchClientFactory.tenantAware,
+          authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
+        },
       });
-      const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
 
-      const tenantAwareClient = ElasticSearchClientFactory.tenantAware(tenant);
-      const entityWriter = new EntityESWriter({ esClient: tenantAwareClient });
-      const fullTextWriter = new FullTextESWriter({ esClient: tenantAwareClient });
-      const entityIndexer = new EntityIndexerService({ writer: entityWriter, entityDAO, slotsDAO });
-      const fullTextIndexer = new FullTextIndexerService({ writer: fullTextWriter, filesDAO });
-
-      const onboarder = new TenantOnboarder({
-        entityIndexer,
-        fullTextIndexer,
-        slotsBootstrapper,
-        slotsReconciler,
-        transactionManager,
-        logger,
+      const onboarder = TenantOnboarderFactory.default({
         onProgress: event => {
           const message = formatProgress(event);
           if (message) {
