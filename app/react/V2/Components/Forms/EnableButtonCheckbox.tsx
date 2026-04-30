@@ -1,5 +1,5 @@
-/* eslint-disable react/no-multi-comp */
-import React, { ReactEventHandler, Ref, useState } from 'react';
+/* eslint-disable react/no-multi-comp, react/require-default-props */
+import React, { CSSProperties, ReactEventHandler, Ref, useState } from 'react';
 import { Translate } from '#app/I18N/index.js';
 
 interface CheckboxProps {
@@ -34,64 +34,60 @@ const Text = ({
   }
 };
 
+type ButtonTone = 'checkedDisabled' | 'checkedHover' | 'checked' | 'disabled' | 'hover' | 'default';
+
+const buttonStyles: Record<ButtonTone, CSSProperties> = {
+  checkedDisabled: {
+    backgroundColor:
+      'color-mix(in srgb, var(--color-theme-feedback-success) 45%, var(--color-theme-surface-raised))',
+    borderColor: 'color-mix(in srgb, var(--color-theme-feedback-success) 45%, transparent)',
+    color: 'var(--color-theme-text-primary)',
+  },
+  checkedHover: {
+    backgroundColor: 'var(--color-theme-feedback-danger)',
+    borderColor: 'var(--color-theme-feedback-danger)',
+    color: 'var(--color-theme-feedback-danger-fg)',
+  },
+  checked: {
+    backgroundColor: 'var(--color-theme-feedback-success)',
+    borderColor: 'var(--color-theme-feedback-success)',
+    color: 'var(--color-theme-feedback-success-fg)',
+  },
+  disabled: {
+    backgroundColor: 'transparent',
+    borderColor: 'color-mix(in srgb, var(--color-theme-action-primary) 35%, transparent)',
+    color:
+      'color-mix(in srgb, var(--color-theme-action-primary) 40%, var(--color-theme-surface-page))',
+  },
+  hover: {
+    backgroundColor: 'var(--color-theme-feedback-success)',
+    borderColor: 'var(--color-theme-feedback-success)',
+    color: 'var(--color-theme-feedback-success-fg)',
+  },
+  default: {
+    backgroundColor: 'var(--color-theme-surface-raised)',
+    borderColor: 'var(--color-theme-action-primary)',
+    color: 'var(--color-theme-action-primary)',
+  },
+};
+
+const getButtonTone = (checked: boolean, disabled: boolean, hovering: boolean): ButtonTone => {
+  if (checked && disabled) return 'checkedDisabled';
+  if (checked && hovering) return 'checkedHover';
+  if (checked) return 'checked';
+  if (disabled) return 'disabled';
+  if (hovering) return 'hover';
+  return 'default';
+};
+
 const EnableButtonCheckbox = React.forwardRef(
   (
-    { name, onChange, className, disabled, defaultChecked }: CheckboxProps,
+    { name, onChange, className = '', disabled = false, defaultChecked = false }: CheckboxProps,
     ref: Ref<HTMLInputElement>
   ) => {
     const [hovering, setHovering] = useState(false);
-    const [isChecked, setIsChecked] = useState<boolean>(defaultChecked || false);
-    const isInteractive = !disabled;
-    const hoverColor = isChecked
-      ? 'var(--color-theme-feedback-danger)'
-      : 'var(--color-theme-feedback-success)';
-
-    let backgroundColor: string;
-    if (isChecked) {
-      if (disabled) {
-        backgroundColor =
-          'color-mix(in srgb, var(--color-theme-feedback-success) 45%, var(--color-theme-surface-raised))';
-      } else if (hovering && isInteractive) {
-        backgroundColor = hoverColor;
-      } else {
-        backgroundColor = 'var(--color-theme-feedback-success)';
-      }
-    } else if (disabled) {
-      backgroundColor = 'transparent';
-    } else if (hovering && isInteractive) {
-      backgroundColor = hoverColor;
-    } else {
-      backgroundColor = 'var(--color-theme-surface-raised)';
-    }
-
-    let borderColor: string;
-    if (isChecked) {
-      if (disabled) {
-        borderColor = 'color-mix(in srgb, var(--color-theme-feedback-success) 45%, transparent)';
-      } else if (hovering && isInteractive) {
-        borderColor = hoverColor;
-      } else {
-        borderColor = 'var(--color-theme-feedback-success)';
-      }
-    } else if (disabled) {
-      borderColor = 'color-mix(in srgb, var(--color-theme-action-primary) 35%, transparent)';
-    } else if (hovering && isInteractive) {
-      borderColor = hoverColor;
-    } else {
-      borderColor = 'var(--color-theme-action-primary)';
-    }
-
-    let textColor: string;
-    if (isChecked) {
-      textColor = 'var(--color-theme-text-on-solid)';
-    } else if (disabled) {
-      textColor =
-        'color-mix(in srgb, var(--color-theme-action-primary) 40%, var(--color-theme-surface-page))';
-    } else if (hovering && isInteractive) {
-      textColor = 'var(--color-theme-text-on-solid)';
-    } else {
-      textColor = 'var(--color-theme-action-primary)';
-    }
+    const [isChecked, setIsChecked] = useState(defaultChecked);
+    const buttonStyle = buttonStyles[getButtonTone(isChecked, disabled, hovering)];
 
     return (
       <label
@@ -111,10 +107,7 @@ const EnableButtonCheckbox = React.forwardRef(
           name={name}
           onChange={event => {
             setIsChecked(event.target.checked);
-
-            if (onChange) {
-              onChange(event);
-            }
+            onChange?.(event);
           }}
           className="sr-only"
           ref={ref}
@@ -124,7 +117,7 @@ const EnableButtonCheckbox = React.forwardRef(
           className={`w-24 truncate rounded-lg border px-1 py-2 text-center text-sm font-medium ${
             disabled ? 'cursor-not-allowed' : 'cursor-pointer'
           }`}
-          style={{ backgroundColor, borderColor, color: textColor }}
+          style={buttonStyle}
         >
           <Text checked={isChecked} hovering={hovering} disabled={disabled} />
         </div>
