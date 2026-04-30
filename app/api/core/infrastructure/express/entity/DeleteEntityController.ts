@@ -3,7 +3,7 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import entities from '#api/entities/entities.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const RequestSchema = z.object({
   sharedId: z.string().trim().min(1, 'sharedId is required'),
@@ -22,7 +22,7 @@ class DeleteEntityController extends AbstractController<RequestDto> {
 
         await useCase.execute({ sharedIds: [sharedId] });
 
-        DependenciesContext.logger.info('Entity Deleted executed successfully', {
+        ExecutionContext.logger.info('Entity Deleted executed successfully', {
           namespace: 'Entity_Delete',
           success: true,
           durationMs: Date.now() - startTime,
@@ -40,7 +40,7 @@ class DeleteEntityController extends AbstractController<RequestDto> {
       if (tenants.current().featureFlags?.v2DeleteEntity) {
         const duration = Date.now() - startTime;
 
-        DependenciesContext.logger.info(
+        ExecutionContext.logger.info(
           `Entity Delete failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
           {
             namespace: 'Entity_Delete',

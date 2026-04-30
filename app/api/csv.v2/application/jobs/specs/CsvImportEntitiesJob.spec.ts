@@ -104,15 +104,18 @@ const buildUseCase = () => {
         await callback(jobsDispatcher.dispatch);
       }),
   }) as jest.Mocked<JobsDispatcher>;
-  const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } =
-    CsvImportEntitiesJobFactory.build({
-      transactionManager,
-      fileStorage,
-      batchSize: 2,
-      jobsDispatcher,
-    });
 
-  return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher };
+  return testingEnvironment.runWithContext(() => {
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } =
+      CsvImportEntitiesJobFactory.build({
+        transactionManager,
+        fileStorage,
+        batchSize: 2,
+        jobsDispatcher,
+      });
+
+    return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher };
+  });
 };
 
 const runSingleRowImport = async (params: {

@@ -1,6 +1,6 @@
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FullTextIndexerService } from '../elasticSearch/entities/FullTextIndexerService.js';
 
 export class FullTextIndexerServiceFactory {
@@ -14,7 +14,7 @@ export class FullTextIndexerServiceFactory {
       });
     }
 
-    const esClient = DependenciesContext.elasticClient;
+    const esClient = ExecutionContext.elasticClient;
 
     const fullTextIndexer = new FullTextIndexerService({ esClient });
 

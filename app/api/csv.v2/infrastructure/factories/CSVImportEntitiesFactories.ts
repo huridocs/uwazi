@@ -71,8 +71,8 @@ export class CSVImportEntitiesFactories {
   static CSVPreflightJobDefault() {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = this.CSVImportDSDefault(transactionManager);
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const tenant = tenants.current();
     const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);

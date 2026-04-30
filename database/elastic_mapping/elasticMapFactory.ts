@@ -15,7 +15,7 @@ const createNewRelationshipMappingFactory = async () => {
     return null;
   }
 
-  const templateDataSource = TemplatesDataSourceFactory.default(transactionManager);
+  const templateDataSource = TemplatesDataSourceFactory.default({ transactionManager });
 
   return new RelationshipPropertyMappingFactory(templateDataSource, propertyMappings);
 };

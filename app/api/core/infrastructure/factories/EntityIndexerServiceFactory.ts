@@ -1,12 +1,17 @@
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { tenants } from '#api/tenants/index.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 
+type Overrides = {
+  transactionManager?: TransactionManager;
+  slotsDAO?: ReturnType<typeof MongoSlotsDAOFactory.default>;
+};
+
 export class EntityIndexerServiceFactory {
-  static default(transactionManager: MongoTransactionManager): EntityIndexerService {
+  static default(overrides?: Overrides): EntityIndexerService {
     const tenant = tenants.current();
 
     if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
@@ -17,8 +22,10 @@ export class EntityIndexerServiceFactory {
       });
     }
 
-    const esClient = DependenciesContext.elasticClient;
-    const slotsDAO = MongoSlotsDAOFactory.default(transactionManager);
+    const esClient = ExecutionContext.elasticClient;
+    const slotsDAO =
+      overrides?.slotsDAO ??
+      MongoSlotsDAOFactory.default({ transactionManager: overrides?.transactionManager });
     const entityIndexerService = new EntityIndexerService({ esClient, slotsDAO });
 
     return entityIndexerService;

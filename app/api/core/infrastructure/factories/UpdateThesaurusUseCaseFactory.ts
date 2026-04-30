@@ -1,21 +1,19 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { UpdateThesaurusUseCase } from '#api/core/application/UpdateThesaurus.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
+import { UpdateThesaurusUseCase } from '#api/core/application/UpdateThesaurus.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 
 class UpdateThesaurusUseCaseFactory {
-  static default() {
+  static default(overrides?: Partial<ConstructorParameters<typeof UpdateThesaurusUseCase>[0]>) {
     const transactionManager = TransactionManagerFactory.default();
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
     const thesaurusTranslationService = new ThesaurusTranslationService({
@@ -23,9 +21,7 @@ class UpdateThesaurusUseCaseFactory {
       translationsDS,
     });
 
-    const dispatcher = new DispatcherAdapter(
-      DefaultDispatcher(tenants.current().name, transactionManager)
-    );
+    const dispatcher = new DispatcherAdapter(ExecutionContext.jobsDispatcher);
 
     const thesauriService = new ThesauriService({
       dispatcher,
@@ -33,17 +29,16 @@ class UpdateThesaurusUseCaseFactory {
       thesaurusTranslationService,
     });
 
-    const useCase = new UpdateThesaurusUseCase(
+    return new UpdateThesaurusUseCase(
       {
         transactionManager,
         thesauriDS,
         thesaurusTranslationService,
         thesauriService,
+        ...overrides,
       },
-      { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+      { tenant: ExecutionContext.tenant, actor: ExecutionContext.actor }
     );
-
-    return useCase;
   }
 }
 

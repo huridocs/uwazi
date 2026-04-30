@@ -25,7 +25,7 @@ describe('custom uploads routes', () => {
   const app: Application = setUpApp(
     customUploadsRoutes,
     (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = (() => requestMockedUser)();
+      (req as any).user = requestMockedUser;
       next();
     }
   );
@@ -72,7 +72,7 @@ describe('custom uploads routes', () => {
     it('should get the file', async () => {
       const response = await request(app).get(path.join(endpoint, file.filename));
 
-      expect(response.status).toBe(200);
+      expect(response).toHaveStatus(200);
       expect(response.body instanceof Buffer).toBe(true);
     });
 

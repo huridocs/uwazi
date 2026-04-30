@@ -110,4 +110,4 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 }
 
 export { UpdateEntityUseCase };
-export type { Input as UpdateEntityUseCaseInput, Deps as UpdateEntityUseCaseDeps };
+export type { Input as UpdateEntityUseCaseInput };

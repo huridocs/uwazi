@@ -21,6 +21,7 @@ const emitToCurrentTenantSpy = jest.fn();
 describe('templates routes', () => {
   const app: Application = setUpApp(templateRoutes, (req, _res, next: NextFunction) => {
     req.sockets = { emitToCurrentTenant: emitToCurrentTenantSpy };
+    req.user = { _id: 'admin', role: 'admin', username: 'admin' };
     next();
   });
 
