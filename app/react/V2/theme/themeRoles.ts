@@ -36,10 +36,12 @@ type ThemeRoles = {
     infoTint: string;
     success: string;
     successTint: string;
+    successFg: string;
     warning: string;
     warningTint: string;
     danger: string;
     dangerTint: string;
+    dangerFg: string;
   };
   chrome: {
     appBar: string;
@@ -95,10 +97,12 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       infoTint: resolved['--color-theme-accent-supporting-tint'],
       success: resolved['--color-theme-success'],
       successTint: resolved['--color-theme-success-light'],
+      successFg: resolved['--color-theme-feedback-success-fg'],
       warning: resolved['--color-theme-warning'],
       warningTint: resolved['--color-theme-warning-light'],
       danger: resolved['--color-theme-accent-emphasis'],
       dangerTint: resolved['--color-theme-accent-emphasis-tint'],
+      dangerFg: resolved['--color-theme-feedback-danger-fg'],
     },
     chrome: {
       appBar: resolved['--color-theme-bg-surface'],
@@ -132,10 +136,12 @@ const getThemeRoleVars = (roles: ThemeRoles): Record<string, string> => ({
   '--color-theme-feedback-info-tint': roles.feedback.infoTint,
   '--color-theme-feedback-success': roles.feedback.success,
   '--color-theme-feedback-success-tint': roles.feedback.successTint,
+  '--color-theme-feedback-success-fg': roles.feedback.successFg,
   '--color-theme-feedback-warning': roles.feedback.warning,
   '--color-theme-feedback-warning-tint': roles.feedback.warningTint,
   '--color-theme-feedback-danger': roles.feedback.danger,
   '--color-theme-feedback-danger-tint': roles.feedback.dangerTint,
+  '--color-theme-feedback-danger-fg': roles.feedback.dangerFg,
   '--color-theme-chrome-app-bar': roles.chrome.appBar,
   '--color-theme-chrome-app-bar-hover': roles.chrome.appBarHover,
   '--color-theme-chrome-app-bar-active': roles.chrome.appBarActive,

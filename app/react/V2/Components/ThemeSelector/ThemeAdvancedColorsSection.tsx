@@ -8,8 +8,8 @@ import {
   SEMANTIC_VAR_LABELS,
   sortPaletteHexColors,
   themeStorageKey,
-} from '#V2/theme/themes.js';
-import type { SemanticVarKey, ThemeMode } from '#V2/theme/themes.js';
+} from '#V2/theme/index.js';
+import type { SemanticVarKey, ThemeMode } from '#V2/theme/index.js';
 
 type ThemeVars = Record<string, string | undefined>;
 
