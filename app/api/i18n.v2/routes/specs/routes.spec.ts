@@ -12,6 +12,7 @@ describe('i18n translations V2 routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
   const app = setUpApp(translationsRoutes, (req, _res, next) => {
     req.user = {
+      _id: 'admin',
       username: 'admin',
       role: UserRole.ADMIN,
       email: 'admin@test.com',

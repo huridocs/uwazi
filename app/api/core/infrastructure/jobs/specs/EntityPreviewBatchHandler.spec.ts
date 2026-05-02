@@ -2,11 +2,11 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { tenants } from '#api/tenants/index.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { EntityPreviewBatchHandler } from '../EntityPreviewBatchHandler.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const f = getFixturesFactory();
 
@@ -74,16 +74,20 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSUT = () => {
-  const transactionManager = TransactionManagerFactory.fake();
-  const handler = new EntityPreviewBatchHandler({
-    transactionManager,
-    filesDS: FilesDataSourceFactory.default(transactionManager),
-    entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
-    settingsDS: SettingsDataSourceFactory.default(transactionManager),
-  });
-  return handler;
-};
+const createSUT = () =>
+  testingEnvironment.runWithContext(
+    () =>
+      new EntityPreviewBatchHandler({
+        transactionManager: ExecutionContext.transactionManager,
+        filesDS: FilesDataSourceFactory.default(),
+        entitiesDS: EntitiesDataSourceFactory.default({
+          transactionManager: ExecutionContext.transactionManager,
+        }),
+        settingsDS: SettingsDataSourceFactory.default({
+          transactionManager: ExecutionContext.transactionManager,
+        }),
+      })
+  );
 
 const heartbeat = jest.fn();
 

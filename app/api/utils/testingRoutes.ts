@@ -49,8 +49,8 @@ const setUpApp = (
       .catch(next);
   });
   app.use(languageMiddleware);
-  app.use(dependenciesContextMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
+  app.use(dependenciesContextMiddleware);
 
   route(app);
   app.use(errorHandlingMiddleware);

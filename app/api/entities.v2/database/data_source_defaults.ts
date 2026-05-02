@@ -8,8 +8,8 @@ const DefaultEntitiesDataSource = (transactionManager: MongoTransactionManager) 
   const db = getConnection();
   return new MongoEntitiesDataSource(
     db,
-    TemplatesDataSourceFactory.default(transactionManager),
-    SettingsDataSourceFactory.default(transactionManager),
+    TemplatesDataSourceFactory.default({ transactionManager }),
+    SettingsDataSourceFactory.default({ transactionManager }),
     transactionManager
   );
 };

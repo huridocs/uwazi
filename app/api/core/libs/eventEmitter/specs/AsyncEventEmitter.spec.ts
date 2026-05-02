@@ -1,44 +1,42 @@
 /* eslint-disable class-methods-use-this */
-
 /* eslint-disable max-classes-per-file */
 import { Collection } from 'mongodb';
+
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { tenants } from '#api/tenants/index.js';
-import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DependenciesContext } from '../../DependenciesContext.js';
 import { JobInfo } from '../../queue/application/contracts/Dispatchable.js';
-import { AsyncEventEmitter } from '../AsyncEventEmitter.js';
+import {
+  DefaultDispatcher,
+  DefaultTestingQueueAdapter,
+} from '../../queue/configuration/factories.js';
 import { Event } from '../Event.js';
+import { EventEmitterFactory } from '../EventEmitterFactory.js';
+import { EventListenerRegistry } from '../EventListenerRegistry.js';
 import { Listener } from '../Listener.js';
-import { DefaultDispatcher } from '../../queue/configuration/factories.js';
-import { EventEmitter } from '../EventEmitter.js';
-import { Logger } from '../../logger/contracts/Logger.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
+  const registry = new EventListenerRegistry();
+  const jobsDispatcher = DefaultDispatcher(
+    tenants.current().name,
+    transactionManager,
+    undefined,
+    DefaultTestingQueueAdapter(transactionManager)
+  );
 
-  const sut = new AsyncEventEmitter();
+  const sut = testingEnvironment.runWithContext(() => EventEmitterFactory.default({ registry }), {
+    factories: {
+      transactionManager: () => transactionManager,
+      jobsDispatcher: () => jobsDispatcher,
+    },
+  });
 
-  const runInContext = async (callback: () => Promise<void>, transactional = true) =>
-    DependenciesContext.run(
-      {
-        factories: {
-          transactionManager: () => transactionManager,
-          jobsDispatcher: () => DefaultDispatcher(tenants.current().name, transactionManager),
-          eventEmitter: () => TestUtils.mockClass<EventEmitter>({}),
-          idGenerator: () => TestUtils.mockClass<IdGenerator>({}),
-          logger: () => TestUtils.mockClass<Logger>({}),
-          authorizedEntityESClient: () => TestUtils.mockClass({}),
-          elasticClient: () => TestUtils.mockClass({}),
-        },
-      },
-      async () => (transactional ? transactionManager.run(callback) : callback())
-    );
+  const runInTransaction = async (callback: () => Promise<void>) =>
+    transactionManager.run(callback);
 
-  return { sut, runInContext };
+  return { sut, registry, runInTransaction };
 };
 
 type PayloadA = {
@@ -84,7 +82,7 @@ describe('AsyncEventEmitter', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp({});
-    jobsCollection = getSharedConnection().collection('jobs');
+    jobsCollection = getConnection().collection('jobs');
   });
 
   beforeEach(async () => {
@@ -97,15 +95,15 @@ describe('AsyncEventEmitter', () => {
   });
 
   it('should emit event', async () => {
-    const { sut, runInContext } = createSut();
+    const { sut, registry, runInTransaction } = createSut();
 
-    sut.listen(ListenerA1);
-    sut.listen(ListenerA2);
-    sut.listen(ListenerB);
+    registry.register(ListenerA1);
+    registry.register(ListenerA2);
+    registry.register(ListenerB);
 
     const eventA = new EventA({ data: 'some data', userId: 'user' });
 
-    await runInContext(async () => sut.emit(eventA));
+    await runInTransaction(async () => sut.emit(eventA));
 
     const jobs = await getJobs();
 
@@ -122,33 +120,31 @@ describe('AsyncEventEmitter', () => {
   });
 
   it('should throw when there are no listeners registered for the event', async () => {
-    const { sut, runInContext } = createSut();
+    const { sut, runInTransaction } = createSut();
 
     const eventA = new EventA({ data: 'some data', userId: 'user' });
 
-    const promise = runInContext(async () => sut.emit(eventA));
+    const promise = runInTransaction(async () => sut.emit(eventA));
 
     await expect(promise).rejects.toThrow();
   });
 
   it('should throw when emitting outside of a transaction', async () => {
-    const { sut, runInContext } = createSut();
+    const { sut, registry } = createSut();
 
-    sut.listen(ListenerA1);
+    registry.register(ListenerA1);
 
     const eventA = new EventA({ data: 'some data', userId: 'user' });
 
-    await expect(runInContext(async () => sut.emit(eventA), false)).rejects.toThrow(
-      'Cannot emit events outside of a transaction'
-    );
+    await expect(sut.emit(eventA)).rejects.toThrow('Cannot emit events outside of a transaction');
   });
 
   it('should throw when listener is already registered', () => {
-    const { sut } = createSut();
+    const { registry } = createSut();
 
-    sut.listen(ListenerA1);
+    registry.register(ListenerA1);
 
-    expect(() => sut.listen(ListenerA1)).toThrow(
+    expect(() => registry.register(ListenerA1)).toThrow(
       'Listener with name ListenerA1 is already registered for event EventA'
     );
   });

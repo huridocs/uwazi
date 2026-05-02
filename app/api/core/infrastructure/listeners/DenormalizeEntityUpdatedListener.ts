@@ -51,7 +51,7 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps
   }
 }
 
-EventEmitterFactory.default().listen(DenormalizeEntityUpdatedListener);
+EventEmitterFactory.registry.register(DenormalizeEntityUpdatedListener);
 
 export { DenormalizeEntityUpdatedListener };
 export type { Deps as DenormalizeEntityUpdatedListenerDeps };

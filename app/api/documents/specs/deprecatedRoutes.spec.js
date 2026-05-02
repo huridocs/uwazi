@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import request from 'supertest';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -26,6 +27,7 @@ describe('documents', () => {
   let currentUser;
 
   const adminUser = {
+    _id: new ObjectId().toString(),
     username: 'User 1',
     role: UserRole.ADMIN,
     email: 'user@test.com',

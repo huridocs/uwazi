@@ -26,7 +26,7 @@ type UpdateDTO = TemplateDBO & { reindex: boolean };
 
 export class TemplateFacade {
   static async create(dto: CreateDTO) {
-    const useCase = CreateTemplateUseCaseFactory.create();
+    const useCase = CreateTemplateUseCaseFactory.default();
 
     // eslint-disable-next-line no-param-reassign
     delete dto.default;
@@ -58,7 +58,7 @@ export class TemplateFacade {
     delete template.processing;
     delete template.__v;
 
-    const useCase = await UpdateTemplateUseCaseFactory.create();
+    const useCase = UpdateTemplateUseCaseFactory.default();
 
     const input = UpdateTemplateDTOSchema.parse({
       ...template,
@@ -85,7 +85,7 @@ export class TemplateFacade {
 
   static async delete(dto: DeleteTemplateRequestDto) {
     const parsed = DeleteTemplateSchema.parse(dto);
-    const useCase = await DeleteTemplateUseCaseFactory.create();
+    const useCase = DeleteTemplateUseCaseFactory.default();
 
     await useCase.execute({ templateId: parsed._id.toString() });
 
@@ -95,7 +95,7 @@ export class TemplateFacade {
   static async setAsDefault(dto: SetTemplateAsDefaultRequestDto) {
     const parsed = SetTemplateAsDefaultSchema.parse(dto);
 
-    const output = await SetTemplateAsDefaultUseCaseFactory.create().execute({
+    const output = await SetTemplateAsDefaultUseCaseFactory.default().execute({
       templateId: parsed._id.toString(),
     });
 

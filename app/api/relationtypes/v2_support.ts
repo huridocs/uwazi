@@ -6,8 +6,9 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 
 const getNewRelationshipCount = async (id: ObjectId) => {
   const transactionManager = TransactionManagerFactory.default();
-  const newRelationshipsAllowed =
-    await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed();
+  const newRelationshipsAllowed = await SettingsDataSourceFactory.default({
+    transactionManager,
+  }).readNewRelationshipsAllowed();
   const relationshipsDataSource = DefaultRelationshipDataSource(transactionManager);
 
   return newRelationshipsAllowed ? relationshipsDataSource.countByType(id.toString()) : 0;
@@ -15,8 +16,9 @@ const getNewRelationshipCount = async (id: ObjectId) => {
 
 const relationTypeIsUsedInQueries = async (id: ObjectId): Promise<boolean> => {
   const transactionManager = TransactionManagerFactory.default();
-  const newRelationshipsAllowed =
-    await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed();
+  const newRelationshipsAllowed = await SettingsDataSourceFactory.default({
+    transactionManager,
+  }).readNewRelationshipsAllowed();
   if (!newRelationshipsAllowed) return false;
 
   const createTemplateService = await CreateTemplateService();

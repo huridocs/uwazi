@@ -1,4 +1,5 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
+
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   getEffectiveThemeMode,
@@ -32,7 +33,8 @@ const ThemeProvider = ({
   const useCustomizationPipeline = customizationOn && !legacyChrome;
   const effectiveThemeMode = getEffectiveThemeMode(customizationOn, themeMode, controlledMode);
 
-  useLayoutEffect(() => {
+  const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
+  useIsomorphicLayoutEffect(() => {
     setThemeControlledMode(controlledMode);
   }, [controlledMode, setThemeControlledMode]);
 

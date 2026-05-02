@@ -49,13 +49,13 @@ const buildEntityServices = (
   fileStorage: FileStorage,
   jobsDispatcher: JobsDispatcher
 ) => {
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
-  const filesService = FilesServiceFactory.default(transactionManager, { fileStorage });
+  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
+  const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+  const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
+  const filesService = FilesServiceFactory.default({ fileStorage });
   const idGenerator = IdGeneratorFactory.default();
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+  const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
   const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
     settingsDS,
     thesauriDS,

@@ -34,6 +34,16 @@ const THEME_PALETTE: ThemePaletteEntry[] = [
     semanticKey: '--color-theme-bg-surface',
     hex: defaultLight['--color-theme-bg-surface'],
   },
+  {
+    id: 'success',
+    semanticKey: '--color-theme-success',
+    hex: defaultLight['--color-theme-success'],
+  },
+  {
+    id: 'warning',
+    semanticKey: '--color-theme-warning',
+    hex: defaultLight['--color-theme-warning'],
+  },
 ];
 
 export { THEME_PALETTE };

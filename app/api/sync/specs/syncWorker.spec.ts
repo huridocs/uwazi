@@ -57,6 +57,7 @@ import {
   template2,
   thesauri1Value2,
 } from './fixtures.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 async function runAllTenants() {
   try {
@@ -377,7 +378,7 @@ describe('syncWorker', () => {
         DefaultTranslationsDataSource(transactionManager),
         new ValidateTranslationsService(
           DefaultTranslationsDataSource(transactionManager),
-          SettingsDataSourceFactory.default(transactionManager)
+          SettingsDataSourceFactory.default({ transactionManager })
         ),
         transactionManager
       ).create([
@@ -503,12 +504,14 @@ describe('syncWorker', () => {
 
   describe('when a template that is whitelisted has been deleted', () => {
     it('should not throw an error', async () => {
-      await tenants.run(async () => {
-        await elasticTesting.reindex();
-        permissionsContext.setCommandContext();
-        await entitiesModel.delete({ template: template1 });
-        await templates.delete({ _id: template1 });
-      }, 'host1');
+      await testingEnvironment.runWithContext(async () => {
+        await tenants.run(async () => {
+          await elasticTesting.reindex();
+          permissionsContext.setCommandContext();
+          await entitiesModel.delete({ template: template1 });
+          await templates.delete({ _id: template1 });
+        }, 'host1');
+      });
 
       await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
     });

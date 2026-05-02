@@ -24,7 +24,9 @@ const f = getFixturesFactory();
 const setUpUseCase = () => {
   const connection = getConnection();
   const mongoTransactionManager = TransactionManagerFactory.default();
-  const templatesDS = TemplatesDataSourceFactory.default(mongoTransactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default({
+    transactionManager: mongoTransactionManager,
+  });
   const extractorDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,

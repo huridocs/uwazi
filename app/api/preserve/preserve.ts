@@ -104,9 +104,9 @@ export const Preserve = {
     const transactionManager = TransactionManagerFactory.default();
 
     const thesauriService = new ThesauriService({
-      thesauriDS: ThesauriDataSourceFactory.default(transactionManager),
+      thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
       thesaurusTranslationService: new ThesaurusTranslationService({
-        settingsDS: SettingsDataSourceFactory.default(transactionManager),
+        settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
         translationsDS: DefaultTranslationsDataSource(transactionManager),
       }),
       dispatcher: new DispatcherAdapter(
