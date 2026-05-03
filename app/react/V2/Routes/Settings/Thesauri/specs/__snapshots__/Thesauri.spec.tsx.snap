@@ -212,7 +212,7 @@ HTMLCollection [
 
 exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
 <div
-  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] [background-color:var(--color-theme-feedback-info-tint)] bg-primary-50"
+  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] [background-color:var(--color-theme-feedback-info-tint)] bg-primary-50"
   data-testid="settings-content-footer"
 >
   <div
