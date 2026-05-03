@@ -11,7 +11,7 @@ interface TaskItemProps {
 const statusIcon: Record<TaskStatus, React.ReactNode> = {
   running: <ArrowPathIcon className="w-4 h-4 text-indigo-500 animate-spin shrink-0" />,
   completed: <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />,
-  failed: <XCircleIcon className="w-4 h-4 text-pink-500 shrink-0" />,
+  failed: <XCircleIcon className="w-4 h-4 text-error-500 shrink-0" />,
 };
 
 const statusLabel: Record<TaskStatus, string> = {
@@ -23,7 +23,7 @@ const statusLabel: Record<TaskStatus, string> = {
 const statusLabelColor: Record<TaskStatus, string> = {
   running: 'text-indigo-600',
   completed: 'text-green-600',
-  failed: 'text-pink-600',
+  failed: 'text-error-600',
 };
 
 const progressColor: Record<TaskStatus, 'primary' | 'success' | 'error'> = {

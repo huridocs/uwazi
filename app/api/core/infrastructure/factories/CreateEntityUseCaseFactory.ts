@@ -1,38 +1,42 @@
 import { CreateEntityUseCase } from '#api/core/application/CreateEntity.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/tenantContext.js';
-import { DefaultDispatcher, NoOpDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
-import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { User } from '#api/users.v2/model/User.js';
 
 class CreateEntityUseCaseFactory {
-  static default(targetLanguage: LanguageISO6391) {
-    const tenant = tenants.current();
+  static default(
+    overrides: Partial<ConstructorParameters<typeof CreateEntityUseCase>[0]> & {
+      targetLanguage?: LanguageISO6391;
+    } = {}
+  ) {
+    const { targetLanguage = 'en', ...depsOverrides } = overrides;
 
-    const transactionManager = TransactionManagerFactory.default();
+    const { tenant } = ExecutionContext;
 
-    const dispatcher = new DispatcherAdapter(
-      process.env.NODE_ENV === 'test'
-        ? NoOpDispatcher()
-        : DefaultDispatcher(tenant.name, transactionManager)
-    );
+    let actor: User | undefined;
+    try {
+      actor = ExecutionContext.actor;
+    } catch {
+      // still needed for some backwards compat tests
+      actor = User.createFrom(permissionsContext.getUserInContext()!);
+    }
 
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
-    const eventBus = applicationEventsBus;
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =
@@ -43,31 +47,21 @@ class CreateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = EntitiesServiceFactory.default({
-      entitiesDS,
-      eventBus,
-      settingsDS,
-      transactionManager,
-      dispatcher,
-    });
+    const entitiesService = EntitiesServiceFactory.default();
 
-    const fileService = FilesServiceFactory.default(transactionManager, {
-      jobsDispatcher: dispatcher,
-    });
+    const fileService = FilesServiceFactory.default();
 
-    const useCase = new CreateEntityUseCase(
+    return new CreateEntityUseCase(
       {
         entitiesService,
         propertyAssignmentCreatorServiceStrategy,
         fileService,
         idGenerator,
         transactionManager,
-        eventBus,
+        ...depsOverrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant, targetLanguage }
+      { actor, tenant, targetLanguage }
     );
-
-    return useCase;
   }
 }
 

@@ -88,15 +88,16 @@ class EntityFileUploadController extends AbstractController {
         new SyncDispatcherForTests({
           PDFPostProcessJobHandler: async () =>
             new PDFPostProcessJobHandler({
-              useCase: PDFPostProcessJobFactory.default(transactionManager),
+              useCase: PDFPostProcessJobFactory.default(),
               wSockets: new V1WebSocketsWrapper(),
             }),
         })
       );
     }
 
-    return FileUploadForEntityFactory.default(transactionManager, {
-      filesService: FilesServiceFactory.default(transactionManager, { jobsDispatcher }),
+    return FileUploadForEntityFactory.default({
+      transactionManager,
+      filesService: FilesServiceFactory.default({ jobsDispatcher, transactionManager }),
     });
   }
 }

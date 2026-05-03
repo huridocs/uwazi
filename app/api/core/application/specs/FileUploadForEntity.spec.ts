@@ -5,11 +5,11 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { FileUploadForEntityFactory } from '#api/core/infrastructure/factories/FileUploadForEntityFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { fileExistsOnPath } from '#api/files/index.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
@@ -42,16 +42,16 @@ describe('FileUploadForEntity', () => {
 
     pathManager = new PathManager({ tenant: tenants.current() });
 
-    const transactionManager = TransactionManagerFactory.default();
-
-    const filesService = FilesServiceFactory.default(transactionManager, {
-      jobsDispatcher,
-      eventBus,
-    });
-
-    const useCase = FileUploadForEntityFactory.default(transactionManager, {
-      filesService,
-      eventBus,
+    const { useCase } = testingEnvironment.runWithContext(() => {
+      const { transactionManager } = ExecutionContext;
+      const filesService = FilesServiceFactory.default({ jobsDispatcher, eventBus });
+      return {
+        useCase: FileUploadForEntityFactory.default({
+          transactionManager,
+          filesService,
+          eventBus,
+        }),
+      };
     });
 
     result = await useCase.execute({

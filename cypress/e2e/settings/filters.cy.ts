@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Filters', () => {
   const checkExistance = () => {
@@ -40,14 +41,14 @@ describe('Filters', () => {
         cy.contains('Ordenes del presidente').click();
         cy.contains('Sentencia de la corte').click();
       });
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
       cy.contains('button', 'Add').click();
     });
     cy.contains('tr', 'My filter group 1').contains('button', 'Group').click();
   });
 
   it('should check that the table is accessible', () => {
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   it('should not list already used tempates', () => {

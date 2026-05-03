@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 
@@ -10,7 +9,7 @@ describe('Collection', () => {
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
     cy.intercept('GET', '/api/settings').as('fetchSettings');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.contains('span', 'Collection').click();
+    cy.get('nav[aria-label="Settings navigation"] a[href*="settings/collection"]').click();
     cy.wait('@fetchTemplates');
     cy.wait('@fetchSettings');
     cy.injectAxe();
@@ -115,7 +114,7 @@ describe('Collection', () => {
   it('should successfully have selected Map view and loaded maplayers', () => {
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.contains('span', 'Collection').click();
+    cy.get('nav[aria-label="Settings navigation"] a[href*="settings/collection"]').click();
     cy.wait('@fetchTemplates');
     cy.get('[data-testid="map-container"]').scrollIntoView();
     cy.get('.leaflet-control-layers-list .leaflet-control-layers-base label')

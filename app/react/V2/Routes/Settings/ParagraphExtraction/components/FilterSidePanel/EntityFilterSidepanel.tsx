@@ -82,7 +82,7 @@ const EntityFilterSidepanel = () => {
         setOpen(false);
       }}
       title={
-        <span className="text-base font-semibold leading-6 text-gray-500 uppercase">
+        <span className="text-base font-semibold uppercase leading-6 [color:var(--color-theme-text-secondary)]">
           <Translate>Filters</Translate>
         </span>
       }
@@ -98,10 +98,10 @@ const EntityFilterSidepanel = () => {
             handleSubmit();
           }}
         >
-          <Button size="small" styling="outline" onClick={clearFilters}>
+          <Button size="small" variant="secondary" onClick={clearFilters}>
             <Translate>Clear All</Translate>
           </Button>
-          <Button size="small" type="submit" color="success">
+          <Button size="small" type="submit" variant="success">
             <Translate>Apply</Translate>
           </Button>
         </form>

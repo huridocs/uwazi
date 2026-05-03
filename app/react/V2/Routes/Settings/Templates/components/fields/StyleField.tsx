@@ -1,9 +1,9 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { RadioSelect } from '#V2/Components/Forms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import { Tooltip } from 'flowbite-react';
+import { Tooltip } from '#V2/Components/UI/Tooltip.js';
 
 export const StyleField = ({ control }: { control: any }) => (
   <Controller
@@ -21,8 +21,6 @@ export const StyleField = ({ control }: { control: any }) => (
               <span className="flex items-center gap-1" key="fill">
                 <Translate>Fill</Translate>{' '}
                 <Tooltip
-                  // eslint-disable-next-line react/style-prop-object
-                  style="light"
                   content={t(
                     'System',
                     'Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.',
@@ -31,7 +29,7 @@ export const StyleField = ({ control }: { control: any }) => (
                   )}
                   placement="right"
                 >
-                  <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+                  <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
                 </Tooltip>
               </span>
             ),
@@ -43,8 +41,6 @@ export const StyleField = ({ control }: { control: any }) => (
               <span className="flex items-center gap-1" key="fit">
                 <Translate>Fit</Translate>{' '}
                 <Tooltip
-                  // eslint-disable-next-line react/style-prop-object
-                  style="light"
                   content={t(
                     'System',
                     'Will show the entire media inside the container.',
@@ -53,7 +49,7 @@ export const StyleField = ({ control }: { control: any }) => (
                   )}
                   placement="right"
                 >
-                  <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+                  <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
                 </Tooltip>
               </span>
             ),

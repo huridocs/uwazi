@@ -26,7 +26,7 @@ const EntityIndexMappingDefinition: IndexDefinition = {
     number_of_shards: 6,
     number_of_replicas: 1,
 
-    'index.mapping.total_fields.limit': 5000,
+    'index.mapping.total_fields.limit': 3200,
 
     analysis: {
       normalizer: {

@@ -10,7 +10,7 @@ const ActionCell = ({
 }: CellContext<TablePXEntityRow, TablePXEntityRow['entity']['sharedId']>) => (
   <div className="flex gap-2 justify-end">
     <Link to={`${cell.getValue()}/paragraphs`}>
-      <Button className="leading-4" styling="outline">
+      <Button className="leading-4" variant="secondary">
         <Translate>View</Translate>
       </Button>
     </Link>

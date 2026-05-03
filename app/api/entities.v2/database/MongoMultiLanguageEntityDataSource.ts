@@ -58,6 +58,7 @@ export class MongoMultiLanguageEntityDataSource
     this.transactionManager.onCommitted(async () => {
       const entities = [...this.deletedEntities.values()];
       this.deletedEntities.clear();
+      if (entities.length === 0) return;
       return this.entityIndexerService.deleteBySharedIds(entities);
     });
   }
@@ -303,6 +304,7 @@ export class MongoMultiLanguageEntityDataSource
 
   async bulkDelete(sharedIds: string[]): Promise<void> {
     await this.getCollection().deleteMany({ sharedId: { $in: sharedIds } });
+    await search.bulkDeleteBySharedId(sharedIds);
 
     sharedIds.forEach(id => this.deletedEntities.add(id));
   }

@@ -18,7 +18,9 @@ const createSut = () => {
   const connection = getConnection();
   const mongoTransactionManager = TransactionManagerFactory.default();
 
-  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+  const settingsDS = SettingsDataSourceFactory.default({
+    transactionManager: mongoTransactionManager,
+  });
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
     connection,
     transactionManager: mongoTransactionManager,

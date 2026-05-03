@@ -1,5 +1,5 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
 import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory.js';
 import { ExpressEntityMapper } from './ExpressEntityMapper.js';
@@ -16,7 +16,7 @@ class UpdateEntityController extends AbstractController<Request> {
       const useCase = UpdateEntityUseCaseFactory.default();
       const entityDAO = new MongoEntityDAO(
         getConnection(),
-        DependenciesContext.transactionManager as MongoTransactionManager,
+        ExecutionContext.transactionManager as MongoTransactionManager,
         this.user
       );
 
@@ -45,7 +45,7 @@ class UpdateEntityController extends AbstractController<Request> {
       const response =
         'entity' in this.request.body ? { entity: entityWithFiles, errors: [] } : entityWithFiles;
 
-      DependenciesContext.logger.info('Entity Update executed successfully', {
+      ExecutionContext.logger.info('Entity Update executed successfully', {
         namespace: 'Entity_Update',
         success: true,
         durationMs: Date.now() - startTime,
@@ -59,7 +59,7 @@ class UpdateEntityController extends AbstractController<Request> {
     } catch (error: unknown) {
       const duration = Date.now() - startTime;
 
-      DependenciesContext.logger.info(
+      ExecutionContext.logger.info(
         `Entity update failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           namespace: 'Entity_Update',

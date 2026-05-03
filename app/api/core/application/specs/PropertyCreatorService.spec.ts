@@ -101,7 +101,9 @@ describe('PropertyCreatorService', () => {
 
   it('should throw if the Property is not consistent', async () => {
     const sut = new PropertyCreatorService({
-      templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+      templatesDS: TemplatesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      }),
     });
 
     await expect(
@@ -119,7 +121,9 @@ describe('PropertyCreatorService', () => {
 
   it('should NOT throw if the Property is unique on the system', async () => {
     const sut = new PropertyCreatorService({
-      templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+      templatesDS: TemplatesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      }),
     });
 
     await expect(
@@ -137,7 +141,9 @@ describe('PropertyCreatorService', () => {
 
   it('should NOT consider the already created Property as duplicated', async () => {
     const sut = new PropertyCreatorService({
-      templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+      templatesDS: TemplatesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      }),
     });
 
     await expect(

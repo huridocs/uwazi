@@ -35,7 +35,7 @@ const Basic = {
           ornare, a volutpat massa interdum.
         </Modal.Body>
         <Modal.Footer>
-          <Button styling="light" className="grow">
+          <Button variant="ghost" className="grow">
             Decline
           </Button>
           <Button className="grow">Accept</Button>
@@ -61,10 +61,10 @@ const Warning = {
           Are you sure you want to delete this product?
         </h3>
         <div className="flex gap-4 justify-center">
-          <Button styling="light" className="grow">
+          <Button variant="ghost" className="grow">
             No, cancel
           </Button>
-          <Button color="error" className="grow">
+          <Button variant="danger" className="grow">
             Yes, I&apos;m sure
           </Button>
         </div>
@@ -87,7 +87,7 @@ const LargeContent = {
           <GeneratedContent />
         </Modal.Body>
         <Modal.Footer>
-          <Button styling="light" className="grow">
+          <Button variant="ghost" className="grow">
             Close
           </Button>
         </Modal.Footer>

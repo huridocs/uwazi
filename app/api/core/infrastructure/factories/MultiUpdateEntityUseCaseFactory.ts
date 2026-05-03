@@ -1,10 +1,8 @@
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
@@ -12,19 +10,20 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { User } from '#api/users.v2/model/User.js';
 
 class MultiUpdateEntityUseCaseFactory {
   static default() {
-    const tenant = tenants.current();
+    const { tenant } = ExecutionContext;
 
-    const transactionManager = DependenciesContext.transactionManager as MongoTransactionManager;
-    const { eventEmitter } = DependenciesContext;
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default();
+    const entitiesDS = EntitiesDataSourceFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default();
 
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.createWithRequired({
@@ -34,18 +33,20 @@ class MultiUpdateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = EntitiesServiceFactory.default({
-      transactionManager,
-      entitiesDS,
-      eventEmitter,
-      settingsDS,
-      templatesDS,
-    });
+    const entitiesService = EntitiesServiceFactory.default();
 
     const entityPermissionChecker = new MongoEntityPermissionChecker(
       getConnection(),
       transactionManager
     );
+
+    let actor: User | undefined;
+    try {
+      actor = ExecutionContext.actor;
+    } catch {
+      // still needed for some backwards compat tests
+      actor = User.createFrom(permissionsContext.getUserInContext()!);
+    }
 
     const useCase = new MultiUpdateEntity(
       {
@@ -56,7 +57,7 @@ class MultiUpdateEntityUseCaseFactory {
         entityPermissionChecker,
         transactionManager,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant }
+      { actor, tenant }
     );
 
     return useCase;

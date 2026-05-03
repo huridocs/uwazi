@@ -276,8 +276,8 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+  const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
   const sut = new SelectPropertyAssignmentCreatorService({
     thesauriDS,
@@ -604,8 +604,8 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   it('should throw when validateRequired is true and a required select property has no value', async () => {
     const transactionManager = TransactionManagerFactory.default();
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
     const sut = new SelectPropertyAssignmentCreatorService(
       { thesauriDS, translationsDS, settingsDS },

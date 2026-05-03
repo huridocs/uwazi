@@ -12,7 +12,9 @@ class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdat
   static eventName = EntityUpdatedEvent.name;
 
   protected async handle(): Promise<void> {
-    const templateDS = TemplatesDataSourceFactory.default(TransactionManagerFactory.default());
+    const templateDS = TemplatesDataSourceFactory.default({
+      transactionManager: TransactionManagerFactory.default(),
+    });
 
     const template = (await templateDS.getById(this.params.after.templateId)).getDataOrThrow();
 
@@ -39,6 +41,6 @@ class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdat
   }
 }
 
-EventEmitterFactory.default().listen(ProcessRelationshipAfterEntityUpdatedListener);
+EventEmitterFactory.registry.register(ProcessRelationshipAfterEntityUpdatedListener);
 
 export { ProcessRelationshipAfterEntityUpdatedListener };

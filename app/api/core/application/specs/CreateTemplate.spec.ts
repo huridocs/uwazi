@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
 import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
@@ -13,30 +12,33 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyPageService.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { CreateTemplateUseCase } from '../CreateTemplate.js';
 
-const createSut = () => {
-  const transactionManager = TransactionManagerFactory.default();
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const idGenerator = IdGeneratorFactory.default();
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const translationService = new LegacyTranslationService();
-  const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-  const pageService = new LegacyPageService();
+const createSut = () =>
+  testingEnvironment.runWithContext(() => {
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
+    const idGenerator = IdGeneratorFactory.default();
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const translationService = new LegacyTranslationService();
+    const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+    const pageService = new LegacyPageService();
 
-  const sut = new CreateTemplateUseCase({
-    templatesDS,
-    idGenerator,
-    thesauriDS: new MongoThesauriDataSource(getConnection(), transactionManager),
-    settingsDS,
-    translationService,
-    relationshipTypesDS,
-    transactionManager,
-    pageService,
+    const sut = new CreateTemplateUseCase({
+      templatesDS,
+      idGenerator,
+      thesauriDS: new MongoThesauriDataSource(getConnection(), transactionManager),
+      settingsDS,
+      translationService,
+      relationshipTypesDS,
+      transactionManager,
+      pageService,
+    });
+
+    return { sut };
   });
-
-  return { sut };
-};
 
 const factory = getFixturesFactory();
 

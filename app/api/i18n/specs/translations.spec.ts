@@ -387,7 +387,9 @@ describe('translations', () => {
 
   describe('addLanguage', () => {
     it('should clone translations of default language and change language to the one added', async () => {
-      await addLanguage({ key: 'fr', label: 'french' });
+      await testingEnvironment.runWithContext(async () => {
+        await addLanguage({ key: 'fr', label: 'french' });
+      });
       const allTranslations = await translations.get();
 
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
@@ -398,12 +400,16 @@ describe('translations', () => {
 
     describe('when the language already exists', () => {
       it('should not clone it again', async () => {
-        await addLanguage({ key: 'fr', label: 'french' });
+        await testingEnvironment.runWithContext(async () => {
+          await addLanguage({ key: 'fr', label: 'french' });
+        });
 
         const firstEntitiesCount = (await entities.get({ language: 'fr' })).length;
         const firstPagesCount = (await pages.get({ language: 'fr' })).length;
 
-        await addLanguage({ key: 'fr', label: 'french' });
+        await testingEnvironment.runWithContext(async () => {
+          await addLanguage({ key: 'fr', label: 'french' });
+        });
 
         const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
         expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);

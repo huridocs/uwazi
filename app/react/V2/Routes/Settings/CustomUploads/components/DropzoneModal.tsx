@@ -62,7 +62,7 @@ const DropzoneModal = ({ notify, isOpen, setIsOpen, uploadService }: DropzoneMod
           <div className="flex gap-4">
             <Button
               className="w-1/2"
-              styling="outline"
+              variant="secondary"
               onClick={() => {
                 handleCancel();
               }}

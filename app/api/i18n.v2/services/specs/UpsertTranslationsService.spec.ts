@@ -16,10 +16,10 @@ const createService = () => {
   const transactionManager = TransactionManagerFactory.default();
   return new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
-    SettingsDataSourceFactory.default(transactionManager),
+    SettingsDataSourceFactory.default({ transactionManager }),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default(transactionManager)
+      SettingsDataSourceFactory.default({ transactionManager })
     ),
     transactionManager
   );

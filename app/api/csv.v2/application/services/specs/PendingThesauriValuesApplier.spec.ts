@@ -68,7 +68,7 @@ describe('PendingThesauriValuesApplier', () => {
   const buildApplier = () => {
     const transactionManager = TransactionManagerFactory.default();
     return new PendingThesauriValuesApplier({
-      thesauriDS: ThesauriDataSourceFactory.default(transactionManager),
+      thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
       translationsDS: DefaultTranslationsDataSource(transactionManager),
     });
   };
@@ -77,7 +77,7 @@ describe('PendingThesauriValuesApplier', () => {
     values: Array<{ id: string; label: string; values?: Array<{ id: string; label: string }> }>
   ) => {
     const transactionManager = TransactionManagerFactory.default();
-    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const current = (await thesauriDS.getById(thesaurusId)).getDataOrThrow();
     const updated = new Thesaurus({
       id: current.id,

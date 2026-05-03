@@ -146,7 +146,7 @@ describe('search filters path', () => {
       selectFilterOption('Mecanismo', 4);
       selectFilterOption('Informe de admisibilidad', 2);
       selectFilterOption('Ordenes de la corte', 6);
-      cy.get('[data-testid="library-filters"], #filtersForm').scrollIntoView();
+      cy.get('[data-testid="library-filters"]').first().scrollIntoView();
       clickAnyCountryOption();
       cy.get(entityRowsSelector).should('have.length.greaterThan', 0);
       getAllEntitiesTitles().then(entityTitles => {

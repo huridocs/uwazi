@@ -2,29 +2,7 @@ import React, { useMemo } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { EntityReference } from '#V2/domain/entities/types.js';
 import { Button } from '#V2/Components/UI/Button.js';
-
-const getTextColor = (backgroundHex: string): string => {
-  if (!backgroundHex) {
-    return '#000';
-  }
-
-  let hexColor = backgroundHex.replace('#', '').trim();
-
-  if (hexColor.length === 3) {
-    hexColor = hexColor
-      .split('')
-      .map(x => x + x)
-      .join('');
-  }
-
-  const r = parseInt(hexColor.substring(0, 2), 16);
-  const g = parseInt(hexColor.substring(2, 4), 16);
-  const b = parseInt(hexColor.substring(4, 6), 16);
-
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-  return brightness > 128 ? '#000' : '#FFF';
-};
+import { getContrastTextColor } from '#shared/utils/contrast.js';
 
 type ReferenceProps = {
   reference: EntityReference;
@@ -39,13 +17,16 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
   const templateName = reference.targetEntity.template.name || '';
   const templateColor = reference.targetEntity.template.color || '#A4CAFE';
   const referenceText = reference.reference.text || '';
-  const textColor = useMemo(() => getTextColor(templateColor), [templateColor]);
+  const textColor = useMemo(() => getContrastTextColor(templateColor), [templateColor]);
+
+  const surface = '[background-color:var(--color-theme-surface-raised)]';
+  const borderIdle =
+    '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
+  const borderClass = isSelected ? 'border-2 border-primary-400' : borderIdle;
 
   return (
     <div
-      className={`w-full border rounded-xl shadow-sm p-4 bg-white flex flex-col gap-3 cursor-pointer transition-colors ${
-        isSelected ? 'border-primary-400 border-2' : 'border-gray-100'
-      }`}
+      className={`flex w-full cursor-pointer flex-col gap-3 rounded-xl border p-4 shadow-sm transition-colors ${surface} ${borderClass}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -57,11 +38,13 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
       }}
     >
       <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-bold text-gray-900">{entityTitle}</h3>
+        <h3 className="text-sm font-bold [color:var(--color-theme-text-primary)]">{entityTitle}</h3>
       </div>
 
       {referenceText && (
-        <p className="text-sm font-medium text-gray-900 leading-relaxed">{referenceText}</p>
+        <p className="text-sm font-medium leading-relaxed [color:var(--color-theme-text-primary)]">
+          {referenceText}
+        </p>
       )}
 
       {templateName && (
@@ -77,8 +60,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
 
       <div className="flex justify-end gap-2 mt-2">
         <Button
-          styling="outline"
-          color="primary"
+          variant="secondary"
           size="small"
           onClick={e => {
             e.stopPropagation();
@@ -88,8 +70,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
           <Translate>View</Translate>
         </Button>
         <Button
-          styling="outline"
-          color="primary"
+          variant="secondary"
           size="small"
           onClick={e => {
             e.stopPropagation();

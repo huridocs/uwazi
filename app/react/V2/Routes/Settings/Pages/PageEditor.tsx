@@ -234,26 +234,20 @@ const PageEditor = () => {
         <SettingsContent.Footer>
           <div className="flex justify-end gap-2">
             <Link to="/settings/pages">
-              <Button styling="light" disabled={isSubmitting}>
+              <Button variant="ghost" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
 
             <Button
-              styling="solid"
-              color="primary"
+              variant="primary"
               onClick={handleSubmit(handleSaveAndPreview)}
               disabled={getValues('entityView') || isSubmitting}
             >
               <Translate>Save & Preview</Translate>
             </Button>
 
-            <Button
-              styling="solid"
-              color="success"
-              onClick={handleSubmit(handleSave)}
-              disabled={isSubmitting}
-            >
+            <Button variant="success" onClick={handleSubmit(handleSave)} disabled={isSubmitting}>
               <Translate>Save</Translate>
             </Button>
           </div>

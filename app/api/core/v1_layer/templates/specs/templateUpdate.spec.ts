@@ -45,7 +45,9 @@ describe('templates', () => {
 
       toSave.name = 'changed name';
 
-      await templates.save(toSave, 'en');
+      await testingEnvironment.runWithContext(async () => {
+        await templates.save(toSave, 'en');
+      });
       const [edited] = await templates.get(templateToBeEditedId);
       expect(edited.name).toBe('changed name');
     });
@@ -55,7 +57,7 @@ describe('templates', () => {
         _id: templateToBeEditedId,
         name: 'changed name',
       });
-      const template1 = await updateTemplate(edited);
+      const template1 = await testingEnvironment.runWithContext(async () => updateTemplate(edited));
       expect(template1.name).toBe('changed name');
     });
 
@@ -87,7 +89,7 @@ describe('templates', () => {
       applicationEventsBus.on(TemplateUpdatedEvent, async data => {
         emitedEventData = data;
       });
-      await updateTemplate(template, 'en');
+      await testingEnvironment.runWithContext(async () => updateTemplate(template));
 
       const [currentTemplate] = await db
         .mongodb!.collection('templates')
@@ -117,7 +119,7 @@ describe('templates', () => {
       );
 
       try {
-        await updateTemplate(changedTemplate);
+        await testingEnvironment.runWithContext(async () => updateTemplate(changedTemplate));
         throw new Error('properties have swaped names, should have failed with an error');
       } catch (error) {
         expect(error.message).toContain('Properties cannot swap names');
@@ -137,7 +139,7 @@ describe('templates', () => {
 
       const mapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
-      await updateTemplate(template);
+      await testingEnvironment.runWithContext(async () => updateTemplate(template));
 
       await elasticClient.indices.refresh({ index: elasticIndex });
 
@@ -157,7 +159,7 @@ describe('templates', () => {
       const testTemplate = await updateTemplate(newTemplate);
 
       testTemplate.name = 'changed name';
-      await updateTemplate(testTemplate);
+      await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
       const dbTranslations = await DefaultTranslationsDataSource(
         TransactionManagerFactory.default()
@@ -172,10 +174,10 @@ describe('templates', () => {
     it('should update translations with the name of the title property, and remove old custom value', async () => {
       const testTemplate = factory.template('template to be edited');
       testTemplate!.commonProperties![0].label = 'First New Title';
-      await updateTemplate(testTemplate);
+      await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
       testTemplate!.commonProperties![0].label = 'Second New Title';
-      await updateTemplate(testTemplate);
+      await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
       const dbTranslations = await DefaultTranslationsDataSource(
         TransactionManagerFactory.default()
@@ -207,7 +209,7 @@ describe('templates', () => {
       template1.properties.pop();
       template1.properties.push({ name: 'label_3', label: 'label 3', type: 'text' });
       template1.commonProperties[0].label = 'new title label';
-      await updateTemplate(template1);
+      await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
@@ -229,7 +231,9 @@ describe('templates', () => {
 
     it('should update translations handling duplicate values properly', async () => {
       const { _id, ...newTemplate } = factory.template('Country');
-      let template1 = await updateTemplate(newTemplate);
+      let template1 = await testingEnvironment.runWithContext(async () =>
+        updateTemplate(newTemplate)
+      );
       let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();
@@ -237,7 +241,7 @@ describe('templates', () => {
       expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
 
       template1.commonProperties![0].label = 'Country name';
-      template1 = await updateTemplate(template1);
+      template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
@@ -249,7 +253,7 @@ describe('templates', () => {
       ).toBe(1);
 
       template1.commonProperties![0].label = 'Country';
-      template1 = await updateTemplate(template1);
+      template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
@@ -261,7 +265,7 @@ describe('templates', () => {
       ).toBe(0);
 
       template1.name = 'Country template';
-      template1 = await updateTemplate(template1);
+      template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
       dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
