@@ -225,7 +225,7 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="div"
-          className={`fixed top-0 right-0 h-full w-full border-l-2 transition duration-200 ease-in transform ${width}`}
+          className={`absolute top-0 right-0 h-full w-full border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
