@@ -104,7 +104,11 @@ class Tenants {
   }
 
   add(tenant: DBTenant) {
-    this.tenants[tenant.name] = { ...this.defaultTenant, ...tenant };
+    this.tenants[tenant.name] = {
+      ...this.defaultTenant,
+      ...tenant,
+      featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
+    };
   }
 
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {
