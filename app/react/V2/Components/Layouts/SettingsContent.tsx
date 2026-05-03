@@ -96,7 +96,7 @@ SettingsContent.Footer = ({
   <div
     className={[
       'sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3',
-      '[border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]',
+      'border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]',
       highlighted
         ? '[background-color:var(--color-theme-feedback-info-tint)]'
         : '[background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]',

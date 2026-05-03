@@ -52,7 +52,6 @@ const App = ({ customParams }) => {
 
   const isV2Route =
     location.pathname.includes('/entityv2') || location.pathname.includes('/settings');
-  const shouldUseThemeWrapper = shouldShowNewHeader || isV2Route;
   const shellSharedTheme = shouldShowNewHeader && isV2Route;
 
   const appMainTree = (
@@ -106,22 +105,14 @@ const App = ({ customParams }) => {
           </>
         )}
       </div>
-      {inlineEditState.inlineEdit &&
-        inlineEditState.context &&
-        (shouldUseThemeWrapper ? (
-          <ThemeProvider legacyChrome>
-            <TranslateModal />
-          </ThemeProvider>
-        ) : (
+      {inlineEditState.inlineEdit && inlineEditState.context && (
+        <ThemeProvider>
           <TranslateModal />
-        ))}
-      {shouldUseThemeWrapper ? (
-        <ThemeProvider legacyChrome>
-          <NotificationsPanel />
         </ThemeProvider>
-      ) : (
-        <NotificationsPanel />
       )}
+      <ThemeProvider>
+        <NotificationsPanel />
+      </ThemeProvider>
     </div>
   );
 };
