@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { NotificationItem } from './NotificationItem.js';
 import { TaskItem } from './TaskItem.js';
 import { Translate } from '#app/I18N/index.js';
-import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center py-1 text-center [color:var(--color-theme-text-muted)]">
@@ -128,7 +128,7 @@ const NotificationsPanel = () => {
           )}
         </Sidepanel.Body>
         {hasClearable && (
-          <Sidepanel.Footer className="border-t p-4 [border-top-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
+          <Sidepanel.Footer className="border-t p-4 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
             <Button variant="secondary" onClick={clearAll} className="w-full">
               <span className="flex items-center justify-center gap-1.5">
                 <Translate>Clear</Translate>

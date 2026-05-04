@@ -8,12 +8,20 @@ import { tenantsModel } from '../tenantsModel.js';
 describe('tenantsContext', () => {
   describe('add', () => {
     it('should add defaults to tenant added', async () => {
-      tenants.add({ name: 'test-tenant', dbName: 'test-tenant-db' });
+      tenants.add({
+        name: 'test-tenant',
+        dbName: 'test-tenant-db',
+        featureFlags: { themeCustomization: true },
+      });
       await tenants.run(async () => {
         expect(tenants.current()).toMatchObject({
           ...config.defaultTenant,
           name: 'test-tenant',
           dbName: 'test-tenant-db',
+          featureFlags: {
+            ...config.defaultTenant.featureFlags,
+            themeCustomization: true,
+          },
         });
       }, 'test-tenant');
     });
