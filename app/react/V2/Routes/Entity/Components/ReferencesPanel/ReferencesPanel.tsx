@@ -8,7 +8,7 @@ import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
-import { formatReferences } from '#V2/formatters/relationships/index.js';
+import { formatReferences } from '#V2/formatters/index.js';
 import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
