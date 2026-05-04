@@ -55,7 +55,8 @@ const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
 const Entity = () => {
-  const { entity, mainDocument, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
+  const { entity, mainDocument, pagePlaintext, searchResults } =
+    useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
 

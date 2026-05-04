@@ -1,8 +1,7 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { DateTime } from 'luxon';
+import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { Translate } from '#app/I18N/index.js';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
@@ -20,23 +19,13 @@ type DateProps = MetadataFieldProps & {
     | MultiDateMetadataProperty['values']
     | DateRangeMetadataProperty['values']
     | MultiDateRangeMetadataProperty['values'];
-};
-
-const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd';
-
-const displayFormatMap: Record<string, string> = {
-  'yyyy-MM-dd': 'yyyy, LLL d',
-  'yyyy/MM/dd': 'yyyy, LLL d',
-  'dd-MM-yyyy': 'd LLL, yyyy',
-  'dd/MM/yyyy': 'd LLL, yyyy',
-  'MM-dd-yyyy': 'LLL d, yyyy',
-  'MM/dd/yyyy': 'LLL d, yyyy',
+  format?: DateTimeFormatOptions;
 };
 
 const normalizeTimestamp = (timestamp: number) =>
   timestamp > 9999999999 ? Math.floor(timestamp / 1000) : timestamp;
 
-const formatTimestamp = (timestamp: number, format?: string, locale?: string) => {
+const formatTimestamp = (timestamp: number, format?: DateTimeFormatOptions, locale?: string) => {
   let luxonDate = DateTime.fromSeconds(normalizeTimestamp(timestamp), { zone: 'utc' });
 
   if (locale) {
@@ -47,18 +36,16 @@ const formatTimestamp = (timestamp: number, format?: string, locale?: string) =>
     return '';
   }
 
-  const selectedFormat = format || DEFAULT_DATE_FORMAT;
-  const displayFormat = displayFormatMap[selectedFormat];
-
-  if (displayFormat) {
-    return luxonDate.toFormat(displayFormat);
-  }
-
-  return luxonDate.toLocaleString(DateTime.DATE_MED);
+  return luxonDate.toLocaleString(format);
 };
 
-const Date = ({ values, label, translationContext, hideLabel }: DateProps) => {
-  const { dateFormat = DEFAULT_DATE_FORMAT } = useAtomValue(settingsAtom);
+const Date = ({
+  values,
+  label,
+  translationContext,
+  hideLabel,
+  format = DateTime.DATE_MED,
+}: DateProps) => {
   const locale = useAtomValue(localeAtom);
 
   if (!values?.length) {
@@ -77,7 +64,7 @@ const Date = ({ values, label, translationContext, hideLabel }: DateProps) => {
       <dd className="flex flex-col gap-1">
         {values.map((stamp, index) => {
           if (typeof stamp.value === 'number') {
-            const formattedValue = formatTimestamp(stamp.value, dateFormat, locale);
+            const formattedValue = formatTimestamp(stamp.value, format, locale);
 
             if (!formattedValue) {
               return null;
@@ -92,11 +79,9 @@ const Date = ({ values, label, translationContext, hideLabel }: DateProps) => {
           }
 
           const formattedFrom = stamp.value.from
-            ? formatTimestamp(stamp.value.from, dateFormat, locale)
+            ? formatTimestamp(stamp.value.from, format, locale)
             : '';
-          const formattedTo = stamp.value.to
-            ? formatTimestamp(stamp.value.to, dateFormat, locale)
-            : '';
+          const formattedTo = stamp.value.to ? formatTimestamp(stamp.value.to, format, locale) : '';
 
           if (!formattedFrom && !formattedTo) {
             return null;
