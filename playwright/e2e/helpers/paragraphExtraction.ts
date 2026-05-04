@@ -56,7 +56,7 @@ export const waitForProcessedParagraphRows = async (
   extractorId: string,
   options: WaitForProcessedRowsOptions = {}
 ): Promise<WaitForProcessedRowsResult> => {
-  const timeoutMs = options.timeoutMs ?? 120000;
+  const timeoutMs = options.timeoutMs ?? 60_000;
   const pollIntervalMs = options.pollIntervalMs ?? 1500;
   const startedAt = Date.now();
   const snapshots: PollSnapshot[] = [];
@@ -91,6 +91,12 @@ export const waitForProcessedParagraphRows = async (
       domRows,
     });
 
+    if (counters.error > 0) {
+      throw new Error(
+        `Paragraph extraction has ${counters.error} row(s) in error for extractor ${extractorId}; aborting instead of waiting. Last snapshot: ${JSON.stringify(snapshots[snapshots.length - 1])}`
+      );
+    }
+
     const processedRows = rows.filter(row => row.status?.status === 'processed');
     if (processedRows.length > 0) {
       return { processedRows, snapshots };
@@ -101,6 +107,6 @@ export const waitForProcessedParagraphRows = async (
 
   const recentSnapshots = snapshots.slice(-3);
   throw new Error(
-    `Timed out waiting processed paragraph rows for extractor ${extractorId}. Last snapshots: ${JSON.stringify(recentSnapshots)}`
+    `Timed out after ${timeoutMs}ms waiting for at least one processed row (extractor ${extractorId}). If nothing completes in ~90s locally, check workers/services — extending the wait usually hides real failures. Last snapshots: ${JSON.stringify(recentSnapshots)}`
   );
 };

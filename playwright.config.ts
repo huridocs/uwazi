@@ -4,11 +4,11 @@ export default defineConfig({
   testDir: './playwright/e2e',
   timeout: 10 * 60 * 1000,
   expect: {
-    timeout: 15000,
+    timeout: process.env.CI ? 30_000 : 15_000,
   },
   fullyParallel: false,
   workers: 1,
-  retries: 0,
+  retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
   use: {
     baseURL: 'http://localhost:3000',

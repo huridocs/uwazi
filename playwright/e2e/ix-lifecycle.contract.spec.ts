@@ -1,5 +1,5 @@
-import { execSync } from 'child_process';
 import { expect, Page, test } from '@playwright/test';
+import { MongoClient } from 'mongodb';
 import { loginAsAdmin } from './helpers/auth';
 
 test.describe.configure({ mode: 'serial' });
@@ -23,7 +23,7 @@ async function gotoWithRetry(url: string, page: Page) {
   }
 }
 
-async function waitForSuggestionsStatusReady(page: Page, extractorId: string, timeoutMs = 120000) {
+async function waitForSuggestionsStatusReady(page: Page, extractorId: string, timeoutMs = 60_000) {
   const startedAt = Date.now();
   while (Date.now() - startedAt < timeoutMs) {
     const statusResponse = await page.request.post('/api/suggestions/status', {
@@ -39,35 +39,31 @@ async function waitForSuggestionsStatusReady(page: Page, extractorId: string, ti
   throw new Error(`Suggestions never reached ready state for extractor ${extractorId}`);
 }
 
-function waitForMongoSegmentationsReady(timeoutMs = 180000) {
-  const startedAt = Date.now();
-  while (Date.now() - startedAt < timeoutMs) {
-    const raw = execSync(
-      `mongosh "mongodb://127.0.0.1:27017/uwazi_e2e" --quiet --eval "const count=db.segmentations.countDocuments({ status: 'ready' }); print(count);"`,
-      { encoding: 'utf8' }
-    ).trim();
-    const readyCount = Number.parseInt(raw, 10);
-    if (Number.isFinite(readyCount) && readyCount > 0) {
-      return readyCount;
+async function waitForMongoSegmentationsReady(timeoutMs = 60_000) {
+  const dbHost = process.env.DBHOST || '127.0.0.1:27017';
+  const databaseName = process.env.DATABASE_NAME || 'uwazi_e2e';
+  const client = new MongoClient(`mongodb://${dbHost}`);
+  try {
+    await client.connect();
+    const collection = client.db(databaseName).collection('segmentations');
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < timeoutMs) {
+      const count = await collection.countDocuments({ status: 'ready' });
+      if (count > 0) return count;
+      await new Promise(resolve => setTimeout(resolve, 1500));
     }
-    execSync('sleep 2');
+    throw new Error(
+      `Timed out after ${timeoutMs}ms waiting for Mongo segmentations with status ready (check segmentation service / EXTERNAL_SERVICES / dummy).`
+    );
+  } finally {
+    await client.close();
   }
-  throw new Error('Timed out waiting for Mongo segmentations with status ready.');
 }
 
 test('ix lifecycle contract from UI', async ({ page }) => {
   test.setTimeout(6 * 60 * 1000);
 
-  await test.step('Restore seeded fixtures and login', async () => {
-    execSync('yarn e2e-fixtures', {
-      cwd: process.cwd(),
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        DATABASE_NAME: 'uwazi_e2e',
-        INDEX_NAME: 'uwazi_e2e',
-      },
-    });
+  await test.step('Login as admin', async () => {
     await loginAsAdmin(page);
   });
   const extractorName = `IX Heroes BIO ${Date.now()}`;
@@ -111,12 +107,12 @@ test('ix lifecycle contract from UI', async ({ page }) => {
     const createdRow = page.getByRole('row', { name: new RegExp(extractorName) });
     await createdRow.getByRole('button', { name: 'Review' }).click();
     const trainingButtons = page.getByTestId('ix-training-set-add');
-    await expect(trainingButtons.first()).toBeVisible({ timeout: 120000 });
+    await expect(trainingButtons.first()).toBeVisible({ timeout: 60_000 });
     const trainingCount = await trainingButtons.count();
     expect(trainingCount).toBeGreaterThan(1);
     await trainingButtons.nth(0).click();
     await trainingButtons.nth(1).click();
-    const readySegmentations = waitForMongoSegmentationsReady(180000);
+    const readySegmentations = await waitForMongoSegmentationsReady();
     expect(readySegmentations).toBeGreaterThan(0);
   });
 
@@ -144,7 +140,7 @@ test('ix lifecycle contract from UI', async ({ page }) => {
     const extractors = Array.isArray(extractorPayload) ? extractorPayload : extractorPayload.rows;
     const createdExtractor = extractors.find((item: any) => item.name === extractorName);
     expect(createdExtractor?._id).toBeTruthy();
-    await waitForSuggestionsStatusReady(page, createdExtractor._id, 180000);
+    await waitForSuggestionsStatusReady(page, createdExtractor._id, 60_000);
     const openModal = page.getByTestId('modal');
     if (await openModal.isVisible().catch(() => false)) {
       const closeButton = openModal.getByRole('button', { name: /Close|Cancel|Done/i });
@@ -158,7 +154,7 @@ test('ix lifecycle contract from UI', async ({ page }) => {
 
   await expect
     .poll(async () => await page.locator('tbody tr button[data-testid="ix-accept-suggestion"]:not([disabled])').count(), {
-      timeout: 120000,
+      timeout: 60_000,
       intervals: [500, 1000, 1500],
       message: 'Wait for at least one enabled Accept suggestion button',
     })

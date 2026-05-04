@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import { expect, Page, test } from '@playwright/test';
 import { loginAsAdmin } from './helpers/auth';
 import { createTemplate } from './helpers/setupData';
@@ -19,19 +18,10 @@ async function gotoWithRetry(url: string, page: Page) {
 }
 
 test('paragraph extraction lifecycle', async ({ page }) => {
-  test.setTimeout(4 * 60 * 1000);
+  /** Fixtures + wizard + bounded wait for processed rows (long waits hide real failures). */
+  test.setTimeout(5 * 60 * 1000);
 
-  await test.step('Restore seeded fixtures and login', async () => {
-    execSync('yarn e2e-fixtures', {
-      cwd: process.cwd(),
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        DATABASE_NAME: 'uwazi_e2e',
-        INDEX_NAME: 'uwazi_e2e',
-        FEATURE_FLAG_PARAGRAPH_EXTRACTION: 'true',
-      },
-    });
+  await test.step('Enable paragraph extraction feature flag and login', async () => {
     await page.addInitScript(() => {
       (
         window as typeof window & { __featureFlags__?: { paragraphExtraction: boolean } }
@@ -128,7 +118,7 @@ test('paragraph extraction lifecycle', async ({ page }) => {
   let processedEntityTitle = '';
   await test.step('Wait until extractor rows show ready status', async () => {
     const { processedRows } = await waitForProcessedParagraphRows(page.request, extractorId, {
-      timeoutMs: 120000,
+      timeoutMs: 60_000,
       pollIntervalMs: 1500,
       getDomRowsCount: async () => page.locator('tbody tr').count(),
     });

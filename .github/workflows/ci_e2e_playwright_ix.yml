@@ -17,6 +17,15 @@ jobs:
     container:
       image: ghcr.io/${{ github.repository }}-cypress-e2e:latest
       options: --ipc=host
+    name: e2e-playwright (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ix
+            spec: 'playwright/e2e/ix-lifecycle.contract.spec.ts'
+          - name: px
+            spec: 'playwright/e2e/paragraph-extraction.contract.spec.ts'
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
@@ -83,14 +92,6 @@ jobs:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
 
-      - name: Setup dummy services
-        run: |
-          python3.11 -m venv .venv
-          make install_venv
-          make start > logs.log &
-          sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
-        working-directory: dummy_extractor_services
-
       - name: Forward ports for container networking
         run: |
           echo "Setting up port forwarding for container networking..."
@@ -141,6 +142,49 @@ jobs:
           nc -z localhost 6379
           curl -s --connect-timeout 5 http://localhost:9200/_cluster/health >/dev/null
 
+      - name: Setup dummy services
+        working-directory: dummy_extractor_services
+        run: |
+          set -e
+          python3.11 -m venv .venv
+          make install_venv
+
+          . .venv/bin/activate
+          PYTHONUNBUFFERED=1 setsid nohup bash -c 'make start_inside_docker' > logs.log 2>&1 &
+          disown || true
+
+          echo "Waiting for gunicorn HTTP servers..."
+          sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+          wget --waitretry=5 --retry-connrefused -v http://localhost:5056/info
+
+          if ! command -v redis-cli >/dev/null 2>&1; then
+            echo "Installing redis-tools..."
+            apt-get update -qq && apt-get install -y redis-tools
+          fi
+
+          echo "Waiting for dummy workers to register Redis queues..."
+          STREAMS=0
+          for i in $(seq 1 30); do
+            STREAMS=$(redis-cli -h localhost -p 6379 KEYS 'rsmq:*' 2>/dev/null | wc -l)
+            if [ "$STREAMS" -gt 0 ]; then
+              echo "Found $STREAMS Redis queue keys after ${i}s"
+              break
+            fi
+            sleep 1
+          done
+          if [ "$STREAMS" -eq 0 ]; then
+            echo "ERROR: dummy workers did not register any Redis queues"
+            cat logs.log
+            exit 1
+          fi
+
+          echo "=== dummy services processes ==="
+          if ! ps -ef | grep -E "gunicorn|worker_(metadata|paragraphs|translations)" | grep -v grep; then
+            echo "ERROR: dummy services processes not running"
+            cat logs.log
+            exit 1
+          fi
+
       - name: Wait For and Download Artifact
         run: |
           apt-get update -qq && apt-get install -y jq unzip
@@ -168,6 +212,15 @@ jobs:
           exit 1
         timeout-minutes: 6
 
+      - name: Restore fixtures
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:9200
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
+        run: yarn e2e-fixtures
+
       - name: Configure IX settings
         run: yarn ix-config
         env:
@@ -186,13 +239,9 @@ jobs:
           INDEX_NAME: uwazi_e2e
         run: .github/scripts/start-uwazi.sh
 
-      - name: Run Playwright IX specs
-        run: |
-          yarn playwright test \
-            playwright/e2e/ix-lifecycle.contract.spec.ts \
-            playwright/e2e/paragraph-extraction.contract.spec.ts \
-            --workers=1
-        timeout-minutes: 45
+      - name: Run Playwright spec - ${{ matrix.name }}
+        run: yarn playwright test ${{ matrix.spec }} --workers=1
+        timeout-minutes: 30
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:9200
@@ -206,7 +255,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-ix-dummy-services-log
+          name: playwright-${{ matrix.name }}-dummy-services-log
           path: dummy_extractor_services/logs.log
           if-no-files-found: ignore
 
@@ -214,7 +263,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-ix-test-results
+          name: playwright-${{ matrix.name }}-test-results
           path: test-results/
           if-no-files-found: ignore
 
@@ -222,7 +271,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-ix-report
+          name: playwright-${{ matrix.name }}-report
           path: playwright-report/
           if-no-files-found: ignore
 
@@ -230,6 +279,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-ix-logs
+          name: playwright-${{ matrix.name }}-logs
           path: .github/logs/
           if-no-files-found: ignore
