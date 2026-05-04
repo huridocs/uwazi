@@ -8,8 +8,16 @@ import {
 } from '../entities/SlotBootstrapDefinitions.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
+// Use minimal slot counts so tests don't bulk-write 850+ documents on every execute()
+const testAmountPerSlotType = Object.fromEntries(
+  Object.keys(AmountPerSlotType).map(k => [k, 2])
+) as typeof AmountPerSlotType;
+
 const createSut = () => {
-  const sut = new MongoSlotsBootstrapper({ database: getConnection() });
+  const sut = new MongoSlotsBootstrapper({
+    database: getConnection(),
+    amountPerSlotType: testAmountPerSlotType,
+  });
 
   return { sut };
 };
@@ -17,7 +25,7 @@ const createSut = () => {
 const slotsCollection = () => testingEnvironment.db.getCollection(MongoSlotsDAO.collectionName)!;
 
 const expectedSlots = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
-  Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
+  Array.from({ length: testAmountPerSlotType[slotType] }, (_, index) => ({
     type: slotType,
     slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
     assignedTo: null,

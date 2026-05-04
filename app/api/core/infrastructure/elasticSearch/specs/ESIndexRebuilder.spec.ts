@@ -19,6 +19,8 @@ import { FullTextESWriter } from '../entities/FullTextESWriter.js';
 import { EntityIndexerService } from '../entities/EntityIndexerService.js';
 import { FullTextIndexerService } from '../entities/FullTextIndexerService.js';
 import { EntityIndexMappingDefinition } from '../entities/EntityIndexMappingDefinition.js';
+import { createEntityMetadataMapping } from '../entities/EntityMetadataMapping.js';
+import type { SlotType } from '../entities/SlotType.js';
 import { ElasticSearchBootstrapper } from '../provision/ElasticSearchBootstrapper.js';
 import { TenantAwareESClient } from '../TenantAwareESClient.js';
 import { IndexNameResolver } from '../IndexNameResolver.js';
@@ -37,6 +39,23 @@ const testAlias = `test_rebuilder_${runId}`;
 const testPhysicalPrefix = `test_rebuilder_${runId}`;
 const testTenantName = `test_tenant_${runId}`;
 
+// Minimal slot counts for tests — enough for 1 filterable text property × 3 languages
+const testAmountPerSlotType: Record<SlotType, number> = {
+  txt: 5,
+  date: 3,
+  num: 3,
+  range: 3,
+  select: 3,
+  relationship: 3,
+  geolocation: 3,
+  relationship_txt: 5,
+  relationship_num: 3,
+  relationship_date: 3,
+  relationship_range: 3,
+  relationship_select: 3,
+  relationship_geolocation: 3,
+};
+
 const testRegistry: Record<string, IndexDefinition> = {
   entities: {
     alias: testAlias,
@@ -46,7 +65,13 @@ const testRegistry: Record<string, IndexDefinition> = {
       number_of_shards: 1,
       number_of_replicas: 0,
     },
-    mappings: EntityIndexMappingDefinition.mappings,
+    mappings: {
+      ...EntityIndexMappingDefinition.mappings,
+      properties: {
+        ...EntityIndexMappingDefinition.mappings.properties,
+        metadata: { properties: createEntityMetadataMapping(testAmountPerSlotType) },
+      },
+    },
   } as IndexDefinition,
 };
 
@@ -96,7 +121,10 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
     }),
   });
 
-  const slotsBootstrapper = new MongoSlotsBootstrapper({ database: db });
+  const slotsBootstrapper = new MongoSlotsBootstrapper({
+    database: db,
+    amountPerSlotType: testAmountPerSlotType,
+  });
   const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
 
   const resolver = TestUtils.mockClass<IndexNameResolver>({
@@ -147,64 +175,71 @@ describe('ESIndexRebuilder', () => {
     await testingEnvironment.setUp(fixtures);
   });
 
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+    MongoSlotsDAO.clearCache();
+  });
+
   afterAll(async () => {
     await deleteTestIndex();
     await testingEnvironment.tearDown();
     await rawESClient.close();
   });
 
-  beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
-    await deleteTestIndex();
-    MongoSlotsDAO.clearCache();
-  });
-
   describe('execute()', () => {
-    it('entities present in MongoDB are searchable in ES after execute()', async () => {
-      const { sut, tenantAwareClient } = createSut();
-      await sut.execute();
-      await refreshTestIndex();
+    describe('after a single execute() with base fixtures', () => {
+      let sharedTenantClient: TenantAwareESClient;
 
-      const resultA = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { sharedId: 'entity_a' } },
-      });
-      const resultB = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { sharedId: 'entity_b' } },
+      beforeAll(async () => {
+        const { sut, tenantAwareClient } = createSut();
+        sharedTenantClient = tenantAwareClient;
+        await sut.execute();
+        await refreshTestIndex();
       });
 
-      expect(resultA.hits.hits).toHaveLength(1);
-      expect(resultB.hits.hits).toHaveLength(1);
+      it('entities present in MongoDB are searchable in ES after execute()', async () => {
+        const resultA = await sharedTenantClient.search({
+          alias: testAlias,
+          query: { term: { sharedId: 'entity_a' } },
+        });
+        const resultB = await sharedTenantClient.search({
+          alias: testAlias,
+          query: { term: { sharedId: 'entity_b' } },
+        });
+
+        expect(resultA.hits.hits).toHaveLength(1);
+        expect(resultB.hits.hits).toHaveLength(1);
+      });
+
+      it('processed documents with fullText are searchable as full-text in ES after execute()', async () => {
+        const result = await sharedTenantClient.search({
+          alias: testAlias,
+          query: { term: { fullText: 'fullText' } },
+        });
+
+        expect(result.hits.hits).toHaveLength(1);
+        expect((result.hits.hits[0]._source as any)?.filename).toBe('doc_en');
+      });
+
+      it('processing/failed/attachment files are not indexed as full-text in ES', async () => {
+        const result = await sharedTenantClient.search({
+          alias: testAlias,
+          query: { term: { fullText: 'fullText' } },
+        });
+
+        const filenames = result.hits.hits.map((h: any) => h._source?.filename);
+        expect(filenames).not.toContain('doc_processing');
+        expect(filenames).not.toContain('att_en');
+      });
     });
 
-    it('processed documents with fullText are searchable as full-text in ES after execute()', async () => {
-      const { sut, tenantAwareClient } = createSut();
+    it('slots are assigned to template filterable properties after execute()', async () => {
+      const { sut } = createSut();
       await sut.execute();
-      await refreshTestIndex();
 
-      const result = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { fullText: 'fullText' } },
-      });
+      const assignedSlots = await slotsCollection().find({ assignedTo: 'filter_prop' }).toArray();
 
-      expect(result.hits.hits).toHaveLength(1);
-      expect((result.hits.hits[0]._source as any)?.filename).toBe('doc_en');
-    });
-
-    it('processing/failed/attachment files are not indexed as full-text in ES', async () => {
-      const { sut, tenantAwareClient } = createSut();
-      await sut.execute();
-      await refreshTestIndex();
-
-      const result = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { fullText: 'fullText' } },
-      });
-
-      const filenames = result.hits.hits.map((h: any) => h._source?.filename);
-      expect(filenames).not.toContain('doc_processing');
-      expect(filenames).not.toContain('att_en');
+      expect(assignedSlots.length).toBeGreaterThan(0);
     });
 
     it('stale entities from a previous index build are no longer present after a second execute()', async () => {
@@ -232,15 +267,6 @@ describe('ESIndexRebuilder', () => {
       });
 
       expect(resultB.hits.hits).toHaveLength(0);
-    });
-
-    it('slots are assigned to template filterable properties after execute()', async () => {
-      const { sut } = createSut();
-      await sut.execute();
-
-      const assignedSlots = await slotsCollection().find({ assignedTo: 'filter_prop' }).toArray();
-
-      expect(assignedSlots.length).toBeGreaterThan(0);
     });
 
     it('stale slot assignments from before execute() are gone after execute()', async () => {

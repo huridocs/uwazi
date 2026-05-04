@@ -1,10 +1,12 @@
-import { Db, MongoServerError } from 'mongodb';
+import { Db } from 'mongodb';
 import { MongoSlotsDAO, SlotDocument } from './MongoSlotsDAO.js';
 import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
 import { config } from '#api/config.js';
+import type { SlotType } from './SlotType.js';
 
 type Deps = {
   database: Db;
+  amountPerSlotType?: Record<SlotType, number>;
 };
 
 class MongoSlotsBootstrapper {
@@ -22,35 +24,31 @@ class MongoSlotsBootstrapper {
     return this.deps.database.collection(MongoSlotsBootstrapper.collectionName);
   }
 
-  async createSlots() {
-    try {
-      const slotsToCreate = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
-        Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
-          type: slotType,
-          slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
-          assignedTo: null,
-          language: null,
-          rand: Math.random(),
-        }))
-      ) as Omit<SlotDocument, '_id'>[];
+  private get amounts(): Record<SlotType, number> {
+    return this.deps.amountPerSlotType ?? AmountPerSlotType;
+  }
 
-      await Promise.all(
-        slotsToCreate.map(async slot =>
-          this.collection.updateOne(
-            { slotName: slot.slotName },
-            {
-              $setOnInsert: slot,
-            },
-            { upsert: true }
-          )
-        )
-      );
-    } catch (error) {
-      if (error instanceof MongoServerError && error.code === 11000) {
-        return;
-      }
-      throw error;
-    }
+  async createSlots() {
+    const slotsToCreate = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
+      Array.from({ length: this.amounts[slotType] }, (_, index) => ({
+        type: slotType,
+        slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
+        assignedTo: null,
+        language: null,
+        rand: Math.random(),
+      }))
+    ) as Omit<SlotDocument, '_id'>[];
+
+    await this.collection.bulkWrite(
+      slotsToCreate.map(slot => ({
+        updateOne: {
+          filter: { slotName: slot.slotName },
+          update: { $setOnInsert: slot },
+          upsert: true,
+        },
+      })),
+      { ordered: false }
+    );
   }
 
   async createIndexes() {

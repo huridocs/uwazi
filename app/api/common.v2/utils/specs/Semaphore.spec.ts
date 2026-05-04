@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable max-statements */
 import { Semaphore } from '../Semaphore.js';
 
 describe('Semaphore', () => {

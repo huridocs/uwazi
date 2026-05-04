@@ -6,11 +6,13 @@ class Semaphore {
     if (permits < 1) throw new RangeError('Semaphore permits must be >= 1');
   }
 
-  async acquire(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  acquire(): Promise<void> {
     if (this.permits > 0) {
       this.permits--;
       return Promise.resolve();
     }
+    // eslint-disable-next-line no-promise-executor-return
     return new Promise<void>(resolve => this.queue.push(resolve));
   }
 
