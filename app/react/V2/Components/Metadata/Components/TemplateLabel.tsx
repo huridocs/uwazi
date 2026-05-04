@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Translate } from '#app/I18N/index.js';
-import { getTextColor } from '../helpers/getTextColor';
+import { getTextColor } from '../helpers/getTextColor.js';
 
 const defaultColor = '#A4CAFE';
 
