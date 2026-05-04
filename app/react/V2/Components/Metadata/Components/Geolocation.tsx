@@ -1,5 +1,6 @@
 import React from 'react';
 import { Map } from '#app/Map/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { MapProps } from '#app/Map/MapContainer.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
@@ -51,11 +52,12 @@ const Geolocation = ({
     <MetadataCard>
       <dt>
         {isGroup ? (
-          <PropertyLabel
-            label="Grouped geolocation properties"
-            translationContext="System"
-            hideLabel={hideLabel}
-          />
+          <Translate
+            className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}
+            context={translationContext}
+          >
+            Grouped geolocation properties
+          </Translate>
         ) : (
           <PropertyLabel
             label={label}
