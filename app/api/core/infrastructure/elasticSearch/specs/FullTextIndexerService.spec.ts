@@ -282,6 +282,7 @@ describe('FullTextIndexerService', () => {
         tenantId: testTenantId,
         deleteByFilenames: jest.fn(),
         index: jest.fn().mockImplementation(async () => {
+          // eslint-disable-next-line no-plusplus
           const num = ++batchNum;
           writeOrder.push(num);
           if (num === 1) throw new Error('batch 1 failed');
