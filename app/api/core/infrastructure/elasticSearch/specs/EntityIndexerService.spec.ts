@@ -16,6 +16,7 @@ import type { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
 import { EntityIndexerService, EntityBatchInfo } from '../entities/EntityIndexerService.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+
 const factory = getFixturesFactory();
 const rawESClient = new ESClient({ node: config.elasticsearch.nodes });
 
@@ -287,6 +288,7 @@ describe('EntityIndexerService', () => {
         deleteBySharedIds: jest.fn(),
         deleteByTemplateIds: jest.fn(),
         index: jest.fn().mockImplementation(async () => {
+          // eslint-disable-next-line no-plusplus
           const num = ++batchNum;
           writeOrder.push(num);
           if (num === 1) throw new Error('batch 1 failed');
