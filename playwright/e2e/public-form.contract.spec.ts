@@ -32,15 +32,20 @@ test('public form contract creates an entity through /api/public', async ({ page
     const settingsResponse = await page.request.get('/api/settings');
     expect(settingsResponse.ok()).toBeTruthy();
     const settingsPayload = await settingsResponse.json();
+    const { themeCustomization: _themeCustomization, ...sanitizedSettingsPayload } = settingsPayload;
     const saveSettingsResponse = await page.request.post('/api/settings', {
       data: {
-        ...settingsPayload,
+        ...sanitizedSettingsPayload,
         openPublicEndpoint: true,
         allowedPublicTemplates: [templateId],
       },
       headers: { 'X-Requested-With': 'XMLHttpRequest' },
     });
-    expect(saveSettingsResponse.ok()).toBeTruthy();
+    const saveSettingsBody = await saveSettingsResponse.text();
+    expect(
+      saveSettingsResponse.ok(),
+      `Save settings failed: ${saveSettingsResponse.status()} ${saveSettingsBody}`
+    ).toBeTruthy();
   });
 
   await test.step('Submit a public entity and verify creation', async () => {
