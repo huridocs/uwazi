@@ -7,3 +7,4 @@ export { formatLinkProperty } from './metadata/formatLinkProperty.js';
 export { formatMediaProperty } from './metadata/formatMediaProperty.js';
 export { formatImageProperty } from './metadata/formatImageProperty.js';
 export { formatSelectProperty } from './metadata/formatSelectProperty.js';
+export { formatEntityFiles } from './files/formatEntityFiles.js';

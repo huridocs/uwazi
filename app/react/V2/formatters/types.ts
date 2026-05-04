@@ -1,4 +1,5 @@
 import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { FileType } from '#shared/types/fileType.js';
 
 interface Timelink {
   readonly time: number;
@@ -161,6 +162,12 @@ interface InheritedRelationshipMetadataProperty extends Omit<BaseMetadataPropert
   readonly values: MetadataProperty[];
 }
 
+interface EntityFile {
+  fileType: 'mainDocument' | 'document' | 'attachment' | 'externalURL' | 'image' | 'media';
+  duration?: number;
+  file: FileType;
+}
+
 type RelationshipMetadataProperty =
   | RelatedRelationshipMetadataProperty
   | InheritedRelationshipMetadataProperty;
@@ -197,4 +204,5 @@ export type {
   Timelink,
   ImageMetadataProperty,
   PreviewMetadataProperty,
+  EntityFile,
 };
