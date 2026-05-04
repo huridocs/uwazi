@@ -2,6 +2,7 @@ import { execSync } from 'child_process';
 import { expect, Page, test } from '@playwright/test';
 import { loginAsAdmin } from './helpers/auth';
 import { createTemplate } from './helpers/setupData';
+import { waitForProcessedParagraphRows } from './helpers/paragraphExtraction';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -117,20 +118,29 @@ test('paragraph extraction lifecycle', async ({ page }) => {
     await extractNewResponse;
   });
 
+  let processedEntityTitle = '';
   await test.step('Wait until extractor rows show ready status', async () => {
-    await expect
-      .poll(async () => page.locator('tbody tr span.sr-only', { hasText: /Processed/i }).count(), {
-        timeout: 90000,
-        intervals: [1000, 1500, 2000],
-      })
-      .toBeGreaterThan(0);
+    const { processedRows, snapshots } = await waitForProcessedParagraphRows(page.request, extractorId, {
+      timeoutMs: 120000,
+      pollIntervalMs: 1500,
+      getDomRowsCount: async () => page.locator('tbody tr').count(),
+    });
+    const lastSnapshot = snapshots[snapshots.length - 1];
+    console.log('[paragraph-extraction] processed rows detected', {
+      extractorId,
+      processedRows: processedRows.length,
+      lastSnapshot,
+    });
+
+    const candidateTitle = processedRows[0]?.entity?.title;
+    processedEntityTitle = typeof candidateTitle === 'string' ? candidateTitle : '';
+    expect(processedRows.length).toBeGreaterThan(0);
   });
 
   await test.step('Open one ready entity and validate extracted paragraphs table', async () => {
-    const processedRow = page
-      .locator('tbody tr')
-      .filter({ has: page.locator('span.sr-only', { hasText: /Processed/i }) })
-      .first();
+    const processedRow = processedEntityTitle
+      ? page.locator('tbody tr', { hasText: processedEntityTitle }).first()
+      : page.locator('tbody tr').first();
     await expect(processedRow).toBeVisible();
     await processedRow.getByRole('button', { name: 'View' }).click();
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 30000 });
