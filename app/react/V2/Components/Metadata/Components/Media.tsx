@@ -21,7 +21,7 @@ const Media = ({
   width = 500,
   height = 300,
 }: MediaProps) => {
-  const { value, alt, timelinks = [] } = values[0];
+  const { value, alt, timelinks = [] } = values[0] || {};
   type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
   type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
   const playerRef = useRef<PlayerInstance>(null);

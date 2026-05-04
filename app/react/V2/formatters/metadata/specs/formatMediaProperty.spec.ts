@@ -103,4 +103,30 @@ describe('formatMediaProperty', () => {
       inheritedType: undefined,
     });
   });
+
+  it('should return empty values when metadata array is empty', () => {
+    const metadata = { media: [] } as Entity['metadata'];
+
+    expect(formatMediaProperty(mediaProperty, metadata)).toEqual({
+      _id: '1.15',
+      name: 'media',
+      type: 'media',
+      values: [],
+      label: 'Media',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
+
+  it('should return empty values when metadata is undefined', () => {
+    expect(formatMediaProperty(mediaProperty, undefined)).toEqual({
+      _id: '1.15',
+      name: 'media',
+      type: 'media',
+      values: [],
+      label: 'Media',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
 });

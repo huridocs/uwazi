@@ -54,4 +54,42 @@ describe('formatLinkProperty', () => {
       label: 'Link 2',
     });
   });
+
+  it('should return empty values when metadata array is empty', () => {
+    const textProperty = {
+      _id: 'p1',
+      name: 'link3',
+      label: 'Link 3',
+      type: 'link',
+    } as BaseMetadataProperty;
+
+    expect(formatLinkProperty(textProperty, { link3: [] } as Entity['metadata'])).toEqual({
+      _id: 'p1',
+      name: 'link3',
+      type: 'link',
+      values: [],
+      label: 'Link 3',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
+
+  it('should return empty values when metadata is undefined', () => {
+    const textProperty = {
+      _id: 'p1',
+      name: 'link3',
+      label: 'Link 3',
+      type: 'link',
+    } as BaseMetadataProperty;
+
+    expect(formatLinkProperty(textProperty, undefined)).toEqual({
+      _id: 'p1',
+      name: 'link3',
+      type: 'link',
+      values: [],
+      label: 'Link 3',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
 });

@@ -250,4 +250,49 @@ describe('formatGeolocationProperty', () => {
       ],
     });
   });
+
+  it('should return empty values when metadata array is empty', () => {
+    const property = {
+      _id: 'geo99',
+      name: 'locationA',
+      label: 'Location A',
+      type: 'geolocation',
+    } as BaseMetadataProperty;
+
+    const entity = {
+      template: 'entity-template',
+      metadata: { locationA: [] },
+      _id: '1',
+      sharedId: '1',
+      language: 'es',
+      creationDate: 1,
+      user: '1',
+      title: 'test1',
+    } as Entity;
+
+    expect(formatGeolocationProperty(property, entity, templates)).toEqual({
+      _id: 'geo99',
+      name: 'locationA',
+      label: 'Location A',
+      type: 'geolocation',
+      values: [],
+    });
+  });
+
+  it('should return empty values when entity metadata is undefined', () => {
+    const property = {
+      _id: 'geo99',
+      name: 'locationA',
+      label: 'Location A',
+      type: 'geolocation',
+    } as BaseMetadataProperty;
+
+    expect(formatGeolocationProperty(property, undefined, templates)).toEqual({
+      _id: 'geo99',
+      name: 'locationA',
+      label: 'Location A',
+      type: 'geolocation',
+      values: [],
+    });
+  });
 });

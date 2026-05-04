@@ -29,4 +29,42 @@ describe('formatImageProperty', () => {
       style: 'cover',
     });
   });
+
+  it('should return empty values when metadata array is empty', () => {
+    const property = {
+      _id: 'p1',
+      name: 'related_images',
+      label: 'Related images',
+      type: 'image',
+    } as BaseMetadataProperty;
+
+    const metadata = { related_images: [] } as Entity['metadata'];
+
+    expect(formatImageProperty(property, metadata)).toEqual({
+      _id: 'p1',
+      name: 'related_images',
+      label: 'Related images',
+      type: 'image',
+      values: [],
+      style: 'contain',
+    });
+  });
+
+  it('should return empty values when metadata is undefined', () => {
+    const property = {
+      _id: 'p1',
+      name: 'related_images',
+      label: 'Related images',
+      type: 'image',
+    } as BaseMetadataProperty;
+
+    expect(formatImageProperty(property, undefined)).toEqual({
+      _id: 'p1',
+      name: 'related_images',
+      label: 'Related images',
+      type: 'image',
+      values: [],
+      style: 'contain',
+    });
+  });
 });

@@ -32,7 +32,7 @@ const formatMediaProperty = (
     return null;
   }
 
-  const value = metadata?.[property.name]?.[0].value as string;
+  const value = metadata?.[property.name]?.[0]?.value as string | undefined;
 
   const formattedProperty: MediaMetadataProperty = {
     _id: property._id,
@@ -60,9 +60,9 @@ const formatMediaProperty = (
         timelinks: timelinks || {},
       });
     }
-  } else {
+  } else if (value) {
     formattedProperty.values.push({
-      value: value?.toString() || '',
+      value,
       timelinks: [],
     });
   }

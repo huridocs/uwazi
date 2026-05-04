@@ -164,4 +164,46 @@ describe('formatRelationshipProperty', () => {
       inheritedType: undefined,
     });
   });
+
+  it('should return empty values when metadata array is empty', () => {
+    const property = {
+      _id: '1.12',
+      name: 'empty_relationships',
+      label: 'Empty Relationships',
+      type: 'relationship',
+    } as BaseMetadataProperty;
+
+    expect(
+      formatRelationshipProperty(property, { empty_relationships: [] } as Entity['metadata'])
+    ).toEqual({
+      _id: '1.12',
+      name: 'empty_relationships',
+      label: 'Empty Relationships',
+      type: 'relationship',
+      mode: 'related',
+      values: [],
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
+
+  it('should return empty values when metadata is undefined', () => {
+    const property = {
+      _id: '1.13',
+      name: 'missing_relationships',
+      label: 'Missing Relationships',
+      type: 'relationship',
+    } as BaseMetadataProperty;
+
+    expect(formatRelationshipProperty(property, undefined)).toEqual({
+      _id: '1.13',
+      name: 'missing_relationships',
+      label: 'Missing Relationships',
+      type: 'relationship',
+      mode: 'related',
+      values: [],
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
 });
