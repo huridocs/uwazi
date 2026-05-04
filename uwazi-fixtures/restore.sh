@@ -11,6 +11,7 @@ mongosh --quiet -host "$HOST" "$DB" --eval "db.dropDatabase()"
 mongorestore -h "$HOST" "uwazi-fixtures/dump/seeded_e2e/uwazi_e2e/" --db="$DB"
 
 echo "Restoring pdfs..."
+mkdir -p ./uploaded_documents
 rm -rf ./uploaded_documents/*
 cp ./uwazi-fixtures/uploaded_documents/seeded_e2e/* ./uploaded_documents/
 
