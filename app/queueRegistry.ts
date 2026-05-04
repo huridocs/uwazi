@@ -26,8 +26,10 @@ import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/liste
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { AddLanguageListener } from '#api/core/infrastructure/listeners/AddLanguageListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import {
   Dispatchable,
   HeartbeatCallback,
@@ -120,7 +122,7 @@ export function registerJobs(register: Register) {
       connection,
       transactionManager,
     });
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),
@@ -181,10 +183,8 @@ export function registerJobs(register: Register) {
   });
 
   register(PDFPostProcessJobHandler, async (_tenantName: string) => {
-    const transactionManager = TransactionManagerFactory.default();
-
     return new PDFPostProcessJobHandler({
-      useCase: PDFPostProcessJobFactory.default(transactionManager),
+      useCase: PDFPostProcessJobFactory.default(),
       wSockets: new V1WebSocketsWrapper(),
     });
   });
@@ -197,15 +197,15 @@ export function registerJobs(register: Register) {
   });
 
   register(TemplatePostProcessEntitiesJob, async () => {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
     return new TemplatePostProcessEntitiesJob({
-      templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: EntitiesDataSourceFactory.default(transactionManager),
-        filesDS: FilesDataSourceFactory.default(transactionManager),
+        entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+        filesDS: FilesDataSourceFactory.default(),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-        templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
         transactionManager,
       }),
     });
@@ -277,7 +277,7 @@ export function registerJobs(register: Register) {
   register(DenormalizeThesaurusEntitiesHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
 
-    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
 
     return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
@@ -288,7 +288,9 @@ export function registerJobs(register: Register) {
     async () =>
       new DenormalizeEntityUpdatedListener({
         denormalizeRelated,
-        templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
+        templatesDS: TemplatesDataSourceFactory.default({
+          transactionManager: TransactionManagerFactory.default(),
+        }),
       })
   );
 

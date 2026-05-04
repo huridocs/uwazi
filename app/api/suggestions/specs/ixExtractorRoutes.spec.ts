@@ -10,6 +10,7 @@ import { UserRole } from '#shared/types/userSchema.js';
 import { extractorsRoutes } from '../extractorsRoutes.js';
 
 const adminUser = {
+  _id: 'admin',
   username: 'User 1',
   role: UserRole.ADMIN,
   email: 'user@test.com',

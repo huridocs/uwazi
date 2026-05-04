@@ -24,6 +24,7 @@ type Tenant = {
     fileCacheHeaders?: boolean;
     v2CSVImport?: boolean;
     v2UpdateThesaurus?: boolean;
+    themeCustomization?: boolean;
     v2GetEntity?: boolean;
     v2ElasticSearch?: boolean;
     v2MultipleUpdateEntity?: boolean;
@@ -104,7 +105,11 @@ class Tenants {
   }
 
   add(tenant: DBTenant) {
-    this.tenants[tenant.name] = { ...this.defaultTenant, ...tenant };
+    this.tenants[tenant.name] = {
+      ...this.defaultTenant,
+      ...tenant,
+      featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
+    };
   }
 
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {

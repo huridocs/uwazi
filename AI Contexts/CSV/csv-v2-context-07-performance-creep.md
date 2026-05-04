@@ -1,111 +1,141 @@
-# CSV V2 Context 07 — Entities Import Performance Creep
+# CSV V2 Context 07 — Performance Creep Diagnosis and Fix Status
 
 Date: 2026-04-23  
-Scope: Diagnose progressive slowdown during long CSV entities imports.
+Scope: Progressive slowdown during long-running CSV entities import (`csv.v2`), with cross-application impact analysis.
 
-## 1) Why this document exists
+## 1) Problem statement
 
-After fixing progress durability and reducing entities-import batch size to 10, imports now report
-progress correctly, but a new runtime concern became clear: throughput degrades as processing advances.
+Long CSV imports show **in-run throughput degradation**:
 
-This doc is a focused handoff for the next agent to diagnose where time is being spent.
+- early batches are fast,
+- later batches in the same run become progressively slower,
+- rerunning the same file starts fast again and creeps again.
 
-## 2) Recent changes already applied
+This is a time-creep pattern, not a fixed per-row cost.
 
-1. Entities import default batch size reduced:
-   - `CsvImportEntitiesJob` default `batchSize`: `1000 -> 10`.
-2. Progress durability aligned with row processing:
-   - row success path persists progress in the same transaction boundary as entity/file insert,
-   - row failure path persists progress + row error in the same transaction boundary.
-3. Focused verification:
-   - `app/api/csv.v2/application/jobs/specs/CsvImportEntitiesJob.spec.ts` passed (7/7).
+## 2) Confirmed root cause
 
-## 3) Current symptom
+Primary root cause is in `MongoTransactionManager` lifecycle, not CSV mapping logic:
 
-- Early import batches are fast (user-reported: first ~250 entities noticeably faster).
-- Later batches are slower (user-reported + timing sample around rows 700+).
-- Representative sample around rows 710..810 (10-row batches) shows many intervals around ~8-11s.
-- Re-run confirmation:
-  - Same CSV file executed again after prior 1000 entities already existed in the collection.
-  - Early batches are fast again, then slowdown appears again later within the same run.
+- transaction commit/retry handlers were accumulating across repeated `run()` executions in the same manager instance,
+- per-row transactional flows register handlers repeatedly,
+- handler accumulation inflated transaction overhead over time.
 
-Interpretation:
+Relationship sync queue pressure is **not** the primary cause of this creep.
 
-- This is a **time-creep pattern** (progressive degradation) instead of fixed per-row throughput.
-- This is likely **run-local accumulation** (in-job pressure growth), not primarily a static
-  “collection size at start” penalty.
+## 3) Affected runtime paths
 
-## 4) Key runtime operations still happening during import
-
-Even with preflight, row import still performs non-trivial work:
-
-1. Per-row entity creation transaction (`EntitiesService.insert`).
-2. Per-row dispatch of `RelationshipSyncJob` from `EntitiesService.insert`.
-3. Per-row import progress write to `csv_imports`.
-4. Property-assignment strategy execution per mapped property; for some property types this includes
-   DS access (relationship/select validation paths).
-
-## 5) Primary hypothesis
-
-Most likely bottleneck is cumulative side-effect pressure from relationship sync:
-
-- one `RelationshipSyncJob` per inserted entity,
-- concurrent write/read contention with import writes,
-- queue/jobs collection growth and scheduling overhead during the same run.
-
-Secondary candidates:
-
-- repeated DS calls in property-assignment strategies (`settings`, `entities`, `thesauri`, `translations`);
-- increased relationship metadata update costs as data grows.
-
-## 6) Files to inspect first
-
-Import chain:
+### 3.1 Import path where creep becomes visible
 
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesRowsProcessor.ts`
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesBatchProcessor.ts`
 - `app/api/csv.v2/application/jobs/CsvImportEntitiesContextLoader.ts`
 
-Core side-effects:
+### 3.2 Core side-effect paths impacted by transaction handler semantics
 
 - `app/api/core/application/EntitiesService.ts`
-- `app/api/core/infrastructure/jobs/RelationshipSyncJob.ts`
-- `app/api/relationships/relationships.js` (`saveEntityBasedReferences`)
+- `app/api/core/application/FilesService.ts`
+- `app/api/entities.v2/database/MongoMultiLanguageEntityDataSource.ts`
+- `app/api/core/infrastructure/mongodb/files/MongoFilesDataSource.ts`
+- `app/api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.ts`
+- `app/api/core/infrastructure/elasticSearch/entities/MongoSlotsDAO.ts`
 
-Property assignment services:
+## 4) Current Stage 1 solution (implemented)
 
-- `app/api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.ts`
-- `app/api/core/application/propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.ts`
-- `app/api/core/application/propertyAssignmentCreatorService/SelectPropertyAssignmentCreatorService.ts`
+Stage 1 applies a **backward-compatible core fix** in:
 
-## 7) Diagnosis checklist (for next agent)
+- `app/api/core/infrastructure/mongodb/common/MongoTransactionManager.ts`
 
-Do this before proposing behavior changes:
+### 4.1 Stage 1 design
 
-1. Measure wall-time per 10-row import batch across run progression:
-   - batch 1..10 vs 40..50 vs 80..90.
-2. Measure queue backlog growth during import:
-   - pending/running count for `RelationshipSyncJob`.
-3. Attribute time inside a batch:
-   - row import transaction duration,
-   - progress update duration,
-   - property-assignment creation duration.
-4. Attribute relationship sync cost:
-   - job pick latency,
-   - per-job execution latency,
-   - relationship write/update durations.
-5. Confirm whether slowdown correlates with:
-   - number of imported entities so far,
-   - relationship-bearing templates,
-   - number of relationship properties.
-6. Keep the rerun signal explicit in all analyses:
-   - if slowdown resets at new run start and reappears later, prioritize in-run accumulating
-     pressures (queue backlog, side-jobs, lock/contention), not static dataset-size explanations.
+Internal handler lifetime split:
 
-## 8) Guardrails while diagnosing
+- persistent handlers (manager-lifetime),
+- run-scoped handlers (cleared per `run()`).
 
-- Keep code changes in `app/api/csv.v2/**` unless explicit approval for core edits.
-- Do not alter queue core contracts while diagnosing.
-- Do not mark this track as complete until measurements identify dominant contributor(s)
-  and a mitigation plan is reviewed.
+Routing behavior:
+
+- registration during active transaction -> run-scoped,
+- registration outside active transaction -> persistent.
+
+### 4.2 Stage 1 addresses
+
+- **X.** Removes run-scoped handler accumulation across repeated transactions (eliminates creep driver).
+- **Y.** Preserves existing constructor-level persistent behavior used by core caching/indexing paths.
+
+### 4.3 Stage 1 verification state
+
+- targeted manager spec passes:
+  - `app/api/core/infrastructure/mongodb/common/specs/MongoTransactionManager.spec.ts`
+- added coverage includes:
+  - no run-to-run leakage for `onCommitted`,
+  - no run-to-run leakage for run-scoped `onRetry`,
+  - persistent handlers still execute across runs.
+
+## 5) Why Stage 1 is intentionally not strict-scoped yet
+
+Several existing implementations currently rely on constructor-level persistent registrations.
+If strict scoped-only registration is enforced immediately, those paths lose behavior.
+
+### 5.1 Implementations that would lose behavior under immediate strict scoped-only
+
+1. `app/api/core/infrastructure/mongodb/CachedMongoSettingsDataSource.ts`  
+   Missing: automatic settings cache invalidation after commit.
+
+2. `app/api/core/infrastructure/mongodb/thesauri/CachedMongoThesauriDataSource.ts`  
+   Missing: automatic thesauri cache invalidation.
+
+3. `app/api/i18n.v2/database/CachedMongoTranslationsDataSource.ts`  
+   Missing: automatic translations cache invalidation.
+
+4. `app/api/core/infrastructure/mongodb/template/CachedMongoTemplatesDataSource.ts`  
+   Missing: automatic templates/default-template cache invalidation.
+
+5. `app/api/core/infrastructure/elasticSearch/entities/MongoSlotsDAO.ts`  
+   Missing: slot cache invalidation on commit/retry.
+
+6. `app/api/entities.v2/database/MongoMultiLanguageEntityDataSource.ts`  
+   Missing: post-commit entity indexing and delete propagation.
+
+7. `app/api/core/infrastructure/mongodb/files/MongoFilesDataSource.ts`  
+   Missing: post-commit file/full-text reindex/delete propagation.
+
+8. `app/api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.ts`  
+   Missing: post-commit template mapping updates.
+
+## 6) Missing Stage 2 solution
+
+Stage 2 is the contract-hardening phase to remove call-site ambiguity and centralize lifecycle policy.
+
+### A) API contract hardening
+
+- Make app-facing `onCommitted` / `onRetry` strictly transaction-scoped.
+- Throw on registration outside active transaction.
+- Keep this as the only app-facing behavior.
+
+### B) Persistent hook centralization
+
+- Move persistent cross-transaction hooks to infrastructure bootstrap/factory only.
+- Do not let feature/use-case code choose persistent vs scoped.
+- Keep persistent registration hidden from app-facing interfaces.
+
+### C) Migration and guardrails
+
+- Migrate constructor-level registrations to centralized bootstrap.
+- Add guardrails:
+  - type/module boundary between app-facing manager and bootstrap API,
+  - runtime assertions for late persistent registration,
+  - lint/rule protections against persistent registration in feature code.
+
+## 7) Target end state
+
+One implementer mental model in feature code:
+
+- register handlers only for the current transaction.
+
+And one infrastructure responsibility:
+
+- own and wire persistent system-level post-commit/retry behavior.
+
+This keeps CSV-v2 creep fixed while preserving required core indexing/cache functionality across the application.
 

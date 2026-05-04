@@ -5,6 +5,7 @@ import { Repeater } from '#api/utils/Repeater.js';
 import { config } from '#api/config.js';
 import { handleError } from '#api/utils/index.js';
 import { Redis } from '#api/infrastructure/Redis.js';
+import { runInJobContext } from './runInJobContext.js';
 
 type DefaultTaskType = string;
 
@@ -119,7 +120,9 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
 
         const processedMessage = JSON.parse(message.message);
 
-        await this.service.processResults(processedMessage);
+        await runInJobContext(processedMessage.tenant, async () =>
+          this.service.processResults!(processedMessage)
+        );
       }
     } catch (e) {
       handleError(e, { useContext: false });

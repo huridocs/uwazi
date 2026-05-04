@@ -167,12 +167,15 @@ describe('OCR service', () => {
     // eslint-disable-next-line max-statements
     it('should process a successful OCR', async () => {
       // @ts-ignore
-      await TaskManager.mock.calls[0][0].processResults({
-        tenant: 'defaultDB',
-        task: 'ocr_results',
-        file_url: 'protocol://link/to/result/file',
-        params: { filename: fileNameToProcess, language: 'en' },
-        success: true,
+      await testingEnvironment.runWithContext(async () => {
+        // @ts-ignore
+        await TaskManager.mock.calls[0][0].processResults({
+          tenant: 'defaultDB',
+          task: 'ocr_results',
+          file_url: 'protocol://link/to/result/file',
+          params: { filename: fileNameToProcess, language: 'en' },
+          success: true,
+        });
       });
 
       const [originalFile] = await files.get({ filename: fileNameToProcess });

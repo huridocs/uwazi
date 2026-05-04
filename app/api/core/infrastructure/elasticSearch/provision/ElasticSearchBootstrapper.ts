@@ -17,6 +17,29 @@ class ElasticSearchBootstrapper {
     await this.bootstrapIndexes();
   }
 
+  async reset() {
+    await this.deletePhysicalIndexes();
+    await this.bootstrapIndexes();
+  }
+
+  private async deletePhysicalIndexes(): Promise<void> {
+    await ArrayUtils.parallelFor(Object.values(this.deps.registry), async definition => {
+      let physicalIndexes: string[];
+
+      try {
+        const aliasInfo = await this.deps.client.indices.getAlias({ name: definition.alias });
+        physicalIndexes = Object.keys(aliasInfo.body);
+      } catch (_err) {
+        // alias does not exist yet — nothing to delete on first run
+        physicalIndexes = [];
+      }
+
+      await ArrayUtils.parallelFor(physicalIndexes, async physicalIndex =>
+        this.deps.client.indices.delete({ index: physicalIndex })
+      );
+    });
+  }
+
   private async bootstrapIndexes() {
     await ArrayUtils.sequentialFor(Object.entries(this.deps.registry), async ([name, definition]) =>
       this.bootstrapIndex(name, definition)

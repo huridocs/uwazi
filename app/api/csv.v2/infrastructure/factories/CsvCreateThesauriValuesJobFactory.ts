@@ -53,7 +53,8 @@ class CsvCreateThesauriValuesJobFactory {
       csvImportsDS,
       thesauriValuesDS,
       thesauriDS:
-        options.thesauriDS ?? ThesauriDataSourceFactory.default(getMongoTransactionManager()),
+        options.thesauriDS ??
+        ThesauriDataSourceFactory.default({ transactionManager: getMongoTransactionManager() }),
       translationsDS:
         options.translationsDS ?? DefaultTranslationsDataSource(getMongoTransactionManager()),
       transactionManager,

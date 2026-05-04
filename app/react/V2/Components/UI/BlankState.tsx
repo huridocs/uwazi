@@ -7,10 +7,19 @@ type BlankStateProps = {
 };
 
 const BlankState = ({ icon, title, description }: BlankStateProps) => (
-  <div className="flex flex-col items-center justify-center h-full w-full text-center border border-dashed border-gray-200 rounded-2xl text-gray-500 gap-2 p-8">
+  <div
+    className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed p-8 text-center"
+    style={{
+      borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 60%, transparent)',
+      color: 'var(--color-theme-text-secondary)',
+      backgroundColor: 'var(--color-theme-surface-raised)',
+    }}
+  >
     {icon}
     <p className="font-semibold text-lg">{title}</p>
-    <p className="text-sm text-gray-400">{description}</p>
+    <p className="text-sm" style={{ color: 'var(--color-theme-text-muted)' }}>
+      {description}
+    </p>
   </div>
 );
 

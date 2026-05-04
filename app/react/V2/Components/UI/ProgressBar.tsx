@@ -8,22 +8,16 @@ interface ProgressBarProps {
   ariaValueText?: string;
 }
 
-const getColor = (color: 'gray' | 'primary' | 'success' | 'error' | 'warning') => {
-  switch (color) {
-    case 'gray':
-      return 'bg-gray-500';
-    case 'primary':
-      return 'bg-primary-500';
-    case 'success':
-      return 'bg-success-500';
-    case 'error':
-      return 'bg-error-500';
-    case 'warning':
-      return 'bg-warning-500';
-    default:
-      return 'bg-gray-500';
-  }
+const fillClass: Record<NonNullable<ProgressBarProps['color']>, string> = {
+  gray: '[background-color:var(--color-theme-text-muted)]',
+  primary: '[background-color:var(--color-theme-action-primary)]',
+  success: '[background-color:var(--color-theme-feedback-success)]',
+  error: '[background-color:var(--color-theme-feedback-danger)]',
+  warning: '[background-color:var(--color-theme-feedback-warning)]',
 };
+
+const trackClass =
+  'h-2.5 w-full rounded-full [background-color:color-mix(in_srgb,var(--color-theme-border-default,var(--color-theme-border-primary))_60%,transparent)]';
 
 export const ProgressBar = ({
   progress,
@@ -36,7 +30,7 @@ export const ProgressBar = ({
 
   return (
     <div
-      className={`w-full bg-gray-200 rounded-full h-2.5 ${className}`}
+      className={`${trackClass} ${className}`}
       role="progressbar"
       aria-labelledby={ariaLabelledby}
       aria-valuemin={0}
@@ -45,7 +39,7 @@ export const ProgressBar = ({
       aria-valuetext={ariaValueText}
     >
       <div
-        className={`h-2.5 rounded-full ${getColor(color)}`}
+        className={`h-2.5 rounded-full ${fillClass[color]}`}
         style={{ width: `${boundedProgress}%` }}
       />
     </div>

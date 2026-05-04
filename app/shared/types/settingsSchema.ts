@@ -325,6 +325,35 @@ const settingsSchema = {
     project: { type: 'string' },
     site_name: { type: 'string' },
     favicon: { type: 'string' },
+    site_logo: { type: 'string' },
+    themeAssets: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        preset: { type: 'string', enum: ['default', 'legacy'] },
+        siteLogo: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            light: { type: 'string' },
+            dark: { type: 'string' },
+          },
+        },
+        favicon: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            light: { type: 'string' },
+            dark: { type: 'string' },
+          },
+        },
+      },
+    },
+    themeVars: {
+      type: 'object',
+      propertyNames: { type: 'string', maxLength: 128 },
+      additionalProperties: { type: 'string', maxLength: 512 },
+    },
     contactEmail: { type: 'string' },
     senderEmail: { type: 'string' },
     home_page: { type: 'string' },

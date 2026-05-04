@@ -1,4 +1,5 @@
 import { ClientEntitySchema } from '#app/istore.js';
+import { Entity } from '../api/entities/types.js';
 
 enum EntityStatus {
   New = 'new',
@@ -102,7 +103,7 @@ type PXParagraphLoaderResponse = {
   totalRows: number;
   rows?: TablePXEntityParagraphRow[];
   extractor?: Extractor;
-  sourceEntity?: ClientEntitySchema;
+  sourceEntity?: Entity;
 };
 
 export type {

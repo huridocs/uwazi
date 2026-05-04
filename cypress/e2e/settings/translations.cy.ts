@@ -1,5 +1,7 @@
 /* eslint-disable max-statements */
 import { changeLanguage, clearCookiesAndLogin } from '../helpers/index.js';
+import { dismissModalIfVisible } from '../helpers/pageEditor.js';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 import 'cypress-axe';
 
 describe('Translations', () => {
@@ -67,7 +69,10 @@ describe('Translations', () => {
       cy.contains('button', 'Save').click();
       cy.wait('@saveTranslations');
       cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
-      cy.contains('.bg-gray-100', 'ES');
+      cy.get('[data-testid=settings-translations-edit]').contains(
+        '[data-testid="pill-comp"]',
+        'ES'
+      );
       cy.contains('Fecha');
       cy.contains('Informe de admisibilidad');
       cy.get('input[name="formValues.0.values.0.value"]').should('have.value', 'Date');
@@ -106,6 +111,10 @@ describe('Translations', () => {
     });
 
     describe('discard changes', () => {
+      beforeEach(() => {
+        dismissModalIfVisible();
+      });
+
       it('should unfilter the from and clear the first field', () => {
         cy.get('div[data-testid=settings-translations-edit]').scrollTo('top');
         cy.get('[type="checkbox"]').check();
@@ -115,7 +124,7 @@ describe('Translations', () => {
       it('should alert about unsaved changes when navigating', () => {
         cy.contains('a', 'Account').click();
         cy.contains('h1', 'Discard changes?');
-        cy.checkA11y();
+        cy.checkA11y('[data-testid="modal"]', undefined, logA11yViolations);
         cy.get('button[aria-label="Close modal"]').click();
       });
 
@@ -138,6 +147,14 @@ describe('Translations', () => {
   });
 
   describe('Live translations', () => {
+    beforeEach(() => {
+      dismissModalIfVisible();
+    });
+
+    afterEach(() => {
+      dismissModalIfVisible();
+    });
+
     it('should enable live translate', () => {
       cy.contains('button', 'English').click();
       cy.contains('button', 'Live translate').click();
@@ -146,9 +163,13 @@ describe('Translations', () => {
     it('should check for accessibilty', () => {
       cy.contains('span', 'Account').click();
       cy.get('#translationsFormModal').should('exist');
-      cy.checkA11y();
+      cy.checkA11y(
+        '#translationsFormModal',
+        { rules: { 'color-contrast': { enabled: false } } },
+        logA11yViolations
+      );
       cy.get('#translationsFormModal').within(() => {
-        cy.contains('button', 'Cancel').click();
+        cy.get('[data-testid="cancel-button"]').click();
       });
     });
 

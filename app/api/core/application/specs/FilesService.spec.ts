@@ -61,13 +61,21 @@ const jobsDispatcher = TestUtils.mockClass<Dispatcher>({
 
 const createService = (deps?: Partial<FilesServiceDeps>) => {
   const transactionManager = TransactionManagerFactory.fake();
-  const service = FilesServiceFactory.default(transactionManager, {
-    fileStorage,
-    jobsDispatcher,
-    ...deps,
-  });
+  return testingEnvironment.runWithContext(
+    () => {
+      const filesDataSource = FilesDataSourceFactory.default();
+      const service = FilesServiceFactory.default({
+        filesDS: filesDataSource,
+        fileStorage,
+        jobsDispatcher,
+        transactionManager,
+        ...deps,
+      });
 
-  return { service, transactionManager };
+      return { service, transactionManager, filesDataSource };
+    },
+    { factories: { transactionManager: () => transactionManager } }
+  );
 };
 
 describe('FilesService', () => {
@@ -263,8 +271,7 @@ describe('FilesService', () => {
       it('should only delete the thumbnail belonging to the deleted document', async () => {
         await testingEnvironment.setUp(fixtures);
         const transactionManager = TransactionManagerFactory.fake();
-        const { service } = createService();
-        const filesDataSource = FilesDataSourceFactory.default(transactionManager);
+        const { service, filesDataSource } = createService();
 
         const doc1 = (await filesDataSource.getById(f.idString('doc1'))).getDataOrThrow();
 

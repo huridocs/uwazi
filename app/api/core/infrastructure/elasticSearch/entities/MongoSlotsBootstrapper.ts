@@ -28,6 +28,7 @@ class MongoSlotsBootstrapper {
           type: slotType,
           slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
           assignedTo: null,
+          language: null,
           rand: Math.random(),
         }))
       ) as Omit<SlotDocument, '_id'>[];
@@ -55,9 +56,9 @@ class MongoSlotsBootstrapper {
     // For unique constraint on slotName
     await this.collection.createIndex({ slotName: 1 }, { unique: true });
 
-    // For ensuring a slot is only assigned to one property at a time
+    // For ensuring a slot is only assigned to one (property, language) pair at a time
     await this.collection.createIndex(
-      { assignedTo: 1 },
+      { assignedTo: 1, language: 1 },
       { unique: true, partialFilterExpression: { assignedTo: { $type: 'string' } } }
     );
 
@@ -74,6 +75,13 @@ class MongoSlotsBootstrapper {
       { $setOnInsert: { version: 0 } },
       { upsert: true }
     );
+  }
+
+  async reset(): Promise<void> {
+    await this.collection.drop().catch(err => {
+      if (err?.codeName !== 'NamespaceNotFound') throw err;
+    });
+    await this.execute();
   }
 }
 

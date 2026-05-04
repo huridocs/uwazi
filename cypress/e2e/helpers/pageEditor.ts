@@ -63,11 +63,15 @@ const typeTarget = (selector: string, value: string) => {
 
 export const dismissModalIfVisible = () => {
   cy.get('body').then($body => {
-    if ($body.find('[data-testid="modal"]').length) {
-      cy.contains('[data-testid="modal"] button', /discard changes|discard|close|cancel|dismiss/i)
-        .first()
-        .click({ force: true });
+    if (!$body.find('[data-testid="modal"]').length) return;
+    const close = $body.find('[data-testid="modal"] button[aria-label="Close modal"]').first();
+    if (close.length) {
+      cy.wrap(close).click({ force: true });
+      return;
     }
+    cy.contains('[data-testid="modal"] button', /discard changes|discard|close|cancel|dismiss/i)
+      .first()
+      .click({ force: true });
   });
 };
 

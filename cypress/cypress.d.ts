@@ -33,6 +33,7 @@ declare global {
       checkAccessibility(components: React.ReactNode[]);
       realDragAndDrop(subject: Chainable, target: Chainable): void;
       realDrag(subject: Chainable, targetX: number, targetY: number): void;
+      waitForMarkdownChartSettled(): Chainable;
       cleanupUnexpectedUi(): Chainable;
       waitForRequestStatusIdle(options?: {
         timeout?: number;

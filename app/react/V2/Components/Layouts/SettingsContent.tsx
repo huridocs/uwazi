@@ -21,7 +21,7 @@ interface SettingsHeaderProps extends PropsWithChildren {
 
 const SettingsContent = ({ children, className }: SettingsContentProps) => (
   <div
-    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0`}
+    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0 [background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]`}
     data-testid="settings-content"
   >
     {children}
@@ -47,7 +47,10 @@ const SettingsHeaderTitle = ({
 };
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
-  <div className={`${className || ''} flex pt-5 pb-4 px-4 `} data-testid="settings-content-header">
+  <div
+    className={`${className || ''} flex pt-5 pb-4 px-4 [background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]`}
+    data-testid="settings-content-header"
+  >
     <I18NLink to="/settings" className="block lg:hidden">
       <ChevronLeftIcon className="w-8 stroke-1 lg:hidden" />
       <span className="sr-only">
@@ -57,7 +60,10 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
     <Breadcrumb className="relative! p-1 flex right-0 bg-transparent! m-0 w-full! flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
         <Breadcrumb.Item key={key} className="max-w-xs">
-          <I18NLink to={value} activeClassname="font-medium text-gray-700 hover:text-gray-900">
+          <I18NLink
+            to={value}
+            activeClassname="font-medium [color:var(--color-theme-text-secondary)] hover:[color:var(--color-theme-text-primary)]"
+          >
             <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
           </I18NLink>
         </Breadcrumb.Item>
@@ -74,7 +80,10 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
 
 SettingsContent.Header = SettingsHeader;
 SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} grow px-4`} data-testid="settings-content-body">
+  <div
+    className={`${className || ''} grow px-4 [background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]`}
+    data-testid="settings-content-body"
+  >
     {children}
   </div>
 );
@@ -85,9 +94,14 @@ SettingsContent.Footer = ({
   highlighted = false,
 }: SettingsContentFooterProps) => (
   <div
-    className={`bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 ${className} ${
-      highlighted ? 'bg-primary-50' : 'bg-white'
-    }`}
+    className={[
+      'sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3',
+      'border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]',
+      highlighted
+        ? '[background-color:var(--color-theme-feedback-info-tint)]'
+        : '[background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]',
+      className,
+    ].join(' ')}
     data-testid="settings-content-footer"
   >
     {children}

@@ -87,7 +87,7 @@ const Users = () => {
                 data={users}
                 columns={usersTableColumns}
                 header={
-                  <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                     Users
                   </Translate>
                 }
@@ -104,7 +104,7 @@ const Users = () => {
                 data={groups}
                 columns={groupsTableColumns}
                 header={
-                  <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                     Groups
                   </Translate>
                 }
@@ -123,7 +123,7 @@ const Users = () => {
             {selectedUsers.length ? (
               <>
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset passwords',
@@ -137,7 +137,7 @@ const Users = () => {
                 </Button>
 
                 <Button
-                  styling="light"
+                  variant="ghost"
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset 2FA',
@@ -154,7 +154,7 @@ const Users = () => {
 
             {selectedUsers.length || selectedGroups.length ? (
               <Button
-                color="error"
+                variant="danger"
                 onClick={() => {
                   setConfirmationModalProps({
                     header: 'Delete',

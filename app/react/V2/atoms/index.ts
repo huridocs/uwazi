@@ -9,4 +9,11 @@ export { userAtom } from './userAtom.js';
 export { relationshipTypesAtom } from './relationshipTypes.js';
 export { deletedEntityAtom } from './deletedEntityAtom.js';
 export { serverIsMobileAtom } from './isMobileAtom.js';
+export { themeModeAtom } from './themeModeAtom.js';
+export {
+  effectiveThemeModeAtom,
+  getEffectiveThemeMode,
+  themeControlledModeAtom,
+} from './effectiveThemeModeAtom.js';
 export type { AtomStoreData } from './store.js';
+export type { ThemeMode } from './themeModeAtom.js';

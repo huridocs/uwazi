@@ -15,8 +15,8 @@ const createSut = () => {
     idGenerator: TestUtils.mockClass({ generate: () => 'id' }),
     thesauriDS: TestUtils.mockClass({}),
     relationshipTypesDS: TestUtils.mockClass({}),
-    settingsDS: SettingsDataSourceFactory.default(transactionManager),
-    templatesDS: TemplatesDataSourceFactory.default(transactionManager),
+    settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+    templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
   });
 
   return { sut: strategy.getStrategy('nested') };

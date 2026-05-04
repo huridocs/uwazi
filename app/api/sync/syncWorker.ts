@@ -5,6 +5,7 @@ import { SettingsSyncSchema } from '#shared/types/settingsType.js';
 import { tenants } from '#api/tenants/index.js';
 import settings from '#api/settings/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { synchronizer } from './synchronizer.js';
 import { createSyncConfig } from './syncConfig.js';
 import syncsModel from './syncsModel.js';
@@ -56,13 +57,13 @@ export const syncWorker = {
   async runAllTenants() {
     return tenants.getTenantsForFeatureFlag('sync').reduce(async (previous, tenant) => {
       await previous;
-      return tenants.run(async () => {
+      return runInJobContext(tenant.name, async () => {
         permissionsContext.setCommandContext();
         const { sync } = await settings.get({}, 'sync');
         if (sync) {
           await this.syncronize(sync);
         }
-      }, tenant.name);
+      });
     }, Promise.resolve());
   },
 

@@ -14,7 +14,7 @@ type Story = StoryObj;
 const statusColors: Record<string, string> = {
   success: 'text-green-600',
   warning: 'text-yellow-500',
-  error: 'text-pink-600',
+  error: 'text-error-600',
   loading: 'text-indigo-600',
 };
 
@@ -31,7 +31,7 @@ const ActionButton = ({
     default: 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300',
     success: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-300',
     warning: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border-yellow-300',
-    error: 'bg-pink-50 hover:bg-pink-100 text-pink-700 border-pink-300',
+    error: 'bg-error-50 hover:bg-error-100 text-error-700 border-error-300',
     info: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-300',
     danger: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-300',
   };
@@ -315,7 +315,7 @@ const Playground = () => {
 
               <dt className="text-gray-500">isConnected</dt>
               <dd
-                className={`font-mono font-semibold ${isConnected ? 'text-green-600' : 'text-pink-600'}`}
+                className={`font-mono font-semibold ${isConnected ? 'text-green-600' : 'text-error-600'}`}
               >
                 {String(isConnected)}
               </dd>

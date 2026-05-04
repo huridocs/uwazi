@@ -286,7 +286,7 @@ const PDF = ({
     return (
       <p
         data-testid="errorInfo"
-        className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400"
+        className="mb-4 text-lg font-light [color:var(--color-theme-text-muted)]"
       >
         {error}
       </p>
@@ -299,10 +299,12 @@ const PDF = ({
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">
-              <div className="font-medium text-gray-500">
+              <div className="font-medium [color:var(--color-theme-text-muted)]">
                 <Translate>Loading</Translate> ...
               </div>
-              <span className="text-sm font-medium text-gray-500">{loading.progress}%</span>
+              <span className="text-sm font-medium [color:var(--color-theme-text-muted)]">
+                {loading.progress}%
+              </span>
             </div>
             <ProgressBar progress={loading.progress} color="gray" />
           </div>
@@ -317,11 +319,14 @@ const PDF = ({
                   <div
                     key={`page-${regionId}`}
                     id={`page-${regionId}-container`}
-                    style={{ borderWidth: BORDER_WIDTH }}
                     ref={el => {
                       pageRefsMap.current[regionId] = el;
                     }}
-                    className="mb-4 border-gray-200 relative"
+                    className={[
+                      'relative mb-4 border-solid',
+                      `[border-width:${BORDER_WIDTH}px]`,
+                      '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
+                    ].join(' ')}
                   >
                     <SelectionRegion regionId={regionId.toString()}>
                       <PDFPage

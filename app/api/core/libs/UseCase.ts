@@ -2,7 +2,6 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { Dispatcher } from '../application/contracts/Dispatcher.js';
@@ -23,7 +22,7 @@ type Deps<ExtendedDeps> = {
 } & ExtendedDeps;
 
 type Context = {
-  actor?: UserSchema; // Using legacy User for now. Optional to support unauthenticated requests
+  actor?: User; // Optional to support unauthenticated requests
   tenant: Tenant; // Using legacy Tenant for now
   targetLanguage?: LanguageISO6391;
 };
@@ -48,12 +47,12 @@ abstract class AbstractUseCase<
   }
 
   protected get actor() {
-    const id = this.context?.actor?._id?.toString();
+    const id = this.context?.actor?._id;
     return id ? { id } : undefined;
   }
 
   protected getActor(): User {
-    return User.createFrom(this.context?.actor || null);
+    return this.context?.actor ?? User.createFrom(null);
   }
 
   protected get targetLanguage() {
@@ -65,8 +64,11 @@ abstract class AbstractUseCase<
   }
 
   protected get actorId() {
-    if (!this.context?.actor?._id) {
+    if (!this.context?.actor) {
       throw new Error(`Actor was not found. ${JSON.stringify(this.context)}`);
+    }
+    if (this.context.actor.isAnonymous()) {
+      throw new Error(`Actor is anonymous (not logged in). ${JSON.stringify(this.context)}`);
     }
 
     return this.context.actor._id.toString();

@@ -1,13 +1,14 @@
 import React from 'react';
 import { HandleTextSelection, TextSelection } from '@huridocs/react-text-selection-handler';
 import { Translate } from '#app/I18N/index.js';
-import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientTemplateSchema } from '#app/istore.js';
+import { Entity } from '#V2/api/entities/types.js';
 
 type TextPropertyProps = {
   onSelect: (selection: TextSelection) => any;
   onDeselect: () => any;
   propertyName?: string;
-  entity?: ClientEntitySchema;
+  entity?: Entity;
   template?: ClientTemplateSchema;
   className?: string;
 };

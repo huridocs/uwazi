@@ -19,14 +19,20 @@ export const landingPageTip = (
 
 export const customFavIcon = (
   <Translate translationKey="Favicon description">
-    {`A favicon is a small icon that represents your collection in browser tabs and bookmarks. The
-      default favicon is the Uwazi logo. To use your own:
+    {`A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
-        1. Upload your icon in Custom Uploads.
-        2. Copy its URL.
-        3. Choose "Custom Icon" and paste the URL in the indicated field.
-        4. Reload the page to see your favicon in action.
-      `}
+1. Upload your icon in Custom Uploads if needed.
+2. Open the favicon picker and pick a file (images from Custom Uploads only).
+3. Reload the page to see your favicon in action.`}
+  </Translate>
+);
+
+export const customSiteLogo = (
+  <Translate translationKey="Site logo description">
+    {`The logo appears in the top bar next to your collection name (about 200×32 pixels).
+
+1. Upload images in Custom Uploads if needed.
+2. Open the logo picker and pick a file; only images from Custom Uploads are listed.`}
   </Translate>
 );
 
@@ -54,7 +60,7 @@ export const receivingEmail = (
       href="https://uwazi.readthedocs.io/en/latest/admin-docs/managing-settings.html#how-to-configure-a-contact-form-or-submission-form"
       target="_blank"
       rel="noreferrer"
-      className="underline text-primary-700 hover:text-primary-900 visited:text-primary-700"
+      className="underline [color:var(--color-theme-action-primary)] hover:[color:var(--color-theme-text-primary)] visited:[color:var(--color-theme-action-primary)]"
     >
       <Translate>here</Translate>
     </a>

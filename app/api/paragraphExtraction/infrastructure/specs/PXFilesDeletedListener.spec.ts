@@ -91,7 +91,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [documentPt];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -117,7 +119,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [documentPt];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -138,7 +142,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [documentPt];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -162,7 +168,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [documentPt];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -185,7 +193,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [documentPt];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -200,7 +210,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [customFile];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -215,7 +227,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [documentEs, customFile];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -238,7 +252,9 @@ describe('PXFilesDeletedListener', () => {
       { ...documentEn, language: documentPt.language },
     ];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -253,7 +269,9 @@ describe('PXFilesDeletedListener', () => {
 
     const files: FileType[] = [{ ...documentEn, entity: new ObjectId().toString() }];
 
-    await eventBus.emit(new FilesDeletedEvent({ files }));
+    await testingEnvironment.runWithContext(async () => {
+      await eventBus.emit(new FilesDeletedEvent({ files }));
+    });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection

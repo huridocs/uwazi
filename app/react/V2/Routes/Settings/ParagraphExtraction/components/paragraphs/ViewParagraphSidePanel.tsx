@@ -24,7 +24,7 @@ const ViewParagraphSidePanel = ({
       setIsSidePanelOpen(false);
     }}
     title={
-      <span className="text-base font-semibold text-gray-500 leading-6 uppercase">
+      <span className="text-base font-semibold uppercase leading-6 [color:var(--color-theme-text-secondary)]">
         <Translate>Entity</Translate>
       </span>
     }
@@ -38,7 +38,7 @@ const ViewParagraphSidePanel = ({
           to={`/${paragraphOnView?.language}/entity/${paragraphOnView?.sharedId}`}
           target="_blank"
         >
-          <Button size="small" styling="outline">
+          <Button size="small" variant="secondary">
             <Translate>View entity</Translate>
           </Button>
         </Link>

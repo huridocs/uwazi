@@ -1,4 +1,6 @@
 /* eslint-disable max-lines */
+import type { Application, Request } from 'express';
+
 import { createError, validation } from '#api/utils/index.js';
 import settings from '#api/settings/index.js';
 import entities from '#api/entities/index.js';
@@ -8,7 +10,6 @@ import { uploadMiddleware } from '#api/files/index.js';
 import { sequentialPromises } from '#shared/asyncUtils.js';
 import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
-import type { Application, Request } from 'express';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
@@ -22,7 +23,7 @@ import translations from './translations.js';
 
 const dispatchEntityPreviewJobs = async (languageKey: LanguageISO6391) => {
   const transactionManager = TransactionManagerFactory.default();
-  const filesDS = FilesDataSourceFactory.default(transactionManager);
+  const filesDS = FilesDataSourceFactory.default();
   const thumbnails = await filesDS.getThumbnailsByLanguage(languageKey).all();
   const sharedIds = [...new Set(thumbnails.map(t => t.entity))];
   if (sharedIds.length === 0) return;
