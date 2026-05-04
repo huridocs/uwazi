@@ -90,26 +90,6 @@ const fixtures: DBFixture = {
         published: true,
       }
     ),
-
-    // entities for streamModifiedSince tests
-    factory.entity(
-      'old_entity',
-      'template_1',
-      {},
-      { language: 'en', editDate: pastDate.getTime() }
-    ),
-    factory.entity(
-      'recent_entity',
-      'template_1',
-      {},
-      { language: 'en', editDate: recentDate.getTime() }
-    ),
-    factory.entity(
-      'boundary_entity',
-      'template_1',
-      {},
-      { language: 'en', editDate: cutoffDate.getTime() }
-    ),
   ],
 
   files: [
@@ -309,6 +289,32 @@ describe('MongoEntityDAO', () => {
   });
 
   describe('streamModifiedSince()', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        entities: [
+          factory.entity(
+            'old_entity',
+            'template_1',
+            {},
+            { language: 'en', editDate: pastDate.getTime() }
+          ),
+          factory.entity(
+            'recent_entity',
+            'template_1',
+            {},
+            { language: 'en', editDate: recentDate.getTime() }
+          ),
+          factory.entity(
+            'boundary_entity',
+            'template_1',
+            {},
+            { language: 'en', editDate: cutoffDate.getTime() }
+          ),
+        ],
+      });
+    });
+
     it('returns only entities whose editDate is >= the given date', async () => {
       const dao = createSut();
       const entities = await dao.streamModifiedSince(cutoffDate).toArray();
