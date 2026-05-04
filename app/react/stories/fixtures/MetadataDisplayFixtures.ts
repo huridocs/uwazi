@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
-import { ProcessingContext } from '#V2/application/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 
 const thesauri: ClientThesaurus[] = [
@@ -611,15 +610,4 @@ const apiEntity: Entity = {
   ],
 };
 
-const processingContextBase: Omit<ProcessingContext, 'templates' | 'settings' | 'thesauri'> = {
-  includeTemplate: true,
-  onlyForCards: true,
-  dateFormat: 'LLL d, yyyy',
-  translateLabels: true,
-  language: 'en',
-  translations: [],
-  currentUser: undefined,
-  defaultLanguage: 'en',
-};
-
-export { apiEntity, processingContextBase, thesauri, templates, settings };
+export { apiEntity, thesauri, templates, settings };

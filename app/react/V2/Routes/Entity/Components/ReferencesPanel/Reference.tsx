@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
+import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { Translate } from '#app/I18N/index.js';
-import { EntityReference } from '#V2/domain/entities/types.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { getContrastTextColor } from '#shared/utils/contrast.js';
 
