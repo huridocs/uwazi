@@ -8,6 +8,7 @@ import { getPagePlaintext } from '#V2/api/files/index.js';
 import { snippets } from '#V2/api/search/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { getBySharedId } from '#V2/api/entities/index.js';
+import { getMainDocument } from '#V2/formatters/index.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
 import { LoaderResponse } from './types.js';
@@ -29,6 +30,7 @@ const entityLoader =
     }
 
     let entity = entityLoaderCache.getEntity(entitySharedId, language);
+    let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
     let searchResults: SnippetsSearchResponse | undefined;
 
@@ -50,15 +52,19 @@ const entityLoader =
       }
     }
 
-    if (entity?.documents?.[0]._id && (isRaw || !isClient)) {
-      pagePlaintext = entityLoaderCache.getPlaintext(
-        entity.documents[0]._id as string,
-        Number(currentPage)
-      );
+    if (!mainDocument && entity?.sharedId) {
+      mainDocument = getMainDocument(entity.documents, language);
+      if (mainDocument) {
+        entityLoaderCache.setMainDocument(entity.sharedId, language, mainDocument);
+      }
+    }
+
+    if (mainDocument?._id && (isRaw || !isClient)) {
+      pagePlaintext = entityLoaderCache.getPlaintext(mainDocument._id, Number(currentPage));
 
       if (!pagePlaintext) {
         const response = await getPagePlaintext(
-          entity.documents[0]._id as string,
+          mainDocument._id,
           Number.parseInt(currentPage, 10),
           headers
         );
@@ -80,11 +86,7 @@ const entityLoader =
           );
         } else {
           pagePlaintext = response;
-          entityLoaderCache.setPlaintext(
-            entity.documents[0]._id as string,
-            Number(currentPage),
-            pagePlaintext
-          );
+          entityLoaderCache.setPlaintext(mainDocument._id, Number(currentPage), pagePlaintext);
         }
       }
     }
@@ -115,7 +117,7 @@ const entityLoader =
       }
     }
 
-    return { entity, pagePlaintext, searchResults };
+    return { entity, mainDocument, pagePlaintext, searchResults };
   };
 
 export { entityLoader };

@@ -11,7 +11,7 @@ import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js'
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
-import { Entity } from '#V2/api/entities/types.js';
+import { FileType } from '#V2/api/entities/types.js';
 import { PlainText } from './PlainText.js';
 import { OCRButton } from './OCRButton.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
@@ -20,11 +20,12 @@ import { useReferencesActions } from './ReferencesPanel/referencesAtom.js';
 import { pdfController } from './atoms.js';
 
 type PDFViewProps = {
-  entity: Entity;
+  mainDocument: FileType;
+  templateId?: string;
   pagePlaintext?: string;
 };
 
-const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
+const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
@@ -134,14 +135,14 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
       const targetPage =
         direction === 'prev'
           ? Math.max(1, pageNumber - 1)
-          : Math.min(pageNumber + 1, entity?.documents?.[0]?.totalPages || 0);
+          : Math.min(pageNumber + 1, mainDocument?.totalPages || 0);
       if (isRaw) {
         updatePageParam(targetPage);
       } else {
         pdfControls.current?.goToPage(targetPage);
       }
     },
-    [entity, isRaw, pageNumber, updatePageParam]
+    [mainDocument?.totalPages, isRaw, pageNumber, updatePageParam]
   );
 
   const handlePageChange = useCallback(
@@ -158,7 +159,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
     setHydrated(true);
   }, []);
 
-  const { filename, originalname, totalPages } = entity.documents?.[0] || {
+  const { filename, originalname, totalPages } = mainDocument || {
     filename: '',
     originalname: '',
     totalPages: 0,
@@ -173,7 +174,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
           <div className="w-full rounded-md p-4 bg-(--color-theme-surface-muted)">
             <div className="flex flex-row justify-between gap-2">
               <div>
-                <TemplateLabel templateId={entity.template} />
+                <TemplateLabel templateId={templateId} />
               </div>
               <div>
                 <label htmlFor="render-mode" className="sr-only">
@@ -240,9 +241,9 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
         ) : (
           <div className="flex flex-row items-center w-full">
             <div className="justify-self-start grow">
-              {ocrServiceEnabled && entity.documents && (
+              {ocrServiceEnabled && mainDocument && (
                 <NeedAuthorization roles={['admin', 'editor']}>
-                  <OCRButton file={entity.documents?.[0]} />
+                  <OCRButton file={mainDocument} />
                 </NeedAuthorization>
               )}
             </div>

@@ -4,6 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { EntityFile, FileCard } from '#V2/Components/UI/Files/FileCard.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { formatEntityFiles } from '#V2/formatters/index.js';
 
 type FileListProps = {
@@ -12,10 +13,15 @@ type FileListProps = {
 
 const FileList = ({ entity }: FileListProps) => {
   const templates = useAtomValue(templatesAtom);
+  const locale = useAtomValue(localeAtom);
 
   const files: EntityFile[] = useMemo(
-    () => formatEntityFiles(entity, templates).map(({ file, fileType }) => ({ ...file, fileType })),
-    [entity, templates]
+    () =>
+      formatEntityFiles(entity, templates, locale).map(({ file, fileType }) => ({
+        ...file,
+        fileType,
+      })),
+    [entity, locale, templates]
   );
 
   if (files.length === 0) {

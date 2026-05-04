@@ -28,4 +28,4 @@ interface Entity extends Omit<
   };
 }
 
-export type { Entity, MetadataSchema, MetadataObjectSchema };
+export type { Entity, FileType, MetadataSchema, MetadataObjectSchema };

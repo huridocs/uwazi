@@ -9,3 +9,4 @@ export { formatImageProperty } from './metadata/formatImageProperty.js';
 export { formatSelectProperty } from './metadata/formatSelectProperty.js';
 export { formatEntityFiles } from './files/formatEntityFiles.js';
 export { formatReferences } from './relationships/index.js';
+export { getMainDocument } from './files/getMainDocument.js';

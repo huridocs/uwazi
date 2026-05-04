@@ -55,21 +55,25 @@ const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
 const Entity = () => {
-  const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
+  const { entity, mainDocument, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
 
-    if (entity?.documents?.[0]?.filename) {
+    if (entity && mainDocument?.filename) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.DOCUMENT}
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView entity={entity} pagePlaintext={pagePlaintext} />
+          <PDFView
+            mainDocument={mainDocument}
+            templateId={entity.template}
+            pagePlaintext={pagePlaintext}
+          />
         </Tabs.Tab>
       );
     }
@@ -108,7 +112,7 @@ const Entity = () => {
     }
 
     return tabs;
-  }, [entity, pagePlaintext]);
+  }, [entity, mainDocument, pagePlaintext]);
 
   const sideTabsByMain: Record<
     MainTabId,
@@ -126,16 +130,16 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
-              toc={entity?.documents?.[0].toc}
-              generatedToc={entity?.documents?.[0].generatedToc}
-              file={entity?.documents?.[0]}
+              toc={mainDocument?.toc}
+              generatedToc={mainDocument?.generatedToc}
+              file={mainDocument}
             />
           ),
         },
         {
           id: SIDE_TABS.REFERENCES,
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <ReferencesPanel entity={entity} />,
+          content: <ReferencesPanel entity={entity} mainDocument={mainDocument} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -179,7 +183,7 @@ const Entity = () => {
       ],
       [MAIN_TABS.FILES]: [],
     }),
-    [entity]
+    [entity, mainDocument]
   );
 
   const activeMainTab = useMemo<MainTabId>(() => {
@@ -187,11 +191,11 @@ const Entity = () => {
     if (isValidMainTab(mainTab)) {
       return mainTab;
     }
-    if (entity?.documents?.[0]?.filename) {
+    if (mainDocument?.filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
-  }, [searchParams, entity]);
+  }, [searchParams, mainDocument]);
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
     const availableTabs = sideTabsByMain[activeMainTab] || [];

@@ -31,13 +31,13 @@ describe('Entity loader with cache integration', () => {
     jest.spyOn(files, 'getPagePlaintext').mockResolvedValue('plaintext content');
   });
 
-  const loadEntity = (url: string) => {
+  const loadEntity = (url: string, lang?: string) => {
     const fullUrl = new URL(url);
     const pathParts = fullUrl.pathname.split('/');
     const sharedId = pathParts[pathParts.length - 1];
 
     return entityLoader()({
-      params: { sharedId },
+      params: { sharedId, ...(lang ? { lang } : {}) },
       request: { url } as Request,
       context: undefined,
       unstable_pattern: '' as any,
@@ -121,6 +121,34 @@ describe('Entity loader with cache integration', () => {
       await loadEntity('http://localhost/entity/shared1?searchTerm=query1');
 
       expect(search.snippets).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Main document loading', () => {
+    it('should include mainDocument in the loader response', async () => {
+      const result = (await loadEntity('http://localhost/entity/shared1')) as any;
+
+      expect(result.mainDocument).toEqual(mockEntity.documents![0]);
+    });
+
+    it('should cache mainDocument and not recompute on subsequent loads', async () => {
+      const getMainDocumentSpy = jest.spyOn(entityLoaderCache, 'setMainDocument');
+
+      await loadEntity('http://localhost/entity/shared1');
+      await loadEntity('http://localhost/entity/shared1');
+
+      // setMainDocument is only called once — on first load; subsequent loads use the cache
+      expect(getMainDocumentSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should recompute mainDocument after cache invalidation', async () => {
+      const setMainDocumentSpy = jest.spyOn(entityLoaderCache, 'setMainDocument');
+
+      await loadEntity('http://localhost/entity/shared1');
+      entityLoaderCache.invalidateEntity('shared1');
+      await loadEntity('http://localhost/entity/shared1');
+
+      expect(setMainDocumentSpy).toHaveBeenCalledTimes(2);
     });
   });
 

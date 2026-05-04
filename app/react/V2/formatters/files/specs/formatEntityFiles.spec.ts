@@ -148,6 +148,48 @@ const entity3 = {
   attachments: [],
 };
 
+const entityWithMultipleDocs = {
+  _id: '5',
+  language: 'es',
+  sharedId: '5',
+  template: '1',
+  user: '1',
+  title: 'Entity with multiple documents',
+  creationDate: 5,
+  metadata: {},
+  documents: [
+    {
+      _id: 'doc-spa',
+      originalname: 'document-spa.pdf',
+      filename: 'doc-spa.pdf',
+      mimetype: 'application/pdf',
+      size: 1000,
+      creationDate: 1,
+      entity: '5',
+      status: 'ready',
+      type: 'document',
+      generatedToc: false,
+      language: 'spa',
+      totalPages: 2,
+    },
+    {
+      _id: 'doc-eng',
+      originalname: 'document-eng.pdf',
+      filename: 'doc-eng.pdf',
+      mimetype: 'application/pdf',
+      size: 1000,
+      creationDate: 2,
+      entity: '5',
+      status: 'ready',
+      type: 'document',
+      generatedToc: false,
+      language: 'eng',
+      totalPages: 2,
+    },
+  ],
+  attachments: [],
+} as Entity;
+
 const entity4 = {
   _id: '4',
   language: 'es',
@@ -246,7 +288,7 @@ const templates = [
 
 describe('formatEntityFiles', () => {
   it('should return all main files and supporting files', () => {
-    const result = formatEntityFiles(entity1, templates);
+    const result = formatEntityFiles(entity1, templates, 'es');
     expect(result).toEqual([
       {
         fileType: 'mainDocument',
@@ -260,7 +302,7 @@ describe('formatEntityFiles', () => {
   });
 
   it('should return also include metadata fields with own files', () => {
-    const result = formatEntityFiles(entity2, templates);
+    const result = formatEntityFiles(entity2, templates, 'es');
     expect(result).toEqual([
       {
         fileType: 'image',
@@ -282,12 +324,12 @@ describe('formatEntityFiles', () => {
   });
 
   it('should ignore media fields with link media', () => {
-    const result = formatEntityFiles(entity3 as Entity, templates);
+    const result = formatEntityFiles(entity3 as Entity, templates, 'es');
     expect(result).toEqual([]);
   });
 
   it('should include supporting files that are links', () => {
-    const result = formatEntityFiles(entity4 as Entity, templates);
+    const result = formatEntityFiles(entity4 as Entity, templates, 'es');
     expect(result).toEqual([
       {
         fileType: 'externalURL',
@@ -298,5 +340,31 @@ describe('formatEntityFiles', () => {
         file: entity4.attachments[1],
       },
     ]);
+  });
+
+  describe('mainDocument selection with multiple documents', () => {
+    it('should mark the document matching the locale as mainDocument', () => {
+      const result = formatEntityFiles(entityWithMultipleDocs, templates, 'es');
+      expect(result).toEqual([
+        { fileType: 'mainDocument', file: entityWithMultipleDocs.documents![0] },
+        { fileType: 'document', file: entityWithMultipleDocs.documents![1] },
+      ]);
+    });
+
+    it('should fall back to the first document when no document matches the locale', () => {
+      const result = formatEntityFiles(entityWithMultipleDocs, templates, 'fr');
+      expect(result).toEqual([
+        { fileType: 'mainDocument', file: entityWithMultipleDocs.documents![0] },
+        { fileType: 'document', file: entityWithMultipleDocs.documents![1] },
+      ]);
+    });
+
+    it('should mark a non-first document as mainDocument when it matches the locale', () => {
+      const result = formatEntityFiles(entityWithMultipleDocs, templates, 'en');
+      expect(result).toEqual([
+        { fileType: 'document', file: entityWithMultipleDocs.documents![0] },
+        { fileType: 'mainDocument', file: entityWithMultipleDocs.documents![1] },
+      ]);
+    });
   });
 });

@@ -4,7 +4,7 @@ import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { useAtomValue } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Entity } from '#V2/api/entities/types.js';
+import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
@@ -20,10 +20,11 @@ import { pdfController } from '../atoms.js';
 
 type ReferencesPanelProps = {
   entity?: Entity;
+  mainDocument?: FileType;
 };
 
 // eslint-disable-next-line max-statements
-const ReferencesPanel = ({ entity }: ReferencesPanelProps) => {
+const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
   const [referenceToDelete, setReferenceToDelete] = useState<EntityReference | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -125,7 +126,7 @@ const ReferencesPanel = ({ entity }: ReferencesPanelProps) => {
       }
 
       // Get source file ID (main document)
-      const sourceFile = entity.documents?.[0];
+      const sourceFile = mainDocument;
       if (!sourceFile?._id) {
         console.error('Cannot save reference: source file is not available');
         return;
@@ -157,7 +158,7 @@ const ReferencesPanel = ({ entity }: ReferencesPanelProps) => {
         // TODO: Show error notification to user
       }
     },
-    [entity, setCreateReferenceSelection, revalidator]
+    [entity, mainDocument, setCreateReferenceSelection, revalidator]
   );
 
   // If there's a createReferenceSelection, show the CreateReference component

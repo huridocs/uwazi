@@ -28,6 +28,8 @@ const sampleEntity: Partial<EntityType> = {
   metadata: {},
 };
 
+const sampleMainDocument = sampleEntity.documents![0];
+
 const sampleTemplate = [
   { _id: 'template1', name: 'Template 1', properties: [], commonProperties: [] },
 ];
@@ -58,7 +60,9 @@ describe('Entity view', () => {
 
   it('should render PDF and metadata', async () => {
     render(
-      <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
+      <TestRouterContext
+        loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
+      >
         <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
           <Entity />
         </TestAtomStoreProvider>
@@ -85,6 +89,7 @@ describe('Entity view', () => {
         <TestRouterContext
           loaderData={{
             entity: { ...sampleEntity },
+            mainDocument: sampleMainDocument,
             pagePlaintext: '',
           }}
         >
@@ -110,6 +115,7 @@ describe('Entity view', () => {
         <TestRouterContext
           loaderData={{
             entity: { ...sampleEntity },
+            mainDocument: sampleMainDocument,
             pagePlaintext: '',
           }}
         >
@@ -133,7 +139,9 @@ describe('Entity view', () => {
   describe('Tabs', () => {
     beforeEach(async () => {
       render(
-        <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
+        <TestRouterContext
+          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
+        >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
           </TestAtomStoreProvider>
@@ -191,7 +199,9 @@ describe('Entity view', () => {
 
     it('should preserve active side tab when switching to a main tab that supports it', async () => {
       render(
-        <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
+        <TestRouterContext
+          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
+        >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
           </TestAtomStoreProvider>
@@ -237,7 +247,7 @@ describe('Entity view', () => {
     it('should clear side tab when switching to a main tab that does not support it', async () => {
       render(
         <TestRouterContext
-          loaderData={{ entity: sampleEntity, pagePlaintext: '' }}
+          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
           initialEntries={['/?main=document&side=metadata']}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
@@ -299,6 +309,7 @@ describe('Entity view', () => {
         <TestRouterContext
           loaderData={{
             entity: { ...sampleEntity },
+            mainDocument: sampleMainDocument,
             pagePlaintext: pageText,
           }}
         >
@@ -331,6 +342,7 @@ describe('Entity view', () => {
         <TestRouterContext
           loaderData={{
             entity: { ...sampleEntity },
+            mainDocument: sampleMainDocument,
             pagePlaintext: pageText,
           }}
         >
@@ -355,7 +367,9 @@ describe('Entity view', () => {
       const entityNoDoc = { ...sampleEntity, documents: undefined } as any;
 
       render(
-        <TestRouterContext loaderData={{ entity: entityNoDoc, pagePlaintext: '' }}>
+        <TestRouterContext
+          loaderData={{ entity: entityNoDoc, mainDocument: undefined, pagePlaintext: '' }}
+        >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
           </TestAtomStoreProvider>
@@ -414,7 +428,12 @@ describe('Entity view', () => {
 
       render(
         <TestRouterContext
-          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: snippets }}
+          loaderData={{
+            entity: sampleEntity,
+            mainDocument: sampleMainDocument,
+            pagePlaintext: '',
+            searchResults: snippets,
+          }}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
