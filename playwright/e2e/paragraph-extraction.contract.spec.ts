@@ -33,7 +33,9 @@ test('paragraph extraction lifecycle', async ({ page }) => {
       },
     });
     await page.addInitScript(() => {
-      (window as typeof window & { __featureFlags__?: { paragraphExtraction: boolean } }).__featureFlags__ = {
+      (
+        window as typeof window & { __featureFlags__?: { paragraphExtraction: boolean } }
+      ).__featureFlags__ = {
         paragraphExtraction: true,
       };
     });
@@ -68,7 +70,10 @@ test('paragraph extraction lifecycle', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'Source template' })).toBeVisible();
     const sourceModal = page.getByRole('dialog', { name: 'Modal' });
     await sourceModal.getByRole('textbox', { name: 'search-multiselect' }).fill(sourceTemplateName);
-    await sourceModal.getByRole('button', { name: 'Select' }).filter({ hasText: sourceTemplateName }).click();
+    await sourceModal
+      .getByRole('button', { name: 'Select' })
+      .filter({ hasText: sourceTemplateName })
+      .click();
     await page.getByRole('button', { name: 'Next' }).click();
     await expect(page.getByRole('heading', { name: 'Extraction configuration' })).toBeVisible();
     const selects = page.locator('select');
@@ -89,7 +94,9 @@ test('paragraph extraction lifecycle', async ({ page }) => {
   const createExtractorPayload = await createExtractorResult.json();
   const extractorId = createExtractorPayload.extractorId;
   expect(extractorId).toBeTruthy();
-  await expect(page.getByTestId('notification-flash-title').getByText('Paragraph Extractor added')).toBeVisible();
+  await expect(
+    page.getByTestId('notification-flash-title').getByText('Paragraph Extractor added')
+  ).toBeVisible();
 
   await test.step('Open extractor details and wait for source rows', async () => {
     await page.getByRole('button', { name: 'View' }).first().click();
@@ -120,16 +127,10 @@ test('paragraph extraction lifecycle', async ({ page }) => {
 
   let processedEntityTitle = '';
   await test.step('Wait until extractor rows show ready status', async () => {
-    const { processedRows, snapshots } = await waitForProcessedParagraphRows(page.request, extractorId, {
+    const { processedRows } = await waitForProcessedParagraphRows(page.request, extractorId, {
       timeoutMs: 120000,
       pollIntervalMs: 1500,
       getDomRowsCount: async () => page.locator('tbody tr').count(),
-    });
-    const lastSnapshot = snapshots[snapshots.length - 1];
-    console.log('[paragraph-extraction] processed rows detected', {
-      extractorId,
-      processedRows: processedRows.length,
-      lastSnapshot,
     });
 
     const candidateTitle = processedRows[0]?.entity?.title;
