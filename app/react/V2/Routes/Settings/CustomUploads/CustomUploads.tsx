@@ -121,7 +121,7 @@ const CustomUploads = () => {
             }}
             enableSelections
             header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
                 Custom Uploads
               </Translate>
             }
@@ -132,8 +132,7 @@ const CustomUploads = () => {
           <UploadProgress queueLength={uploadService.getFilesInQueue().length} />
           {selectedRows.length > 0 && (
             <Button
-              styling="solid"
-              color="error"
+              variant="danger"
               onClick={() => {
                 setConfirmationModal(true);
                 setModalProps({ items: selectedRows, action: deleteMultiple });
@@ -142,7 +141,7 @@ const CustomUploads = () => {
               <Translate>Delete</Translate>
             </Button>
           )}
-          <Button styling="solid" color="primary" onClick={async () => setShowUploadsModal(true)}>
+          <Button variant="primary" onClick={async () => setShowUploadsModal(true)}>
             <Translate>Import asset</Translate>
           </Button>
         </SettingsContent.Footer>

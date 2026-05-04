@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { NotificationItem } from './NotificationItem.js';
 import { TaskItem } from './TaskItem.js';
 import { Translate } from '#app/I18N/index.js';
-import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 
 const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center py-1 text-center text-gray-400">
+  <div className="flex flex-col items-center justify-center py-1 text-center [color:var(--color-theme-text-muted)]">
     <HandThumbUpIcon className="h-6 w-6" />
     <p className="font-semibold text-lg">
       <Translate>All clear</Translate>
@@ -91,7 +91,7 @@ const NotificationsPanel = () => {
 
           {tasks.length > 0 && (
             <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider [color:var(--color-theme-text-muted)]">
                 <Translate>Tasks</Translate>
               </h2>
               <ul className="flex flex-col gap-2">
@@ -106,7 +106,7 @@ const NotificationsPanel = () => {
 
           {notifications.length > 0 && (
             <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider [color:var(--color-theme-text-muted)]">
                 <Translate>Notifications</Translate>
               </h2>
               <ul className="flex flex-col gap-2">
@@ -128,8 +128,8 @@ const NotificationsPanel = () => {
           )}
         </Sidepanel.Body>
         {hasClearable && (
-          <Sidepanel.Footer className="p-4 border-t border-gray-100">
-            <Button styling="light" color="primary" onClick={clearAll} className="w-full">
+          <Sidepanel.Footer className="border-t p-4 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
+            <Button variant="secondary" onClick={clearAll} className="w-full">
               <span className="flex items-center justify-center gap-1.5">
                 <Translate>Clear</Translate>
               </span>

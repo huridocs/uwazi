@@ -134,7 +134,6 @@ app.use(appContextMiddleware);
 
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
-app.use(dependenciesContextMiddleware);
 app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
@@ -144,6 +143,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();
   authRoutes(app);
+  app.use(dependenciesContextMiddleware);
   versionRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));

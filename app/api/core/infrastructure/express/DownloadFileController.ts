@@ -1,5 +1,8 @@
-import { createError } from '#api/utils/index.js';
+import type { Request, Response } from 'express';
+import { z } from 'zod';
+import { pipeline } from 'stream/promises';
 
+import { createError } from '#api/utils/index.js';
 import {
   AbstractController,
   Dependencies,
@@ -10,9 +13,6 @@ import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFa
 import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users.v2/model/User.js';
-import type { Request, Response } from 'express';
-import { z } from 'zod';
-import { pipeline } from 'stream/promises';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory.js';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
@@ -90,8 +90,7 @@ class DownloadFileController extends AbstractController {
   }
 
   private async getFile(filename: string) {
-    const transactionManager = TransactionManagerFactory.default();
-    const filesDS = FilesDataSourceFactory.default(transactionManager);
+    const filesDS = FilesDataSourceFactory.default();
 
     const fileResult = await filesDS.getByFilename(filename, this.typesAllowed);
 

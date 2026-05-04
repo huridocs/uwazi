@@ -13,11 +13,7 @@ const SettingsNavigation = () => {
   const { allowcustomJS } = settings;
 
   const renderLink = (to: string, children: React.ReactNode) => (
-    <I18NLink
-      to={to}
-      activeClassname="bg-primary-100 text-primary-800 focus:bg-primary-100"
-      className="block p-2 rounded-sm hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm"
-    >
+    <I18NLink to={to} className="settings-nav-link block">
       <span className="whitespace-nowrap flex items-center gap-1">{children}</span>
     </I18NLink>
   );
@@ -28,7 +24,7 @@ const SettingsNavigation = () => {
       className="h-full flex flex-col gap-6 text-sm overflow-y-auto"
     >
       <section className="p-4">
-        <h2 className="font-bold text-sm text-gray-500 mb-4 tracking-wider">
+        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-primary)]">
           <Translate>Settings</Translate>
         </h2>
         <ul className="flex flex-col gap-4">
@@ -47,9 +43,9 @@ const SettingsNavigation = () => {
           </NeedAuthorization>
         </ul>
       </section>
-      <section className="p-4 border-t border-gray-200">
+      <section className="border-t border-solid [border-top-width:1px] p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
         <NeedAuthorization roles={['admin', 'editor']}>
-          <h2 className="font-bold text-sm text-gray-500 mb-2 tracking-wider">
+          <h2 className="mb-2 text-sm font-bold tracking-wider [color:var(--color-theme-text-primary)]">
             <Translate>Metadata</Translate>
           </h2>
         </NeedAuthorization>
@@ -86,8 +82,8 @@ const SettingsNavigation = () => {
           </NeedAuthorization>
         </ul>
       </section>
-      <section className="p-4 border-t border-gray-200">
-        <h2 className="font-bold text-sm text-gray-500 mb-4 tracking-wider">
+      <section className="border-t border-solid [border-top-width:1px] p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
+        <h2 className="mb-4 text-sm font-bold tracking-wider [color:var(--color-theme-text-primary)]">
           <Translate>Tools</Translate>
         </h2>
         <ul className="flex flex-col gap-4">
@@ -135,7 +131,7 @@ const SettingsNavigation = () => {
               href="https://uwazi.io/page/9852italrtk/support"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 p-2 rounded-sm hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm whitespace-nowrap"
+              className="settings-nav-link inline-flex items-center gap-1 whitespace-nowrap"
             >
               <Translate>Documentation</Translate> <Icon icon="external-link-alt" />
             </a>

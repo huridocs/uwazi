@@ -11,6 +11,7 @@ A valid email is required,Потрібна дійсна електронна а�
 Accept,Прийняти
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
 Accepting suggestions,Прийняття пропозицій
+Accessibility checks need attention,Accessibility checks need attention
 Account,Акаунт
 Account locked,Обліковий запис заблоковано
 Account unlocked successfully,Обліковий запис успішно розблоковано
@@ -67,6 +68,7 @@ Adding items to the thesauri,Додавання елементів до теза
 Admin,Адмін
 Administrators and Editors,Адміністратори та Редактори
 Admins,Адміни
+Advanced colors,Advanced colors
 ALL,ВСІ
 All,ВСІ
 "All changes will be lost, are you sure you want to proceed?","Усі зміни будуть втрачені, ви впевнені, що хочете продовжити?"
@@ -135,6 +137,7 @@ Captcha bypass,"Увімкнувши цю опцію, ви можете дозв
 шкідливим контентом."
 Cards,Картки
 Cards view,Вид карток
+Change,Change
 Change password,Змінити пароль
 Change Password,Змінити пароль
 Changes in the thesaurus will impact all the entities using these values.,"Зміни в тезаурусі вплинуть на всіх суб'єктів, які використовують ці значення."
@@ -145,6 +148,8 @@ Character support description,"Цей параметр покращує підт
 Character support process warning,"Цей процес може зайняти кілька хвилин і, ймовірно, змінить URL-адреси на фільтри бібліотек. Якщо у вас є меню або посилання, що використовують такі URL-адреси, вони, ймовірно, перестануть працювати після оновлення. Вам потрібно буде оновити їх вручну."
 Character support revert warning,"Вибравши цю опцію, ви не зможете повернутися до використання старих імен властивостей. Якщо у вас немає проблем з іменами властивостей шаблону, ми рекомендуємо не позначати цю опцію."
 Check to make this instance public (non-logged in users can see public documents and entities),"Установіть прапорець, щоб зробити цей екземпляр загальнодоступним (неавторизовані користувачі можуть бачити загальнодоступні документи та сутності)"
+Checking which images fit the requirements,Checking which images fit the requirements...
+Choose,Choose
 Choose which data to use for training,"Виберіть, які дані використовувати для навчання"
 Clear,Чисто
 Clear all,Зачистити все.
@@ -235,7 +240,10 @@ Custom JS,Спеціальний JS
 Custom landing page,Налаштована цільова сторінка
 custom page error warning,"На цій кастомній сторінці сталася несподівана помилка, вона може не працювати належним чином. Будь ласка, зв'яжіться з адміністратором для уточнення деталей."
 Custom Uploads,Персоналізовані завантаження
+Customize,Customize
+Customized,Customized
 Dark,Темний
+Dark Theme,Dark Theme
 Dashboard,Приладова панель
 Date,Date
 Date added,Дата додавання
@@ -291,6 +299,7 @@ Documentation,Документація
 documents,документи
 Documents,Документи
 documents.,документи.
+Done,Done
 Done creating entities,Done creating entities
 Done creating relationships,Done creating relationships
 Done creating thesauri,Done creating thesauri
@@ -313,6 +322,7 @@ Edit File,Редагувати файл
 Edit group,Група редагування
 Edit item,Редагувати елемент
 Edit metadata of entities,Редагування метаданих сутностей
+Edit theme,Edit theme
 Edit user,Редагувати користувача
 Editor,Редактор
 editor,Редактор
@@ -365,10 +375,10 @@ Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Іконка - це невелика піктограма, яка представляє вашу колекцію у вкладках та закладках браузера. За замовчуванням це логотип Uwazi. Ви можете використовувати свій власний:
 
-1. Завантажте свою іконку в Користувацькі завантаження.
-2. Скопіюйте її URL-адресу.
-3. Виберіть ""Користувацька іконка"" і вставте URL-адресу у вказане поле.
-4. Перезавантажте сторінку, щоб побачити вашу іконку в дії."
+1. За потреби завантажте свою іконку в Користувацькі завантаження.
+2. Натисніть ""Вибрати зображення фавікону"" і оберіть файл (лише зображення з Користувацьких завантажень).
+3. Перезавантажте сторінку, щоб побачити вашу іконку в дії."
+Favicon no images hint,Favicon no images hint
 FEATURED,ОБРАНІ
 File,Файл
 File deleted,Файл видалено
@@ -417,8 +427,10 @@ Group Options,Параметри групи
 Group saved,Групу збережено
 Group updated,Групу оновлено
 Groups,Групи
+Header and button preview,Header and button preview
 help,допомога
 here,тут.
+Hide,Hide
 Hide actions,Приховати дії
 Hide label,Приховати мітку
 Hide toolbar,Приховати панель інструментів
@@ -433,6 +445,7 @@ ID:,ПОСВІДЧЕННЯ ОСОБИ:
                         with instructions to reset your password."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Якщо це зовнішній URL, використовуйте повністю сформований URL. Тобто http://www.uwazi.io."
 "If you want to continue, please type","Якщо ви хочете продовжити, будь ласка, введіть"
+Image doesn't match the required size.,Image doesn't match the required size.
 Import,Імпортувати
 Import asset,Імпортний актив
 Import completed,Імпорт завершено. Кількість створених сутностей:
@@ -504,8 +517,11 @@ Library,Бібліотека
 library list view,перегляд бібліотеки у вигляді списку
 library map view,перегляд бібліотеки у вигляді карти
 library table view,перегляд бібліотеки у табличному вигляді
+Light,Light
+Light Theme,Light Theme
 Link,Посилання
 linked,пов'язаний
+Live preview,Live preview
 Live translate,Прямий переклад
 Loading,Завантаження
 Login,Увійти
@@ -617,6 +633,7 @@ No table of contents description,Ви можете почати з виділе�
 No text match,"Немає тексту, що збігається"
 No text match description,"Ви можете ввести щось інше в поле пошуку, щоб отримати деякі результати."
 No type,Немає типу
+No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
 No valid target template available,Відсутній правильний шаблон цілі
 No value,Немає значення
 No Value,Немає значення
@@ -699,6 +716,7 @@ Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOK
 Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
 Previous,Попередній
+Primary button,Primary button
 Primary Documents,Основні документи
 Priority sorting,Пріоритетне сортування
 Priority sorting description,"Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
@@ -750,6 +768,7 @@ RAW,RAW
 Re-uploaded document,Перезавантажений документ
 Receiving email,Електронна пошта одержувача
 Receiving email description,"Якщо у вас є контактна форма, це адреса електронної пошти, на яку ви будете отримувати відповіді."
+Recommended,Recommended
 Reference,Посилання
 References,Посилання
 Reject,Відхилити
@@ -822,14 +841,18 @@ Search Tips: one char wildcard,"? для одного символу підст�
 Search Tips: proximity,"~ для близького пошуку. Тобто: ""статус""~5 знайде все, що має ""статус"" і ""статус"" на відстані 5 слів, наприклад, ""процесуальний статус"", ""особливий правовий статус""."
 Search Tips: wildcard,"Використовуйте * для пошуку за шаблоном. Наприклад: ""juris*"" буде відповідати таким словам, як юрисдикція, юрисдикційний, юристи, юриспруденція тощо."
 Searching...,Searching...
+Secondary button,Secondary button
 Secret keys,Секретні ключі
 Security,Безпека
 Select,Виберіть
 Select & Search,Вибір та пошук
 Select all,Вибрати все
+Select an existing image,Select an existing image
+Select favicon image,Вибрати зображення фавікону
 Select files on your device,Вибрати файли на вашому пристрої
 Select from computer,Виберіть з комп'ютера
 Select relationship type,Виберіть тип взаємозв'язків
+Select site logo image,Вибрати зображення логотипу сайту
 Select target paragraph,Виберіть цільовий абзац
 Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
 Select the template with the source documents.,Виберіть шаблон з вихідними документами.
@@ -868,6 +891,11 @@ Showing,Показати
 shown of,показано від
 Sign in,Увійти
 Single relationships must have a hub,Одинокі стосунки повинні мати центр
+Site logo description,"Логотип відображається у верхній панелі поруч із назвою вашої колекції (близько 200×32 пікселів).
+
+1. За потреби завантажте зображення в Користувацькі завантаження.
+2. Натисніть ""Вибрати зображення логотипу сайту"" і оберіть файл; показуються лише зображення з Користувацьких завантажень."
+Site logo no images hint,"Поки немає файлів зображень у Користувацьких завантаженнях. Спочатку додайте зображення PNG, SVG або JPEG."
 Size,Розмір
 Skip to main content,Перейти до основного змісту
 Something went wrong,Щось пішло не так
@@ -942,6 +970,11 @@ The request could not be processed.,Запит не вдалося оброби�
 The source of this template is a sync.,Джерелом цього шаблону є синхронізація.
 The token does not validate against the secret key,Токен не перевіряється за допомогою секретного ключа
 The token does not validate against the secret key!,Токен не перевіряється за допомогою секретного ключа!
+Theme and branding,Theme and branding
+Theme favicon,Theme favicon
+Theme logotype,Theme logotype
+Theme presets,Theme presets
+Theme preview,Theme preview
 There are no pages enabled for entity view,"Немає сторінок з можливостями, які надаються для перегляду об'єкта"
 There are no untranslated terms,Немає неперекладених термінів
 Thesauri,Предметний покажчик
@@ -1021,6 +1054,7 @@ Two-factor verification failed,Двохетапна перевірка не вд
 Two-step verification,Двохетапна перевірка
 Two-step verification token required,Потрібен токен з двоетапною верифікацією
 Type,Тип
+U,U
 "Unable to save, failed response","Не вдалося врятувати, не вдалося відповісти"
 Unauthorized,Несанкціонований
 Unexpected error,Неочікувана помилка
@@ -1043,9 +1077,11 @@ Updated settings,Оновлені налаштування
 Updated translations,Оновлені переклади
 Updated user,Оновлений користувач
 Updating template properties across,Оновлення властивостей шаблону в усіх
+Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Завантажити ZIP або CSV файл.
 Upload and select file,Завантажити й вибрати файл
 Upload from computer,Завантажити з комп'ютера
+Upload image,Upload image
 Upload PDF,Завантажити PDF
 Upload PDF(s) to create,"Завантажити PDF, щоб створити"
 Uploaded attachment,Завантажено вкладення
@@ -1073,6 +1109,7 @@ Users,Користувачі
 Users & Groups,Користувачі та групи
 Using Authenticator,Використання автентифікатора
 Using URLs,Використання URL-адрес
+Uwazi,Uwazi
 Uwazi is developed by,Uwazi розроблений
 Uwazi UI,Uwazi UI
 Validating,Validating

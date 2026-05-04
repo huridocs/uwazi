@@ -32,13 +32,14 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
-const setUpUseCase = () => {
-  const entityStatusManager = PXEntityStatusManagerFactory.createDefault();
+const setUpUseCase = () =>
+  testingEnvironment.runWithContext(() => {
+    const entityStatusManager = PXEntityStatusManagerFactory.createDefault();
 
-  return {
-    entityStatusManager,
-  };
-};
+    return {
+      entityStatusManager,
+    };
+  });
 
 // eslint-disable-next-line max-statements
 describe('PXEntityStatusManager', () => {

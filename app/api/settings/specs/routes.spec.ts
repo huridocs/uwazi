@@ -1,17 +1,16 @@
-import entities from '#api/entities/index.js';
+import type { NextFunction, Request, Response } from 'express';
+import request from 'supertest';
+import { ObjectId } from 'mongodb';
+
+import templates from '#api/core/v1_layer/templates/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
-import templates from '#api/core/v1_layer/templates/index.js';
 import users from '#api/users/users.js';
-import { setUpApp } from '#api/utils/testingRoutes.js';
-import type { NextFunction, Request, Response } from 'express';
-import request from 'supertest';
-
+import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import translations from '#api/i18n/index.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import waitForExpect from 'wait-for-expect';
 import * as setupSockets from '#api/socketio/setupSockets.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import settingsRoutes from '../routes.js';
 import { settingsModel } from '../settingsModel.js';
 import fixtures from './fixtures.js';
@@ -29,7 +28,7 @@ describe('Settings routes', () => {
   const getApp = (userRole?: string) =>
     setUpApp(settingsRoutes, (req: Request, _res: Response, next: NextFunction) => {
       if (typeof userRole === 'string') {
-        (req as any).user = { role: userRole };
+        (req as any).user = { _id: new ObjectId().toString(), role: userRole, username: 'user' };
       }
       next();
     });
@@ -56,6 +55,7 @@ describe('Settings routes', () => {
           site_name: 'Uwazi',
           mapApiKey: 'testMapApiKey123',
           allowedPublicTemplates: ['id1', 'id2'],
+          site_logo: 'http://localhost:3000/assets/test-logo.png',
         });
 
         expect(response.body.mailerConfig).toBeUndefined();
@@ -77,6 +77,7 @@ describe('Settings routes', () => {
           contactEmail: 'admin@uwazi.com',
           senderEmail: 'noreply@uwazi.com',
           publicFormDestination: 'http://example.com/submit',
+          site_logo: 'http://localhost:3000/assets/test-logo.png',
           features: expect.objectContaining({
             'metadata-extraction': true,
             metadataExtraction: { url: 'http:someurl' },
@@ -88,15 +89,39 @@ describe('Settings routes', () => {
   });
 
   describe('POST', () => {
-    const app = getApp();
+    const app = getApp('admin');
 
     it('should save settings', async () => {
+      iosocket.emit.mockClear();
+
       const response = await request(app)
         .post('/api/settings')
-        .send({ site_name: 'my new name' })
+        .send({
+          site_name: 'my new name',
+          mailerConfig: 'smtp://user:password@example.com',
+          contactEmail: 'contact@example.com',
+          senderEmail: 'sender@example.com',
+          features: { favorites: true },
+        })
         .expect(200);
 
-      expect(response.body).toEqual(expect.objectContaining({ site_name: 'my new name' }));
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          site_name: 'my new name',
+          mailerConfig: 'smtp://user:password@example.com',
+          features: { favorites: true },
+        })
+      );
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'updateSettings',
+        TestEmitSources.currentTenant,
+        expect.not.objectContaining({
+          features: expect.anything(),
+          mailerConfig: expect.anything(),
+          contactEmail: expect.anything(),
+          senderEmail: expect.anything(),
+        })
+      );
     });
 
     describe('newNameGeneration', () => {
@@ -123,15 +148,6 @@ describe('Settings routes', () => {
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'براي' })] }),
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'país' })] }),
         ]);
-
-        await waitForExpect(async () => {
-          expect(await entities.get()).toEqual([
-            expect.objectContaining({ language: 'en', metadata: { براي: [{ value: 'value' }] } }),
-            expect.objectContaining({ language: 'es', metadata: { براي: [{ value: 'value' }] } }),
-            expect.objectContaining({ language: 'en', metadata: { país: [{ value: 'pais' }] } }),
-            expect.objectContaining({ language: 'es', metadata: { país: [{ value: 'pais' }] } }),
-          ]);
-        });
       });
 
       it('should only migrate in the newNameGeneration false to true scenario', async () => {

@@ -89,7 +89,10 @@ describe('thesauri routes', () => {
         body: { name: 'Batman wish list', values: [{ label: 'Joker BFF' }] },
         sockets: { emitToCurrentTenant: jest.fn().mockResolvedValue() },
       };
-      const response = await routes.post('/api/thesauris', req);
+
+      const response = await testingEnvironment.runWithContext(async () =>
+        routes.post('/api/thesauris', req)
+      );
 
       expect(response).toEqual({
         _id: expect.any(ObjectId),

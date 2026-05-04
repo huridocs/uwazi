@@ -75,8 +75,7 @@ class FilesService {
    *
    * @example
    * // For external integrations (PreserveSync, etc.):
-   * const transactionManager = TransactionManagerFactory.default();
-   * const filesService = FilesServiceFactory.default(transactionManager);
+   * const filesService = FilesServiceFactory.default();
    *
    * // 1. Store files to disk first
    * await filesService.storeFiles([attachment]);

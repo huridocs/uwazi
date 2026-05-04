@@ -13,6 +13,7 @@ import {
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 
 interface TweetParamsType {
   title: string;
@@ -78,7 +79,7 @@ class TwitterIntegration {
 
     await Promise.all(
       Object.keys(tenants.tenants).map(async tenant => {
-        await tenants.run(async () => {
+        await runInJobContext(tenant, async () => {
           const twitterIntegration = await this.getTwitterIntegrationSettings();
 
           if (!twitterIntegration.hashtagsTemplateName) {
@@ -102,7 +103,7 @@ class TwitterIntegration {
               },
             });
           }
-        }, tenant);
+        });
       })
     );
   };

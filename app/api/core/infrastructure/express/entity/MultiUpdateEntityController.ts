@@ -1,5 +1,5 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
 import { MultiUpdateEntityUseCaseFactory } from '../../factories/MultiUpdateEntityUseCaseFactory.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
@@ -46,7 +46,7 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
 
       const entityDAO = new MongoEntityDAO(
         getConnection(),
-        DependenciesContext.transactionManager as MongoTransactionManager,
+        ExecutionContext.transactionManager as MongoTransactionManager,
         this.user
       );
 
@@ -54,7 +54,7 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
         .getWithFiles({ sharedId: { $in: sharedIds }, language: targetLanguage })
         .toArray();
 
-      DependenciesContext.logger.info('MultiUpdateEntity executed successfully', {
+      ExecutionContext.logger.info('MultiUpdateEntity executed successfully', {
         namespace: 'MultiUpdate_Entity',
         success: true,
         durationMs: Date.now() - startTime,
@@ -63,7 +63,7 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
 
       this.response.json(updatedEntities);
     } catch (error: unknown) {
-      DependenciesContext.logger.info(
+      ExecutionContext.logger.info(
         `MultiUpdateEntity failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           namespace: 'MultiUpdate_Entity',

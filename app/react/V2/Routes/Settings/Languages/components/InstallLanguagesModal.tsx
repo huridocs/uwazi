@@ -46,13 +46,13 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
   return (
     <Modal size="lg">
       <Modal.Header>
-        <h1 className="text-xl font-medium text-gray-900">
+        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
           <Translate>Install Language(s)</Translate>
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
       <Modal.Body className="pt-0">
-        <Translate className="block px-2 pt-4 text-justify text-gray-700">
+        <Translate className="block px-2 pt-4 text-justify [color:var(--color-theme-text-secondary)]">
           This action may take some time while we add the extra language to the entire collection.
         </Translate>
         <div className="h-96 pt-2">
@@ -65,11 +65,11 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">
-          <p className="w-full pt-0 pb-3 text-sm font-normal text-gray-500 dark:text-gray-400">
+          <p className="w-full pt-0 pb-3 text-sm font-normal [color:var(--color-theme-text-muted)]">
             * <Translate>Available default translation</Translate>
           </p>
           <div className="flex gap-2">
-            <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+            <Button variant="ghost" onClick={() => setShowModal(false)} className="grow">
               <Translate>Cancel</Translate>
             </Button>
             <Button

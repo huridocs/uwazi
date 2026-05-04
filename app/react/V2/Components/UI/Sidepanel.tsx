@@ -3,8 +3,10 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { useAtomValue } from 'jotai';
 import { availableLanguages } from '#shared/language/index.js';
 import { Translate } from '#app/I18N/index.js';
+import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
 
 interface SidePanelProps {
   children: JSX.Element | React.ReactNode;
@@ -22,7 +24,13 @@ const sidepanelHeader = (
   title?: React.ReactNode,
   titleId?: string
 ) => (
-  <div className="flex p-4 mb-2 text-gray-500 justify-between">
+  <div
+    className="mb-2 flex justify-between p-4"
+    style={{
+      color: 'var(--color-theme-text-secondary)',
+      backgroundColor: 'var(--color-theme-surface-raised)',
+    }}
+  >
     <h1 className="text-base font-bold grow" id={titleId}>
       {title}
     </h1>
@@ -53,6 +61,7 @@ const Sidepanel = ({
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
   const titleId = useId();
+  const themeMode = useAtomValue(effectiveThemeModeAtom);
   const panelRef = useRef<HTMLElement>(null);
   const previousFocusedElement = useRef<HTMLElement | null>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -199,7 +208,6 @@ const Sidepanel = ({
 
   if (withOverlay) {
     const overlayContainerClass = 'fixed left-0 z-10 flex w-full max-h-full';
-    const overlayPanelClass = `w-full h-full top-0 right-0 absolute bg-white border-l-2 transition duration-200 ease-in transform ${width}`;
 
     return (
       <Transition
@@ -210,7 +218,8 @@ const Sidepanel = ({
       >
         <Transition.Child
           as="div"
-          className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:grow"
+          data-testid="sidepanel-overlay"
+          className="w-full transition-opacity duration-200 ease-in md:grow [background-color:var(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))]"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
@@ -218,10 +227,18 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="div"
-          className={overlayPanelClass}
+          className={`absolute top-0 right-0 h-full w-full border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? titleId : undefined}
+          style={{
+            backgroundColor: 'var(--color-theme-surface-page)',
+            borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+            colorScheme: themeMode,
+          }}
         >
           <aside
             ref={panelRef}
@@ -243,11 +260,16 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="div"
-      className={`fixed right-0 z-40 w-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
+      className={`fixed right-0 z-40 w-full border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
-      style={sidepanelContainerStyle}
+      style={{
+        ...sidepanelContainerStyle,
+        backgroundColor: 'var(--color-theme-surface-page)',
+        borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
+        colorScheme: themeMode,
+      }}
     >
       <aside
         ref={panelRef}
@@ -278,7 +300,13 @@ Sidepanel.Footer = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div className={`bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>;
+}) => (
+  <div
+    className={`bottom-0 left-0 z-1 w-full [background-color:var(--color-theme-surface-page)] ${className}`}
+  >
+    {children}
+  </div>
+);
 
 export type { SidePanelProps };
 export { Sidepanel };

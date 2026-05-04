@@ -44,24 +44,24 @@ const setUpJob = (pdfService = new PDFService()) => {
     emit: jest.fn(),
   });
 
-  return {
+  return testingEnvironment.runWithContext(() => ({
     job: new PDFPostProcessJobHandler({
       useCase: new PDFPostProcessJob({
         eventBus,
         transactionManager,
-        filesDS: FilesDataSourceFactory.default(transactionManager),
+        filesDS: FilesDataSourceFactory.default(),
         fileStorage: FileStorageFactory.default(),
         pdfService,
         idGenerator: IdGeneratorFactory.default(),
-        filesService: FilesServiceFactory.default(transactionManager, { eventBus }),
-        entitiesDS: EntitiesDataSourceFactory.forTesting(transactionManager),
-        settingsDS: SettingsDataSourceFactory.default(transactionManager),
+        filesService: FilesServiceFactory.default({ eventBus }),
+        entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+        settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
       }),
       wSockets,
     }),
     wSockets,
     eventBus,
-  };
+  }));
 };
 
 const f = getFixturesFactory();

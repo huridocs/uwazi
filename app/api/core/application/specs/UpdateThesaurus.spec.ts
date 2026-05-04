@@ -1,34 +1,32 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2.js';
-import {
-  getConnection,
-  getSharedConnection,
-} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { tenants } from '#api/tenants/index.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
-import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
-import { UserSchema } from '#shared/types/userType.js';
-import {
-  ThesaurusNotFoundError,
-  ThesaurusNameAlreadyExistsError,
-} from '#api/core/domain/thesaurus/errors.js';
-import { JobDBO } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { Result } from '#api/core/libs/Result.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import {
+  ThesaurusNameAlreadyExistsError,
+  ThesaurusNotFoundError,
+} from '#api/core/domain/thesaurus/errors.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
-import { UpdateThesaurusUseCase } from '../UpdateThesaurus.js';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
-import { factory, fixtures } from './UpdateThesaurusFixtures.js';
+import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { Result } from '#api/core/libs/Result.js';
+import { JobDBO } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { tenants } from '#api/tenants/index.js';
+import { User } from '#api/users.v2/model/User.js';
 import { ThesauriService } from '../ThesauriService.js';
+import { UpdateThesaurusUseCase } from '../UpdateThesaurus.js';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService.js';
+import { factory, fixtures } from './UpdateThesaurusFixtures.js';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
@@ -36,51 +34,56 @@ type CreateSutProps = {
   dispatcher?: Dispatcher;
 };
 
-const createSut = (props?: CreateSutProps) => {
-  const tenant = tenants.current();
-  const actor: UserSchema = {
-    _id: factory.id('user1'),
-    username: 'username',
-    email: 'email@email.com',
-    role: 'admin',
-  };
+const createSut = (props?: CreateSutProps) =>
+  testingEnvironment.runWithContext(
+    () => {
+      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-  const transactionManager = TransactionManagerFactory.default();
-  const dispatcher =
-    props?.dispatcher ?? new DispatcherAdapter(DefaultDispatcher(tenant.name, transactionManager));
+      const dispatcher =
+        props?.dispatcher ?? new DispatcherAdapter(ExecutionContext.jobsDispatcher);
 
-  const thesauriDS =
-    props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesaurusTranslationService =
-    props?.thesaurusTranslationService ??
-    new ThesaurusTranslationService({
-      settingsDS,
-      translationsDS,
-    });
+      const thesauriDS =
+        props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const thesaurusTranslationService =
+        props?.thesaurusTranslationService ??
+        new ThesaurusTranslationService({
+          settingsDS,
+          translationsDS,
+        });
+      const thesauriService = new ThesauriService({
+        dispatcher,
+        thesauriDS,
+        thesaurusTranslationService,
+      });
 
-  const thesauriService = new ThesauriService({
-    dispatcher,
-    thesauriDS,
-    thesaurusTranslationService,
-  });
+      const sut = new UpdateThesaurusUseCase(
+        {
+          thesauriDS,
+          thesaurusTranslationService,
+          dispatcher,
+          transactionManager,
+          thesauriService,
+        },
+        { tenant: ExecutionContext.tenant, actor: ExecutionContext.actor }
+      );
 
-  const sut = new UpdateThesaurusUseCase(
-    {
-      thesauriDS,
-      thesaurusTranslationService,
-      transactionManager,
-      thesauriService,
+      return { sut };
     },
-    { tenant, actor }
+    {
+      actor: User.createFrom({
+        _id: factory.id('user1'),
+        username: 'username',
+        email: 'email@email.com',
+        role: 'admin',
+        groups: [],
+      }),
+    }
   );
 
-  return { sut };
-};
-
 describe('UpdateThesaurusUseCase', () => {
-  const getJobs = async () => getSharedConnection().collection('jobs').find().toArray();
+  const getJobs = async () => getConnection().collection('jobs').find().toArray();
   const getThesaurusById = async (_id: ObjectId) =>
     testingEnvironment.db!.getCollection('dictionaries')!.findOne({
       _id,
@@ -92,7 +95,7 @@ describe('UpdateThesaurusUseCase', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setFixtures(fixtures);
-    await getSharedConnection().collection('jobs').deleteMany({});
+    await getConnection().collection('jobs').deleteMany({});
   });
 
   afterAll(async () => {
@@ -326,7 +329,7 @@ describe('UpdateThesaurusUseCase', () => {
   });
 
   it('should delete and re-dispatch denormalization jobs for the updated thesaurus', async () => {
-    await getSharedConnection()
+    await getConnection()
       .collection<JobDBO>('jobs')
       .insertMany([
         {

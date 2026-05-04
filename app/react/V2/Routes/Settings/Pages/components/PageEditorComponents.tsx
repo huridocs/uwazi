@@ -5,7 +5,14 @@ import { InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react
 import { Translate } from '#app/I18N/index.js';
 
 const HTMLNotification = () => (
-  <div className="flex items-center gap-4 p-4 text-primary-700 border-primary-300 bg-primary-100 w-fit">
+  <div
+    className="flex w-fit items-center gap-4 border p-4"
+    style={{
+      backgroundColor: 'var(--color-theme-info-banner-bg)',
+      borderColor: 'var(--color-theme-info-banner-border)',
+      color: 'var(--color-theme-info-banner-fg)',
+    }}
+  >
     <InformationCircleIcon className="w-7 h-7" />
     <div>
       <Translate>Use</Translate>&nbsp;
@@ -38,7 +45,14 @@ const HTMLNotification = () => (
 );
 
 const JSNotification = () => (
-  <div className="flex items-center gap-4 p-4 text-warning-700 border-warning-300 bg-warning-100 w-fit">
+  <div
+    className="flex w-fit items-center gap-4 border p-4"
+    style={{
+      backgroundColor: 'var(--color-theme-warning-banner-bg)',
+      borderColor: 'var(--color-theme-warning-banner-border)',
+      color: 'var(--color-theme-warning-banner-fg)',
+    }}
+  >
     <ExclamationTriangleIcon className="w-7 h-7" />
     <div>
       <Translate>With great power comes great responsibility!</Translate>

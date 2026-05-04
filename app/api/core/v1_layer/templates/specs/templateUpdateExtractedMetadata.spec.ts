@@ -1,3 +1,12 @@
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { files } from '#api/files/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import testingDB from '#api/utils/testing_db.js';
@@ -12,9 +21,34 @@ import fixtures, {
   templateWithExtractedMetadata,
 } from './fixtures/fixtures.js';
 
-async function updateTemplate(template: TemplateSchema, language = 'en') {
+async function updateTemplate(template: TemplateSchema) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-  return templates.save(template, language, true, false);
+
+  const transactionManager = TransactionManagerFactory.default();
+  const jobsDispatcher = new SyncDispatcherForTests({
+    TemplatePostProcessEntitiesJob: async () =>
+      new TemplatePostProcessEntitiesJob({
+        useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+          entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+          relationshipsV1DS: new MongoRelationshipsV1DataSource(
+            getConnection(),
+            transactionManager
+          ),
+          templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+          transactionManager,
+          filesDS: FilesDataSourceFactory.default(),
+        }),
+        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      }),
+  });
+  return testingEnvironment.runWithContext(
+    async () => templates.save(template, 'en', true, false),
+    {
+      factories: {
+        jobsDispatcher: () => jobsDispatcher,
+      },
+    }
+  );
 }
 
 describe('updateExtractedMetadataProperties', () => {
@@ -79,7 +113,7 @@ describe('updateExtractedMetadataProperties', () => {
       ],
     };
 
-    await updateTemplate(templateToUpdate, 'en');
+    await updateTemplate(templateToUpdate);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
@@ -157,7 +191,7 @@ describe('updateExtractedMetadataProperties', () => {
       ],
     };
 
-    await updateTemplate(templateWithRenamedProps, 'en');
+    await updateTemplate(templateWithRenamedProps);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',

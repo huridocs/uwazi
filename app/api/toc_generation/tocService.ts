@@ -8,6 +8,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { tenants } from '#api/tenants/index.js';
 import settings from '#api/settings/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
@@ -53,13 +54,13 @@ const tocService = {
   async processAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
-      return tenants.run(async () => {
+      return runInJobContext(tenantName, async () => {
         permissionsContext.setCommandContext();
         const { features } = await settings.get({}, 'features.tocGeneration');
         if (features?.tocGeneration) {
           await this.processNext(features.tocGeneration.url);
         }
-      }, tenantName);
+      });
     }, Promise.resolve());
   },
 

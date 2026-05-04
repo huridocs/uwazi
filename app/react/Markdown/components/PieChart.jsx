@@ -7,8 +7,9 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 import { Loader } from '#app/components/Elements/Loader.js';
 import { arrayUtils } from '#app/Charts/index.js';
-import { PieChartLabel } from './PieChartLabel.js';
 import markdownDatasets from '../markdownDatasets.js';
+import { isMarkdownChartAnimationActive } from '../rechartsAnimationActive.js';
+import { PieChartLabel } from './PieChartLabel.js';
 
 const formatData = (data, property, options) => {
   let formattedData = arrayUtils.sortValues(arrayUtils.formatDataForChart(data, property, options));
@@ -65,6 +66,7 @@ const PieChartComponent = props => {
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             fill="#8884d8"
+            isAnimationActive={isMarkdownChartAnimationActive()}
             labelLine={shouldShowLabel}
             label={shouldShowLabel ? <PieChartLabel data={formattedData} /> : undefined}
           >
