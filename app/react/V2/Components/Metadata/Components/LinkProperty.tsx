@@ -10,11 +10,11 @@ type LinkPropertyProps = MetadataFieldProps & {
 
 const LinkProperty = ({ values, label, translationContext, hideLabel }: LinkPropertyProps) => {
   const noValues = useMemo(
-    () => values.every(value => value.value && value.value !== ''),
+    () => values.length === 0 || values.every(value => !value.value || value.value === ''),
     [values]
   );
 
-  if (!noValues) {
+  if (noValues) {
     return null;
   }
 

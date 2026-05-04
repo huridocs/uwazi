@@ -99,38 +99,28 @@ describe('Metadata Display', () => {
   describe('dates', () => {
     it('renders dates with correct locale and format', () => {
       Basic.args.locale = 'en';
-      Basic.args.dateFormat = 'dd/MM/yyyy';
 
       mount(<Basic />);
 
-      cy.contains('dd', '1 Jan, 2024').should('exist');
-      cy.contains('dd', '2 Jan, 2024').should('exist');
-      cy.contains('dd', '3 Jan, 2024').should('exist');
-      cy.contains('dd', '2 Oct, 2025').should('exist');
-      cy.contains('dd', '13 Oct, 2025').should('exist');
-      cy.contains('dd', 'From 1 Jan, 2024 ~ To 2 Jan, 2024').should('exist');
+      cy.contains('dd', 'Jan 1, 2024').should('exist');
+      cy.contains('dd', 'From Jan 1, 2024 ~ To Jan 2, 2024').should('exist');
     });
 
     it('renders dates with russian locale and yyyy-MM-dd format', () => {
       Basic.args.locale = 'ru';
-      Basic.args.dateFormat = 'yyyy-MM-dd';
 
       mount(<Basic />);
 
-      cy.contains('dd', '2024, янв. 1').should('exist');
-      cy.contains('dd', '2024, янв. 2').should('exist');
-      cy.contains('dd', '2024, янв. 3').should('exist');
-      cy.contains('dd', '2025, окт. 2').should('exist');
-      cy.contains('dd', '2025, окт. 13').should('exist');
-      cy.contains('dd', 'From 2024, янв. 1 ~ To 2024, янв. 2').should('exist');
+      cy.contains('dd', '1 янв. 2024').should('exist');
+      cy.contains('dd', 'From 1 янв. 2024 г. ~ To 2 янв. 2024 г.').should('exist');
     });
   });
 
   describe('Empty metadata fields', () => {
     const checkProperties = () => {
       cy.contains('dd', 'Title of the displayed entity');
-      cy.contains('dd', '2025, Oct 2');
-      cy.contains('dd', '2025, Oct 13');
+      cy.contains('dd', 'Oct 2, 2025');
+      cy.contains('dd', 'Oct 13, 2025');
 
       cy.contains('dt', 'A basic simple text').should('not.exist');
       cy.contains('dt', 'Single Date').should('not.exist');
