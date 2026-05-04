@@ -1,20 +1,19 @@
 /**
  * @jest-environment jsdom
  */
-import { Entity } from '#V2/domain/index.js';
+import * as entityApi from '#V2/api/entities/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as search from '#V2/api/search/index.js';
-import * as container from '#V2/application/container/singletons.js';
+import { Entity } from '#V2/api/entities/types.js';
 import { entityLoader } from '../loader.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 
+jest.mock('#V2/api/entities/index.js');
 jest.mock('#V2/api/files/index.js');
 jest.mock('#V2/api/search/index.js');
-jest.mock('#V2/application/container/singletons.js');
 
 describe('Entity loader with cache integration', () => {
   let mockEntity: Partial<Entity>;
-  let mockCompositionUseCase: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -25,14 +24,10 @@ describe('Entity loader with cache integration', () => {
       sharedId: 'shared1',
       title: 'Test Entity',
       language: 'en',
-      mainDocument: [{ _id: 'doc1', filename: 'test.pdf' }],
+      documents: [{ _id: 'doc1', filename: 'test.pdf' }],
     };
 
-    mockCompositionUseCase = { composeEntity: jest.fn() };
-    (container.getEntityCompositionUseCase as jest.Mock).mockResolvedValue(mockCompositionUseCase);
-
-    mockCompositionUseCase.composeEntity.mockResolvedValue({ success: true, entity: mockEntity });
-
+    jest.spyOn(entityApi, 'getBySharedId').mockResolvedValue([[mockEntity as Entity]]);
     jest.spyOn(files, 'getPagePlaintext').mockResolvedValue('plaintext content');
   });
 
@@ -53,15 +48,14 @@ describe('Entity loader with cache integration', () => {
     it('should fetch entity when not cached', async () => {
       await loadEntity('http://localhost/entity/shared1');
 
-      expect(mockCompositionUseCase.composeEntity).toHaveBeenCalledTimes(1);
+      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(1);
     });
 
     it('should use cached entity and not fetch again', async () => {
       await loadEntity('http://localhost/entity/shared1');
-
       await loadEntity('http://localhost/entity/shared1');
 
-      expect(mockCompositionUseCase.composeEntity).toHaveBeenCalledTimes(1);
+      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -74,7 +68,6 @@ describe('Entity loader with cache integration', () => {
 
     it('should use cached plaintext and not fetch again', async () => {
       await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
-
       await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
 
       expect(files.getPagePlaintext).toHaveBeenCalledTimes(1);
@@ -82,9 +75,7 @@ describe('Entity loader with cache integration', () => {
 
     it('should use cached plaintext and not fetch again after switching pages', async () => {
       await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
-
       await loadEntity('http://localhost/entity/shared1?page=2&raw=true');
-
       await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
 
       expect(files.getPagePlaintext).toHaveBeenCalledTimes(2);
@@ -92,9 +83,7 @@ describe('Entity loader with cache integration', () => {
 
     it('should not fetch if the view mode is not set for plaintext', async () => {
       await loadEntity('http://localhost/entity/shared1?page=1');
-
       await loadEntity('http://localhost/entity/shared1?page=2');
-
       await loadEntity('http://localhost/entity/shared1?page=1');
 
       expect(files.getPagePlaintext).not.toHaveBeenCalled();
@@ -102,7 +91,7 @@ describe('Entity loader with cache integration', () => {
   });
 
   describe('Search results loading', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.spyOn(search, 'snippets').mockResolvedValue('data' as any);
     });
 
@@ -121,7 +110,6 @@ describe('Entity loader with cache integration', () => {
 
     it('should use cached search results and not fetch again', async () => {
       await loadEntity('http://localhost/entity/shared1?searchTerm=query');
-
       await loadEntity('http://localhost/entity/shared1?searchTerm=query');
 
       expect(search.snippets).toHaveBeenCalledTimes(1);
@@ -129,9 +117,7 @@ describe('Entity loader with cache integration', () => {
 
     it('should fetch if the search changes and cache repeated searches', async () => {
       await loadEntity('http://localhost/entity/shared1?searchTerm=query1');
-
       await loadEntity('http://localhost/entity/shared1?searchTerm=query2');
-
       await loadEntity('http://localhost/entity/shared1?searchTerm=query1');
 
       expect(search.snippets).toHaveBeenCalledTimes(2);
@@ -146,7 +132,7 @@ describe('Entity loader with cache integration', () => {
 
       await loadEntity('http://localhost/entity/shared1');
 
-      expect(mockCompositionUseCase.composeEntity).toHaveBeenCalledTimes(2);
+      expect(entityApi.getBySharedId).toHaveBeenCalledTimes(2);
     });
   });
 });
