@@ -1,13 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
 import { api } from '#app/utils/api.js';
-import { EntitySchema } from '#shared/types/entityType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { SearchQuery, CompoundFilter } from '#shared/types/SearchQueryType.js';
-import { getEntityCompositionUseCase } from '#V2/application/container/singletons.js';
-import { cardViewOptions } from '#V2/application/optionsPresets.js';
-import { Entity as DomainEntity } from '#V2/domain/entities/Entity.js';
 import { EntitySearchResponse } from '../types.js';
 import * as formatter from './formatter.js';
 import { ApiResponse } from '../ApiResponse.js';
@@ -116,7 +112,7 @@ const searchByTitle = async (
     includeFiles?: boolean;
   },
   headers?: IncomingHttpHeaders
-): Promise<DomainEntity[]> => {
+): Promise<ApiResponse<Entity[] | undefined, FetchResponseError>> => {
   try {
     const finalFields = includeFiles
       ? [...new Set([...fields, 'documents', 'attachments'])]
@@ -146,30 +142,12 @@ const searchByTitle = async (
     const searchResults = response.json.data;
 
     if (searchResults.length === 0) {
-      return [];
+      return [undefined, undefined];
     }
 
-    const entityCompositionUseCase = await getEntityCompositionUseCase();
-    const compositionOptions = includeFiles
-      ? { ...cardViewOptions, includeSupportingFiles: true }
-      : cardViewOptions;
-
-    const compositionResults = await Promise.all(
-      searchResults.map(async entity => {
-        const compositionResult = await entityCompositionUseCase.composeEntityData(
-          entity as EntitySchema,
-          compositionOptions
-        );
-
-        return compositionResult.success ? compositionResult.entity : null;
-      })
-    );
-
-    return compositionResults.filter(
-      (entity: DomainEntity | null): entity is DomainEntity => entity !== null
-    );
+    return [searchResults as Entity[], undefined];
   } catch (e) {
-    return [];
+    return [undefined, e];
   }
 };
 

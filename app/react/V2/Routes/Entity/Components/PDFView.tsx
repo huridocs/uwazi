@@ -9,9 +9,9 @@ import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { Entity } from '#V2/domain/entities/Entity.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 import { PlainText } from './PlainText.js';
 import { OCRButton } from './OCRButton.js';
 import { PAGE_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from '../urlParams.js';
@@ -134,14 +134,14 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
       const targetPage =
         direction === 'prev'
           ? Math.max(1, pageNumber - 1)
-          : Math.min(pageNumber + 1, entity?.mainDocument?.[0]?.totalPages || 0);
+          : Math.min(pageNumber + 1, entity?.documents?.[0]?.totalPages || 0);
       if (isRaw) {
         updatePageParam(targetPage);
       } else {
         pdfControls.current?.goToPage(targetPage);
       }
     },
-    [entity?.mainDocument, isRaw, pageNumber, updatePageParam]
+    [entity, isRaw, pageNumber, updatePageParam]
   );
 
   const handlePageChange = useCallback(
@@ -158,7 +158,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
     setHydrated(true);
   }, []);
 
-  const { filename, originalname, totalPages } = entity.mainDocument?.[0] || {
+  const { filename, originalname, totalPages } = entity.documents?.[0] || {
     filename: '',
     originalname: '',
     totalPages: 0,
@@ -170,10 +170,10 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
     <Panel className="gap-2">
       <Panel.Body>
         <div className="flex flex-col gap-2">
-          <div className="w-full rounded-md p-4 [background-color:var(--color-theme-surface-muted)]">
+          <div className="w-full rounded-md p-4 bg-(--color-theme-surface-muted)">
             <div className="flex flex-row justify-between gap-2">
               <div>
-                <TemplateLabel templateId={entity.template?._id} />
+                <TemplateLabel templateId={entity.template} />
               </div>
               <div>
                 <label htmlFor="render-mode" className="sr-only">
@@ -181,7 +181,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
                 </label>
                 <select
                   id="render-mode"
-                  className="rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800 [background-color:var(--color-theme-surface-raised)]"
+                  className="rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800 bg-(--color-theme-surface-raised)"
                   value={isRaw ? 'raw' : 'normal'}
                   onChange={onDisplayModeChange}
                 >
@@ -191,9 +191,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
               </div>
             </div>
             <Truncate maxLength={80}>
-              <h2 className="mt-2 text-lg font-bold [color:var(--color-theme-text-primary)]">
-                {originalname}
-              </h2>
+              <h2 className="mt-2 text-lg font-bold text-ink">{originalname}</h2>
             </Truncate>
           </div>
           <div className={`flex-1 min-h-0 ${isRaw ? 'hidden' : 'block'}`}>
@@ -242,9 +240,9 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
         ) : (
           <div className="flex flex-row items-center w-full">
             <div className="justify-self-start grow">
-              {ocrServiceEnabled && entity.mainDocument && (
+              {ocrServiceEnabled && entity.documents && (
                 <NeedAuthorization roles={['admin', 'editor']}>
-                  <OCRButton file={entity.mainDocument?.[0]} />
+                  <OCRButton file={entity.documents?.[0]} />
                 </NeedAuthorization>
               )}
             </div>
@@ -253,7 +251,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
                 type="button"
                 onClick={() => handlePageNavigation('prev')}
                 disabled={pageNumber <= 1}
-                className="text-primary-700 disabled:[color:var(--color-theme-text-muted)]"
+                className="text-primary-700 disabled:text-ink-muted"
               >
                 <Translate>Previous</Translate>
               </button>
@@ -264,7 +262,7 @@ const PDFView = ({ entity, pagePlaintext }: PDFViewProps) => {
                 type="button"
                 onClick={() => handlePageNavigation('next')}
                 disabled={totalPages ? nextPage > totalPages : false}
-                className="text-primary-700 disabled:[color:var(--color-theme-text-muted)]"
+                className="text-primary-700 disabled:text-ink-muted"
               >
                 <Translate>Next</Translate>
               </button>

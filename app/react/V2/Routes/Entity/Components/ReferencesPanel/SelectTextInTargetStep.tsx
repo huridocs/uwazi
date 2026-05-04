@@ -3,7 +3,7 @@ import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { FileType } from '#shared/types/fileType.js';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { Entity } from '#V2/domain/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 
 type SelectTextInTargetStepProps = {
   selectedEntity: Entity | undefined;
@@ -24,7 +24,7 @@ const SelectTextInTargetStep = ({
       <div className="flex flex-col gap-2">
         <h3 className="text-md font-bold text-gray-900">{selectedEntity?.title}</h3>
         <h3 className="text-sm text-gray-500">{selectedFile.filename}</h3>
-        <TemplateLabel templateId={selectedEntity?.template?._id} />
+        <TemplateLabel templateId={selectedEntity?.template} />
       </div>
       <div className="flex-1 min-h-50 overflow-auto border border-gray-200 rounded-md">
         <PDF

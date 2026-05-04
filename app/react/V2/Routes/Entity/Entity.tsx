@@ -62,7 +62,7 @@ const Entity = () => {
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
 
-    if (entity?.mainDocument?.[0]?.filename) {
+    if (entity?.documents?.[0]?.filename) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.DOCUMENT}
@@ -95,7 +95,7 @@ const Entity = () => {
         <span no-translate>Relationships</span>
       </Tabs.Tab>
     );
-    if (entity?.mainDocument?.length || entity?.documents?.length || entity?.attachments?.length) {
+    if (entity?.documents?.length || entity?.attachments?.length) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.FILES}
@@ -126,16 +126,16 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
-              toc={entity?.mainDocument?.[0].toc}
-              generatedToc={entity?.mainDocument?.[0].generatedToc}
-              file={entity?.mainDocument?.[0]}
+              toc={entity?.documents?.[0].toc}
+              generatedToc={entity?.documents?.[0].generatedToc}
+              file={entity?.documents?.[0]}
             />
           ),
         },
         {
           id: SIDE_TABS.REFERENCES,
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <ReferencesPanel references={entity?.references} entity={entity} />,
+          content: <ReferencesPanel entity={entity} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -187,7 +187,7 @@ const Entity = () => {
     if (isValidMainTab(mainTab)) {
       return mainTab;
     }
-    if (entity?.mainDocument?.[0]?.filename) {
+    if (entity?.documents?.[0]?.filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;

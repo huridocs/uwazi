@@ -16,6 +16,7 @@ interface Entity extends Omit<
   title: string;
   template: string;
   creationDate: number;
+  editDate?: number;
   user: string;
   documents?: FileType[];
   attachments?: FileType[];
