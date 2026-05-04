@@ -249,7 +249,7 @@ describe('formatEntityFiles', () => {
     const result = formatEntityFiles(entity1, templates);
     expect(result).toEqual([
       {
-        fileType: 'document',
+        fileType: 'mainDocument',
         file: entity1.documents![0],
       },
       {

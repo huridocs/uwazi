@@ -18,9 +18,7 @@ const FileList = ({ entity }: FileListProps) => {
     [entity, templates]
   );
 
-  const firstDocument = entity.documents?.[0];
-
-  if (!firstDocument && files.length === 0) {
+  if (files.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
         <Translate>No files available</Translate>
@@ -32,14 +30,6 @@ const FileList = ({ entity }: FileListProps) => {
     <div className="flex flex-col h-full" role="region" aria-label="Files list">
       <div className="flex-1 overflow-y-auto p-4" role="list" aria-label="Available files">
         <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 w-full">
-          {firstDocument && (
-            <FileCard
-              key={`${firstDocument._id || firstDocument.filename || 0}`}
-              translations={entity.documents!.slice(0, 1)}
-              file={{ ...firstDocument, fileType: 'mainDocument' as const }}
-              index={0}
-            />
-          )}
           {files.map((file, index) => (
             <FileCard key={`${file._id || file.filename || index}`} file={file} index={index} />
           ))}

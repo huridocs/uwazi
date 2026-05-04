@@ -27,8 +27,8 @@ const formatEntityFiles = (entity: Entity, templates: ClientTemplateSchema[]): E
     return [{ fileType: property.type as 'image' | 'media', file: { filename, mimetype } }];
   });
 
-  const documents: EntityFile[] = (entity.documents || []).map(doc => ({
-    fileType: 'document',
+  const documents: EntityFile[] = (entity.documents || []).map((doc, index) => ({
+    fileType: index === 0 ? 'mainDocument' : 'document',
     file: doc,
   }));
 

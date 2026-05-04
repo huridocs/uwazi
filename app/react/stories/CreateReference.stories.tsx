@@ -48,7 +48,7 @@ const mockEntities: Entity[] = [
     creationDate: Date.now() - 86400000 * 30,
     user: 'user-1',
     metadata: {},
-    mainDocument: [mockPDFFile1],
+    documents: [mockPDFFile1],
   },
   {
     _id: '2',

@@ -73,9 +73,8 @@ function useCreateReferenceState({
                   (entity.attachments && entity.attachments.length > 0)
               )
             : result;
-        if (filteredResults) {
-          setSearchResults(filteredResults);
-        }
+
+        setSearchResults(filteredResults || []);
       } catch {
         setSearchResults([]);
       } finally {
