@@ -1,8 +1,8 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
-import { EntityFile } from '../types';
-import { getMainDocument } from './getMainDocument';
+import { EntityFile } from '../types.js';
+import { getMainDocument } from './getMainDocument.js';
 
 const formatEntityFiles = (
   entity: Entity,
