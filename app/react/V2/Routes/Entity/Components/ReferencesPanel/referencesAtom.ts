@@ -1,9 +1,9 @@
 import { atom, useAtomValue, useAtom } from 'jotai';
 import { atomWithReset, useResetAtom } from 'jotai/utils';
-import { EntityReference } from '#V2/domain/entities/types.js';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
+import { EntityReference } from '#V2/formatters/relationships/types.js';
 
-export type ReferenceMode = 'entity' | 'text';
+type ReferenceMode = 'entity' | 'text';
 
 type ReferencesState = {
   references: EntityReference[] | undefined;
@@ -98,5 +98,5 @@ export function useReferencesActions() {
   };
 }
 
-// Export statements
+export type { ReferenceMode };
 export { referencesStateAtom, referencesActions };

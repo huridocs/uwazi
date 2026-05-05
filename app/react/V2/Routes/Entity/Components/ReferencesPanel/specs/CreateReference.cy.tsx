@@ -3,7 +3,7 @@ import 'cypress-axe';
 import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/CreateReference.stories.js';
-import { CreateReference } from '../CreateReference';
+import { CreateReference } from '../CreateReference.js';
 import { logA11yViolations } from '../../../../../../../../cypress/support/helpers/a11y.js';
 
 const { Default, EmptyRelationshipTypes, LongSelection, TextMode } = composeStories(stories);
@@ -46,7 +46,7 @@ describe('CreateReference', () => {
         _id: 'entity-1',
         sharedId: 'shared-entity-1',
         title: 'Simple entity',
-        template: { _id: 'template-1', name: 'Template', label: 'Template', color: '#A4CAFE' },
+        template: 'template-1',
         metadata: [],
       },
     ] as any[];
@@ -54,7 +54,7 @@ describe('CreateReference', () => {
     const searchFunction = cy
       .stub()
       .as('searchFunction')
-      .callsFake(async () => Promise.resolve(mockEntities));
+      .callsFake(async () => Promise.resolve([mockEntities, undefined]));
 
     const selection = {
       text: 'Selected text',
@@ -98,9 +98,9 @@ describe('CreateReference', () => {
         _id: 'entity-text-1',
         sharedId: 'shared-text-1',
         title: 'Entity with PDF',
-        template: { _id: 'template-1', name: 'Template', label: 'Template', color: '#A4CAFE' },
+        template: 'template-1',
         metadata: [],
-        mainDocument: [
+        documents: [
           {
             _id: 'file-text-1',
             filename: 'text-doc.pdf',
@@ -114,7 +114,7 @@ describe('CreateReference', () => {
     const searchFunction = cy
       .stub()
       .as('searchFunctionText')
-      .callsFake(async () => Promise.resolve(mockEntities));
+      .callsFake(async () => Promise.resolve([mockEntities, undefined]));
 
     const selection = {
       text: 'Original selection',
@@ -151,7 +151,7 @@ describe('CreateReference', () => {
 
     cy.window().its('__createReferenceTestApi').invoke('handleTargetPdfSelect', targetSelection);
 
-    cy.contains('button', 'Save').click();
+    cy.contains('button', 'Save').should('not.be.disabled').click();
 
     cy.get('@onSave').should('have.been.calledOnce');
     cy.get('@onSave')
