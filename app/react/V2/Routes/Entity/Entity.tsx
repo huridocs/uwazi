@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
+import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
 import { Tabs } from '#V2/Components/UI/index.js';
 import {
@@ -55,21 +55,26 @@ const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
 const Entity = () => {
-  const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
+  const { entity, mainDocument, pagePlaintext, searchResults } =
+    useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
 
-    if (entity?.mainDocument?.[0]?.filename) {
+    if (entity && mainDocument?.filename) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.DOCUMENT}
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView entity={entity} pagePlaintext={pagePlaintext} />
+          <PDFView
+            mainDocument={mainDocument}
+            templateId={entity.template}
+            pagePlaintext={pagePlaintext}
+          />
         </Tabs.Tab>
       );
     }
@@ -95,7 +100,7 @@ const Entity = () => {
         <span no-translate>Relationships</span>
       </Tabs.Tab>
     );
-    if (entity?.mainDocument?.length || entity?.documents?.length || entity?.attachments?.length) {
+    if (entity?.documents?.length || entity?.attachments?.length) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.FILES}
@@ -108,7 +113,7 @@ const Entity = () => {
     }
 
     return tabs;
-  }, [entity, pagePlaintext]);
+  }, [entity, mainDocument, pagePlaintext]);
 
   const sideTabsByMain: Record<
     MainTabId,
@@ -126,16 +131,16 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
-              toc={entity?.mainDocument?.[0].toc}
-              generatedToc={entity?.mainDocument?.[0].generatedToc}
-              file={entity?.mainDocument?.[0]}
+              toc={mainDocument?.toc}
+              generatedToc={mainDocument?.generatedToc}
+              file={mainDocument}
             />
           ),
         },
         {
           id: SIDE_TABS.REFERENCES,
           label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
-          content: <ReferencesPanel references={entity?.references} entity={entity} />,
+          content: <ReferencesPanel entity={entity} mainDocument={mainDocument} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -179,7 +184,7 @@ const Entity = () => {
       ],
       [MAIN_TABS.FILES]: [],
     }),
-    [entity]
+    [entity, mainDocument]
   );
 
   const activeMainTab = useMemo<MainTabId>(() => {
@@ -187,11 +192,11 @@ const Entity = () => {
     if (isValidMainTab(mainTab)) {
       return mainTab;
     }
-    if (entity?.mainDocument?.[0]?.filename) {
+    if (mainDocument?.filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
-  }, [searchParams, entity]);
+  }, [searchParams, mainDocument]);
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
     const availableTabs = sideTabsByMain[activeMainTab] || [];

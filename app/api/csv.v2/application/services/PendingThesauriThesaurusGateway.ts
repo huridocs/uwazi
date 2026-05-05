@@ -29,6 +29,7 @@ const addIds = (children: Array<{ label: string }> | undefined) =>
 const appendValuesToThesaurus = (thesaurus: Thesaurus, valuesToAppend: ThesaurusValueInput[]) => {
   const nextValues = structuredClone(thesaurus.values);
 
+  // eslint-disable-next-line max-statements
   valuesToAppend.forEach(rootToAppend => {
     const existingRoot = nextValues.find(value => value.label === rootToAppend.label);
 
@@ -61,8 +62,7 @@ const appendValuesToThesaurus = (thesaurus: Thesaurus, valuesToAppend: Thesaurus
     existingRoot.values = [...existingChildren, ...childrenToAdd];
   });
 
-  return new Thesaurus({
-    id: thesaurus.id,
+  return thesaurus.update({
     name: thesaurus.name,
     values: nextValues,
   });
@@ -71,19 +71,7 @@ const appendValuesToThesaurus = (thesaurus: Thesaurus, valuesToAppend: Thesaurus
 const getThesaurusSchemaById = async (thesauriDS: ThesauriDataSource, thesaurusId: string) =>
   toSchema((await thesauriDS.getById(thesaurusId)).getDataOrThrow());
 
-const appendAndPersistThesaurusValues = async (
-  thesauriDS: ThesauriDataSource,
-  thesaurusId: string,
-  valuesToAppend: ThesaurusValueInput[]
-) => {
-  const current = (await thesauriDS.getById(thesaurusId)).getDataOrThrow();
-  if (!valuesToAppend.length) {
-    return toSchema(current);
-  }
+const getThesaurusById = async (thesauriDS: ThesauriDataSource, thesaurusId: string) =>
+  (await thesauriDS.getById(thesaurusId)).getDataOrThrow();
 
-  const updated = appendValuesToThesaurus(current, valuesToAppend);
-  await thesauriDS.update(updated);
-  return toSchema(updated);
-};
-
-export { getThesaurusSchemaById, appendAndPersistThesaurusValues };
+export { getThesaurusSchemaById, getThesaurusById, appendValuesToThesaurus, toSchema };
