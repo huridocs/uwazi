@@ -24,7 +24,7 @@ import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipS
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
-import { AddLanguageListener } from '#api/core/infrastructure/listeners/AddLanguageListener.js';
+import { AddLanguagePagesListener } from '#api/core/infrastructure/listeners/AddLanguagePagesListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
@@ -299,5 +299,5 @@ export function registerJobs(register: Register) {
     async () => new ProcessRelationshipAfterEntityUpdatedListener({})
   );
 
-  register(AddLanguageListener.asJob(), async () => new AddLanguageListener({}));
+  register(AddLanguagePagesListener.asJob(), async () => new AddLanguagePagesListener({}));
 }

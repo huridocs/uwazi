@@ -7,7 +7,7 @@ import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 import i18nRoutes from '#api/i18n/routes.js';
 import settings from '#api/settings/index.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
-import '#api/core/infrastructure/listeners/AddLanguageListener.js';
+import '#api/core/infrastructure/listeners/AddLanguagePagesListener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
