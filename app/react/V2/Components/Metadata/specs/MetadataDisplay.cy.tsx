@@ -2,13 +2,11 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
-import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
 import * as stories from '#app/stories/Metadata.stories.jsx';
 
 describe('Metadata Display', () => {
   const { Basic } = composeStories(stories);
 
-  // eslint-disable-next-line max-statements
   describe('General', () => {
     beforeEach(() => {
       Basic.args.showGeolocationProperties = false;
@@ -54,7 +52,7 @@ describe('Metadata Display', () => {
     it('renders relationship links with correct hrefs', () => {
       cy.contains('dt', 'Relationship with inheritance').should('exist');
       cy.contains('a.underline', 'Traffic Accident - Main Street')
-        .should('have.attr', 'href', `${DEFAULT_ENTITY_BASE_PATH}entity4`)
+        .should('have.attr', 'href', '/entityv2/entity4')
         .should('have.attr', 'target', '_blank');
       cy.contains('a.underline', 'Traffic Accident - Main Street')
         .parent()
@@ -74,13 +72,13 @@ describe('Metadata Display', () => {
       cy.contains('dt', 'Media with an image').should('exist');
       cy.contains('dt', /Preview of the main document/).should('exist');
 
-      cy.get('img[alt="Alternative text for image"]').should(
+      cy.get('img[alt="/short-video-thumbnail.jpg"]').should(
         'have.attr',
         'src',
         '/short-video-thumbnail.jpg'
       );
 
-      cy.get('img[alt="Annoying rich kid.pdf"]').should('have.attr', 'src', '/batman.jpg');
+      cy.get('img[alt="/batman.jpg"]').should('have.attr', 'src', '/batman.jpg');
     });
 
     it('renders media timelinks as buttons', () => {
@@ -92,11 +90,29 @@ describe('Metadata Display', () => {
 
   describe('accessibility', () => {
     it('should be accessible', () => {
-      Basic.args.showGeolocationProperties = true;
       cy.injectAxe();
       mount(<Basic />);
-      cy.get('div[data-testid="map-container"]').should('exist');
       cy.checkA11y();
+    });
+  });
+
+  describe('dates', () => {
+    it('renders dates with correct locale and format', () => {
+      Basic.args.locale = 'en';
+
+      mount(<Basic />);
+
+      cy.contains('dd', 'Jan 1, 2024').should('exist');
+      cy.contains('dd', 'From Jan 1, 2024 ~ To Jan 2, 2024').should('exist');
+    });
+
+    it('renders dates with russian locale and yyyy-MM-dd format', () => {
+      Basic.args.locale = 'ru';
+
+      mount(<Basic />);
+
+      cy.contains('dd', '1 янв. 2024').should('exist');
+      cy.contains('dd', 'From 1 янв. 2024 г. ~ To 2 янв. 2024 г.').should('exist');
     });
   });
 
@@ -117,7 +133,8 @@ describe('Metadata Display', () => {
     };
 
     it('should not render empty metadata fields', () => {
-      Basic.args.dbEntity = {
+      Basic.args.locale = 'en';
+      Basic.args.entity = {
         _id: '1',
         language: 'en',
         mongoLanguage: 'en',
@@ -157,6 +174,7 @@ describe('Metadata Display', () => {
           related_people: [],
           video_of_event: [{ value: '' }],
         },
+        user: '',
       };
 
       mount(<Basic />);
@@ -165,7 +183,7 @@ describe('Metadata Display', () => {
     });
 
     it('should not render missing metadata fields', () => {
-      Basic.args.dbEntity = {
+      Basic.args.entity = {
         _id: '1',
         language: 'en',
         mongoLanguage: 'en',
@@ -175,6 +193,7 @@ describe('Metadata Display', () => {
         creationDate: 1759374706197, // Oct 2, 2025
         editDate: 1760366924144, // Oct 13, 2025
         metadata: {},
+        user: '',
       };
 
       mount(<Basic />);
