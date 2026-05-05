@@ -4,17 +4,16 @@ import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { ClientRelationshipType } from '#app/apiResponseTypes.js';
 import { Button } from '#V2/Components/UI/Button.js';
+import { searchByTitle } from '#V2/api/entities/index.js';
 import { ReferenceMode } from './referencesAtom.js';
 import { useCreateReferenceState } from './useCreateReferenceState.js';
 import { SelectTargetStep } from './SelectTargetStep.js';
 import { SelectTextInTargetStep } from './SelectTextInTargetStep.js';
 
-type SearchFunction = (searchString: string) => Promise<import('#V2/domain').Entity[]>;
-
 type CreateReferenceProps = {
   selection: TextSelection;
   relationshipTypes: ClientRelationshipType[];
-  searchFunction: SearchFunction;
+  searchFunction: (search: string) => ReturnType<typeof searchByTitle>;
   mode?: ReferenceMode;
   onSave?: (data: {
     selection: TextSelection;

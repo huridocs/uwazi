@@ -1,41 +1,40 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { CreateReference } from '#V2/Routes/Entity/Components/ReferencesPanel/CreateReference.js';
-import { ClientRelationshipType } from '#app/apiResponseTypes.js';
-import { Entity } from '#V2/domain/index.js';
-import { DateMetadataProperty } from '#V2/domain/entities/types.js';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
-import { FileType } from '#shared/types/fileType.js';
+import { ClientRelationshipType } from '#app/apiResponseTypes.js';
+import { CreateReference } from '#V2/Routes/Entity/Components/ReferencesPanel/CreateReference.js';
+import { Entity } from '#V2/api/entities/types.js';
+import { searchByTitle } from '#V2/api/entities/index.js';
 
 // Mock PDF files
-const mockPDFFile1: FileType = {
+const mockPDFFile1 = {
   _id: 'file-1',
   filename: 'document1.pdf',
   originalname: 'Human Rights Document.pdf',
   mimetype: 'application/pdf',
   language: 'eng',
   totalPages: 25,
-  type: 'document',
+  type: 'document' as const,
 };
 
-const mockPDFFile2: FileType = {
+const mockPDFFile2 = {
   _id: 'file-2',
   filename: 'document2.pdf',
   originalname: 'Legal Analysis.pdf',
   mimetype: 'application/pdf',
   language: 'spa',
   totalPages: 42,
-  type: 'document',
+  type: 'document' as const,
 };
 
-const mockPDFFile3: FileType = {
+const mockPDFFile3 = {
   _id: 'file-3',
   filename: 'document3.pdf',
   originalname: 'Court Decision.pdf',
   mimetype: 'application/pdf',
   language: 'eng',
   totalPages: 18,
-  type: 'document',
+  type: 'document' as const,
 };
 
 // Mock entities for search results with files
@@ -45,55 +44,21 @@ const mockEntities: Entity[] = [
     sharedId: 'shared-1',
     title: 'Document about Human Rights',
     language: 'en',
-    template: {
-      _id: 'template-1',
-      name: 'Case',
-      label: 'Case',
-      color: '#A4CAFE',
-    },
-    creationDate: {
-      type: 'date',
-      _id: 'creationDate',
-      name: 'creationDate',
-      label: 'Creation Date',
-      values: [{ value: Date.now() - 86400000 * 30, label: '' }],
-    } as DateMetadataProperty,
-    editDate: {
-      type: 'date',
-      _id: 'editDate',
-      name: 'editDate',
-      label: 'Edit Date',
-      values: [{ value: Date.now() - 86400000 * 7, label: '' }],
-    } as DateMetadataProperty,
-    metadata: [],
-    mainDocument: [mockPDFFile1],
+    template: 'template-1',
+    creationDate: Date.now() - 86400000 * 30,
+    user: 'user-1',
+    metadata: {},
+    documents: [mockPDFFile1],
   },
   {
     _id: '2',
     sharedId: 'shared-2',
     title: 'Legal Document Analysis',
     language: 'en',
-    template: {
-      _id: 'template-2',
-      name: 'Report',
-      label: 'Report',
-      color: '#F5BDBD',
-    },
-    creationDate: {
-      type: 'date',
-      _id: 'creationDate',
-      name: 'creationDate',
-      label: 'Creation Date',
-      values: [{ value: Date.now() - 86400000 * 60, label: '' }],
-    } as DateMetadataProperty,
-    editDate: {
-      type: 'date',
-      _id: 'editDate',
-      name: 'editDate',
-      label: 'Edit Date',
-      values: [{ value: Date.now() - 86400000 * 14, label: '' }],
-    } as DateMetadataProperty,
-    metadata: [],
+    template: 'template-2',
+    creationDate: Date.now() - 86400000 * 60,
+    user: 'user-1',
+    metadata: {},
     documents: [mockPDFFile2],
   },
   {
@@ -101,27 +66,10 @@ const mockEntities: Entity[] = [
     sharedId: 'shared-3',
     title: 'Court Document Decision 2024',
     language: 'en',
-    template: {
-      _id: 'template-3',
-      name: 'Decision',
-      label: 'Decision',
-      color: '#BDF5BD',
-    },
-    creationDate: {
-      type: 'date',
-      _id: 'creationDate',
-      name: 'creationDate',
-      label: 'Creation Date',
-      values: [{ value: Date.now() - 86400000 * 90, label: '' }],
-    } as DateMetadataProperty,
-    editDate: {
-      type: 'date',
-      _id: 'editDate',
-      name: 'editDate',
-      label: 'Edit Date',
-      values: [{ value: Date.now() - 86400000 * 1, label: '' }],
-    } as DateMetadataProperty,
-    metadata: [],
+    template: 'template-3',
+    creationDate: Date.now() - 86400000 * 90,
+    user: 'user-1',
+    metadata: {},
     attachments: [mockPDFFile3],
   },
   {
@@ -129,53 +77,32 @@ const mockEntities: Entity[] = [
     sharedId: 'shared-4',
     title: 'Official Document Submission',
     language: 'en',
-    template: {
-      _id: 'template-4',
-      name: 'Submission',
-      label: 'Submission',
-      color: '#FFD93D',
-    },
-    creationDate: {
-      type: 'date',
-      _id: 'creationDate',
-      name: 'creationDate',
-      label: 'Creation Date',
-      values: [{ value: Date.now() - 86400000 * 15, label: '' }],
-    } as DateMetadataProperty,
-    editDate: {
-      type: 'date',
-      _id: 'editDate',
-      name: 'editDate',
-      label: 'Edit Date',
-      values: [{ value: Date.now() - 86400000 * 2, label: '' }],
-    } as DateMetadataProperty,
-    metadata: [],
-    // This entity has no files
+    template: 'template-4',
+    creationDate: Date.now() - 86400000 * 15,
+    user: 'user-1',
+    metadata: {},
   },
 ];
 
 // Mock search function for Storybook
-const mockSearchFunction = async (searchString: string): Promise<Entity[]> => {
-  // Simulate API delay
+const mockSearchFunction = async (searchString: string): ReturnType<typeof searchByTitle> => {
   await new Promise<void>(resolve => {
     setTimeout(() => {
       resolve();
     }, 300);
   });
 
-  const query = searchString.toLowerCase();
+  const filtered = mockEntities.filter(entity =>
+    entity.title.toLowerCase().includes(searchString.toLowerCase())
+  );
 
-  // Filter entities based on search query
-  const filtered = mockEntities.filter(entity => entity.title.toLowerCase().includes(query));
-
-  return filtered;
+  return [filtered, undefined];
 };
 
 const meta: Meta<typeof CreateReference> = {
   title: 'EntityViewer/CreateReference',
   component: CreateReference,
 };
-export default meta;
 
 type Story = StoryObj<typeof CreateReference>;
 
@@ -225,7 +152,7 @@ const Default: Story = {
     relationshipTypes: mockRelationshipTypes,
     searchFunction: mockSearchFunction,
     onSave: data => {
-      // eslint-disable-next-line no-console, no-alert
+      // eslint-disable-next-line no-alert
       alert(
         `Creating reference:\n- Target Entity: ${data.targetEntityId}\n- Relationship Type: ${data.relationshipType}`
       );
@@ -273,7 +200,7 @@ const TextMode: Story = {
     searchFunction: mockSearchFunction,
     mode: 'text',
     onSave: data => {
-      // eslint-disable-next-line no-console, no-alert
+      // eslint-disable-next-line no-alert
       alert(
         `Creating text reference:\n- Target Entity: ${data.targetEntityId}\n- Relationship Type: ${data.relationshipType}`
       );
@@ -287,3 +214,4 @@ const TextMode: Story = {
 
 export { Default, EmptyRelationshipTypes, LongSelection, TextMode };
 // eslint-disable-next-line import/no-default-export
+export default meta;
