@@ -288,6 +288,42 @@ describe('MongoEntityDAO', () => {
     });
   });
 
+  describe('streamSharedIds()', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('returns only sharedId fields, one per MongoDB document, sorted ascending', async () => {
+      const dao = createSut();
+      const rows = await dao.streamSharedIds().toArray();
+      const ids = rows.map(r => r.sharedId);
+      // entity_1 has en + es variants → appears twice
+      expect(ids).toEqual([...ids].sort());
+      expect(ids.every(id => typeof id === 'string')).toBe(true);
+      expect(rows.every(r => Object.keys(r).length === 1)).toBe(true);
+    });
+
+    it('returns unique sharedIds covering all entities', async () => {
+      const dao = createSut();
+      const rows = await dao.streamSharedIds().toArray();
+      const unique = [...new Set(rows.map(r => r.sharedId))].sort();
+      expect(unique).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
+    });
+
+    it('with afterSharedId returns only entries lexically after the checkpoint', async () => {
+      const dao = createSut();
+      const rows = await dao.streamSharedIds({ afterSharedId: 'entity_3' }).toArray();
+      const unique = [...new Set(rows.map(r => r.sharedId))].sort();
+      expect(unique).toEqual(['entity_4', 'entity_5']);
+    });
+
+    it('with afterSharedId returns empty cursor when nothing follows the checkpoint', async () => {
+      const dao = createSut();
+      const rows = await dao.streamSharedIds({ afterSharedId: 'entity_5' }).toArray();
+      expect(rows).toHaveLength(0);
+    });
+  });
+
   describe('streamModifiedSince()', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp({

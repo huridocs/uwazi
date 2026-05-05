@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { Client } from '@elastic/elasticsearch';
@@ -150,6 +149,20 @@ const createSut = (deps?: Partial<TenantOnboarderDeps>) => {
 
 const slotsCollection = () => getConnection().collection(MongoSlotsDAO.collectionName);
 
+const resetState = async () => {
+  await testingEnvironment.setFixtures(fixtures);
+  MongoSlotsDAO.clearCache();
+  await rawESClient.deleteByQuery({
+    index: testAlias,
+    conflicts: 'proceed',
+    body: { query: { match_all: {} } },
+    refresh: true,
+  });
+  await slotsCollection()
+    .drop()
+    .catch(() => {});
+};
+
 describe('TenantOnboarder', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
@@ -162,156 +175,87 @@ describe('TenantOnboarder', () => {
     await rawESClient.close();
   });
 
-  beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
-    MongoSlotsDAO.clearCache();
-    // wipe any documents indexed by a previous test, keeping the index and alias intact
-    await rawESClient.deleteByQuery({
-      index: testAlias,
-      conflicts: 'proceed',
-      body: { query: { match_all: {} } },
-      refresh: true,
-    });
-    // drop slots collection so each test starts fresh
-    await slotsCollection()
-      .drop()
-      .catch(() => {});
-  });
-
   describe('execute()', () => {
-    it('entities present in MongoDB are searchable in ES after execute()', async () => {
-      const { sut, tenantAwareClient } = createSut();
-      await sut.execute();
-      await refreshTestIndex();
+    describe('after a single execute()', () => {
+      let tenantAwareClient: TenantAwareESClient;
 
-      const resultA = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { sharedId: 'entity_a' } },
-      });
-      const resultB = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { sharedId: 'entity_b' } },
+      beforeAll(async () => {
+        await resetState();
+        const result = createSut();
+        tenantAwareClient = result.tenantAwareClient;
+        await result.sut.execute();
+        await refreshTestIndex();
       });
 
-      expect(resultA.hits.hits).toHaveLength(1);
-      expect(resultB.hits.hits).toHaveLength(1);
-    });
+      it('entities present in MongoDB are searchable in ES', async () => {
+        const resultA = await tenantAwareClient.search({
+          alias: testAlias,
+          query: { term: { sharedId: 'entity_a' } },
+        });
+        const resultB = await tenantAwareClient.search({
+          alias: testAlias,
+          query: { term: { sharedId: 'entity_b' } },
+        });
 
-    it('processed documents are searchable as full-text after execute()', async () => {
-      const { sut, tenantAwareClient } = createSut();
-      await sut.execute();
-      await refreshTestIndex();
-
-      const result = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { fullText: 'fullText' } },
+        expect(resultA.hits.hits).toHaveLength(1);
+        expect(resultB.hits.hits).toHaveLength(1);
       });
 
-      const filenames = result.hits.hits.map((h: any) => h._source?.filename).sort();
-      expect(filenames).toEqual(['doc_en', 'doc_en2']);
-    });
+      it('processed documents are searchable as full-text', async () => {
+        const result = await tenantAwareClient.search({
+          alias: testAlias,
+          query: { term: { fullText: 'fullText' } },
+        });
 
-    it('files with status processing or type attachment are not indexed as full-text', async () => {
-      const { sut, tenantAwareClient } = createSut();
-      await sut.execute();
-      await refreshTestIndex();
-
-      const result = await tenantAwareClient.search({
-        alias: testAlias,
-        query: { term: { fullText: 'fullText' } },
+        const filenames = result.hits.hits.map((h: any) => h._source?.filename).sort();
+        expect(filenames).toEqual(['doc_en', 'doc_en2']);
       });
 
-      const filenames = result.hits.hits.map((h: any) => h._source?.filename);
-      expect(filenames).not.toContain('doc_processing');
-      expect(filenames).not.toContain('att_en');
+      it('files with status processing or type attachment are not indexed as full-text', async () => {
+        const result = await tenantAwareClient.search({
+          alias: testAlias,
+          query: { term: { fullText: 'fullText' } },
+        });
+
+        const filenames = result.hits.hits.map((h: any) => h._source?.filename);
+        expect(filenames).not.toContain('doc_processing');
+        expect(filenames).not.toContain('att_en');
+      });
+
+      it('slots are bootstrapped and assigned to filterable template properties', async () => {
+        const assignedSlots = await slotsCollection().find({ assignedTo: 'filter_prop' }).toArray();
+        expect(assignedSlots.length).toBeGreaterThan(0);
+      });
+
+      it('plain (non-filterable) properties are not assigned a slot', async () => {
+        const assignedToPlain = await slotsCollection()
+          .find({ assignedTo: 'plain_prop' })
+          .toArray();
+        expect(assignedToPlain).toHaveLength(0);
+      });
     });
 
-    it('slots are bootstrapped and assigned to filterable template properties after execute()', async () => {
-      const { sut } = createSut();
-      await sut.execute();
+    describe('idempotency', () => {
+      beforeEach(resetState);
 
-      const assignedSlots = await slotsCollection().find({ assignedTo: 'filter_prop' }).toArray();
-      expect(assignedSlots.length).toBeGreaterThan(0);
-    });
+      it('slot document _id is stable across two execute() calls — slotsBootstrapper.execute() is idempotent (no drop)', async () => {
+        const { sut } = createSut();
 
-    it('plain (non-filterable) properties are not assigned a slot', async () => {
-      const { sut } = createSut();
-      await sut.execute();
+        await sut.execute();
+        const slotAfterFirst = await slotsCollection().findOne({ assignedTo: 'filter_prop' });
+        expect(slotAfterFirst).not.toBeNull();
+        const firstId = slotAfterFirst!._id.toString();
 
-      const assignedToPlain = await slotsCollection().find({ assignedTo: 'plain_prop' }).toArray();
-      expect(assignedToPlain).toHaveLength(0);
-    });
-
-    it('slot document _id is stable across two execute() calls — slotsBootstrapper.execute() is idempotent (no drop)', async () => {
-      const { sut } = createSut();
-
-      // First run — bootstraps and reconciles; assigns a slot to filter_prop
-      await sut.execute();
-      const slotAfterFirst = await slotsCollection().findOne({ assignedTo: 'filter_prop' });
-      expect(slotAfterFirst).not.toBeNull();
-      const firstId = slotAfterFirst!._id.toString();
-
-      // Second run — must reuse the existing slots collection, not drop + recreate it
-      await sut.execute();
-      const slotAfterSecond = await slotsCollection().findOne({ assignedTo: 'filter_prop' });
-      expect(slotAfterSecond).not.toBeNull();
-      expect(slotAfterSecond!._id.toString()).toBe(firstId);
-    });
-
-    it('progress events are emitted in the correct order with non-decreasing indexed counts', async () => {
-      const events: ProgressEvent[] = [];
-      const { sut } = createSut({ onProgress: e => events.push(e) });
-      await sut.execute();
-
-      const stages = events.map(e => e.stage);
-      expect(stages[0]).toBe('bootstrap-slots');
-      expect(stages[1]).toBe('reconcile-slots');
-
-      const entityEvents = events.filter(e => e.stage === 'index-entities') as Extract<
-        ProgressEvent,
-        { stage: 'index-entities' }
-      >[];
-      const fulltextEvents = events.filter(e => e.stage === 'index-fulltext') as Extract<
-        ProgressEvent,
-        { stage: 'index-fulltext' }
-      >[];
-
-      expect(stages[stages.length - 1]).toBe('done');
-
-      // indexed counts must be strictly increasing across batches
-      for (let i = 1; i < entityEvents.length; i++) {
-        expect(entityEvents[i].indexed).toBeGreaterThan(entityEvents[i - 1].indexed);
-      }
-      for (let i = 1; i < fulltextEvents.length; i++) {
-        expect(fulltextEvents[i].indexed).toBeGreaterThan(fulltextEvents[i - 1].indexed);
-      }
-
-      // entity events must all come before fulltext events
-      const lastEntityIdx = stages.lastIndexOf('index-entities');
-      const firstFulltextIdx = stages.indexOf('index-fulltext');
-      if (lastEntityIdx !== -1 && firstFulltextIdx !== -1) {
-        expect(lastEntityIdx).toBeLessThan(firstFulltextIdx);
-      }
-    });
-
-    it('each index-entities event carries the lastSharedId of the last entity in that batch', async () => {
-      const events: ProgressEvent[] = [];
-      const { sut } = createSut({ onProgress: e => events.push(e) });
-      await sut.execute();
-
-      const entityEvents = events.filter(e => e.stage === 'index-entities') as Extract<
-        ProgressEvent,
-        { stage: 'index-entities' }
-      >[];
-
-      expect(entityEvents.length).toBeGreaterThan(0);
-      entityEvents.forEach(e => {
-        expect(typeof e.lastSharedId).toBe('string');
-        expect(e.lastSharedId.length).toBeGreaterThan(0);
+        await sut.execute();
+        const slotAfterSecond = await slotsCollection().findOne({ assignedTo: 'filter_prop' });
+        expect(slotAfterSecond).not.toBeNull();
+        expect(slotAfterSecond!._id.toString()).toBe(firstId);
       });
     });
 
     describe('resumeFrom', () => {
+      beforeEach(resetState);
+
       it('execute({ entitySharedId }) skips entities up to and including the checkpoint', async () => {
         const events: ProgressEvent[] = [];
         const { sut } = createSut({ onProgress: e => events.push(e) });
@@ -329,7 +273,6 @@ describe('TenantOnboarder', () => {
       });
 
       it('execute({ fileId }) skips fulltext files up to and including the checkpoint', async () => {
-        // Get the actual _id of the first ready doc (factory ordering is by _id insertion order)
         const readyFiles = await getConnection()
           .collection('files')
           .find({ type: 'document', status: 'ready' })

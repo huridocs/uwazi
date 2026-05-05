@@ -234,6 +234,83 @@ describe('EntityIndexerService', () => {
 
       expect(batches).toHaveLength(0);
     });
+
+    describe('ghost cleanup', () => {
+      const seedGhost = async (tenantClient: TenantAwareESClient, sharedId: string) => {
+        await tenantClient.bulk({
+          alias: EntityIndexMappingDefinition.alias,
+          operations: [
+            {
+              id: sharedId,
+              document: {
+                sharedId,
+                template: 'ghost_template',
+                published: false,
+                permissionRefIds: [],
+                creationDate: 0,
+                editDate: 0,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                rawEntities: {},
+                metadata: {},
+                fullText: { name: 'entity' },
+              },
+            },
+          ],
+          routing: tenantClient.tenantId,
+          refresh: true,
+        });
+      };
+
+      it('deletes ghost ES documents that have no MongoDB counterpart', async () => {
+        const { sut, tenantClient } = createSut();
+        await seedGhost(tenantClient, 'ghost_z');
+
+        await sut.syncAll(undefined, true);
+
+        const ghostResult = await searchBySharedId(tenantClient, 'ghost_z');
+        expect(ghostResult.hits.hits).toHaveLength(0);
+
+        // real entities remain
+        await ArrayUtils.parallelFor(['entity_a', 'entity_b', 'entity_c'], async sharedId => {
+          const result = await searchBySharedId(tenantClient, sharedId);
+          expect(result.hits.hits).toHaveLength(1);
+        });
+      });
+
+      it('does not delete a ghost whose sharedId is before afterSharedId (out of scope)', async () => {
+        const { sut, tenantClient } = createSut();
+        // 'entity_aaa' sorts before 'entity_b' — seeding it as a ghost
+        await seedGhost(tenantClient, 'entity_aaa');
+
+        // resume after 'entity_b' — scope is (entity_b, +∞), so entity_aaa is out of range
+        await sut.syncAll({ afterSharedId: 'entity_b' }, true);
+
+        const ghostResult = await searchBySharedId(tenantClient, 'entity_aaa');
+        expect(ghostResult.hits.hits).toHaveLength(1);
+      });
+
+      it('deletes a ghost whose sharedId is after afterSharedId (in scope)', async () => {
+        const { sut, tenantClient } = createSut();
+        // 'ghost_z' sorts after every entity_* — clearly in scope
+        await seedGhost(tenantClient, 'ghost_z');
+
+        await sut.syncAll({ afterSharedId: 'entity_b' }, true);
+
+        const ghostResult = await searchBySharedId(tenantClient, 'ghost_z');
+        expect(ghostResult.hits.hits).toHaveLength(0);
+      });
+
+      it('leaves real entities untouched when there are no ghosts', async () => {
+        const { sut, tenantClient } = createSut();
+
+        await sut.syncAll(undefined, true);
+
+        const result = await searchAll(tenantClient);
+        const sharedIds = result.hits.hits.map((h: any) => h._source?.sharedId).sort();
+        expect(sharedIds).toEqual(['entity_a', 'entity_b', 'entity_c']);
+      });
+    });
   });
 
   describe('remove()', () => {

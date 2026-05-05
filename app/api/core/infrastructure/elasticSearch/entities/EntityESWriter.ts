@@ -46,6 +46,39 @@ class EntityESWriter {
     });
   }
 
+  async *scrollSharedIds(options?: {
+    afterSharedId?: string;
+    pageSize?: number;
+  }): AsyncGenerator<string> {
+    const pageSize = options?.pageSize ?? 500;
+    const query = options?.afterSharedId
+      ? { range: { sharedId: { gt: options.afterSharedId } } }
+      : { exists: { field: 'sharedId' } };
+
+    let searchAfter: unknown[] | undefined;
+
+    while (true) {
+      // eslint-disable-next-line no-await-in-loop
+      const response = await this.deps.esClient.search<{ sharedId: string }>({
+        alias: this.alias,
+        query,
+        sort: [{ sharedId: 'asc' }],
+        source: ['sharedId'],
+        size: pageSize,
+        searchAfter,
+      });
+
+      const { hits } = response.hits;
+      if (hits.length === 0) return;
+
+      for (const hit of hits) {
+        yield (hit._source as { sharedId: string }).sharedId;
+      }
+
+      searchAfter = hits.at(-1)!.sort as unknown[];
+    }
+  }
+
   async deleteByTemplateIds(templateIds: string[], refresh = false): Promise<void> {
     if (templateIds.length === 0) {
       return;

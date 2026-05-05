@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
+import { FindCursor } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { Semaphore } from '#api/common.v2/utils/Semaphore.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
@@ -8,6 +9,7 @@ import { EntityESWriter } from './EntityESWriter.js';
 import { EntityElasticDocumentMapper } from './EntityElasticDocumentMapper.js';
 import type { MappedDocument } from './EntityElasticDocumentMapper.js';
 import { MongoSlotsDAO } from './MongoSlotsDAO.js';
+import type { SlotMap } from './MongoSlotsDAO.js';
 
 type EntityIndexerServiceDeps = {
   writer: EntityESWriter;
@@ -23,6 +25,18 @@ type EntitySyncAllOptions = {
   afterSharedId?: string;
   onBatch?: (info: EntityBatchInfo) => void;
 };
+
+async function* cursorToSharedIdStream(
+  cursor: FindCursor<{ sharedId: string }>
+): AsyncGenerator<string> {
+  try {
+    while (await cursor.hasNext()) {
+      yield (await cursor.next())!.sharedId;
+    }
+  } finally {
+    await cursor.close();
+  }
+}
 
 class EntityIndexerService {
   private static readonly DEFAULT_BATCH_SIZE = 500;
@@ -61,47 +75,14 @@ class EntityIndexerService {
     const inFlight: Promise<void>[] = [];
     const errors: unknown[] = [];
     let totalIndexed = 0;
-    let overflow: EntityDBO | null = null;
-
-    const readBatch = async (): Promise<MappedDocument[]> => {
-      const mappedBatch: MappedDocument[] = [];
-      let currentGroup: EntityDBO[] = overflow ? [overflow] : [];
-      overflow = null;
-
-      while (await cursor.hasNext()) {
-        const entity = (await cursor.next())!;
-
-        if (currentGroup.length > 0 && entity.sharedId !== currentGroup[0].sharedId) {
-          const [mapped] = EntityElasticDocumentMapper.toDocuments(currentGroup, slotMap);
-          if (mapped) mappedBatch.push(mapped);
-
-          if (mappedBatch.length >= this.batchSize) {
-            overflow = entity;
-            return mappedBatch;
-          }
-
-          currentGroup = [entity];
-        } else {
-          currentGroup.push(entity);
-        }
-      }
-
-      // cursor exhausted — flush remaining group
-      if (currentGroup.length > 0) {
-        const [mapped] = EntityElasticDocumentMapper.toDocuments(currentGroup, slotMap);
-        if (mapped) mappedBatch.push(mapped);
-      }
-
-      return mappedBatch;
-    };
 
     try {
-      let batch = await readBatch();
-      while (batch.length > 0) {
-        totalIndexed += batch.length;
-        options?.onBatch?.({ indexed: totalIndexed, lastSharedId: batch.at(-1)!.sharedId });
+      let batch = await this.readBatch(cursor, slotMap);
+      while (batch.result.length > 0) {
+        totalIndexed += batch.result.length;
+        options?.onBatch?.({ indexed: totalIndexed, lastSharedId: batch.result.at(-1)!.sharedId });
         await sem.acquire();
-        const ops = batch;
+        const ops = batch.result;
         inFlight.push(
           this.deps.writer
             .index(ops, refresh)
@@ -110,7 +91,7 @@ class EntityIndexerService {
             })
             .finally(() => sem.release())
         );
-        batch = await readBatch();
+        batch = await this.readBatch(cursor, slotMap, batch.overflow);
       }
     } finally {
       await cursor.close();
@@ -121,6 +102,8 @@ class EntityIndexerService {
     if (errors.length > 1) {
       throw new AggregateError(errors, `${errors.length} batch write(s) failed`);
     }
+
+    await this.ghostCleanup({ afterSharedId: options?.afterSharedId }, refresh);
   }
 
   async remove(sharedIds: string[], refresh = false): Promise<void> {
@@ -129,6 +112,74 @@ class EntityIndexerService {
 
   async removeByTemplateIds(templateIds: string[], refresh = false): Promise<void> {
     await this.deps.writer.deleteByTemplateIds(templateIds, refresh);
+  }
+
+  private async readBatch(
+    cursor: FindCursor<EntityDBO>,
+    slotMap: SlotMap,
+    seed: EntityDBO | null = null
+  ): Promise<{ result: MappedDocument[]; overflow: EntityDBO | null }> {
+    const result: MappedDocument[] = [];
+    let currentGroup: EntityDBO[] = seed ? [seed] : [];
+
+    while (await cursor.hasNext()) {
+      const entity = (await cursor.next())!;
+
+      if (currentGroup.length > 0 && entity.sharedId !== currentGroup[0].sharedId) {
+        const [mapped] = EntityElasticDocumentMapper.toDocuments(currentGroup, slotMap);
+        if (mapped) result.push(mapped);
+
+        if (result.length >= this.batchSize) {
+          return { result, overflow: entity };
+        }
+
+        currentGroup = [entity];
+      } else {
+        currentGroup.push(entity);
+      }
+    }
+
+    // cursor exhausted — flush remaining group
+    if (currentGroup.length > 0) {
+      const [mapped] = EntityElasticDocumentMapper.toDocuments(currentGroup, slotMap);
+      if (mapped) result.push(mapped);
+    }
+
+    return { result, overflow: null };
+  }
+
+  private async ghostCleanup(options: { afterSharedId?: string }, refresh: boolean): Promise<void> {
+    const es = this.deps.writer.scrollSharedIds({ afterSharedId: options.afterSharedId });
+    const mongo = cursorToSharedIdStream(
+      this.deps.entityDAO.streamSharedIds({ afterSharedId: options.afterSharedId })
+    );
+
+    let esItem = await es.next();
+    let mongoItem = await mongo.next();
+    let ghosts: string[] = [];
+
+    while (!esItem.done) {
+      if (mongoItem.done || esItem.value < mongoItem.value) {
+        // ghost — ES has it, Mongo doesn't
+        ghosts.push(esItem.value);
+        if (ghosts.length >= this.batchSize) {
+          await this.deps.writer.deleteBySharedIds(ghosts, refresh);
+          ghosts = [];
+        }
+        esItem = await es.next();
+      } else if (esItem.value === mongoItem.value) {
+        // in sync — advance both
+        esItem = await es.next();
+        mongoItem = await mongo.next();
+      } else {
+        // esId > mongoId — Mongo-only entry (just written); advance Mongo only
+        mongoItem = await mongo.next();
+      }
+    }
+
+    if (ghosts.length > 0) {
+      await this.deps.writer.deleteBySharedIds(ghosts, refresh);
+    }
   }
 }
 

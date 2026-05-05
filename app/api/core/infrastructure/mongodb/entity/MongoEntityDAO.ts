@@ -93,6 +93,13 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
     return this.getCollection().find(filter).sort({ sharedId: 1 });
   }
 
+  streamSharedIds(options?: { afterSharedId?: string }): FindCursor<{ sharedId: string }> {
+    const filter = options?.afterSharedId ? { sharedId: { $gt: options.afterSharedId } } : {};
+    return this.getCollection()
+      .find(filter, { projection: { sharedId: 1, _id: 0 } })
+      .sort({ sharedId: 1 });
+  }
+
   streamModifiedSince(date: Date): FindCursor<EntityDBO> {
     return this.getCollection()
       .find({ editDate: { $gte: date.getTime() } })
