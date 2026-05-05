@@ -1,20 +1,22 @@
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { ThesauriService } from '#api/core/application/ThesauriService.js';
+import translations from '#api/i18n/translations.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
 } from '../../domain/CsvImportThesauriValues.js';
 import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff.js';
 import {
-  appendAndPersistThesaurusValues,
+  appendValuesToThesaurus,
+  getThesaurusById,
   getThesaurusSchemaById,
+  toSchema,
 } from './PendingThesauriThesaurusGateway.js';
-import { upsertThesaurusTranslations } from './PendingThesauriTranslationsGateway.js';
 import { collectAppliedValuesFromPending } from './PendingThesauriAppliedValuesCollector.js';
 
 type Deps = {
   thesauriDS: ThesauriDataSource;
-  translationsDS: TranslationsDataSource;
+  thesauriService: ThesauriService;
 };
 
 type ApplyResult = {
@@ -25,7 +27,11 @@ type ApplyResult = {
 class PendingThesauriValuesApplier {
   constructor(private deps: Deps) {}
 
-  async apply(pendingDoc: CsvImportThesauriValues): Promise<ApplyResult> {
+  // eslint-disable-next-line max-statements
+  async apply(
+    pendingDoc: CsvImportThesauriValues,
+    executionContext: { tenantName: string; userId: string }
+  ): Promise<ApplyResult> {
     const existingThesaurus = await getThesaurusSchemaById(
       this.deps.thesauriDS,
       pendingDoc.thesaurusId
@@ -36,19 +42,19 @@ class PendingThesauriValuesApplier {
     let updatedThesaurus = existingThesaurus;
 
     if (diff.valuesToAppend.length) {
-      updatedThesaurus = await appendAndPersistThesaurusValues(
-        this.deps.thesauriDS,
-        pendingDoc.thesaurusId,
-        diff.valuesToAppend
-      );
-      if (Object.keys(diff.translations).length) {
-        await upsertThesaurusTranslations(
-          this.deps.translationsDS,
-          pendingDoc.thesaurusId,
-          diff.translations,
-          existingThesaurus.name
-        );
+      const currentThesaurus = await getThesaurusById(this.deps.thesauriDS, pendingDoc.thesaurusId);
+      const updatedThesaurusDomain = appendValuesToThesaurus(currentThesaurus, diff.valuesToAppend);
+
+      await this.deps.thesauriService.update(updatedThesaurusDomain, {
+        tenantName: executionContext.tenantName,
+        actorId: executionContext.userId,
+      });
+
+      if (Object.keys(diff.translations).length > 0) {
+        await translations.updateEntries(pendingDoc.thesaurusId, diff.translations);
       }
+
+      updatedThesaurus = toSchema(updatedThesaurusDomain);
     }
 
     appliedValues = collectAppliedValuesFromPending(pendingDoc, updatedThesaurus);
