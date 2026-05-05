@@ -3,6 +3,8 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
 import { PaneLayoutProps } from './types.js';
 
+const LEGACY_MENU_HEIGHT = '50px';
+
 const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   const [currentPane, setCurrentPane] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -50,7 +52,12 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   };
 
   return (
-    <section className={`overflow-hidden relative h-full min-h-0 flex flex-col ${className}`}>
+    <section
+      style={{
+        height: `calc(100dvh - ${LEGACY_MENU_HEIGHT})`,
+      }}
+      className={`overflow-y-hidden relative min-h-0 flex flex-col ${className}`}
+    >
       <div
         className={`flex grow h-full min-h-0 transition-transform duration-300 ease-in-out ${
           isDragging ? 'transition-none' : ''
