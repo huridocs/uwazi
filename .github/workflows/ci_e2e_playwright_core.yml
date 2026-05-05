@@ -131,6 +131,10 @@ jobs:
             playwright/e2e/languages-translations.contract.spec.ts \
             playwright/e2e/menu.contract.spec.ts \
             playwright/e2e/pages.contract.spec.ts \
+            playwright/e2e/relationship-types.contract.spec.ts \
+            playwright/e2e/thesauri.contract.spec.ts \
+            playwright/e2e/users.contract.spec.ts \
+            playwright/e2e/account-settings.contract.spec.ts \
             --workers=1
         timeout-minutes: 35
         env:

@@ -247,6 +247,99 @@ What it validates:
 - Save page and capture generated `page-url`.
 - Navigate to generated URL and verify marker heading is rendered.
 
+## Relationship types contract e2e (blank fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/relationship-types.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can create relationship types from `/settings/relationship-types`.
+- Relationship types can be edited and re-saved.
+- Relationship types can be deleted via bulk-select.
+- All operations persist after reload.
+
+## Spec steps
+
+- Reset Uwazi with `blank-e2e-fixtures` and authenticate as admin.
+- Open `/settings/relationship-types` and add `Parent` and `Son` via the sidepanel form.
+- Edit the `Parent` row, append a suffix and save.
+- Reload the page and verify both rows persist with the edited name.
+- Bulk-select the `Parent` row and confirm deletion via the modal.
+- Reload and verify only `Son` remains.
+
+## Thesauri contract e2e (blank fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/thesauri.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can create a new thesaurus with multiple items.
+- Admin can add a group with child items.
+- Admin can edit and delete thesaurus items.
+- All changes persist after reload of the edit page.
+
+## Spec steps
+
+- Reset Uwazi with `blank-e2e-fixtures` and authenticate as admin.
+- Open `/settings/thesauri`, click `Add thesaurus`, set the thesaurus name.
+- Add two items via the value sidepanel and one group with one child via the group sidepanel.
+- Save the thesaurus, capture the edit URL and verify the success notification.
+- Reload edit URL and verify items + group persist.
+- Edit one item label, save, reload and verify the new label persists.
+- Bulk-select an item, click `Remove`, save, reload and verify the deleted item is gone while the rest persists.
+
+## Users contract e2e (blank fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/users.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can create a new user via the sidepanel form with admin password confirmation.
+- Admin can edit a user's username and persist changes.
+- Admin can bulk-delete a user with admin password confirmation.
+- All operations persist after reloading the users settings page.
+
+## Spec steps
+
+- Reset Uwazi with `blank-e2e-fixtures` and authenticate as admin.
+- Open `/settings/users` and click `Add user`.
+- Fill `username`, `email`, `password`, click `Save` and confirm with admin password in the modal.
+- Verify the new user row appears in the table.
+- Edit the new user, change the username, save and confirm with admin password.
+- Reload the users page and verify the renamed user persists.
+- Bulk-select the user, click `Delete` and confirm with admin password.
+- Reload and verify the user is no longer present.
+
+## Account settings contract e2e (blank fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/account-settings.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Inline validation: mismatching password and confirmation triggers the inline error.
+- Password update with admin password confirmation persists, and the user can re-login with the new password.
+- 2FA can be enabled by reading the secret displayed in the UI and submitting a TOTP token.
+- 2FA-protected login through `/login` accepts a fresh TOTP token to authenticate.
+
+## Spec steps
+
+- Reset Uwazi with `blank-e2e-fixtures` and authenticate as `admin`.
+- Open `/settings/account`, set a valid email, type mismatching new/confirm passwords and assert the inline error.
+- Fix the confirmation, click `Update`, type the current admin password in the confirmation modal and verify the success notification.
+- Logout via the account footer link and re-login with the new password.
+- Open the 2FA setup sidepanel, read the secret from the displayed input and generate a TOTP via `otplib`.
+- Submit the TOTP, confirm the `Activated` state in the account 2FA card.
+- Clear cookies, go to `/login`, submit username + new password, then submit a freshly generated TOTP on the token form.
+- Confirm the authenticated session can reach `/settings/account` and the `Activated` state persists.
+
 ## IX lifecycle contract e2e (seeded fixtures)
 
 Run:
@@ -297,7 +390,7 @@ What it validates:
 
 - This is intended for manual/local execution to generate DB state.
 - CI lane mapping for Playwright contracts:
-  - Core lane (`.github/workflows/ci_e2e_playwright_core.yml`): `auth-gate`, `settings-core`, `public-form`, `entity-crud`, `languages-translations`, `menu`, `pages`.
+  - Core lane (`.github/workflows/ci_e2e_playwright_core.yml`): `auth-gate`, `settings-core`, `public-form`, `entity-crud`, `languages-translations`, `menu`, `pages`, `relationship-types`, `thesauri`, `users`, `account-settings`.
   - Data lane (`.github/workflows/ci_e2e_playwright_data.yml`): `library-search`, `csv-import`, `attachments`, `relationships-view`.
 - In CI, IX/PX run in `.github/workflows/ci_e2e_playwright_ix.yml` as a matrix (`ix` / `px`) with isolated jobs.
 - CI restores `e2e-fixtures` before starting Uwazi; IX/PX specs no longer run `yarn e2e-fixtures` internally.
