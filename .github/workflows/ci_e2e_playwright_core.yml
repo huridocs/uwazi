@@ -128,6 +128,9 @@ jobs:
             playwright/e2e/settings-core.contract.spec.ts \
             playwright/e2e/public-form.contract.spec.ts \
             playwright/e2e/entity-crud.contract.spec.ts \
+            playwright/e2e/languages-translations.contract.spec.ts \
+            playwright/e2e/menu.contract.spec.ts \
+            playwright/e2e/pages.contract.spec.ts \
             --workers=1
         timeout-minutes: 35
         env:

@@ -148,6 +148,105 @@ What it validates:
 - Wait for a terminal status row in the imports table and verify the row is actionable.
 - Go to Library and assert each imported title returns search results.
 
+## Attachments contract e2e (seeded fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/attachments.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can open a seeded entity sidepanel with existing files.
+- Admin can rename a primary document from the UI.
+- Renamed filename persists after reloading and reopening the same entity sidepanel.
+
+## Spec steps
+
+- Reset Uwazi with `e2e-fixtures` and authenticate as admin.
+- Open Library with stable query params and search a seeded hero (`Midnight`).
+- Open the entity sidepanel and assert at least one file row exists.
+- Edit the first file `originalname`, save, and verify the new filename appears.
+- Reload Library, reopen the same sidepanel, and verify renamed filename is still present.
+
+## Relationships view contract e2e (seeded fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/relationships-view.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can open the Relationships tab for a seeded entity.
+- Relationships hub content is rendered with at least one relationship item.
+- Clicking a relationship item opens related entity preview navigation affordances in UI.
+
+## Spec steps
+
+- Reset Uwazi with `e2e-fixtures` and authenticate as admin.
+- Search seeded hero (`Midnight`) from Library and open entity view via sidepanel.
+- Open Relationships tab and assert hub container and relationship rows are visible.
+- Click a relationship row and verify active preview sidepanel shows entity navigation link.
+
+## Languages + translations contract e2e (blank fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/languages-translations.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can install a new language from Languages settings.
+- Admin can edit one system translation from Translations settings.
+- Edited translation value persists after reload.
+
+## Spec steps
+
+- Reset Uwazi with `blank-e2e-fixtures` and authenticate as admin.
+- Open `/settings/languages`, install `Spanish`, and wait until language row appears.
+- Open `/settings/translations`, enter a system translation context, and edit ES value.
+- Save and verify success notification.
+- Reload edit view and confirm the ES input keeps the saved value.
+
+## Menu contract e2e (blank fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/menu.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can add and save a custom menu link from settings.
+- Saved menu link is still present after reload.
+- Menu link is visible from home UI.
+- Collection landing page (`home_page`) persists after save and reload.
+
+## Spec steps
+
+- Reset Uwazi with `blank-e2e-fixtures` and authenticate as admin.
+- Open `/settings/navlinks`, add a link, save, and verify button state indicates persisted save.
+- Reload navlinks settings and assert link row is present.
+- Open `/` and verify the custom link is rendered.
+- Open `/settings/collection`, set `landing-page`, save, reload, and assert persisted value.
+
+## Pages contract e2e (blank fixtures)
+
+Run:
+
+- `yarn playwright:test playwright/e2e/pages.contract.spec.ts --workers=1`
+
+What it validates:
+
+- Admin can create a page from Settings > Pages.
+- Markdown content is saved and page URL is generated.
+- Published URL resolves and renders expected marker content.
+
+## Spec steps
+
+- Reset Uwazi with `blank-e2e-fixtures` and authenticate as admin.
+- Open `/settings/pages`, create a new page title, and add marker HTML in Markdown tab.
+- Save page and capture generated `page-url`.
+- Navigate to generated URL and verify marker heading is rendered.
+
 ## IX lifecycle contract e2e (seeded fixtures)
 
 Run:
@@ -164,12 +263,12 @@ What it validates:
 
 ## Spec steps
 
-- Reset Uwazi with `e2e-fixtures` and log in as `admin/admin`.
+- Log in as `admin/admin` (fixtures are expected to be pre-restored).
 - Create a new extractor in UI using template `Heroes` and property `BIO`, then open `Review`.
 - Mark at least two rows with `Use for training`.
-- Poll Mongo (`uwazi_e2e.segmentations`) until there is at least one document with `status: ready`.
+- Poll Mongo (`uwazi_e2e.segmentations`) until there is at least one document with `status: ready` (bounded to 60s).
 - Open `Train model`, enable `Find suggestions after training`, and run training.
-- Wait for `/api/suggestions/status` to reach `ready`, then close modal if still open.
+- Wait for `/api/suggestions/status` to reach `ready` (bounded to 60s), then close modal if still open.
 - Target row `Aqua Sentinel (en)`, open sidepanel, and capture the current `input[name="field"]` value.
 - Accept suggestion on that same row, wait for `Suggestions updated`, reopen sidepanel, and assert `input[name="field"]` changed.
 
@@ -188,14 +287,19 @@ What it validates:
 
 ## Spec steps
 
-- Reset Uwazi with `e2e-fixtures` and prepare PX-compatible source/target templates.
+- Log in and prepare PX-compatible source/target templates (fixtures are expected to be pre-restored).
 - Create one source entity and an additional relation type required by PX validation rules.
-- Wait for background PDF segmentation to finish for source documents before launching extraction actions.
+- Wait for background processing to produce at least one `processed` row in extractor status (bounded to 60s).
 - Navigate to Paragraph Extraction settings and complete the wizard from the UI.
 - Open extractor detail (View), validate that entity rows are present, and that extraction controls are visible.
 
 ## Notes
 
 - This is intended for manual/local execution to generate DB state.
-- CI integration is intentionally out of scope.
+- CI lane mapping for Playwright contracts:
+  - Core lane (`.github/workflows/ci_e2e_playwright_core.yml`): `auth-gate`, `settings-core`, `public-form`, `entity-crud`, `languages-translations`, `menu`, `pages`.
+  - Data lane (`.github/workflows/ci_e2e_playwright_data.yml`): `library-search`, `csv-import`, `attachments`, `relationships-view`.
+- In CI, IX/PX run in `.github/workflows/ci_e2e_playwright_ix.yml` as a matrix (`ix` / `px`) with isolated jobs.
+- CI restores `e2e-fixtures` before starting Uwazi; IX/PX specs no longer run `yarn e2e-fixtures` internally.
+- CI bootstraps dummy extractor services with detached processes and queue-health checks before running the specs.
 
