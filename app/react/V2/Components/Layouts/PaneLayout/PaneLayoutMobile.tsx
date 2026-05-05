@@ -54,9 +54,9 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   return (
     <section
       style={{
-        height: `calc(100dvh - ${LEGACY_MENU_HEIGHT} - env(safe-area-inset-bottom, 0px))`,
+        maxHeight: `calc(min(100dvh, 100vh) - ${LEGACY_MENU_HEIGHT} - env(safe-area-inset-bottom, 0px))`,
       }}
-      className={`overflow-hidden relative min-h-0 flex flex-col ${className}`}
+      className={`overflow-hidden relative min-h-0 h-full flex flex-col ${className}`}
     >
       <div
         className={`flex grow h-full min-h-0 transition-transform duration-300 ease-in-out ${
