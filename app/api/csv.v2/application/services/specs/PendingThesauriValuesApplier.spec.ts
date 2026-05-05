@@ -3,12 +3,19 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { ThesauriService } from '#api/core/application/ThesauriService.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
+import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PendingThesauriValuesApplier } from '../PendingThesauriValuesApplier.js';
 import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues.js';
 import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues.js';
+
 const fixturesFactory = getFixturesFactory();
 
 const fixtures = {
@@ -67,9 +74,22 @@ describe('PendingThesauriValuesApplier', () => {
 
   const buildApplier = () => {
     const transactionManager = TransactionManagerFactory.default();
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const thesauriService = new ThesauriService({
+      dispatcher: new DispatcherAdapter(
+        DefaultDispatcher(tenants.current().name, transactionManager)
+      ),
+      thesauriDS,
+      thesaurusTranslationService: new ThesaurusTranslationService({
+        settingsDS,
+        translationsDS,
+      }),
+    });
     return new PendingThesauriValuesApplier({
-      thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
-      translationsDS: DefaultTranslationsDataSource(transactionManager),
+      thesauriDS,
+      thesauriService,
     });
   };
 
@@ -126,7 +146,10 @@ describe('PendingThesauriValuesApplier', () => {
       childLabel: 'Child',
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc);
+    const { diff, appliedValues } = await applier.apply(pendingDoc, {
+      tenantName: tenants.current().name,
+      userId: fixturesFactory.idString('pending-thesauri-user'),
+    });
 
     expect(diff.valuesToAppend).toHaveLength(0);
     expect(appliedValues).toEqual(
@@ -152,7 +175,10 @@ describe('PendingThesauriValuesApplier', () => {
       childLabel: 'New Child',
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc);
+    const { diff, appliedValues } = await applier.apply(pendingDoc, {
+      tenantName: tenants.current().name,
+      userId: fixturesFactory.idString('pending-thesauri-user'),
+    });
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(appliedValues).toHaveLength(2);
@@ -173,8 +199,6 @@ describe('PendingThesauriValuesApplier', () => {
       ])
     );
   });
-
-  // eslint-disable-next-line max-statements
   it('should include existing and new values together', async () => {
     await replaceThesaurusValues([
       {
@@ -241,7 +265,10 @@ describe('PendingThesauriValuesApplier', () => {
       entries: [entry],
     });
 
-    const { diff, appliedValues } = await applier.apply(pendingDoc);
+    const { diff, appliedValues } = await applier.apply(pendingDoc, {
+      tenantName: tenants.current().name,
+      userId: fixturesFactory.idString('pending-thesauri-user'),
+    });
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(diff.valuesToAppend).toEqual(
