@@ -40,8 +40,7 @@ type DenormalizeThesaurusParams = {
 };
 
 type CloneLanguageEntitiesParams = {
-  from: LanguageISO6391;
-  to: LanguageISO6391;
+  pairs: { from: LanguageISO6391; to: LanguageISO6391 }[];
 };
 
 interface Dispatcher {
@@ -53,7 +52,7 @@ interface Dispatcher {
     callback: (dispatch: (params: TemplatePostProcessParams) => void) => void | Promise<void>
   ): Promise<void>;
   denormalizeThesaurus(params: DenormalizeThesaurusParams): Promise<void>;
-  cloneLanguageEntities(items: CloneLanguageEntitiesParams[]): Promise<void>;
+  cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void>;
 }
 
 export type {

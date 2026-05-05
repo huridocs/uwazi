@@ -255,13 +255,23 @@ export default (app: Application) => {
       const languages = req.body as LanguageSchema[];
 
       if (tenants.current().featureFlags?.v2AddLanguage) {
-        AddLanguageUseCaseFactory.create()
-          .execute({ languages })
-          .catch((error: Error) => {
+        (async () => {
+          try {
+            await AddLanguageUseCaseFactory.default().execute({ languages });
+            for (const language of languages) {
+              // eslint-disable-next-line no-await-in-loop
+              const [newTranslations] = await translations.get({ locale: language.key });
+              req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+            }
+            const newSettings = await settings.get();
+            req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+            // translationsInstallDone is emitted by CloneLanguageEntitiesJob
+          } catch (error: any) {
             req.emitToSessionSocket('translationsInstallError', error.message);
             // eslint-disable-next-line no-console
             console.error(error);
-          });
+          }
+        })();
       } else {
         addLanguages(languages, req).catch((error: Error) => {
           req.emitToSessionSocket('translationsInstallError', error.message);

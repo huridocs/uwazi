@@ -58,10 +58,8 @@ class DispatcherAdapter implements Dispatcher {
     await this.jobsDispatcher.dispatch(DenormalizeThesaurusEntitiesHandler, params);
   }
 
-  async cloneLanguageEntities(items: CloneLanguageEntitiesParams[]): Promise<void> {
-    await this.jobsDispatcher.dispatchMany(dispatch => {
-      items.forEach(p => dispatch(CloneLanguageEntitiesJob, p));
-    });
+  async cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void> {
+    await this.jobsDispatcher.dispatch(CloneLanguageEntitiesJob, params);
   }
 }
 

@@ -6,8 +6,11 @@ import * as csvApi from '#api/csv/csvLoader.js';
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 import i18nRoutes from '#api/i18n/routes.js';
 import settings from '#api/settings/index.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
+import '#api/core/infrastructure/listeners/AddLanguageListener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
@@ -231,48 +234,26 @@ describe('i18n translations routes', () => {
       });
     });
 
-    describe('api/translations/languages', () => {
+    describe.each([
+      { title: 'V1', featureFlags: { v2AddLanguage: false } },
+      { title: 'V2', featureFlags: { v2AddLanguage: true } },
+    ])('api/translations/languages ($title)', ({ featureFlags }) => {
       describe('when successful', () => {
         let response: request.Response;
         let mockCalls: any[];
 
-        const newSettings = {
-          _id: expect.anything(),
+        const newSettings = expect.objectContaining({
           languages: [
-            {
-              _id: expect.anything(),
-              key: 'en',
-              label: 'English',
-              default: true,
-            },
-            {
-              _id: expect.anything(),
-              key: 'es',
-              label: 'Spanish',
-              default: false,
-            },
-            {
-              _id: expect.anything(),
-              key: 'zh',
-              label: 'Chinese',
-            },
-            {
-              _id: expect.anything(),
-              key: 'ja',
-              label: 'Japanese',
-            },
+            expect.objectContaining({ key: 'en', label: 'English', default: true }),
+            expect.objectContaining({ key: 'es', label: 'Spanish', default: false }),
+            expect.objectContaining({ key: 'zh', label: 'Chinese' }),
+            expect.objectContaining({ key: 'ja', label: 'Japanese' }),
           ],
-          mapStartingPoint: [
-            {
-              lon: 6,
-              lat: 46,
-            },
-          ],
-          links: [],
-          filters: [],
-        };
+          mapStartingPoint: [{ lon: 6, lat: 46 }],
+        });
 
         beforeAll(async () => {
+          testingTenants.changeCurrentTenant({ featureFlags });
           DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 
           response = await request(app)
@@ -344,7 +325,7 @@ describe('i18n translations routes', () => {
         });
 
         it('should emit an updateSettings event', async () => {
-          const eventCandidate = mockCalls[mockCalls.length - 2];
+          const eventCandidate = mockCalls.find(([eventName]) => eventName === 'updateSettings');
           expect(eventCandidate).toMatchObject([
             'updateSettings',
             TestEmitSources.currentTenant,
@@ -353,11 +334,13 @@ describe('i18n translations routes', () => {
         });
 
         it('should emit a translationsInstallDone event', async () => {
-          const eventCandidate = mockCalls[mockCalls.length - 1];
-          expect(eventCandidate).toMatchObject([
-            'translationsInstallDone',
-            TestEmitSources.session,
-          ]);
+          const expectedSource = featureFlags.v2AddLanguage
+            ? TestEmitSources.currentTenant
+            : TestEmitSources.session;
+          const eventCandidate = mockCalls.find(
+            ([eventName]) => eventName === 'translationsInstallDone'
+          );
+          expect(eventCandidate).toMatchObject(['translationsInstallDone', expectedSource]);
         });
       });
 
@@ -365,15 +348,23 @@ describe('i18n translations routes', () => {
         let mockCalls: any[];
         jest.spyOn(console, 'error').mockImplementation(() => true);
         let response: request.Response;
-        let settingsAddLanguageMock: jest.SpyInstance;
+        let errorMock: jest.SpyInstance;
 
         beforeAll(async () => {
+          testingTenants.changeCurrentTenant({ featureFlags });
           DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 
-          settingsAddLanguageMock = jest.spyOn(settings, 'addLanguage');
-          settingsAddLanguageMock.mockImplementation(() => {
-            throw new Error('error message');
-          });
+          if (featureFlags.v2AddLanguage) {
+            errorMock = jest
+              .spyOn(MongoSettingsDataSource.prototype, 'addLanguage')
+              .mockImplementation(() => {
+                throw new Error('error message');
+              });
+          } else {
+            errorMock = jest.spyOn(settings, 'addLanguage').mockImplementation(() => {
+              throw new Error('error message');
+            });
+          }
 
           response = await request(app)
             .post('/api/translations/languages')
@@ -385,7 +376,7 @@ describe('i18n translations routes', () => {
         });
 
         afterAll(async () => {
-          settingsAddLanguageMock.mockRestore();
+          errorMock.mockRestore();
         });
 
         it('should still return a 204', async () => {

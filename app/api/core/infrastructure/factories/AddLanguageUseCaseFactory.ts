@@ -1,22 +1,38 @@
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
+import { CloneLanguageEntitiesJobFactory } from './CloneLanguageEntitiesJobFactory.js';
 
 class AddLanguageUseCaseFactory {
-  static create(): AddLanguageUseCase {
-    const tenant = tenants.current();
-    const transactionManager = DependenciesContext.transactionManager as MongoTransactionManager;
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  static default(
+    overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>
+  ): AddLanguageUseCase {
+    const { tenant, actor } = ExecutionContext;
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const eventEmitter = EventEmitterFactory.default();
-    const dispatcher = new DispatcherAdapter(DefaultDispatcher(tenant.name, transactionManager));
+    const eventEmitter =
+      process.env.NODE_ENV === 'test'
+        ? EventEmitterFactory.forTesting()
+        : EventEmitterFactory.default();
+    const translationService = new LegacyTranslationService();
+
+    let jobsDispatcher = ExecutionContext.jobsDispatcher;
+    if (process.env.NODE_ENV === 'test') {
+      const innerDispatcher = new SyncDispatcherForTests({});
+      const cloneJob = CloneLanguageEntitiesJobFactory.default({ jobsDispatcher: innerDispatcher });
+      jobsDispatcher = new SyncDispatcherForTests({
+        [CloneLanguageEntitiesJob.name]: async () => cloneJob,
+      });
+    }
+    const dispatcher = new DispatcherAdapter(jobsDispatcher);
 
     return new AddLanguageUseCase(
       {
@@ -25,8 +41,10 @@ class AddLanguageUseCaseFactory {
         translationsDS,
         eventEmitter,
         dispatcher,
+        translationService,
+        ...overrides,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant }
+      { actor, tenant }
     );
   }
 }
