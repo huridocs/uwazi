@@ -1,8 +1,9 @@
+/* eslint-disable max-lines */
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource.js';
 import {
@@ -44,7 +45,7 @@ type Deps = {
   csvImportsDS: CsvImportsDataSource;
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
   thesauriDS: ThesauriDataSource;
-  translationsDS: TranslationsDataSource;
+  thesauriService: ThesauriService;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
 };
@@ -61,7 +62,7 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
     super(deps);
     this.pendingValuesApplier = new PendingThesauriValuesApplier({
       thesauriDS: deps.thesauriDS,
-      translationsDS: deps.translationsDS,
+      thesauriService: deps.thesauriService,
     });
   }
 
@@ -107,12 +108,17 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
     index: number;
     total: number;
     callbacks: Callbacks;
+    tenantName: string;
+    userId: string;
   }): Promise<{
     result: PendingValuesProcessingResult;
     updatedDoc: CsvImportThesauriValues;
   }> {
-    const { pendingDoc, index, total, callbacks } = params;
-    const { diff, appliedValues } = await this.pendingValuesApplier.apply(pendingDoc);
+    const { pendingDoc, index, total, callbacks, tenantName, userId } = params;
+    const { diff, appliedValues } = await this.pendingValuesApplier.apply(pendingDoc, {
+      tenantName,
+      userId,
+    });
 
     const summary: PendingValuesDiffSummary = {
       observedValues: diff.observedValues,
@@ -232,6 +238,8 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
           index,
           total: pendingDocs.length,
           callbacks,
+          tenantName,
+          userId,
         });
         pendingDocs[index - 1] = updatedDoc;
       }
