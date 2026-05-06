@@ -1,14 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRevalidator } from 'react-router';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { useAtomValue } from 'jotai';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
+import { Entity, FileType } from '#V2/api/entities/types.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { EntityReference } from '#V2/domain/entities/types.js';
-import { relationshipTypesAtom } from '#V2/atoms/index.js';
-import { Entity } from '#V2/domain/index.js';
+import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { searchByTitle } from '#V2/api/entities/index.js';
+import { formatReferences } from '#V2/formatters/index.js';
+import { EntityReference } from '#V2/formatters/relationships/types.js';
 import { deleteReference, saveTextReference } from '#V2/api/relationships/index.js';
 import { ConfirmationModal, BlankState } from '#V2/Components/UI/index.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
@@ -18,11 +19,12 @@ import { useReferences, useReferencesActions } from './referencesAtom.js';
 import { pdfController } from '../atoms.js';
 
 type ReferencesPanelProps = {
-  references?: EntityReference[];
   entity?: Entity;
+  mainDocument?: FileType;
 };
 
-const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
+// eslint-disable-next-line max-statements
+const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(null);
   const [referenceToDelete, setReferenceToDelete] = useState<EntityReference | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -31,9 +33,27 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
   const { setCreateReferenceSelection } = useReferencesActions();
   const revalidator = useRevalidator();
   const mainPdfController = useAtomValue(pdfController);
+  const templates = useAtomValue(templatesAtom);
+  const references = useMemo<EntityReference[]>(() => {
+    if (!entity) return [];
+    return formatReferences(entity).map(ref => {
+      const template = templates.find(t => t._id === ref.targetEntity.templateId);
+      return {
+        ...ref,
+        targetEntity: {
+          ...ref.targetEntity,
+          template: {
+            _id: ref.targetEntity.templateId,
+            name: template?.name || '',
+            color: template?.color || '#A4CAFE',
+          },
+        },
+      };
+    });
+  }, [entity, templates]);
 
   const lookup = useCallback(
-    async (searchString: string): Promise<Entity[]> =>
+    async (searchString: string) =>
       searchByTitle({
         title: searchString,
         fields: ['title', 'template', 'creationDate', 'sharedId'],
@@ -106,7 +126,7 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
       }
 
       // Get source file ID (main document)
-      const sourceFile = entity.mainDocument?.[0];
+      const sourceFile = mainDocument;
       if (!sourceFile?._id) {
         console.error('Cannot save reference: source file is not available');
         return;
@@ -138,7 +158,7 @@ const ReferencesPanel = ({ references = [], entity }: ReferencesPanelProps) => {
         // TODO: Show error notification to user
       }
     },
-    [entity, setCreateReferenceSelection, revalidator]
+    [entity, mainDocument, setCreateReferenceSelection, revalidator]
   );
 
   // If there's a createReferenceSelection, show the CreateReference component

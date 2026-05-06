@@ -69,7 +69,7 @@ const SearchResults = () => {
   const mainPdfController = useAtomValue(pdfController);
 
   const template = useMemo(
-    () => templates.find(temp => temp._id === entity?.template?._id),
+    () => templates.find(temp => temp._id === entity?.template),
     [entity, templates]
   );
 
@@ -148,7 +148,7 @@ const SearchResults = () => {
                                 className="p-2 border border-gray-100 shadow-md rounded-lg"
                               >
                                 <dt className="text-sm font-semibold text-gray-900">
-                                  <Translate context={entity!.template!._id}>
+                                  <Translate context={entity!.template}>
                                     {getFieldName(m.field, template)}
                                   </Translate>
                                 </dt>

@@ -204,7 +204,7 @@ const Collection = () => {
                     selectButtonTitle={<Translate>Select favicon image</Translate>}
                     recommendedSize="16x16 to 512x512 px (square)"
                     sizeRule={faviconImageSizeRule}
-                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]"
+                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] [border-color:color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]"
                   />
                 ) : null}
                 {themeCustomization && (

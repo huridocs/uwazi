@@ -1,8 +1,13 @@
+import { Entity, FileType } from '#V2/api/entities/types.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
-import { Entity } from '#V2/domain/entities/Entity.js';
 
 type LoaderResponse =
-  | { entity: Entity; pagePlaintext?: string; searchResults?: SnippetsSearchResponse }
+  | {
+      entity?: Entity;
+      mainDocument?: FileType;
+      pagePlaintext?: string;
+      searchResults?: SnippetsSearchResponse;
+    }
   | undefined;
 
 export type { LoaderResponse };

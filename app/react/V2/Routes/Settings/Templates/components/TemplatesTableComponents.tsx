@@ -52,7 +52,7 @@ const DefaultButton =
   (handleSetDefault: (row: TemplateRow) => void) =>
   ({ cell }: CellContext<TemplateRow, boolean>) => (
     <Button
-      variant={cell.row.original.default ? 'primary' : 'ghost'}
+      variant={cell.row.original.default ? 'primary' : 'secondary'}
       onClick={() => handleSetDefault(cell.row.original)}
       className="leading-4 m-auto"
       disabled={cell.row.original.default || cell.row.original.synced}
@@ -62,7 +62,7 @@ const DefaultButton =
         className={
           cell.row.original.default
             ? 'w-4 text-white'
-            : 'w-4 [color:var(--color-theme-text-on-solid)] stroke-current [stroke:var(--color-theme-border-default)] stroke-2'
+            : 'w-4 [color:var(--color-theme-button-secondary-bg)] [stroke:var(--color-theme-border-default)] stroke-2'
         }
       />
     </Button>
@@ -86,7 +86,7 @@ const SyncedTemplateCell = ({ cell }: CellContext<TemplateRow, boolean>) =>
   cell.getValue() ? (
     <Tooltip
       content={
-        <div className="text-xs [color:var(--color-theme-text-muted)]">
+        <div className="text-xs [color:var(--color-theme-text-tertiary)]">
           <Translate>The source of this template is a sync.</Translate>
           <br />
           <Translate>All editing options will be disabled.</Translate>

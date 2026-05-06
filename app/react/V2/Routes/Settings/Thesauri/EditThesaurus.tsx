@@ -135,7 +135,7 @@ const EditThesaurus = () => {
             setSelectedThesaurusValue={setSelectedThesaurusValue}
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bottom-0 bg-primary-50">
+        <SettingsContent.Footer className="bottom-0" highlighted={!isEmpty(selectedThesaurusValue)}>
           {!isEmpty(selectedThesaurusValue) && (
             <div className="flex items-center gap-2">
               <Button

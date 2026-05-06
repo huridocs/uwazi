@@ -7,6 +7,10 @@ import type { ImageFeedback, ImageSizeRule } from './customUploadImagePickerLib.
 import { GallerySection } from './GallerySection.js';
 import { ImageValidationIconButton } from './ImageValidationIconButton.js';
 
+const ACCEPTED_IMAGE_FILES = {
+  'image/*': ['.avif', '.bmp', '.gif', '.ico', '.jpg', '.jpeg', '.png', '.svg', '.webp'],
+} as const;
+
 const uploadFileTrailing = (
   file: File,
   getFeedback: (f: File) => ImageFeedback | null
@@ -19,10 +23,9 @@ type CustomUploadImagePickerModalProps = {
   selectButtonTitle: React.ReactNode;
   onClose: () => void;
   onDropzoneFiles: (newFiles: File[]) => void | Promise<void>;
-  filesToUpload: File[];
-  uploading: boolean;
   uploadProgress: { filename?: string; progress?: number };
-  onUpload: () => void;
+  dropzoneFeedback: ImageFeedback | null;
+  validationFeedback: ImageFeedback | null;
   getUploadFileFeedback: (file: File) => ImageFeedback | null;
   images: FileType[];
   emptyGalleryHint: React.ReactNode;
@@ -37,10 +40,9 @@ const CustomUploadImagePickerModal = ({
   selectButtonTitle,
   onClose,
   onDropzoneFiles,
-  filesToUpload,
-  uploading,
   uploadProgress,
-  onUpload,
+  dropzoneFeedback,
+  validationFeedback,
   getUploadFileFeedback,
   images,
   emptyGalleryHint,
@@ -58,34 +60,34 @@ const CustomUploadImagePickerModal = ({
     <Modal.Body className="!p-4">
       <div className="min-w-0 space-y-4">
         <div className="min-w-0 rounded-lg border p-4 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]">
-          <p className="mb-3 text-sm font-medium [color:var(--color-theme-text-primary)]">
-            <Translate>Upload a new image</Translate>
-          </p>
           <FileDropzone
             className="w-full min-w-0 max-w-full"
+            acceptedFiles={ACCEPTED_IMAGE_FILES}
+            multiple={false}
             fileTrailing={file => uploadFileTrailing(file, getUploadFileFeedback)}
             onChange={newFiles => {
               Promise.resolve(onDropzoneFiles(newFiles)).catch(() => undefined);
             }}
           />
-          <div className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-            <div className="min-w-0 text-xs [color:var(--color-theme-text-muted)]">
-              {uploadProgress.filename ? (
-                <>
-                  <Translate>Uploading</Translate> {uploadProgress.filename}{' '}
-                  {uploadProgress.progress ?? 0}%
-                </>
-              ) : null}
-            </div>
-            <Button
-              type="button"
-              className="w-full shrink-0 sm:w-auto"
-              onClick={onUpload}
-              disabled={uploading || filesToUpload.length === 0}
-            >
-              <Translate>Upload image</Translate>
-            </Button>
+          <div className="mt-3 min-w-0 text-xs [color:var(--color-theme-text-tertiary)]">
+            {uploadProgress.filename ? (
+              <>
+                <Translate>Uploading</Translate> {uploadProgress.filename}{' '}
+                {uploadProgress.progress ?? 0}%
+              </>
+            ) : null}
           </div>
+          {dropzoneFeedback || validationFeedback ? (
+            <p
+              className={`mt-2 text-xs ${
+                (dropzoneFeedback?.type ?? validationFeedback?.type) === 'error'
+                  ? '[color:var(--color-theme-feedback-danger)]'
+                  : '[color:var(--color-theme-warning)]'
+              }`}
+            >
+              {dropzoneFeedback?.message ?? validationFeedback?.message}
+            </p>
+          ) : null}
         </div>
 
         <GallerySection

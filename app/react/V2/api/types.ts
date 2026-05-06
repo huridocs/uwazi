@@ -19,6 +19,7 @@ type Response<T> = {
 type EntitySearchResponse = SearchResponse<
   Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string }
 >;
+
 type EntityResponse = Response<
   Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string }
 >;
