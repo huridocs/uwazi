@@ -1,5 +1,3 @@
-import path from 'path';
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -7,7 +5,6 @@ import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
-import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
 import { search } from '#api/search/index.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 
@@ -40,8 +37,10 @@ const fixtures: DBFixture = {
 };
 
 const cloneLanguageEntitiesSpy = jest.fn().mockResolvedValue(undefined);
+const importPredefinedTranslationsSpy = jest.fn().mockResolvedValue(undefined);
 const mockDispatcher = {
   cloneLanguageEntities: cloneLanguageEntitiesSpy,
+  importPredefinedTranslations: importPredefinedTranslationsSpy,
 } as unknown as Dispatcher;
 
 const createSut = (overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>) =>
@@ -52,10 +51,7 @@ const createSut = (overrides?: Partial<ConstructorParameters<typeof AddLanguageU
 describe('AddLanguage use case', () => {
   beforeEach(async () => {
     cloneLanguageEntitiesSpy.mockClear();
-    DefaultTranslations.CONTENTS_DIRECTORY = path.join(
-      __dirname,
-      '../../../i18n/specs/test_contents/2'
-    );
+    importPredefinedTranslationsSpy.mockClear();
     jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(fixtures);
   });
@@ -106,28 +102,16 @@ describe('AddLanguage use case', () => {
       expect(zhCount).toBe(2);
     });
 
-    it('should import predefined translations when a CSV is available for a locale', async () => {
+    it('should dispatch importPredefinedTranslations job for each new language', async () => {
       await createSut().execute({
         languages: [
-          { key: 'es', label: 'Spanish' }, // has CSV in test_contents/2
-          { key: 'zh', label: 'Chinese' }, // no CSV
+          { key: 'es', label: 'Spanish' },
+          { key: 'zh', label: 'Chinese' },
         ],
       });
 
-      const esSearch = await testingEnvironment.db.getCollection('translationsV2')!.findOne({
-        language: 'es',
-        key: 'Search',
-        'context.id': 'System',
-      });
-      expect(esSearch?.value).toBe('Buscar traducida');
-
-      // zh has no CSV — cloned value from en should remain
-      const zhSearch = await testingEnvironment.db.getCollection('translationsV2')!.findOne({
-        language: 'zh',
-        key: 'Search',
-        'context.id': 'System',
-      });
-      expect(zhSearch?.value).toBe('Search');
+      expect(importPredefinedTranslationsSpy).toHaveBeenCalledWith({ languageKey: 'es' });
+      expect(importPredefinedTranslationsSpy).toHaveBeenCalledWith({ languageKey: 'zh' });
     });
 
     it('should dispatch CloneLanguageEntities job with all new-language pairs', async () => {

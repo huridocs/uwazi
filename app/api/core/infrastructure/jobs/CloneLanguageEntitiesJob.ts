@@ -50,13 +50,13 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
         // eslint-disable-next-line no-await-in-loop
         await search.indexEntities({ language: to });
 
-        const iso639_3 = LanguageUtils.fromISO639_1(to)?.ISO639_3;
-        if (iso639_3) {
+        const ISO639_3 = LanguageUtils.fromISO639_1(to)?.ISO639_3;
+        if (ISO639_3) {
           // eslint-disable-next-line no-await-in-loop
           const sharedIds: string[] = await this.deps.filesCollection.distinct('entity', {
             type: 'document',
             status: 'ready',
-            language: iso639_3,
+            language: ISO639_3,
           });
 
           if (sharedIds.length > 0) {

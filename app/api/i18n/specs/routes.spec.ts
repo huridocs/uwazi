@@ -370,27 +370,36 @@ describe('i18n translations routes', () => {
             .post('/api/translations/languages')
             .send([{ key: 'ja', label: 'Japanese' }]);
           mockCalls = iosocket.emit.mock.calls;
-          await waitForExpect(() => {
-            expect(mockCalls.length).toBe(1);
-          });
+
+          if (!featureFlags.v2AddLanguage) {
+            await waitForExpect(() => {
+              expect(mockCalls.length).toBe(1);
+            });
+          }
         });
 
         afterAll(async () => {
           errorMock.mockRestore();
         });
 
-        it('should still return a 204', async () => {
-          expect(response.status).toBe(204);
-        });
+        if (featureFlags.v2AddLanguage) {
+          it('should return a 500 as the error propagates through Express', async () => {
+            expect(response.status).toBe(500);
+          });
+        } else {
+          it('should still return a 204', async () => {
+            expect(response.status).toBe(204);
+          });
 
-        it('should emit a translationsInstallError event', async () => {
-          const eventCandidate = mockCalls[0];
-          expect(eventCandidate).toMatchObject([
-            'translationsInstallError',
-            TestEmitSources.session,
-            'error message',
-          ]);
-        });
+          it('should emit a translationsInstallError event', async () => {
+            const eventCandidate = mockCalls[0];
+            expect(eventCandidate).toMatchObject([
+              'translationsInstallError',
+              TestEmitSources.session,
+              'error message',
+            ]);
+          });
+        }
       });
     });
 

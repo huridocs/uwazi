@@ -3,7 +3,6 @@ import { LanguageSchema } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
-import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 
 type Input = {
@@ -15,7 +14,6 @@ type Output = void;
 type Deps = {
   settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
-  translationService: TranslationService;
 };
 
 class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -43,12 +41,11 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.dispatcher.cloneLanguageEntities({
         pairs: newLanguages.map(l => ({ from: defaultLanguage, to: l.key })),
       });
-    });
 
-    // outside of transaction since its using non-transactional v1 models
-    for (const language of languages) {
-      await this.deps.translationService.importPredefined(language.key);
-    }
+      for (const language of newLanguages) {
+        await this.dispatcher.importPredefinedTranslations({ languageKey: language.key });
+      }
+    });
   }
 }
 

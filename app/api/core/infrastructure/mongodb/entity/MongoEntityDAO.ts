@@ -108,10 +108,13 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
     try {
       let batch: EntityDBO[] = [];
 
+      // eslint-disable-next-line no-await-in-loop
       while (await cursor.hasNext()) {
+        // eslint-disable-next-line no-await-in-loop
         const doc = await cursor.next();
         if (doc) batch.push(doc);
 
+        // eslint-disable-next-line no-await-in-loop
         if (batch.length >= BATCH_SIZE || !(await cursor.hasNext())) {
           if (batch.length > 0) {
             // eslint-disable-next-line no-await-in-loop
