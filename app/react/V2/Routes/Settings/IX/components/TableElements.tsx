@@ -112,7 +112,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
   const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
 
   return (
-    <div className="flex gap-1 text-xs font-bold [color:var(--color-theme-text-muted)]">
+    <div className="flex gap-1 text-xs font-bold [color:var(--color-theme-text-tertiary)]">
       <span>
         {amountOfValues} <Translate>values</Translate>
       </span>
@@ -153,7 +153,7 @@ const CurrentValueCell = ({
 }) => {
   if (cell.row.original.state.error) {
     return (
-      <div className="flex gap-1 text-xs font-bold [color:var(--color-theme-text-muted)]">
+      <div className="flex gap-1 text-xs font-bold [color:var(--color-theme-text-tertiary)]">
         <span>
           <Translate className="[color:var(--color-theme-feedback-danger)]">Error</Translate>
         </span>

@@ -33,6 +33,7 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
   const [uploadProgress, setUploadProgress] = useState<{ filename?: string; progress?: number }>(
     {}
   );
+  const [dropzoneFeedback, setDropzoneFeedback] = useState<ImageFeedback | null>(null);
   const [uploadFileFeedback, setUploadFileFeedback] = useState<
     Record<string, ImageFeedback | null>
   >({});
@@ -89,17 +90,10 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
   useEffect(() => {
     if (!open) {
       setFilesToUpload([]);
+      setDropzoneFeedback(null);
       setUploadFileFeedback({});
     }
   }, [open]);
-
-  const handleDropzoneFiles = async (newFiles: File[]) => {
-    const result = await validateFiles(newFiles);
-    setFilesToUpload(result.acceptedFiles);
-    setUploadFileFeedback(
-      Object.fromEntries(result.perFile.map(({ file, feedback }) => [localFileKey(file), feedback]))
-    );
-  };
 
   const getUploadFileFeedback = (file: File) => uploadFileFeedback[localFileKey(file)] ?? null;
 
@@ -120,15 +114,15 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     }
   };
 
-  const handleUpload = async () => {
-    if (!filesToUpload.length) return;
+  const handleUpload = async (pendingFiles: File[] = filesToUpload) => {
+    if (!pendingFiles.length) return;
 
     setUploading(true);
     uploadService.onProgress((filename, progress) => {
       setUploadProgress({ filename, progress });
     });
 
-    const responses = await uploadService.upload([...filesToUpload]);
+    const responses = await uploadService.upload([...pendingFiles]);
     const uploadedImage = responses.find(
       (response): response is FileType =>
         !(response instanceof FetchResponseError) && Boolean(response._id) && isImageFile(response)
@@ -152,12 +146,26 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
       }
 
       onChange(uploadedUrl);
+      setOpen(false);
     }
 
     setFilesToUpload([]);
+    setDropzoneFeedback(null);
     setUploadFileFeedback({});
     setUploadProgress({});
     setUploading(false);
+  };
+
+  const handleDropzoneFiles = async (newFiles: File[]) => {
+    const result = await validateFiles(newFiles);
+    setFilesToUpload(result.acceptedFiles);
+    setDropzoneFeedback(result.feedback);
+    setUploadFileFeedback(
+      Object.fromEntries(result.perFile.map(({ file, feedback }) => [localFileKey(file), feedback]))
+    );
+    if (result.acceptedFiles.length) {
+      await handleUpload(result.acceptedFiles);
+    }
   };
 
   return {
@@ -168,6 +176,7 @@ export const useCustomUploadImagePickerLogic = ({ sizeRule, files, value, onChan
     filesToUpload,
     setFilesToUpload,
     uploading,
+    dropzoneFeedback,
     validationFeedback,
     setValidationFeedback,
     uploadProgress,

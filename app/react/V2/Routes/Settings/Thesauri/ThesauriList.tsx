@@ -74,7 +74,7 @@ const ThesauriList = () => {
             />
           </div>
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bg-primary-50" highlighted>
+        <SettingsContent.Footer highlighted={selectedThesauri.length > 0}>
           {selectedThesauri.length ? (
             <div className="flex items-center gap-2">
               <Button

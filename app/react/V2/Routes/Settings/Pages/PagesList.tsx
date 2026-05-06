@@ -99,7 +99,7 @@ const PagesList = () => {
             defaultSorting={[{ id: 'title', desc: false }]}
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
+        <SettingsContent.Footer highlighted={selectedPages.length > 0}>
           {selectedPages.length > 0 && (
             <div className="flex items-center gap-2">
               <Button
