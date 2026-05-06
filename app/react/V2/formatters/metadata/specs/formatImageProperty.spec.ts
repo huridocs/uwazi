@@ -67,4 +67,29 @@ describe('formatImageProperty', () => {
       style: 'contain',
     });
   });
+
+  it('should keep all image values', () => {
+    const property = {
+      _id: 'p2',
+      name: 'related_images',
+      label: 'Related images',
+      type: 'image',
+    } as BaseMetadataProperty;
+
+    const metadata = {
+      related_images: [{ value: '/api/files/image-1.png' }, { value: '/api/files/image-2.png' }],
+    } as Entity['metadata'];
+
+    expect(formatImageProperty(property, metadata)).toEqual({
+      _id: 'p2',
+      name: 'related_images',
+      label: 'Related images',
+      type: 'image',
+      values: [
+        { value: '/api/files/image-1.png', alt: '/api/files/image-1.png' },
+        { value: '/api/files/image-2.png', alt: '/api/files/image-2.png' },
+      ],
+      style: 'contain',
+    });
+  });
 });

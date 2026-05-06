@@ -12,14 +12,22 @@ const formatSimpleProperty = (
     return null;
   }
 
-  const rawValue = metadata?.[property.name]?.[0]?.value;
-  const value = rawValue === null || rawValue === undefined ? '' : String(rawValue);
+  const rawValues = metadata?.[property.name] ?? [];
+  const values =
+    rawValues.length > 0
+      ? rawValues.map(item => {
+          const value = item?.value;
+          return {
+            value: value === null || value === undefined ? '' : String(value),
+          };
+        })
+      : [{ value: '' }];
 
   return {
     _id: property._id,
     name: property.name,
     type: property.type,
-    values: [{ value }],
+    values,
     label: property.label,
     inherited: property.inherited,
     inheritedType: property.inheritedType,

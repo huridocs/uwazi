@@ -147,6 +147,10 @@ describe('formatGeolocationProperty', () => {
       name: 'group1',
       label: 'group1',
       type: 'geolocation',
+      propertyGroup: [
+        { name: 'locationA', label: 'Location A' },
+        { name: 'locationB', label: 'Location B' },
+      ],
       values: [
         { value: { latitude: 10, longitude: 20 }, label: 'Location A', color: '#1A73E8' },
         {
@@ -183,6 +187,16 @@ describe('formatGeolocationProperty', () => {
       name: '__group1',
       label: '__group1',
       type: 'geolocation',
+      propertyGroup: [
+        { name: 'locationB', label: 'Location B' },
+        {
+          name: 'rel_1',
+          label: 'Rel 1',
+          inherited: true,
+          content: '69f0a4ac62c282d87ef5970f',
+          property: 'x',
+        },
+      ],
       values: [
         {
           value: { latitude: -5, longitude: -6 },
@@ -233,6 +247,16 @@ describe('formatGeolocationProperty', () => {
       name: '__group2',
       label: '__group2',
       type: 'geolocation',
+      propertyGroup: [
+        { name: 'locationB', label: 'Location B' },
+        {
+          name: 'rel_nested',
+          label: 'Rel Nested',
+          inherited: true,
+          content: '69f0a4ac62c282d87ef5970f',
+          property: 'y',
+        },
+      ],
       values: [
         {
           value: { latitude: -5, longitude: -6 },
