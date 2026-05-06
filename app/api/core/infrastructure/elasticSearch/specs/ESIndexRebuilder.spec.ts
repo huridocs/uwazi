@@ -346,10 +346,7 @@ describe('ESIndexRebuilder', () => {
       expect(stages).not.toContain('index-entities');
       expect(stages).not.toContain('index-fulltext');
 
-      const indexingEvents = events.filter(
-        (e): e is { stage: 'indexing'; entitiesIndexed: number; fullTextIndexed: number } =>
-          e.stage === 'indexing'
-      );
+      const indexingEvents = events.filter(e => e.stage === 'indexing');
       expect(indexingEvents.length).toBeGreaterThan(0);
 
       const last = indexingEvents[indexingEvents.length - 1];
