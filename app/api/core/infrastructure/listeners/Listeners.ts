@@ -1,4 +1,4 @@
 import './LogEntityCreatedListener.js';
 import './DenormalizeEntityUpdatedListener.js';
 import './ProcessRelationshipAfterEntityUpdatedListener.js';
-import './AddLanguagePagesListener.js';
+import '#api/pages/AddLanguagePagesListener.js';

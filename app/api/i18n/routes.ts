@@ -280,7 +280,7 @@ export default (app: Application) => {
         });
       }
 
-      res.status(204).json('ok');
+      res.sendStatus(204);
     }
   );
 
@@ -310,7 +310,7 @@ export default (app: Application) => {
         // eslint-disable-next-line no-console
         console.error(error);
       });
-      res.status(204).json('ok');
+      res.sendStatus(204);
     }
   );
 };

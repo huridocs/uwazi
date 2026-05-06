@@ -1,7 +1,7 @@
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
-import pages from '#api/pages/index.js';
+import pages from './index.js';
 
 class AddLanguagePagesListener extends Listener<LanguageAddedEvent> {
   static eventName = LanguageAddedEvent.name;

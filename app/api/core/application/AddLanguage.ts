@@ -22,8 +22,12 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ languages }: Input): Promise<Output> {
     await this.transactionManager.run(async () => {
       const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+      const installedKeys = new Set(await this.deps.settingsDS.getLanguageKeys());
+      const newLanguages = languages.filter(l => !installedKeys.has(l.key));
 
-      for (const language of languages) {
+      if (newLanguages.length === 0) return;
+
+      for (const language of newLanguages) {
         await this.deps.settingsDS.addLanguage(language);
         await this.deps.settingsDS.setLanguageInstalling(language.key, true);
         await this.deps.translationsDS.cloneForLanguage(defaultLanguage, language.key);
@@ -37,7 +41,7 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       }
 
       await this.dispatcher.cloneLanguageEntities({
-        pairs: languages.map(l => ({ from: defaultLanguage, to: l.key })),
+        pairs: newLanguages.map(l => ({ from: defaultLanguage, to: l.key })),
       });
     });
 

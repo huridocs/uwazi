@@ -68,93 +68,8 @@ describe('AddLanguage use case', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('when adding a single language', () => {
-    it('should persist the new language in settings', async () => {
-      await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
-
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      expect(settings?.languages).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ key: 'en', label: 'English', default: true }),
-          expect.objectContaining({ key: 'es', label: 'Spanish' }),
-        ])
-      );
-    });
-
-    it('should clone translations from the default language', async () => {
-      await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
-
-      const cloned = await testingEnvironment.db
-        .getCollection('translationsV2')!
-        .find({ language: 'es' })
-        .toArray();
-
-      expect(cloned.length).toBe(2);
-      expect(cloned).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ key: 'Search', language: 'es' }),
-          expect.objectContaining({ key: 'Filters', language: 'es' }),
-        ])
-      );
-    });
-
-    it('should import predefined translations when a CSV is available for the locale', async () => {
-      await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
-
-      const updated = await testingEnvironment.db.getCollection('translationsV2')!.findOne({
-        language: 'es',
-        key: 'Search',
-        'context.id': 'System',
-      });
-
-      expect(updated?.value).toBe('Buscar traducida');
-    });
-
-    it('should complete without error when no predefined CSV exists for the locale', async () => {
-      await expect(
-        createSut().execute({ languages: [{ key: 'zh', label: 'Chinese' }] })
-      ).resolves.not.toThrow();
-
-      const cloned = await testingEnvironment.db
-        .getCollection('translationsV2')!
-        .find({ language: 'zh' })
-        .toArray();
-      expect(cloned.length).toBe(2);
-    });
-
-    it('should dispatch CloneLanguageEntities job with the correct pairs', async () => {
-      await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
-
-      expect(cloneLanguageEntitiesSpy).toHaveBeenCalledWith({
-        pairs: [{ from: 'en', to: 'es' }],
-      });
-    });
-
-    it('should mark the new language as installing in settings', async () => {
-      await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
-
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      const esLanguage = settings?.languages?.find((l: any) => l.key === 'es');
-      expect(esLanguage?.installing).toBe(true);
-    });
-
-    it('should emit a LanguageAddedEvent with the correct payload', async () => {
-      const emitSpy = jest.fn().mockResolvedValue(undefined);
-      await createSut({ eventEmitter: { emit: emitSpy } }).execute({
-        languages: [{ key: 'es', label: 'Spanish' }],
-      });
-
-      expect(emitSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          payload: expect.objectContaining({ language: 'es', defaultLanguage: 'en' }),
-        })
-      );
-      expect(emitSpy.mock.calls[0][0]).toBeInstanceOf(LanguageAddedEvent);
-    });
-  });
-
   describe('when adding multiple languages', () => {
-    it('should persist all new languages in settings', async () => {
+    it('should persist all new languages in settings and mark them as installing', async () => {
       await createSut().execute({
         languages: [
           { key: 'es', label: 'Spanish' },
@@ -165,14 +80,14 @@ describe('AddLanguage use case', () => {
       const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
       expect(settings?.languages).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ key: 'en' }),
-          expect.objectContaining({ key: 'es' }),
-          expect.objectContaining({ key: 'zh' }),
+          expect.objectContaining({ key: 'en', label: 'English', default: true }),
+          expect.objectContaining({ key: 'es', label: 'Spanish', installing: true }),
+          expect.objectContaining({ key: 'zh', label: 'Chinese', installing: true }),
         ])
       );
     });
 
-    it('should clone translations for each new language', async () => {
+    it('should clone translations from the default language for each new language', async () => {
       await createSut().execute({
         languages: [
           { key: 'es', label: 'Spanish' },
@@ -191,7 +106,47 @@ describe('AddLanguage use case', () => {
       expect(zhCount).toBe(2);
     });
 
-    it('should emit a LanguageAddedEvent for each language', async () => {
+    it('should import predefined translations when a CSV is available for a locale', async () => {
+      await createSut().execute({
+        languages: [
+          { key: 'es', label: 'Spanish' }, // has CSV in test_contents/2
+          { key: 'zh', label: 'Chinese' }, // no CSV
+        ],
+      });
+
+      const esSearch = await testingEnvironment.db.getCollection('translationsV2')!.findOne({
+        language: 'es',
+        key: 'Search',
+        'context.id': 'System',
+      });
+      expect(esSearch?.value).toBe('Buscar traducida');
+
+      // zh has no CSV — cloned value from en should remain
+      const zhSearch = await testingEnvironment.db.getCollection('translationsV2')!.findOne({
+        language: 'zh',
+        key: 'Search',
+        'context.id': 'System',
+      });
+      expect(zhSearch?.value).toBe('Search');
+    });
+
+    it('should dispatch CloneLanguageEntities job with all new-language pairs', async () => {
+      await createSut().execute({
+        languages: [
+          { key: 'es', label: 'Spanish' },
+          { key: 'zh', label: 'Chinese' },
+        ],
+      });
+
+      expect(cloneLanguageEntitiesSpy).toHaveBeenCalledWith({
+        pairs: [
+          { from: 'en', to: 'es' },
+          { from: 'en', to: 'zh' },
+        ],
+      });
+    });
+
+    it('should emit a LanguageAddedEvent for each new language', async () => {
       const emitSpy = jest.fn().mockResolvedValue(undefined);
       await createSut({ eventEmitter: { emit: emitSpy } }).execute({
         languages: [
@@ -204,6 +159,52 @@ describe('AddLanguage use case', () => {
         ([event]) => event instanceof LanguageAddedEvent
       );
       expect(languageAddedCalls).toHaveLength(2);
+      expect(languageAddedCalls[0][0].payload).toMatchObject({
+        language: 'es',
+        defaultLanguage: 'en',
+      });
+      expect(languageAddedCalls[1][0].payload).toMatchObject({
+        language: 'zh',
+        defaultLanguage: 'en',
+      });
+    });
+
+    it('should skip already-installed languages and only process new ones', async () => {
+      const emitSpy = jest.fn().mockResolvedValue(undefined);
+      // 'en' is already installed; only 'es' is new
+      await createSut({ eventEmitter: { emit: emitSpy }, dispatcher: mockDispatcher }).execute({
+        languages: [
+          { key: 'en', label: 'English' }, // already installed
+          { key: 'es', label: 'Spanish' }, // new
+        ],
+      });
+
+      // Only one event for the new language
+      const languageAddedCalls = emitSpy.mock.calls.filter(
+        ([event]) => event instanceof LanguageAddedEvent
+      );
+      expect(languageAddedCalls).toHaveLength(1);
+      expect(languageAddedCalls[0][0].payload).toMatchObject({ language: 'es' });
+
+      // Job dispatched only for the new language
+      expect(cloneLanguageEntitiesSpy).toHaveBeenCalledWith({
+        pairs: [{ from: 'en', to: 'es' }],
+      });
+
+      // 'en' entry in settings unchanged (no duplicate)
+      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      const enEntries = settings?.languages?.filter((l: any) => l.key === 'en');
+      expect(enEntries).toHaveLength(1);
+    });
+
+    it('should do nothing when all requested languages are already installed', async () => {
+      const emitSpy = jest.fn().mockResolvedValue(undefined);
+      await createSut({ eventEmitter: { emit: emitSpy }, dispatcher: mockDispatcher }).execute({
+        languages: [{ key: 'en', label: 'English' }],
+      });
+
+      expect(emitSpy).not.toHaveBeenCalled();
+      expect(cloneLanguageEntitiesSpy).not.toHaveBeenCalled();
     });
   });
 });

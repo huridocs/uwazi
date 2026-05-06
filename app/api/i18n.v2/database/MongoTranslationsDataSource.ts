@@ -146,7 +146,11 @@ export class MongoTranslationsDataSource
     const stream = this.createBulkStream();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for await (const { _id, ...doc } of cursor) {
-      await stream.insert({ ...doc, language: to });
+      await stream.updateOne(
+        { language: to, key: doc.key, 'context.id': doc.context.id },
+        { $setOnInsert: { ...doc, language: to } },
+        true
+      );
     }
     await stream.flush();
   }
