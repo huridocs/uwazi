@@ -101,20 +101,37 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
   }
 
   async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
-    await this.getCollection()
-      .aggregate([
-        { $match: { language: from } },
-        { $project: { _id: 0 } },
-        { $set: { language: to } },
-        {
-          $merge: {
-            into: 'entities',
-            whenNotMatched: 'insert',
-            whenMatched: 'keepExisting',
-          },
-        },
-      ])
-      .toArray();
+    const BATCH_SIZE = 500;
+    const collection = this.getCollection();
+    const cursor = collection.find({ language: from });
+
+    try {
+      let batch: EntityDBO[] = [];
+
+      while (await cursor.hasNext()) {
+        const doc = await cursor.next();
+        if (doc) batch.push(doc);
+
+        if (batch.length >= BATCH_SIZE || !(await cursor.hasNext())) {
+          if (batch.length > 0) {
+            // eslint-disable-next-line no-await-in-loop
+            await collection.bulkWrite(
+              batch.map(({ _id: _discarded, ...rest }) => ({
+                updateOne: {
+                  filter: { sharedId: rest.sharedId, language: to },
+                  update: { $setOnInsert: { ...rest, language: to } },
+                  upsert: true,
+                },
+              })),
+              { ordered: false }
+            );
+            batch = [];
+          }
+        }
+      }
+    } finally {
+      await cursor.close();
+    }
   }
 }
 
