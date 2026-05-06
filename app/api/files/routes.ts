@@ -3,7 +3,6 @@ import type { Application } from 'express';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
-import { DownloadFileSegmentationController } from '#api/core/infrastructure/express/files/DownloadFileSegmentationController.js';
 import { EntityFileUploadController } from '#api/core/infrastructure/express/files/EntityFileUploadController.js';
 import { FileDeleteController } from '#api/core/infrastructure/express/files/FileDeleteController.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
@@ -141,11 +140,6 @@ export default (app: Application) => {
 
   app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
   app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
-  app.get(
-    '/api/v2/files/:id/segmentation',
-    needsAuthorization(['admin']),
-    DownloadFileSegmentationController.createHandler()
-  );
 
   // Deprecated routes, keeping for Backwards compatibility
   app.use('/uploaded_documents/:fileName', (req, res) => {

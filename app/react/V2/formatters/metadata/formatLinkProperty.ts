@@ -11,15 +11,19 @@ const formatLinkProperty = (
     return null;
   }
 
-  const link = metadata?.[property.name]?.[0]?.value as
-    | { url?: string; label?: string }
-    | undefined;
+  const values = (metadata?.[property.name] ?? []).map(item => {
+    const link = item?.value as { url?: string; label?: string } | undefined;
+    return {
+      value: link?.url ?? '',
+      label: link?.label ?? '',
+    };
+  });
 
   return {
     _id: property._id,
     name: property.name,
     type: property.type,
-    values: link ? [{ value: link.url ?? '', label: link.label ?? '' }] : [],
+    values,
     label: property.label,
     inherited: property.inherited,
     inheritedType: property.inheritedType,

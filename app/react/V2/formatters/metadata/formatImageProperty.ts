@@ -17,14 +17,17 @@ const formatImageProperty = (
     templateProperty => templateProperty.name === property.name
   );
 
-  const value = metadata?.[property.name]?.[0]?.value as string | undefined;
+  const values = (metadata?.[property.name] ?? [])
+    .map(item => item?.value as string | undefined)
+    .filter((value): value is string => Boolean(value))
+    .map(value => ({ value, alt: value }));
 
   return {
     _id: property._id,
     name: property.name,
     label: property.label,
     type: property.type === 'preview' ? 'preview' : 'image',
-    values: value ? [{ value, alt: value }] : [],
+    values,
     style: originalProperty?.fullWidth ? 'cover' : 'contain',
   };
 };
