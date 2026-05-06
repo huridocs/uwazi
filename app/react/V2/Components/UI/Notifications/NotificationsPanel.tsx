@@ -91,7 +91,7 @@ const NotificationsPanel = () => {
 
           {tasks.length > 0 && (
             <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider [color:var(--color-theme-text-muted)]">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider [color:var(--color-theme-text-tertiary)]">
                 <Translate>Tasks</Translate>
               </h2>
               <ul className="flex flex-col gap-2">
@@ -106,7 +106,7 @@ const NotificationsPanel = () => {
 
           {notifications.length > 0 && (
             <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider [color:var(--color-theme-text-muted)]">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider [color:var(--color-theme-text-tertiary)]">
                 <Translate>Notifications</Translate>
               </h2>
               <ul className="flex flex-col gap-2">

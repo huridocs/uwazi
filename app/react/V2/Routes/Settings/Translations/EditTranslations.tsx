@@ -317,7 +317,7 @@ const EditTranslations = () => {
                               {title}
                             </caption>
                           )}
-                          <thead className="text-xs uppercase [color:var(--color-theme-text-muted)] [background-color:var(--color-theme-surface-muted)]">
+                          <thead className="text-xs uppercase [color:var(--color-theme-text-tertiary)] [background-color:var(--color-theme-surface-muted)]">
                             <tr className="border-b">
                               <th scope="col" className="px-6 py-3">
                                 <div className="inline-flex">

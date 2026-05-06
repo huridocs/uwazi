@@ -129,9 +129,7 @@ const MenuConfig = () => {
             }
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer
-          className={Object.keys(selectedLinks).length ? 'bg-primary-50' : ''}
-        >
+        <SettingsContent.Footer highlighted={Object.keys(selectedLinks).length > 0}>
           {Object.keys(selectedLinks).length > 0 && (
             <div className="flex gap-2 items-center">
               <Button
