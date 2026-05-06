@@ -6,6 +6,7 @@ describe('formatSimpleProperty', () => {
   const metadata = {
     simple_text: [{ value: 'Emergency incident report' }],
     numeric_field: [{ value: 42 }],
+    multi_text: [{ value: 'First value' }, { value: 'Second value' }, { value: '' }],
     empty_text: [{ value: '' }],
     empty_array: [],
   } as Entity['metadata'];
@@ -109,6 +110,25 @@ describe('formatSimpleProperty', () => {
       type: 'numeric',
       values: [{ value: '42' }],
       label: 'Numeric',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
+
+  it('should keep all values when metadata contains multiple items', () => {
+    const property = {
+      _id: 'p7',
+      name: 'multi_text',
+      label: 'Multiple text values',
+      type: 'text',
+    } as BaseMetadataProperty;
+
+    expect(formatSimpleProperty(property, metadata)).toEqual({
+      _id: 'p7',
+      name: 'multi_text',
+      type: 'text',
+      values: [{ value: 'First value' }, { value: 'Second value' }, { value: '' }],
+      label: 'Multiple text values',
       inherited: undefined,
       inheritedType: undefined,
     });
