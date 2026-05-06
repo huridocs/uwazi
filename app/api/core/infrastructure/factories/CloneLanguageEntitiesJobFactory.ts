@@ -3,6 +3,7 @@ import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEnt
 import { User } from '#api/users.v2/model/User.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
@@ -16,11 +17,13 @@ class CloneLanguageEntitiesJobFactory {
     const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
     const filesCollection = db.collection('files');
     const jobsDispatcher = ExecutionContext.jobsDispatcher;
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     return new CloneLanguageEntitiesJob({
       entityDAO,
       filesCollection,
       jobsDispatcher,
       webSockets: new V1WebSocketsWrapper(),
+      settingsDS,
       ...overrides,
     });
   }

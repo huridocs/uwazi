@@ -25,6 +25,7 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
 
       for (const language of languages) {
         await this.deps.settingsDS.addLanguage(language);
+        await this.deps.settingsDS.setLanguageInstalling(language.key, true);
         await this.deps.translationsDS.cloneForLanguage(defaultLanguage, language.key);
         await this.eventEmitter.emit(
           new LanguageAddedEvent({

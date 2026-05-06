@@ -130,6 +130,14 @@ describe('AddLanguage use case', () => {
       });
     });
 
+    it('should mark the new language as installing in settings', async () => {
+      await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+
+      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      const esLanguage = settings?.languages?.find((l: any) => l.key === 'es');
+      expect(esLanguage?.installing).toBe(true);
+    });
+
     it('should emit a LanguageAddedEvent with the correct payload', async () => {
       const emitSpy = jest.fn().mockResolvedValue(undefined);
       await createSut({ eventEmitter: { emit: emitSpy } }).execute({

@@ -524,6 +524,7 @@ describe('i18n translations routes', () => {
             expect(mockCalls.length).toBe(3);
           });
         });
+
         it('should return a 204', async () => {
           expect(response.status).toBe(204);
         });
@@ -605,6 +606,18 @@ describe('i18n translations routes', () => {
             TestEmitSources.session,
             'error message',
           ]);
+        });
+      });
+
+      describe('when the language is still being installed', () => {
+        it('should return 409 and not start the delete operation', async () => {
+          await testingEnvironment.db
+            .getCollection('settings')!
+            .updateOne({ 'languages.key': 'es' }, { $set: { 'languages.$.installing': true } });
+
+          const response = await request(app).delete('/api/translations/languages?key=es').send();
+
+          expect(response.status).toBe(409);
         });
       });
     });

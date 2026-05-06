@@ -297,6 +297,14 @@ export default (app: Application) => {
     }),
     async (req: DeleteTranslationRequest, res) => {
       const { key } = req.query;
+
+      const currentSettings = await settings.get();
+      const language = currentSettings.languages?.find(l => l.key === key);
+      if (language?.installing) {
+        res.status(409).json({ error: 'Language is still being installed' });
+        return;
+      }
+
       deleteLanguage(key, req).catch((error: Error) => {
         req.emitToSessionSocket('translationsDeleteError', error.message);
         // eslint-disable-next-line no-console

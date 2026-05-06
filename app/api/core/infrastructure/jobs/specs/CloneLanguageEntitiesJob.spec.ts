@@ -7,6 +7,7 @@ import { CloneLanguageEntitiesJobFactory } from '#api/core/infrastructure/factor
 import { EntityPreviewBatchHandler } from '../EntityPreviewBatchHandler.js';
 import { search } from '#api/search/index.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 const f = getFixturesFactory();
 
@@ -40,12 +41,14 @@ const heartbeat = jest.fn();
 
 const createSUT = (
   mockWebSockets: jest.Mocked<WebSockets>,
-  innerDispatcher: SyncDispatcherForTests = new SyncDispatcherForTests({})
+  innerDispatcher: SyncDispatcherForTests = new SyncDispatcherForTests({}),
+  mockSettingsDS?: jest.Mocked<Pick<SettingsDataSource, 'setLanguageInstalling'>>
 ) =>
   testingEnvironment.runWithContext(() =>
     CloneLanguageEntitiesJobFactory.default({
       jobsDispatcher: innerDispatcher,
       webSockets: mockWebSockets,
+      ...(mockSettingsDS ? { settingsDS: mockSettingsDS as any } : {}),
     })
   );
 
@@ -177,6 +180,52 @@ describe('CloneLanguageEntitiesJob', () => {
       await job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, undefined);
 
       expect(mockWebSockets.emitToTenant).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('installing flag management', () => {
+    it('should clear installing flag for each target language on success', async () => {
+      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+
+      await dispatch(createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS), [
+        { from: 'en', to: 'ja' },
+        { from: 'en', to: 'zh' },
+      ]);
+
+      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
+      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('zh', false);
+    });
+
+    it('should clear installing flag on final retry failure', async () => {
+      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      jest.spyOn(search, 'indexEntities').mockRejectedValue(new Error('index failed'));
+
+      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS);
+      await expect(
+        job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, {
+          namespace: tenants.current().name,
+          retryCount: 3,
+          maxRetries: 3,
+        })
+      ).rejects.toThrow('index failed');
+
+      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
+    });
+
+    it('should NOT clear installing flag on non-final retry failure', async () => {
+      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      jest.spyOn(search, 'indexEntities').mockRejectedValue(new Error('index failed'));
+
+      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS);
+      await expect(
+        job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, {
+          namespace: tenants.current().name,
+          retryCount: 1,
+          maxRetries: 3,
+        })
+      ).rejects.toThrow('index failed');
+
+      expect(mockSettingsDS.setLanguageInstalling).not.toHaveBeenCalled();
     });
   });
 });

@@ -10,6 +10,7 @@ import {
 import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { MongoEntityDAO } from '../mongodb/entity/MongoEntityDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 
@@ -27,6 +28,7 @@ type JobDependencies = {
   filesCollection: Collection;
   jobsDispatcher: JobsDispatcher;
   webSockets: WebSockets;
+  settingsDS: SettingsDataSource;
 };
 
 class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
@@ -39,31 +41,46 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
     params: Params,
     jobInfo?: JobInfo
   ): Promise<void> {
-    for (const { from, to } of params.pairs) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.deps.entityDAO.cloneForLanguage(from, to);
-      // eslint-disable-next-line no-await-in-loop
-      await search.indexEntities({ language: to });
+    const isLastAttempt = jobInfo !== undefined && jobInfo.retryCount === jobInfo.maxRetries;
 
-      const iso639_3 = LanguageUtils.fromISO639_1(to)?.ISO639_3;
-      if (iso639_3) {
+    try {
+      for (const { from, to } of params.pairs) {
         // eslint-disable-next-line no-await-in-loop
-        const sharedIds: string[] = await this.deps.filesCollection.distinct('entity', {
-          type: 'document',
-          status: 'ready',
-          language: iso639_3,
-        });
+        await this.deps.entityDAO.cloneForLanguage(from, to);
+        // eslint-disable-next-line no-await-in-loop
+        await search.indexEntities({ language: to });
 
-        if (sharedIds.length > 0) {
-          const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
+        const iso639_3 = LanguageUtils.fromISO639_1(to)?.ISO639_3;
+        if (iso639_3) {
           // eslint-disable-next-line no-await-in-loop
-          await this.deps.jobsDispatcher.dispatchMany(dispatch => {
-            chunks.forEach(chunk =>
-              dispatch(EntityPreviewBatchHandler, { languageKey: to, sharedIds: chunk })
-            );
+          const sharedIds: string[] = await this.deps.filesCollection.distinct('entity', {
+            type: 'document',
+            status: 'ready',
+            language: iso639_3,
           });
+
+          if (sharedIds.length > 0) {
+            const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
+            // eslint-disable-next-line no-await-in-loop
+            await this.deps.jobsDispatcher.dispatchMany(dispatch => {
+              chunks.forEach(chunk =>
+                dispatch(EntityPreviewBatchHandler, { languageKey: to, sharedIds: chunk })
+              );
+            });
+          }
+        }
+
+        // eslint-disable-next-line no-await-in-loop
+        await this.deps.settingsDS.setLanguageInstalling(to, false);
+      }
+    } catch (e) {
+      if (isLastAttempt) {
+        for (const { to } of params.pairs) {
+          // eslint-disable-next-line no-await-in-loop
+          await this.deps.settingsDS.setLanguageInstalling(to, false);
         }
       }
+      throw e;
     }
 
     if (jobInfo) {
