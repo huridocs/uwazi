@@ -299,5 +299,8 @@ export function registerJobs(register: Register) {
     async () => new ProcessRelationshipAfterEntityUpdatedListener({})
   );
 
-  register(AddLanguagePagesListener.asJob(), async () => new AddLanguagePagesListener({}));
+  register(
+    AddLanguagePagesListener.asJob(),
+    async () => new AddLanguagePagesListener({ settingsDS: SettingsDataSourceFactory.default() })
+  );
 }
