@@ -36,6 +36,7 @@ export default async (app, server) => {
   (await import('./pages/routes.js')).default(app);
   (await import('./files/jsRoutes.js')).default(app);
   (await import('./files/routes.js')).default(app);
+  (await import('./segmentation.v2/infrastructure/http/routes.js')).segmentationV2Routes(app);
   (await import('./files/exportRoutes.js')).default(app);
   (await import('./files/ocrRoutes.js')).ocrRoutes(app);
   (await import('./settings/routes.js')).default(app);
