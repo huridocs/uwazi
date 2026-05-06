@@ -15,9 +15,9 @@ class ElasticSearchClientFactory {
   static getInstance(): Client {
     if (!ElasticSearchClientFactory.instance) {
       ElasticSearchClientFactory.instance = new Client({
-        nodes: config.elasticsearch.nodes,
-        requestTimeout: config.elasticsearch.requestTimeout,
-        auth: config.elasticsearch.auth,
+        nodes: config.elasticSearchMultiTenant.nodes,
+        requestTimeout: config.elasticSearchMultiTenant.requestTimeout,
+        auth: config.elasticSearchMultiTenant.auth,
       });
     }
 
