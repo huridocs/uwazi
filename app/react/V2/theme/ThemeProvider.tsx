@@ -8,7 +8,13 @@ import {
   themeModeAtom,
 } from '#V2/atoms/index.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
-import { appliedTheme, getPresetId, type ThemeMode } from '#V2/theme/themes.js';
+import {
+  appliedTheme,
+  getChromeStyleOverrides,
+  getPresetId,
+  mergeScopedThemeAndChrome,
+  type ThemeMode,
+} from '#V2/theme/themes.js';
 
 type ThemeProviderProps = React.PropsWithChildren<{
   className?: string;
@@ -46,9 +52,16 @@ const ThemeProvider = ({
     () => appliedTheme(themeVars, effectiveThemeMode, useCustomizationPipeline),
     [useCustomizationPipeline, effectiveThemeMode, themeVars]
   );
+  const chromeStyle = React.useMemo(
+    () => (useCustomizationPipeline ? getChromeStyleOverrides(themeVars, effectiveThemeMode) : {}),
+    [useCustomizationPipeline, themeVars, effectiveThemeMode]
+  );
   const themeVarsStyle = React.useMemo<React.CSSProperties & Record<string, string>>(
-    () => getScopedThemeVars(presetId, resolved),
-    [presetId, resolved]
+    () =>
+      useCustomizationPipeline
+        ? mergeScopedThemeAndChrome(getScopedThemeVars(presetId, resolved), chromeStyle, resolved)
+        : getScopedThemeVars(presetId, resolved),
+    [useCustomizationPipeline, presetId, resolved, chromeStyle]
   );
   const mergedClassName = React.useMemo(
     () =>
