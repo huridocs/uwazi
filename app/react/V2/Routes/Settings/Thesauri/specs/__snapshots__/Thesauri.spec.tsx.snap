@@ -29,7 +29,7 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="text-indigo-700"
+            class="[color:var(--color-theme-text-primary)]"
           >
             Animals
           </span>
@@ -92,7 +92,7 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="text-indigo-700"
+            class="[color:var(--color-theme-text-primary)]"
           >
             Colors
           </span>
@@ -156,7 +156,7 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="text-indigo-700"
+            class="[color:var(--color-theme-text-primary)]"
           >
             Names
           </span>
@@ -179,7 +179,7 @@ HTMLCollection [
         >
           <div>
             <span
-              class="whitespace-nowrap  px-2.5 py-1 rounded-md text-xs "
+              class="whitespace-nowrap [background-color:var(--color-theme-surface-warm)] [color:var(--color-theme-text-secondary)] px-2.5 py-1 rounded-md text-xs"
               data-testid="pill-comp"
             >
               <span
@@ -212,7 +212,7 @@ HTMLCollection [
 
 exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
 <div
-  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] [background-color:var(--color-theme-feedback-info-tint)] bg-primary-50"
+  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] [background-color:var(--color-theme-feedback-info-tint)]"
   data-testid="settings-content-footer"
 >
   <div

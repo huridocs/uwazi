@@ -12,10 +12,11 @@ import { useCustomUploadImagePickerLogic } from './useCustomUploadImagePickerLog
 
 type AssetField = 'site_logo' | 'favicon';
 
-const defaultPreviewClass = 'max-h-full max-w-full object-contain';
+const defaultPreviewClass =
+  'max-h-full max-w-full rounded object-contain [box-shadow:0_0_0_1px_color-mix(in_srgb,var(--color-theme-text-primary)_45%,transparent),0_0_0_2px_color-mix(in_srgb,var(--color-theme-surface-raised,var(--color-theme-bg-surface))_92%,transparent)]';
 
 const defaultPreviewWrapperClass =
-  'flex h-14 w-28 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]';
+  'flex h-14 w-28 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] [border-color:color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]';
 
 type CustomUploadImagePickerProps = {
   id: string;
@@ -79,20 +80,20 @@ const CustomUploadImagePicker = ({
       )}
       <Label htmlFor={id}>{label}</Label>
       {recommendedSize ? (
-        <div className="mt-1 text-xs [color:var(--color-theme-text-muted)]">
+        <div className="mt-1 text-xs [color:var(--color-theme-text-tertiary)]">
           <Translate>Recommended</Translate>: {recommendedSize}
         </div>
       ) : null}
       <div className="mt-2 flex flex-col gap-3">
         {logic.trimmed ? (
-          <div className="flex flex-wrap items-start gap-6">
-            <div className="flex min-w-0 items-start gap-2">
+          <div className="flex min-w-0 w-full flex-col items-center justify-center gap-4 min-[1400px]:flex-row min-[1400px]:flex-wrap min-[1400px]:items-center">
+            <div className="flex min-w-0 items-center justify-center gap-2 min-[1400px]:justify-start">
               <div className={previewWrapperClassName}>
                 <img src={logic.trimmed} alt="" className={previewImgClassName} />
               </div>
               {!logic.open && urlValidationControl ? urlValidationControl : null}
             </div>
-            <div className="flex flex-col flex-wrap gap-2">
+            <div className="flex shrink-0 flex-col items-center gap-2 min-[1400px]:ml-auto min-[1400px]:items-end">
               {actionButton}
               <Button
                 variant="dangerSecondary"
@@ -119,12 +120,9 @@ const CustomUploadImagePicker = ({
           onDropzoneFiles={newFiles => {
             logic.handleDropzoneFiles(newFiles).catch(() => undefined);
           }}
-          filesToUpload={logic.filesToUpload}
-          uploading={logic.uploading}
           uploadProgress={logic.uploadProgress}
-          onUpload={() => {
-            logic.handleUpload().catch(() => undefined);
-          }}
+          dropzoneFeedback={logic.dropzoneFeedback}
+          validationFeedback={logic.validationFeedback}
           getUploadFileFeedback={logic.getUploadFileFeedback}
           images={logic.images}
           emptyGalleryHint={emptyGalleryHint}
