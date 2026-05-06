@@ -65,6 +65,7 @@ added to hub with the following errors:,προστέθηκε στον κόμβο
 added to hub.,προστέθηκε στον κόμβο.
 Adding a group and its items.,Προσθήκη μιας ομάδας και των στοιχείων της.
 Adding items to the thesauri,Προσθήκη στοιχείων στους θησαυρούς
+Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
 Admin,Διαχειριστής
 Administrators and Editors,Διαχειριστές και επιμελητές
 Admins,Διαχειριστές
@@ -150,6 +151,7 @@ Check to make this instance public (non-logged in users can see public documents
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
 Choose which data to use for training,Επιλέξτε ποια δεδομένα θα χρησιμοποιήσετε για την εκπαίδευση
+Chrome header,Chrome header
 Clear,Εκκαθάριση
 Clear all,Εκκαθάριση όλων
 Clear All,Εκκαθάριση όλων
@@ -411,6 +413,7 @@ Forms and email configuration,Διαμόρφωση φορμών και email
 From,Από
 From all suggestions,Από όλες τις προτάσεις
 From previous step,Από το προηγούμενο βήμα
+Full mode,Full mode
 Full width,Πλήρες πλάτος
 General,Γενικά
 General Information,Γενικές πληροφορίες
@@ -428,6 +431,11 @@ Group updated,Η ομάδα ενημερώθηκε
 Grouped geolocation properties,Grouped geolocation properties
 Groups,Ομάδες
 Header and button preview,Header and button preview
+Header bar active background,Header bar active background
+Header bar background,Header bar background
+Header bar divider,Header bar divider
+Header bar hover background,Header bar hover background
+Header bar text,Header bar text
 help,βοήθεια
 here,εδώ
 Hide,Hide
@@ -455,6 +463,7 @@ Import finished successfully.,Import finished successfully.
 Import instructions,Οδηγίες εισαγωγής
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
+Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
 Imported entities from file,Εισήχθησαν οντότητες από αρχείο
 Imported translations from file,Εισήχθησαν μεταφράσεις από αρχείο
@@ -874,6 +883,8 @@ Set default template,Ορισμός προεπιλεγμένου προτύπο�
 Set the default starting point for your geolocation properties.,Ορίστε το προεπιλεγμένο σημείο εκκίνησης για τις ιδιότητες γεωγραφικής θέσης.
 Settings,Ρυθμίσεις
 settings,ρυθμίσεις
+Settings navigation active background,Settings navigation active background
+Settings sidebar background,Settings sidebar background
 Settings updated,Οι ρυθμίσεις ενημερώθηκαν
 Share,Κοινοποίηση
 Share edit access with other users,Κοινοποίηση πρόσβασης επεξεργασίας με άλλους χρήστες
@@ -890,6 +901,7 @@ Show toolbar,Εμφάνιση γραμμής εργαλείων
 Showing,Εμφάνιση
 shown of,εμφανιζόμενα από
 Sign in,Είσοδος
+Simple mode,Simple mode
 Single relationships must have a hub,Οι μεμονωμένες σχέσεις πρέπει να έχουν έναν κόμβο
 Site logo description,"Το λογότυπο εμφανίζεται στη γραμμή επάνω δίπλα στο όνομα της συλλογής σας (περίπου 200×32 εικονοστοιχεία).
 
@@ -971,7 +983,10 @@ The source of this template is a sync.,Η πηγή αυτού του προτύ�
 The token does not validate against the secret key,Το token δεν επικυρώνεται με το μυστικό κλειδί
 The token does not validate against the secret key!,Το token δεν επικυρώνεται με το μυστικό κλειδί!
 Theme and branding,Theme and branding
+Theme colors,Theme colors
+Theme colors imported,Theme colors imported
 Theme favicon,Theme favicon
+Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
@@ -1077,7 +1092,6 @@ Updated settings,Οι ρυθμίσεις ενημερώθηκαν
 Updated translations,Οι μεταφράσεις ενημερώθηκαν
 Updated user,Ο χρήστης ενημερώθηκε
 Updating template properties across,Ενημερώνονται ιδιότητες προτύπου σε
-Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Μεταφόρτωση αρχείου ZIP ή CSV.
 Upload and select file,Μεταφόρτωση και επιλογή αρχείου
 Upload from computer,Μεταφόρτωση από υπολογιστή

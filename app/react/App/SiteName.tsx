@@ -11,6 +11,25 @@ interface SiteNameProps {
   hideTextWhenLogo?: boolean;
 }
 
+const WORDMARK_ASPECT_RATIO = 4;
+const SQUARE_LOGO_ASPECT_RATIO = 1.5;
+
+type LogoSize = 'wordmark' | 'square' | 'rectangle';
+
+const LOGO_SIZE_CLASSES: Record<LogoSize, string> = {
+  wordmark: 'h-[14.7px]',
+  square: 'max-h-12',
+  rectangle: 'max-h-7 sm:max-h-8',
+};
+
+const getLogoSize = (naturalWidth: number, naturalHeight: number): LogoSize => {
+  const aspectRatio = naturalHeight === 0 ? WORDMARK_ASPECT_RATIO : naturalWidth / naturalHeight;
+
+  if (aspectRatio >= WORDMARK_ASPECT_RATIO) return 'wordmark';
+
+  return aspectRatio <= SQUARE_LOGO_ASPECT_RATIO ? 'square' : 'rectangle';
+};
+
 export const SiteName: React.FC<SiteNameProps> = ({
   className = '',
   textClassName = '',
@@ -24,6 +43,7 @@ export const SiteName: React.FC<SiteNameProps> = ({
     themeVars,
     themeCustomization,
   } = useAtomValue(settingsAtom);
+  const [logoSize, setLogoSize] = React.useState<LogoSize>('wordmark');
   const themeMode = useAtomValue(effectiveThemeModeAtom);
   const themeCustomizationEnabled = Boolean(themeCustomization);
   const fallbackLogoUrl = siteLogo?.trim() ?? '';
@@ -44,9 +64,16 @@ export const SiteName: React.FC<SiteNameProps> = ({
     fallbackFaviconUrl,
     themeCustomizationEnabled
   );
+  React.useEffect(() => {
+    setLogoSize('wordmark');
+  }, [logoUrl]);
   const showLogo = Boolean(themeCustomization && logoUrl);
   const showText = !hideTextWhenLogo || !showLogo;
   const linkClass = ['flex', 'items-center', 'gap-2', className].filter(Boolean).join(' ');
+  const logoClassName = [
+    'logo-img w-auto max-w-[8rem] shrink-0 object-contain sm:max-w-[10rem] lg:max-w-[12.5rem]',
+    LOGO_SIZE_CLASSES[logoSize],
+  ].join(' ');
   return (
     <>
       <Helmet
@@ -66,7 +93,11 @@ export const SiteName: React.FC<SiteNameProps> = ({
           <img
             src={logoUrl}
             alt=""
-            className="logo-img max-h-7 w-auto max-w-[8rem] shrink-0 object-contain sm:max-h-8 sm:max-w-[10rem] lg:max-w-[12.5rem]"
+            className={logoClassName}
+            onLoad={event => {
+              const { naturalWidth, naturalHeight } = event.currentTarget;
+              setLogoSize(getLogoSize(naturalWidth, naturalHeight));
+            }}
           />
         ) : null}
         {showText ? <span className={textClassName}>{siteName}</span> : null}

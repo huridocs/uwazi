@@ -10,6 +10,8 @@ interface CheckboxProps {
   disabled?: boolean;
 }
 
+const TRANSLATE_COLOR = '[color:inherit]';
+
 const Text = ({
   checked,
   disabled,
@@ -21,16 +23,16 @@ const Text = ({
 }) => {
   switch (true) {
     case checked && hovering && !disabled:
-      return <Translate>Disable</Translate>;
+      return <Translate className={TRANSLATE_COLOR}>Disable</Translate>;
 
     case checked && disabled:
-      return <Translate>Activated</Translate>;
+      return <Translate className={TRANSLATE_COLOR}>Activated</Translate>;
 
     case checked && !hovering:
-      return <Translate>Activated</Translate>;
+      return <Translate className={TRANSLATE_COLOR}>Activated</Translate>;
 
     default:
-      return <Translate>Activate</Translate>;
+      return <Translate className={TRANSLATE_COLOR}>Activate</Translate>;
   }
 };
 
@@ -51,7 +53,7 @@ const buttonStyles: Record<ButtonTone, CSSProperties> = {
   checked: {
     backgroundColor: 'var(--color-theme-feedback-success)',
     borderColor: 'var(--color-theme-feedback-success)',
-    color: 'var(--color-theme-feedback-success-fg)',
+    color: 'var(--color-theme-button-success-fg)',
   },
   disabled: {
     backgroundColor: 'transparent',
@@ -62,7 +64,7 @@ const buttonStyles: Record<ButtonTone, CSSProperties> = {
   hover: {
     backgroundColor: 'var(--color-theme-feedback-success)',
     borderColor: 'var(--color-theme-feedback-success)',
-    color: 'var(--color-theme-feedback-success-fg)',
+    color: 'var(--color-theme-button-success-fg)',
   },
   default: {
     backgroundColor: 'var(--color-theme-surface-raised)',
@@ -93,12 +95,6 @@ const EnableButtonCheckbox = React.forwardRef(
       <label
         data-testid="enable-button-checkbox"
         className={`relative inline-flex text-sm font-medium ${className}`}
-        onMouseEnter={() => {
-          setHovering(true);
-        }}
-        onMouseLeave={() => {
-          setHovering(false);
-        }}
       >
         <input
           type="checkbox"
@@ -118,6 +114,12 @@ const EnableButtonCheckbox = React.forwardRef(
             disabled ? 'cursor-not-allowed' : 'cursor-pointer'
           }`}
           style={buttonStyle}
+          onPointerEnter={() => {
+            setHovering(true);
+          }}
+          onPointerLeave={() => {
+            setHovering(false);
+          }}
         >
           <Text checked={isChecked} hovering={hovering} disabled={disabled} />
         </div>

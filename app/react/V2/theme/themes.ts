@@ -15,6 +15,9 @@ import type {
   ThemeMode,
   ThemePresetId,
 } from './tokens.js';
+import { getAccessibleForegroundOnBackground } from '#shared/utils/contrast.js';
+import { CHROME_OVERRIDE_VAR_KEYS } from './themeChromeOverrides.js';
+import { THEME_EDITOR_MODE_KEY } from './themeSimpleDerivation.js';
 import { THEME_PALETTE } from './themePaletteList.js';
 import { isValidHex, normalizeHex, sortPaletteHexColors } from './themePaletteSort.js';
 
@@ -81,11 +84,11 @@ const THEME_ASSET_PRESETS: Record<
 > = {
   legacy: {
     light: {
-      siteLogo: '/public/logo.svg',
+      siteLogo: '/public/uwazi-theme-logo-light.svg',
       favicon: '/public/favicon.ico',
     },
     dark: {
-      siteLogo: '/public/logo.svg',
+      siteLogo: '/public/uwazi-theme-logo-dark.svg',
       favicon: '/public/favicon.ico',
     },
   },
@@ -95,7 +98,7 @@ const THEME_ASSET_PRESETS: Record<
       favicon: '/public/uwazi-design-icon-light.png',
     },
     dark: {
-      siteLogo: '/public/uwazi-design-logo.svg',
+      siteLogo: '/public/uwazi-design-logo-dark.svg',
       favicon: '/public/uwazi-design-icon-dark.png',
     },
   },
@@ -206,21 +209,23 @@ const getThemeAsset = (
   fallback?: string,
   themeCustomizationEnabled: boolean = true
 ) => {
-  const fromEffective = getEffectiveThemeAssets(themeAssets, themeCustomizationEnabled)?.[asset]?.[
-    mode
-  ];
+  const presetId = getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled);
+  const preset = THEME_ASSET_PRESETS[presetId][mode][asset];
+  const normalizeLegacyLogoAlias = (value: string | undefined) =>
+    asset === 'siteLogo' && presetId === 'legacy' && value?.trim() === '/public/logo.svg'
+      ? preset
+      : value;
+  const fromEffective = normalizeLegacyLogoAlias(
+    getEffectiveThemeAssets(themeAssets, themeCustomizationEnabled)?.[asset]?.[mode]
+  );
   if (fromEffective) return fromEffective;
-
-  const preset =
-    THEME_ASSET_PRESETS[getThemeAssetPresetId(themeAssets, themeVars, themeCustomizationEnabled)][
-      mode
-    ][asset];
+  const normalizedFallback = normalizeLegacyLogoAlias(fallback);
 
   if (!themeCustomizationEnabled) {
-    return (fallback?.trim() ? fallback : preset) ?? '';
+    return (normalizedFallback?.trim() ? normalizedFallback : preset) ?? '';
   }
 
-  return preset ?? fallback ?? '';
+  return preset ?? normalizedFallback ?? '';
 };
 
 const getPresetPair = (presetId: ThemePresetId): Record<ThemeMode, EditableThemeVars> => ({
@@ -265,13 +270,68 @@ const getCustomThemeVars = (
   const next: Record<string, string> = {
     [THEME_PRESET_KEY]: 'custom',
   };
+  const editorMode = themeVars?.[THEME_EDITOR_MODE_KEY];
+  if (editorMode === 'simple' || editorMode === 'advanced') {
+    next[THEME_EDITOR_MODE_KEY] = editorMode;
+  }
   THEME_MODES.forEach(mode => {
     const resolved = appliedTheme(themeVars, mode, themeCustomizationEnabled);
     SEMANTIC_VAR_KEYS.forEach(key => {
       next[themeStorageKey(mode, key)] = resolved[key];
     });
+    CHROME_OVERRIDE_VAR_KEYS.forEach(key => {
+      const storage = themeStorageKey(mode, key);
+      const v = themeVars?.[storage];
+      if (v) next[storage] = v;
+    });
   });
   return next;
+};
+
+const getChromeStyleOverrides = (
+  themeVars: ThemeVarsInput,
+  mode: ThemeMode
+): Record<string, string> => {
+  if (!themeVars) return {};
+  const out: Record<string, string> = {};
+  CHROME_OVERRIDE_VAR_KEYS.forEach(key => {
+    const v = themeVars[themeStorageKey(mode, key)];
+    if (v) out[key] = v;
+  });
+  return out;
+};
+
+const stripChromeStorageKeysAbsentFromImport = (
+  base: Record<string, string>,
+  importedFlat: Record<string, string>
+): Record<string, string> => {
+  const next = { ...base };
+  THEME_MODES.forEach(mode => {
+    CHROME_OVERRIDE_VAR_KEYS.forEach(key => {
+      const sk = themeStorageKey(mode, key);
+      if (!Object.prototype.hasOwnProperty.call(importedFlat, sk)) delete next[sk];
+    });
+  });
+  return next;
+};
+
+const mergeScopedThemeAndChrome = (
+  scoped: Record<string, string>,
+  tenantChrome: Record<string, string>,
+  resolved: ResolvedThemeVars
+): Record<string, string> => {
+  const merged = { ...scoped, ...tenantChrome };
+  const tenantBar = tenantChrome['--color-theme-chrome-app-bar'];
+  if (!tenantBar || tenantChrome['--color-theme-chrome-app-bar-fg'] !== undefined) {
+    return merged;
+  }
+  return {
+    ...merged,
+    '--color-theme-chrome-app-bar-fg': getAccessibleForegroundOnBackground(
+      tenantBar,
+      resolved['--color-theme-text-primary']
+    ).foreground,
+  };
 };
 
 const COMPATIBILITY_VAR_ENTRIES: Array<
@@ -341,6 +401,9 @@ export {
   getPresetPair,
   getPresetVars,
   getCustomThemeVars,
+  getChromeStyleOverrides,
+  mergeScopedThemeAndChrome,
+  stripChromeStorageKeysAbsentFromImport,
   getPresetId,
   getThemeAssetPresetId,
   getThemeAsset,
@@ -357,3 +420,5 @@ export type {
   ThemeAssetPresetId,
   ThemeAssets,
 };
+export { CHROME_OVERRIDE_VAR_KEYS, CHROME_VAR_LABELS } from './themeChromeOverrides.js';
+export type { ChromeOverrideVarKey } from './themeChromeOverrides.js';

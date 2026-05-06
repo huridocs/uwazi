@@ -101,7 +101,9 @@ SettingsContent.Footer = ({
         ? '[background-color:var(--color-theme-feedback-info-tint)]'
         : '[background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]',
       className,
-    ].join(' ')}
+    ]
+      .filter(Boolean)
+      .join(' ')}
     data-testid="settings-content-footer"
   >
     {children}

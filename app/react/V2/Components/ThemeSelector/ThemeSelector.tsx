@@ -1,25 +1,35 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
+import { t } from '#app/I18N/index.js';
 import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
+import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import {
   appliedTheme,
+  CHROME_OVERRIDE_VAR_KEYS,
+  getChromeStyleOverrides,
   getCustomThemeVars,
   getThemeAsset,
   getThemeAssetPresetId,
   getPresetId,
   getPresetVars,
   isValidHex,
+  mergeScopedThemeAndChrome,
   NAMED_THEMES,
+  parseThemeInstanceImportJson,
   SEMANTIC_VAR_KEYS,
+  THEME_EDITOR_MODE_KEY,
   THEME_PALETTE,
   THEME_MODES,
+  stripChromeStorageKeysAbsentFromImport,
   themeStorageKey,
   toCanonicalThemeVars,
+  type ChromeOverrideVarKey,
   type SemanticVarKey,
   type ThemeAssets,
   type ThemeMode,
-} from '#V2/theme/themes.js';
-import { ThemeAdvancedColorsSection } from './ThemeAdvancedColorsSection.js';
+} from '#V2/theme/index.js';
+import { notify } from '#V2/utils/notifyBridge.js';
+import { ThemeColorsSection } from './ThemeColorsSection.js';
 import { ThemePresetSection } from './ThemePresetSection.js';
 import { ThemePreviewSection } from './ThemePreviewSection.js';
 
@@ -46,7 +56,6 @@ const ThemeSelector = ({
   const themeVars = React.useMemo(() => toCanonicalThemeVars(value), [value]);
   const selectedPreset = getPresetId(themeVars, true);
   const [previewMode, setPreviewMode] = React.useState<ThemeMode>(activeThemeMode);
-  const [showAdvanced, setShowAdvanced] = React.useState(false);
   const wasPanelOpen = React.useRef(false);
   const previewLogo = getThemeAsset(themeAssets, themeVars, previewMode, 'siteLogo', siteLogo);
   const previewFavicon = getThemeAsset(themeAssets, themeVars, previewMode, 'favicon', favicon);
@@ -54,6 +63,13 @@ const ThemeSelector = ({
     () => appliedTheme(themeVars, previewMode, true),
     [themeVars, previewMode]
   );
+  const resolvedMergedPreview = React.useMemo(() => {
+    const resolved = appliedTheme(themeVars, previewMode, true);
+    const presetId = getPresetId(themeVars, true);
+    const scoped = getScopedThemeVars(presetId, resolved);
+    const chrome = getChromeStyleOverrides(themeVars, previewMode);
+    return mergeScopedThemeAndChrome(scoped, chrome, resolved);
+  }, [themeVars, previewMode]);
   const colorOptions = React.useMemo(
     () =>
       Array.from(
@@ -66,10 +82,13 @@ const ThemeSelector = ({
             ...THEME_MODES.flatMap(mode =>
               SEMANTIC_VAR_KEYS.map(key => appliedTheme(themeVars, mode, true)[key])
             ),
+            ...CHROME_OVERRIDE_VAR_KEYS.map(key => resolvedMergedPreview[key]).filter(
+              (v): v is string => typeof v === 'string' && isValidHex(v)
+            ),
           ].filter(isValidHex)
         )
       ),
-    [themeVars]
+    [themeVars, resolvedMergedPreview]
   );
 
   const update = (key: string, nextValue: string | undefined) => {
@@ -86,6 +105,52 @@ const ThemeSelector = ({
 
   const updateModeVar = (mode: ThemeMode, key: SemanticVarKey, nextValue: string | undefined) => {
     update(themeStorageKey(mode, key), nextValue);
+  };
+
+  const updateChromeModeVar = (
+    mode: ThemeMode,
+    key: ChromeOverrideVarKey,
+    nextValue: string | undefined
+  ) => {
+    update(themeStorageKey(mode, key), nextValue);
+  };
+
+  const setSimpleChromeBar = (mode: ThemeMode, hex: string | undefined) => {
+    const next: Record<string, string | undefined> = {
+      ...themeVars,
+      [THEME_EDITOR_MODE_KEY]: 'simple',
+    };
+    CHROME_OVERRIDE_VAR_KEYS.forEach(key => {
+      delete next[themeStorageKey(mode, key)];
+    });
+    if (hex) {
+      next[themeStorageKey(mode, '--color-theme-chrome-app-bar')] = hex;
+    }
+    onChange(next);
+  };
+
+  const handleImportThemeInstanceText = (text: string) => {
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(text);
+    } catch {
+      notify(t('System', 'Theme instance file invalid', null, false), 'error');
+      return;
+    }
+    const parsed = parseThemeInstanceImportJson(parsedJson);
+    if ('error' in parsed) {
+      notify(t('System', 'Theme instance file invalid', null, false), 'error', parsed.error);
+      return;
+    }
+    const materialized = getCustomThemeVars(themeVars, true);
+    const withoutStaleChrome = stripChromeStorageKeysAbsentFromImport(materialized, parsed.flat);
+    const next = { ...withoutStaleChrome, ...parsed.flat, [THEME_EDITOR_MODE_KEY]: 'advanced' };
+    onChange(next);
+    onThemeAssetsChange?.({
+      ...themeAssets,
+      preset: getThemeAssetPresetId(themeAssets, next, true),
+    });
+    notify(t('System', 'Theme colors imported', null, false), 'success');
   };
 
   const handleSelectPreset = (presetId: (typeof NAMED_THEMES)[number]['id']) => {
@@ -134,14 +199,19 @@ const ThemeSelector = ({
         favicon={previewFavicon}
       />
 
-      <ThemeAdvancedColorsSection
+      <ThemeColorsSection
         previewMode={previewMode}
-        showAdvanced={showAdvanced}
-        setShowAdvanced={setShowAdvanced}
+        selectedPreset={selectedPreset}
         themeVars={themeVars}
         resolvedPreviewTheme={resolvedPreviewTheme}
+        resolvedMergedPreview={resolvedMergedPreview}
         colorOptions={colorOptions}
+        getResolved={mode => appliedTheme(themeVars, mode, true)}
         updateModeVar={updateModeVar}
+        updateChromeModeVar={updateChromeModeVar}
+        onImportThemeInstanceText={handleImportThemeInstanceText}
+        onChange={onChange}
+        setSimpleChromeBar={setSimpleChromeBar}
       />
     </div>
   );

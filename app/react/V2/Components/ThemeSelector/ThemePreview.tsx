@@ -5,7 +5,9 @@ import { checkContrast, getContrastTextColor } from '#shared/utils/contrast.js';
 import {
   ACCENT_PRIMARY_KEY,
   appliedTheme,
+  getChromeStyleOverrides,
   getPresetId,
+  mergeScopedThemeAndChrome,
   SEMANTIC_VAR_LABELS,
   THEME_PALETTE,
 } from '#V2/theme/themes.js';
@@ -40,10 +42,12 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
   );
   const accentText = getContrastTextColor(accent);
   const outlineColor = resolveAccessibleText(surfaceBg, accent, primaryText);
+  const chromeStyle = getChromeStyleOverrides(themeVars, mode);
   const style: React.CSSProperties & Record<string, string> = {
     colorScheme: mode,
-    ...getScopedThemeVars(presetId, resolved),
+    ...mergeScopedThemeAndChrome(getScopedThemeVars(presetId, resolved), chromeStyle, resolved),
   };
+  const headerFg = 'var(--color-theme-chrome-app-bar-fg)';
 
   return (
     <div
@@ -62,8 +66,8 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
       <div
         className="flex items-center justify-between gap-3 border-b px-4 py-3"
         style={{
-          backgroundColor: 'var(--color-theme-bg-surface)',
-          borderColor: 'var(--color-theme-border-primary)',
+          backgroundColor: 'var(--color-theme-chrome-app-bar)',
+          borderColor: 'var(--color-theme-chrome-app-bar-separator)',
         }}
       >
         <div className="flex min-w-0 items-center gap-3">
@@ -73,18 +77,18 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
             <div
               className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold"
               style={{
-                backgroundColor: 'var(--color-theme-bg-muted)',
-                color: primaryText,
+                backgroundColor: 'var(--color-theme-chrome-app-bar-active)',
+                color: headerFg,
               }}
             >
               <Translate>Uwazi</Translate>
             </div>
           )}
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold" style={{ color: primaryText }}>
+            <p className="truncate text-sm font-semibold" style={{ color: headerFg }}>
               <Translate>Uwazi</Translate>
             </p>
-            <p className="truncate text-xs" style={{ color: secondaryText }}>
+            <p className="truncate text-xs" style={{ color: headerFg }}>
               <Translate>Header and button preview</Translate>
             </p>
           </div>
@@ -95,8 +99,8 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
             type="button"
             className="rounded-md border px-3 py-1.5 text-[0.8125rem] font-medium"
             style={{
-              borderColor: 'var(--color-theme-border-soft)',
-              color: secondaryText,
+              borderColor: 'var(--color-theme-chrome-app-bar-separator)',
+              color: headerFg,
             }}
           >
             <Translate>Library</Translate>
@@ -105,8 +109,8 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
             type="button"
             className="rounded-md border px-3 py-1.5 text-[0.8125rem] font-medium"
             style={{
-              borderColor: 'var(--color-theme-border-soft)',
-              color: secondaryText,
+              borderColor: 'var(--color-theme-chrome-app-bar-separator)',
+              color: headerFg,
             }}
           >
             <Translate>Settings</Translate>
