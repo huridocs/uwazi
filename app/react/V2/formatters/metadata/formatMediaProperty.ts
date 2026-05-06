@@ -23,7 +23,6 @@ const getFileType = (mimetype: string): string => {
   return type === 'application' ? 'document' : type;
 };
 
-// eslint-disable-next-line max-statements
 const formatMediaProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata']
@@ -32,7 +31,7 @@ const formatMediaProperty = (
     return null;
   }
 
-  const value = metadata?.[property.name]?.[0]?.value as string | undefined;
+  const metadataValues = metadata?.[property.name] ?? [];
 
   const formattedProperty: MediaMetadataProperty = {
     _id: property._id,
@@ -44,28 +43,41 @@ const formatMediaProperty = (
     inheritedType: property.inheritedType,
   };
 
-  if (typeof value === 'string' && value.startsWith('(')) {
-    const match = value.match(/^\(([^,]+),\s*({.*})\)$/);
-    if (match) {
-      const fileUrl = match[1];
-      const timelinksData = JSON.parse(match[2]);
-      const timelinks = processTimelines(timelinksData.timelinks);
-      const fileName = fileUrl.split('/').pop() || 'Unknown file';
-      const mimetype = getMimetypeFromUrl(fileUrl);
-      formattedProperty.values.push({
-        value: fileUrl,
-        alt: fileName,
-        mimetype,
-        fileType: getFileType(mimetype),
-        timelinks: timelinks || {},
-      });
+  // eslint-disable-next-line max-statements
+  metadataValues.forEach(item => {
+    const value = item?.value as string | undefined;
+
+    if (!value) {
+      return;
     }
-  } else if (value) {
+
+    if (typeof value === 'string' && value.startsWith('(')) {
+      const match = value.match(/^\(([^,]+),\s*({.*})\)$/);
+
+      if (match) {
+        const fileUrl = match[1];
+        const timelinksData = JSON.parse(match[2]);
+        const timelinks = processTimelines(timelinksData.timelinks);
+        const fileName = fileUrl.split('/').pop() || 'Unknown file';
+        const mimetype = getMimetypeFromUrl(fileUrl);
+
+        formattedProperty.values.push({
+          value: fileUrl,
+          alt: fileName,
+          mimetype,
+          fileType: getFileType(mimetype),
+          timelinks,
+        });
+
+        return;
+      }
+    }
+
     formattedProperty.values.push({
       value,
       timelinks: [],
     });
-  }
+  });
 
   return formattedProperty;
 };
