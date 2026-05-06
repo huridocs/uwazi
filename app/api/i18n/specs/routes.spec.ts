@@ -55,20 +55,17 @@ describe('i18n translations routes', () => {
         label: 'User Interface',
       }),
     ];
-    await testingEnvironment.setUp(
-      {
-        settings: [
-          {
-            languages: [
-              { key: 'en', label: 'English', default: true },
-              { key: 'es', label: 'Spanish', default: false },
-            ],
-          },
-        ],
-        translationsV2,
-      },
-      'index_i18n_routes'
-    );
+    await testingEnvironment.setUp({
+      settings: [
+        {
+          languages: [
+            { key: 'en', label: 'English', default: true },
+            { key: 'es', label: 'Spanish', default: false },
+          ],
+        },
+      ],
+      translationsV2,
+    });
   });
 
   afterEach(() => {
