@@ -60,7 +60,11 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
     actionPrimary,
     presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-primary']
   ).foreground;
-  const appBarFg = resolved['--color-theme-text-primary'];
+  const chromeAppBar = resolved['--color-theme-bg-surface'];
+  const appBarFg = getAccessibleForegroundOnBackground(
+    chromeAppBar,
+    resolved['--color-theme-text-primary']
+  ).foreground;
 
   return {
     surface: {
@@ -105,7 +109,7 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       dangerFg: resolved['--color-theme-feedback-danger-fg'],
     },
     chrome: {
-      appBar: resolved['--color-theme-bg-surface'],
+      appBar: chromeAppBar,
       appBarHover: resolved['--color-theme-bg-warm'],
       appBarActive: resolved['--color-theme-bg-muted'],
       appBarFg,

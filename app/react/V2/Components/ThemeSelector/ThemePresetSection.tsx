@@ -19,8 +19,8 @@ type PresetCardProps = {
   onClick: () => void;
 };
 
-const previewPaneClassName = 'space-y-2 p-2';
-const previewButtonClassName = 'h-8 rounded-md border';
+const previewPaneClassName = 'space-y-1 p-1.5';
+const previewButtonClassName = 'h-6 rounded border';
 
 const previewPaneStyle = (mode: ThemeMode): React.CSSProperties => ({
   backgroundColor: mode === 'light' ? '#ffffff' : '#242424',
@@ -29,8 +29,9 @@ const previewPaneStyle = (mode: ThemeMode): React.CSSProperties => ({
 const PresetCard = ({ title, lightAccent, darkAccent, selected, onClick }: PresetCardProps) => (
   <button
     type="button"
-    className={`flex min-w-[10rem] flex-1 flex-col gap-3 rounded-xl border p-3 text-left transition-all ${
-      selected ? 'border-primary-600 ring-2 ring-primary-500/20' : 'hover:border-gray-300'
+    title={title}
+    className={`flex min-w-[9rem] flex-1 basis-[9rem] shrink-0 snap-start flex-col gap-2 rounded-lg border p-2 text-left transition-all ${
+      selected ? 'border-primary-600 ring-1 ring-primary-500/25' : 'hover:border-gray-300'
     }`}
     style={{
       borderColor: selected
@@ -41,31 +42,31 @@ const PresetCard = ({ title, lightAccent, darkAccent, selected, onClick }: Prese
     onClick={onClick}
   >
     <div
-      className="overflow-hidden rounded-lg border"
+      className="overflow-hidden rounded-md border"
       style={{
         borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 70%, transparent)',
       }}
     >
       <div className="grid grid-cols-2">
         <div className={previewPaneClassName} style={previewPaneStyle('light')}>
-          <div className="h-2 w-12 rounded-sm bg-black/20" />
+          <div className="h-1.5 w-8 rounded-sm bg-black/20" />
           <div
             className={previewButtonClassName}
             style={{ borderColor: lightAccent, backgroundColor: '#ffffff' }}
           />
-          <div className="h-6 rounded-md" style={{ backgroundColor: lightAccent }} />
+          <div className="h-4 rounded-sm" style={{ backgroundColor: lightAccent }} />
         </div>
         <div className={previewPaneClassName} style={previewPaneStyle('dark')}>
-          <div className="h-2 w-12 rounded-sm bg-white/20" />
+          <div className="h-1.5 w-8 rounded-sm bg-white/20" />
           <div
             className={previewButtonClassName}
             style={{ borderColor: darkAccent, backgroundColor: '#242424' }}
           />
-          <div className="h-6 rounded-md" style={{ backgroundColor: darkAccent }} />
+          <div className="h-4 rounded-sm" style={{ backgroundColor: darkAccent }} />
         </div>
       </div>
     </div>
-    <div className="text-sm font-medium">{title}</div>
+    <div className="truncate text-xs font-medium leading-snug">{title}</div>
   </button>
 );
 
@@ -78,7 +79,7 @@ const ThemePresetSection = ({
     <label className="mb-2 block text-sm font-medium text-ink-secondary">
       <Translate>Theme presets</Translate>
     </label>
-    <div className="grid gap-3 md:grid-cols-3">
+    <div className="-mx-1 flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2 xl:gap-3">
       {NAMED_THEMES.map(theme => {
         const lightAccent =
           theme.id === 'custom'

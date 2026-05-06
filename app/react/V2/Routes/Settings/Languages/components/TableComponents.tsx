@@ -8,17 +8,17 @@ import { TableLanguages } from '../LanguagesList.js';
 
 const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) => (
   <Button
-    variant={cell.row.original.default ? 'primary' : 'ghost'}
+    variant={cell.row.original.default ? 'primary' : 'secondary'}
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >
     <Translate className="sr-only">Default</Translate>
     <StarIcon
-      className={`${
+      className={
         !cell.row.original.default
-          ? ' w-4 [color:var(--color-theme-text-on-solid)] stroke-current [stroke:var(--color-theme-border-default)] stroke-2'
-          : 'w-4'
-      }`}
+          ? 'w-4 [color:var(--color-theme-button-secondary-bg)] [stroke:var(--color-theme-border-default)] stroke-2'
+          : 'w-4 text-white'
+      }
     />
   </Button>
 );

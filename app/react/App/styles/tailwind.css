@@ -505,24 +505,33 @@
 .tw-content .header-bar[data-uwazi-header] .header-bar-button,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button {
   background-color: transparent;
-  color: var(--color-theme-text-secondary, #333333);
-  border-color: var(--color-theme-border-soft, #d1d5db);
+  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-secondary, #333333));
+  border-color: var(
+    --color-theme-chrome-app-bar-separator,
+    var(--color-theme-border-soft, #d1d5db)
+  );
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button:hover,
 .tw-content .header-bar[data-uwazi-header] .header-bar-button:focus-visible,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:hover,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:focus-visible {
-  background-color: var(--color-theme-bg-warm, #f9fafb);
-  color: var(--color-theme-text-primary, #1a1a1a);
+  background-color: var(--color-theme-chrome-app-bar-hover, var(--color-theme-bg-warm, #f9fafb));
+  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button-active,
 .tw-content .header-bar[data-uwazi-header] .header-bar-panel-item-active {
-  background-color: var(--color-theme-bg-muted, #f3f4f6);
-  color: var(--color-theme-text-primary, #1a1a1a);
-  border-color: var(--color-theme-border-primary, #e5e7eb);
+  background-color: var(--color-theme-chrome-app-bar-active, var(--color-theme-bg-muted, #f3f4f6));
+  color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
+  border-color: var(
+    --color-theme-chrome-app-bar-separator,
+    var(--color-theme-border-primary, #e5e7eb)
+  );
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-separator {
-  background-color: var(--color-theme-border-primary, #e5e7eb);
+  background-color: var(
+    --color-theme-chrome-app-bar-separator,
+    var(--color-theme-border-primary, #e5e7eb)
+  );
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-panel {
   background-color: var(--color-theme-bg-surface, #ffffff);
@@ -616,10 +625,6 @@
 .tw-content .theme-notification-highlight {
   background-color: var(--notification-tone, var(--color-theme-feedback-success, #059669));
   color: var(--color-theme-text-primary, #1a1a1a);
-}
-
-.tw-content.dark .logo-img {
-  filter: invert(1);
 }
 
 .tw-content.dark input[type='checkbox'] {

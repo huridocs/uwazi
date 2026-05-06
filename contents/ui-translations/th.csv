@@ -65,6 +65,7 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
 Adding items to the thesauri,Adding items to the thesauri
+Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
 Admins,Admins
@@ -149,6 +150,7 @@ Check to make this instance public (non-logged in users can see public documents
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
 Choose which data to use for training,Choose which data to use for training
+Chrome header,Chrome header
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
@@ -410,6 +412,7 @@ Forms and email configuration,การตั้งค่าแบบฟอร�
 From,From
 From all suggestions,From all suggestions
 From previous step,From previous step
+Full mode,Full mode
 Full width,Full width
 General,ข้อมูลทั่วไป
 General Information,General Information
@@ -427,6 +430,11 @@ Group updated,Group updated
 Grouped geolocation properties,Grouped geolocation properties
 Groups,กลุ่ม
 Header and button preview,Header and button preview
+Header bar active background,Header bar active background
+Header bar background,Header bar background
+Header bar divider,Header bar divider
+Header bar hover background,Header bar hover background
+Header bar text,Header bar text
 help,ช่วยเหลือ
 here,here
 Hide,Hide
@@ -454,6 +462,7 @@ Import finished successfully.,Import finished successfully.
 Import instructions,คำแนะนำการนำเข้าข้อมูล
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
+Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
@@ -873,6 +882,8 @@ Set default template,Set default template
 Set the default starting point for your geolocation properties.,ตั้งค่าจุดเริ่มต้นอัตโนมัติสำหรับคุณสมบัติทางภูมิศาสตร์ของคุณ
 Settings,การตั้งค่า
 settings,การตั้งค่า
+Settings navigation active background,Settings navigation active background
+Settings sidebar background,Settings sidebar background
 Settings updated,การตั้งค่าถูกอัปเดตแล้ว
 Share,แบ่งปัน
 Share edit access with other users,Share edit access with other users
@@ -889,6 +900,7 @@ Show toolbar,Show toolbar
 Showing,Showing
 shown of,แสดงโดย
 Sign in,เข้าสู่ระบบ
+Simple mode,Simple mode
 Single relationships must have a hub,Single relationships must have a hub
 Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
 
@@ -970,7 +982,10 @@ The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 Theme and branding,Theme and branding
+Theme colors,Theme colors
+Theme colors imported,Theme colors imported
 Theme favicon,Theme favicon
+Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
@@ -1076,7 +1091,6 @@ Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
 Updating template properties across,Updating template properties across
-Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,นำเข้าไฟล์ zip หรือ csv
 Upload and select file,นำเข้าและเลือกไฟล์
 Upload from computer,นำเข้าจากคอมพิวเตอร์

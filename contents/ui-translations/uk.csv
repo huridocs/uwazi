@@ -65,6 +65,7 @@ added to hub with the following errors:,додано до хабу з насту
 added to hub.,додано до хабу.
 Adding a group and its items.,Додавання групи та її елементів.
 Adding items to the thesauri,Додавання елементів до тезаурусів
+Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
 Admin,Адмін
 Administrators and Editors,Адміністратори та Редактори
 Admins,Адміни
@@ -151,6 +152,7 @@ Check to make this instance public (non-logged in users can see public documents
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
 Choose which data to use for training,"Виберіть, які дані використовувати для навчання"
+Chrome header,Chrome header
 Clear,Чисто
 Clear all,Зачистити все.
 Clear All,Очистити все.
@@ -412,6 +414,7 @@ Forms and email configuration,Налаштування форм та елект�
 From,Від
 From all suggestions,З усіх пропозицій
 From previous step,З попереднього кроку
+Full mode,Full mode
 Full width,Повна ширина
 General,Загальний
 General Information,Загальна інформація
@@ -429,6 +432,11 @@ Group updated,Групу оновлено
 Grouped geolocation properties,Grouped geolocation properties
 Groups,Групи
 Header and button preview,Header and button preview
+Header bar active background,Header bar active background
+Header bar background,Header bar background
+Header bar divider,Header bar divider
+Header bar hover background,Header bar hover background
+Header bar text,Header bar text
 help,допомога
 here,тут.
 Hide,Hide
@@ -456,6 +464,7 @@ Import finished successfully.,Import finished successfully.
 Import instructions,Інструкції з імпортування
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
+Import theme instance file,Import theme instance file
 Import was cancelled.,Import was cancelled.
 Imported entities from file,Імпортовані сутності з файлу
 Imported translations from file,Імпортовані переклади з файлу
@@ -875,6 +884,8 @@ Set default template,Встановити шаблон за замовчуван
 Set the default starting point for your geolocation properties.,Встановити відправну точку за замовчуванням для своїх властивостей геолокації.
 Settings,Налаштування
 settings,налаштування
+Settings navigation active background,Settings navigation active background
+Settings sidebar background,Settings sidebar background
 Settings updated,Налаштування оновлено
 Share,Поширити
 Share edit access with other users,Діліться доступом до редагування з іншими користувачами
@@ -891,6 +902,7 @@ Show toolbar,Показати панель інструментів
 Showing,Показати
 shown of,показано від
 Sign in,Увійти
+Simple mode,Simple mode
 Single relationships must have a hub,Одинокі стосунки повинні мати центр
 Site logo description,"Логотип відображається у верхній панелі поруч із назвою вашої колекції (близько 200×32 пікселів).
 
@@ -972,7 +984,10 @@ The source of this template is a sync.,Джерелом цього шаблон�
 The token does not validate against the secret key,Токен не перевіряється за допомогою секретного ключа
 The token does not validate against the secret key!,Токен не перевіряється за допомогою секретного ключа!
 Theme and branding,Theme and branding
+Theme colors,Theme colors
+Theme colors imported,Theme colors imported
 Theme favicon,Theme favicon
+Theme instance file invalid,Theme instance file invalid
 Theme logotype,Theme logotype
 Theme presets,Theme presets
 Theme preview,Theme preview
@@ -1078,7 +1093,6 @@ Updated settings,Оновлені налаштування
 Updated translations,Оновлені переклади
 Updated user,Оновлений користувач
 Updating template properties across,Оновлення властивостей шаблону в усіх
-Upload a new image,Upload a new image
 Upload a ZIP or CSV file.,Завантажити ZIP або CSV файл.
 Upload and select file,Завантажити й вибрати файл
 Upload from computer,Завантажити з комп'ютера

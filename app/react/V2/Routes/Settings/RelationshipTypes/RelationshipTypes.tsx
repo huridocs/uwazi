@@ -124,7 +124,7 @@ const RelationshipTypes = () => {
             }}
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer className={selectedItems.length ? 'bg-primary-50' : ''}>
+        <SettingsContent.Footer highlighted={selectedItems.length > 0}>
           {selectedItems.length > 0 && (
             <div className="flex items-center gap-2">
               <Button
