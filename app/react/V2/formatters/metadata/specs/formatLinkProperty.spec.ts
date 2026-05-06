@@ -19,6 +19,20 @@ describe('formatLinkProperty', () => {
         },
       },
     ],
+    linkMulti: [
+      {
+        value: {
+          label: 'first',
+          url: 'https://first.example.com',
+        },
+      },
+      {
+        value: {
+          label: 'second',
+          url: 'https://second.example.com',
+        },
+      },
+    ],
   } as Entity['metadata'];
 
   it('should format the link property', () => {
@@ -88,6 +102,28 @@ describe('formatLinkProperty', () => {
       type: 'link',
       values: [],
       label: 'Link 3',
+      inherited: undefined,
+      inheritedType: undefined,
+    });
+  });
+
+  it('should keep all link values', () => {
+    const textProperty = {
+      _id: 'p2',
+      name: 'linkMulti',
+      label: 'Link Multi',
+      type: 'link',
+    } as BaseMetadataProperty;
+
+    expect(formatLinkProperty(textProperty, metadata)).toEqual({
+      _id: 'p2',
+      name: 'linkMulti',
+      type: 'link',
+      values: [
+        { value: 'https://first.example.com', label: 'first' },
+        { value: 'https://second.example.com', label: 'second' },
+      ],
+      label: 'Link Multi',
       inherited: undefined,
       inheritedType: undefined,
     });
