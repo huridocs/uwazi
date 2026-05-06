@@ -26,7 +26,8 @@ const fixtures: DBFixture = {
     ...f.entityInMultipleLanguages(['en'], 'entity2', 'template1'),
   ],
   files: [
-    // a ready PDF document in 'es' — triggers EntityPreviewBatchHandler when cloning en→es
+    // a ready PDF document for Spanish — language uses ISO 639-1 ('es'); the fixture factory
+    // converts it to ISO 639-3 ('spa'), matching what CloneLanguageEntitiesJob queries
     f.file('doc1-es', {
       type: 'document',
       status: 'ready',

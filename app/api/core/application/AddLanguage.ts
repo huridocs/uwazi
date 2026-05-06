@@ -21,7 +21,9 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () => {
       const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
       const installedKeys = new Set(await this.deps.settingsDS.getLanguageKeys());
-      const newLanguages = languages.filter(l => !installedKeys.has(l.key));
+      const newLanguages = [
+        ...new Map(languages.filter(l => !installedKeys.has(l.key)).map(l => [l.key, l])).values(),
+      ];
 
       if (newLanguages.length === 0) return;
 

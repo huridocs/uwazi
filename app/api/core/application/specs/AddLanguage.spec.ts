@@ -190,5 +190,31 @@ describe('AddLanguage use case', () => {
       expect(emitSpy).not.toHaveBeenCalled();
       expect(cloneLanguageEntitiesSpy).not.toHaveBeenCalled();
     });
+
+    it('should deduplicate input languages with the same key', async () => {
+      const emitSpy = jest.fn().mockResolvedValue(undefined);
+      await createSut({ eventEmitter: { emit: emitSpy }, dispatcher: mockDispatcher }).execute({
+        languages: [
+          { key: 'es', label: 'Spanish' },
+          { key: 'es', label: 'Spanish' },
+        ],
+      });
+
+      // Event emitted only once
+      const languageAddedCalls = emitSpy.mock.calls.filter(
+        ([event]) => event instanceof LanguageAddedEvent
+      );
+      expect(languageAddedCalls).toHaveLength(1);
+
+      // Job dispatched with a single pair
+      expect(cloneLanguageEntitiesSpy).toHaveBeenCalledWith({
+        pairs: [{ from: 'en', to: 'es' }],
+      });
+
+      // Only one 'es' entry in settings
+      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      const esEntries = settings?.languages?.filter((l: any) => l.key === 'es');
+      expect(esEntries).toHaveLength(1);
+    });
   });
 });
