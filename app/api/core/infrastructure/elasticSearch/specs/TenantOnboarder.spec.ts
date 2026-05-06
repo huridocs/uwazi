@@ -263,12 +263,12 @@ describe('TenantOnboarder', () => {
         // entity_a < entity_b < entity_c — resume after entity_b means only entity_c is indexed
         await sut.execute({ entitySharedId: 'entity_b' });
 
-        const entityEvents = events.filter(e => e.stage === 'index-entities') as Extract<
+        const entityEvents = events.filter(e => e.stage === 'indexing') as Extract<
           ProgressEvent,
-          { stage: 'index-entities' }
+          { stage: 'indexing' }
         >[];
         const totalIndexed =
-          entityEvents.length > 0 ? entityEvents[entityEvents.length - 1].indexed : 0;
+          entityEvents.length > 0 ? entityEvents[entityEvents.length - 1].entitiesIndexed : 0;
         expect(totalIndexed).toBe(1); // only entity_c (1 language doc)
       });
 
@@ -285,12 +285,12 @@ describe('TenantOnboarder', () => {
         const { sut } = createSut({ onProgress: e => events.push(e) });
         await sut.execute({ fileId: firstFileId });
 
-        const fulltextEvents = events.filter(e => e.stage === 'index-fulltext') as Extract<
+        const fulltextEvents = events.filter(e => e.stage === 'indexing') as Extract<
           ProgressEvent,
-          { stage: 'index-fulltext' }
+          { stage: 'indexing' }
         >[];
         const totalIndexed =
-          fulltextEvents.length > 0 ? fulltextEvents[fulltextEvents.length - 1].indexed : 0;
+          fulltextEvents.length > 0 ? fulltextEvents[fulltextEvents.length - 1].fullTextIndexed : 0;
         expect(totalIndexed).toBe(1); // only the second ready doc
       });
 

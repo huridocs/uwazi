@@ -19,7 +19,7 @@ type EntityIndexerServiceDeps = {
   maxConcurrentWrites?: number;
 };
 
-type EntityBatchInfo = { indexed: number; lastSharedId: string };
+type EntityBatchInfo = { indexed: number; lastSharedId: string; total: number };
 
 type EntitySyncAllOptions = {
   afterSharedId?: string;
@@ -69,6 +69,7 @@ class EntityIndexerService {
   }
 
   async syncAll(options?: EntitySyncAllOptions, refresh = false): Promise<void> {
+    const total = await this.deps.entityDAO.countDistinctSharedIds();
     const cursor = this.deps.entityDAO.streamAll({ afterSharedId: options?.afterSharedId });
     const slotMap = await this.deps.slotsDAO.getSlotMap();
     const sem = new Semaphore(this.maxConcurrentWrites);
@@ -80,7 +81,11 @@ class EntityIndexerService {
       let batch = await this.readBatch(cursor, slotMap);
       while (batch.result.length > 0) {
         totalIndexed += batch.result.length;
-        options?.onBatch?.({ indexed: totalIndexed, lastSharedId: batch.result.at(-1)!.sharedId });
+        options?.onBatch?.({
+          indexed: totalIndexed,
+          lastSharedId: batch.result.at(-1)!.sharedId,
+          total,
+        });
         await sem.acquire();
         const ops = batch.result;
         inFlight.push(

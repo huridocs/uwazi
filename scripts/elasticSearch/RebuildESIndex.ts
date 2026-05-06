@@ -30,8 +30,17 @@ const formatProgress = (event: ProgressEvent): string => {
       return '[2/4] Wiping and re-seeding slot collection...\n';
     case 'reconcile-slots':
       return '[3/4] Reconciling slots with templates...\n';
-    case 'indexing':
-      return `[4/4] Entities: ${event.entitiesIndexed} | Full-text: ${event.fullTextIndexed} indexed\r`;
+    case 'indexing': {
+      const entityPct =
+        event.entitiesToIndex > 0
+          ? Math.round((event.entitiesIndexed / event.entitiesToIndex) * 100)
+          : 0;
+      const ftPct =
+        event.fullTextToIndex > 0
+          ? Math.round((event.fullTextIndexed / event.fullTextToIndex) * 100)
+          : 0;
+      return `[4/4] Entities: ${event.entitiesIndexed}/${event.entitiesToIndex} (${entityPct}%) | Full-text: ${event.fullTextIndexed}/${event.fullTextToIndex} (${ftPct}%)\r`;
+    }
     case 'done':
       return '\n';
     default:
@@ -75,9 +84,9 @@ async function main() {
 
     const [seconds, nanoseconds] = process.hrtime(start);
     const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
-    console.log(`Done. Took ${elapsed}s`);
+    console.log(`\nDone. Took ${elapsed}s`);
   } catch (err) {
-    console.log('ES index rebuild failed:', err);
+    console.log('\nES index rebuild failed:', err);
     process.exitCode = 1;
   } finally {
     await ElasticSearchClientFactory.getInstance().close();

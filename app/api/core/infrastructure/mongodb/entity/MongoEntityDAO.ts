@@ -120,6 +120,13 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
       .find({ sharedId: { $in: sharedIds } })
       .toArray();
   }
+
+  async countDistinctSharedIds(): Promise<number> {
+    const result = await this.getCollection()
+      .aggregate<{ count: number }>([{ $group: { _id: '$sharedId' } }, { $count: 'count' }])
+      .toArray();
+    return result[0]?.count ?? 0;
+  }
 }
 
 export { MongoEntityDAO };

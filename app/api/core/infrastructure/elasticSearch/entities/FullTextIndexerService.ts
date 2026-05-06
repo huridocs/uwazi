@@ -15,7 +15,7 @@ type FullTextIndexerServiceDeps = {
   maxConcurrentWrites?: number;
 };
 
-type FileBatchInfo = { indexed: number; lastFileId: string };
+type FileBatchInfo = { indexed: number; lastFileId: string; total: number };
 
 type FileSyncAllOptions = {
   afterId?: ObjectId;
@@ -43,6 +43,7 @@ class FullTextIndexerService {
   }
 
   async syncAll(options?: FileSyncAllOptions, refresh = false): Promise<void> {
+    const total = await this.deps.filesDAO.countProcessedDocs();
     const cursor = this.deps.filesDAO.streamProcessedDocs({ afterId: options?.afterId });
     const { tenantId } = this.deps.writer;
     const sem = new Semaphore(this.maxConcurrentWrites);
@@ -90,7 +91,7 @@ class FullTextIndexerService {
       let result = await readBatch();
       while (result.ops.length > 0) {
         totalIndexed += result.ops.length;
-        options?.onBatch?.({ indexed: totalIndexed, lastFileId: result.lastFileId! });
+        options?.onBatch?.({ indexed: totalIndexed, lastFileId: result.lastFileId!, total });
         await sem.acquire();
         const { ops } = result;
         inFlight.push(

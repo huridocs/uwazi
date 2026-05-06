@@ -9,9 +9,15 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 type ProgressEvent =
   | { stage: 'bootstrap-slots' }
   | { stage: 'reconcile-slots' }
-  | { stage: 'index-entities'; indexed: number; lastSharedId: string }
-  | { stage: 'index-fulltext'; indexed: number; lastFileId: string }
-  | { stage: 'catch-up'; indexed: number }
+  | {
+      stage: 'indexing';
+      entitiesIndexed: number;
+      lastSharedId: string;
+      entitiesToIndex: number;
+      fullTextIndexed: number;
+      lastFileId: string;
+      fullTextToIndex: number;
+    }
   | { stage: 'done' };
 
 type ResumeFrom = {
@@ -37,6 +43,46 @@ class TenantOnboarder {
     this.deps.onProgress(event);
   }
 
+  private async indexInParallel(resumeFrom?: ResumeFrom): Promise<void> {
+    let entitiesIndexed = 0;
+    let lastSharedId = '';
+    let entitiesToIndex = 0;
+    let fullTextIndexed = 0;
+    let lastFileId = '';
+    let fullTextToIndex = 0;
+    const notifyIndexing = () =>
+      this.notify({
+        stage: 'indexing',
+        entitiesIndexed,
+        lastSharedId,
+        entitiesToIndex,
+        fullTextIndexed,
+        lastFileId,
+        fullTextToIndex,
+      });
+
+    await Promise.all([
+      this.deps.entityIndexer.syncAll({
+        afterSharedId: resumeFrom?.entitySharedId,
+        onBatch: ({ indexed, lastSharedId: sid, total }) => {
+          entitiesIndexed = indexed;
+          lastSharedId = sid;
+          entitiesToIndex = total;
+          notifyIndexing();
+        },
+      }),
+      this.deps.fullTextIndexer.syncAll({
+        afterId: resumeFrom?.fileId,
+        onBatch: ({ indexed, lastFileId: fid, total }) => {
+          fullTextIndexed = indexed;
+          lastFileId = fid;
+          fullTextToIndex = total;
+          notifyIndexing();
+        },
+      }),
+    ]);
+  }
+
   async execute(resumeFrom?: ResumeFrom): Promise<void> {
     this.notify({ stage: 'bootstrap-slots' });
     await this.deps.slotsBootstrapper.execute();
@@ -44,17 +90,7 @@ class TenantOnboarder {
     this.notify({ stage: 'reconcile-slots' });
     await this.deps.transactionManager.run(async () => this.deps.slotsReconciler.execute());
 
-    await this.deps.entityIndexer.syncAll({
-      afterSharedId: resumeFrom?.entitySharedId,
-      onBatch: ({ indexed, lastSharedId }) =>
-        this.notify({ stage: 'index-entities', indexed, lastSharedId }),
-    });
-
-    await this.deps.fullTextIndexer.syncAll({
-      afterId: resumeFrom?.fileId,
-      onBatch: ({ indexed, lastFileId }) =>
-        this.notify({ stage: 'index-fulltext', indexed, lastFileId }),
-    });
+    await this.indexInParallel(resumeFrom);
 
     this.notify({ stage: 'done' });
   }

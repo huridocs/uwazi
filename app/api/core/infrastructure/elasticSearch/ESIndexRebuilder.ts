@@ -14,7 +14,13 @@ type ProgressEvent =
   | { stage: 'reset-indexes' }
   | { stage: 'reset-slots' }
   | { stage: 'reconcile-slots' }
-  | { stage: 'indexing'; entitiesIndexed: number; fullTextIndexed: number }
+  | {
+      stage: 'indexing';
+      entitiesIndexed: number;
+      fullTextIndexed: number;
+      entitiesToIndex: number;
+      fullTextToIndex: number;
+    }
   | { stage: 'done' };
 
 type Deps = {
@@ -55,19 +61,29 @@ class ESIndexRebuilder {
 
     let entitiesIndexed = 0;
     let fullTextIndexed = 0;
+    let entitiesToIndex = 0;
+    let fullTextToIndex = 0;
     const notifyIndexing = () =>
-      this.notify({ stage: 'indexing', entitiesIndexed, fullTextIndexed });
+      this.notify({
+        stage: 'indexing',
+        entitiesIndexed,
+        fullTextIndexed,
+        entitiesToIndex,
+        fullTextToIndex,
+      });
 
     await Promise.all([
       this.deps.entityIndexer.syncAll({
-        onBatch: ({ indexed }) => {
+        onBatch: ({ indexed, total }) => {
           entitiesIndexed = indexed;
+          entitiesToIndex = total;
           notifyIndexing();
         },
       }),
       this.deps.fullTextIndexer.syncAll({
-        onBatch: ({ indexed }) => {
+        onBatch: ({ indexed, total }) => {
           fullTextIndexed = indexed;
+          fullTextToIndex = total;
           notifyIndexing();
         },
       }),

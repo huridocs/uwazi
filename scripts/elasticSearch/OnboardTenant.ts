@@ -34,17 +34,24 @@ const { tenant, resumeFromEntity, resumeFromFile } = yargs(hideBin(process.argv)
 const formatProgress = (event: ProgressEvent): string => {
   switch (event.stage) {
     case 'bootstrap-slots':
-      return '[bootstrap-slots]';
+      return '[1/3] Bootstrapping slots...\n';
     case 'reconcile-slots':
-      return '[reconcile-slots]';
-    case 'index-entities':
-      return `[index-entities] indexed=${event.indexed}   checkpoint-entity=${event.lastSharedId}\r\n`;
-    case 'index-fulltext':
-      return `[index-fulltext] indexed=${event.indexed}   checkpoint-file=${event.lastFileId}\r\n`;
-    case 'catch-up':
-      return `[catch-up] indexed=${event.indexed}\r\n`;
+      return '[2/3] Reconciling slots with templates...\n';
+    case 'indexing': {
+      const entityPct =
+        event.entitiesToIndex > 0
+          ? Math.round((event.entitiesIndexed / event.entitiesToIndex) * 100)
+          : 0;
+      const ftPct =
+        event.fullTextToIndex > 0
+          ? Math.round((event.fullTextIndexed / event.fullTextToIndex) * 100)
+          : 0;
+      const entityChk = event.lastSharedId || '-';
+      const fileChk = event.lastFileId || '-';
+      return `[3/3] Entities: ${event.entitiesIndexed}/${event.entitiesToIndex} (${entityPct}%) [${entityChk}] | Full-text: ${event.fullTextIndexed}/${event.fullTextToIndex} (${ftPct}%) [${fileChk}]\r`;
+    }
     case 'done':
-      return '[done]';
+      return '\n';
     default:
       return '';
   }
@@ -76,7 +83,7 @@ async function main() {
         onProgress: event => {
           const message = formatProgress(event);
           if (message) {
-            process.stdout.write(`${message}\n`);
+            process.stdout.write(message);
           }
         },
       });
@@ -94,9 +101,9 @@ async function main() {
 
     const [seconds, nanoseconds] = process.hrtime(start);
     const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
-    process.stdout.write(`Done. Took ${elapsed}s\n`);
+    process.stdout.write(`\nDone. Took ${elapsed}s`);
   } catch (err) {
-    console.error('Tenant onboarding failed:', err);
+    console.error(`\nTenant onboarding failed:`, err);
     process.exitCode = 1;
   } finally {
     await ElasticSearchClientFactory.getInstance().close();

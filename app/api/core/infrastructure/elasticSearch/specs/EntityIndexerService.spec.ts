@@ -219,9 +219,9 @@ describe('EntityIndexerService', () => {
       //   flush entity_b → indexed=2, lastSharedId='entity_b'
       //   flush entity_c → indexed=3, lastSharedId='entity_c'
       expect(batches).toHaveLength(3);
-      expect(batches[0]).toEqual({ indexed: 1, lastSharedId: 'entity_a' });
-      expect(batches[1]).toEqual({ indexed: 2, lastSharedId: 'entity_b' });
-      expect(batches[2]).toEqual({ indexed: 3, lastSharedId: 'entity_c' });
+      expect(batches[0]).toEqual({ indexed: 1, lastSharedId: 'entity_a', total: 3 });
+      expect(batches[1]).toEqual({ indexed: 2, lastSharedId: 'entity_b', total: 3 });
+      expect(batches[2]).toEqual({ indexed: 3, lastSharedId: 'entity_c', total: 3 });
     });
 
     it('does not call onBatch when there are no entities', async () => {

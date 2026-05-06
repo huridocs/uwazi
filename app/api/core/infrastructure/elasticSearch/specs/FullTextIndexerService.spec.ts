@@ -187,7 +187,7 @@ describe('FullTextIndexerService', () => {
       expect(filenames).not.toContain(readyFiles[0].filename);
     });
 
-    it('calls onBatch with cumulative indexed count and lastFileId', async () => {
+    it('calls onBatch with cumulative indexed count, total, and lastFileId', async () => {
       const batches: FileBatchInfo[] = [];
       // byteThreshold=1 so each file exceeds the threshold and is flushed individually
       const { sut } = createSut({ byteThreshold: 1 });
@@ -199,6 +199,7 @@ describe('FullTextIndexerService', () => {
       expect(batches[1].indexed).toBe(2);
       expect(batches[2].indexed).toBe(3);
       batches.forEach(b => {
+        expect(b.total).toBe(3);
         expect(typeof b.lastFileId).toBe('string');
         expect(b.lastFileId.length).toBeGreaterThan(0);
       });

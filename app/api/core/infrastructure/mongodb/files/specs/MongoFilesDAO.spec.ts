@@ -17,11 +17,25 @@ const fixtures: DBFixture = {
       status: 'ready',
       fullText: { 1: 'page content here' },
     }),
-    // included: type=document, status=ready, no fullText
+    // included: type=document, status=ready, with fullText
+    factory.document('ready_doc_3', {
+      entity: 'entity_1',
+      language: 'es',
+      status: 'ready',
+      fullText: { 1: 'more content here' },
+    }),
+    // excluded: type=document, status=ready, but NO fullText
     factory.document('ready_doc_2', {
       entity: 'entity_1',
       language: 'es',
       status: 'ready',
+    }),
+    // excluded: type=document, status=ready, but fullText is whitespace-only
+    factory.document('whitespace_doc', {
+      entity: 'entity_1',
+      language: 'en',
+      status: 'ready',
+      fullText: { 1: '   ', 2: '\t\n' },
     }),
     // excluded: status=processing
     factory.document('processing_doc', {
@@ -55,7 +69,7 @@ describe('MongoFilesDAO', () => {
   });
 
   describe('streamProcessedDocs()', () => {
-    it('returns only documents with type=document and status=ready', async () => {
+    it('returns only documents with type=document, status=ready, and non-empty fullText', async () => {
       const sut = createSut();
       const files = await sut.streamProcessedDocs().toArray();
       expect(files).toHaveLength(2);
@@ -63,11 +77,19 @@ describe('MongoFilesDAO', () => {
       expect(files.every(f => f.status === 'ready')).toBe(true);
     });
 
-    it('excludes processing and failed documents', async () => {
+    it('excludes documents without fullText and documents with whitespace-only fullText', async () => {
       const sut = createSut();
       const files = await sut.streamProcessedDocs().toArray();
       const filenames = files.map(f => f.filename).sort();
-      expect(filenames).toEqual(['ready_doc_1', 'ready_doc_2']);
+      expect(filenames).toEqual(['ready_doc_1', 'ready_doc_3']);
+    });
+
+    it('excludes processing and failed documents', async () => {
+      const sut = createSut();
+      const files = await sut.streamProcessedDocs().toArray();
+      const filenames = files.map(f => f.filename);
+      expect(filenames).not.toContain('processing_doc');
+      expect(filenames).not.toContain('failed_doc');
     });
 
     it('excludes attachments', async () => {
@@ -114,6 +136,22 @@ describe('MongoFilesDAO', () => {
         const files = await sut.streamProcessedDocs().toArray();
         expect(files).toHaveLength(0);
       });
+    });
+  });
+
+  describe('countProcessedDocs()', () => {
+    it('counts only documents with type=document, status=ready, and non-empty fullText', async () => {
+      await testingEnvironment.setUp(fixtures);
+      const sut = createSut();
+      const count = await sut.countProcessedDocs();
+      expect(count).toBe(2);
+    });
+
+    it('returns 0 when no indexable documents exist', async () => {
+      await testingEnvironment.setUp({ files: [] });
+      const sut = createSut();
+      const count = await sut.countProcessedDocs();
+      expect(count).toBe(0);
     });
   });
 });
