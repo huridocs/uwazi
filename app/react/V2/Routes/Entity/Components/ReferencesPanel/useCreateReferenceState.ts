@@ -1,17 +1,16 @@
 import { useState, useCallback, useEffect } from 'react';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
-import { Entity } from '#V2/domain/index.js';
+import { searchByTitle } from '#V2/api/entities/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 import { FileType } from '#shared/types/fileType.js';
 
 type CreateReferenceStep = 'selectTarget' | 'selectTextInTarget';
 
 type ReferenceMode = 'entity' | 'text';
 
-type SearchFunction = (searchString: string) => Promise<Entity[]>;
-
 type UseCreateReferenceStateParams = {
   selection: TextSelection;
-  searchFunction: SearchFunction;
+  searchFunction: (search: string) => ReturnType<typeof searchByTitle>;
   mode: ReferenceMode;
   onSave?: (data: {
     selection: TextSelection;
@@ -54,6 +53,7 @@ function useCreateReferenceState({
   }, []);
 
   const handleSearch = useCallback(
+    // eslint-disable-next-line max-statements
     async (searchString: string) => {
       if (!searchString.trim()) {
         setSearchResults([]);
@@ -64,17 +64,17 @@ function useCreateReferenceState({
       setIsSearching(true);
       setHasSearched(true);
       try {
-        const result = await searchFunction(searchString);
+        const [result] = await searchFunction(searchString);
         const filteredResults =
           mode === 'text'
-            ? result.filter(
+            ? result?.filter(
                 entity =>
-                  (entity.mainDocument && entity.mainDocument.length > 0) ||
                   (entity.documents && entity.documents.length > 0) ||
                   (entity.attachments && entity.attachments.length > 0)
               )
             : result;
-        setSearchResults(filteredResults);
+
+        setSearchResults(filteredResults || []);
       } catch {
         setSearchResults([]);
       } finally {

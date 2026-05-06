@@ -66,6 +66,7 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
     const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
+      deleteByParams: jest.fn().mockResolvedValue(undefined),
     }) as jest.Mocked<JobsDispatcher>;
     const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build({
       jobsDispatcher,
@@ -148,6 +149,92 @@ describe('CsvCreateThesauriValuesJob (integration)', () => {
         valuesObserved: 2,
       })
     );
+    const translations = await testingEnvironment.db
+      .getCollection('translationsV2')!
+      .find({
+        'context.id': thesaurusId,
+        key: { $in: ['Country', 'Country::City'] },
+      })
+      .toArray();
+    expect(translations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ key: 'Country', language: 'en', value: 'Country' }),
+        expect.objectContaining({ key: 'Country', language: 'es', value: 'País' }),
+        expect.objectContaining({ key: 'Country::City', language: 'en', value: 'City' }),
+        expect.objectContaining({ key: 'Country::City', language: 'es', value: 'Ciudad' }),
+      ])
+    );
+    expect(translations).toHaveLength(4);
     expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
+  });
+
+  it('should fallback missing locale values to the default language label', async () => {
+    const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
+      dispatch: jest.fn().mockResolvedValue(undefined),
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
+      deleteByParams: jest.fn().mockResolvedValue(undefined),
+    }) as jest.Mocked<JobsDispatcher>;
+    const { useCase, csvImportsDS, thesauriValuesDS } = CsvCreateThesauriValuesJobFactory.build({
+      jobsDispatcher,
+    });
+    const importId = fixturesFactory.idString('create-thesauri-default-only-import');
+    createdImportIds.push(importId);
+    const userId = fixturesFactory.idString('create-thesauri-default-only-user');
+    const tenantName = tenants.current().name;
+
+    const csvImport = CsvImportDomain.withStorage(
+      CsvImportDomain.create({
+        id: importId,
+        templateId,
+        file: { originalName: 'file.csv', mimeType: 'text/csv', size: 10 },
+        createdBy: userId,
+      }),
+      `csv-imports/${importId}/original.csv`
+    );
+    await csvImportsDS.insert(csvImport);
+
+    const entry = new CsvThesauriPendingEntry({
+      propertyId: 'prop',
+      propertyName: 'Property',
+      thesaurusId,
+      type: 'select',
+    });
+    entry.ensureRoot({
+      label: 'Single Language Value',
+      normalized: 'single language value',
+      languages: { en: 'Single Language Value' },
+    });
+
+    await thesauriValuesDS.replacePendingValues(importId, [
+      CsvImportThesauriValues.create({
+        importId,
+        thesaurusId,
+        createdAt: Date.now(),
+        entries: [entry],
+      }),
+    ]);
+
+    await useCase.execute({
+      importId,
+      tenantName,
+      userId,
+      callbacks: createCallbacks(),
+    });
+
+    const translations = await testingEnvironment.db
+      .getCollection('translationsV2')!
+      .find({
+        'context.id': thesaurusId,
+        key: 'Single Language Value',
+      })
+      .toArray();
+
+    expect(translations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ language: 'en', value: 'Single Language Value' }),
+        expect.objectContaining({ language: 'es', value: 'Single Language Value' }),
+      ])
+    );
+    expect(translations).toHaveLength(2);
   });
 });

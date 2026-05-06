@@ -7,8 +7,8 @@ import { localeAtom } from '#app/V2/atoms/index.js';
 import { getPagePlaintext } from '#V2/api/files/index.js';
 import { snippets } from '#V2/api/search/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
-import { getEntityCompositionUseCase } from '#V2/application/container/singletons.js';
-import { fullDetailOptions } from '#V2/application/optionsPresets.js';
+import { getBySharedId } from '#V2/api/entities/index.js';
+import { getMainDocument } from '#V2/formatters/index.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
 import { LoaderResponse } from './types.js';
@@ -30,50 +30,41 @@ const entityLoader =
     }
 
     let entity = entityLoaderCache.getEntity(entitySharedId, language);
+    let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
     let searchResults: SnippetsSearchResponse | undefined;
 
     if (!entity?._id) {
-      const entityCompositionUseCase = await getEntityCompositionUseCase();
-
-      const composition = await entityCompositionUseCase.composeEntity(
-        entitySharedId,
-        fullDetailOptions,
+      const [fetchedEntity, error] = await getBySharedId(
         {
-          headers,
-        }
+          sharedId: entitySharedId,
+          language,
+          omitRelationships: false,
+        },
+        headers
       );
 
-      if (!composition.success || !composition.entity) {
-        throw new Response(
-          JSON.stringify({
-            error: 'Failed to load entity',
-            message: composition.error || 'Entity not found',
-            entityId: entitySharedId,
-          }),
-          {
-            status: 404,
-            statusText: 'Entity Not Found',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+      if (error || !fetchedEntity?.[0]?._id) {
+        entity = undefined;
+      } else {
+        [entity] = fetchedEntity;
+        entityLoaderCache.setEntity(entitySharedId, language, entity!);
       }
-
-      entity = composition.entity;
-      entityLoaderCache.setEntity(entitySharedId, language, entity);
     }
 
-    if (entity.mainDocument?.[0]._id && (isRaw || !isClient)) {
-      pagePlaintext = entityLoaderCache.getPlaintext(
-        entity.mainDocument[0]._id as string,
-        Number(currentPage)
-      );
+    if (!mainDocument && entity?.sharedId) {
+      mainDocument = getMainDocument(entity.documents, language);
+      if (mainDocument) {
+        entityLoaderCache.setMainDocument(entity.sharedId, language, mainDocument);
+      }
+    }
+
+    if (mainDocument?._id && (isRaw || !isClient)) {
+      pagePlaintext = entityLoaderCache.getPlaintext(mainDocument._id, Number(currentPage));
 
       if (!pagePlaintext) {
         const response = await getPagePlaintext(
-          entity.mainDocument[0]._id as string,
+          mainDocument._id,
           Number.parseInt(currentPage, 10),
           headers
         );
@@ -95,16 +86,12 @@ const entityLoader =
           );
         } else {
           pagePlaintext = response;
-          entityLoaderCache.setPlaintext(
-            entity.mainDocument[0]._id as string,
-            Number(currentPage),
-            pagePlaintext
-          );
+          entityLoaderCache.setPlaintext(mainDocument._id, Number(currentPage), pagePlaintext);
         }
       }
     }
 
-    if (currentSearchTerm && entity.sharedId) {
+    if (currentSearchTerm && entity?.sharedId) {
       searchResults = entityLoaderCache.getSearchResults(
         entity.sharedId,
         language,
@@ -130,7 +117,7 @@ const entityLoader =
       }
     }
 
-    return { entity, pagePlaintext, searchResults };
+    return { entity, mainDocument, pagePlaintext, searchResults };
   };
 
 export { entityLoader };

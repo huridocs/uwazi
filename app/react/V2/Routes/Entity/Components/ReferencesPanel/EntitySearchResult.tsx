@@ -1,10 +1,10 @@
 import React from 'react';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
-import { Entity } from '#V2/domain/index.js';
-import { Card } from '#V2/Components/UI/Card.js';
-import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.js';
 import { FileType } from '#shared/types/fileType.js';
 import { LanguageUtils } from '#shared/language/index.js';
+import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
+import { Card } from '#V2/Components/UI/Card.js';
+import { Entity } from '#V2/api/entities/types.js';
 
 type EntitySearchResultProps = {
   entity: Entity;
@@ -23,19 +23,13 @@ export const EntitySearchResult = ({
   selectedFile,
   onFileSelect,
 }: EntitySearchResultProps) => {
-  const templateName = entity.template?.name || '';
-  const templateColor = entity.template?.color || '#A4CAFE';
-  const templateLabel = entity.template?.label || templateName;
-  const templateId = entity.template?._id;
-
   // Format date - try to get creationDate or editDate
   const dateProperty = entity.creationDate || entity.editDate;
-  const dateValue = dateProperty?.values?.[0]?.value;
+  const dateValue = dateProperty;
   let formattedDate = '';
   if (dateValue) {
     try {
-      const timestamp = typeof dateValue === 'number' ? dateValue : dateValue;
-      formattedDate = new Date(timestamp).toLocaleDateString('en-US', {
+      formattedDate = new Date(dateValue).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -48,11 +42,7 @@ export const EntitySearchResult = ({
   const showFiles = mode === 'text' && isSelected;
 
   // Get PDF files from the entity
-  const allFiles = [
-    ...(entity.mainDocument || []),
-    ...(entity.documents || []),
-    ...(entity.attachments || []),
-  ];
+  const allFiles = [...(entity.documents || []), ...(entity.attachments || [])];
   const pdfFiles = showFiles ? allFiles.filter(f => f.mimetype === 'application/pdf') : [];
 
   const handleFileSelect = (file: FileType) => {
@@ -83,9 +73,7 @@ export const EntitySearchResult = ({
               <h3 className="text-sm text-gray-900 line-clamp-2">{entity.title || '-'}</h3>
               {formattedDate && <p className="text-xs text-gray-600 mt-1">{formattedDate}</p>}
             </div>
-            {templateLabel && (
-              <TemplateLabel label={templateLabel} templateId={templateId} color={templateColor} />
-            )}
+            <TemplateLabel templateId={entity.template} />
           </div>
         </Card>
       </div>
