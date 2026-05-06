@@ -1,5 +1,5 @@
-import { Entity } from '#V2/domain/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
+import { Entity, FileType } from '#V2/api/entities/types.js';
 import { isClient } from '#app/utils/index.js';
 
 interface CachedItem<T> {
@@ -53,6 +53,8 @@ const invalidateByPrefix = <T>(cache: Map<string, CachedItem<T>>, prefix: string
 class EntityLoaderCache {
   private entityCache = new Map<string, CachedItem<Entity>>();
 
+  private mainDocumentCache = new Map<string, CachedItem<FileType>>();
+
   private plaintextCache = new Map<string, CachedItem<string>>();
 
   private searchResultsCache = new Map<string, CachedItem<SnippetsSearchResponse>>();
@@ -61,12 +63,14 @@ class EntityLoaderCache {
 
   private ttls = {
     entity: 5 * 60 * 1000,
+    mainDocument: 5 * 60 * 1000,
     plaintext: 5 * 60 * 1000,
     searchResults: 5 * 60 * 1000,
   };
 
   private limits = {
     entity: 20,
+    mainDocument: 20,
     plaintext: 20,
     searchResults: 20,
   };
@@ -90,7 +94,24 @@ class EntityLoaderCache {
 
   invalidateEntity(sharedId: string): void {
     invalidateByPrefix(this.entityCache, `${sharedId}:`);
+    invalidateByPrefix(this.mainDocumentCache, `${sharedId}:`);
     this.invalidateSearchResults(sharedId);
+  }
+
+  getMainDocument(sharedId: string, language: string): FileType | undefined {
+    if (this.isSSR) {
+      return undefined;
+    }
+
+    const key = `${sharedId}:${language}`;
+    return getCachedItem(this.mainDocumentCache, key, this.ttls.mainDocument);
+  }
+
+  setMainDocument(sharedId: string, language: string, data: FileType): void {
+    if (!this.isSSR) {
+      const key = `${sharedId}:${language}`;
+      setCachedItem(this.mainDocumentCache, key, data, this.limits.mainDocument);
+    }
   }
 
   getPlaintext(documentId: string, page: number): string | undefined {
@@ -144,6 +165,7 @@ class EntityLoaderCache {
 
   invalidateAll(): void {
     this.entityCache.clear();
+    this.mainDocumentCache.clear();
     this.plaintextCache.clear();
     this.searchResultsCache.clear();
   }

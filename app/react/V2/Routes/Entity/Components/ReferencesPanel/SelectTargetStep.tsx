@@ -2,10 +2,10 @@ import React from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
 import { ClientRelationshipType } from '#app/apiResponseTypes.js';
-import { Entity } from '#V2/domain/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { Card, BlankState } from '#V2/Components/UI/index.js';
 import { InputField, Checkbox } from '#V2/Components/Forms/index.js';
+import { Entity } from '#V2/api/entities/types.js';
 import { EntitySearchResult } from './EntitySearchResult.js';
 import { ReferenceMode } from './useCreateReferenceState.js';
 
