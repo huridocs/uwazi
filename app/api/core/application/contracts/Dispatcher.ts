@@ -43,10 +43,6 @@ type CloneLanguageEntitiesParams = {
   pairs: { from: LanguageISO6391; to: LanguageISO6391 }[];
 };
 
-type ImportPredefinedTranslationsParams = {
-  languageKey: LanguageISO6391;
-};
-
 interface Dispatcher {
   syncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
   cleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
@@ -57,7 +53,6 @@ interface Dispatcher {
   ): Promise<void>;
   denormalizeThesaurus(params: DenormalizeThesaurusParams): Promise<void>;
   cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void>;
-  importPredefinedTranslations(params: ImportPredefinedTranslationsParams): Promise<void>;
 }
 
 export type {
@@ -68,5 +63,4 @@ export type {
   TemplatePostProcessParams,
   DenormalizeThesaurusParams,
   CloneLanguageEntitiesParams,
-  ImportPredefinedTranslationsParams,
 };

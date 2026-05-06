@@ -6,14 +6,12 @@ import {
   TemplatePostProcessParams,
   DenormalizeThesaurusParams,
   CloneLanguageEntitiesParams,
-  ImportPredefinedTranslationsParams,
 } from '#api/core/application/contracts/Dispatcher.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { BulkCleanupEntityJob } from './BulkCleanupEntityJob.js';
 import { CloneLanguageEntitiesJob } from './CloneLanguageEntitiesJob.js';
 import { DeleteFileFromStorageJobHandler } from './DeleteFileFromStorageJobHandler.js';
 import { DenormalizeThesaurusEntitiesHandler } from './DenormalizeThesaurusEntitiesHandler.js';
-import { ImportPredefinedTranslationsJob } from './ImportPredefinedTranslationsJob.js';
 import { PDFPostProcessJobHandler } from './PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from './RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from './TemplatePostProcessEntitiesJob.js';
@@ -62,10 +60,6 @@ class DispatcherAdapter implements Dispatcher {
 
   async cloneLanguageEntities(params: CloneLanguageEntitiesParams): Promise<void> {
     await this.jobsDispatcher.dispatch(CloneLanguageEntitiesJob, params);
-  }
-
-  async importPredefinedTranslations(params: ImportPredefinedTranslationsParams): Promise<void> {
-    await this.jobsDispatcher.dispatch(ImportPredefinedTranslationsJob, params);
   }
 }
 

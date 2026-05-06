@@ -7,7 +7,6 @@ import { DenormalizeThesaurusEntitiesUseCaseFactory } from '#api/core/infrastruc
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { EntityPreviewBatchHandlerFactory } from '#api/core/infrastructure/factories/EntityPreviewBatchFactory.js';
 import { CloneLanguageEntitiesJobFactory } from '#api/core/infrastructure/factories/CloneLanguageEntitiesJobFactory.js';
-import { ImportPredefinedTranslationsJobFactory } from '#api/core/infrastructure/factories/ImportPredefinedTranslationsJobFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -20,7 +19,6 @@ import { DenormalizeThesaurusEntitiesChunkHandler } from '#api/core/infrastructu
 import { DenormalizeThesaurusEntitiesHandler } from '#api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesHandler.js';
 import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
 import { CloneLanguageEntitiesJob } from '#api/core/infrastructure/jobs/CloneLanguageEntitiesJob.js';
-import { ImportPredefinedTranslationsJob } from '#api/core/infrastructure/jobs/ImportPredefinedTranslationsJob.js';
 import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
@@ -259,10 +257,6 @@ export function registerJobs(register: Register) {
   register(EntityPreviewBatchHandler, async () => EntityPreviewBatchHandlerFactory.default());
 
   register(CloneLanguageEntitiesJob, async () => CloneLanguageEntitiesJobFactory.default());
-
-  register(ImportPredefinedTranslationsJob, async () =>
-    ImportPredefinedTranslationsJobFactory.default()
-  );
 
   register(
     BulkCleanupEntityJob,

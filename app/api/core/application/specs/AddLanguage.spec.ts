@@ -7,6 +7,7 @@ import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/Ad
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
 import { search } from '#api/search/index.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 
 jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
@@ -37,21 +38,28 @@ const fixtures: DBFixture = {
 };
 
 const cloneLanguageEntitiesSpy = jest.fn().mockResolvedValue(undefined);
-const importPredefinedTranslationsSpy = jest.fn().mockResolvedValue(undefined);
 const mockDispatcher = {
   cloneLanguageEntities: cloneLanguageEntitiesSpy,
-  importPredefinedTranslations: importPredefinedTranslationsSpy,
 } as unknown as Dispatcher;
+
+const importPredefinedSpy = jest.fn().mockResolvedValue(undefined);
+const mockTranslationService = {
+  importPredefined: importPredefinedSpy,
+} as unknown as TranslationService;
 
 const createSut = (overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>) =>
   testingEnvironment.runWithContext(() =>
-    AddLanguageUseCaseFactory.default({ dispatcher: mockDispatcher, ...overrides })
+    AddLanguageUseCaseFactory.default({
+      dispatcher: mockDispatcher,
+      translationService: mockTranslationService,
+      ...overrides,
+    })
   );
 
 describe('AddLanguage use case', () => {
   beforeEach(async () => {
     cloneLanguageEntitiesSpy.mockClear();
-    importPredefinedTranslationsSpy.mockClear();
+    importPredefinedSpy.mockClear();
     jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(fixtures);
   });
@@ -102,7 +110,7 @@ describe('AddLanguage use case', () => {
       expect(zhCount).toBe(2);
     });
 
-    it('should dispatch importPredefinedTranslations job for each new language', async () => {
+    it('should call importPredefined on the translation service for each new language', async () => {
       await createSut().execute({
         languages: [
           { key: 'es', label: 'Spanish' },
@@ -110,8 +118,29 @@ describe('AddLanguage use case', () => {
         ],
       });
 
-      expect(importPredefinedTranslationsSpy).toHaveBeenCalledWith({ languageKey: 'es' });
-      expect(importPredefinedTranslationsSpy).toHaveBeenCalledWith({ languageKey: 'zh' });
+      expect(importPredefinedSpy).toHaveBeenCalledWith('es');
+      expect(importPredefinedSpy).toHaveBeenCalledWith('zh');
+    });
+
+    it('should call importPredefined after the transaction commits', async () => {
+      const callOrder: string[] = [];
+      const trackingDispatcher = {
+        cloneLanguageEntities: jest.fn().mockImplementation(async () => {
+          callOrder.push('cloneLanguageEntities dispatched');
+        }),
+      } as unknown as Dispatcher;
+      const trackingTranslationService = {
+        importPredefined: jest.fn().mockImplementation(async () => {
+          callOrder.push('importPredefined called');
+        }),
+      } as unknown as TranslationService;
+
+      await createSut({
+        dispatcher: trackingDispatcher,
+        translationService: trackingTranslationService,
+      }).execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+
+      expect(callOrder).toEqual(['cloneLanguageEntities dispatched', 'importPredefined called']);
     });
 
     it('should dispatch CloneLanguageEntities job with all new-language pairs', async () => {
@@ -156,7 +185,7 @@ describe('AddLanguage use case', () => {
     it('should skip already-installed languages and only process new ones', async () => {
       const emitSpy = jest.fn().mockResolvedValue(undefined);
       // 'en' is already installed; only 'es' is new
-      await createSut({ eventEmitter: { emit: emitSpy }, dispatcher: mockDispatcher }).execute({
+      await createSut({ eventEmitter: { emit: emitSpy } }).execute({
         languages: [
           { key: 'en', label: 'English' }, // already installed
           { key: 'es', label: 'Spanish' }, // new
@@ -175,6 +204,10 @@ describe('AddLanguage use case', () => {
         pairs: [{ from: 'en', to: 'es' }],
       });
 
+      // importPredefined called only for the new language
+      expect(importPredefinedSpy).toHaveBeenCalledTimes(1);
+      expect(importPredefinedSpy).toHaveBeenCalledWith('es');
+
       // 'en' entry in settings unchanged (no duplicate)
       const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
       const enEntries = settings?.languages?.filter((l: any) => l.key === 'en');
@@ -183,17 +216,18 @@ describe('AddLanguage use case', () => {
 
     it('should do nothing when all requested languages are already installed', async () => {
       const emitSpy = jest.fn().mockResolvedValue(undefined);
-      await createSut({ eventEmitter: { emit: emitSpy }, dispatcher: mockDispatcher }).execute({
+      await createSut({ eventEmitter: { emit: emitSpy } }).execute({
         languages: [{ key: 'en', label: 'English' }],
       });
 
       expect(emitSpy).not.toHaveBeenCalled();
       expect(cloneLanguageEntitiesSpy).not.toHaveBeenCalled();
+      expect(importPredefinedSpy).not.toHaveBeenCalled();
     });
 
     it('should deduplicate input languages with the same key', async () => {
       const emitSpy = jest.fn().mockResolvedValue(undefined);
-      await createSut({ eventEmitter: { emit: emitSpy }, dispatcher: mockDispatcher }).execute({
+      await createSut({ eventEmitter: { emit: emitSpy } }).execute({
         languages: [
           { key: 'es', label: 'Spanish' },
           { key: 'es', label: 'Spanish' },
@@ -210,6 +244,10 @@ describe('AddLanguage use case', () => {
       expect(cloneLanguageEntitiesSpy).toHaveBeenCalledWith({
         pairs: [{ from: 'en', to: 'es' }],
       });
+
+      // importPredefined called once
+      expect(importPredefinedSpy).toHaveBeenCalledTimes(1);
+      expect(importPredefinedSpy).toHaveBeenCalledWith('es');
 
       // Only one 'es' entry in settings
       const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
