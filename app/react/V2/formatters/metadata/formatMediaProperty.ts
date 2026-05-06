@@ -66,7 +66,7 @@ const formatMediaProperty = (
           alt: fileName,
           mimetype,
           fileType: getFileType(mimetype),
-          timelinks: timelinks || {},
+          timelinks,
         });
 
         return;

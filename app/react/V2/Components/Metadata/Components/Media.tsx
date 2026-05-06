@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useId, useRef } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
 import { MediaMetadataProperty } from '#V2/formatters/types.js';
@@ -24,6 +24,7 @@ const Media = ({
   width = 500,
   height = 300,
 }: MediaProps) => {
+  const baseId = useId();
   const playerRefs = useRef<React.RefObject<PlayerInstance>[]>([]);
   if (playerRefs.current.length !== values.length) {
     playerRefs.current = Array.from({ length: values.length }, () =>
@@ -53,10 +54,12 @@ const Media = ({
             playerRef?.current?.seekTo(time, 'seconds');
           };
 
+          const figId = `${baseId}-${index}`;
+
           return (
             // eslint-disable-next-line react/no-array-index-key
             <div key={index} className="flex flex-col items-center gap-2">
-              <figure aria-labelledby={label} className="w-full bg-gray-100 rounded-md">
+              <figure aria-labelledby={figId} className="w-full bg-gray-100 rounded-md">
                 <MediaPlayer
                   className="m-auto"
                   playerRef={playerRef}
@@ -65,7 +68,7 @@ const Media = ({
                   height={height}
                 />
                 {alt && (
-                  <figcaption className="sr-only" id={label}>
+                  <figcaption className="sr-only" id={figId}>
                     {alt}
                   </figcaption>
                 )}
