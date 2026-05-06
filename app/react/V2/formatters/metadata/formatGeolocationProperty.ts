@@ -122,6 +122,7 @@ const formatGeolocationProperty = (
     name: property.name,
     label: property.label,
     type: 'geolocation',
+    ...(property.propertyGroup && { propertyGroup: property.propertyGroup }),
     values,
   };
 };

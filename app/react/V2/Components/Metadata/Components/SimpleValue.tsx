@@ -9,9 +9,10 @@ type SimpleValueProps = MetadataFieldProps & {
 };
 
 const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleValueProps) => {
-  const value = values?.[0]?.value ?? '';
+  const nonEmptyValues =
+    values?.filter(v => v.value !== '' && v.value !== undefined && v.value !== null) ?? [];
 
-  if (value === '') {
+  if (nonEmptyValues.length === 0) {
     return null;
   }
 
@@ -24,7 +25,14 @@ const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleVal
           hideLabel={hideLabel}
         />
       </dt>
-      <dd className="font-medium text-sm text-gray-900">{value}</dd>
+      <dd className="flex flex-col gap-1">
+        {nonEmptyValues.map((v, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <span key={index} className="font-medium text-sm text-gray-900">
+            {v.value}
+          </span>
+        ))}
+      </dd>
     </MetadataCard>
   );
 };
