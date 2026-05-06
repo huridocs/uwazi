@@ -17,13 +17,10 @@ function promptConfirm(question: string): Promise<boolean> {
 
 async function main() {
   try {
-    const { nodes, requestTimeout, auth } = config.elasticsearch;
+    const { nodes, requestTimeout, auth } = config.elasticSearchMultiTenant;
     const apiKeySet = Boolean(auth?.apiKey);
 
     console.log('\n--- ElasticSearch Client Config ---');
-    console.log(
-      `  ELASTICSEARCH_URL  : ${process.env.ELASTICSEARCH_URL ?? '(not set, default: http://localhost:9200)'}`
-    );
     console.log(`  Resolved nodes     : ${nodes.join(', ')}`);
     console.log(`  Request timeout    : ${requestTimeout}ms`);
     console.log(`  ELASTICSEARCH_API_KEY : ${apiKeySet ? '(set)' : '(not set)'}`);
@@ -49,7 +46,7 @@ async function main() {
 
     await esBootstrapper.execute();
   } catch (err) {
-    console.error('ES index rebuild failed:', err);
+    console.error('\nES index creation failed:', err);
     process.exitCode = 1;
   } finally {
     await ElasticSearchClientFactory.getInstance().close();
