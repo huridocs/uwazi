@@ -1,5 +1,6 @@
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { EntityCreatedEvent as CoreEntityCreatedEvent } from '../domain/entity/EntityCreatedEvent.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -87,6 +88,10 @@ class EntitiesService {
       },
     ]);
 
+    await this.deps.eventEmitter.emit(
+      new CoreEntityCreatedEvent({ sharedId: entity.sharedId, userId: context.actorId })
+    );
+
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage));
     });
@@ -144,11 +149,19 @@ class EntitiesService {
       }))
     );
 
+    await ArrayUtils.parallelFor(entities, async entity =>
+      this.deps.eventEmitter.emit(
+        new CoreEntityCreatedEvent({ sharedId: entity.sharedId, userId: context.actorId })
+      )
+    );
+
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
-        entities.map(async entity =>
-          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage))
-        )
+        entities.map(async entity => {
+          await this.deps.eventBus.emit(
+            EntityCreatedEvent.fromEntity(entity, context.targetLanguage)
+          );
+        })
       );
     });
   }

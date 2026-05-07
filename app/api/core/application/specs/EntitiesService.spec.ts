@@ -21,6 +21,7 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { EntityCreatedEvent as CoreEntityCreatedEvent } from '#api/core/domain/entity/EntityCreatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 
 const factory = getFixturesFactory();
@@ -47,6 +48,9 @@ const fixtures: DBFixture = {
 const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
   testingEnvironment.runWithContext(() => {
     const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
+    const eventEmitter = TestUtils.mockClass<EventEmitter>({
+      emit: jest.fn().mockResolvedValue(undefined),
+    });
     const dispatcher = TestUtils.mockClass<Dispatcher>({
       syncRelationships: jest.fn().mockResolvedValue(undefined),
       cleanupEntities: jest.fn().mockResolvedValue(undefined),
@@ -61,12 +65,14 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
     return {
       sut: EntitiesServiceFactory.default({
         eventBus,
+        eventEmitter,
         dispatcher,
         ...deps,
       }),
       transactionManager: ExecutionContext.transactionManager,
       dispatcher,
       eventBus,
+      eventEmitter,
     };
   });
 
@@ -163,6 +169,21 @@ describe('EntitiesService', () => {
 
       expect(emitCalledDuringTransaction).toBe(false);
       expect(eventBus.emit).toHaveBeenCalled();
+    });
+
+    it('should emit a CoreEntityCreatedEvent via eventEmitter after commit', async () => {
+      const { sut, eventEmitter } = createSut();
+      const entity = createEntitySample();
+
+      await sut.insert(entity, {
+        targetLanguage: 'en',
+        actorId: 'actorId',
+        tenantName: 'tenantName',
+      });
+
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        new CoreEntityCreatedEvent({ sharedId: entity.sharedId, userId: 'actorId' })
+      );
     });
 
     it('should dispatch a RelationshipSyncJob', async () => {
@@ -301,6 +322,25 @@ describe('EntitiesService', () => {
 
       expect(emitCalledDuringTransaction).toBe(false);
       expect(eventBus.emit).toHaveBeenCalledTimes(2);
+    });
+
+    it('should emit a CoreEntityCreatedEvent for each entity via eventEmitter after commit', async () => {
+      const { sut, eventEmitter } = createSut();
+      const entity1 = createEntitySample();
+      const entity2 = createEntitySample();
+
+      await sut.bulkInsert([entity1, entity2], {
+        targetLanguage: 'en',
+        actorId: 'creatorId',
+        tenantName: 'tenantName',
+      });
+
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        new CoreEntityCreatedEvent({ sharedId: entity1.sharedId, userId: 'creatorId' })
+      );
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        new CoreEntityCreatedEvent({ sharedId: entity2.sharedId, userId: 'creatorId' })
+      );
     });
 
     it('should handle empty array gracefully', async () => {
