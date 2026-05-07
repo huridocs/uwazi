@@ -171,14 +171,16 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).toHaveBeenCalled();
     });
 
-    it('should emit a CoreEntityCreatedEvent via eventEmitter after commit', async () => {
-      const { sut, eventEmitter } = createSut();
+    it('should emit a CoreEntityCreatedEvent', async () => {
+      const { sut, eventEmitter, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity, {
-        targetLanguage: 'en',
-        actorId: 'actorId',
-        tenantName: 'tenantName',
+      await transactionManager.run(async () => {
+        await sut.insert(entity, {
+          targetLanguage: 'en',
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
       });
 
       expect(eventEmitter.emit).toHaveBeenCalledWith(
@@ -324,15 +326,17 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).toHaveBeenCalledTimes(2);
     });
 
-    it('should emit a CoreEntityCreatedEvent for each entity via eventEmitter after commit', async () => {
-      const { sut, eventEmitter } = createSut();
+    it('should emit a CoreEntityCreatedEvent for each entity ', async () => {
+      const { sut, eventEmitter, transactionManager } = createSut();
       const entity1 = createEntitySample();
       const entity2 = createEntitySample();
 
-      await sut.bulkInsert([entity1, entity2], {
-        targetLanguage: 'en',
-        actorId: 'creatorId',
-        tenantName: 'tenantName',
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2], {
+          targetLanguage: 'en',
+          actorId: 'creatorId',
+          tenantName: 'tenantName',
+        });
       });
 
       expect(eventEmitter.emit).toHaveBeenCalledWith(

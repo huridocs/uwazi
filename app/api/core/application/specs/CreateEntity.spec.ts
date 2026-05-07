@@ -4,8 +4,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
-import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
 import { CreateEntityUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityUseCaseFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
@@ -378,16 +376,8 @@ describe('CreateEntityUseCase', () => {
       title: 'My entity title',
       creationDate: expect.any(Number),
       editDate: expect.any(Number),
-      published: false,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
-      permissions: [
-        {
-          refId: factory.id('user1').toHexString(),
-          type: PermissionType.User,
-          level: AccessLevel.Write,
-        },
-      ],
       user: factory.id('user1'),
       metadata: {
         text: [{ value: 'Some text' }],
@@ -495,45 +485,6 @@ describe('CreateEntityUseCase', () => {
       expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
       expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
       expect.objectContaining({ originalname: 'URL_attachment.png' }),
-    ]);
-  });
-
-  it('should add grant access when actor is present', async () => {
-    const actor = User.createFrom({
-      _id: factory.id('user1'),
-      username: 'username',
-      email: 'email@email.com',
-      role: 'collaborator',
-    });
-
-    const { sut } = createSut({ actor });
-
-    const entity = await sut.execute({
-      templateId: factory.id('Document').toHexString(),
-      propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
-    });
-
-    const entities = await testingEnvironment.db
-      .getCollection('entities')
-      ?.find({ sharedId: entity.sharedId })
-      .toArray();
-
-    expect(entities?.map(e => e.user)).toEqual([factory.id('user1'), factory.id('user1')]);
-    expect(entities?.map(e => e.permissions)).toEqual([
-      [
-        {
-          refId: factory.id('user1').toHexString(),
-          type: PermissionType.User,
-          level: AccessLevel.Write,
-        },
-      ],
-      [
-        {
-          refId: factory.id('user1').toHexString(),
-          type: PermissionType.User,
-          level: AccessLevel.Write,
-        },
-      ],
     ]);
   });
 
