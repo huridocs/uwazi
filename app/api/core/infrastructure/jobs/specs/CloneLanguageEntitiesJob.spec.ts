@@ -65,6 +65,7 @@ describe('CloneLanguageEntitiesJob', () => {
 
   beforeEach(async () => {
     mockWebSockets = { emitToTenant: jest.fn(), emitToTenantAdmins: jest.fn() };
+    heartbeat.mockClear();
     jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(fixtures);
   });
@@ -94,6 +95,12 @@ describe('CloneLanguageEntitiesJob', () => {
 
       expect(search.indexEntities).toHaveBeenCalledWith({ language: 'ja' });
     });
+
+    it('should call heartbeat once after cloning', async () => {
+      await dispatch(createSUT(mockWebSockets), [{ from: 'en', to: 'ja' }]);
+
+      expect(heartbeat).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('when cloning multiple language pairs', () => {
@@ -116,6 +123,15 @@ describe('CloneLanguageEntitiesJob', () => {
       expect(zhEntities).toHaveLength(2);
       expect(search.indexEntities).toHaveBeenCalledWith({ language: 'ja' });
       expect(search.indexEntities).toHaveBeenCalledWith({ language: 'zh' });
+    });
+
+    it('should call heartbeat once per language pair', async () => {
+      await dispatch(createSUT(mockWebSockets), [
+        { from: 'en', to: 'ja' },
+        { from: 'en', to: 'zh' },
+      ]);
+
+      expect(heartbeat).toHaveBeenCalledTimes(2);
     });
   });
 

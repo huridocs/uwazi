@@ -37,7 +37,7 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
   }
 
   protected async handle(
-    _heartbeat: HeartbeatCallback,
+    heartbeat: HeartbeatCallback,
     params: Params,
     jobInfo?: JobInfo
   ): Promise<void> {
@@ -47,6 +47,8 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
       for (const { from, to } of params.pairs) {
         // eslint-disable-next-line no-await-in-loop
         await this.deps.entityDAO.cloneForLanguage(from, to);
+        // eslint-disable-next-line no-await-in-loop
+        await heartbeat();
         // eslint-disable-next-line no-await-in-loop
         await search.indexEntities({ language: to });
 

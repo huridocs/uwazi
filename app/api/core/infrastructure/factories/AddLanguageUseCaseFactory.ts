@@ -8,19 +8,22 @@ import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
 import { CloneLanguageEntitiesJobFactory } from './CloneLanguageEntitiesJobFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 
 class AddLanguageUseCaseFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>
   ): AddLanguageUseCase {
-    const { actor, tenant } = ExecutionContext;
+    const { actor, tenant, eventEmitter } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const eventEmitter = ExecutionContext.eventEmitter;
     const translationService = new LegacyTranslationService();
 
-    let jobsDispatcher = ExecutionContext.jobsDispatcher;
+    const minutes30 = 30 * 60 * 1000;
+    let jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {
+      lockWindow: minutes30,
+    });
     if (process.env.NODE_ENV === 'test') {
       const innerDispatcher = new SyncDispatcherForTests({});
       const cloneJob = CloneLanguageEntitiesJobFactory.default({ jobsDispatcher: innerDispatcher });
