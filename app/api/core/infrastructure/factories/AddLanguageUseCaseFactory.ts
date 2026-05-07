@@ -9,6 +9,7 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
 import { CloneLanguageEntitiesJobFactory } from './CloneLanguageEntitiesJobFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
 class AddLanguageUseCaseFactory {
   static default(
@@ -21,7 +22,7 @@ class AddLanguageUseCaseFactory {
     const translationService = new LegacyTranslationService();
 
     const minutes30 = 30 * 60 * 1000;
-    let jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {
+    let jobsDispatcher: JobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {
       lockWindow: minutes30,
     });
     if (process.env.NODE_ENV === 'test') {

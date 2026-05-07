@@ -98,6 +98,16 @@ export const config = {
     },
   },
 
+  elasticSearchMultiTenant: {
+    nodes: process.env.ELASTIC_SEARCH_NODES
+      ? process.env.ELASTIC_SEARCH_NODES.split(',')
+      : ['http://localhost:9200'],
+    requestTimeout: 60000,
+    auth: {
+      apiKey: process.env.ELASTIC_SEARCH_API_KEY || '',
+    },
+  },
+
   SHARED_DB: process.env.NODE_ENV === 'test' ? 'uwazi_shared_db_testing' : 'uwazi_shared_db',
 
   multiTenant: process.env.MULTI_TENANT || false,
