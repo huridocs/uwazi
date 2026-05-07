@@ -1,35 +1,42 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { ObjectId } from 'mongodb';
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { ProgressEvent } from '#api/core/infrastructure/elasticSearch/ESIndexRebuilder.js';
-import { ESIndexRebuilderFactory } from '#api/core/infrastructure/factories/ESIndexRebuilderFactory.js';
+import { ProgressEvent } from '#api/core/infrastructure/elasticSearch/TenantOnboarder.js';
+import { TenantOnboarderFactory } from '#api/core/infrastructure/factories/TenantOnboarderFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
-const { tenant } = yargs(hideBin(process.argv))
+const { tenant, resumeFromEntity, resumeFromFile } = yargs(hideBin(process.argv))
   .option('tenant', {
     alias: 't',
     type: 'string',
-    describe: 'Tenant name to rebuild the index for',
-    default: config.defaultTenant.name,
+    describe: 'Tenant name to onboard',
+    demandOption: true,
+  })
+  .option('resume-from-entity', {
+    type: 'string',
+    describe: 'Resume entity indexing after this sharedId checkpoint',
+  })
+  .option('resume-from-file', {
+    type: 'string',
+    describe: 'Resume fulltext indexing after this file ObjectId checkpoint',
   })
   .parseSync();
 
 const formatProgress = (event: ProgressEvent): string => {
   switch (event.stage) {
-    case 'reset-indexes':
-      return '[1/4] Resetting ES indexes (delete + recreate)...\n';
-    case 'reset-slots':
-      return '[2/4] Wiping and re-seeding slot collection...\n';
+    case 'bootstrap-slots':
+      return '[1/3] Bootstrapping slots...\n';
     case 'reconcile-slots':
-      return '[3/4] Reconciling slots with templates...\n';
+      return '[2/3] Reconciling slots with templates...\n';
     case 'indexing': {
       const entityPct =
         event.entitiesToIndex > 0
@@ -39,7 +46,9 @@ const formatProgress = (event: ProgressEvent): string => {
         event.fullTextToIndex > 0
           ? Math.round((event.fullTextIndexed / event.fullTextToIndex) * 100)
           : 0;
-      return `[4/4] Entities: ${event.entitiesIndexed}/${event.entitiesToIndex} (${entityPct}%) | Full-text: ${event.fullTextIndexed}/${event.fullTextToIndex} (${ftPct}%)\r`;
+      const entityChk = event.lastSharedId || '-';
+      const fileChk = event.lastFileId || '-';
+      return `[3/3] Entities: ${event.entitiesIndexed}/${event.entitiesToIndex} (${entityPct}%) [${entityChk}] | Full-text: ${event.fullTextIndexed}/${event.fullTextToIndex} (${ftPct}%) [${fileChk}]\r`;
     }
     case 'done':
       return '\n';
@@ -56,7 +65,7 @@ async function main() {
 
   try {
     await tenants.run(async () => {
-      ExecutionContext.attachSyncContext(ESIndexRebuilderFactory, 'default', {
+      ExecutionContext.attachSyncContext(TenantOnboarderFactory, 'default', {
         tenant: tenants.current(),
         factories: {
           transactionManager: TransactionManagerFactory.default,
@@ -70,7 +79,7 @@ async function main() {
         },
       });
 
-      const rebuilder = ESIndexRebuilderFactory.default({
+      const onboarder = TenantOnboarderFactory.default({
         onProgress: event => {
           const message = formatProgress(event);
           if (message) {
@@ -79,14 +88,22 @@ async function main() {
         },
       });
 
-      await rebuilder.execute();
+      const resumeFrom =
+        resumeFromEntity || resumeFromFile
+          ? {
+              entitySharedId: resumeFromEntity,
+              fileId: resumeFromFile ? new ObjectId(resumeFromFile) : undefined,
+            }
+          : undefined;
+
+      await onboarder.execute(resumeFrom);
     }, tenant);
 
     const [seconds, nanoseconds] = process.hrtime(start);
     const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
-    console.log(`\nDone. Took ${elapsed}s`);
+    process.stdout.write(`\nDone. Took ${elapsed}s`);
   } catch (err) {
-    console.log('\nES index rebuild failed:', err);
+    console.error(`\nTenant onboarding failed:`, err);
     process.exitCode = 1;
   } finally {
     await ElasticSearchClientFactory.getInstance().close();

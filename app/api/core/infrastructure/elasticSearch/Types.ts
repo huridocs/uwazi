@@ -39,6 +39,7 @@ export interface SearchOptions {
   size?: number;
   sort?: SortCombinations | SortCombinations[];
   source?: boolean | string[] | SearchSourceFilter;
+  searchAfter?: unknown[];
 }
 
 export interface IndexOptions {
