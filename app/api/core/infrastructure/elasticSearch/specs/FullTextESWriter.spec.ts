@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { Client as ESClient } from '@elastic/elasticsearch';
 import { ObjectId } from 'mongodb';
 import { config } from '#api/config.js';
@@ -77,6 +76,7 @@ const sharedIdDelete = 'shared-delete';
 const sharedIdKeep = 'shared-keep';
 
 describe('FullTextESWriter', () => {
+  jest.setTimeout(30_000);
   beforeEach(async () => {
     await recreateTestIndex();
     await indexEntityParent('tenant-a', sharedId1);

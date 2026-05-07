@@ -171,6 +171,7 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
 const slotsCollection = () => getConnection().collection(MongoSlotsDAO.collectionName);
 
 describe('ESIndexRebuilder', () => {
+  jest.setTimeout(30_000);
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
   });

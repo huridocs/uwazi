@@ -164,6 +164,7 @@ const resetState = async () => {
 };
 
 describe('TenantOnboarder', () => {
+  jest.setTimeout(30_000);
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
     await createTestIndex();

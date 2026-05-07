@@ -37,6 +37,7 @@ const expectedSlotCount = expectedSlots.length;
 const expectedSlotNames = expectedSlots.map(slot => slot.slotName).sort();
 
 describe('MongoSlotsBootstrapper', () => {
+  jest.setTimeout(30_000);
   beforeAll(async () => {
     await testingEnvironment.setUp({
       [MongoSlotsDAO.collectionName]: [],

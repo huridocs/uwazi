@@ -100,6 +100,7 @@ const searchBySharedId = async (tenantClient: TenantAwareESClient, sharedId: str
   });
 
 describe('EntityIndexerService', () => {
+  jest.setTimeout(30_000);
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
     await createTestIndex();

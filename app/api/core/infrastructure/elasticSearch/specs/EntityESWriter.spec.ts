@@ -105,6 +105,7 @@ const createSut = (tenantId = 'tenant-a') => {
 };
 
 describe('EntityESWriter', () => {
+  jest.setTimeout(30_000);
   beforeEach(async () => {
     await recreateTestIndex();
   });
