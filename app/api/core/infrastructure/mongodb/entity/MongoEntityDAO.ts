@@ -88,8 +88,22 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
     ]);
   }
 
-  streamAll(): FindCursor<EntityDBO> {
-    return this.getCollection().find({}).sort({ sharedId: 1 });
+  streamAll(options?: { afterSharedId?: string }): FindCursor<EntityDBO> {
+    const filter = options?.afterSharedId ? { sharedId: { $gt: options.afterSharedId } } : {};
+    return this.getCollection().find(filter).sort({ sharedId: 1 });
+  }
+
+  streamSharedIds(options?: { afterSharedId?: string }): FindCursor<{ sharedId: string }> {
+    const filter = options?.afterSharedId ? { sharedId: { $gt: options.afterSharedId } } : {};
+    return this.getCollection()
+      .find(filter, { projection: { sharedId: 1, _id: 0 } })
+      .sort({ sharedId: 1 });
+  }
+
+  streamModifiedSince(date: Date): FindCursor<EntityDBO> {
+    return this.getCollection()
+      .find({ editDate: { $gte: date.getTime() } })
+      .sort({ sharedId: 1 });
   }
 
   async getEntityIdsBySharedId(
@@ -98,6 +112,20 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
     return this.getCollection()
       .find({ sharedId: { $in: sharedIds } }, { projection: { _id: 1, sharedId: 1 } })
       .toArray();
+  }
+
+  async findBySharedIds(sharedIds: string[]): Promise<EntityDBO[]> {
+    if (sharedIds.length === 0) return [];
+    return this.getCollection()
+      .find({ sharedId: { $in: sharedIds } })
+      .toArray();
+  }
+
+  async countDistinctSharedIds(): Promise<number> {
+    const result = await this.getCollection()
+      .aggregate<{ count: number }>([{ $group: { _id: '$sharedId' } }, { $count: 'count' }])
+      .toArray();
+    return result[0]?.count ?? 0;
   }
 }
 
