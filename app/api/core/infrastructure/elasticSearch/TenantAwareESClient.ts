@@ -82,6 +82,7 @@ class TenantAwareESClient {
         size: options.size,
         sort: options.sort,
         _source: options.source,
+        search_after: options.searchAfter,
       },
     });
 

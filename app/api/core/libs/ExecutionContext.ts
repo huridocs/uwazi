@@ -103,6 +103,13 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
     (anInstance[method] as any) = async (...args: any[]) =>
       this.run(deps, async () => originalMethod(...args));
   }
+
+  attachSyncContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {
+    const originalMethod = (anInstance[method] as any).bind(anInstance);
+
+    // eslint-disable-next-line no-param-reassign
+    (anInstance[method] as any) = (...args: any[]) => this.run(deps, () => originalMethod(...args));
+  }
 }
 
 const executionContext = new ExecutionContext();
