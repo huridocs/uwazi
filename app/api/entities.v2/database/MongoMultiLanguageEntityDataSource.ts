@@ -95,12 +95,18 @@ export class MongoMultiLanguageEntityDataSource
   async bulkUpdate(entities: Entity[]): Promise<void> {
     const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
 
-    const updates = allDbos.map(dbo => ({
-      replaceOne: {
-        filter: { _id: dbo._id },
-        replacement: dbo,
-      },
-    }));
+    const updates = allDbos.map(dbo => {
+      const { published, permissions, ...contentDbo } = dbo;
+      return {
+        updateOne: {
+          filter: { _id: dbo._id },
+          update: {
+            $set: contentDbo,
+            ...(dbo.preview === undefined ? { $unset: { preview: '' } } : {}),
+          },
+        },
+      };
+    });
 
     if (updates.length > 0) {
       await this.getCollection().bulkWrite(updates, { ignoreUndefined: true });

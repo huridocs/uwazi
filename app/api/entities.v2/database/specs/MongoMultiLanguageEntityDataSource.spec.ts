@@ -559,4 +559,92 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       bulkDeleteBySharedIdSpy.mockRestore();
     });
   });
+
+  describe('bulkUpdate', () => {
+    it('should not overwrite permissions or published when updating entity content', async () => {
+      const { sut, transactionManager } = createSut();
+      const template = createSampleTemplate();
+      const entity = createEntity(['en', 'es'], template);
+
+      const existingPermissions = [{ refId: 'user-abc', type: 'user', level: 'write' }];
+
+      // Insert with permissions and published set directly, bypassing the domain mapper
+      const templateObjectId = new ObjectId(template.id);
+      await testingEnvironment.db.getCollection('entities')!.insertMany([
+        {
+          _id: new ObjectId(entity.getTranslation('en').id.value),
+          sharedId: entity.sharedId,
+          language: 'en',
+          template: templateObjectId,
+          title: 'Original Title',
+          metadata: {},
+          obsoleteMetadata: [],
+          published: true,
+          permissions: existingPermissions,
+          creationDate: Date.now(),
+          editDate: Date.now(),
+        },
+        {
+          _id: new ObjectId(entity.getTranslation('es').id.value),
+          sharedId: entity.sharedId,
+          language: 'es',
+          template: templateObjectId,
+          title: 'Original Title',
+          metadata: {},
+          obsoleteMetadata: [],
+          published: true,
+          permissions: existingPermissions,
+          creationDate: Date.now(),
+          editDate: Date.now(),
+        },
+      ]);
+
+      // Update content via bulkUpdate
+      entity.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Updated Title' }] }),
+      ]);
+
+      await transactionManager.run(async () => {
+        await sut.bulkUpdate([entity]);
+      });
+
+      const stored = await testingEnvironment.db.getAllFrom('entities');
+      const entityDocs = stored.filter(e => e.sharedId === entity.sharedId);
+
+      entityDocs.forEach(doc => {
+        expect(doc.title).toBe('Updated Title'); // content was updated
+        expect(doc.published).toBe(true); // not erased
+        expect(doc.permissions).toEqual(existingPermissions); // not erased
+      });
+    });
+
+    it('should unset preview when the entity has no preview', async () => {
+      const { sut, transactionManager } = createSut();
+      const template = createSampleTemplate();
+      const entity = createEntity(['en'], template);
+
+      await testingEnvironment.db.getCollection('entities')!.insertOne({
+        _id: new ObjectId(entity.getTranslation('en').id.value),
+        sharedId: entity.sharedId,
+        language: 'en',
+        template: new ObjectId(template.id),
+        title: 'Title',
+        metadata: {},
+        obsoleteMetadata: [],
+        published: false,
+        permissions: [],
+        preview: 'some-thumbnail.jpg', // preview was previously set
+        creationDate: Date.now(),
+        editDate: Date.now(),
+      });
+
+      // entity domain object has no preview set (undefined)
+      await transactionManager.run(async () => {
+        await sut.bulkUpdate([entity]);
+      });
+
+      const [stored] = await testingEnvironment.db.getAllFrom('entities');
+      expect(stored.preview).toBeUndefined();
+    });
+  });
 });

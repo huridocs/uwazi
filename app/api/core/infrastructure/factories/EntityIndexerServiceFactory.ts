@@ -10,6 +10,7 @@ import { User } from '#api/users.v2/model/User.js';
 import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { EntityESWriterFactory } from './EntityESWriterFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 export class EntityIndexerServiceFactory {
   static default(overrides?: Partial<EntityIndexerServiceDeps>): EntityIndexerService {
@@ -36,5 +37,15 @@ export class EntityIndexerServiceFactory {
     const entityESWriter = new EntityIndexerService({ entityDAO, slotsDAO, writer, ...overrides });
 
     return entityESWriter;
+  }
+
+  static forTests(): EntityIndexerService {
+    return TestUtils.mockClass<EntityIndexerService>({
+      index: async () => {},
+      sync: async () => {},
+      syncAll: async () => {},
+      remove: async () => {},
+      removeByTemplateIds: async () => {},
+    });
   }
 }
