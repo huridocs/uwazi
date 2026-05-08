@@ -291,7 +291,7 @@
     "@cfaester/enzyme-adapter-react-18": "^0.8.0",
     "@chromatic-com/storybook": "^5.1.2",
     "@cypress/webpack-preprocessor": "^7.0.2",
-    "@eslint/compat": "^2.0.3",
+    "@eslint/compat": "2.1.0",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.15.0",
     "@simonsmith/cypress-image-snapshot": "^10.0.3",
