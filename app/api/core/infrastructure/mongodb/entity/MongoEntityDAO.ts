@@ -114,7 +114,11 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
       .toArray();
   }
 
-  async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
+  async cloneForLanguage(
+    from: LanguageISO6391,
+    to: LanguageISO6391,
+    onBatch?: (clonedEntities: Omit<EntityDBO, '_id'>[]) => Promise<void>
+  ): Promise<void> {
     const BATCH_SIZE = 500;
     const collection = this.getCollection();
     const cursor = collection.find({ language: from });
@@ -131,17 +135,23 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
         // eslint-disable-next-line no-await-in-loop
         if (batch.length >= BATCH_SIZE || !(await cursor.hasNext())) {
           if (batch.length > 0) {
+            const clonedEntities = batch.map(({ _id: _discarded, ...rest }) => ({
+              ...rest,
+              language: to,
+            }));
             // eslint-disable-next-line no-await-in-loop
             await collection.bulkWrite(
-              batch.map(({ _id: _discarded, ...rest }) => ({
+              clonedEntities.map(entity => ({
                 updateOne: {
-                  filter: { sharedId: rest.sharedId, language: to },
-                  update: { $setOnInsert: { ...rest, language: to } },
+                  filter: { sharedId: entity.sharedId, language: to },
+                  update: { $setOnInsert: entity },
                   upsert: true,
                 },
               })),
               { ordered: false }
             );
+            // eslint-disable-next-line no-await-in-loop
+            if (onBatch) await onBatch(clonedEntities);
             batch = [];
           }
         }

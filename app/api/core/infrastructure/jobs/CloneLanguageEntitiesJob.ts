@@ -11,6 +11,7 @@ import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/con
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
 import { MongoEntityDAO } from '../mongodb/entity/MongoEntityDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 
@@ -29,6 +30,7 @@ type JobDependencies = {
   jobsDispatcher: JobsDispatcher;
   webSockets: WebSockets;
   settingsDS: SettingsDataSource;
+  entityIndexer: EntityIndexerService;
 };
 
 class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
@@ -46,7 +48,9 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
     try {
       for (const { from, to } of params.pairs) {
         // eslint-disable-next-line no-await-in-loop
-        await this.deps.entityDAO.cloneForLanguage(from, to);
+        await this.deps.entityDAO.cloneForLanguage(from, to, batch =>
+          this.deps.entityIndexer.sync(batch.map(e => e.sharedId))
+        );
         // eslint-disable-next-line no-await-in-loop
         await heartbeat();
         // eslint-disable-next-line no-await-in-loop
