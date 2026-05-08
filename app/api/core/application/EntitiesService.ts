@@ -13,7 +13,7 @@ import { Dispatcher } from './contracts/Dispatcher.js';
 import {
   EntityPermissionChecker,
   Specification,
-} from '../domain/entity/EntityPermissionChecker.js';
+} from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
 import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
 

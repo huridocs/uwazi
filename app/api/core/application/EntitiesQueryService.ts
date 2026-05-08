@@ -7,9 +7,8 @@ import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import {
   EntityPermissionChecker,
   Specification,
-} from '../domain/entity/EntityPermissionChecker.js';
+} from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
-import { PermissionType } from '../domain/entity/PermissionType.js';
 import { Template } from '../domain/template/Template.js';
 import {
   EntityWithFiles,
@@ -19,6 +18,7 @@ import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoR
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
 import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
+import { GrantType } from '../domain/entityAccessPolicy/GrantType.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -195,7 +195,7 @@ class EntitiesQueryService {
     }
 
     const spec = new Specification({
-      type: PermissionType.User,
+      type: GrantType.User,
       level: AccessLevel.Read,
       actor: user,
     });
