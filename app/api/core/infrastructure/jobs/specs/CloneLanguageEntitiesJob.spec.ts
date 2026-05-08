@@ -40,6 +40,8 @@ const fixtures: DBFixture = {
 
 const heartbeat = jest.fn();
 
+const mockEntityIndexer = { index: jest.fn().mockResolvedValue(undefined) };
+
 const createSUT = (
   mockWebSockets: jest.Mocked<WebSockets>,
   innerDispatcher: SyncDispatcherForTests = new SyncDispatcherForTests({}),
@@ -49,6 +51,7 @@ const createSUT = (
     CloneLanguageEntitiesJobFactory.default({
       jobsDispatcher: innerDispatcher,
       webSockets: mockWebSockets,
+      entityIndexer: mockEntityIndexer as any,
       ...(mockSettingsDS ? { settingsDS: mockSettingsDS as any } : {}),
     })
   );
@@ -66,6 +69,7 @@ describe('CloneLanguageEntitiesJob', () => {
   beforeEach(async () => {
     mockWebSockets = { emitToTenant: jest.fn(), emitToTenantAdmins: jest.fn() };
     heartbeat.mockClear();
+    mockEntityIndexer.index.mockClear();
     jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(fixtures);
   });
@@ -96,6 +100,14 @@ describe('CloneLanguageEntitiesJob', () => {
       expect(search.indexEntities).toHaveBeenCalledWith({ language: 'ja' });
     });
 
+    it('should call the V2 entity indexer with the cloned entities', async () => {
+      await dispatch(createSUT(mockWebSockets), [{ from: 'en', to: 'ja' }]);
+
+      expect(mockEntityIndexer.index).toHaveBeenCalled();
+      const allIndexed = mockEntityIndexer.index.mock.calls.flatMap((args: any[]) => args[0]);
+      expect(allIndexed.every((e: any) => e.language === 'ja')).toBe(true);
+    });
+
     it('should call heartbeat once after cloning', async () => {
       await dispatch(createSUT(mockWebSockets), [{ from: 'en', to: 'ja' }]);
 
@@ -123,6 +135,14 @@ describe('CloneLanguageEntitiesJob', () => {
       expect(zhEntities).toHaveLength(2);
       expect(search.indexEntities).toHaveBeenCalledWith({ language: 'ja' });
       expect(search.indexEntities).toHaveBeenCalledWith({ language: 'zh' });
+      const jaIndexed = mockEntityIndexer.index.mock.calls
+        .flatMap((args: any[]) => args[0])
+        .filter((e: any) => e.language === 'ja');
+      const zhIndexed = mockEntityIndexer.index.mock.calls
+        .flatMap((args: any[]) => args[0])
+        .filter((e: any) => e.language === 'zh');
+      expect(jaIndexed).toHaveLength(2);
+      expect(zhIndexed).toHaveLength(2);
     });
 
     it('should call heartbeat once per language pair', async () => {
