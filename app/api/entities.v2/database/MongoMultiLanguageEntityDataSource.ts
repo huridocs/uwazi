@@ -58,8 +58,7 @@ export class MongoMultiLanguageEntityDataSource
     this.transactionManager.onCommitted(async () => {
       const entities = [...this.deletedEntities.values()];
       this.deletedEntities.clear();
-      if (entities.length === 0) return;
-      return this.entityIndexerService.deleteBySharedIds(entities);
+      return this.entityIndexerService.remove(entities);
     });
   }
 
