@@ -179,11 +179,6 @@ const formater = {
       url = `/entity/${option.value}`;
     }
 
-    let authorized;
-    if (typeof option.authorized === 'boolean') {
-      authorized = option.authorized;
-    }
-
     let relatedEntity;
     if (doc && doc.relations && doc.relations.length > 0) {
       const relation = doc.relations.find(e => e.entity === option.value);
@@ -193,7 +188,15 @@ const formater = {
         : relatedEntity;
     }
 
-    return { value, originalValue, url, icon, parent, relatedEntity, ...authorized };
+    return {
+      value,
+      originalValue,
+      url,
+      icon,
+      parent,
+      relatedEntity,
+      ...(option?.authorized === false ? { authorized: false } : {}),
+    };
   },
 
   multimedia(property, [{ value }], type) {
