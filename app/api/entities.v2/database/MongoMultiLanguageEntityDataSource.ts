@@ -109,7 +109,7 @@ export class MongoMultiLanguageEntityDataSource
     });
 
     if (updates.length > 0) {
-      await this.getCollection().bulkWrite(updates, { ignoreUndefined: true });
+      await this.getCollection().bulkWrite(updates as any, { ignoreUndefined: true });
     }
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
