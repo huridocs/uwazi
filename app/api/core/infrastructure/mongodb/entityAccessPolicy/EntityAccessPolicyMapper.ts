@@ -30,10 +30,6 @@ class EntityAccessPolicyMapper {
       level: g.level,
     }));
 
-    if (policy.isPublic) {
-      permissions.push({ refId: 'public', type: 'public', level: 'read' });
-    }
-
     return { permissions, published: policy.isPublic };
   }
 }

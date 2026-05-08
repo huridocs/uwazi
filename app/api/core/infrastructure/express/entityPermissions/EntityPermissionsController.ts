@@ -4,6 +4,8 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { GrantEntityPermissionsUseCaseFactory } from '../../factories/GrantEntityPermissionsUseCaseFactory.js';
 import { BulkGrantEntityPermissionsUseCaseFactory } from '../../factories/BulkGrantEntityPermissionsUseCaseFactory.js';
 import { AccessGrantProps } from '#api/core/domain/entityAccessPolicy/AccessGrant.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 
 const RequestSchema = z
   .object({
@@ -30,6 +32,12 @@ type RequestDto = z.infer<typeof RequestSchema>;
 
 class EntityPermissionsController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
+    if (!ExecutionContext.tenant.featureFlags?.v2EntityPermission) {
+      await entitiesPermissions.set(this.request.body);
+      this.response.json(this.request.body);
+      return;
+    }
+
     const body = RequestSchema.parse(this.request.body);
     const { ids, permissions } = body;
 

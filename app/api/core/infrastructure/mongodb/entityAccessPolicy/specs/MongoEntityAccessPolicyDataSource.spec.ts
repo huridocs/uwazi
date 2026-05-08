@@ -91,11 +91,6 @@ describe('MongoEntityAccessPolicyDataSource', () => {
 
       const doc = await getConnection().collection('entities').findOne({ sharedId });
       expect(doc!.published).toBe(true);
-      expect(doc!.permissions).toContainEqual({
-        refId: 'public',
-        type: 'public',
-        level: 'read',
-      });
     });
 
     it('does not affect other entities', async () => {
@@ -174,7 +169,6 @@ describe('MongoEntityAccessPolicyDataSource', () => {
         .collection('entities')
         .findOne({ sharedId: 'other-entity' });
       expect(doc2!.published).toBe(true);
-      expect(doc2!.permissions).toContainEqual({ refId: 'public', type: 'public', level: 'read' });
     });
 
     it('adds all mutated sharedIds to the indexer on commit', async () => {

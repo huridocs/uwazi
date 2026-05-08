@@ -45,6 +45,7 @@ const mongoSchema = new mongoose.Schema({
     v2ElasticSearch: Boolean,
     v2DeleteEntity: Boolean,
     newHeader: Boolean,
+    v2EntityPermission: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

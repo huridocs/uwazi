@@ -52,7 +52,7 @@ export class MongoMultiLanguageEntityDataSource
     this.transactionManager.onCommitted(async () => {
       const entities = [...this.mutatedEntities.values()];
       this.mutatedEntities.clear();
-      return this.entityIndexerService.index(entities);
+      return this.entityIndexerService.sync(entities.map(e => e.sharedId));
     });
 
     this.transactionManager.onCommitted(async () => {
