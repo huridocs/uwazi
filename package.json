@@ -388,7 +388,7 @@
     "jest-jasmine2": "^29.7.0",
     "jest-puppeteer": "6.1.0",
     "jsdom-testing-mocks": "^1.16.0",
-    "mini-css-extract-plugin": "^2.10.1",
+    "mini-css-extract-plugin": "2.10.2",
     "monaco-editor-webpack-plugin": "^7.1.1",
     "node-polyfill-webpack-plugin": "^4.1.0",
     "nodemon": "^3.1.14",
