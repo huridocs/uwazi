@@ -475,6 +475,13 @@ const apiEntity: Entity = {
         icon: '',
         type: 'entity',
       },
+      {
+        value: 'entity6',
+        label: 'This value should not display',
+        icon: '',
+        authorized: false,
+        type: 'entity',
+      },
     ],
     external_link: [
       {

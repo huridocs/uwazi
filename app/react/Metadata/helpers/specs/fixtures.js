@@ -46,7 +46,7 @@ export const doc = {
     relationship2: [
       { type: 'document', value: 'value1', label: 'Value 1' },
       { type: 'document', value: 'value2', label: 'Value 2' },
-      { type: 'entity', value: 'value4', label: 'Value 4' },
+      { type: 'entity', value: 'value4', label: 'Value 4', authorized: false },
     ],
     relationship3: [
       { value: 'value1', label: 'Value 1', inheritedValue: [{ value: 'how' }] },

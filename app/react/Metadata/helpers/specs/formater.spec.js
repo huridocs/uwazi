@@ -85,6 +85,7 @@ describe('metadata formater', () => {
       icon: undefined,
       url: `/entity/${value.toLowerCase().replace(/ /g, '')}`,
       value,
+      ...(originalValue.authorized && { authorized: originalValue.authorized }),
       ...(originalValue ? { originalValue } : {}),
     });
 

@@ -58,11 +58,12 @@ enum ItemTypes {
   ROW = 'row',
 }
 
-export type ClientFeatureFlags = {
+type ClientFeatureFlags = {
   paragraphExtraction?: boolean;
   themeCustomization?: boolean;
   v2CSVImport?: boolean;
   newHeader?: boolean;
+  v2GetEntity?: boolean;
 };
 
 type ClientProperty = Property & {
@@ -86,4 +87,5 @@ export type {
   TranslationValue,
   ClientTemplateSchema,
   ClientProperty,
+  ClientFeatureFlags,
 };
