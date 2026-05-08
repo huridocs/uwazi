@@ -105,7 +105,7 @@ const FiltersTable = () => {
   const handleSave = async () => {
     setDisabled(true);
     const filtersToSave = sanitizeFilters(currentFilters.current);
-    const [error, response] = await settingsAPI.save({ filters: filtersToSave });
+    const [response, error] = await settingsAPI.save({ filters: filtersToSave });
     if (error) {
       notify(
         'error',
@@ -188,9 +188,7 @@ const FiltersTable = () => {
             columns={createColumns(setShowSidepanel)}
             data={filters}
             header={
-              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
-                Filters
-              </Translate>
+              <Translate className="text-left text-base font-semibold text-ink">Filters</Translate>
             }
           />
         </SettingsContent.Body>
