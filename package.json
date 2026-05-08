@@ -120,7 +120,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@elastic/elasticsearch": "7.17",
-    "@fast-csv/format": "^5.0.5",
+    "@fast-csv/format": "5.0.7",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
