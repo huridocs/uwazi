@@ -125,11 +125,13 @@ const slotMappingRegistry: Record<SlotType, MappingProperty> = {
 
 const slotMapping = (slotType: SlotType): MappingProperty => slotMappingRegistry[slotType];
 
-export const createEntityMetadataMapping = () => {
+export const createEntityMetadataMapping = (
+  amounts: Record<string, number> = AmountPerSlotType
+) => {
   const metadata: Record<string, MappingProperty> = {};
 
   SlotBootstrapDefinitions.slotList().forEach(slotType => {
-    const slotAmount = AmountPerSlotType[slotType];
+    const slotAmount = amounts[slotType];
     if (!slotAmount) throw new Error(`No slot amount defined for prefix: ${slotType}`);
 
     for (let i = 0; i < slotAmount; i += 1) {

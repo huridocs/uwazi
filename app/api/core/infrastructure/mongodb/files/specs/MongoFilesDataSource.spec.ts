@@ -122,7 +122,7 @@ const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
   const fullTextIndexer = TestUtils.mockClass<FullTextIndexerService>({
     index: jest.fn().mockResolvedValue(undefined),
-    deleteByFilenames: jest.fn().mockResolvedValue(undefined),
+    remove: jest.fn().mockResolvedValue(undefined),
   });
   const ds = new MongoFilesDataSource(
     getConnection(),
@@ -608,7 +608,7 @@ describe('MongoFilesDataSource', () => {
       await ds.delete([processedPdf, attachment]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(fullTextIndexer.deleteByFilenames).toHaveBeenCalledWith([processedPdf.filename]);
+      expect(fullTextIndexer.remove).toHaveBeenCalledWith([processedPdf.filename]);
     });
   });
 });
