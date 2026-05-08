@@ -251,9 +251,7 @@ const Collection = () => {
                 <CollectionOptionToggle
                   valueKey="private"
                   label={
-                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
-                      Public instance
-                    </Translate>
+                    <Translate className="text-sm font-medium text-ink">Public instance</Translate>
                   }
                   tip={tips.publicSharing}
                   register={register}
@@ -262,7 +260,7 @@ const Collection = () => {
                 <CollectionOptionToggle
                   valueKey="filterUnauthorizedRelated"
                   label={
-                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                    <Translate className="text-sm font-medium text-ink">
                       Hide restricted relationships
                     </Translate>
                   }
@@ -273,7 +271,7 @@ const Collection = () => {
                 <CollectionOptionToggle
                   valueKey="cookiepolicy"
                   label={
-                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                    <Translate className="text-sm font-medium text-ink">
                       Show cookie policy
                     </Translate>
                   }
@@ -283,11 +281,7 @@ const Collection = () => {
                 />
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
-                  label={
-                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
-                      Global JS
-                    </Translate>
-                  }
+                  label={<Translate className="text-sm font-medium text-ink">Global JS</Translate>}
                   tip={tips.globalJS}
                   register={register}
                   defaultChecked={formData.allowcustomJS}
@@ -296,7 +290,7 @@ const Collection = () => {
                   <CollectionOptionToggle
                     valueKey="newNameGeneration"
                     label={
-                      <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                      <Translate className="text-sm font-medium text-ink">
                         Non-latin characters support
                       </Translate>
                     }
@@ -313,7 +307,7 @@ const Collection = () => {
                 <span className="flex gap-4">
                   <Translate>Analytics</Translate>
                   <Tooltip content={tips.analytics} placement="right">
-                    <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
+                    <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
                   </Tooltip>
                 </span>
               }
@@ -339,7 +333,11 @@ const Collection = () => {
               <Card className="mb-4" title={<Translate>Services</Translate>}>
                 <CollectionOptionToggle
                   valueKey="ocrServiceEnabled"
-                  label="Document OCR trigger"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Document OCR trigger
+                    </Translate>
+                  }
                   tip={tips.ocrTrigger}
                   register={register}
                   defaultChecked={formData.ocrServiceEnabled}
@@ -377,7 +375,11 @@ const Collection = () => {
                 </div>
                 <CollectionOptionToggle
                   valueKey="openPublicEndpoint"
-                  label="Allow captcha bypass"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Allow captcha bypass
+                    </Translate>
+                  }
                   tip={tips.openPublicForm}
                   register={register}
                   defaultChecked={formData.openPublicEndpoint}
