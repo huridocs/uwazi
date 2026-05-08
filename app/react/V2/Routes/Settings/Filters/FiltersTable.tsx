@@ -2,11 +2,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
+import { useSetAtom } from 'jotai';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { useSetAtom } from 'jotai';
 import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
@@ -32,7 +32,8 @@ import {
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
   async () => {
-    const { filters } = await settingsAPI.get(headers);
+    const [settings] = await settingsAPI.get(headers);
+    const { filters } = settings || { filters: [] };
     const templates = await templatesAPI.get(headers);
     const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
     return { filters: tableFilters, templates };
@@ -104,13 +105,13 @@ const FiltersTable = () => {
   const handleSave = async () => {
     setDisabled(true);
     const filtersToSave = sanitizeFilters(currentFilters.current);
-    const response = await settingsAPI.save({ filters: filtersToSave });
-    if (response instanceof FetchResponseError) {
+    const [error, response] = await settingsAPI.save({ filters: filtersToSave });
+    if (error) {
       notify(
         'error',
         t('System', 'An error occurred', null, false),
         undefined,
-        response.message || undefined
+        (error as FetchResponseError | undefined)?.message || undefined
       );
       return;
     }
@@ -118,7 +119,7 @@ const FiltersTable = () => {
     setDisabled(false);
     setHasChanges(false);
     await revalidator.revalidate();
-    return notify('success', t('System', 'Filters saved', null, false));
+    notify('success', t('System', 'Filters saved', null, false));
   };
 
   const handleSelect = ({

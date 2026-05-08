@@ -17,7 +17,6 @@ import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
@@ -31,7 +30,7 @@ type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const raw = await SettingsAPI.get(headers);
+    const [raw] = await SettingsAPI.get(headers);
     const { themeCustomization: themeCustomizationFlag, ...settings } =
       raw as SettingsWithThemeFlag;
     const [templates, customFilesRaw] = await Promise.all([
@@ -127,13 +126,13 @@ const Collection = () => {
     }
     data.private = !data.private;
     const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
-    const response = await SettingsAPI.save(rest);
-    if (response instanceof FetchResponseError) {
+    const [response, error] = await SettingsAPI.save(rest);
+    if (error) {
       notify(
         'error',
         t('System', 'An error occurred', null, false),
         undefined,
-        response.message || undefined
+        error.message || undefined
       );
     } else {
       setSettings(prev => mergeClientSettings(prev, response));
@@ -146,7 +145,7 @@ const Collection = () => {
     <span className="flex gap-4">
       {label}
       <Tooltip content={tip} placement="right">
-        <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
+        <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
       </Tooltip>
     </span>
   );
