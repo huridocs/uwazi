@@ -390,6 +390,7 @@ File updated,Файл оновлено
 Files,Файли
 Files and database usage,Використання файлів і баз даних
 Fill,Заповнити
+Filter relationships,Filter relationships
 Filters,Фільтри
 Filters AND operator,І
 Filters configuration,Фільтри
@@ -421,6 +422,7 @@ General Information,Загальна інформація
 Generated ID,Згенерований ідентифікатор
 Global CSS,Глобальні CSS
 Global CSS & JS,Глобальний CSS та JS
+Global JS,Global JS
 Google,Google
 Google Analytics,Google Аналітики
 Google Analytics ID,ID Google Аналітики
@@ -442,6 +444,7 @@ here,тут.
 Hide,Hide
 Hide actions,Приховати дії
 Hide label,Приховати мітку
+Hide restricted relationships,Hide restricted relationships
 Hide toolbar,Приховати панель інструментів
 https://yourdomain,https://вашдомен
 hubs,хаби
@@ -650,6 +653,7 @@ No Value,Немає значення
 "No, cancel","Ні, скасуй."
 Non processed,Не оброблений
 Non-labeled,Без маркування
+Non-latin characters support,Non-latin characters support
 Normal view,Нормальний вигляд
 Not already been use as source template in another extractor,Не використовувався як вихідний шаблон в іншому екстракторі
 Not already been use as target template,Ще не використовувався як цільовий шаблон
@@ -769,6 +773,7 @@ Public form settings description,Тут ви можете налаштувати
 Public Form submit URL,Публічна форма надсилання URL-адреси
 Public form URL description,"Якщо ви налаштували публічну форму і хочете, щоб інша колекція Uwazi отримувала заявки, введіть URL-адресу цієї колекції тут."
 Public form whitelist description,"Якщо ви хочете включити публічні форми на свої сторінки, ви повинні додати ідентифікатори шаблонів, для яких очікуються публічні форми, до білого списку."
+Public instance,Public instance
 Publish,Опублікувати
 Published,У відкритому доступі
 QR Code,QR-код

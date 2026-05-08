@@ -1,6 +1,23 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login.js';
 
+const clickToggleButton = (label: string) => {
+  cy.contains('span', label)
+    .parent()
+    .within(() => {
+      cy.get('label').click();
+    });
+};
+
+const checkToggleButton = (label: string, checked: boolean) => {
+  cy.contains('span', label)
+    .parent()
+    .within(() => {
+      cy.get('input').should(checked ? 'be.checked' : 'not.be.checked');
+    });
+};
+
+// eslint-disable-next-line max-statements
 describe('Collection', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
@@ -41,7 +58,7 @@ describe('Collection', () => {
     cy.get('#sending-email').type('email@mailer.com', { delay: 0 });
     cy.get('#receiving-email').type('reciever@mailer.com', { delay: 0 });
     cy.get('#public-form-destination').type('/public/form/url', { delay: 0 });
-    cy.get('[data-testid="enable-button-checkbox"]').eq(3).click();
+    clickToggleButton('Non-latin characters support');
   });
 
   it('should save Whitelisted templates successfully', () => {
@@ -67,11 +84,11 @@ describe('Collection', () => {
   });
 
   it('should enable public instance, show cookies policy and Global JS', () => {
-    cy.get('[data-testid="enable-button-checkbox"]').eq(0).click();
-    cy.get('[data-testid="enable-button-checkbox"]').eq(1).click();
-    cy.get('[data-testid="enable-button-checkbox"]').eq(2).click();
-    cy.get('[data-testid="enable-button-checkbox"]').eq(3).click();
-    cy.get('[data-testid="enable-button-checkbox"]').eq(4).click();
+    clickToggleButton('Public instance');
+    clickToggleButton('Show cookie policy');
+    clickToggleButton('Global JS');
+    clickToggleButton('Non-latin characters support');
+    clickToggleButton('Allow captcha bypass');
   });
 
   it('should save', () => {
@@ -94,21 +111,10 @@ describe('Collection', () => {
   });
 
   it('should have changed all the buttons', () => {
-    cy.get('[data-testid="enable-button-checkbox"]')
-      .eq(0)
-      .within(() => {
-        cy.get('input').should('not.be.checked');
-      });
-    cy.get('[data-testid="enable-button-checkbox"]')
-      .eq(1)
-      .within(() => {
-        cy.get('input').should('be.checked');
-      });
-    cy.get('[data-testid="enable-button-checkbox"]')
-      .eq(2)
-      .within(() => {
-        cy.get('input').should('be.checked');
-      });
+    checkToggleButton('Public instance', false);
+    checkToggleButton('Show cookie policy', true);
+    checkToggleButton('Global JS', true);
+    checkToggleButton('Allow captcha bypass', true);
   });
 
   it('should successfully have selected Map view and loaded maplayers', () => {

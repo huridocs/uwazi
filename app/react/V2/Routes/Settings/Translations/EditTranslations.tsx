@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-lines */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -13,14 +14,21 @@ import {
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
+import RenderIfVisibleModule from 'react-render-if-visible';
 import { t, Translate } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { ClientTranslationSchema } from '#app/istore.js';
-import { InputField } from '#app/V2/Components/Forms/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import RenderIfVisibleModule from 'react-render-if-visible';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, ToggleButton, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+import * as translationsAPI from '#V2/api/translations/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { Settings } from '#shared/types/settingsType.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { LanguagePill } from './components/LanguagePill.js';
 
 // eslint-disable-next-line react/prop-types -- typed via ComponentType<>
 const Fallback: React.ComponentType<{ children: React.ReactNode }> = ({ children }) => (
@@ -31,20 +39,12 @@ const RenderIfVisible = resolveDefaultExport<React.ComponentType<{ children: Rea
   Fallback,
   c => typeof c === 'function'
 );
-import * as translationsAPI from '#V2/api/translations/index.js';
-import * as settingsAPI from '#V2/api/settings/index.js';
-import { availableLanguages } from '#shared/language/index.js';
-import { Settings } from '#shared/types/settingsType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { LanguagePill } from './components/LanguagePill.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }: { params: Params }) => {
     const translations = await translationsAPI.get(headers, params);
-    const settings = await settingsAPI.get(headers);
-
+    const [settings] = await settingsAPI.get(headers);
     const sortedTranslations = translations.map(language => {
       const sortedContexts = language.contexts.map(context => {
         const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
@@ -65,7 +65,6 @@ const editTranslationsLoader =
 
 const editTranslationsAction =
   (): ActionFunction =>
-  // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
     const formData = await request.formData();
     const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
@@ -185,7 +184,6 @@ const calculateTableData = (terms: string[], formValues: formValuesType, hideTra
     })
     .filter(v => v);
 
-// eslint-disable-next-line max-statements
 const EditTranslations = () => {
   const { translations, settings } = useLoaderData() as {
     translations: ClientTranslationSchema[];
