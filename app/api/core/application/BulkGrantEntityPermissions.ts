@@ -6,7 +6,7 @@ import { AccessGrantProps } from '../domain/entityAccessPolicy/AccessGrant.js';
 type Input = {
   sharedIds: string[];
   grants: AccessGrantProps[];
-  isPublic: boolean | undefined;
+  isPublic?: boolean;
 };
 
 type Output = void;

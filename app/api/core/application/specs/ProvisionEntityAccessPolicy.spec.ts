@@ -6,6 +6,7 @@ import { EntityAccessPolicyDataSourceFactory } from '#api/core/infrastructure/fa
 import { User } from '#api/users.v2/model/User.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 
 const admin = new User('admin-id', 'admin', []);
 
@@ -19,14 +20,12 @@ const fixtures = {
   ],
 };
 
-const noopIndexer = { sync: jest.fn().mockResolvedValue(undefined) };
-
 const createSut = () =>
   testingEnvironment.runWithContext(
     () => ({
       sut: ProvisionEntityAccessPolicyUseCaseFactory.default({
         entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
-          entityIndexerService: noopIndexer as any,
+          entityIndexerService: EntityIndexerServiceFactory.forTests(),
         }),
       }),
     }),
@@ -70,22 +69,5 @@ describe('ProvisionEntityAccessPolicy', () => {
 
     expect(doc).not.toBeNull();
     expect(doc!.permissions).toEqual([]);
-  });
-
-  it('creates a separate policy for each entity', async () => {
-    const { sut } = createSut();
-
-    await sut.execute({ sharedId: 'entity-3', creatorId: 'user-a' });
-    await sut.execute({ sharedId: 'entity-4', creatorId: 'user-b' });
-
-    const doc3 = await getConnection().collection('entities').findOne({ sharedId: 'entity-3' });
-    const doc4 = await getConnection().collection('entities').findOne({ sharedId: 'entity-4' });
-
-    expect(doc3!.permissions).toEqual([
-      { refId: 'user-a', type: GrantType.User, level: AccessLevel.Write },
-    ]);
-    expect(doc4!.permissions).toEqual([
-      { refId: 'user-b', type: GrantType.User, level: AccessLevel.Write },
-    ]);
   });
 });

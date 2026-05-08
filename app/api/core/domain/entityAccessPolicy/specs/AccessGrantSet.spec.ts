@@ -30,7 +30,7 @@ describe('AccessGrantSet', () => {
     const set = AccessGrantSet.create([
       { refId: 'u1', type: GrantType.User, level: AccessLevel.Write },
     ]);
-    const items = set.items;
+    const { items } = set;
     items.pop(); // mutate the copy
     expect(set.size).toBe(1); // original unchanged
   });

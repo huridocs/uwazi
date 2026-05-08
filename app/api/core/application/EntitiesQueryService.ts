@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -8,7 +9,6 @@ import {
   Specification,
 } from '../domain/entity/EntityPermissionChecker.js';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
-import { AccessLevel } from '../domain/entity/AccessLevel.js';
 import { PermissionType } from '../domain/entity/PermissionType.js';
 import { Template } from '../domain/template/Template.js';
 import {
@@ -18,7 +18,7 @@ import {
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
-import { EntityAccessPolicyDataSource } from './contracts/EntityAccessPolicyDataSource.js';
+import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -26,7 +26,6 @@ type Deps = {
   entityPermissionChecker: EntityPermissionChecker;
   entityDAO: MongoEntityDAO;
   relationshipsDataSource: MongoRelationshipsV1DataSource;
-  entityAccessPolicyDS: EntityAccessPolicyDataSource;
 };
 
 class EntitiesQueryService {
@@ -72,7 +71,7 @@ class EntitiesQueryService {
         : relations.filter(rel => rel.entityData?.published !== false);
     }
 
-    await this.applyPermissionsFieldSecurity(entity, user, includePermissions);
+    this.applyPermissionsFieldSecurity(entity, user, includePermissions);
 
     const response: GetEntityResponseDTO = {
       ...entity,
@@ -107,11 +106,11 @@ class EntitiesQueryService {
     );
   }
 
-  private async applyPermissionsFieldSecurity(
+  private applyPermissionsFieldSecurity(
     entity: EntityWithFiles,
     user: User,
     includePermissions: boolean
-  ): Promise<void> {
+  ): void {
     if (!includePermissions || user.isAnonymous()) {
       delete entity.permissions;
       return;
@@ -119,19 +118,15 @@ class EntitiesQueryService {
 
     if (user.isPrivileged()) return;
 
-    const policyResult = await this.deps.entityAccessPolicyDS.getBySharedId(entity.sharedId);
+    if (entity.published) return;
 
-    if (policyResult.isError()) {
-      // Policy not yet provisioned — treat as private
-      delete entity.permissions;
-      return;
-    }
-
-    const policy = policyResult.getData();
-
-    if (policy.allowsPublicRead()) return;
-
-    const hasWrite = policy.allowsUserWrite(user._id, user.groups);
+    const userIds = [user._id, ...user.groups];
+    const hasWrite =
+      Array.isArray(entity.permissions) &&
+      entity.permissions.some((p: any) => {
+        const refId = p.refId?.toString?.() ?? p.refId;
+        return p.level === AccessLevel.Write && userIds.includes(refId);
+      });
 
     if (!hasWrite) delete entity.permissions;
   }

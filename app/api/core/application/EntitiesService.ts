@@ -157,11 +157,9 @@ class EntitiesService {
 
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
-        entities.map(async entity => {
-          await this.deps.eventBus.emit(
-            EntityCreatedEvent.fromEntity(entity, context.targetLanguage)
-          );
-        })
+        entities.map(async entity =>
+          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage))
+        )
       );
     });
   }

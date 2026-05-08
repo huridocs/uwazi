@@ -11,7 +11,6 @@ import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1D
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
-import { EntityAccessPolicyDataSourceFactory } from './EntityAccessPolicyDataSourceFactory.js';
 
 type FactoryDeps = Partial<EntitiesQueryServiceDeps> & {
   transactionManager?: MongoTransactionManager;
@@ -31,8 +30,6 @@ class EntitiesQueryServiceFactory {
       relationshipsDataSource:
         deps?.relationshipsDataSource ??
         new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-      entityAccessPolicyDS:
-        deps?.entityAccessPolicyDS ?? EntityAccessPolicyDataSourceFactory.default(),
     });
   }
 }

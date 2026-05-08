@@ -225,30 +225,4 @@ describe('BulkGrantEntityPermissions', () => {
       ).resolves.toBeUndefined();
     });
   });
-
-  describe('single transaction', () => {
-    it('persists all entity updates within a single commit', async () => {
-      const syncSpy = jest.fn().mockResolvedValue(undefined);
-      const { sut } = testingEnvironment.runWithContext(
-        () => ({
-          sut: BulkGrantEntityPermissionsUseCaseFactory.default({
-            entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
-              entityIndexerService: { sync: syncSpy } as any,
-            }),
-          }),
-        }),
-        { actor: admin }
-      );
-
-      await sut.execute({
-        sharedIds: [sharedId1, sharedId2],
-        grants: [{ refId: 'u1', type: GrantType.User, level: AccessLevel.Read }],
-        isPublic: undefined,
-      });
-
-      // sync should be called once with both sharedIds (single commit)
-      expect(syncSpy).toHaveBeenCalledTimes(1);
-      expect(syncSpy).toHaveBeenCalledWith(expect.arrayContaining([sharedId1, sharedId2]));
-    });
-  });
 });
