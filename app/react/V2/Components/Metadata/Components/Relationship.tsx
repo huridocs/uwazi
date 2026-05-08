@@ -19,16 +19,8 @@ const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
 ): value is RelatedRelationshipMetadataProperty['values'][number] => 'title' in value;
 
-// authorized nevers comes as true. It's either false or not present.
-const hasAuthorized = (value: RelatedRelationshipMetadataProperty['values'][number]) =>
-  !(value.authorized === false);
-
 const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => {
   if (!Array.isArray(values) || !values.length || !values.every(isEntityRelationshipValue)) {
-    return null;
-  }
-
-  if (!values.some(hasAuthorized)) {
     return null;
   }
 
@@ -43,11 +35,17 @@ const Relationship = ({ label, translationContext, hideLabel, values }: Relation
       </dt>
       <dd className="flex flex-col gap-1">
         {values.map((value, index) => {
+          const itemKey = value._id || `${label}-${index}`;
+
           if (value.authorized === false) {
-            return null;
+            return (
+              <span key={itemKey} className="flex flex-row flex-nowrap gap-2 align-middle">
+                {value.icon?._id && <CountryFlag id={value.icon._id} />}
+                <span>{value.title}</span>
+              </span>
+            );
           }
 
-          const itemKey = value._id || `${label}-${index}`;
           return (
             <span key={itemKey} className="flex flex-row flex-nowrap gap-2 align-middle">
               {value.icon?._id && <CountryFlag id={value.icon._id} />}

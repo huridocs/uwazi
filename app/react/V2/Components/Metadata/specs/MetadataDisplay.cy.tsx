@@ -58,7 +58,7 @@ describe('Metadata Display', () => {
         .parent()
         .find('span[role="img"]')
         .should('exist');
-      cy.contains('This value should not display').should('not.exist');
+      cy.contains('This value should not display').should('not.have.attr', 'href');
     });
 
     it('renders external link property as anchor with correct href', () => {
