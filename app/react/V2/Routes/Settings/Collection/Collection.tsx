@@ -250,21 +250,44 @@ const Collection = () => {
                 </div>
                 <CollectionOptionToggle
                   valueKey="private"
-                  label="Public instance"
+                  label={
+                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                      Public instance
+                    </Translate>
+                  }
                   tip={tips.publicSharing}
                   register={register}
                   defaultChecked={formData.private}
                 />
                 <CollectionOptionToggle
+                  valueKey="filterUnauthorizedRelated"
+                  label={
+                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                      Hide restricted relationships
+                    </Translate>
+                  }
+                  tip={tips.filterUnauthorizedRelated}
+                  register={register}
+                  defaultChecked={formData.filterUnauthorizedRelated}
+                />
+                <CollectionOptionToggle
                   valueKey="cookiepolicy"
-                  label="Show cookie policy"
+                  label={
+                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                      Show cookie policy
+                    </Translate>
+                  }
                   tip={tips.cookiePolicy}
                   register={register}
                   defaultChecked={formData.cookiepolicy}
                 />
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
-                  label="Global JS"
+                  label={
+                    <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                      Global JS
+                    </Translate>
+                  }
                   tip={tips.globalJS}
                   register={register}
                   defaultChecked={formData.allowcustomJS}
@@ -272,7 +295,11 @@ const Collection = () => {
                 {!settings.newNameGeneration && (
                   <CollectionOptionToggle
                     valueKey="newNameGeneration"
-                    label="Non-latin characters support"
+                    label={
+                      <Translate className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+                        Non-latin characters support
+                      </Translate>
+                    }
                     tip={tips.characterSupport}
                     register={register}
                     defaultChecked={formData.newNameGeneration}

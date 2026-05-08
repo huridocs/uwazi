@@ -187,3 +187,7 @@ export const globalJS = (
     </Translate>
   </>
 );
+
+export const filterUnauthorizedRelated = (
+  <Translate translationKey="Filter relationships">Filter relationships</Translate>
+);
