@@ -201,7 +201,7 @@ describe('metadata formater', () => {
       assessMultiValues(relationship2, [
         formatValue('Value 1', 'value1'),
         formatValue('Value 2', 'value2'),
-        formatValue('Value 4', 'value4'),
+        { ...formatValue('Value 4', 'value4'), authorized: false },
       ]);
     });
 
