@@ -1,10 +1,19 @@
-import { MetadataSchema, MetadataObjectSchema } from '#shared/types/commonTypes.js';
+import type { MetadataObjectSchema as CommonMetadataObjectSchema } from '#shared/types/commonTypes.js';
 import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import type { FileType as ApiFileType } from '#shared/types/fileType.js';
 
 interface FileType extends Omit<ApiFileType, '_id'> {
   _id: string;
 }
+
+type MetadataObjectSchema = CommonMetadataObjectSchema & {
+  // authorized is either false or not present.
+  authorized?: false;
+};
+
+type MetadataSchema = {
+  [k: string]: MetadataObjectSchema[] | undefined;
+};
 
 interface Entity extends Omit<
   EntityWithFilesSchema,

@@ -33,6 +33,7 @@ describe('formatRelationshipProperty', () => {
         value: 'entity5',
         label: 'Fire Incident - Downtown',
         icon: '',
+        authorized: false,
       },
     ],
     hierarchical_relationships: [
@@ -157,6 +158,7 @@ describe('formatRelationshipProperty', () => {
         },
         {
           _id: 'entity5',
+          authorized: false,
           title: 'Fire Incident - Downtown',
         },
       ],

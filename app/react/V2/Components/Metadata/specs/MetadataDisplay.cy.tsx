@@ -49,7 +49,7 @@ describe('Metadata Display', () => {
       cy.contains('span', 'Grouped verbs: verb1').should('exist');
     });
 
-    it('renders relationship links with correct hrefs', () => {
+    it('renders authorized relationship links with correct hrefs', () => {
       cy.contains('dt', 'Relationship with inheritance').should('exist');
       cy.contains('a.underline', 'Traffic Accident - Main Street')
         .should('have.attr', 'href', '/entityv2/entity4')
@@ -58,6 +58,7 @@ describe('Metadata Display', () => {
         .parent()
         .find('span[role="img"]')
         .should('exist');
+      cy.contains('This value should not display').should('not.exist');
     });
 
     it('renders external link property as anchor with correct href', () => {
