@@ -24,6 +24,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
+import { isClient } from '#app/utils/index.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
@@ -257,17 +258,19 @@ const Collection = () => {
                   register={register}
                   defaultChecked={formData.private}
                 />
-                <CollectionOptionToggle
-                  valueKey="filterUnauthorizedRelated"
-                  label={
-                    <Translate className="text-sm font-medium text-ink">
-                      Hide restricted relationships
-                    </Translate>
-                  }
-                  tip={tips.filterUnauthorizedRelated}
-                  register={register}
-                  defaultChecked={formData.filterUnauthorizedRelated}
-                />
+                {isClient && window.__featureFlags__?.v2GetEntity && (
+                  <CollectionOptionToggle
+                    valueKey="filterUnauthorizedRelated"
+                    label={
+                      <Translate className="text-sm font-medium text-ink">
+                        Hide restricted relationships
+                      </Translate>
+                    }
+                    tip={tips.filterUnauthorizedRelated}
+                    register={register}
+                    defaultChecked={formData.filterUnauthorizedRelated}
+                  />
+                )}
                 <CollectionOptionToggle
                   valueKey="cookiepolicy"
                   label={
