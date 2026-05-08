@@ -102,7 +102,8 @@ const PXParagraphLoader =
       totalRows: 0,
     };
 
-    const defaultLanguage = (await settingsApi.get(headers)).languages?.find(lang => lang.default);
+    const [settings] = await settingsApi.get(headers);
+    const defaultLanguage = settings?.languages?.find(lang => lang.default);
 
     const extractors = await extractorsAPI.get(headers);
     const extractor = extractors.find(ext => ext._id === extractorId);

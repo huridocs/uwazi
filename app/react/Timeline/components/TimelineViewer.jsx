@@ -51,6 +51,8 @@ const fetchReferenceData = references => {
   return Promise.all(fetchPromises);
 };
 
+const isValidTimestamp = value => typeof value === 'number' && Number.isFinite(value);
+
 const assignDataToYear = (years, date, data) => {
   const year = DateTime.fromSeconds(date, { zone: 'utc' }).toFormat('yyyy');
   years[year] = years[year] || [];
@@ -165,7 +167,7 @@ class TimelineViewer extends Component {
     references.forEach(reference => {
       const isDesiredTemplate = desiredTemplates.indexOf(reference.data.template !== -1);
       const metadataProperty = reference.data.metadata[dateProperties[reference.data.template]];
-      const hasDate = metadataProperty[0] && metadataProperty[0].value !== null;
+      const hasDate = metadataProperty[0] && isValidTimestamp(metadataProperty[0].value);
       if (isDesiredTemplate && hasDate) {
         assignDataToYear(
           years,
@@ -266,7 +268,9 @@ class TimelineViewer extends Component {
         const relatedDates = relatedEntity
           ? this.getDates(relatedEntity, isCase ? 'related' : 'main')
           : [];
-        const dates = entityDates.concat(relatedDates);
+        const dates = entityDates
+          .concat(relatedDates)
+          .filter(date => isValidTimestamp(date.timestamp));
 
         const isMainMatter = !isCase && !relatedEntity;
 

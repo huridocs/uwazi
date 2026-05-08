@@ -1,6 +1,9 @@
 import React from 'react';
 import { I18NLinkV2 } from '#app/I18N/index.js';
-import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import {
+  RelationshipMetadataProperty,
+  RelatedRelationshipMetadataProperty,
+} from '#V2/formatters/types.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
@@ -14,12 +17,7 @@ type RelationshipProps = MetadataFieldProps & {
 
 const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
-): value is {
-  _id: string;
-  title: string;
-  templateId?: string;
-  icon?: { _id: string; label?: string };
-} => 'title' in value;
+): value is RelatedRelationshipMetadataProperty['values'][number] => 'title' in value;
 
 const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => {
   if (!Array.isArray(values) || !values.length || !values.every(isEntityRelationshipValue)) {
@@ -38,6 +36,16 @@ const Relationship = ({ label, translationContext, hideLabel, values }: Relation
       <dd className="flex flex-col gap-1">
         {values.map((value, index) => {
           const itemKey = value._id || `${label}-${index}`;
+
+          if (value.authorized === false) {
+            return (
+              <span key={itemKey} className="flex flex-row flex-nowrap gap-2 align-middle">
+                {value.icon?._id && <CountryFlag id={value.icon._id} />}
+                <span>{value.title}</span>
+              </span>
+            );
+          }
+
           return (
             <span key={itemKey} className="flex flex-row flex-nowrap gap-2 align-middle">
               {value.icon?._id && <CountryFlag id={value.icon._id} />}
