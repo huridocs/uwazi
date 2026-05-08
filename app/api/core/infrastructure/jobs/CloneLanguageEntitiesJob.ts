@@ -48,7 +48,7 @@ class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
     try {
       for (const { from, to } of params.pairs) {
         // eslint-disable-next-line no-await-in-loop
-        await this.deps.entityDAO.cloneForLanguage(from, to, batch =>
+        await this.deps.entityDAO.cloneForLanguage(from, to, async batch =>
           this.deps.entityIndexer.sync(batch.map(e => e.sharedId))
         );
         // eslint-disable-next-line no-await-in-loop
