@@ -290,7 +290,7 @@
     "@babel/traverse": "^7.28.6",
     "@cfaester/enzyme-adapter-react-18": "^0.8.0",
     "@chromatic-com/storybook": "^5.1.2",
-    "@cypress/webpack-preprocessor": "^7.0.2",
+    "@cypress/webpack-preprocessor": "7.1.0",
     "@eslint/compat": "2.1.0",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.15.0",
