@@ -193,7 +193,7 @@ const formater = {
         : relatedEntity;
     }
 
-    return { value, originalValue, url, authorized, icon, parent, relatedEntity };
+    return { value, originalValue, url, icon, parent, relatedEntity, ...authorized };
   },
 
   multimedia(property, [{ value }], type) {
