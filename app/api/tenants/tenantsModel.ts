@@ -44,7 +44,7 @@ const mongoSchema = new mongoose.Schema({
     v2MultipleUpdateEntity: Boolean,
     v2ElasticSearch: Boolean,
     v2DeleteEntity: Boolean,
-    v2AddLanguage: Boolean,
+    v2Languages: Boolean,
     newHeader: Boolean,
   },
   globalMatomo: { id: String, url: String },

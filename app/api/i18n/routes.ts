@@ -18,6 +18,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
+import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
 
@@ -254,7 +255,7 @@ export default (app: Application) => {
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
 
-      if (tenants.current().featureFlags?.v2AddLanguage) {
+      if (tenants.current().featureFlags?.v2Languages) {
         await AddLanguageUseCaseFactory.default().execute({ languages });
         for (const language of languages) {
           // eslint-disable-next-line no-await-in-loop
@@ -292,8 +293,17 @@ export default (app: Application) => {
 
       const currentSettings = await settings.get();
       const language = currentSettings.languages?.find(l => l.key === key);
-      if (language?.installing) {
-        res.status(409).json({ error: 'Language is still being installed' });
+      if (!language || language.installing) {
+        res.status(409).json({ error: 'Language is still being installed or does not exist' });
+        return;
+      }
+
+      if (tenants.current().featureFlags?.v2Languages) {
+        await DeleteLanguageUseCaseFactory.default().execute({ key });
+        const newSettings = await settings.get();
+        req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+        req.sockets.emitToCurrentTenant('translationsDelete', key);
+        res.sendStatus(204);
         return;
       }
 

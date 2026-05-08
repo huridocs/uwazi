@@ -5,6 +5,7 @@ export interface SettingsDataSource {
   getLanguageKeys(): Promise<LanguageISO6391[]>;
   addLanguage(language: LanguageSchema): Promise<void>;
   setLanguageInstalling(key: LanguageISO6391, installing: boolean): Promise<void>;
+  deleteLanguage(key: LanguageISO6391): Promise<void>;
   getDefaultLanguageKey(): Promise<LanguageISO6391>;
   readNewRelationshipsAllowed(): Promise<boolean>;
   readFilterUnauthorizedRelated(): Promise<boolean>;

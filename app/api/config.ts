@@ -140,7 +140,7 @@ export const config = {
       v2MultipleUpdateEntity: false,
       v2ElasticSearch: false,
       v2DeleteEntity: false,
-      v2AddLanguage: false,
+      v2Languages: false,
       newHeader: NEW_HEADER === 'true' || false,
     },
   },

@@ -25,6 +25,10 @@ export class MongoSettingsDataSource
     );
   }
 
+  async deleteLanguage(key: LanguageISO6391): Promise<void> {
+    await this.getCollection().updateOne({}, { $pull: { languages: { key } } });
+  }
+
   async getInstalledLanguages(): Promise<LanguagesListSchema> {
     const settings = await this.readSettings();
     if (!settings?.languages) {
