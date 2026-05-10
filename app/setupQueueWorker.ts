@@ -35,7 +35,6 @@ import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { UserSchema } from '#shared/types/userType.js';
 import users from '#api/users/users.js';
 import { User } from '#api/users.v2/model/User.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -68,9 +67,6 @@ function register<T extends Dispatchable>(
       let actor: UserSchema | null = null;
       if (job.params.userId) {
         actor = await users.getById(job.params.userId, '-password', true);
-        if (actor) {
-          permissionsContext.setUserInContext(actor); // v1 backwards compatibility
-        }
       }
       deps = {
         actor: User.createFrom(actor),
@@ -81,9 +77,8 @@ function register<T extends Dispatchable>(
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,
-          elasticClient: () => ElasticSearchClientFactory.tenantAware(namespace),
-          authorizedEntityESClient: () =>
-            ElasticSearchClientFactory.authorizedEntityClient(namespace, User.createFrom(actor)),
+          elasticClient: ElasticSearchClientFactory.tenantAware,
+          authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
         },
       };
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));

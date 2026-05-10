@@ -4,6 +4,7 @@ import { BaseMetadataProperty, MetadataProperty, RelationshipMetadataProperty } 
 type MetadataValue = {
   value?: unknown;
   label?: string;
+  authorized?: false;
   icon?: { _id?: string; label?: string } | string;
   inheritedValue?: MetadataValue[];
   inheritedType?: BaseMetadataProperty['inheritedType'];
@@ -16,6 +17,9 @@ const mapRelationshipValue = (metadataValue: MetadataValue) => {
   return {
     _id: String(metadataValue?.value || ''),
     title: metadataValue?.label || '',
+    ...(typeof metadataValue?.authorized === 'boolean' && {
+      authorized: metadataValue.authorized,
+    }),
     ...(icon &&
       icon._id && {
         icon: {

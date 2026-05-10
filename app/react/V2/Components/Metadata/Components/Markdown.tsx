@@ -13,22 +13,25 @@ type MarkdownProps = MetadataFieldProps & {
 
 const markdownParser = new MarkdownIt({ html: true });
 
+const sanitizeOptions = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    a: ['href', 'name', 'target'],
+    img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+  },
+};
+
 const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProps) => {
-  const value = values?.[0]?.value || '';
+  const safeHtmlList = useMemo(
+    () =>
+      (values ?? [])
+        .map(v => sanitizeHtml(markdownParser.render(v.value || ''), sanitizeOptions))
+        .filter(html => html !== ''),
+    [values]
+  );
 
-  const safeHtml = useMemo(() => {
-    const html = markdownParser.render(value);
-    return sanitizeHtml(html, {
-      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-      allowedAttributes: {
-        ...sanitizeHtml.defaults.allowedAttributes,
-        a: ['href', 'name', 'target'],
-        img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
-      },
-    });
-  }, [value]);
-
-  if (safeHtml === '') {
+  if (safeHtmlList.length === 0) {
     return null;
   }
 
@@ -41,10 +44,11 @@ const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProp
           hideLabel={hideLabel}
         />
       </dt>
-      <dd>
-        {/* Allow inserting html since it's sanitized */}
-        {/* eslint-disable-next-line react/no-danger */}
-        <div className="no-tailwind" dangerouslySetInnerHTML={{ __html: safeHtml }} />
+      <dd className="flex flex-col gap-1">
+        {safeHtmlList.map((safeHtml, index) => (
+          // eslint-disable-next-line react/no-array-index-key, react/no-danger
+          <div key={index} className="no-tailwind" dangerouslySetInnerHTML={{ __html: safeHtml }} />
+        ))}
       </dd>
     </MetadataCard>
   );
