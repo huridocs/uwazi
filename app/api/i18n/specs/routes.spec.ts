@@ -523,26 +523,26 @@ describe('i18n translations routes', () => {
       { title: 'V1', featureFlags: { v2Languages: false } },
       { title: 'V2', featureFlags: { v2Languages: true } },
     ])('api/translations/languages ($title)', ({ featureFlags }) => {
-      beforeAll(async () => {
-        await testingEnvironment.setUp({
-          settings: [
-            {
-              languages: [
-                { key: 'en', label: 'English', default: true },
-                { key: 'es', label: 'Spanish', default: false },
-              ],
-            },
-          ],
-        });
-      });
-
       describe('when successful', () => {
         let response: request.Response;
         let mockCalls: any[];
 
         beforeAll(async () => {
           testingTenants.changeCurrentTenant({ featureFlags });
+          await testingEnvironment.setFixtures({
+            settings: [
+              {
+                languages: [
+                  { key: 'en', label: 'English', default: true },
+                  { key: 'es', label: 'Spanish', default: false },
+                ],
+              },
+            ],
+          });
           response = await request(app).delete('/api/translations/languages?key=es').send();
+          await waitForExpect(() => {
+            expect(iosocket.emit.mock.calls.length).toBeGreaterThan(0);
+          });
           mockCalls = iosocket.emit.mock.calls;
         });
 
