@@ -6,6 +6,8 @@ import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors
 import pages from '../index.js';
 import { AddLanguagePagesListener } from '../AddLanguagePagesListener.js';
 
+const user1 = db.id();
+
 const fixtures: DBFixture = {
   settings: [
     {
@@ -21,7 +23,7 @@ const fixtures: DBFixture = {
       sharedId: 'page1',
       language: 'en',
       title: 'Test page',
-      user: 'user1',
+      user: user1.toString(),
     },
   ],
 };
@@ -37,7 +39,7 @@ const createSUT = (settingsDS?: SettingsDataSource) =>
 const dispatch = async (listener: AddLanguagePagesListener, language: string): Promise<void> => {
   await listener.handleDispatch(heartbeat, {
     tenantName: 'localhost',
-    userId: 'user1',
+    userId: user1.toString(),
     language,
     defaultLanguage: 'en',
   } as any);

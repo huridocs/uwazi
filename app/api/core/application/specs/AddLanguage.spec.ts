@@ -225,6 +225,32 @@ describe('AddLanguage use case', () => {
       expect(importPredefinedSpy).not.toHaveBeenCalled();
     });
 
+    it('should return only the newly added languages, not already-installed ones', async () => {
+      const result = await createSut().execute({
+        languages: [
+          { key: 'en', label: 'English' }, // already installed
+          { key: 'es', label: 'Spanish' }, // new
+          { key: 'zh', label: 'Chinese' }, // new
+        ],
+      });
+
+      expect(result).toHaveLength(2);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ key: 'es' }),
+          expect.objectContaining({ key: 'zh' }),
+        ])
+      );
+    });
+
+    it('should return an empty array when all requested languages are already installed', async () => {
+      const result = await createSut().execute({
+        languages: [{ key: 'en', label: 'English' }],
+      });
+
+      expect(result).toEqual([]);
+    });
+
     it('should deduplicate input languages with the same key', async () => {
       const emitSpy = jest.fn().mockResolvedValue(undefined);
       await createSut({ eventEmitter: { emit: emitSpy } }).execute({

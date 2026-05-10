@@ -10,7 +10,7 @@ type Input = {
   languages: LanguageSchema[];
 };
 
-type Output = void;
+type Output = LanguageSchema[];
 
 type Deps = {
   settingsDS: SettingsDataSource;
@@ -26,7 +26,7 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       ...new Map(languages.filter(l => !installedKeys.has(l.key)).map(l => [l.key, l])).values(),
     ];
 
-    if (newLanguages.length === 0) return;
+    if (newLanguages.length === 0) return [];
 
     await this.transactionManager.run(async () => {
       for (const language of newLanguages) {
@@ -51,6 +51,8 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
     for (const language of newLanguages) {
       await this.deps.translationService.importPredefined(language.key);
     }
+
+    return newLanguages;
   }
 }
 

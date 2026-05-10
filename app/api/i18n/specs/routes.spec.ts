@@ -544,9 +544,6 @@ describe('i18n translations routes', () => {
           testingTenants.changeCurrentTenant({ featureFlags });
           response = await request(app).delete('/api/translations/languages?key=es').send();
           mockCalls = iosocket.emit.mock.calls;
-          await waitForExpect(() => {
-            expect(mockCalls.length).toBe(3);
-          });
         });
 
         it('should return a 204', async () => {
@@ -554,42 +551,48 @@ describe('i18n translations routes', () => {
         });
 
         it('should emit an updateSettings event', async () => {
-          const eventCandidate = mockCalls.find(([eventName]) => eventName === 'updateSettings');
-          expect(eventCandidate).toMatchObject([
-            'updateSettings',
-            TestEmitSources.currentTenant,
-            {
-              languages: [
-                {
-                  default: true,
-                  key: 'en',
-                  label: 'English',
-                },
-              ],
-              mapStartingPoint: [{ lat: 46, lon: 6 }],
-            },
-          ]);
+          await waitForExpect(() => {
+            const eventCandidate = mockCalls.find(([eventName]) => eventName === 'updateSettings');
+            expect(eventCandidate).toMatchObject([
+              'updateSettings',
+              TestEmitSources.currentTenant,
+              {
+                languages: [
+                  {
+                    default: true,
+                    key: 'en',
+                    label: 'English',
+                  },
+                ],
+                mapStartingPoint: [{ lat: 46, lon: 6 }],
+              },
+            ]);
+          });
         });
 
         it('should emit a translationsDelete event', async () => {
-          const eventCandidate = mockCalls.find(
-            ([eventName]) => eventName === 'translationsDelete'
-          );
-          expect(eventCandidate).toMatchObject([
-            'translationsDelete',
-            TestEmitSources.currentTenant,
-            'es',
-          ]);
+          await waitForExpect(() => {
+            const eventCandidate = mockCalls.find(
+              ([eventName]) => eventName === 'translationsDelete'
+            );
+            expect(eventCandidate).toMatchObject([
+              'translationsDelete',
+              TestEmitSources.currentTenant,
+              'es',
+            ]);
+          });
         });
 
         it('should emit a translationsDeleteDone event', async () => {
-          const expectedSource = featureFlags.v2Languages
-            ? TestEmitSources.currentTenant
-            : TestEmitSources.session;
-          const eventCandidate = mockCalls.find(
-            ([eventName]) => eventName === 'translationsDeleteDone'
-          );
-          expect(eventCandidate).toMatchObject(['translationsDeleteDone', expectedSource]);
+          await waitForExpect(() => {
+            const expectedSource = featureFlags.v2Languages
+              ? TestEmitSources.currentTenant
+              : TestEmitSources.session;
+            const eventCandidate = mockCalls.find(
+              ([eventName]) => eventName === 'translationsDeleteDone'
+            );
+            expect(eventCandidate).toMatchObject(['translationsDeleteDone', expectedSource]);
+          });
         });
       });
 

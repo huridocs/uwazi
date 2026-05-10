@@ -256,8 +256,8 @@ export default (app: Application) => {
       const languages = req.body as LanguageSchema[];
 
       if (tenants.current().featureFlags?.v2Languages) {
-        await AddLanguageUseCaseFactory.default().execute({ languages });
-        for (const language of languages) {
+        const addedLanguages = await AddLanguageUseCaseFactory.default().execute({ languages });
+        for (const language of addedLanguages) {
           // eslint-disable-next-line no-await-in-loop
           const [newTranslations] = await translations.get({ locale: language.key });
           req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
