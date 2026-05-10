@@ -13,7 +13,7 @@ export class MongoSettingsDataSource
 
   async addLanguage(language: LanguageSchema): Promise<void> {
     await this.getCollection().updateOne(
-      { 'languages.key': { $ne: language.key } },
+      { languages: { $not: { $elemMatch: { key: language.key } } } },
       { $push: { languages: language } }
     );
   }
