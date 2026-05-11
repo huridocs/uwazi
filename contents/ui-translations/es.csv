@@ -386,7 +386,6 @@ File updated,Archivo actualizado
 Files,Archivos
 Files and database usage,Uso de archivos y base de datos
 Fill,Rellenar/completar
-Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtros
 Filters AND operator,Y

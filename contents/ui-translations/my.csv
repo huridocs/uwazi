@@ -388,7 +388,6 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,ဖြည့်ရန်
-Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,စစ်ထုတ်မှုများ
 Filters AND operator,စစ်ထုတ်မှုများနှင့် အော်ပရေတာ
