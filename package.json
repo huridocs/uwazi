@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.228.302",
+  "version": "1.228.304",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -87,9 +87,9 @@
     "cypress": "cypress open",
     "cy-components": "cypress run --component --config video=false --browser chrome",
     "cy-e2e": "cypress run --browser chrome",
-    "es:dev:bootstrap": "tsx scripts/elasticSearch/RebuildESIndex.ts",
-    "es:create:indexes": "tsx scripts/elasticSearch/CreateESIndexes.ts",
-    "es:add:tenant": "tsx scripts/elasticSearch/OnboardTenant.ts",
+    "es:dev:bootstrap": "node scripts/runner.js ./scripts/elasticSearch/RebuildESIndex",
+    "es:create:indexes": "node scripts/runner.js ./scripts/elasticSearch/CreateESIndexes",
+    "es:add:tenant": "node scripts/runner.js ./scripts/elasticSearch/OnboardTenant",
     "setup:dev": "yarn blank-state --force &&  yarn es:dev:bootstrap"
   },
   "jest": {
