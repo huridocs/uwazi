@@ -263,7 +263,7 @@ const Collection = () => {
                     valueKey="filterUnauthorizedRelated"
                     label={
                       <Translate className="text-sm font-medium text-ink">
-                        Hide restricted relationships
+                        Hide restricted relationships from public
                       </Translate>
                     }
                     tip={tips.filterUnauthorizedRelated}
