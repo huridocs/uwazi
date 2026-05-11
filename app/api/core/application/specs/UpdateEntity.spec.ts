@@ -282,6 +282,8 @@ describe('UpdateEntityUseCase', () => {
             type: 'Empty',
           },
           obsoleteMetadata: [],
+          permissions: [],
+          published: false,
         },
         {
           sharedId: 'full_entity',

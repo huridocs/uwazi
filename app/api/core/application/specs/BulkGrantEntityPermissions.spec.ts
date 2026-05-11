@@ -12,6 +12,8 @@ import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js'
 
 const sharedId1 = 'bulk-entity-1';
 const sharedId2 = 'bulk-entity-2';
+const sharedId3 = 'bulk-entity-3';
+const sharedId4 = 'bulk-entity-4';
 
 const fixtures: DBFixture = {
   entities: [
@@ -41,6 +43,34 @@ const fixtures: DBFixture = {
       sharedId: sharedId2,
       language: 'es',
       published: false,
+      permissions: [],
+    },
+    {
+      _id: new ObjectId(),
+      sharedId: sharedId3,
+      language: 'en',
+      published: true,
+      permissions: [],
+    },
+    {
+      _id: new ObjectId(),
+      sharedId: sharedId3,
+      language: 'es',
+      published: true,
+      permissions: [],
+    },
+    {
+      _id: new ObjectId(),
+      sharedId: sharedId4,
+      language: 'en',
+      published: true,
+      permissions: [],
+    },
+    {
+      _id: new ObjectId(),
+      sharedId: sharedId4,
+      language: 'es',
+      published: true,
       permissions: [],
     },
   ],
@@ -143,17 +173,17 @@ describe('BulkGrantEntityPermissions', () => {
       const { sut } = createSut(admin);
 
       await sut.execute({
-        sharedIds: [sharedId1, sharedId2],
+        sharedIds: [sharedId3, sharedId4],
         grants: [],
         isPublic: undefined,
       });
 
       const docs = await getConnection()
         .collection('entities')
-        .find({ sharedId: { $in: [sharedId1, sharedId2] } })
+        .find({ sharedId: { $in: [sharedId3, sharedId4] } })
         .toArray();
 
-      docs.forEach(doc => expect(doc.published).toBe(false));
+      docs.forEach(doc => expect(doc.published).toBe(true));
     });
 
     it('sets published to true on all entities when isPublic is true', async () => {
@@ -173,18 +203,18 @@ describe('BulkGrantEntityPermissions', () => {
       docs.forEach(doc => expect(doc.published).toBe(true));
     });
 
-    it('sets published to false on all entities when isPublic is false (unchanged)', async () => {
+    it('sets published to false on all entities when isPublic is false', async () => {
       const { sut } = createSut(admin);
 
       await sut.execute({
-        sharedIds: [sharedId1, sharedId2],
+        sharedIds: [sharedId3, sharedId4],
         grants: [],
         isPublic: false,
       });
 
       const docs = await getConnection()
         .collection('entities')
-        .find({ sharedId: { $in: [sharedId1, sharedId2] } })
+        .find({ sharedId: { $in: [sharedId3, sharedId4] } })
         .toArray();
 
       docs.forEach(doc => expect(doc.published).toBe(false));

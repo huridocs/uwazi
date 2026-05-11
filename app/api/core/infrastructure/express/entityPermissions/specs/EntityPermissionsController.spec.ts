@@ -202,6 +202,19 @@ describe('EntityPermissionsController', () => {
       expect(bulkGrantSpy).toHaveBeenCalledWith(expect.objectContaining({ isPublic: true }));
     });
 
+    it('should set isPublic to FALSE when the public entry is not present', async () => {
+      const { sut } = createSut({
+        requestDto: {
+          ids: ['entity-1', 'entity-2'],
+          permissions: [],
+        },
+      });
+
+      await sut.handleAsync();
+
+      expect(bulkGrantSpy).toHaveBeenCalledWith(expect.objectContaining({ isPublic: false }));
+    });
+
     it('should strip mixed non-public grants before calling the bulk use case', async () => {
       const { sut } = createSut({
         requestDto: {

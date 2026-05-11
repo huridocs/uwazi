@@ -102,6 +102,7 @@ class EntitiesService {
     this.ensureTransaction();
 
     await this.deps.entitiesDS.bulkInsert(entities);
+
     await this.deps.entityAccessPolicyDS.bulkCreate(
       entities.map(e => EntityAccessPolicy.createForNewEntity(e.sharedId, context.actorId))
     );

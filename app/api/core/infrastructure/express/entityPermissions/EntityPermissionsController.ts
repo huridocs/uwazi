@@ -52,7 +52,9 @@ class EntityPermissionsController extends AbstractController<RequestDto> {
       await useCase.execute({ sharedId: ids[0], grants, isPublic });
     } else {
       let isPublic: boolean | undefined;
-      if (!publicEntry || publicEntry.level === 'mixed') {
+      if (!publicEntry) {
+        isPublic = false;
+      } else if (publicEntry.level === 'mixed') {
         isPublic = undefined;
       } else {
         isPublic = true;

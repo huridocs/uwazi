@@ -6,6 +6,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { CreateEntityFromPDFUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityFromPDFUseCaseFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 
 const factory = getFixturesFactory();
 
@@ -99,10 +101,17 @@ describe('CreateEntityFromPDFUseCase', () => {
       creationDate: expect.any(Number),
       editDate: expect.any(Number),
       icon: { _id: null, type: 'Empty' },
-
+      permissions: [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: GrantType.User,
+          level: AccessLevel.Write,
+        },
+      ],
       metadata: expect.objectContaining({
         description: [{ value: 'A description extracted from PDF' }],
       }),
+      published: false,
       obsoleteMetadata: [],
     };
 
