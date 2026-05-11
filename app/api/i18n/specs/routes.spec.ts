@@ -366,12 +366,6 @@ describe('i18n translations routes', () => {
             .post('/api/translations/languages')
             .send([{ key: 'ja', label: 'Japanese' }]);
           mockCalls = iosocket.emit.mock.calls;
-
-          // if (!featureFlags.v2Languages) {
-          //   await waitForExpect(() => {
-          //     expect(mockCalls.length).toBe(1);
-          //   });
-          // }
         });
 
         afterAll(async () => {
@@ -539,7 +533,9 @@ describe('i18n translations routes', () => {
           });
           response = await request(app).delete('/api/translations/languages?key=es').send();
           await waitForExpect(() => {
-            expect(iosocket.emit.mock.calls.length).toBeGreaterThan(0);
+            expect(
+              iosocket.emit.mock.calls.find(([eventName]) => eventName === 'translationsDeleteDone')
+            ).toBeDefined();
           });
         });
 
