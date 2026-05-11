@@ -32,6 +32,7 @@ import {
   formatMetadataFields,
   formatSelectProperty,
 } from '#V2/formatters/index.js';
+import { resolvePropertyType } from '#V2/formatters/metadata/resolvePropertyMetadataValues.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
@@ -53,49 +54,53 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
     () =>
       metadataFields
         .map(field => {
-          if (field.type === 'relationship') {
-            return formatRelationshipProperty(field, entity.metadata);
-          }
+          const type = resolvePropertyType(field, entity.metadata);
 
           if (
-            field.type === 'text' ||
-            field.type === 'generatedid' ||
-            field.type === 'numeric' ||
-            field.type === 'markdown'
+            type === 'text' ||
+            type === 'generatedid' ||
+            type === 'numeric' ||
+            type === 'markdown'
           ) {
             return formatSimpleProperty(field, entity.metadata);
           }
 
           if (
-            field.type === 'date' ||
-            field.type === 'daterange' ||
-            field.type === 'multidate' ||
-            field.type === 'multidaterange'
+            type === 'date' ||
+            type === 'daterange' ||
+            type === 'multidate' ||
+            type === 'multidaterange'
           ) {
             return formatDateProperty(field, entity.metadata);
           }
 
-          if (field.type === 'geolocation') {
+          if (type === 'geolocation') {
             return formatGeolocationProperty(field, entity, templates);
           }
 
-          if (field.type === 'select' || field.type === 'multiselect') {
+          if (type === 'select' || type === 'multiselect') {
             return formatSelectProperty(field, entity.metadata);
           }
 
-          if (field.type === 'link') {
+          if (type === 'link') {
             return formatLinkProperty(field, entity.metadata);
           }
 
-          if (field.type === 'media') {
+          if (type === 'media') {
             return formatMediaProperty(field, entity.metadata);
           }
 
-          if (field.type === 'image' || field.type === 'preview') {
+          if (type === 'image' || type === 'preview') {
             return formatImageProperty(field, entity.metadata, entityTemplate);
           }
 
-          return undefined;
+          if (type === 'relationship') {
+            return formatRelationshipProperty(field, entity.metadata);
+          }
+
+          return field.type === 'relationship'
+            ? formatRelationshipProperty(field, entity.metadata)
+            : null;
         })
         .filter(m => m) as MetadataProperty[],
     [entity, metadataFields, entityTemplate, templates]
