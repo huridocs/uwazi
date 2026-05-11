@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { t, Translate } from '#app/I18N/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
@@ -9,13 +8,18 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderResponse> =>
   async () => {
-    const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
-    return { allowcustomJS, customCSS, customJS };
+    const [settings] = await settingsAPI.get(headers);
+    if (settings) {
+      const { allowcustomJS, customCSS, customJS } = settings;
+      return { allowcustomJS, customCSS, customJS };
+    }
+    return {};
   };
 
 const Customisation = () => {
@@ -35,10 +39,13 @@ const Customisation = () => {
 
   const handleSave = async () => {
     if (hasChanges) {
-      const response = await settingsAPI.save({ customCSS: cssContent, customJS: jsContent });
+      const [, error] = await settingsAPI.save({
+        customCSS: cssContent,
+        customJS: jsContent,
+      });
 
-      if (response instanceof FetchResponseError) {
-        notify('error', t('System', 'An error occurred', null, false), undefined, response.message);
+      if (error) {
+        notify('error', t('System', 'An error occurred', null, false), undefined, error.message);
       } else {
         notify('success', t('System', 'Saved successfully.', null, false));
         setHasChanges(false);
