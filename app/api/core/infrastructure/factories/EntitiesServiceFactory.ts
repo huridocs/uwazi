@@ -17,21 +17,25 @@ import { EntityAccessPolicyDataSourceFactory } from './EntityAccessPolicyDataSou
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
-    const { transactionManager, eventEmitter, jobsDispatcher } = ExecutionContext;
+    const transactionManager = deps?.transactionManager ?? ExecutionContext.transactionManager;
+
+    const { eventEmitter, jobsDispatcher } = ExecutionContext;
 
     return new EntitiesService({
       eventEmitter,
       dispatcher: new DispatcherAdapter(jobsDispatcher),
-      entitiesDS: EntitiesDataSourceFactory.default(),
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),
         transactionManager as MongoTransactionManager
       ),
       eventBus: applicationEventsBus,
-      settingsDS: SettingsDataSourceFactory.default(),
-      templatesDS: TemplatesDataSourceFactory.default(),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       transactionManager,
-      entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default(),
+      entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
+        transactionManager: transactionManager as MongoTransactionManager,
+      }),
       ...deps,
     });
   }

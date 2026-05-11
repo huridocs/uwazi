@@ -13,7 +13,9 @@ export class EntityAccessPolicyDataSourceFactory {
     overrides?: Partial<MongoEntityAccessPolicyDataSourceDeps>
   ): EntityAccessPolicyDataSource {
     const db = getConnection();
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const transactionManager =
+      overrides?.transactionManager ??
+      (ExecutionContext.transactionManager as MongoTransactionManager);
     const entityIndexerService = EntityIndexerServiceFactory.default();
 
     return new MongoEntityAccessPolicyDataSource({
