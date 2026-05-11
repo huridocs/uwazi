@@ -18,6 +18,7 @@ class ElasticSearchClientFactory {
         nodes: config.elasticSearchMultiTenant.nodes,
         requestTimeout: config.elasticSearchMultiTenant.requestTimeout,
         auth: config.elasticSearchMultiTenant.auth,
+        ssl: { rejectUnauthorized: false },
       });
     }
 
