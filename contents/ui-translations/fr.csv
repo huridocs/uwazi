@@ -387,7 +387,7 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,Remplir
-Filter relationships,Filter relationships
+Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtres
 Filters AND operator,ET
 Filters configuration,Configuration des filtres

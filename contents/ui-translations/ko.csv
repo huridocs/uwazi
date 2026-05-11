@@ -388,7 +388,7 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,채우기
-Filter relationships,Filter relationships
+Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,필터
 Filters AND operator,필터 AND 오퍼레이터
 Filters configuration,필터 구성

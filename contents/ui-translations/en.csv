@@ -390,7 +390,7 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,Fill
-Filter relationships,Filter relationships
+Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filters
 Filters AND operator,AND
 Filters configuration,Filters

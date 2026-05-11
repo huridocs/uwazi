@@ -389,7 +389,7 @@ File updated,Το αρχείο ενημερώθηκε
 Files,Αρχεία
 Files and database usage,Χρήση αρχείων και βάσης δεδομένων
 Fill,Συμπλήρωση
-Filter relationships,Filter relationships
+Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Φίλτρα
 Filters AND operator,ΚΑΙ
 Filters configuration,Φίλτρα
