@@ -391,6 +391,7 @@ Files,Файли
 Files and database usage,Використання файлів і баз даних
 Fill,Заповнити
 Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Фільтри
 Filters AND operator,І
 Filters configuration,Фільтри

@@ -389,6 +389,7 @@ Files,Files
 Files and database usage,Files and database usage
 Fill,Doldur
 Filter relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtreler
 Filters AND operator,VE
 Filters configuration,Filtreler
