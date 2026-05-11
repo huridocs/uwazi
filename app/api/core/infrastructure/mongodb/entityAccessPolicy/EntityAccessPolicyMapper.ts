@@ -1,17 +1,13 @@
 import { EntityAccessPolicy } from '#api/core/domain/entityAccessPolicy/EntityAccessPolicy.js';
-import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
-import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { EntityAccessPolicyDBO, PermissionDBO } from './EntityAccessPolicyDBO.js';
 
 class EntityAccessPolicyMapper {
   static toDomain(dbo: EntityAccessPolicyDBO): EntityAccessPolicy {
-    const grants = (dbo.permissions ?? [])
-      .filter(p => p.type !== 'public')
-      .map(p => ({
-        refId: p.refId,
-        type: p.type as GrantType,
-        level: p.level as AccessLevel,
-      }));
+    const grants = (dbo.permissions ?? []).map(p => ({
+      refId: p.refId,
+      type: p.type,
+      level: p.level,
+    }));
 
     return new EntityAccessPolicy({
       sharedId: dbo.sharedId,

@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { GrantEntityPermissionsUseCaseFactory } from '#api/core/infrastructure/factories/GrantEntityPermissionsUseCaseFactory.js';
 import { EntityAccessPolicyDataSourceFactory } from '#api/core/infrastructure/factories/EntityAccessPolicyDataSourceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -75,7 +74,10 @@ describe('GrantEntityPermissions', () => {
         isPublic: true,
       });
 
-      const docs = await getConnection().collection('entities').find({ sharedId }).toArray();
+      const docs = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ sharedId })
+        .toArray();
       expect(docs).toHaveLength(2);
       docs.forEach(doc => {
         expect(doc.published).toBe(true);
@@ -107,7 +109,7 @@ describe('GrantEntityPermissions', () => {
         isPublic: false,
       });
 
-      const doc = await getConnection().collection('entities').findOne({ sharedId });
+      const doc = await testingEnvironment.db.getCollection('entities')!.findOne({ sharedId });
       expect(doc!.permissions).toEqual([
         { refId: 'user-3', type: GrantType.Group, level: AccessLevel.Read },
       ]);
@@ -145,7 +147,7 @@ describe('GrantEntityPermissions', () => {
         })
       ).resolves.toBeUndefined();
 
-      const doc = await getConnection().collection('entities').findOne({ sharedId });
+      const doc = await testingEnvironment.db.getCollection('entities')!.findOne({ sharedId });
       expect(doc!.permissions).toEqual([
         { refId: 'collab-id', type: GrantType.User, level: AccessLevel.Write },
       ]);
@@ -158,7 +160,7 @@ describe('GrantEntityPermissions', () => {
 
       await expect(sut.execute({ sharedId, grants: [], isPublic: true })).resolves.toBeUndefined();
 
-      const doc = await getConnection().collection('entities').findOne({ sharedId });
+      const doc = await testingEnvironment.db.getCollection('entities')!.findOne({ sharedId });
       expect(doc!.published).toBe(true);
     });
   });

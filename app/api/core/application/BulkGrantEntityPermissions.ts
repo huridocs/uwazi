@@ -21,7 +21,7 @@ class BulkGrantEntityPermissions extends AbstractUseCase<Input, Output, Deps> {
 
     const policies = await this.deps.entityAccessPolicyDS.getBySharedIds(sharedIds);
 
-    for (const policy of policies) {
+    policies.forEach(policy => {
       if (
         isPublic !== undefined &&
         isPublic !== policy.isPublic &&
@@ -35,7 +35,7 @@ class BulkGrantEntityPermissions extends AbstractUseCase<Input, Output, Deps> {
       }
 
       policy.mergeGrants(grants);
-    }
+    });
 
     await this.transactionManager.run(async () =>
       this.deps.entityAccessPolicyDS.bulkUpdate(policies)

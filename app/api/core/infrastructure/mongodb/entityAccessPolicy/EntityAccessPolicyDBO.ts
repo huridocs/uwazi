@@ -1,7 +1,10 @@
+import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
+import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+
 type PermissionDBO = {
   refId: string;
-  type: 'user' | 'group' | 'public';
-  level: 'read' | 'write' | 'mixed';
+  type: GrantType;
+  level: AccessLevel;
 };
 
 type EntityAccessPolicyDBO = {

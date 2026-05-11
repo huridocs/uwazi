@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { BulkGrantEntityPermissionsUseCaseFactory } from '#api/core/infrastructure/factories/BulkGrantEntityPermissionsUseCaseFactory.js';
 import { EntityAccessPolicyDataSourceFactory } from '#api/core/infrastructure/factories/EntityAccessPolicyDataSourceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -110,8 +109,8 @@ describe('BulkGrantEntityPermissions', () => {
         isPublic: undefined,
       });
 
-      const docs = await getConnection()
-        .collection('entities')
+      const docs = await testingEnvironment.db
+        .getCollection('entities')!
         .find({ sharedId: sharedId1 })
         .toArray();
 
@@ -137,10 +136,11 @@ describe('BulkGrantEntityPermissions', () => {
       await sut.execute({
         sharedIds: [sharedId1],
         grants: [{ refId: 'existing-user', type: GrantType.User, level: AccessLevel.Write }],
-        isPublic: undefined,
       });
 
-      const doc = await getConnection().collection('entities').findOne({ sharedId: sharedId1 });
+      const doc = await testingEnvironment.db
+        .getCollection('entities')!
+        .findOne({ sharedId: sharedId1 });
 
       expect(doc!.permissions).toEqual([
         { refId: 'existing-user', type: GrantType.User, level: AccessLevel.Write },
@@ -158,7 +158,7 @@ describe('BulkGrantEntityPermissions', () => {
 
       for (const sharedId of [sharedId1, sharedId2]) {
         // eslint-disable-next-line no-await-in-loop
-        const doc = await getConnection().collection('entities').findOne({ sharedId });
+        const doc = await testingEnvironment.db.getCollection('entities')!.findOne({ sharedId });
         expect(doc!.permissions).toContainEqual({
           refId: 'shared-user',
           type: GrantType.Group,
@@ -178,8 +178,8 @@ describe('BulkGrantEntityPermissions', () => {
         isPublic: undefined,
       });
 
-      const docs = await getConnection()
-        .collection('entities')
+      const docs = await testingEnvironment.db
+        .getCollection('entities')!
         .find({ sharedId: { $in: [sharedId3, sharedId4] } })
         .toArray();
 
@@ -195,8 +195,8 @@ describe('BulkGrantEntityPermissions', () => {
         isPublic: true,
       });
 
-      const docs = await getConnection()
-        .collection('entities')
+      const docs = await testingEnvironment.db
+        .getCollection('entities')!
         .find({ sharedId: { $in: [sharedId1, sharedId2] } })
         .toArray();
 
@@ -212,8 +212,8 @@ describe('BulkGrantEntityPermissions', () => {
         isPublic: false,
       });
 
-      const docs = await getConnection()
-        .collection('entities')
+      const docs = await testingEnvironment.db
+        .getCollection('entities')!
         .find({ sharedId: { $in: [sharedId3, sharedId4] } })
         .toArray();
 
@@ -222,11 +222,28 @@ describe('BulkGrantEntityPermissions', () => {
   });
 
   describe('collaborator permission check', () => {
-    it('throws InsufficientPermissionsToPublishError when collaborator tries to change isPublic', async () => {
+    it('throws InsufficientPermissionsToPublishError when collaborator tries to publish', async () => {
       const { sut } = createSut(collaborator);
 
       await expect(
         sut.execute({ sharedIds: [sharedId1], grants: [], isPublic: true })
+      ).rejects.toBeInstanceOf(InsufficientPermissionsToPublishError);
+    });
+
+    it('throws InsufficientPermissionsToPublishError when collaborator tries to unpublish', async () => {
+      const { sut } = createSut(collaborator);
+
+      await expect(
+        sut.execute({ sharedIds: [sharedId3], grants: [], isPublic: false })
+      ).rejects.toBeInstanceOf(InsufficientPermissionsToPublishError);
+    });
+
+    it('throws when batch contains a mix of published states and collaborator tries to set isPublic', async () => {
+      const { sut } = createSut(collaborator);
+
+      // sharedId1 is published: false, sharedId3 is published: true — mixed batch
+      await expect(
+        sut.execute({ sharedIds: [sharedId1, sharedId3], grants: [], isPublic: false })
       ).rejects.toBeInstanceOf(InsufficientPermissionsToPublishError);
     });
 

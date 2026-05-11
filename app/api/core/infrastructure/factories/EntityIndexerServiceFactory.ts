@@ -41,11 +41,11 @@ export class EntityIndexerServiceFactory {
 
   static forTests(): EntityIndexerService {
     return TestUtils.mockClass<EntityIndexerService>({
-      index: async () => {},
-      sync: async () => {},
-      syncAll: async () => {},
-      remove: async () => {},
-      removeByTemplateIds: async () => {},
+      index: jest.fn(),
+      sync: jest.fn(),
+      syncAll: jest.fn(),
+      remove: jest.fn(),
+      removeByTemplateIds: jest.fn(),
     });
   }
 }

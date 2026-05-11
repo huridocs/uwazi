@@ -10,9 +10,8 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 import { search } from '#api/search/index.js';
+import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 
 const factory = getFixturesFactory();
 const fixtures = {
@@ -78,10 +77,7 @@ const createEntity = (languages: string[], template: Template, userId?: string) 
 const createSut = () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const entityIndexerService = TestUtils.mockClass<EntityIndexerService>({
-    index: jest.fn().mockResolvedValue(undefined),
-    remove: jest.fn().mockResolvedValue(undefined),
-  });
+  const entityIndexerService = EntityIndexerServiceFactory.forTests();
 
   const sut = new MongoMultiLanguageEntityDataSource({
     db,
@@ -357,12 +353,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.create(entity);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -375,13 +368,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkInsert([entity1, entity2]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity1.sharedId }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });
 
@@ -393,12 +382,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.update(entity);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -411,13 +397,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkUpdate([entity1, entity2]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity1.sharedId }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });
 
@@ -433,12 +415,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.deleteMetadataProperties(['text'], [entity.sharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -454,12 +433,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.renameMetadataProperties({ text: 'newText' }, [entity.sharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -489,9 +465,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.deleteReferencesToSharedIds([targetSharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.objectContaining({ sharedId: affectedSharedId })])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([affectedSharedId])
       );
     });
 
@@ -507,12 +483,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkUpdateDeprecated([entity]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
