@@ -253,14 +253,13 @@ const formater = {
   },
 
   preview(property, _value, _thesauri, { doc }) {
-    const defaultDoc = doc.defaultDoc || {};
     return {
       ...this.multimedia(
         property,
-        [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
+        [{ value: doc.preview ? `/api/files/${doc.preview}` : null }],
         'image'
       ),
-      ...(defaultDoc?.status ? { status: defaultDoc.status } : {}),
+      ...(doc?.status ? { status: doc.status } : {}),
     };
   },
 
