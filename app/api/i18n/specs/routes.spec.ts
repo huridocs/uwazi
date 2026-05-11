@@ -16,6 +16,7 @@ import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js
 import { availableLanguages } from '#shared/language/index.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
+import { search } from '#api/search/index.js';
 import { DefaultTranslations } from '../defaultTranslations.js';
 import { sortByLocale } from './sortByLocale.js';
 
@@ -31,6 +32,10 @@ describe('i18n translations routes', () => {
     // @ts-ignore
     req.file = { path: 'filder/filename.ext' };
     next();
+  });
+
+  beforeAll(() => {
+    jest.spyOn(search, 'deleteLanguage').mockResolvedValue(undefined as any);
   });
 
   beforeEach(async () => {
