@@ -147,6 +147,8 @@ interface RelationshipEntityValue {
   readonly _id: string;
   readonly title: string;
   readonly templateId?: string;
+  // authorized is either false or not present.
+  readonly authorized?: false;
   readonly icon?: { _id: string; label?: string };
 }
 
@@ -205,4 +207,5 @@ export type {
   ImageMetadataProperty,
   PreviewMetadataProperty,
   EntityFile,
+  RelatedRelationshipMetadataProperty,
 };
