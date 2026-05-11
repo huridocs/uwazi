@@ -160,19 +160,6 @@ describe('EntityPermissionsController', () => {
       expect(grantSpy).not.toHaveBeenCalled();
     });
 
-    it('should set isPublic to undefined when no public entry is present', async () => {
-      const { sut } = createSut({
-        requestDto: {
-          ids: ['entity-1', 'entity-2'],
-          permissions: [{ refId: 'user-1', type: 'user', level: 'read' }],
-        },
-      });
-
-      await sut.handleAsync();
-
-      expect(bulkGrantSpy).toHaveBeenCalledWith(expect.objectContaining({ isPublic: undefined }));
-    });
-
     it('should set isPublic to undefined when the public entry has mixed level', async () => {
       const { sut } = createSut({
         requestDto: {

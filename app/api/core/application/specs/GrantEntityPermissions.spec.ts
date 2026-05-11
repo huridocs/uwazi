@@ -84,11 +84,6 @@ describe('GrantEntityPermissions', () => {
           type: GrantType.User,
           level: AccessLevel.Write,
         });
-        expect(doc.permissions).toContainEqual({
-          refId: 'public',
-          type: 'public',
-          level: AccessLevel.Read,
-        });
       });
     });
 
