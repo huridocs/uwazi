@@ -388,7 +388,7 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,Doldur
-Filter relationships,Filter relationships
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtreler
 Filters AND operator,VE
 Filters configuration,Filtreler
@@ -442,7 +442,7 @@ here,here
 Hide,Hide
 Hide actions,Hide actions
 Hide label,Etiketi Gizle
-Hide restricted relationships,Hide restricted relationships
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
 https://yourdomain,https://yourdomain
 hubs,hubs

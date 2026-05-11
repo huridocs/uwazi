@@ -387,7 +387,7 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,Remplir
-Filter relationships,Filter relationships
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtres
 Filters AND operator,ET
 Filters configuration,Configuration des filtres
@@ -441,7 +441,7 @@ here,here
 Hide,Hide
 Hide actions,Hide actions
 Hide label,Masquer l'étiquette
-Hide restricted relationships,Hide restricted relationships
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
 https://yourdomain,https://votredomaine
 hubs,hubs
