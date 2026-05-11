@@ -45,11 +45,12 @@ class MongoEntityAccessPolicyDataSource
     await this.persist(policy);
   }
 
+  async bulkCreate(policies: EntityAccessPolicy[]): Promise<void> {
+    await this.bulkPersist(policies);
+  }
+
   async bulkUpdate(policies: EntityAccessPolicy[]): Promise<void> {
-    for (const policy of policies) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.persist(policy);
-    }
+    await this.bulkPersist(policies);
   }
 
   async getBySharedId(
@@ -90,13 +91,45 @@ class MongoEntityAccessPolicyDataSource
 
   private async persist(policy: EntityAccessPolicy): Promise<void> {
     const { permissions, published } = EntityAccessPolicyMapper.toDBO(policy);
+
     await this.getCollection<EntityAccessPolicyDBO>().updateMany(
       { sharedId: policy.sharedId },
       { $set: { permissions, published } }
     );
+
     this.mutatedSharedIds.add(policy.sharedId);
+  }
+
+  private async bulkPersist(policies: EntityAccessPolicy[]): Promise<void> {
+    if (policies.length === 0) return;
+
+    const ops = policies.map(policy => {
+      const { permissions, published } = EntityAccessPolicyMapper.toDBO(policy);
+      return {
+        updateMany: {
+          filter: { sharedId: policy.sharedId },
+          update: { $set: { permissions, published } },
+        },
+      };
+    });
+
+    await this.getCollection<EntityAccessPolicyDBO>().bulkWrite(ops);
+
+    policies.forEach(policy => this.mutatedSharedIds.add(policy.sharedId));
   }
 }
 
 export { MongoEntityAccessPolicyDataSource };
 export type { Deps as MongoEntityAccessPolicyDataSourceDeps };
+
+/**
+ * entity aggregation have its own transaction (gets created) and event is emitted
+ *
+ * I react  to the entity created event, initate another transaction AND execute the use case, which is create the permissions.
+ *
+ *
+ * entity aggregation and permission aggregation they share the same transaction
+ * 1. call entity data source
+ * 2. call permission data source
+ *
+ */

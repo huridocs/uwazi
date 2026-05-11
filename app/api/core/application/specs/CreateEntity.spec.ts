@@ -11,6 +11,8 @@ import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
+import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 
 const factory = getFixturesFactory();
 
@@ -376,8 +378,16 @@ describe('CreateEntityUseCase', () => {
       title: 'My entity title',
       creationDate: expect.any(Number),
       editDate: expect.any(Number),
+      published: false,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
+      permissions: [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: GrantType.User,
+          level: AccessLevel.Write,
+        },
+      ],
       user: factory.id('user1'),
       metadata: {
         text: [{ value: 'Some text' }],

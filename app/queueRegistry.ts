@@ -22,7 +22,6 @@ import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipS
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
-import { ProvisionEntityAccessPolicyOnCreationListener } from '#api/core/infrastructure/listeners/ProvisionEntityAccessPolicyOnCreationListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
@@ -295,10 +294,5 @@ export function registerJobs(register: Register) {
   register(
     ProcessRelationshipAfterEntityUpdatedListener.asJob(),
     async () => new ProcessRelationshipAfterEntityUpdatedListener({})
-  );
-
-  register(
-    ProvisionEntityAccessPolicyOnCreationListener.asJob(),
-    async () => new ProvisionEntityAccessPolicyOnCreationListener({})
   );
 }

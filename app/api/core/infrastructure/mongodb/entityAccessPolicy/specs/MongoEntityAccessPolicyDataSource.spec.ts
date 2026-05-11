@@ -193,6 +193,70 @@ describe('MongoEntityAccessPolicyDataSource', () => {
     });
   });
 
+  describe('bulkCreate()', () => {
+    it('persists all policies in a single bulk operation', async () => {
+      const { sut } = createSut();
+
+      const policy1 = new EntityAccessPolicy({
+        sharedId,
+        grants: [{ refId: 'u2', type: GrantType.User, level: AccessLevel.Read }],
+        isPublic: false,
+      });
+      const policy2 = new EntityAccessPolicy({
+        sharedId: 'other-entity',
+        grants: [],
+        isPublic: true,
+      });
+
+      await sut.bulkCreate([policy1, policy2]);
+
+      const docs1 = await getConnection().collection('entities').find({ sharedId }).toArray();
+      expect(docs1).toHaveLength(2);
+      docs1.forEach(doc => {
+        expect(doc.permissions).toEqual([{ refId: 'u2', type: 'user', level: 'read' }]);
+        expect(doc.published).toBe(false);
+      });
+
+      const doc2 = await getConnection()
+        .collection('entities')
+        .findOne({ sharedId: 'other-entity' });
+      expect(doc2!.published).toBe(true);
+    });
+
+    it('adds all created sharedIds to the indexer on commit', async () => {
+      const indexerSpy = { sync: jest.fn().mockResolvedValue(undefined) };
+      const { sut, transactionManager } = createSut(indexerSpy);
+
+      await transactionManager.run(async () => {
+        await sut.bulkCreate([
+          new EntityAccessPolicy({ sharedId, grants: [], isPublic: false }),
+          new EntityAccessPolicy({ sharedId: 'other-entity', grants: [], isPublic: false }),
+        ]);
+      });
+
+      expect(indexerSpy.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([sharedId, 'other-entity'])
+      );
+    });
+
+    it('does not affect other entities not in the list', async () => {
+      const { sut } = createSut();
+
+      await sut.bulkCreate([new EntityAccessPolicy({ sharedId, grants: [], isPublic: false })]);
+
+      const other = await getConnection()
+        .collection('entities')
+        .findOne({ sharedId: 'other-entity' });
+      expect(other!.published).toBe(true);
+      expect(other!.permissions).toEqual([{ refId: 'user-x', type: 'user', level: 'write' }]);
+    });
+
+    it('is a no-op for an empty list', async () => {
+      const { sut } = createSut();
+      await expect(sut.bulkCreate([])).resolves.toBeUndefined();
+    });
+  });
+
   describe('getBySharedId()', () => {
     it('returns the access policy with correct grants', async () => {
       const { sut } = createSut();

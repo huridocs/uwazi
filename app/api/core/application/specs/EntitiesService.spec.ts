@@ -21,8 +21,9 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { EntityCreatedEvent as CoreEntityCreatedEvent } from '#api/core/domain/entity/EntityCreatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
+import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 
 const factory = getFixturesFactory();
 
@@ -171,21 +172,28 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).toHaveBeenCalled();
     });
 
-    it('should emit a CoreEntityCreatedEvent', async () => {
-      const { sut, eventEmitter, transactionManager } = createSut();
+    it('should provision access to the entity', async () => {
+      const { sut, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await transactionManager.run(async () => {
-        await sut.insert(entity, {
+      await transactionManager.run(async () =>
+        sut.insert(entity, {
           targetLanguage: 'en',
           actorId: 'actorId',
           tenantName: 'tenantName',
-        });
-      });
-
-      expect(eventEmitter.emit).toHaveBeenCalledWith(
-        new CoreEntityCreatedEvent({ sharedId: entity.sharedId, userId: 'actorId' })
+        })
       );
+
+      const entityCreated = await testingEnvironment.db
+        .getCollection('entities')
+        ?.findOne({ sharedId: entity.sharedId });
+
+      expect(entityCreated).toMatchObject({
+        language: 'en',
+        sharedId: entity.sharedId,
+        permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+        published: false,
+      });
     });
 
     it('should dispatch a RelationshipSyncJob', async () => {
@@ -219,13 +227,13 @@ describe('EntitiesService', () => {
       const entity2 = createEntitySample();
       const entity3 = createEntitySample();
 
-      await transactionManager.run(async () => {
-        await sut.bulkInsert([entity1, entity2, entity3], {
+      await transactionManager.run(async () =>
+        sut.bulkInsert([entity1, entity2, entity3], {
           actorId: 'actorId',
           tenantName: 'tenantName',
           targetLanguage: 'en',
-        });
-      });
+        })
+      );
 
       const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
 
@@ -326,25 +334,41 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).toHaveBeenCalledTimes(2);
     });
 
-    it('should emit a CoreEntityCreatedEvent for each entity ', async () => {
-      const { sut, eventEmitter, transactionManager } = createSut();
+    it('should provision access to all entities', async () => {
+      const { sut, transactionManager } = createSut();
       const entity1 = createEntitySample();
       const entity2 = createEntitySample();
+      const entity3 = createEntitySample();
 
-      await transactionManager.run(async () => {
-        await sut.bulkInsert([entity1, entity2], {
-          targetLanguage: 'en',
-          actorId: 'creatorId',
+      await transactionManager.run(async () =>
+        sut.bulkInsert([entity1, entity2, entity3], {
+          actorId: 'actorId',
           tenantName: 'tenantName',
-        });
-      });
+          targetLanguage: 'en',
+        })
+      );
 
-      expect(eventEmitter.emit).toHaveBeenCalledWith(
-        new CoreEntityCreatedEvent({ sharedId: entity1.sharedId, userId: 'creatorId' })
-      );
-      expect(eventEmitter.emit).toHaveBeenCalledWith(
-        new CoreEntityCreatedEvent({ sharedId: entity2.sharedId, userId: 'creatorId' })
-      );
+      const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
+
+      expect(entitiesCreated).toMatchObject([
+        {
+          language: 'en',
+          sharedId: entity1.sharedId,
+          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+          published: false,
+        },
+        {
+          language: 'en',
+          sharedId: entity2.sharedId,
+          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+          published: false,
+        },
+        {
+          sharedId: entity3.sharedId,
+          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+          published: false,
+        },
+      ]);
     });
 
     it('should handle empty array gracefully', async () => {
