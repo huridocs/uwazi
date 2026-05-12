@@ -1,9 +1,13 @@
-import { Entity } from '#app/V2/api/entities/types.js';
+import { Entity } from '#V2/api/entities/types.js';
 import {
   BaseMetadataProperty,
   MultiSelectMetadataProperty,
   SelectMetadataProperty,
 } from '../types';
+import {
+  resolvePropertyMetadataValues,
+  resolvePropertyType,
+} from './resolvePropertyMetadataValues.js';
 
 const isSelectType = (type: BaseMetadataProperty['type']) =>
   type === 'select' || type === 'multiselect';
@@ -12,11 +16,12 @@ const formatSelectProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata']
 ): SelectMetadataProperty | MultiSelectMetadataProperty | null => {
-  if (!isSelectType(property.type)) {
+  const metadataValues = resolvePropertyMetadataValues(property, metadata);
+  const type = resolvePropertyType(property, metadata);
+
+  if (!isSelectType(type)) {
     return null;
   }
-
-  const metadataValues = metadata?.[property.name] ?? [];
 
   const values = metadataValues.map(value => {
     const { parent } = value;
@@ -33,8 +38,10 @@ const formatSelectProperty = (
     _id: property._id,
     name: property.name,
     label: property.label,
-    type: property.type,
+    type,
     values,
+    inherited: property.inherited,
+    inheritedType: property.inheritedType,
   };
 };
 

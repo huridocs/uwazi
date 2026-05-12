@@ -8,6 +8,26 @@ describe('formatDateProperty', () => {
     multi_date: [{ value: 1717027200 }, { value: 1717113600000 }],
     date_range: [{ value: { from: 1717027200, to: 1717113600 } }],
     empty_date: [],
+    inherited_date: [
+      {
+        value: 'entity-1',
+        inheritedType: 'date',
+        inheritedValue: [{ value: 1717200000 }],
+      },
+    ],
+    inherited_nested_range: [
+      {
+        value: 'entity-2',
+        inheritedType: 'relationship',
+        inheritedValue: [
+          {
+            value: 'entity-3',
+            inheritedType: 'daterange',
+            inheritedValue: [{ value: { from: 1717200000, to: 1717286400 } }],
+          },
+        ],
+      },
+    ],
   } as Entity['metadata'];
 
   it('should prepare single date properties', () => {
@@ -102,5 +122,45 @@ describe('formatDateProperty', () => {
     } as BaseMetadataProperty;
 
     expect(formatDateProperty(property, metadata)).toBeNull();
+  });
+
+  it('should format inherited relationship values when they resolve to date types', () => {
+    const inheritedDateProperty = {
+      _id: 'd7',
+      name: 'inherited_date',
+      label: 'Inherited Date',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'date',
+    } as BaseMetadataProperty;
+
+    const inheritedRangeProperty = {
+      _id: 'd8',
+      name: 'inherited_nested_range',
+      label: 'Inherited Range',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'relationship',
+    } as BaseMetadataProperty;
+
+    expect(formatDateProperty(inheritedDateProperty, metadata)).toEqual({
+      _id: 'd7',
+      name: 'inherited_date',
+      label: 'Inherited Date',
+      type: 'date',
+      values: [{ value: 1717200000 }],
+      inherited: true,
+      inheritedType: 'date',
+    });
+
+    expect(formatDateProperty(inheritedRangeProperty, metadata)).toEqual({
+      _id: 'd8',
+      name: 'inherited_nested_range',
+      label: 'Inherited Range',
+      type: 'daterange',
+      values: [{ value: { from: 1717200000, to: 1717286400 } }],
+      inherited: true,
+      inheritedType: 'relationship',
+    });
   });
 });

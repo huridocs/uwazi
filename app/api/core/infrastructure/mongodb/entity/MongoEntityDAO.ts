@@ -114,6 +114,53 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
       .toArray();
   }
 
+  async cloneForLanguage(
+    from: LanguageISO6391,
+    to: LanguageISO6391,
+    onBatch?: (clonedEntities: Omit<EntityDBO, '_id'>[]) => Promise<void>
+  ): Promise<void> {
+    const BATCH_SIZE = 500;
+    const collection = this.getCollection();
+    const cursor = collection.find({ language: from });
+
+    try {
+      let batch: EntityDBO[] = [];
+
+      // eslint-disable-next-line no-await-in-loop
+      while (await cursor.hasNext()) {
+        // eslint-disable-next-line no-await-in-loop
+        const doc = await cursor.next();
+        if (doc) batch.push(doc);
+
+        // eslint-disable-next-line no-await-in-loop
+        if (batch.length >= BATCH_SIZE || !(await cursor.hasNext())) {
+          if (batch.length > 0) {
+            const clonedEntities = batch.map(({ _id: _discarded, ...rest }) => ({
+              ...rest,
+              language: to,
+            }));
+            // eslint-disable-next-line no-await-in-loop
+            await collection.bulkWrite(
+              clonedEntities.map(entity => ({
+                updateOne: {
+                  filter: { sharedId: entity.sharedId, language: to },
+                  update: { $setOnInsert: entity },
+                  upsert: true,
+                },
+              })),
+              { ordered: false }
+            );
+            // eslint-disable-next-line no-await-in-loop
+            if (onBatch) await onBatch(clonedEntities);
+            batch = [];
+          }
+        }
+      }
+    } finally {
+      await cursor.close();
+    }
+  }
+
   async findBySharedIds(sharedIds: string[]): Promise<EntityDBO[]> {
     if (sharedIds.length === 0) return [];
     return this.getCollection()
@@ -126,6 +173,39 @@ class MongoEntityDAO extends MongoDataSource<EntityDBO> {
       .aggregate<{ count: number }>([{ $group: { _id: '$sharedId' } }, { $count: 'count' }])
       .toArray();
     return result[0]?.count ?? 0;
+  }
+
+  async deleteByLanguage(
+    language: LanguageISO6391,
+    onBatch?: (sharedIds: string[]) => Promise<void>
+  ): Promise<void> {
+    const BATCH_SIZE = 500;
+    const collection = this.getCollection();
+    const cursor = collection.find({ language }, { projection: { sharedId: 1 } });
+
+    try {
+      let batch: string[] = [];
+
+      // eslint-disable-next-line no-await-in-loop
+      while (await cursor.hasNext()) {
+        // eslint-disable-next-line no-await-in-loop
+        const doc = await cursor.next();
+        if (doc) batch.push(doc.sharedId);
+
+        // eslint-disable-next-line no-await-in-loop
+        if (batch.length >= BATCH_SIZE || !(await cursor.hasNext())) {
+          if (batch.length > 0) {
+            // eslint-disable-next-line no-await-in-loop
+            await collection.deleteMany({ sharedId: { $in: batch }, language });
+            // eslint-disable-next-line no-await-in-loop
+            if (onBatch) await onBatch(batch);
+            batch = [];
+          }
+        }
+      }
+    } finally {
+      await cursor.close();
+    }
   }
 }
 

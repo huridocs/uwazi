@@ -422,7 +422,7 @@ describe('metadata formater', () => {
     });
 
     it('should return empty value preview if no PDF associated to the entity', () => {
-      const adaptedEntity = { ...doc, defaultDoc: undefined, documents: [] };
+      const adaptedEntity = { ...doc, preview: undefined, defaultDoc: undefined, documents: [] };
       const formatted = formater.prepareMetadata(
         adaptedEntity,
         templates,

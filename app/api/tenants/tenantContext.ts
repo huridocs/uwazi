@@ -31,6 +31,7 @@ type Tenant = {
     v2DeleteEntity?: boolean;
     v2EntityPermission?: boolean;
     newHeader?: boolean;
+    v2Languages?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
