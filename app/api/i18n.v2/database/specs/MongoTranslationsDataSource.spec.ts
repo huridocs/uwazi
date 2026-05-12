@@ -31,6 +31,10 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 
 describe('MongoTranslationsDataSource', () => {
@@ -90,6 +94,69 @@ describe('MongoTranslationsDataSource', () => {
           ])
         ).rejects.toEqual(new Error('db error'));
       });
+    });
+  });
+
+  describe('cloneForLanguage()', () => {
+    const systemContext = { id: 'System', type: 'Uwazi UI' as const, label: 'User Interface' };
+
+    beforeEach(async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        translationsV2: [
+          createTranslationDBO('Search', 'Search', 'en', systemContext),
+          createTranslationDBO('Filters', 'Filters', 'en', systemContext),
+        ],
+      });
+    });
+
+    it('should clone all source-language translations into the target language', async () => {
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+      await sut.cloneForLanguage('en', 'es');
+
+      const cloned = await testingDB
+        .mongodb!.collection('translationsV2')
+        .find({ language: 'es' })
+        .toArray();
+      expect(cloned).toHaveLength(2);
+      expect(cloned.map((t: any) => t.key).sort()).toEqual(['Filters', 'Search']);
+    });
+
+    it('should be idempotent: calling twice does not create duplicates', async () => {
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+      await sut.cloneForLanguage('en', 'es');
+      await sut.cloneForLanguage('en', 'es');
+
+      const cloned = await testingDB
+        .mongodb!.collection('translationsV2')
+        .find({ language: 'es' })
+        .toArray();
+      expect(cloned).toHaveLength(2);
+    });
+
+    it('should not overwrite translations that already exist in the target language', async () => {
+      await testingDB
+        .mongodb!.collection('translationsV2')
+        .insertOne(createTranslationDBO('Search', 'Buscar', 'es', systemContext));
+
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+      await sut.cloneForLanguage('en', 'es');
+
+      const esSearch = await testingDB.mongodb!.collection('translationsV2').findOne({
+        language: 'es',
+        key: 'Search',
+        'context.id': 'System',
+      });
+      expect(esSearch?.value).toBe('Buscar');
     });
   });
 });

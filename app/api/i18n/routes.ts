@@ -17,6 +17,8 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { EntityPreviewBatchHandler } from '#api/core/infrastructure/jobs/EntityPreviewBatchHandler.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
+import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
 
@@ -252,12 +254,26 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      addLanguages(languages, req).catch((error: Error) => {
-        req.emitToSessionSocket('translationsInstallError', error.message);
-        // eslint-disable-next-line no-console
-        console.error(error);
-      });
-      res.status(204).json('ok');
+
+      if (tenants.current().featureFlags?.v2Languages) {
+        const addedLanguages = await AddLanguageUseCaseFactory.default().execute({ languages });
+        for (const language of addedLanguages) {
+          // eslint-disable-next-line no-await-in-loop
+          const [newTranslations] = await translations.get({ locale: language.key });
+          req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+        }
+        const newSettings = await settings.get();
+        req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+        // translationsInstallDone is emitted by CloneLanguageEntitiesJob
+      } else {
+        addLanguages(languages, req).catch((error: Error) => {
+          req.emitToSessionSocket('translationsInstallError', error.message);
+          // eslint-disable-next-line no-console
+          console.error(error);
+        });
+      }
+
+      res.sendStatus(204);
     }
   );
 
@@ -274,12 +290,29 @@ export default (app: Application) => {
     }),
     async (req: DeleteTranslationRequest, res) => {
       const { key } = req.query;
+
+      const currentSettings = await settings.get();
+      const language = currentSettings.languages?.find(l => l.key === key);
+      if (!language || language.installing) {
+        res.status(409).json({ error: 'Language is still being installed or does not exist' });
+        return;
+      }
+
+      if (tenants.current().featureFlags?.v2Languages) {
+        await DeleteLanguageUseCaseFactory.default().execute({ key });
+        const newSettings = await settings.get();
+        req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+        req.sockets.emitToCurrentTenant('translationsDelete', key);
+        res.sendStatus(204);
+        return;
+      }
+
       deleteLanguage(key, req).catch((error: Error) => {
         req.emitToSessionSocket('translationsDeleteError', error.message);
         // eslint-disable-next-line no-console
         console.error(error);
       });
-      res.status(204).json('ok');
+      res.sendStatus(204);
     }
   );
 };
