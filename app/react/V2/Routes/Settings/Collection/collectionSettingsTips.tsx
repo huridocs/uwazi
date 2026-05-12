@@ -189,7 +189,7 @@ export const globalJS = (
 );
 
 export const filterUnauthorizedRelated = (
-  <Translate translationKey="Filter relationships">
+  <Translate translationKey="Filter unauthorized relationships">
     By default, relationships pointing to restricted entities are visible to anonymous users but not
     linked. When enabled, these relationships are completely hidden, preventing public users from
     knowing restricted content exists.
