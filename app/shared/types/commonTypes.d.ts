@@ -248,6 +248,7 @@ export interface LanguageSchema {
   ISO639_1?: LanguageISO6391;
   localized_label?: string;
   translationAvailable?: boolean;
+  installing?: boolean;
 }
 
 export type LanguagesListSchema = {
@@ -261,6 +262,7 @@ export type LanguagesListSchema = {
   ISO639_1?: LanguageISO6391;
   localized_label?: string;
   translationAvailable?: boolean;
+  installing?: boolean;
 }[];
 
 export interface LatLonSchema {
