@@ -11,6 +11,8 @@ import { FileType } from '#shared/types/fileType.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { needsAuthorization } from '../auth/index.js';
+import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
+import { registerSyncHandlers } from './registerSyncHandlers.js';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -104,6 +106,8 @@ const keepOnlyOneDefaultTemplate = async (
 };
 
 export default (app: Application) => {
+  registerSyncHandlers();
+
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
       if (req.body.namespace === 'settings') {
@@ -130,9 +134,14 @@ export default (app: Application) => {
         );
         await models[req.body.namespace]().save(req.body.data);
       } else {
+        const odmModel = models[req.body.namespace]?.();
+        const handler = odmModel ?? SyncHandlerRegistry.get(req.body.namespace);
+        if (!handler) {
+          throw new Error(`No sync handler for namespace: ${req.body.namespace}`);
+        }
         await (Array.isArray(req.body.data)
-          ? models[req.body.namespace]().saveMultiple(req.body.data)
-          : models[req.body.namespace]().save(req.body.data));
+          ? handler.saveMultiple(req.body.data)
+          : handler.save(req.body.data));
       }
 
       await updateMappings(req);
@@ -166,6 +175,10 @@ export default (app: Application) => {
     '/api/sync',
     needsAuthorization(['admin']),
     async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res) => {
+      if (SyncHandlerRegistry.has(req.query.namespace)) {
+        res.json('ok');
+        return;
+      }
       await models[req.query.namespace]().delete(JSON.parse(req.query.data));
 
       if (req.query.namespace === 'files') {

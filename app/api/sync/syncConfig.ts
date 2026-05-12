@@ -64,6 +64,7 @@ const COLLECTION_SYNC_ORDER = [
   'files',
   'connections',
   'entities',
+  'elasticSlots',
 ];
 const TEMPLATE_DEPENDENCIES = [
   'settings',
