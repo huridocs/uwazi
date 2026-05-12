@@ -141,6 +141,20 @@ export class MongoTranslationsDataSource
     );
   }
 
+  async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
+    const cursor = this.getCollection().find({ language: from });
+    const stream = this.createBulkStream();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for await (const { _id, ...doc } of cursor) {
+      await stream.updateOne(
+        { language: to, key: doc.key, 'context.id': doc.context.id },
+        { $setOnInsert: { ...doc, language: to } },
+        true
+      );
+    }
+    await stream.flush();
+  }
+
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
     const context = await this.getCollection().findOne({ 'context.id': contextId });
     if (!context) {

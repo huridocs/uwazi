@@ -35,6 +35,8 @@ export interface TranslationsDataSource {
 
   calculateNonexistentKeys(contextId: string, keys: string[]): Promise<string[]>;
 
+  cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void>;
+
   // Domain model methods
   getContext(
     contextInfo: TranslationContext,

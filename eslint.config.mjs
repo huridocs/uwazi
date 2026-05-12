@@ -9,7 +9,7 @@ import prettier from 'eslint-plugin-prettier';
 import node from 'eslint-plugin-node';
 import reactHooks from 'eslint-plugin-react-hooks';
 import cypress from 'eslint-plugin-cypress';
-import { fixupPluginRules } from '@eslint/compat';
+
 import tsParser from '@typescript-eslint/parser';
 import { FlatCompat } from '@eslint/eslintrc';
 import rules from './uwazi-eslint-rules.cjs';
@@ -55,7 +55,8 @@ const localRulesPlugin = {
 
 export default defineConfig([
   { ignores: ['**/__snapshots__/**', '**/*.snap', 'eslint.config.mjs'] },
-  ...compat.extends('airbnb', 'plugin:cypress/recommended'),
+  ...compat.extends('airbnb'),
+  cypress.configs.recommended,
   ...storybook.configs['flat/recommended'],
   {
     files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
@@ -65,7 +66,7 @@ export default defineConfig([
         ...globals.node,
         ...globals.jest,
         ...globals.jasmine,
-        ...cypress.environments.globals.globals,
+        ...cypress.configs.globals.languageOptions.globals,
       },
       ecmaVersion: 2022,
     },
@@ -75,7 +76,7 @@ export default defineConfig([
       '@typescript-eslint': typescriptEslint,
       prettier,
       node,
-      'react-hooks': fixupPluginRules(reactHooks),
+      'react-hooks': reactHooks,
       cypress,
     },
 
