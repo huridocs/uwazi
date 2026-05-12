@@ -96,6 +96,7 @@ updates:
     schedule:
       interval: weekly
     target-branch: production
+    open-pull-requests-limit: 1
     labels:
       - dependencies
     rebase-strategy: disabled

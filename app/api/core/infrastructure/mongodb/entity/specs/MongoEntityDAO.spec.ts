@@ -288,6 +288,95 @@ describe('MongoEntityDAO', () => {
     });
   });
 
+  describe('cloneForLanguage()', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('should clone all entities from the source language to the target language', async () => {
+      const dao = createSut();
+      await dao.cloneForLanguage('en', 'fr');
+
+      const cloned = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ language: 'fr' })
+        .toArray();
+
+      const originalSharedIds = ['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5'].sort();
+      expect(cloned.map(e => e.sharedId).sort()).toEqual(originalSharedIds);
+      expect(cloned.every(e => e.language === 'fr')).toBe(true);
+    });
+
+    it('should be idempotent (running twice does not create duplicates)', async () => {
+      const dao = createSut();
+      await dao.cloneForLanguage('en', 'fr');
+      await dao.cloneForLanguage('en', 'fr');
+
+      const cloned = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ language: 'fr' })
+        .toArray();
+
+      expect(cloned).toHaveLength(5);
+    });
+
+    it('should not overwrite already existing entities for the target language', async () => {
+      const dao = createSut();
+      await dao.cloneForLanguage('en', 'es');
+
+      const esEntities = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ language: 'es' })
+        .toArray();
+
+      // entity_1 already existed in 'es' from fixtures; it should not be overwritten
+      const entity1es = esEntities.find(e => e.sharedId === 'entity_1');
+      expect(entity1es).toBeDefined();
+      // The other en-only entities should have been cloned
+      const clonedSharedIds = esEntities.map(e => e.sharedId).sort();
+      expect(clonedSharedIds).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
+    });
+
+    it('should call onBatch with all cloned entities having the target language', async () => {
+      const dao = createSut();
+      const onBatch = jest.fn().mockResolvedValue(undefined);
+      await dao.cloneForLanguage('en', 'fr', onBatch);
+
+      expect(onBatch).toHaveBeenCalled();
+      const allReceived = onBatch.mock.calls.flatMap((args: any[]) => args[0]);
+      expect(allReceived.every((e: any) => e.language === 'fr')).toBe(true);
+      const receivedSharedIds = allReceived.map((e: any) => e.sharedId).sort();
+      expect(receivedSharedIds).toEqual([
+        'entity_1',
+        'entity_2',
+        'entity_3',
+        'entity_4',
+        'entity_5',
+      ]);
+    });
+
+    it('should call onBatch with entities that do not have an _id field', async () => {
+      const dao = createSut();
+      const onBatch = jest.fn().mockResolvedValue(undefined);
+      await dao.cloneForLanguage('en', 'fr', onBatch);
+
+      const allReceived = onBatch.mock.calls.flatMap((args: any[]) => args[0]);
+      expect(allReceived.every((e: any) => !('_id' in e))).toBe(true);
+    });
+
+    it('should still clone normally when onBatch is not provided', async () => {
+      const dao = createSut();
+      await dao.cloneForLanguage('en', 'fr');
+
+      const cloned = await testingEnvironment.db
+        .getCollection('entities')!
+        .find({ language: 'fr' })
+        .toArray();
+
+      expect(cloned).toHaveLength(5);
+    });
+  });
+
   describe('streamSharedIds()', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures);
