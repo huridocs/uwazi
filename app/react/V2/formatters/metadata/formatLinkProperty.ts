@@ -1,5 +1,9 @@
 import type { Entity } from '#V2/api/entities/types.js';
 import type { BaseMetadataProperty, LinkMetadataProperty } from '../types';
+import {
+  resolvePropertyMetadataValues,
+  resolvePropertyType,
+} from './resolvePropertyMetadataValues.js';
 
 const isLinkType = (type: BaseMetadataProperty['type']) => type === 'link';
 
@@ -7,11 +11,14 @@ const formatLinkProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata']
 ): LinkMetadataProperty | null => {
-  if (!isLinkType(property.type)) {
+  const metadataValues = resolvePropertyMetadataValues(property, metadata);
+  const type = resolvePropertyType(property, metadata);
+
+  if (!isLinkType(type)) {
     return null;
   }
 
-  const values = (metadata?.[property.name] ?? []).map(item => {
+  const values = metadataValues.map(item => {
     const link = item?.value as { url?: string; label?: string } | undefined;
     return {
       value: link?.url ?? '',
@@ -22,7 +29,7 @@ const formatLinkProperty = (
   return {
     _id: property._id,
     name: property.name,
-    type: property.type,
+    type: 'link',
     values,
     label: property.label,
     inherited: property.inherited,
