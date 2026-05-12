@@ -9,7 +9,7 @@ const ImageValidationIconButton = ({ feedback }: ImageValidationIconButtonProps)
   <Tooltip content={feedback.message} placement="top">
     <button
       type="button"
-      className="inline-flex shrink-0 rounded p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-theme-action-primary)] focus-visible:ring-offset-1"
+      className="inline-flex shrink-0 rounded p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-theme-action-primary) focus-visible:ring-offset-1"
       aria-label={feedback.message}
       style={{
         color:

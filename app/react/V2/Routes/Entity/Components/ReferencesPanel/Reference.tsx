@@ -16,9 +16,9 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
   const entityTitle = reference.targetEntity.title || '-';
   const referenceText = reference.reference.text || '';
 
-  const surface = '[background-color:var(--color-theme-surface-raised)]';
+  const surface = 'bg-(--color-theme-surface-raised)';
   const borderIdle =
-    '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
+    'border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
   const borderClass = isSelected ? 'border-2 border-primary-400' : borderIdle;
 
   return (

@@ -48,7 +48,6 @@ const titleFormat = (locale: string) => {
 const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string) => {
   const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
   const locale = language || 'en';
-
   return {
     days: Info.weekdays('long', { locale }),
     daysShort: Info.weekdays('short', { locale }),
@@ -196,11 +195,11 @@ const DatePickerComponent = React.forwardRef(
               name={name}
               ref={ref}
               disabled={disabled}
-              className={`block w-full flex-1 border p-2.5 text-sm placeholder:[color:var(--color-theme-control-placeholder)] focus:outline-hidden ${
+              className={`block w-full flex-1 border p-2.5 text-sm placeholder:text-(--color-theme-control-placeholder) focus:outline-hidden ${
                 showError
-                  ? 'focus:[border-color:var(--color-theme-control-border-error)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
-                  : 'focus:[border-color:var(--color-theme-control-border-focus)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
-              } ${fieldStyles} disabled:[color:var(--color-theme-control-text-disabled)]`}
+                  ? 'focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+                  : 'focus:border-(--color-theme-control-border-focus) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+              } ${fieldStyles} disabled:text-(--color-theme-control-text-disabled)`}
               style={fieldStyle}
               placeholder={placeholder}
               autoComplete={autoComplete}
@@ -208,7 +207,7 @@ const DatePickerComponent = React.forwardRef(
             <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
               <svg
                 aria-hidden="true"
-                className="h-5 w-5 [color:var(--color-theme-control-text-muted)]"
+                className="h-5 w-5 text-(--color-theme-control-text-muted)"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

@@ -16,7 +16,7 @@ const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) =
     <StarIcon
       className={
         !cell.row.original.default
-          ? 'w-4 [color:var(--color-theme-button-secondary-bg)] [stroke:var(--color-theme-border-default)] stroke-2'
+          ? 'w-4 text-(--color-theme-button-secondary-bg) stroke-(--color-theme-border-default) stroke-2'
           : 'w-4 text-white'
       }
     />
