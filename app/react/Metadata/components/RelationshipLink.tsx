@@ -28,6 +28,15 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & RelationshipLinkProps;
 
 const RelationshipLink = ({ propValue: propVal, selectConnection }: mappedProps) => {
+  if (propVal.authorized === false) {
+    return (
+      <>
+        {propVal.icon && <Icon className="item-icon" data={propVal.icon} />}
+        {propVal.value}
+      </>
+    );
+  }
+
   if (propVal.relatedEntity) {
     return (
       <button

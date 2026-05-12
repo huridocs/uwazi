@@ -388,6 +388,7 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,Doldur
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtreler
 Filters AND operator,VE
 Filters configuration,Filtreler
@@ -419,6 +420,7 @@ General Information,General Information
 Generated ID,Generated ID
 Global CSS,Genel CSS
 Global CSS & JS,Global CSS & JS
+Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics Kimliği
@@ -440,6 +442,7 @@ here,here
 Hide,Hide
 Hide actions,Hide actions
 Hide label,Etiketi Gizle
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
 https://yourdomain,https://yourdomain
 hubs,hubs
@@ -648,6 +651,7 @@ No Value,Değer yok
 "No, cancel","No, cancel"
 Non processed,İşlenmemiş
 Non-labeled,Non-labeled
+Non-latin characters support,Non-latin characters support
 Normal view,Normal görünüm
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
@@ -767,6 +771,7 @@ Public form settings description,Here you can configure the public form destinat
 Public Form submit URL,Public Form submit URL
 Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
+Public instance,Public instance
 Publish,Yayınla
 Published,Yayınlanan
 QR Code,QR Code

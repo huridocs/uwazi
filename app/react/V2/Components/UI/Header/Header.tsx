@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
+import { useLocation } from 'react-router';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
 import {
   BookOpenIcon,
   Cog6ToothIcon,
@@ -7,10 +10,14 @@ import {
   MoonIcon,
   SunIcon,
 } from '@heroicons/react/24/outline';
+import { actions } from '#app/BasicReducer/index.js';
 import { I18NLink } from '#app/I18N/I18NLinkV2.js';
 import { t, Translate } from '#app/I18N/index.js';
+import { IStore } from '#app/istore.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import { SiteName } from '#app/App/SiteName.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
+import { buildLibraryUrl } from './buildLibraryUrl.js';
 import { settingsAtom, themeModeAtom, userAtom } from '../../../atoms/index.js';
 import { RequestStatus } from '../Notifications/RequestStatus.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
@@ -32,21 +39,41 @@ const isLibraryUrl = (url?: string) => {
   return libraryRoutes.has(path);
 };
 
-const getLibraryUrl = (defaultLibraryView?: string) => {
-  if (defaultLibraryView === 'map') return 'library/map';
-  if (defaultLibraryView === 'table') return 'library/table';
-  return 'library';
-};
+const mapStateToProps = (state: IStore) => ({
+  librarySearch: state.library.search,
+  libraryFilters: state.library.filters,
+});
 
-const Header = () => {
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators(
+    { setSidePanelView: actions.set.bind(null, 'library.sidepanel.view') },
+    wrapDispatch(dispatch, 'library')
+  );
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type HeaderReduxProps = ConnectedProps<typeof connector>;
+
+const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderReduxProps) => {
   const user = useAtomValue(userAtom);
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
   const authenticatedUser = Boolean(user?._id);
   const settings = useAtomValue(settingsAtom);
   const isMobile = useIsMobile();
+  const location = useLocation();
 
-  const { private: privateInstance, defaultLibraryView = 'cards', themeCustomization } = settings;
-  const libraryUrl = getLibraryUrl(defaultLibraryView);
+  const { private: privateInstance, defaultLibraryView, themeCustomization } = settings;
+
+  const libraryUrl = useMemo(
+    () =>
+      buildLibraryUrl({
+        location,
+        librarySearch,
+        libraryFilters,
+        defaultLibraryView,
+      }),
+    [location, librarySearch, libraryFilters, defaultLibraryView]
+  );
+
   const shouldShowLibrary = !privateInstance || authenticatedUser;
   const headerLinks = (settings.links ?? []).filter(link => !isLibraryUrl(link.url));
 
@@ -58,7 +85,7 @@ const Header = () => {
       >
         <Translate>Skip to main content</Translate>
       </a>
-      <div className="flex min-h-[3.25rem] items-center justify-between gap-4 px-5">
+      <div className="flex min-h-13 items-center justify-between gap-4 px-5">
         <div className="flex min-w-0 items-center gap-3">
           {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
           <SiteName
@@ -78,6 +105,7 @@ const Header = () => {
           {shouldShowLibrary && (
             <I18NLink
               to={libraryUrl}
+              onClick={() => setSidePanelView('library')}
               className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors"
               activeClassname="header-bar-button-active"
               aria-label={t('System', 'Library', null, false)}
@@ -126,5 +154,7 @@ const Header = () => {
     </header>
   );
 };
+
+const Header = connector(HeaderView);
 
 export { Header };
