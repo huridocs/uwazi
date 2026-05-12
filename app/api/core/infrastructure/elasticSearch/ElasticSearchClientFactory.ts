@@ -7,6 +7,7 @@ import { IndexNameResolver } from './IndexNameResolver.js';
 import { config } from '#api/config.js';
 import { AuthorizedEntityESClient } from './entities/AuthorizedElasticEntityClient.js';
 import { User } from '#api/users.v2/model/User.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 class ElasticSearchClientFactory {
   private static instance: Client;
@@ -14,16 +15,17 @@ class ElasticSearchClientFactory {
   static getInstance(): Client {
     if (!ElasticSearchClientFactory.instance) {
       ElasticSearchClientFactory.instance = new Client({
-        nodes: config.elasticsearch.nodes,
-        requestTimeout: config.elasticsearch.requestTimeout,
-        auth: config.elasticsearch.auth,
+        nodes: config.elasticSearchMultiTenant.nodes,
+        requestTimeout: config.elasticSearchMultiTenant.requestTimeout,
+        auth: config.elasticSearchMultiTenant.auth,
+        ssl: { rejectUnauthorized: false },
       });
     }
 
     return ElasticSearchClientFactory.instance;
   }
 
-  static tenantAware(tenantId: string): TenantAwareESClient {
+  static tenantAware(): TenantAwareESClient {
     const mongoTenantRoutingDataSource = new MongoTenantRoutingDataSource(
       getSharedConnection(),
       TransactionManagerFactory.createForSharedDataBase()
@@ -36,11 +38,11 @@ class ElasticSearchClientFactory {
     return new TenantAwareESClient({
       client,
       resolver,
-      tenantId,
+      tenantId: ExecutionContext.tenant.name,
     });
   }
 
-  static authorizedEntityClient(tenantId: string, actor: User | null): AuthorizedEntityESClient {
+  static authorizedEntityClient(): AuthorizedEntityESClient {
     const mongoTenantRoutingDataSource = new MongoTenantRoutingDataSource(
       getSharedConnection(),
       TransactionManagerFactory.createForSharedDataBase()
@@ -51,11 +53,11 @@ class ElasticSearchClientFactory {
     const elasticClient = new TenantAwareESClient({
       client: ElasticSearchClientFactory.getInstance(),
       resolver,
-      tenantId,
+      tenantId: ExecutionContext.tenant.name,
     });
 
     return new AuthorizedEntityESClient({
-      actor,
+      actor: ExecutionContext.actor || User.createFrom(null),
       elasticClient,
     });
   }

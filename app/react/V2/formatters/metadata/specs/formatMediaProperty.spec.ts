@@ -79,6 +79,55 @@ describe('formatMediaProperty', () => {
     });
   });
 
+  it('should keep all media values and preserve timelinks per item', () => {
+    const metadata = {
+      media: [
+        {
+          value:
+            '(/api/files/video-one.mp4, {"timelinks":{"00:00:02":"Timelink 1","00:00:04":"Timelink 2"}})',
+        },
+        {
+          value: '/api/files/video-two.webm',
+        },
+      ],
+    } as Entity['metadata'];
+
+    expect(formatMediaProperty(mediaProperty, metadata)).toEqual({
+      _id: '1.15',
+      name: 'media',
+      type: 'media',
+      values: [
+        {
+          value: '/api/files/video-one.mp4',
+          alt: 'video-one.mp4',
+          mimetype: 'video/mp4',
+          fileType: 'video',
+          timelinks: [
+            {
+              label: 'Timelink 1',
+              hh: 0,
+              mm: 0,
+              ss: 2,
+              time: 2,
+            },
+            {
+              label: 'Timelink 2',
+              hh: 0,
+              mm: 0,
+              ss: 4,
+              time: 4,
+            },
+          ],
+        },
+        {
+          value: '/api/files/video-two.webm',
+          timelinks: [],
+        },
+      ],
+      label: 'Media',
+    });
+  });
+
   it('should keep external URLs as plain values', () => {
     const metadata = {
       media: [

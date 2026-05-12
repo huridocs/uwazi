@@ -3,27 +3,15 @@ import { hideBin } from 'yargs/helpers';
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { MongoEntityDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntityDAO.js';
-import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
-import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
-import { MongoSlotsDAO } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsDAO.js';
-import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
-import { ElasticSearchBootstrapper } from '#api/core/infrastructure/elasticSearch/provision/ElasticSearchBootstrapper.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
-import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
-import { IndexMappingRegistry } from '#api/core/infrastructure/elasticSearch/IndexMappingRegistry.js';
-import {
-  ESIndexRebuilder,
-  ProgressEvent,
-} from '#api/core/infrastructure/elasticSearch/ESIndexRebuilder.js';
-import { User } from '#api/users.v2/model/User.js';
+import { ProgressEvent } from '#api/core/infrastructure/elasticSearch/ESIndexRebuilder.js';
+import { ESIndexRebuilderFactory } from '#api/core/infrastructure/factories/ESIndexRebuilderFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 
 const { tenant } = yargs(hideBin(process.argv))
   .option('tenant', {
@@ -37,17 +25,24 @@ const { tenant } = yargs(hideBin(process.argv))
 const formatProgress = (event: ProgressEvent): string => {
   switch (event.stage) {
     case 'reset-indexes':
-      return '[1/5] Resetting ES indexes (delete + recreate)...';
+      return '[1/4] Resetting ES indexes (delete + recreate)...\n';
     case 'reset-slots':
-      return '[2/5] Wiping and re-seeding slot collection...';
+      return '[2/4] Wiping and re-seeding slot collection...\n';
     case 'reconcile-slots':
-      return '[3/5] Reconciling slots with templates...';
-    case 'index-entities':
-      return `[4/5] Indexing entities... ${event.indexed} indexed`;
-    case 'index-fulltext':
-      return `[5/5] Indexing full-text documents... ${event.indexed} indexed`;
+      return '[3/4] Reconciling slots with templates...\n';
+    case 'indexing': {
+      const entityPct =
+        event.entitiesToIndex > 0
+          ? Math.round((event.entitiesIndexed / event.entitiesToIndex) * 100)
+          : 0;
+      const ftPct =
+        event.fullTextToIndex > 0
+          ? Math.round((event.fullTextIndexed / event.fullTextToIndex) * 100)
+          : 0;
+      return `[4/4] Entities: ${event.entitiesIndexed}/${event.entitiesToIndex} (${entityPct}%) | Full-text: ${event.fullTextIndexed}/${event.fullTextToIndex} (${ftPct}%)\r`;
+    }
     case 'done':
-      return '';
+      return '\n';
     default:
       return '';
   }
@@ -61,49 +56,25 @@ async function main() {
 
   try {
     await tenants.run(async () => {
-      const db = getConnection();
-      const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
-      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-      const logger = LoggerFactory.default();
-
-      const entityDAO = new MongoEntityDAO(db, transactionManager, User.createFrom(null));
-      const filesDAO = new MongoFilesDAO({ db, transactionManager });
-
-      const slotsBootstrapper = new MongoSlotsBootstrapper({ database: db });
-      const templatesDAO = new MongoTemplatesDAO({ db, transactionManager });
-      const slotsDAO = new MongoSlotsDAO({
-        db,
-        transactionManager,
-        tenantName: tenant,
-        settingsDS,
+      ExecutionContext.attachSyncContext(ESIndexRebuilderFactory, 'default', {
+        tenant: tenants.current(),
+        factories: {
+          transactionManager: TransactionManagerFactory.default,
+          jobsDispatcher: () =>
+            DefaultDispatcher(ExecutionContext.tenant.name, ExecutionContext.transactionManager),
+          eventEmitter: EventEmitterFactory.default,
+          idGenerator: IdGeneratorFactory.default,
+          logger: LoggerFactory.default,
+          elasticClient: ElasticSearchClientFactory.tenantAware,
+          authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
+        },
       });
-      const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });
 
-      const esClient = ElasticSearchClientFactory.getInstance();
-      const tenantAwareClient = ElasticSearchClientFactory.tenantAware(tenant);
-      const esBootstrapper = new ElasticSearchBootstrapper({
-        client: esClient,
-        registry: IndexMappingRegistry,
-        logger,
-      });
-      const entityIndexer = new EntityIndexerService({ esClient: tenantAwareClient, slotsDAO });
-      const fullTextIndexer = new FullTextIndexerService({ esClient: tenantAwareClient });
-
-      const rebuilder = new ESIndexRebuilder({
-        esClient,
-        esBootstrapper,
-        entityIndexer,
-        fullTextIndexer,
-        slotsBootstrapper,
-        slotsReconciler,
-        entityDAO,
-        filesDAO,
-        registry: IndexMappingRegistry,
-        logger,
+      const rebuilder = ESIndexRebuilderFactory.default({
         onProgress: event => {
           const message = formatProgress(event);
           if (message) {
-            console.log(message);
+            process.stdout.write(message);
           }
         },
       });
@@ -113,9 +84,9 @@ async function main() {
 
     const [seconds, nanoseconds] = process.hrtime(start);
     const elapsed = (seconds + nanoseconds / 1e9).toFixed(1);
-    console.log(`Done. Took ${elapsed}s`);
+    console.log(`\nDone. Took ${elapsed}s`);
   } catch (err) {
-    console.error('ES index rebuild failed:', err);
+    console.log('\nES index rebuild failed:', err);
     process.exitCode = 1;
   } finally {
     await ElasticSearchClientFactory.getInstance().close();

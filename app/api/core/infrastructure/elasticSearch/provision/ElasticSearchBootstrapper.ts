@@ -68,6 +68,10 @@ class ElasticSearchBootstrapper {
           aliases: { [alias]: {} },
         },
       });
+
+      this.deps.logger.info(
+        `[ElasticSearchBootstrapper] Created physical index "${physicalIndex}" with alias "${alias}".`
+      );
     } catch (err) {
       if (
         err instanceof errors.ResponseError &&

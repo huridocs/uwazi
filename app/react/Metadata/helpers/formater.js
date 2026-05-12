@@ -160,6 +160,7 @@ const formater = {
     return `${from} ~ ${to}`;
   },
 
+  // eslint-disable-next-line max-statements
   getSelectOptions(option, thesaurus, doc) {
     let value = '';
     let originalValue = '';
@@ -187,7 +188,15 @@ const formater = {
         : relatedEntity;
     }
 
-    return { value, originalValue, url, icon, parent, relatedEntity };
+    return {
+      value,
+      originalValue,
+      url,
+      icon,
+      parent,
+      relatedEntity,
+      ...(option?.authorized === false ? { authorized: false } : {}),
+    };
   },
 
   multimedia(property, [{ value }], type) {

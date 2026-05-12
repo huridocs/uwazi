@@ -90,7 +90,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
         .filter(f => f instanceof ProcessedPDF)
         .map(f => f.filename);
 
-      await this.fullTextIndexer.deleteByFilenames(processedPDFFilenames);
+      await this.fullTextIndexer.remove(processedPDFFilenames);
 
       this.fileToDelete.clear();
     });
