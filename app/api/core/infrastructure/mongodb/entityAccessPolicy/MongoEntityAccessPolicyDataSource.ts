@@ -23,30 +23,30 @@ class MongoEntityAccessPolicyDataSource
 
   private readonly entityIndexerService: EntityIndexerService;
 
-  private readonly mutatedSharedIds = new Set<string>();
+  private readonly updatedSharedIds = new Set<string>();
 
   constructor({ db, transactionManager, entityIndexerService }: Deps) {
     super(db, transactionManager);
     this.entityIndexerService = entityIndexerService;
 
     transactionManager.onCommitted(async () => {
-      if (this.mutatedSharedIds.size === 0) return;
-      const sharedIds = Array.from(this.mutatedSharedIds);
-      this.mutatedSharedIds.clear();
+      if (this.updatedSharedIds.size === 0) return;
+      const sharedIds = Array.from(this.updatedSharedIds);
+      this.updatedSharedIds.clear();
       await this.entityIndexerService.sync(sharedIds);
     });
   }
 
   async create(policy: EntityAccessPolicy): Promise<void> {
-    await this.persist(policy);
+    await this.persist(policy, false);
+  }
+
+  async bulkCreate(policies: EntityAccessPolicy[]): Promise<void> {
+    await this.bulkPersist(policies, false);
   }
 
   async update(policy: EntityAccessPolicy): Promise<void> {
     await this.persist(policy);
-  }
-
-  async bulkCreate(policies: EntityAccessPolicy[]): Promise<void> {
-    await this.bulkPersist(policies);
   }
 
   async bulkUpdate(policies: EntityAccessPolicy[]): Promise<void> {
@@ -89,7 +89,7 @@ class MongoEntityAccessPolicyDataSource
     return unique.map(EntityAccessPolicyMapper.toDomain);
   }
 
-  private async persist(policy: EntityAccessPolicy): Promise<void> {
+  private async persist(policy: EntityAccessPolicy, shouldIndex = true): Promise<void> {
     const { permissions, published } = EntityAccessPolicyMapper.toDBO(policy);
 
     await this.getCollection<EntityAccessPolicyDBO>().updateMany(
@@ -97,10 +97,12 @@ class MongoEntityAccessPolicyDataSource
       { $set: { permissions, published } }
     );
 
-    this.mutatedSharedIds.add(policy.sharedId);
+    if (shouldIndex) {
+      this.updatedSharedIds.add(policy.sharedId);
+    }
   }
 
-  private async bulkPersist(policies: EntityAccessPolicy[]): Promise<void> {
+  private async bulkPersist(policies: EntityAccessPolicy[], shouldIndex = true): Promise<void> {
     if (policies.length === 0) return;
 
     const ops = policies.map(policy => {
@@ -115,7 +117,9 @@ class MongoEntityAccessPolicyDataSource
 
     await this.getCollection<EntityAccessPolicyDBO>().bulkWrite(ops);
 
-    policies.forEach(policy => this.mutatedSharedIds.add(policy.sharedId));
+    if (shouldIndex) {
+      policies.forEach(policy => this.updatedSharedIds.add(policy.sharedId));
+    }
   }
 }
 
