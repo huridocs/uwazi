@@ -21,9 +21,9 @@ class AddLanguageUseCaseFactory {
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const translationService = new LegacyTranslationService();
 
-    const minutes30 = 30 * 60 * 1000;
+    const minutes60 = 60 * 60 * 1000;
     let jobsDispatcher: JobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {
-      lockWindow: minutes30,
+      lockWindow: minutes60,
     });
     if (process.env.NODE_ENV === 'test') {
       const innerDispatcher = new SyncDispatcherForTests({});
