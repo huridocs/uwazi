@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
