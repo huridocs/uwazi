@@ -298,7 +298,7 @@ Sidepanel.Footer = ({
   className?: String;
 }) => (
   <div
-    className={`bottom-0 left-0 z-1 w-full [background-color:var(--color-theme-surface-page)] ${className}`}
+    className={`bottom-0 left-0 z-1 w-full bg-(--color-theme-surface-page) ${className}`}
   >
     {children}
   </div>

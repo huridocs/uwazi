@@ -80,7 +80,7 @@ const CustomUploadImagePicker = ({
       )}
       <Label htmlFor={id}>{label}</Label>
       {recommendedSize ? (
-        <div className="mt-1 text-xs [color:var(--color-theme-text-tertiary)]">
+        <div className="mt-1 text-xs text-(--color-theme-text-tertiary)">
           <Translate>Recommended</Translate>: {recommendedSize}
         </div>
       ) : null}

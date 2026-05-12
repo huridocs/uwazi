@@ -42,9 +42,7 @@ const Modal = ({ children, size, id }: ModalProps) => {
       id={id}
     >
       <div className={`mx-auto max-h-[min(100dvh,100vh)] min-h-0 w-full ${sizes[size]}`}>
-        <div
-          className={`min-w-0 rounded-lg shadow-sm ${modalSurfaceClass} [color:var(--color-theme-text-primary)]`}
-        >
+        <div className={`min-w-0 rounded-lg shadow-sm ${modalSurfaceClass} text-ink`}>
           {children}
         </div>
       </div>
@@ -106,8 +104,8 @@ Modal.CloseButton = ({
     className={[
       className,
       'ml-auto inline-flex shrink-0 items-center rounded-lg bg-transparent p-1.5 text-sm',
-      '[color:var(--color-theme-text-secondary)]',
-      'enabled:hover:[background-color:var(--color-theme-surface-muted)]',
+      'text-(--color-theme-text-secondary)',
+      'enabled:hover:bg-(--color-theme-surface-muted)',
       'disabled:hover:bg-transparent',
     ].join(' ')}
     type="button"

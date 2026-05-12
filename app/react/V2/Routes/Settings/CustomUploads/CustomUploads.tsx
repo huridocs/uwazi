@@ -121,7 +121,7 @@ const CustomUploads = () => {
             }}
             enableSelections
             header={
-              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
+              <Translate className="text-left text-base font-semibold text-(--color-theme-text-primary)">
                 Custom Uploads
               </Translate>
             }

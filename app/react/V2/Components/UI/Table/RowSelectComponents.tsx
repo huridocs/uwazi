@@ -44,7 +44,7 @@ const IndeterminateCheckboxRow = <
       {disabled && typeof disableReason !== 'boolean' ? (
         <Tooltip
           content={
-            <div className="w-40 text-xs [color:var(--color-theme-text-secondary)]">
+            <div className="w-40 text-xs text-(--color-theme-text-secondary)">
               {disableReason}
             </div>
           }

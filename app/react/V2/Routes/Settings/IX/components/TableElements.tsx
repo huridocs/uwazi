@@ -90,7 +90,7 @@ const PropertyCell = ({ cell }: CellContext<TableExtractor, TableExtractor['prop
   return (
     <div className="flex items-center gap-2">
       <span className="w-5">{propertyIcons[property]}</span>
-      <p className="whitespace-nowrap [color:var(--color-theme-text-muted)]">
+      <p className="whitespace-nowrap text-(--color-theme-text-muted)">
         {cell.row.original.propertyLabel}
       </p>
     </div>
@@ -112,7 +112,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
   const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
 
   return (
-    <div className="flex gap-1 text-xs font-bold [color:var(--color-theme-text-tertiary)]">
+    <div className="flex gap-1 text-xs font-bold text-(--color-theme-text-tertiary)">
       <span>
         {amountOfValues} <Translate>values</Translate>
       </span>
@@ -124,7 +124,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
         <>
           <span>|</span>
           <span>
-            <span className="[color:var(--color-theme-feedback-success)]">{amountOfMatches}</span>{' '}
+            <span className="text-(--color-theme-feedback-success)">{amountOfMatches}</span>{' '}
             <Translate>matching</Translate>
           </span>
         </>
@@ -133,7 +133,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
         <>
           <span>|</span>
           <span>
-            <span className="[color:var(--color-theme-feedback-warning)]">
+            <span className="text-(--color-theme-feedback-warning)">
               {amountOfMissmatches}
             </span>{' '}
             <Translate>mismatching</Translate>
@@ -153,9 +153,9 @@ const CurrentValueCell = ({
 }) => {
   if (cell.row.original.state.error) {
     return (
-      <div className="flex gap-1 text-xs font-bold [color:var(--color-theme-text-tertiary)]">
+      <div className="flex gap-1 text-xs font-bold text-(--color-theme-text-tertiary)">
         <span>
-          <Translate className="[color:var(--color-theme-feedback-danger)]">Error</Translate>
+          <Translate className="text-(--color-theme-feedback-danger)">Error</Translate>
         </span>
       </div>
     );

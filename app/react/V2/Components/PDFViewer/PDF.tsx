@@ -284,10 +284,7 @@ const PDF = ({
 
   if (error) {
     return (
-      <p
-        data-testid="errorInfo"
-        className="mb-4 text-lg font-light [color:var(--color-theme-text-muted)]"
-      >
+      <p data-testid="errorInfo" className="mb-4 text-lg font-light text-ink-muted">
         {error}
       </p>
     );
@@ -299,12 +296,10 @@ const PDF = ({
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">
-              <div className="font-medium [color:var(--color-theme-text-muted)]">
+              <div className="font-medium text-ink-muted">
                 <Translate>Loading</Translate> ...
               </div>
-              <span className="text-sm font-medium [color:var(--color-theme-text-muted)]">
-                {loading.progress}%
-              </span>
+              <span className="text-sm font-medium text-ink-muted">{loading.progress}%</span>
             </div>
             <ProgressBar progress={loading.progress} color="gray" />
           </div>
@@ -325,7 +320,7 @@ const PDF = ({
                     className={[
                       'relative mb-4 border-solid',
                       `[border-width:${BORDER_WIDTH}px]`,
-                      '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
+                      'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
                     ].join(' ')}
                   >
                     <SelectionRegion regionId={regionId.toString()}>

@@ -142,13 +142,13 @@ const PXEntityDashboard = () => {
                 selected={selected}
                 disabled={isSaving}
               />
-              <div className="[color:var(--color-theme-text-secondary)]">
+              <div className="text-(--color-theme-text-secondary)">
                 <Translate>Selected</Translate>{' '}
-                <span className="font-semibold [color:var(--color-theme-text-primary)]">
+                <span className="font-semibold text-(--color-theme-text-primary)">
                   {selected.length}
                 </span>{' '}
                 <Translate>of</Translate>{' '}
-                <span className="font-semibold [color:var(--color-theme-text-primary)]">
+                <span className="font-semibold text-(--color-theme-text-primary)">
                   {totalRows}
                 </span>
               </div>

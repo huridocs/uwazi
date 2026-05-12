@@ -119,7 +119,7 @@ const Templates = () => {
                 <Button variant="danger" onClick={handleDeleteClick}>
                   <Translate>Delete</Translate>
                 </Button>
-                <span className="[color:var(--color-theme-text-secondary)]">
+                <span className="text-(--color-theme-text-secondary)">
                   <Translate>Selected</Translate> {selected.length} <Translate>of</Translate>{' '}
                   {templates.length}
                 </span>

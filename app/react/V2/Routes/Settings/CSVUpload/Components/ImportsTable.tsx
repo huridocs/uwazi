@@ -236,7 +236,7 @@ const ImportsTable = () => {
                   'color-mix(in srgb, var(--color-theme-border-default) 60%, transparent)',
               }}
             >
-              <DocumentIcon className="h-6 w-6 [color:var(--color-theme-text-primary)]" />
+              <DocumentIcon className="h-6 w-6 text-(--color-theme-text-primary)" />
             </div>
           }
           title={<Translate>No CSVs yet</Translate>}
@@ -260,14 +260,14 @@ const ImportsTable = () => {
             <span className="float-left text-xl font-semibold" no-translate="true">
               CSVs
             </span>
-            <div className="float-right flex flex-row items-center gap-2 text-sm [color:var(--color-theme-text-muted)]">
+            <div className="float-right flex flex-row items-center gap-2 text-sm text-(--color-theme-text-muted)">
               <ArrowPathIcon className="w-4 h-4" />
               <Translate>Auto-refreshing</Translate>
             </div>
           </div>
           <div className="flex flex-row gap-8 items-center">
             <div className="flex flex-row gap-2 items-center">
-              <span className="text-lg font-semibold [color:var(--color-theme-text-primary)]">
+              <span className="text-lg font-semibold text-(--color-theme-text-primary)">
                 {tableData.length}
               </span>
               <Translate>Total imports</Translate>
@@ -280,7 +280,7 @@ const ImportsTable = () => {
               }}
             />
             <div className="flex flex-row gap-2 items-center">
-              <span className="text-lg font-semibold [color:var(--color-theme-action-primary)]">
+              <span className="text-lg font-semibold text-(--color-theme-action-primary)">
                 {processing}
               </span>
               <Translate>Processing</Translate>
@@ -293,7 +293,7 @@ const ImportsTable = () => {
               }}
             />
             <div className="flex flex-row gap-2 items-center">
-              <span className="text-lg font-semibold [color:var(--color-theme-feedback-success)]">
+              <span className="text-lg font-semibold text-(--color-theme-feedback-success)">
                 {completed}
               </span>
               <Translate>Completed</Translate>
@@ -306,7 +306,7 @@ const ImportsTable = () => {
               }}
             />
             <div className="flex flex-row gap-2 items-center">
-              <span className="text-lg font-semibold [color:var(--color-theme-feedback-danger)]">
+              <span className="text-lg font-semibold text-(--color-theme-feedback-danger)">
                 {failed}
               </span>
               <Translate>Failed jobs</Translate>

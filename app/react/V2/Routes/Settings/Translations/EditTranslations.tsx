@@ -293,7 +293,7 @@ const EditTranslations = () => {
                 className="px-5 pt-5"
                 onToggle={() => setHideTranslated(!hideTranslated)}
               >
-                <div className="pl-1 text-sm [color:var(--color-theme-text-secondary)]">
+                <div className="pl-1 text-sm text-(--color-theme-text-secondary)">
                   <Translate>Untranslated Terms</Translate>
                 </div>
               </ToggleButton>
@@ -311,11 +311,11 @@ const EditTranslations = () => {
                       <div className="relative mb-4 w-full rounded-md border shadow-md [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
                         <table className="w-full text-sm text-left" data-testid="table">
                           {title && (
-                            <caption className="p-4 text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
+                            <caption className="p-4 text-left text-base font-semibold text-(--color-theme-text-primary)">
                               {title}
                             </caption>
                           )}
-                          <thead className="text-xs uppercase [color:var(--color-theme-text-tertiary)] [background-color:var(--color-theme-surface-muted)]">
+                          <thead className="text-xs uppercase text-(--color-theme-text-tertiary) bg-(--color-theme-surface-muted)">
                             <tr className="border-b">
                               <th scope="col" className="px-6 py-3">
                                 <div className="inline-flex">
@@ -377,9 +377,9 @@ const EditTranslations = () => {
                   );
                 })
               ) : (
-                <div className="flex items-center gap-2 rounded-md border p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] [background-color:var(--color-theme-feedback-info-tint)]">
-                  <InformationCircleIcon className="w-10 [color:var(--color-theme-action-primary)]" />
-                  <span className="[color:var(--color-theme-action-primary)]">
+                <div className="flex items-center gap-2 rounded-md border p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-feedback-info-tint)">
+                  <InformationCircleIcon className="w-10 text-(--color-theme-action-primary)" />
+                  <span className="text-(--color-theme-action-primary)">
                     <Translate>There are no untranslated terms</Translate>
                   </span>
                 </div>

@@ -8,7 +8,7 @@ const TableHeader = ({
   className?: string;
 }) => (
   <span
-    className={`font-semibold text-xs [color:var(--color-theme-text-secondary)] ${className}`.trim()}
+    className={`font-semibold text-xs text-(--color-theme-text-secondary) ${className}`.trim()}
   >
     {children}
   </span>

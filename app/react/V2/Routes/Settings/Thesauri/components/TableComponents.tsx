@@ -18,14 +18,14 @@ const ThesaurusLabel = ({ cell }: any) => {
   const hidden = translated === cell.row.original.name;
   return (
     <div className="flex items-center">
-      <span className="[color:var(--color-theme-text-primary)]">{cell.row.original.name}</span>
+      <span className="text-(--color-theme-text-primary)">{cell.row.original.name}</span>
       {hidden && (
-        <div className="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]">
+        <div className="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
           <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
         </div>
       )}
       {!hidden && (
-        <div className="ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]">
+        <div className="ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
           <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
         </div>
       )}
@@ -42,17 +42,17 @@ const ThesaurusValueLabel = ({ getValue, cell }: CellContext<ThesaurusRow, strin
   const hidden = translated === label;
   return (
     <div className="flex items-center gap-2">
-      <span className="[color:var(--color-theme-text-primary)]">{label}</span>
+      <span className="text-(--color-theme-text-primary)">{label}</span>
       {thesaurus !== undefined && hidden && (
-        <div className="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]">
-          <Translate context={thesaurus._id} className="[color:var(--color-theme-text-secondary)]">
+        <div className="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
+          <Translate context={thesaurus._id} className="text-(--color-theme-text-secondary)">
             {label}
           </Translate>
         </div>
       )}
       {thesaurus !== undefined && !hidden && (
-        <div className="ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]">
-          <Translate context={thesaurus._id} className="[color:var(--color-theme-text-secondary)]">
+        <div className="ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)">
+          <Translate context={thesaurus._id} className="text-(--color-theme-text-secondary)">
             {label}
           </Translate>
         </div>

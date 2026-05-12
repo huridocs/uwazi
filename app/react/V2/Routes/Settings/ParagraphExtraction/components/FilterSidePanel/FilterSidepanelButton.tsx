@@ -12,12 +12,12 @@ const FilterSidepanelButton = () => {
   const activeFilters = Array.from(searchParams.entries()).filter(([key]) => key !== 'page').length;
   return (
     <Button
-      className="flex items-center gap-2 leading-4 [color:var(--color-theme-text-secondary)]"
+      className="flex items-center gap-2 leading-4 text-(--color-theme-text-secondary)"
       variant="ghost"
       onClick={() => setOpen(true)}
     >
       <FunnelIcon
-        className={`mr-2 inline w-4 ${activeFilters > 0 ? '[color:var(--color-theme-action-primary)]' : '[color:var(--color-theme-text-secondary)]'} `}
+        className={`mr-2 inline w-4 ${activeFilters > 0 ? 'text-(--color-theme-action-primary)' : 'text-(--color-theme-text-secondary)'} `}
       />
       <Translate>Filters</Translate>
       {activeFilters > 0 && (

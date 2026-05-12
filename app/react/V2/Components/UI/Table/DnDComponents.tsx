@@ -124,7 +124,7 @@ const DraggableRow = <T extends TableRow<T>>({
     <>
       <tr
         ref={setNodeRef}
-        className={`border-b transition-colors hover:[background-color:var(--color-theme-surface-warm)] ${rowStyles}`}
+        className={`border-b transition-colors hover:bg-(--color-theme-surface-warm) ${rowStyles}`}
         style={{
           ...(isDragging ? draggingStyles : undefined),
           color: 'var(--color-theme-text-primary)',

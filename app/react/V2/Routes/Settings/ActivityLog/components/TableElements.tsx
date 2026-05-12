@@ -139,7 +139,7 @@ const getActivityLogColumns = (setSelectedEntry: any) => [
     meta: {
       action: setSelectedEntry,
       headerClassName:
-        'sr-only invisible w-1/12 [background-color:var(--color-theme-surface-muted)]',
+        'sr-only invisible w-1/12 bg-(--color-theme-surface-muted)',
       contentClassName: 'text-center w-1/12',
     },
   }),

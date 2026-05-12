@@ -54,7 +54,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
   return (
     <Modal size="md">
       <Modal.Header>
-        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
+        <h1 className="text-xl font-medium text-(--color-theme-text-primary)">
           <Translate>Add relationship type</Translate>
         </h1>
         <Modal.CloseButton onClick={handleClose} />

@@ -59,7 +59,7 @@ const CustomUploadImagePickerModal = ({
     </Modal.Header>
     <Modal.Body className="!p-4">
       <div className="min-w-0 space-y-4">
-        <div className="min-w-0 rounded-lg border p-4 [background-color:var(--color-theme-surface-warm)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]">
+        <div className="min-w-0 rounded-lg border p-4 bg-(--color-theme-surface-warm) [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]">
           <FileDropzone
             className="w-full min-w-0 max-w-full"
             acceptedFiles={ACCEPTED_IMAGE_FILES}
@@ -69,7 +69,7 @@ const CustomUploadImagePickerModal = ({
               Promise.resolve(onDropzoneFiles(newFiles)).catch(() => undefined);
             }}
           />
-          <div className="mt-3 min-w-0 text-xs [color:var(--color-theme-text-tertiary)]">
+          <div className="mt-3 min-w-0 text-xs text-(--color-theme-text-tertiary)">
             {uploadProgress.filename ? (
               <>
                 <Translate>Uploading</Translate> {uploadProgress.filename}{' '}
@@ -81,8 +81,8 @@ const CustomUploadImagePickerModal = ({
             <p
               className={`mt-2 text-xs ${
                 (dropzoneFeedback?.type ?? validationFeedback?.type) === 'error'
-                  ? '[color:var(--color-theme-feedback-danger)]'
-                  : '[color:var(--color-theme-warning)]'
+                  ? 'text-(--color-theme-feedback-danger)'
+                  : 'text-(--color-theme-warning)'
               }`}
             >
               {dropzoneFeedback?.message ?? validationFeedback?.message}

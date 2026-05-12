@@ -3,7 +3,7 @@ import { Translate } from '#app/I18N/index.js';
 import { CustomUploadImagePickerModalProps } from './CustomUploadImagePickerModal.js';
 import { assetUrl, fileMatchesAssetUrl } from './customUploadImagePickerLib.js';
 
-const muted = 'text-sm [color:var(--color-theme-text-secondary)]';
+const muted = 'text-sm text-(--color-theme-text-secondary)';
 
 const GallerySection = ({
   images,
@@ -47,7 +47,7 @@ const GallerySection = ({
 
   return (
     <>
-      <p className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+      <p className="text-sm font-medium text-(--color-theme-text-primary)">
         <Translate>Select an existing image</Translate>
       </p>
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -76,7 +76,7 @@ const GallerySection = ({
                     className="max-h-full max-w-full rounded object-contain [box-shadow:0_0_0_1px_color-mix(in_srgb,var(--color-theme-text-primary)_45%,transparent),0_0_0_2px_color-mix(in_srgb,var(--color-theme-surface-raised,var(--color-theme-bg-surface))_92%,transparent)]"
                   />
                 </span>
-                <span className="truncate border-t px-2 py-1.5 text-xs [color:var(--color-theme-text-secondary)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
+                <span className="truncate border-t px-2 py-1.5 text-xs text-(--color-theme-text-secondary) [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
                   {file.originalname || file.filename}
                 </span>
               </button>

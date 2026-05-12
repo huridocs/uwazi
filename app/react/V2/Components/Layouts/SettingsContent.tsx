@@ -21,7 +21,7 @@ interface SettingsHeaderProps extends PropsWithChildren {
 
 const SettingsContent = ({ children, className }: SettingsContentProps) => (
   <div
-    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0 [background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]`}
+    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0 bg-parchment`}
     data-testid="settings-content"
   >
     {children}
@@ -48,7 +48,7 @@ const SettingsHeaderTitle = ({
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
   <div
-    className={`${className || ''} flex pt-5 pb-4 px-4 [background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]`}
+    className={`${className || ''} flex pt-5 pb-4 px-4 bg-parchment`}
     data-testid="settings-content-header"
   >
     <I18NLink to="/settings" className="block lg:hidden">
@@ -62,7 +62,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
         <Breadcrumb.Item key={key} className="max-w-xs">
           <I18NLink
             to={value}
-            activeClassname="font-medium [color:var(--color-theme-text-secondary)] hover:[color:var(--color-theme-text-primary)]"
+            activeClassname="font-medium text-(--color-theme-text-secondary) hover:text-(--color-theme-text-primary)"
           >
             <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
           </I18NLink>
@@ -80,10 +80,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
 
 SettingsContent.Header = SettingsHeader;
 SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
-  <div
-    className={`${className || ''} grow px-4 [background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]`}
-    data-testid="settings-content-body"
-  >
+  <div className={`${className || ''} grow px-4 bg-parchment`} data-testid="settings-content-body">
     {children}
   </div>
 );
@@ -97,9 +94,7 @@ SettingsContent.Footer = ({
     className={[
       'sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3',
       'border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]',
-      highlighted
-        ? '[background-color:var(--color-theme-feedback-info-tint)]'
-        : '[background-color:var(--color-theme-surface-page,var(--color-theme-bg-primary))]',
+      highlighted ? 'bg-(--color-theme-feedback-info-tint)' : 'bg-parchment',
       className,
     ]
       .filter(Boolean)

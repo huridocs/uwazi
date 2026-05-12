@@ -14,8 +14,8 @@ const renderChild = (child: string | React.ReactNode) =>
 
 const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => {
   const color = hasErrors
-    ? 'var(--color-theme-accent-emphasis)'
-    : 'var(--color-theme-text-secondary)';
+    ? 'text-(--color-theme-accent-emphasis)'
+    : 'text-(--color-theme-text-secondary)';
 
   return (
     <label

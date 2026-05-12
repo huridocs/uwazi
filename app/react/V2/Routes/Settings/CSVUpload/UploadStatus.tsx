@@ -133,7 +133,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Entities created</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-(--color-theme-text-primary)">
                       {entry.stats?.entitiesCreated || '-'}
                     </span>
                   </div>
@@ -141,7 +141,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Rows processed</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-(--color-theme-text-primary)">
                       {entry.stats?.rowsProcessed || '-'}
                     </span>
                   </div>
@@ -149,7 +149,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Rows failed</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-(--color-theme-text-primary)">
                       {entry.stats?.rowsFailed || '-'}
                     </span>
                   </div>
@@ -157,7 +157,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Thesauri values created</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-(--color-theme-text-primary)">
                       {entry.stats?.thesaurusValuesCreated || '-'}
                     </span>
                   </div>
@@ -165,7 +165,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Related entities created</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-(--color-theme-text-primary)">
                       {entry.stats?.relationshipValuesCreated || '-'}
                     </span>
                   </div>
@@ -178,7 +178,7 @@ const UploadStatus = () => {
                   </Translate>
                   <Card>
                     <div className="flex flex-col gap-3">
-                      <div className="font-medium [color:var(--color-theme-text-primary)]">
+                      <div className="font-medium text-(--color-theme-text-primary)">
                         {entry.failure.message}
                       </div>
                       <div
