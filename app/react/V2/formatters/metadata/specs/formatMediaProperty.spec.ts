@@ -10,6 +10,15 @@ describe('formatMediaProperty', () => {
     type: 'media',
   } as BaseMetadataProperty;
 
+  const inheritedMediaProperty = {
+    _id: '1.16',
+    name: 'inherited_media',
+    label: 'Inherited Media',
+    type: 'relationship',
+    inherited: true,
+    inheritedType: 'relationship',
+  } as BaseMetadataProperty;
+
   it('should parse media timelinks payload and include processed timelinks', () => {
     const metadata = {
       media: [
@@ -176,6 +185,55 @@ describe('formatMediaProperty', () => {
       label: 'Media',
       inherited: undefined,
       inheritedType: undefined,
+    });
+  });
+
+  it('should format inherited relationship values when they resolve to media', () => {
+    const metadata = {
+      inherited_media: [
+        {
+          value: 'entity-1',
+          inheritedType: 'relationship',
+          inheritedValue: [
+            {
+              value: 'entity-2',
+              inheritedType: 'media',
+              inheritedValue: [
+                {
+                  value:
+                    '(/api/files/inherited-video.mp4, {"timelinks":{"00:00:03":"Nested link"}})',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    } as Entity['metadata'];
+
+    expect(formatMediaProperty(inheritedMediaProperty, metadata)).toEqual({
+      _id: '1.16',
+      name: 'inherited_media',
+      type: 'media',
+      values: [
+        {
+          value: '/api/files/inherited-video.mp4',
+          alt: 'inherited-video.mp4',
+          mimetype: 'video/mp4',
+          fileType: 'video',
+          timelinks: [
+            {
+              label: 'Nested link',
+              hh: 0,
+              mm: 0,
+              ss: 3,
+              time: 3,
+            },
+          ],
+        },
+      ],
+      label: 'Inherited Media',
+      inherited: true,
+      inheritedType: 'relationship',
     });
   });
 });
