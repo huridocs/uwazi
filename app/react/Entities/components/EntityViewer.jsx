@@ -424,10 +424,11 @@ const selectRelationTypes = createSelector(
   r => sortBy(r.toJS(), 'name')
 );
 
-const mapStateToProps = (state, { entity }) => {
+const mapStateToProps = (state, ownProps = {}) => {
+  const entity = ownProps.entity ?? state.entityView.entity;
   const entityTemplateId = entity && entity.get('template');
   const entityTemplate = state.templates.find(template => template.get('_id') === entityTemplateId);
-  const templateWithPageView = entityTemplate.get('entityViewPage');
+  const templateWithPageView = entityTemplate && entityTemplate.get('entityViewPage');
   const defaultTab = templateWithPageView ? 'page' : 'info';
   const { uiState } = state.entityView;
   return {
