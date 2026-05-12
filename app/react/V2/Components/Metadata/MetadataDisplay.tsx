@@ -98,9 +98,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             return formatRelationshipProperty(field, entity.metadata);
           }
 
-          return field.type === 'relationship'
-            ? formatRelationshipProperty(field, entity.metadata)
-            : null;
+          return null;
         })
         .filter(m => m) as MetadataProperty[],
     [entity, metadataFields, entityTemplate, templates]
