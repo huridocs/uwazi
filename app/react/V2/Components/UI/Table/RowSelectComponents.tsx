@@ -42,11 +42,7 @@ const IndeterminateCheckboxRow = <
     <label>
       <Translate className="sr-only">Select</Translate>
       {disabled && typeof disableReason !== 'boolean' ? (
-        <Tooltip
-          content={
-            <div className="w-40 text-xs text-ink-secondary">{disableReason}</div>
-          }
-        >
+        <Tooltip content={<div className="w-40 text-xs text-ink-secondary">{disableReason}</div>}>
           <span>{checkbox}</span>
         </Tooltip>
       ) : (

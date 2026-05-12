@@ -60,10 +60,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
     <Breadcrumb className="relative! p-1 flex right-0 bg-transparent! m-0 w-full! flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
         <Breadcrumb.Item key={key} className="max-w-xs">
-          <I18NLink
-            to={value}
-            activeClassname="font-medium text-ink-secondary hover:text-ink"
-          >
+          <I18NLink to={value} activeClassname="font-medium text-ink-secondary hover:text-ink">
             <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
           </I18NLink>
         </Breadcrumb.Item>

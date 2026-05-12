@@ -173,9 +173,7 @@ const UploadStatus = () => {
                   </Translate>
                   <Card>
                     <div className="flex flex-col gap-3">
-                      <div className="font-medium text-ink">
-                        {entry.failure.message}
-                      </div>
+                      <div className="font-medium text-ink">{entry.failure.message}</div>
                       <div className="flex flex-wrap gap-6 text-sm text-(--color-theme-text-secondary)">
                         <div>
                           <Translate>Stage</Translate>: {entry.failure.stage}

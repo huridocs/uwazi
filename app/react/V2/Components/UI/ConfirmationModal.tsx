@@ -68,9 +68,7 @@ const ConfirmationModal = ({
   return (
     <Modal size={size}>
       <Modal.Header className="border-b-0">
-        <h1 className="text-xl font-medium text-ink">
-          {renderChild(header)}
-        </h1>
+        <h1 className="text-xl font-medium text-ink">{renderChild(header)}</h1>
         <Modal.CloseButton onClick={onCancelClick} disabled={disabled} />
       </Modal.Header>
       {warningText && (

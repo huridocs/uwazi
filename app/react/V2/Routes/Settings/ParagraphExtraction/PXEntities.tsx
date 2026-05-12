@@ -144,9 +144,7 @@ const PXEntityDashboard = () => {
               />
               <div className="text-ink-secondary">
                 <Translate>Selected</Translate>{' '}
-                <span className="font-semibold text-ink">
-                  {selected.length}
-                </span>{' '}
+                <span className="font-semibold text-ink">{selected.length}</span>{' '}
                 <Translate>of</Translate>{' '}
                 <span className="font-semibold text-ink">{totalRows}</span>
               </div>

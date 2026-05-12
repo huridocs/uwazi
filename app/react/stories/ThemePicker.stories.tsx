@@ -123,7 +123,7 @@ const meta: Meta<typeof ThemePickerWithPreview> = {
   },
   decorators: [
     (Story, context) => (
-      <MemoryRouter initi lEntries={['/en/library']}>
+      <MemoryRouter initialEntries={['/en/library']}>
         <Story
           args={{
             ...context.args,

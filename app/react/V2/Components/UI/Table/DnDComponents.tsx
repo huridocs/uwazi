@@ -150,10 +150,7 @@ const DraggableRow = <T extends TableRow<T>>({
             borderColor: 'color-mix(in srgb, var(--color-theme-border-default) 40%, transparent)',
           }}
         >
-          <td
-            className="px-4 py-3 text-sm italic text-ink-secondary"
-            colSpan={colSpan}
-          >
+          <td className="px-4 py-3 text-sm italic text-ink-secondary" colSpan={colSpan}>
             {dndEnabled ? (
               <Translate>Empty group. Drop here to add</Translate>
             ) : (

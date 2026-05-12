@@ -267,9 +267,7 @@ const ImportsTable = () => {
           </div>
           <div className="flex flex-row gap-8 items-center">
             <div className="flex flex-row gap-2 items-center">
-              <span className="text-lg font-semibold text-ink">
-                {tableData.length}
-              </span>
+              <span className="text-lg font-semibold text-ink">{tableData.length}</span>
               <Translate>Total imports</Translate>
             </div>
             <span

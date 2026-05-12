@@ -89,9 +89,7 @@ const PagesList = () => {
             data={pages}
             enableSelections
             header={
-              <Translate className="text-left text-base font-semibold text-ink">
-                Pages
-              </Translate>
+              <Translate className="text-left text-base font-semibold text-ink">Pages</Translate>
             }
             onSelect={({ selectedRows }) => {
               setSelectedPages(pages.filter(page => page.rowId in selectedRows));
