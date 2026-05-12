@@ -1,23 +1,24 @@
-import { tenants } from '#api/tenants/index.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { FullTextIndexerService } from '../elasticSearch/entities/FullTextIndexerService.js';
+import {
+  FullTextIndexerService,
+  FullTextIndexerServiceDeps,
+} from '../elasticSearch/entities/FullTextIndexerService.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
+import { FullTextESWriterFactory } from './FullTextESWriterFactory.js';
 
 export class FullTextIndexerServiceFactory {
-  static default(): FullTextIndexerService {
-    const tenant = tenants.current();
+  static default(overrides?: Partial<FullTextIndexerServiceDeps>): FullTextIndexerService {
+    const writer = FullTextESWriterFactory.default();
 
-    if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
-      return TestUtils.mockClass<FullTextIndexerService>({
-        deleteByFilenames: async () => Promise.resolve(),
-        index: async () => Promise.resolve(),
-      });
-    }
+    const filesDAO = new MongoFilesDAO({
+      db: getConnection(),
+      transactionManager: ExecutionContext.transactionManager as MongoTransactionManager,
+    });
 
-    const esClient = ExecutionContext.elasticClient;
+    const fullTextIndexerService = new FullTextIndexerService({ filesDAO, writer, ...overrides });
 
-    const fullTextIndexer = new FullTextIndexerService({ esClient });
-
-    return fullTextIndexer;
+    return fullTextIndexerService;
   }
 }

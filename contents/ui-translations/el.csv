@@ -389,6 +389,7 @@ File updated,Το αρχείο ενημερώθηκε
 Files,Αρχεία
 Files and database usage,Χρήση αρχείων και βάσης δεδομένων
 Fill,Συμπλήρωση
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Φίλτρα
 Filters AND operator,ΚΑΙ
 Filters configuration,Φίλτρα
@@ -420,6 +421,7 @@ General Information,Γενικές πληροφορίες
 Generated ID,Παραγόμενο aναγνωριστικό
 Global CSS,Καθολικό CSS
 Global CSS & JS,Καθολικό CSS και JS
+Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,Αναγνωριστικό Google Analytics
@@ -441,6 +443,7 @@ here,εδώ
 Hide,Hide
 Hide actions,Απόκρυψη ενεργειών
 Hide label,Απόκρυψη ετικέτας
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
 https://yourdomain,https://yourdomain
 hubs,κόμβοι
@@ -649,6 +652,7 @@ No Value,Χωρίς τιμή
 "No, cancel","Όχι, ακύρωση"
 Non processed,Μη επεξεργασμένο
 Non-labeled,Χωρίς ετικέτα
+Non-latin characters support,Non-latin characters support
 Normal view,Κανονική προβολή
 Not already been use as source template in another extractor,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο πηγής σε άλλο εξαγωγέα
 Not already been use as target template,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο στόχου
@@ -768,6 +772,7 @@ Public form settings description,Εδώ μπορείτε να διαμορφώσ
 Public Form submit URL,URL δημόσιας φόρμας υποβολής
 Public form URL description,"Εάν έχετε διαμορφώσει μια δημόσια φόρμα και θέλετε μια διαφορετική συλλογή Uwazi να λάβει τις υποβολές, εισαγάγετε το URL της εδώ."
 Public form whitelist description,"Εάν επιθυμείτε να συμπεριλάβετε δημόσιες φόρμες στις σελίδες σας, πρέπει να προσθέσετε στη λίστα επιτρεπόμενων προτύπων τα αναγνωριστικά προτύπων για τα οποία αναμένεται η χρήση δημόσιων φορμών."
+Public instance,Public instance
 Publish,Δημοσίευση
 Published,Δημοσιευμένα
 QR Code,Κωδικός QR

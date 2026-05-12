@@ -1,14 +1,12 @@
+import type { Application, NextFunction, Request, Response } from 'express';
+import path from 'path';
+import request, { Response as SuperTestResponse } from 'supertest';
 import settings from '#api/settings/settings.js';
-import { FileContents } from '#api/core/domain/files/FileContents.js';
-import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import type { Application, NextFunction, Request, Response } from 'express';
-// eslint-disable-next-line node/no-restricted-import
+
 import privateInstanceMiddleware from '#api/auth/privateInstanceMiddleware.js';
-import path from 'path';
-import request, { Response as SuperTestResponse } from 'supertest';
 import uploadRoutes from '../routes.js';
 import {
   adminUser,
@@ -21,7 +19,6 @@ import {
   fixturesFactory,
   mainDocument1,
   restrictedFileName,
-  uploadId,
   writerUser,
 } from './fixtures.js';
 
@@ -41,11 +38,6 @@ describe('files routes download', () => {
     app = setUpApp(uploadRoutes);
     await testingEnvironment.setUp(fixtures);
     await testingEnvironment.setupTenantTmpPaths(fixtures.files || []);
-    const fileStorage = FileStorageFactory.default();
-    const segmentationXml = new FileContents(async function* streamCallback() {
-      yield new TextEncoder().encode('<segmentation>ok</segmentation>');
-    });
-    await fileStorage.storeContent(segmentationXml, 'segmentation/english_testing_file.xml');
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -57,46 +49,6 @@ describe('files routes download', () => {
 
       expect(customResponse).toHaveStatus(404);
       expect(thumbnailResponse).toHaveStatus(404);
-    });
-  });
-
-  describe('GET /api/v2/files/:id/segmentation', () => {
-    const endpoint = `/api/v2/files/${uploadId.toString()}/segmentation`;
-
-    beforeEach(async () => {
-      app = setAppWithUser(uploadRoutes, adminUser);
-    });
-
-    it('should download the segmentation XML when feature is enabled', async () => {
-      await settings.save({ features: { segmentation: { url: 'http://localhost:1235' } } });
-
-      const response = await request(app).get(endpoint);
-
-      expect(response).toHaveStatus(200);
-      expect(response.get('Content-Type')).toContain('application/xml');
-      expect(response.get('Content-Disposition')).toBe(
-        `filename*=UTF-8''${encodeURIComponent('english_testing_file.xml')}`
-      );
-      expect(response.text).toBe('<segmentation>ok</segmentation>');
-    });
-
-    it('should set attachment disposition with ?download=true', async () => {
-      await settings.save({ features: { segmentation: { url: 'http://localhost:1235' } } });
-
-      const response = await request(app).get(`${endpoint}?download=true`);
-
-      expect(response).toHaveStatus(200);
-      expect(response.get('Content-Disposition')).toBe(
-        `attachment; filename*=UTF-8''${encodeURIComponent('english_testing_file.xml')}`
-      );
-    });
-
-    it('should return 404 when segmentation feature is disabled on settings', async () => {
-      await settings.save({ features: {} });
-
-      const response = await request(app).get(endpoint);
-
-      expect(response).toHaveStatus(404);
     });
   });
 

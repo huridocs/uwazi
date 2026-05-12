@@ -80,7 +80,7 @@ const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const entityIndexerService = TestUtils.mockClass<EntityIndexerService>({
     index: jest.fn().mockResolvedValue(undefined),
-    deleteBySharedIds: jest.fn().mockResolvedValue(undefined),
+    remove: jest.fn().mockResolvedValue(undefined),
   });
 
   const sut = new MongoMultiLanguageEntityDataSource({
@@ -529,8 +529,8 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkDelete([entity1.sharedId, entity2.sharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledWith(
+      expect(entityIndexerService.remove).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.remove).toHaveBeenCalledWith(
         expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });

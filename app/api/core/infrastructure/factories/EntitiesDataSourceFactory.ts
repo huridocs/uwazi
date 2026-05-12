@@ -3,8 +3,8 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 
 type Overrides = Partial<
   Omit<ConstructorParameters<typeof MongoMultiLanguageEntityDataSource>[0], 'transactionManager'>
@@ -19,12 +19,10 @@ export class EntitiesDataSourceFactory {
       ExecutionContext.transactionManager) as MongoTransactionManager;
 
     const entityIndexerService =
-      overrides?.entityIndexerService ??
-      EntityIndexerServiceFactory.default({
-        transactionManager: overrides?.transactionManager,
-      });
+      overrides?.entityIndexerService ?? EntityIndexerServiceFactory.default();
 
     const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
+
     return new MongoMultiLanguageEntityDataSource({
       db,
       transactionManager: mongoTM,

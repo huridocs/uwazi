@@ -45,6 +45,7 @@ import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
+import { ClientFeatureFlags } from './V2/shared/types.js';
 
 loadIcons();
 
@@ -372,11 +373,12 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
-  const clientFeatureFlags = {
+  const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     v2CSVImport: featureFlags?.v2CSVImport,
     newHeader: featureFlags?.newHeader,
     themeCustomization: featureFlags?.themeCustomization,
+    v2GetEntity: featureFlags?.v2GetEntity,
   };
   const settingsWithFeatureFlags = {
     ...settings,

@@ -1,33 +1,40 @@
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { tenants } from '#api/tenants/index.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { EntityIndexerService } from '../elasticSearch/entities/EntityIndexerService.js';
-
-type Overrides = {
-  transactionManager?: TransactionManager;
-  slotsDAO?: ReturnType<typeof MongoSlotsDAOFactory.default>;
-};
+import {
+  EntityIndexerService,
+  EntityIndexerServiceDeps,
+} from '../elasticSearch/entities/EntityIndexerService.js';
+import { MongoEntityDAO } from '../mongodb/entity/MongoEntityDAO.js';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { User } from '#api/users.v2/model/User.js';
+import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
+import { EntityESWriterFactory } from './EntityESWriterFactory.js';
 
 export class EntityIndexerServiceFactory {
-  static default(overrides?: Overrides): EntityIndexerService {
-    const tenant = tenants.current();
+  static default(overrides?: Partial<EntityIndexerServiceDeps>): EntityIndexerService {
+    const { tenant } = ExecutionContext;
 
-    if (!tenant.featureFlags?.v2ElasticSearch || process.env.NODE_ENV === 'test') {
-      return TestUtils.mockClass<EntityIndexerService>({
-        deleteBySharedIds: async () => Promise.resolve(),
-        deleteByTemplateIds: async () => Promise.resolve(),
-        index: async () => Promise.resolve(),
-      });
-    }
+    const db = getConnection();
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
-    const esClient = ExecutionContext.elasticClient;
-    const slotsDAO =
-      overrides?.slotsDAO ??
-      MongoSlotsDAOFactory.default({ transactionManager: overrides?.transactionManager });
-    const entityIndexerService = new EntityIndexerService({ esClient, slotsDAO });
+    const settingsDS = SettingsDataSourceFactory.default();
+    const entityDAO = new MongoEntityDAO(
+      db,
+      transactionManager,
+      ExecutionContext.actor || User.createFrom(null)
+    );
+    const slotsDAO = new MongoSlotsDAO({
+      db,
+      transactionManager,
+      tenantName: tenant.name,
+      settingsDS,
+    });
 
-    return entityIndexerService;
+    const writer = EntityESWriterFactory.default();
+
+    const entityESWriter = new EntityIndexerService({ entityDAO, slotsDAO, writer, ...overrides });
+
+    return entityESWriter;
   }
 }

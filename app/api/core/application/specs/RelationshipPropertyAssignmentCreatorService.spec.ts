@@ -374,9 +374,10 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-
-  const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+  const { entitiesDS, settingsDS } = testingEnvironment.runWithContext(() => ({
+    entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+    settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+  }));
 
   const sut = new RelationshipPropertyAssignmentCreatorService({
     entitiesDS,
@@ -1435,8 +1436,10 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
   it('should throw when validateRequired is true and a required relationship property has no value', async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const { entitiesDS, settingsDS } = testingEnvironment.runWithContext(() => ({
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+    }));
 
     const sut = new RelationshipPropertyAssignmentCreatorService(
       { entitiesDS, settingsDS },
