@@ -288,7 +288,7 @@ Sidepanel.Body = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div className={`g ow p-4 ${className}`}>{children}</div>;
+}) => <div className={`grow p-4 ${className}`}>{children}</div>;
 
 Sidepanel.Footer = ({
   children,
@@ -297,7 +297,7 @@ Sidepanel.Footer = ({
   children: React.ReactNode;
   className?: String;
 }) => (
-  <div className={`b ttom-0 left-0 z-1 w-full bg-(--color-theme-surface-page) ${className}`}>
+  <div className={`bottom-0 left-0 z-1 w-full bg-(--color-theme-surface-page) ${className}`}>
     {children}
   </div>
 );
