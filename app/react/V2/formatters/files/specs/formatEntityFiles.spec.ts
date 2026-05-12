@@ -366,5 +366,13 @@ describe('formatEntityFiles', () => {
         { fileType: 'mainDocument', file: entityWithMultipleDocs.documents![1] },
       ]);
     });
+
+    it('should fall back to default language document when locale has no match', () => {
+      const result = formatEntityFiles(entityWithMultipleDocs, templates, 'fr', 'en');
+      expect(result).toEqual([
+        { fileType: 'document', file: entityWithMultipleDocs.documents![0] },
+        { fileType: 'mainDocument', file: entityWithMultipleDocs.documents![1] },
+      ]);
+    });
   });
 });

@@ -14,6 +14,16 @@ const formatMetadataFields = (
   const formattedProperties: BaseMetadataProperty[] = [];
   let groupedGeolocationIndex = 1;
 
+  const formatGeolocationGroupEntry = (property: PropertySchema) => ({
+    name: property.name,
+    label: property.label,
+    ...(property.inherit?.type === 'geolocation' && {
+      inherited: true,
+      content: property.content,
+      property: property.inherit.property,
+    }),
+  });
+
   for (let index = 0; index < templateProperties.length; index += 1) {
     const property = templateProperties[index] as PropertySchema;
 
@@ -35,7 +45,7 @@ const formatMetadataFields = (
       };
 
       if (options?.groupGeolocationProperties && isGeolocationProperty) {
-        const propertyGroup = [{ name: property.name, label: property.label }];
+        const propertyGroup = [formatGeolocationGroupEntry(property)];
 
         for (let nextIndex = index + 1; nextIndex < templateProperties.length; nextIndex += 1) {
           const adjacentProperty = templateProperties[nextIndex] as PropertySchema;
@@ -48,13 +58,7 @@ const formatMetadataFields = (
           }
 
           propertyGroup.push({
-            name: adjacentProperty.name,
-            label: adjacentProperty.label,
-            ...(adjacentProperty.inherit?.type === 'geolocation' && {
-              inherited: true,
-              content: adjacentProperty.content,
-              property: adjacentProperty.inherit.property,
-            }),
+            ...formatGeolocationGroupEntry(adjacentProperty),
           });
           index = nextIndex;
         }

@@ -14,7 +14,7 @@ const dependenciesContextMiddleware = (
   _response: Response,
   next: NextFunction
 ) => {
-  if (!/^\/(api|files|assets)(\/|$)/.test(request.path)) {
+  if (!/^\/(api|files|assets)(\/|$)/i.test(request.path)) {
     return next();
   }
 

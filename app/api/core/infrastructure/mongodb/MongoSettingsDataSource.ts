@@ -1,6 +1,6 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../../application/contracts/SettingsDataSource.js';
 import { DefaultLanguageMissingError } from './errors/settingsErrors.js';
@@ -10,6 +10,24 @@ export class MongoSettingsDataSource
   implements SettingsDataSource
 {
   protected collectionName = 'settings';
+
+  async addLanguage(language: LanguageSchema): Promise<void> {
+    await this.getCollection().updateOne(
+      { languages: { $not: { $elemMatch: { key: language.key } } } },
+      { $push: { languages: language } }
+    );
+  }
+
+  async setLanguageInstalling(key: LanguageISO6391, installing: boolean): Promise<void> {
+    await this.getCollection().updateOne(
+      { 'languages.key': key },
+      { $set: { 'languages.$.installing': installing } }
+    );
+  }
+
+  async deleteLanguage(key: LanguageISO6391): Promise<void> {
+    await this.getCollection().updateOne({}, { $pull: { languages: { key } } });
+  }
 
   async getInstalledLanguages(): Promise<LanguagesListSchema> {
     const settings = await this.readSettings();

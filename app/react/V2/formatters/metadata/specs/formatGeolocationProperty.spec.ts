@@ -224,6 +224,44 @@ describe('formatGeolocationProperty', () => {
     });
   });
 
+  it('should format a standalone inherited relationship geolocation field', () => {
+    const property = {
+      _id: 'rel_geo',
+      name: 'rel_1',
+      label: 'Rel 1',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'geolocation',
+      relationShipTarget: '69f0a4ac62c282d87ef5970f',
+    } as BaseMetadataProperty;
+
+    expect(formatGeolocationProperty(property, entityB, templates)).toEqual({
+      _id: 'rel_geo',
+      name: 'rel_1',
+      label: 'Rel 1',
+      type: 'geolocation',
+      values: [
+        {
+          value: { latitude: 10, longitude: 20 },
+          label: 'Location 1',
+          color: '#FF6F00',
+          entity: {
+            _id: '1',
+            icon: { _id: 'star', label: 'Star' },
+          },
+        },
+        {
+          value: { latitude: 11, longitude: 21 },
+          label: 'Location 2',
+          color: '#FF6F00',
+          entity: {
+            _id: '2',
+          },
+        },
+      ],
+    });
+  });
+
   it('should format grouped geolocations when one property is deeply nested relationship inheritance', () => {
     const property = {
       _id: 'group2',
