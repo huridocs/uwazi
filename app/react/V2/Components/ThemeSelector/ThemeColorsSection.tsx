@@ -67,7 +67,7 @@ const ThemeColorsSection = ({
       <div className="flex w-full flex-wrap items-center justify-end px-4 py-3">
         <button
           type="button"
-          className="inline-flex min-w-0 max-w-full items-center gap-1.5 text-sm font-medium text-ink-secondary underline decoration-from-font underline-offset-2 transition-colors hover:text-(--color-theme-text-primary)"
+          className="inline-flex min-w-0 max-w-full items-center gap-1.5 text-sm font-medium text-ink-secondary underline decoration-from-font underline-offset-2 transition-colors hover:text-ink"
           aria-expanded={open}
           onClick={() => setOpen(v => !v)}
         >

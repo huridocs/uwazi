@@ -61,7 +61,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               control={control}
               render={({ field }) => (
                 <div>
-                  <label htmlFor={field.name} className="pb-4 text-(--color-theme-text-primary)">
+                  <label htmlFor={field.name} className="pb-4 text-ink">
                     <Tooltip
                       content={
                         <div>
@@ -129,7 +129,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               disabled={disableAmountField}
               render={({ field }) => (
                 <div className="flex gap-2 items-center">
-                  <label htmlFor={field.name} className="text-(--color-theme-text-primary)">
+                  <label htmlFor={field.name} className="text-ink">
                     <Translate>Amount</Translate> :
                   </label>
                   <InputField

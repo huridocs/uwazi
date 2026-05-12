@@ -224,14 +224,14 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
               <div className="flex flex-col gap-4">
                 {propertyToEdit ? (
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm font-medium text-(--color-theme-text-secondary)">
+                    <p className="text-sm font-medium text-ink-secondary">
                       <Translate>Type</Translate>
                     </p>
                     <div className="flex w-full items-center gap-2 rounded-lg px-4 py-2 bg-(--color-theme-surface-muted)">
-                      <span className="h-5 w-5 text-(--color-theme-text-muted)">
+                      <span className="h-5 w-5 text-ink-muted">
                         {propertyIcons[type as keyof typeof propertyIcons]}
                       </span>
-                      <span className="text-sm text-(--color-theme-text-secondary)">
+                      <span className="text-sm text-ink-secondary">
                         {t(
                           'System',
                           translationsKeys[type as keyof typeof translationsKeys] || type,
@@ -280,7 +280,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
               </div>
               {!isCommonProperty && (
                 <div>
-                  <h3 className="mb-2 text-sm font-semibold text-(--color-theme-text-secondary)">
+                  <h3 className="mb-2 text-sm font-semibold text-ink-secondary">
                     <Translate>
                       Properties from other templates in the collection using the same label.
                     </Translate>

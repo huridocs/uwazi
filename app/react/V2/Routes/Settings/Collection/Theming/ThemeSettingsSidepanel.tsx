@@ -25,7 +25,7 @@ const modeTitle: Record<ThemeMode, React.ReactNode> = {
 };
 
 const assetPreviewWrapperClassName =
-  'flex shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] [border-color:color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]';
+  'flex shrink-0 items-center justify-center overflow-hidden rounded border p-2 bg-[color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] border-[color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]';
 
 const ThemeSettingsSidepanel = ({
   isOpen,
@@ -92,7 +92,7 @@ const ThemeSettingsSidepanel = ({
                 </div>
               </div>
 
-              <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] pt-6">
+              <div className="border-t border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] pt-6">
                 <SectionHeading>
                   <Translate>Theme favicon</Translate>
                 </SectionHeading>
@@ -128,7 +128,7 @@ const ThemeSettingsSidepanel = ({
         </div>
       </Sidepanel.Body>
 
-      <Sidepanel.Footer className="border-t px-4 py-3 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
+      <Sidepanel.Footer className="border-t px-4 py-3 border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
         <div className="flex justify-end">
           <Button type="button" variant="primary" onClick={onClose}>
             <Translate>Done</Translate>

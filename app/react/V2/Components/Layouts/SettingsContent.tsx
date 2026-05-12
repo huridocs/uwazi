@@ -62,7 +62,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
         <Breadcrumb.Item key={key} className="max-w-xs">
           <I18NLink
             to={value}
-            activeClassname="font-medium text-(--color-theme-text-secondary) hover:text-(--color-theme-text-primary)"
+            activeClassname="font-medium text-ink-secondary hover:text-ink"
           >
             <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
           </I18NLink>

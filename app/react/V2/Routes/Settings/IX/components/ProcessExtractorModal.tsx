@@ -72,7 +72,7 @@ const ProcessForm = ({ submit }: { submit: (values: FormData) => Promise<void> }
             rules={{ min: 1 }}
             render={({ field }) => (
               <div className="flex gap-2 items-center">
-                <label htmlFor={field.name} className="text-(--color-theme-text-primary)">
+                <label htmlFor={field.name} className="text-ink">
                   <Translate>Amount</Translate> :
                 </label>
                 <InputField

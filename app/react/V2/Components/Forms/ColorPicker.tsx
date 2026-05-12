@@ -128,9 +128,7 @@ const ColorPicker = ({
                   </li>
                 ))}
               </ul>
-              <label
-                className="flex w-fit cursor-pointer flex-row items-center gap-2 text-(--color-theme-text-secondary)"
-              >
+              <label className="flex w-fit cursor-pointer flex-row items-center gap-2 text-(--color-theme-text-secondary)">
                 <Translate>Pick a color</Translate>
                 <input
                   type="color"

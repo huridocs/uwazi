@@ -82,7 +82,7 @@ const EntityFilterSidepanel = () => {
         setOpen(false);
       }}
       title={
-        <span className="text-base font-semibold uppercase leading-6 text-(--color-theme-text-secondary)">
+        <span className="text-base font-semibold uppercase leading-6 text-ink-secondary">
           <Translate>Filters</Translate>
         </span>
       }

@@ -151,7 +151,7 @@ const DraggableRow = <T extends TableRow<T>>({
           }}
         >
           <td
-            className="px-4 py-3 text-sm italic text-(--color-theme-text-secondary)"
+            className="px-4 py-3 text-sm italic text-ink-secondary"
             colSpan={colSpan}
           >
             {dndEnabled ? (

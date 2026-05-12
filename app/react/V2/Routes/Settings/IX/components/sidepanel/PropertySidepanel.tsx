@@ -166,7 +166,7 @@ const PropertySidepanel = ({
               title={
                 <div className="flex gap-4 items-center">
                   <Translate
-                    className={`font-semibold uppercase ${selectionError ? 'text-(--color-theme-feedback-danger)' : 'text-(--color-theme-text-muted)'}`}
+                    className={`font-semibold uppercase ${selectionError ? 'text-(--color-theme-feedback-danger)' : 'text-ink-muted'}`}
                     context={templateId}
                   >
                     {property?.label}
@@ -176,7 +176,7 @@ const PropertySidepanel = ({
                       size="small"
                       onToggle={() => setSelectAndSearch(!selectAndSearch)}
                     >
-                      <Translate className="text-xs font-medium text-(--color-theme-text-primary)">
+                      <Translate className="text-xs font-medium text-ink">
                         Select & Search
                       </Translate>
                     </ToggleButton>

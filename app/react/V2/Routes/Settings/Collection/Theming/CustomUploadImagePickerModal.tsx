@@ -59,7 +59,7 @@ const CustomUploadImagePickerModal = ({
     </Modal.Header>
     <Modal.Body className="!p-4">
       <div className="min-w-0 space-y-4">
-        <div className="min-w-0 rounded-lg border p-4 bg-(--color-theme-surface-warm) [border-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]">
+        <div className="min-w-0 rounded-lg border p-4 bg-(--color-theme-surface-warm) border-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)]">
           <FileDropzone
             className="w-full min-w-0 max-w-full"
             acceptedFiles={ACCEPTED_IMAGE_FILES}
@@ -69,7 +69,7 @@ const CustomUploadImagePickerModal = ({
               Promise.resolve(onDropzoneFiles(newFiles)).catch(() => undefined);
             }}
           />
-          <div className="mt-3 min-w-0 text-xs text-(--color-theme-text-tertiary)">
+          <div className="mt-3 min-w-0 text-xs text-ink-tertiary">
             {uploadProgress.filename ? (
               <>
                 <Translate>Uploading</Translate> {uploadProgress.filename}{' '}

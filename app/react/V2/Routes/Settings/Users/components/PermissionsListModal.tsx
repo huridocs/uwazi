@@ -194,7 +194,7 @@ const PermissionsListModal = ({ showModal, closeModal }: PermissionsListModalPro
   showModal ? (
     <Modal size="xxxl">
       <Modal.Header>
-        <Translate className="text-xl font-medium text-(--color-theme-text-primary)">
+        <Translate className="text-xl font-medium text-ink">
           Permissions
         </Translate>
         <Modal.CloseButton onClick={closeModal} />

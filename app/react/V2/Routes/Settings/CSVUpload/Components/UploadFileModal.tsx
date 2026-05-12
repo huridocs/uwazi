@@ -83,7 +83,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
               'application/zip': ['.zip'],
             }}
             message={
-              <Translate className="italic text-(--color-theme-text-muted)">
+              <Translate className="italic text-ink-muted">
                 CSV or ZIP up to 50MB
               </Translate>
             }

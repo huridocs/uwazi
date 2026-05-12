@@ -60,7 +60,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
   return (
     <Modal size="md">
       <Modal.Header>
-        <h1 className="text-xl font-medium text-(--color-theme-text-primary)">
+        <h1 className="text-xl font-medium text-ink">
           <Translate>Add thesaurus</Translate>
         </h1>
         <Modal.CloseButton onClick={handleClose} />

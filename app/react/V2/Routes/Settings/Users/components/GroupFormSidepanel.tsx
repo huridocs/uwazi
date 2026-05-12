@@ -112,7 +112,7 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 rounded-md border shadow-md [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-raised)">
+            <div className="mb-5 rounded-md border shadow-md border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-raised)">
               <MultiSelect
                 label={
                   <Translate className="block w-full text-base font-semibold">Members</Translate>

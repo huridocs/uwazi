@@ -86,7 +86,7 @@ const SyncedTemplateCell = ({ cell }: CellContext<TemplateRow, boolean>) =>
   cell.getValue() ? (
     <Tooltip
       content={
-        <div className="text-xs text-(--color-theme-text-tertiary)">
+        <div className="text-xs text-ink-tertiary">
           <Translate>The source of this template is a sync.</Translate>
           <br />
           <Translate>All editing options will be disabled.</Translate>

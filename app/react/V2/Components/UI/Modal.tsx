@@ -7,14 +7,13 @@ type modalSizeType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl';
 const modalBackdropClass = [
   'fixed inset-0 top-0 left-0 z-[100] flex items-center justify-center',
   'overflow-y-auto overflow-x-hidden p-3 sm:p-4',
-  '[background-color:color-mix(in_srgb,var(--color-theme-surface-overlay,var(--color-theme-bg-overlay))_65%,transparent)]',
+  'bg-[color-mix(in_srgb,var(--color-theme-surface-overlay,var(--color-theme-bg-overlay))_65%,transparent)]',
 ].join(' ');
 
 const modalBorderClass =
-  '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]';
+  'border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]';
 
-const modalSurfaceClass =
-  '[background-color:var(--color-theme-surface-raised,var(--color-theme-bg-surface))]';
+const modalSurfaceClass = 'bg-paper';
 
 interface ModalProps {
   children: string | React.ReactNode;

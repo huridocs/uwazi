@@ -17,7 +17,7 @@ const fillClass: Record<NonNullable<ProgressBarProps['color']>, string> = {
 };
 
 const trackClass =
-  'h-2.5 w-full rounded-full [background-color:color-mix(in_srgb,var(--color-theme-border-default,var(--color-theme-border-primary))_60%,transparent)]';
+  'h-2.5 w-full rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default,var(--color-theme-border-primary))_60%,transparent)]';
 
 export const ProgressBar = ({
   progress,

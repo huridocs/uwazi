@@ -90,9 +90,7 @@ const PropertyCell = ({ cell }: CellContext<TableExtractor, TableExtractor['prop
   return (
     <div className="flex items-center gap-2">
       <span className="w-5">{propertyIcons[property]}</span>
-      <p className="whitespace-nowrap text-(--color-theme-text-muted)">
-        {cell.row.original.propertyLabel}
-      </p>
+      <p className="whitespace-nowrap text-ink-muted">{cell.row.original.propertyLabel}</p>
     </div>
   );
 };
@@ -112,7 +110,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
   const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
 
   return (
-    <div className="flex gap-1 text-xs font-bold text-(--color-theme-text-tertiary)">
+    <div className="flex gap-1 text-xs font-bold text-ink-tertiary">
       <span>
         {amountOfValues} <Translate>values</Translate>
       </span>
@@ -151,7 +149,7 @@ const CurrentValueCell = ({
 }) => {
   if (cell.row.original.state.error) {
     return (
-      <div className="flex gap-1 text-xs font-bold text-(--color-theme-text-tertiary)">
+      <div className="flex gap-1 text-xs font-bold text-ink-tertiary">
         <span>
           <Translate className="text-(--color-theme-feedback-danger)">Error</Translate>
         </span>

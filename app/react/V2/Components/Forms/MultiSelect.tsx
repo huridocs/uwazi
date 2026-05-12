@@ -167,7 +167,7 @@ const MultiSelect = ({
               if (!option) return null;
               return (
                 <Pill color="gray" key={option.value} className="flex flex-row gap-2">
-                  <span className="text-(--color-theme-text-secondary)">
+                  <span className="text-ink-secondary">
                     {renderChild(option.label)}
                   </span>
                   <button
@@ -191,7 +191,7 @@ const MultiSelect = ({
                 </Pill>
               );
             })
-          : renderChild(placeholder, 'text-(--color-theme-text-muted)')}
+          : renderChild(placeholder, 'text-ink-muted')}
       </div>
     </div>
   );

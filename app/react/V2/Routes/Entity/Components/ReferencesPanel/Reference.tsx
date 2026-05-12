@@ -18,7 +18,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
 
   const surface = 'bg-(--color-theme-surface-raised)';
   const borderIdle =
-    '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
+    'border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
   const borderClass = isSelected ? 'border-2 border-primary-400' : borderIdle;
 
   return (

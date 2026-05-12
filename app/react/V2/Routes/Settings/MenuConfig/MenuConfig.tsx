@@ -133,7 +133,7 @@ const MenuConfig = () => {
               setLinkState(rows);
             }}
             header={
-              <Translate className="text-left text-base font-semibold text-(--color-theme-text-primary)">
+              <Translate className="text-left text-base font-semibold text-ink">
                 Menu
               </Translate>
             }

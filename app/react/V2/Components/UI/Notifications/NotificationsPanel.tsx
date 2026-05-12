@@ -8,7 +8,7 @@ import { TaskItem } from './TaskItem.js';
 import { Translate } from '#app/I18N/index.js';
 
 const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center py-1 text-center text-(--color-theme-text-muted)">
+  <div className="flex flex-col items-center justify-center py-1 text-center text-ink-muted">
     <HandThumbUpIcon className="h-6 w-6" />
     <p className="font-semibold text-lg">
       <Translate>All clear</Translate>
@@ -91,7 +91,7 @@ const NotificationsPanel = () => {
 
           {tasks.length > 0 && (
             <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-(--color-theme-text-tertiary)">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
                 <Translate>Tasks</Translate>
               </h2>
               <ul className="flex flex-col gap-2">
@@ -106,7 +106,7 @@ const NotificationsPanel = () => {
 
           {notifications.length > 0 && (
             <section>
-              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-(--color-theme-text-tertiary)">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
                 <Translate>Notifications</Translate>
               </h2>
               <ul className="flex flex-col gap-2">

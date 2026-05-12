@@ -33,7 +33,12 @@ const Card = ({ title, children, className, color = 'default' }: CardProps) => {
 
   return (
     <SurfacePanel
-      className={['[border-width:1px] [border-style:solid] border-(--color-theme-card-border)', className].filter(Boolean).join(' ')}
+      className={[
+        '[border-width:1px] [border-style:solid] border-(--color-theme-card-border)',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       padding="none"
     >
       {title && (

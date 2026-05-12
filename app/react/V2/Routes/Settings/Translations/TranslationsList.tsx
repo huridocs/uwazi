@@ -76,7 +76,7 @@ const TranslationsList = () => {
               columns={columns}
               data={contexts.systemContexts}
               header={
-                <Translate className="text-left text-base font-semibold text-(--color-theme-text-primary)">
+                <Translate className="text-left text-base font-semibold text-ink">
                   System translations
                 </Translate>
               }
@@ -88,7 +88,7 @@ const TranslationsList = () => {
               columns={columns}
               data={contexts.contentContexts}
               header={
-                <Translate className="text-left text-base font-semibold text-(--color-theme-text-primary)">
+                <Translate className="text-left text-base font-semibold text-ink">
                   Content translations
                 </Translate>
               }
