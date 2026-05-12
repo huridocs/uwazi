@@ -19,9 +19,9 @@ class DeleteLanguageUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
-    const minutes30 = 30 * 60 * 1000;
+    const minutes60 = 60 * 60 * 1000;
     let jobsDispatcher: JobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {
-      lockWindow: minutes30,
+      lockWindow: minutes60,
     });
     if (process.env.NODE_ENV === 'test') {
       const deleteJob = DeleteLanguageEntitiesJobFactory.default();
