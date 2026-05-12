@@ -124,7 +124,11 @@ const PDFSidepanel = ({
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
-    if (dirtyFields.field && entity?._id) {
+    const fieldDirty = dirtyFields.field;
+    const trainingSetDirty = dirtyFields.inTrainingSet;
+    const inTrainingSet = formContext.getValues().inTrainingSet || false;
+
+    if (fieldDirty && entity?._id) {
       const [savedEntity, error] = await handleEntitySave(
         { ...entity, __extractedMetadata: { fileID: pdfFile?._id, selections } },
         property,
@@ -137,16 +141,13 @@ const PDFSidepanel = ({
 
         notify('error', t('System', 'An error occurred', null, false), undefined, details);
       } else if (savedEntity) {
-        if (savedEntity) {
-          setEntity(savedEntity);
-        }
-
+        setEntity(savedEntity);
         notify('success', t('System', 'Saved successfully.', null, false));
       }
     }
 
-    if (suggestion?._id && dirtyFields.inTrainingSet) {
-      onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
+    if (suggestion?._id && (trainingSetDirty || fieldDirty)) {
+      onEntitySave([suggestion?._id], inTrainingSet);
     }
 
     handleClose();

@@ -1,5 +1,6 @@
 import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import translations from '#api/i18n/translations.js';
+import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
@@ -52,6 +53,14 @@ class LegacyTemplatesTranslationService implements TranslationService {
     context[titleProperty!.label] = titleProperty!.label;
     return context;
   };
+  // eslint-disable-next-line class-methods-use-this
+  async importPredefined(locale: string): Promise<void> {
+    try {
+      await translations.importPredefined(locale);
+    } catch (error) {
+      if (!(error instanceof UITranslationNotAvailable)) throw error;
+    }
+  }
 }
 
 export { LegacyTemplatesTranslationService as LegacyTranslationService };
