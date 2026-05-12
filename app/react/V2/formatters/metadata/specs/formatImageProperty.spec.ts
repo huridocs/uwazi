@@ -92,4 +92,40 @@ describe('formatImageProperty', () => {
       style: 'contain',
     });
   });
+
+  it('should format inherited relationship values when they resolve to image/preview', () => {
+    const property = {
+      _id: 'p3',
+      name: 'inherited_images',
+      label: 'Inherited images',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'relationship',
+    } as BaseMetadataProperty;
+
+    const metadata = {
+      inherited_images: [
+        {
+          value: 'entity-1',
+          inheritedType: 'relationship',
+          inheritedValue: [
+            {
+              value: 'entity-2',
+              inheritedType: 'image',
+              inheritedValue: [{ value: '/api/files/inherited-image.png' }],
+            },
+          ],
+        },
+      ],
+    } as Entity['metadata'];
+
+    expect(formatImageProperty(property, metadata)).toEqual({
+      _id: 'p3',
+      name: 'inherited_images',
+      label: 'Inherited images',
+      type: 'image',
+      values: [{ value: '/api/files/inherited-image.png', alt: '/api/files/inherited-image.png' }],
+      style: 'contain',
+    });
+  });
 });

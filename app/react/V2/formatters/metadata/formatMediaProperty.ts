@@ -1,6 +1,10 @@
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { BaseMetadataProperty, MediaMetadataProperty, Timelink } from '../types';
+import {
+  resolvePropertyMetadataValues,
+  resolvePropertyType,
+} from './resolvePropertyMetadataValues.js';
 
 const isMediaType = (type: BaseMetadataProperty['type']) => type === 'media';
 
@@ -27,16 +31,17 @@ const formatMediaProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata']
 ): MediaMetadataProperty | null => {
-  if (!isMediaType(property.type)) {
+  const metadataValues = resolvePropertyMetadataValues(property, metadata);
+  const type = resolvePropertyType(property, metadata);
+
+  if (!isMediaType(type)) {
     return null;
   }
-
-  const metadataValues = metadata?.[property.name] ?? [];
 
   const formattedProperty: MediaMetadataProperty = {
     _id: property._id,
     name: property.name,
-    type: property.type,
+    type: 'media',
     values: [],
     label: property.label,
     inherited: property.inherited,

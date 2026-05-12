@@ -1,5 +1,9 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { BaseMetadataProperty, SimpleMetadataProperty } from '../types.js';
+import {
+  resolvePropertyMetadataValues,
+  resolvePropertyType,
+} from './resolvePropertyMetadataValues.js';
 
 const isSimpleType = (type: BaseMetadataProperty['type']) =>
   type === 'text' || type === 'generatedid' || type === 'numeric' || type === 'markdown';
@@ -8,14 +12,16 @@ const formatSimpleProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata']
 ): SimpleMetadataProperty | null => {
-  if (!isSimpleType(property.type)) {
+  const metadataValues = resolvePropertyMetadataValues(property, metadata);
+  const type = resolvePropertyType(property, metadata);
+
+  if (!isSimpleType(type)) {
     return null;
   }
 
-  const rawValues = metadata?.[property.name] ?? [];
   const values =
-    rawValues.length > 0
-      ? rawValues.map(item => {
+    metadataValues.length > 0
+      ? metadataValues.map(item => {
           const value = item?.value;
           return {
             value: value === null || value === undefined ? '' : String(value),
@@ -26,7 +32,7 @@ const formatSimpleProperty = (
   return {
     _id: property._id,
     name: property.name,
-    type: property.type,
+    type,
     values,
     label: property.label,
     inherited: property.inherited,

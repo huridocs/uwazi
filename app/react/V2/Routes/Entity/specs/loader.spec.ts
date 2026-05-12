@@ -5,6 +5,8 @@ import * as entityApi from '#V2/api/entities/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as search from '#V2/api/search/index.js';
 import { Entity } from '#V2/api/entities/types.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { getStore } from '#shared/atomStore/index.js';
 import { entityLoader } from '../loader.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 
@@ -29,6 +31,12 @@ describe('Entity loader with cache integration', () => {
 
     jest.spyOn(entityApi, 'getBySharedId').mockResolvedValue([[mockEntity as Entity]]);
     jest.spyOn(files, 'getPagePlaintext').mockResolvedValue('plaintext content');
+    getStore().set(settingsAtom, {
+      languages: [
+        { key: 'en', label: 'English', default: true },
+        { key: 'es', label: 'Spanish' },
+      ],
+    } as any);
   });
 
   const loadEntity = (url: string, lang?: string) => {
@@ -149,6 +157,17 @@ describe('Entity loader with cache integration', () => {
       await loadEntity('http://localhost/entity/shared1');
 
       expect(setMainDocumentSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should use default language document when locale does not match', async () => {
+      mockEntity.documents = [
+        { _id: 'doc-es', filename: 'es.pdf', language: 'spa' },
+        { _id: 'doc-en', filename: 'en.pdf', language: 'eng' },
+      ];
+
+      const result = (await loadEntity('http://localhost/entity/shared1', 'fr')) as any;
+
+      expect(result.mainDocument).toEqual(mockEntity.documents[1]);
     });
   });
 
