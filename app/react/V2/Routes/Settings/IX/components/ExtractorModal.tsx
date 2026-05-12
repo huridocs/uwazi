@@ -184,7 +184,7 @@ const ExtractorModal = ({
   return (
     <Modal size="xxl">
       <Modal.Header>
-        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
+        <h1 className="text-xl font-medium text-ink">
           {extractor ? <Translate>Edit Extractor</Translate> : <Translate>Add Extractor</Translate>}
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />

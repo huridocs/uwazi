@@ -27,7 +27,7 @@ export const FilterField = ({ control }: { control: any }) => (
               placement="right"
               className="max-w-xs"
             >
-              <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
+              <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
             </Tooltip>
           </span>
         }

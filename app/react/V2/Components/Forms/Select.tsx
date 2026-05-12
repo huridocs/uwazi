@@ -63,8 +63,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           <select
             className={`block w-full appearance-none rounded-lg border p-2.5 pr-10 text-sm focus:outline-hidden ${
               showError
-                ? 'focus:[border-color:var(--color-theme-control-border-error)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
-                : 'focus:[border-color:var(--color-theme-control-border-focus)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+                ? 'focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+                : 'focus:border-(--color-theme-control-border-focus) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
             }`}
             id={id}
             disabled={disabled}
@@ -82,7 +82,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <div className="pointer-events-none absolute bottom-1 right-3 transform -translate-y-2 flex items-center">
-            <ChevronDownIcon className="h-4 w-4 [color:var(--color-theme-control-text-muted)]" />
+            <ChevronDownIcon className="h-4 w-4 text-(--color-theme-control-text-muted)" />
           </div>
         </div>
       </div>

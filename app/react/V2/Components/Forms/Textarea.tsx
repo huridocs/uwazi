@@ -80,10 +80,10 @@ const Textarea = ({
           ref={ref}
           disabled={disabled}
           value={value}
-          className={`block w-full flex-1 rounded-sm border text-sm placeholder:[color:var(--color-theme-control-placeholder)] focus:outline-hidden ${
+          className={`block w-full flex-1 rounded-sm border text-sm placeholder:text-(--color-theme-control-placeholder) focus:outline-hidden ${
             showError
-              ? 'focus:[border-color:var(--color-theme-control-border-error)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
-              : 'focus:[border-color:var(--color-theme-control-border-focus)] focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
+              ? 'focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
+              : 'focus:border-(--color-theme-control-border-focus) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
           } ${clearFieldAction ? 'pr-10' : ''}`}
           rows={rows}
           placeholder={placeholder}
@@ -95,7 +95,7 @@ const Textarea = ({
             onClick={clearFieldAction}
             disabled={disabled}
             data-testid="clear-field-button"
-            className="absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:[color:var(--color-theme-control-clear-hover-fg)] disabled:[color:var(--color-theme-control-text-muted)]"
+            className="absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:text-(--color-theme-control-clear-hover-fg) disabled:text-(--color-theme-control-text-muted)"
             style={{
               color: showError
                 ? 'var(--color-theme-control-text-error)'

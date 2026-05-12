@@ -30,7 +30,7 @@ const PresetCard = ({ title, lightAccent, darkAccent, selected, onClick }: Prese
   <button
     type="button"
     title={title}
-    className={`flex min-w-[9rem] flex-1 basis-[9rem] shrink-0 snap-start flex-col gap-2 rounded-lg border p-2 text-left transition-all ${
+    className={`flex min-w-36 flex-1 basis-36 shrink-0 snap-start flex-col gap-2 rounded-lg border p-2 text-left transition-all ${
       selected ? 'border-primary-600 ring-1 ring-primary-500/25' : 'hover:border-gray-300'
     }`}
     style={{
@@ -70,6 +70,7 @@ const PresetCard = ({ title, lightAccent, darkAccent, selected, onClick }: Prese
   </button>
 );
 
+// eslint-disable-next-line react/no-multi-comp
 const ThemePresetSection = ({
   themeVars,
   selectedPreset,
