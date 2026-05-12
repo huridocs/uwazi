@@ -84,11 +84,7 @@ const ColorPicker = ({
           <>
             <Popover.Button
               ref={setReferenceElement}
-              className="flex h-10.5 w-10.5 cursor-pointer items-center justify-center rounded-lg border shadow-md transition focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
-              style={{
-                borderColor: 'var(--color-theme-control-border)',
-                backgroundColor: 'var(--color-theme-control-bg)',
-              }}
+              className="flex h-10.5 w-10.5 cursor-pointer items-center justify-center rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) shadow-md transition focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]"
             >
               <div
                 data-testid="colorpicker-button"
@@ -132,10 +128,7 @@ const ColorPicker = ({
                   </li>
                 ))}
               </ul>
-              <label
-                className="flex w-fit cursor-pointer flex-row items-center gap-2"
-                style={{ color: 'var(--color-theme-text-secondary)' }}
-              >
+              <label className="flex w-fit cursor-pointer flex-row items-center gap-2 text-(--color-theme-text-secondary)">
                 <Translate>Pick a color</Translate>
                 <input
                   type="color"

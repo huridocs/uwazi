@@ -87,7 +87,7 @@ const Users = () => {
                 data={users}
                 columns={usersTableColumns}
                 header={
-                  <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
+                  <Translate className="text-left text-base font-semibold text-ink">
                     Users
                   </Translate>
                 }
@@ -104,7 +104,7 @@ const Users = () => {
                 data={groups}
                 columns={groupsTableColumns}
                 header={
-                  <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
+                  <Translate className="text-left text-base font-semibold text-ink">
                     Groups
                   </Translate>
                 }

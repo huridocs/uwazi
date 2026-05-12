@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
@@ -165,13 +164,10 @@ const DateRangePickerComponent = React.forwardRef(
             datepicker-autoselect-today="true"
             className="flex items-center gap-4"
           >
-            <div
-              // eslint-disable-next-line max-len
-              className="relative "
-            >
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+            <div className="relative ">
+              <div className="absolute inset-y-0 flex items-center pointer-events-none inset-s-0 ps-3">
                 <svg
-                  className="z-3 h-4 w-4 [color:var(--color-theme-control-text-muted)]"
+                  className="z-3 h-4 w-4 text-(--color-theme-control-text-muted)"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -190,7 +186,6 @@ const DateRangePickerComponent = React.forwardRef(
                 type="text"
                 disabled={disabled}
                 hasErrors={Boolean(hasErrors || errorMessage)}
-                // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderStart}
                 ref={fromRef}
@@ -202,9 +197,9 @@ const DateRangePickerComponent = React.forwardRef(
               />
             </div>
             <div className="relative">
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+              <div className="absolute inset-y-0 flex items-center pointer-events-none inset-s-0 ps-3">
                 <svg
-                  className="z-3 h-4 w-4 [color:var(--color-theme-control-text-muted)]"
+                  className="z-3 h-4 w-4 text-(--color-theme-control-text-muted)"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -223,7 +218,6 @@ const DateRangePickerComponent = React.forwardRef(
                 type="text"
                 disabled={disabled}
                 hasErrors={Boolean(hasErrors || errorMessage)}
-                // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles}`}
                 placeholder={placeholderEnd}
                 clearFieldAction={() => {

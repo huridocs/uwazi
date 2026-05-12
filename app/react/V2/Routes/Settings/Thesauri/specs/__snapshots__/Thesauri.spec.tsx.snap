@@ -4,7 +4,7 @@ exports[`Settings Thesauri ThesauriList Thesaurus deletion should ask for confir
 HTMLCollection [
   <tbody>
     <tr
-      class="border-b transition-colors hover:[background-color:var(--color-theme-surface-warm)]  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
     >
       <td
         class="relative px-4 py-2  "
@@ -29,12 +29,12 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="[color:var(--color-theme-text-primary)]"
+            class="text-ink"
           >
             Animals
           </span>
           <div
-            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)"
           >
             <span
               class="translation "
@@ -55,7 +55,7 @@ HTMLCollection [
         class="relative px-4 py-2  "
       >
         <button
-          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:[background-color:var(--color-theme-button-ghost-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-ghost-hover-border)] enabled:hover:[color:var(--color-theme-button-ghost-hover-fg)]"
+          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)"
           type="button"
         >
           <span
@@ -67,7 +67,7 @@ HTMLCollection [
       </td>
     </tr>
     <tr
-      class="border-b transition-colors hover:[background-color:var(--color-theme-surface-warm)]  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
     >
       <td
         class="relative px-4 py-2  "
@@ -92,12 +92,12 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="[color:var(--color-theme-text-primary)]"
+            class="text-ink"
           >
             Colors
           </span>
           <div
-            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)"
           >
             <span
               class="translation "
@@ -118,7 +118,7 @@ HTMLCollection [
         class="relative px-4 py-2  "
       >
         <button
-          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:[background-color:var(--color-theme-button-ghost-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-ghost-hover-border)] enabled:hover:[color:var(--color-theme-button-ghost-hover-fg)]"
+          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)"
           type="button"
         >
           <span
@@ -130,7 +130,7 @@ HTMLCollection [
       </td>
     </tr>
     <tr
-      class="border-b transition-colors hover:[background-color:var(--color-theme-surface-warm)]  "
+      class="border-b transition-colors hover:bg-(--color-theme-surface-warm)  "
     >
       <td
         class="relative px-4 py-2  "
@@ -156,12 +156,12 @@ HTMLCollection [
           class="flex items-center"
         >
           <span
-            class="[color:var(--color-theme-text-primary)]"
+            class="text-ink"
           >
             Names
           </span>
           <div
-            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 [border-color:var(--color-theme-border-default)]"
+            class="has-[span:not(.active)]:hidden ml-2 h-full rounded-lg border border-solid border-b-0 border-l-2 border-r-2 border-t-0 p-1 border-(--color-theme-border-default)"
           >
             <span
               class="translation "
@@ -179,7 +179,7 @@ HTMLCollection [
         >
           <div>
             <span
-              class="whitespace-nowrap [background-color:var(--color-theme-surface-warm)] [color:var(--color-theme-text-secondary)] px-2.5 py-1 rounded-md text-xs"
+              class="whitespace-nowrap bg-(--color-theme-surface-warm) text-ink-secondary px-2.5 py-1 rounded-md text-xs"
               data-testid="pill-comp"
             >
               <span
@@ -195,7 +195,7 @@ HTMLCollection [
         class="relative px-4 py-2  "
       >
         <button
-          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:[background-color:var(--color-theme-button-ghost-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-ghost-hover-border)] enabled:hover:[color:var(--color-theme-button-ghost-hover-fg)]"
+          class="leading-4 px-3 py-1.5 text-xs border rounded-md font-medium transition-colors disabled:cursor-not-allowed focus:outline-hidden focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)] enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)"
           type="button"
         >
           <span
@@ -212,7 +212,7 @@ HTMLCollection [
 
 exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
 <div
-  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] [background-color:var(--color-theme-feedback-info-tint)]"
+  class="sticky bottom-0 left-0 z-1 w-full border-t px-4 py-3 border-t-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)] bg-(--color-theme-feedback-info-tint)"
   data-testid="settings-content-footer"
 >
   <div

@@ -21,7 +21,7 @@ export const GeneratedIdField = ({ control }: { control: any }) => (
               content={t('System', 'A generated ID will be the default title.', null, false)}
               placement="right"
             >
-              <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
+              <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
             </Tooltip>
           </span>
         }

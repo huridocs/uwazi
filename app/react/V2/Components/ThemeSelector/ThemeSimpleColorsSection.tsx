@@ -62,7 +62,7 @@ const ThemeSimpleColorsSection = ({
   const chromeDisplay = resolvedMergedPreview[chromeBarKey] ?? '#000000';
 
   return (
-    <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] px-4 py-4">
+    <div className="border-t border-[color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] px-4 py-4">
       <p className="mb-3 text-xs text-ink-muted">
         <Translate>
           Adjust a few colors; secondary text and muted backgrounds update automatically.

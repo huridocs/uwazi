@@ -109,11 +109,10 @@ const MultiSelect = ({
         <span className="flex-1 text-sm font-semibold" style={labelStyle}>
           {renderChild(label)}
         </span>
-        <Popover className="border [border-color:color-mix(in_srgb,var(--color-theme-border-default)_20%,transparent)]">
+        <Popover className="border border-(--color-theme-border-default)@20%">
           <Popover.Button
             ref={setReferenceElement}
-            className="disabled:opacity-40"
-            style={{ color: 'var(--color-theme-action-primary)' }}
+            className="disabled:opacity-40 text-(--color-theme-action-primary)"
             disabled={disabled || options.length === 0}
           >
             <span className="sr-only">{t('System', 'Select', null, false)}</span>
@@ -168,9 +167,7 @@ const MultiSelect = ({
               if (!option) return null;
               return (
                 <Pill color="gray" key={option.value} className="flex flex-row gap-2">
-                  <span style={{ color: 'var(--color-theme-text-secondary)' }}>
-                    {renderChild(option.label)}
-                  </span>
+                  <span className="text-ink-secondary">{renderChild(option.label)}</span>
                   <button
                     type="button"
                     className={`content-center justify-center text-xs font-bold ${
@@ -192,7 +189,7 @@ const MultiSelect = ({
                 </Pill>
               );
             })
-          : renderChild(placeholder, '[color:var(--color-theme-text-muted)]')}
+          : renderChild(placeholder, 'text-ink-muted')}
       </div>
     </div>
   );
