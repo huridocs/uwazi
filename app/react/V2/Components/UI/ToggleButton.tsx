@@ -17,6 +17,18 @@ const ToggleButton = ({
   className = '',
   size = 'regular',
 }: ToggleButtonProps) => {
+  const toggleVars = {
+    ['--toggle-track-bg' as string]:
+      'var(--color-theme-toggle-track-bg, var(--color-theme-control-border, #e5e7eb))',
+    ['--toggle-track-active' as string]: disabled
+      ? 'var(--color-theme-toggle-track-disabled-active-bg, var(--color-theme-button-primary-disabled-bg, #9ca3af))'
+      : 'var(--color-theme-toggle-track-active-bg, var(--color-theme-button-primary-bg, #2563eb))',
+    ['--toggle-thumb-bg' as string]:
+      'var(--color-theme-toggle-thumb-bg, var(--color-theme-surface-raised, #ffffff))',
+    ['--toggle-thumb-border' as string]:
+      'var(--color-theme-toggle-thumb-border, var(--color-theme-control-border, #d1d5db))',
+  } as React.CSSProperties;
+
   const sizeClasses = {
     regular: {
       container: 'w-11 h-6',
@@ -31,31 +43,26 @@ const ToggleButton = ({
   const currentSize = sizeClasses[size];
 
   return (
-    <label className="relative inline-flex items-center gap-2 cursor-pointer">
+    <label
+      className={`relative inline-flex items-center gap-2 ${
+        disabled ? 'cursor-not-allowed' : 'cursor-pointer'
+      }`}
+    >
       <input
         type="checkbox"
         value={value}
-        className={`${className} sr-only peer`}
+        className="sr-only peer"
         disabled={disabled}
         onChange={onToggle}
         data-testid="toggle"
       />
       <div
-        className={`${className} ${currentSize.container} rounded-full peer
-        peer-checked:[background-color:var(--toggle-track-active)] peer-checked:after:translate-x-full
+        className={`${className} relative ${currentSize.container} rounded-full transition-colors bg-(--toggle-track-bg)
+        peer-checked:bg-(--toggle-track-active) peer-checked:after:translate-x-full
         after:content-[''] after:absolute after:rounded-full after:border
-        after:[background-color:var(--toggle-thumb-bg)] after:[border-color:var(--toggle-thumb-border)]
+        after:bg-(--toggle-thumb-bg) after:border-(--toggle-thumb-border)
         ${currentSize.thumb} after:transition-all`}
-        style={
-          {
-            backgroundColor: 'var(--color-theme-toggle-track-bg)',
-            ['--toggle-track-active' as string]: disabled
-              ? 'var(--color-theme-toggle-track-disabled-active-bg)'
-              : 'var(--color-theme-toggle-track-active-bg)',
-            ['--toggle-thumb-bg' as string]: 'var(--color-theme-toggle-thumb-bg)',
-            ['--toggle-thumb-border' as string]: 'var(--color-theme-toggle-thumb-border)',
-          } as React.CSSProperties
-        }
+        style={toggleVars}
       />
       {children}
     </label>

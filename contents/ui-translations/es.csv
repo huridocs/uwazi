@@ -386,6 +386,7 @@ File updated,Archivo actualizado
 Files,Archivos
 Files and database usage,Uso de archivos y base de datos
 Fill,Rellenar/completar
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Filtros
 Filters AND operator,Y
 Filters configuration,Configuración de filtros
@@ -417,6 +418,7 @@ General Information,General Information
 Generated ID,Generated ID
 Global CSS,CSS global
 Global CSS & JS,CSS Global & JS
+Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
@@ -438,6 +440,7 @@ here,aquí
 Hide,Hide
 Hide actions,Ocultar acciones
 Hide label,Ocultar etiqueta
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Ocultar barra de herramientas
 https://yourdomain,https://tudominio
 hubs,nodos
@@ -646,6 +649,7 @@ No Value,Sin valor
 "No, cancel","No, cancelar"
 Non processed,No procesados
 Non-labeled,Non-labeled
+Non-latin characters support,Non-latin characters support
 Normal view,Vista normal
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
 Not already been use as target template,Not already been use as target template
@@ -765,6 +769,7 @@ Public form settings description,Aquí puedes configurar el destino del formular
 Public Form submit URL,URL de envío de formulario público
 Public form URL description,"Si has configurado un formulario público y deseas que una colección diferente de Uwazi reciba los envíos, ingresa su URL aquí."
 Public form whitelist description,"Si deseas incluir formularios públicos en tus páginas, debes incluir en la lista blanca los identificadores de las plantillas para los que se esperan formularios públicos"
+Public instance,Public instance
 Publish,Publicar
 Published,Publicado
 QR Code,QR Code
