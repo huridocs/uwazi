@@ -133,9 +133,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
         <>
           <span>|</span>
           <span>
-            <span className="text-(--color-theme-feedback-warning)">
-              {amountOfMissmatches}
-            </span>{' '}
+            <span className="text-(--color-theme-feedback-warning)">{amountOfMissmatches}</span>{' '}
             <Translate>mismatching</Translate>
           </span>
         </>

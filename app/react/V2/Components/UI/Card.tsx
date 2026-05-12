@@ -33,9 +33,8 @@ const Card = ({ title, children, className, color = 'default' }: CardProps) => {
 
   return (
     <SurfacePanel
-      className={['[border-width:1px] [border-style:solid]', className].filter(Boolean).join(' ')}
+      className={['[border-width:1px] [border-style:solid] border-(--color-theme-card-border)', className].filter(Boolean).join(' ')}
       padding="none"
-      style={{ borderColor: 'var(--color-theme-card-border)' }}
     >
       {title && (
         <div className="block w-full p-4 text-base font-semibold" style={headerStyle}>

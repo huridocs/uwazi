@@ -17,7 +17,7 @@ const BlankState = ({ icon, title, description }: BlankStateProps) => (
   >
     {icon}
     <p className="font-semibold text-lg">{title}</p>
-    <p className="text-sm" style={{ color: 'var(--color-theme-text-muted)' }}>
+    <p className="text-sm text-(--color-theme-text-muted)">
       {description}
     </p>
   </div>

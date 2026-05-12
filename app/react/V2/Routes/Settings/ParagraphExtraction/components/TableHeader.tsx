@@ -7,9 +7,7 @@ const TableHeader = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <span
-    className={`font-semibold text-xs text-(--color-theme-text-secondary) ${className}`.trim()}
-  >
+  <span className={`font-semibold text-xs text-(--color-theme-text-secondary) ${className}`.trim()}>
     {children}
   </span>
 );

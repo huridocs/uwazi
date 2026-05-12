@@ -88,7 +88,7 @@ const ThemePickerWithPreview = ({
           <Provider store={store}>
             <ThemeProvider
               controlledMode={themeMode}
-              className="rounded border [border-color:color-mix(in_srgb,var(--color-theme-border-primary)_60%,transparent)]"
+              className="rounded border border-[color-mix(in_srgb,var(--color-theme-border-primary)_60%,transparent)]"
             >
               <Header />
               <p
@@ -123,7 +123,7 @@ const meta: Meta<typeof ThemePickerWithPreview> = {
   },
   decorators: [
     (Story, context) => (
-      <MemoryRouter initialEntries={['/en/library']}>
+      <MemoryRouter initi lEntries={['/en/library']}>
         <Story
           args={{
             ...context.args,
@@ -135,7 +135,6 @@ const meta: Meta<typeof ThemePickerWithPreview> = {
     ),
   ],
 };
-export default meta;
 
 type Story = StoryObj<typeof ThemePickerWithPreview>;
 
@@ -146,3 +145,5 @@ export const NamedThemesAndPalette: Story = {
 export const FlagOff: Story = {
   args: { themeCustomization: false },
 };
+
+export default meta;

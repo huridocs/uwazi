@@ -182,9 +182,7 @@ const PropertySidepanel = ({
                     </ToggleButton>
                   )}
                   {selectionError && (
-                    <span className="text-(--color-theme-feedback-danger)">
-                      {selectionError}
-                    </span>
+                    <span className="text-(--color-theme-feedback-danger)">{selectionError}</span>
                   )}
                 </div>
               }

@@ -112,8 +112,7 @@ const MultiSelect = ({
         <Popover className="border border-(--color-theme-border-default)@20%">
           <Popover.Button
             ref={setReferenceElement}
-            className="disabled:opacity-40"
-            style={{ color: 'var(--color-theme-action-primary)' }}
+            className="disabled:opacity-40 text-(--color-theme-action-primary)"
             disabled={disabled || options.length === 0}
           >
             <span className="sr-only">{t('System', 'Select', null, false)}</span>
@@ -168,7 +167,7 @@ const MultiSelect = ({
               if (!option) return null;
               return (
                 <Pill color="gray" key={option.value} className="flex flex-row gap-2">
-                  <span style={{ color: 'var(--color-theme-text-secondary)' }}>
+                  <span className="text-(--color-theme-text-secondary)">
                     {renderChild(option.label)}
                   </span>
                   <button

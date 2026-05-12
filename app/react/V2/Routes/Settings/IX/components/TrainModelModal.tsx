@@ -61,10 +61,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               control={control}
               render={({ field }) => (
                 <div>
-                  <label
-                    htmlFor={field.name}
-                    className="pb-4 text-(--color-theme-text-primary)"
-                  >
+                  <label htmlFor={field.name} className="pb-4 text-(--color-theme-text-primary)">
                     <Tooltip
                       content={
                         <div>

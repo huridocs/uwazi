@@ -297,9 +297,7 @@ Sidepanel.Footer = ({
   children: React.ReactNode;
   className?: String;
 }) => (
-  <div
-    className={`bottom-0 left-0 z-1 w-full bg-(--color-theme-surface-page) ${className}`}
-  >
+  <div className={`bottom-0 left-0 z-1 w-full bg-(--color-theme-surface-page) ${className}`}>
     {children}
   </div>
 );

@@ -110,12 +110,11 @@ const UploadStatus = () => {
                     {statusMessage?.title}
                   </span>
                 </div>
-                <p style={{ color: 'var(--color-theme-text-secondary)' }}>
+                <p className="text-(--color-theme-text-secondary)">
                   {statusMessage?.description}
                 </p>
                 <div
-                  className="flex flex-row items-center gap-10"
-                  style={{ color: 'var(--color-theme-text-muted)' }}
+                  className="flex flex-row items-center gap-10 text-(--color-theme-text-muted)"
                 >
                   <div>
                     <Translate>Template</Translate>:{' '}
@@ -182,8 +181,7 @@ const UploadStatus = () => {
                         {entry.failure.message}
                       </div>
                       <div
-                        className="flex flex-wrap gap-6 text-sm"
-                        style={{ color: 'var(--color-theme-text-secondary)' }}
+                        className="flex flex-wrap gap-6 text-sm text-(--color-theme-text-secondary)"
                       >
                         <div>
                           <Translate>Stage</Translate>: {entry.failure.stage}
@@ -212,7 +210,7 @@ const UploadStatus = () => {
                   status={entry.status}
                   stats={entry.stats}
                 />
-                <p className="pt-2 text-sm" style={{ color: 'var(--color-theme-text-secondary)' }}>
+                <p className="pt-2 text-sm text-(--color-theme-text-secondary)">
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
               </div>
