@@ -388,7 +388,7 @@ File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
 Fill,ဖြည့်ရန်
-Filter relationships,Filter relationships
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,စစ်ထုတ်မှုများ
 Filters AND operator,စစ်ထုတ်မှုများနှင့် အော်ပရေတာ
 Filters configuration,စစ်ထုတ်မှုများ စနစ်ဖွဲ့စည်းမှု
@@ -442,7 +442,7 @@ here,here
 Hide,Hide
 Hide actions,Hide actions
 Hide label,Hide label
-Hide restricted relationships,Hide restricted relationships
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
 https://yourdomain,https://yourdomain
 hubs,ဟတ်ဘ်များ
