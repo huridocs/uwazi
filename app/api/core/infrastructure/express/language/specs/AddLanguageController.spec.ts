@@ -25,12 +25,11 @@ describe('AddLanguageController', () => {
   const useCaseExecuteSpy: jest.SpyInstance = jest.fn();
 
   beforeEach(() => {
-    useCaseExecuteSpy.mockResolvedValue([]);
     jest.spyOn(tenants, 'current').mockReturnValue({} as any);
     jest.spyOn(AddLanguageUseCaseFactory, 'default').mockReturnValue({
       execute: useCaseExecuteSpy,
     } as any);
-    jest.spyOn(translations, 'get').mockResolvedValue([{ locale: 'es', contexts: [] }] as any);
+    jest.spyOn(translations, 'get').mockResolvedValue([] as any);
     jest.spyOn(settings, 'get').mockResolvedValue({ languages: [] } as any);
   });
 
@@ -50,7 +49,8 @@ describe('AddLanguageController', () => {
     await expect(sut.handleAsync()).rejects.toThrow();
   });
 
-  it('should call use case with parsed languages', async () => {
+  it('should call use case with all requested languages', async () => {
+    useCaseExecuteSpy.mockResolvedValue([]);
     const languages = [{ key: 'es', label: 'Spanish' }];
     const { sut, response } = createSut(languages);
 
@@ -60,42 +60,50 @@ describe('AddLanguageController', () => {
     expect(response.sendStatus).toHaveBeenCalledWith(204);
   });
 
-  it('should emit translationsChange for each language and updateSettings after execution', async () => {
-    const fakeTranslations = { locale: 'es', contexts: [] };
-    const fakeSettings = { languages: [{ key: 'es', label: 'Spanish' }] };
-    jest.spyOn(translations, 'get').mockResolvedValue([fakeTranslations] as any);
-    jest.spyOn(settings, 'get').mockResolvedValue(fakeSettings as any);
-
-    const languages = [{ key: 'es', label: 'Spanish' }];
-    const { sut, emitToCurrentTenant } = createSut(languages);
+  it('should not emit translationsChange when execute returns no added languages', async () => {
+    useCaseExecuteSpy.mockResolvedValue([]);
+    const { sut, emitToCurrentTenant, response } = createSut([{ key: 'es', label: 'Spanish' }]);
 
     await sut.handleAsync();
 
-    expect(emitToCurrentTenant).toHaveBeenCalledWith('translationsChange', fakeTranslations);
-    expect(emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', fakeSettings);
+    expect(translations.get).not.toHaveBeenCalled();
+    expect(emitToCurrentTenant).not.toHaveBeenCalledWith('translationsChange', expect.anything());
+    expect(emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', expect.anything());
+    expect(response.sendStatus).toHaveBeenCalledWith(204);
   });
 
-  it('should emit translationsChange for each language when multiple languages are added', async () => {
-    jest
-      .spyOn(translations, 'get')
-      .mockResolvedValueOnce([{ locale: 'es', contexts: [] }] as any)
-      .mockResolvedValueOnce([{ locale: 'fr', contexts: [] }] as any);
+  it('should emit translationsChange only for languages returned by execute', async () => {
+    const addedLanguage = { key: 'es', label: 'Spanish' };
+    useCaseExecuteSpy.mockResolvedValue([addedLanguage]);
+    const fakeTranslations = { locale: 'es', contexts: [] };
+    jest.spyOn(translations, 'get').mockResolvedValue([fakeTranslations] as any);
 
-    const languages = [
+    // request body contains two languages but execute only returns one (the new one)
+    const { sut, emitToCurrentTenant } = createSut([
       { key: 'es', label: 'Spanish' },
-      { key: 'fr', label: 'French' },
-    ];
-    const { sut, emitToCurrentTenant } = createSut(languages);
+      { key: 'en', label: 'English' }, // already installed, not returned by use case
+    ]);
 
     await sut.handleAsync();
 
-    expect(emitToCurrentTenant).toHaveBeenCalledWith(
+    expect(translations.get).toHaveBeenCalledTimes(1);
+    expect(translations.get).toHaveBeenCalledWith({ locale: 'es' });
+    expect(emitToCurrentTenant).toHaveBeenCalledWith('translationsChange', fakeTranslations);
+    expect(emitToCurrentTenant).not.toHaveBeenCalledWith(
       'translationsChange',
-      expect.objectContaining({ locale: 'es' })
+      expect.objectContaining({ locale: 'en' })
     );
-    expect(emitToCurrentTenant).toHaveBeenCalledWith(
-      'translationsChange',
-      expect.objectContaining({ locale: 'fr' })
-    );
+  });
+
+  it('should emit updateSettings after execution', async () => {
+    const fakeSettings = { languages: [{ key: 'es', label: 'Spanish' }] };
+    useCaseExecuteSpy.mockResolvedValue([]);
+    jest.spyOn(settings, 'get').mockResolvedValue(fakeSettings as any);
+
+    const { sut, emitToCurrentTenant } = createSut([{ key: 'es', label: 'Spanish' }]);
+
+    await sut.handleAsync();
+
+    expect(emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', fakeSettings);
   });
 });

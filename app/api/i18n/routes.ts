@@ -284,15 +284,15 @@ export default (app: Application) => {
     async (req: DeleteTranslationRequest, res) => {
       const { key } = req.query;
 
+      if (tenants.current().featureFlags?.v2Languages) {
+        await new DeleteLanguageController({ request: req, response: res }).handleAsync();
+        return;
+      }
+
       const currentSettings = await settings.get();
       const language = currentSettings.languages?.find(l => l.key === key);
       if (!language || language.installing) {
         res.status(409).json({ error: 'Language is still being installed or does not exist' });
-        return;
-      }
-
-      if (tenants.current().featureFlags?.v2Languages) {
-        await new DeleteLanguageController({ request: req, response: res }).handleAsync();
         return;
       }
 

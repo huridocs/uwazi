@@ -24,9 +24,9 @@ class AddLanguageController extends AbstractController<RequestDto> {
 
     try {
       const languages = LanguageInputSchema.parse(this.request?.body) as LanguageSchema[];
-      await AddLanguageUseCaseFactory.default().execute({ languages });
+      const addedLanguages = await AddLanguageUseCaseFactory.default().execute({ languages });
 
-      for (const language of languages) {
+      for (const language of addedLanguages) {
         // eslint-disable-next-line no-await-in-loop
         const [newTranslations] = await translations.get({ locale: language.key });
         this.request.sockets.emitToCurrentTenant('translationsChange', newTranslations);
@@ -38,7 +38,7 @@ class AddLanguageController extends AbstractController<RequestDto> {
       logger.info('Add language executed successfully', {
         namespace: 'Add_Language',
         success: true,
-        keys: languages.map(l => l.key),
+        keys: addedLanguages.map(l => l.key),
       });
 
       this.response.sendStatus(204);
