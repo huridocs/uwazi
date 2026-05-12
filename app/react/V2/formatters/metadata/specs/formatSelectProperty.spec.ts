@@ -14,6 +14,32 @@ describe('formatSelectProperty', () => {
       { value: undefined, label: undefined },
     ],
     empty_array: [],
+    inherited_select: [
+      {
+        value: 'entity-1',
+        inheritedType: 'select',
+        inheritedValue: [{ value: 's2', label: 'Inherited Option' }],
+      },
+    ],
+    inherited_nested_multiselect: [
+      {
+        value: 'entity-2',
+        inheritedType: 'relationship',
+        inheritedValue: [
+          {
+            value: 'entity-3',
+            inheritedType: 'multiselect',
+            inheritedValue: [
+              {
+                value: 'm3',
+                label: 'Nested Option',
+                parent: { value: 'p2', label: 'Nested Parent' },
+              },
+            ],
+          },
+        ],
+      },
+    ],
   } as Entity['metadata'];
 
   it('should prepare select properties', () => {
@@ -114,5 +140,51 @@ describe('formatSelectProperty', () => {
     } as BaseMetadataProperty;
 
     expect(formatSelectProperty(property, metadata)).toBeNull();
+  });
+
+  it('should format inherited relationship values when they resolve to select types', () => {
+    const inheritedSelectProperty = {
+      _id: 'm5',
+      name: 'inherited_select',
+      label: 'Inherited Select',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'select',
+    } as BaseMetadataProperty;
+
+    const inheritedNestedMultiselectProperty = {
+      _id: 'm6',
+      name: 'inherited_nested_multiselect',
+      label: 'Inherited Nested Multiselect',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'relationship',
+    } as BaseMetadataProperty;
+
+    expect(formatSelectProperty(inheritedSelectProperty, metadata)).toEqual({
+      _id: 'm5',
+      name: 'inherited_select',
+      label: 'Inherited Select',
+      type: 'select',
+      values: [{ value: 's2', label: 'Inherited Option' }],
+      inherited: true,
+      inheritedType: 'select',
+    });
+
+    expect(formatSelectProperty(inheritedNestedMultiselectProperty, metadata)).toEqual({
+      _id: 'm6',
+      name: 'inherited_nested_multiselect',
+      label: 'Inherited Nested Multiselect',
+      type: 'multiselect',
+      values: [
+        {
+          value: 'm3',
+          label: 'Nested Option',
+          parent: { value: 'p2', label: 'Nested Parent' },
+        },
+      ],
+      inherited: true,
+      inheritedType: 'relationship',
+    });
   });
 });

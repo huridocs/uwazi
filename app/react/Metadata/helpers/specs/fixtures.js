@@ -14,6 +14,8 @@ export const doc = {
   file: {
     filename: 'filename.pdf',
   },
+  preview: 'doc2.jpg',
+  status: 'processing',
   defaultDoc: entityDocs[1],
   documents: entityDocs,
   metadata: {

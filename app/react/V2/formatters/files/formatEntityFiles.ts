@@ -7,7 +7,8 @@ import { getMainDocument } from './getMainDocument.js';
 const formatEntityFiles = (
   entity: Entity,
   templates: ClientTemplateSchema[],
-  locale: string
+  locale: string,
+  defaultLanguage?: string
 ): EntityFile[] => {
   const entityTemplate = templates.find(template => template._id === entity.template);
 
@@ -32,7 +33,7 @@ const formatEntityFiles = (
     return [{ fileType: property.type as 'image' | 'media', file: { filename, mimetype } }];
   });
 
-  const mainDocument = getMainDocument(entity.documents, locale);
+  const mainDocument = getMainDocument(entity.documents, locale, defaultLanguage);
 
   const documents: EntityFile[] = (entity.documents || []).map(doc => ({
     fileType: doc._id === mainDocument?._id ? 'mainDocument' : 'document',

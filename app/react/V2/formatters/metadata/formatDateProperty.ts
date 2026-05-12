@@ -6,14 +6,18 @@ import {
   MultiDateMetadataProperty,
   MultiDateRangeMetadataProperty,
 } from '../types.js';
+import {
+  resolvePropertyMetadataValues,
+  resolvePropertyType,
+} from './resolvePropertyMetadataValues.js';
 
 const isDateType = (type: BaseMetadataProperty['type']) =>
   type === 'date' || type === 'multidate' || type === 'daterange' || type === 'multidaterange';
 
-const formatSingleDateValues = (metadataValues: NonNullable<Entity['metadata']>[string] = []) =>
+const formatSingleDateValues = (metadataValues: Array<{ value?: unknown }> = []) =>
   metadataValues.flatMap(item => (typeof item?.value === 'number' ? [{ value: item.value }] : []));
 
-const formatRangeDateValues = (metadataValues: NonNullable<Entity['metadata']>[string] = []) =>
+const formatRangeDateValues = (metadataValues: Array<{ value?: unknown }> = []) =>
   metadataValues.flatMap(item => {
     const range = item?.value;
 
@@ -33,9 +37,10 @@ const formatRangeDateValues = (metadataValues: NonNullable<Entity['metadata']>[s
 
 const createSingleDateProperty = (
   property: BaseMetadataProperty,
-  values: DateMetadataProperty['values']
+  values: DateMetadataProperty['values'],
+  type: 'date' | 'multidate'
 ): DateMetadataProperty | MultiDateMetadataProperty => {
-  if (property.type === 'date') {
+  if (type === 'date') {
     return {
       _id: property._id,
       name: property.name,
@@ -60,9 +65,10 @@ const createSingleDateProperty = (
 
 const createRangeDateProperty = (
   property: BaseMetadataProperty,
-  values: DateRangeMetadataProperty['values']
+  values: DateRangeMetadataProperty['values'],
+  type: 'daterange' | 'multidaterange'
 ): DateRangeMetadataProperty | MultiDateRangeMetadataProperty => {
-  if (property.type === 'daterange') {
+  if (type === 'daterange') {
     return {
       _id: property._id,
       name: property.name,
@@ -94,17 +100,19 @@ const formatDateProperty = (
   | DateRangeMetadataProperty
   | MultiDateRangeMetadataProperty
   | null => {
-  if (!isDateType(property.type)) {
+  const type = resolvePropertyType(property, metadata);
+
+  if (!isDateType(type)) {
     return null;
   }
 
-  const metadataValues = metadata?.[property.name] ?? [];
+  const metadataValues = resolvePropertyMetadataValues(property, metadata);
 
-  if (property.type === 'date' || property.type === 'multidate') {
-    return createSingleDateProperty(property, formatSingleDateValues(metadataValues));
+  if (type === 'date' || type === 'multidate') {
+    return createSingleDateProperty(property, formatSingleDateValues(metadataValues), type);
   }
 
-  return createRangeDateProperty(property, formatRangeDateValues(metadataValues));
+  return createRangeDateProperty(property, formatRangeDateValues(metadataValues), type);
 };
 
 export { formatDateProperty };

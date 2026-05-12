@@ -1,4 +1,4 @@
-import type { Entity } from '#app/V2/api/entities/types.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import { formatLinkProperty } from '../formatLinkProperty';
 import { BaseMetadataProperty } from '../../types';
 
@@ -31,6 +31,23 @@ describe('formatLinkProperty', () => {
           label: 'second',
           url: 'https://second.example.com',
         },
+      },
+    ],
+    inheritedLink: [
+      {
+        value: 'entity-1',
+        inheritedType: 'relationship',
+        inheritedValue: [
+          {
+            value: 'entity-2',
+            inheritedType: 'link',
+            inheritedValue: [
+              {
+                value: { label: 'nested link', url: 'https://nested.example.com' },
+              },
+            ],
+          },
+        ],
       },
     ],
   } as Entity['metadata'];
@@ -126,6 +143,27 @@ describe('formatLinkProperty', () => {
       label: 'Link Multi',
       inherited: undefined,
       inheritedType: undefined,
+    });
+  });
+
+  it('should format inherited relationship values when they resolve to links', () => {
+    const property = {
+      _id: 'p3',
+      name: 'inheritedLink',
+      label: 'Inherited Link',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'relationship',
+    } as BaseMetadataProperty;
+
+    expect(formatLinkProperty(property, metadata)).toEqual({
+      _id: 'p3',
+      name: 'inheritedLink',
+      type: 'link',
+      values: [{ value: 'https://nested.example.com', label: 'nested link' }],
+      label: 'Inherited Link',
+      inherited: true,
+      inheritedType: 'relationship',
     });
   });
 });
