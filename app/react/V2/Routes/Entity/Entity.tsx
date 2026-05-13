@@ -79,15 +79,17 @@ const Entity = () => {
       );
     }
 
-    tabs.push(
-      <Tabs.Tab
-        id={MAIN_TABS.METADATA}
-        key={MAIN_TABS.METADATA}
-        label={<TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />}
-      >
-        <MetadataDisplay entity={entity as any} />
-      </Tabs.Tab>
-    );
+    if (entity) {
+      tabs.push(
+        <Tabs.Tab
+          id={MAIN_TABS.METADATA}
+          key={MAIN_TABS.METADATA}
+          label={<TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />}
+        >
+          <MetadataDisplay entity={entity} />
+        </Tabs.Tab>
+      );
+    }
 
     tabs.push(
       <Tabs.Tab
@@ -225,6 +227,8 @@ const Entity = () => {
 
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
+      if (!isValidMainTab(selectedMainTab)) return;
+
       const next = new URLSearchParams(searchParams.toString());
       next.set(MAIN_TAB_PARAM, selectedMainTab);
 
@@ -243,6 +247,8 @@ const Entity = () => {
 
   const onSideTabChange = useCallback(
     (selectedSideTab: string) => {
+      if (!isValidSideTab(selectedSideTab)) return;
+
       const next = new URLSearchParams(searchParams.toString());
       next.set(SIDE_TAB_PARAM, selectedSideTab);
       if (!next.get(MAIN_TAB_PARAM)) {
@@ -259,15 +265,20 @@ const Entity = () => {
 
   return (
     <>
-      <PaneLayout defaultRatios={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="h-full">
-          <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
+      <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-(--color-theme-surface-page) text-ink">
+        <PaneLayout.Pane>
+          <Tabs
+            unmountTabs={false}
+            initialTabId={activeMainTab}
+            onTabSelected={onMainTabChange}
+            tabListAriaLabel="Entity primary"
+          >
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
-        <PaneLayout.Pane className="h-full">
+        <PaneLayout.Pane>
           <Tabs
-            className="min-w-75 overflow-x-auto"
+            className="min-w-0 w-full border-l border-[color-mix(in_srgb,var(--color-theme-border-default)_65%,transparent)]"
             unmountTabs={false}
             initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}

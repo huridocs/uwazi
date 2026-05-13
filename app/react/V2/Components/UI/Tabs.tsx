@@ -42,11 +42,15 @@ const Tabs = ({
     if (newIndex !== -1) {
       setSelectedIndex(newIndex);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialTabId, tabChildren]);
 
-  const activeClass = 'text-gray-900 bg-gray-50';
-  const inactiveClass = 'text-gray-500';
+  const activeClass = 'text-ink bg-vellum';
+  const inactiveClass = 'text-ink-tertiary bg-paper hover:text-ink-secondary';
+  const tabListChromeClass = 'tabs-segmented-list';
+
+  const tabScrollWrapClass = [
+    'tabs-segmented-scroll mx-[var(--spacing-theme-3)] my-[var(--spacing-theme-2)] md:my-[var(--spacing-theme-2-5)]',
+  ].join(' ');
 
   const handleChange = (index: number) => {
     setSelectedIndex(index);
@@ -58,55 +62,51 @@ const Tabs = ({
 
   return (
     <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange} manual>
-      <div className={`flex flex-col h-full gap-2 ${className ?? ''}`}>
-        <HeadlessTab.List
-          className={`inline-grid m-4 mb-2 grid-flow-col auto-cols-auto rounded-md shadow-md shadow-black/10 border border-gray-100 w-fit ${
-            tabListClassName || ''
-          }`}
-          aria-label={tabListAriaLabel}
-          data-testid="tabs-comp"
-        >
-          {tabChildren.map((child, index) => {
-            const isFirst = index === 0;
-            const isLast = index === totalTabs - 1;
-            const shapeClass = (() => {
-              if (totalTabs === 1) {
-                return 'rounded-md';
-              }
-              if (isFirst) {
-                return 'rounded-l-md';
-              }
-              if (isLast) {
-                return 'rounded-r-md';
-              }
-              return 'rounded-none';
-            })();
-            const dividerClass = isFirst ? '' : 'border-l border-gray-100';
-
-            return (
-              <HeadlessTab
-                key={child.props.id}
-                id={`tab-${child.props.id}`}
-                as="button"
-                type="button"
-                className={({ selected }) =>
-                  [
-                    'p-2 text-left flex items-center justify-start h-full',
-                    'focus-visible:outline-none focus-visible:ring-2',
-                    'focus-visible:ring-primary-400 focus-visible:ring-inset',
-
-                    shapeClass,
-                    dividerClass,
-                    selected ? activeClass : inactiveClass,
-                  ].join(' ')
+      <div className={`flex min-h-0 min-w-0 w-full flex-col h-full ${className ?? ''}`}>
+        <div className={`${tabScrollWrapClass} ${tabListClassName || ''}`} data-testid="tabs-comp">
+          <HeadlessTab.List className={tabListChromeClass} aria-label={tabListAriaLabel}>
+            {tabChildren.map((child, index) => {
+              const isFirst = index === 0;
+              const isLast = index === totalTabs - 1;
+              const shapeClass = (() => {
+                if (totalTabs === 1) {
+                  return 'rounded-md';
                 }
-              >
-                {child.props.label}
-              </HeadlessTab>
-            );
-          })}
-        </HeadlessTab.List>
-        <HeadlessTab.Panels className="grow overflow-y-auto">
+                if (isFirst) {
+                  return 'rounded-l-md';
+                }
+                if (isLast) {
+                  return 'rounded-r-md';
+                }
+                return 'rounded-none';
+              })();
+              const dividerClass = isFirst ? '' : 'border-segmented-divide shrink-0';
+
+              return (
+                <HeadlessTab
+                  key={child.props.id}
+                  id={`tab-${child.props.id}`}
+                  as="button"
+                  type="button"
+                  className={({ selected }) =>
+                    [
+                      'tabs-segmented-trigger transition-colors',
+                      'focus-visible:outline-none focus-visible:ring-2',
+                      'focus-visible:ring-(--color-theme-control-border-focus) focus-visible:ring-inset',
+
+                      shapeClass,
+                      dividerClass,
+                      selected ? activeClass : inactiveClass,
+                    ].join(' ')
+                  }
+                >
+                  {child.props.label}
+                </HeadlessTab>
+              );
+            })}
+          </HeadlessTab.List>
+        </div>
+        <HeadlessTab.Panels className="grow overflow-y-auto min-h-0 min-w-0">
           {tabChildren.map(child => (
             <HeadlessTab.Panel
               key={child.props.id}

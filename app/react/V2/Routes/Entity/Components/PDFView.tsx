@@ -168,21 +168,21 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
   const nextPage = Math.min(pageNumber + 1, totalPages || 0);
 
   return (
-    <Panel className="gap-2">
+    <Panel>
       <Panel.Body>
-        <div className="flex flex-col gap-2">
-          <div className="w-full rounded-md p-4 bg-(--color-theme-surface-muted)">
-            <div className="flex flex-row justify-between gap-2">
-              <div>
+        <div className="flex h-full min-h-0 flex-col gap-(--spacing-theme-3)">
+          <div className="w-full rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_65%,transparent)] bg-(--color-theme-surface-warm) p-(--spacing-theme-3)">
+            <div className="flex flex-row justify-between gap-(--spacing-theme-2)">
+              <div className="min-w-0">
                 <TemplateLabel templateId={templateId} />
               </div>
-              <div>
+              <div className="shrink-0">
                 <label htmlFor="render-mode" className="sr-only">
                   <Translate>View</Translate>
                 </label>
                 <select
                   id="render-mode"
-                  className="rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800 bg-(--color-theme-surface-raised)"
+                  className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_80%,transparent)] bg-(--color-theme-surface-raised) px-(--spacing-theme-3) py-(--spacing-theme-1) text-xs font-medium text-ink focus:border-(--color-theme-control-border-focus) focus:outline-hidden"
                   value={isRaw ? 'raw' : 'normal'}
                   onChange={onDisplayModeChange}
                 >
@@ -192,10 +192,14 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
               </div>
             </div>
             <Truncate maxLength={80}>
-              <h2 className="mt-2 text-lg font-bold text-ink">{originalname}</h2>
+              <h2 className="mt-(--spacing-theme-2) text-base font-bold text-ink">
+                {originalname}
+              </h2>
             </Truncate>
           </div>
-          <div className={`flex-1 min-h-0 ${isRaw ? 'hidden' : 'block'}`}>
+          <div
+            className={`flex-1 min-h-0 overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
+          >
             <PDF
               fileUrl={`/api/files/${filename}`}
               size={{ height: '100%', width: '90%' }}
@@ -212,13 +216,15 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
               }}
             />
           </div>
-          <div className={`flex-1 min-h-0 ${isRaw ? 'block' : 'hidden'}`}>
+          <div
+            className={`flex-1 min-h-0 overflow-auto rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'block' : 'hidden'}`}
+          >
             <PlainText text={pagePlaintext || ''} />
           </div>
         </div>
       </Panel.Body>
 
-      <Panel.Footer highlighted={selectedText && userIsAdminOrEditor}>
+      <Panel.Footer highlighted={Boolean(selectedText && userIsAdminOrEditor)}>
         {selectedText && userIsAdminOrEditor ? (
           <NeedAuthorization roles={['admin', 'editor']}>
             <div className="flex flex-row gap-2 items-center w-full">
@@ -239,7 +245,7 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
             </div>
           </NeedAuthorization>
         ) : (
-          <div className="flex flex-row items-center w-full">
+          <div className="flex flex-row items-center w-full gap-(--spacing-theme-3)">
             <div className="justify-self-start grow">
               {ocrServiceEnabled && mainDocument && (
                 <NeedAuthorization roles={['admin', 'editor']}>
@@ -247,23 +253,23 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
                 </NeedAuthorization>
               )}
             </div>
-            <div className="justify-self-end flex items-center gap-2 font-medium">
+            <div className="justify-self-end flex items-center gap-(--spacing-theme-2) text-xs font-medium">
               <button
                 type="button"
                 onClick={() => handlePageNavigation('prev')}
                 disabled={pageNumber <= 1}
-                className="text-primary-700 disabled:text-ink-muted"
+                className="text-ink-secondary hover:text-ink disabled:text-ink-muted disabled:hover:text-ink-muted"
               >
                 <Translate>Previous</Translate>
               </button>
-              <div className="text-base text-primary-900">
+              <div className="rounded bg-(--color-theme-surface-warm) px-(--spacing-theme-2) py-(--spacing-theme-1) text-ink">
                 {pageNumber} / {totalPages}
               </div>
               <button
                 type="button"
                 onClick={() => handlePageNavigation('next')}
                 disabled={totalPages ? nextPage > totalPages : false}
-                className="text-primary-700 disabled:text-ink-muted"
+                className="text-ink-secondary hover:text-ink disabled:text-ink-muted disabled:hover:text-ink-muted"
               >
                 <Translate>Next</Translate>
               </button>

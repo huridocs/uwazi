@@ -35,6 +35,7 @@ const Geolocation = ({
   markers,
   translationContext,
   hideLabel,
+  className,
   clickOnMarker,
   onClick,
   showControls,
@@ -49,10 +50,10 @@ const Geolocation = ({
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className}>
       <dt>
         {isGroup ? (
-          <Translate className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}>
+          <Translate className={`${hideLabel ? 'sr-only' : 'font-bold text-ink'}`}>
             Grouped geolocation properties
           </Translate>
         ) : (

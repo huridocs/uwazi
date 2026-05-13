@@ -159,6 +159,25 @@ const getAccessibleForegroundOnBackground = (
   return { foreground: target, ratio: checkContrast(backgroundHex, target).ratio };
 };
 
+const getTemplatePillColors = (
+  accentHex: string,
+  tintBaseHex: string,
+  minimumRatio = WCAG_AA
+): { background: string; foreground: string; ratio: number } => {
+  for (let step = 1; step <= 100; step += 1) {
+    const w = step / 100;
+    const background = mixHex(tintBaseHex, accentHex, w);
+    const next = checkContrast(background, accentHex);
+    if (next.ratio >= minimumRatio) {
+      return { background, foreground: accentHex, ratio: next.ratio };
+    }
+  }
+
+  const background = mixHex(tintBaseHex, accentHex, 0.22);
+  const adjusted = getAccessibleForegroundOnBackground(background, accentHex, minimumRatio);
+  return { background, foreground: adjusted.foreground, ratio: adjusted.ratio };
+};
+
 export {
   hexToRgb,
   rgbToHex,
@@ -171,4 +190,5 @@ export {
   getContrastTextColor,
   getAccessibleColorPair,
   getAccessibleForegroundOnBackground,
+  getTemplatePillColors,
 };

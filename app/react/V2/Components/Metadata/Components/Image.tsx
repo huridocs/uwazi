@@ -10,7 +10,14 @@ type ImageProps = MetadataFieldProps & {
   imageStyle?: 'contain' | 'cover';
 };
 
-const Image = ({ label, hideLabel, translationContext, values, imageStyle }: ImageProps) => {
+const Image = ({
+  label,
+  hideLabel,
+  translationContext,
+  values,
+  imageStyle,
+  className,
+}: ImageProps) => {
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
 
   if (!values?.length) {
@@ -22,7 +29,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className}>
       <dt>
         <PropertyLabel
           label={label}
@@ -43,7 +50,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
         }
 
         return (
-          <dd className="w-full rounded-md bg-gray-100">
+          <dd className="w-full rounded-md bg-(--color-theme-surface-warm)">
             <img
               className="m-auto max-h-96"
               style={{

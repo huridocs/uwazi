@@ -178,9 +178,9 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
   // Otherwise, show the references list
   return (
     <>
-      <Panel className="gap-4">
+      <Panel>
         <Panel.Body className="pr-1">
-          <div className="flex flex-col gap-2 h-full">
+          <div className="flex flex-col gap-(--spacing-theme-3) h-full">
             {references.length > 0 ? (
               references.map((reference, index) => (
                 <Reference
@@ -194,7 +194,9 @@ const ReferencesPanel = ({ entity, mainDocument }: ReferencesPanelProps) => {
               ))
             ) : (
               <BlankState
-                icon={<LinkIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />}
+                icon={
+                  <LinkIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
+                }
                 title={<Translate>No References</Translate>}
                 description={
                   <Translate>

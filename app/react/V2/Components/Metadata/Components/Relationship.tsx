@@ -19,13 +19,19 @@ const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
 ): value is RelatedRelationshipMetadataProperty['values'][number] => 'title' in value;
 
-const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => {
+const Relationship = ({
+  label,
+  translationContext,
+  hideLabel,
+  values,
+  className,
+}: RelationshipProps) => {
   if (!Array.isArray(values) || !values.length || !values.every(isEntityRelationshipValue)) {
     return null;
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className}>
       <dt>
         <PropertyLabel
           label={label}

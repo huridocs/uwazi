@@ -163,14 +163,17 @@ const PaneLayoutDesktop = ({
   };
 
   return (
-    <div ref={containerRef} className={`flex h-full min-h-0 ${className}`}>
+    <div
+      ref={containerRef}
+      className={`flex h-full min-h-0 bg-(--color-theme-surface-page) ${className}`}
+    >
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
           <section
             style={{ width: widths.length > 0 ? widths[index] : initialWidths?.current?.[index] }}
             className="h-full min-h-0"
           >
-            <div className="h-full min-h-0 overflow-auto">{child}</div>
+            <div className="h-full min-h-0 min-w-0 overflow-auto">{child}</div>
           </section>
 
           {index < children.length - 1 && (
@@ -179,11 +182,11 @@ const PaneLayoutDesktop = ({
               role="separator"
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="cursor-col-resize shrink-0 group"
+              className="cursor-col-resize shrink-0 group transition-colors hover:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_18%,transparent)]"
               style={{ width: SEPARATOR_PX }}
             >
               <div
-                className="h-full border-r border-gray-300 group-hover:border-gray-400"
+                className="h-full border-r border-[color-mix(in_srgb,var(--color-theme-border-default)_80%,transparent)] group-hover:border-[color-mix(in_srgb,var(--color-theme-action-primary)_35%,transparent)]"
                 style={{ width: SEPARATOR_PX / 2 }}
               />
             </div>

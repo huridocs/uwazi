@@ -22,7 +22,7 @@ const sanitizeOptions = {
   },
 };
 
-const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProps) => {
+const Markdown = ({ label, translationContext, values, hideLabel, className }: MarkdownProps) => {
   const safeHtmlList = useMemo(
     () =>
       (values ?? [])
@@ -36,7 +36,7 @@ const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProp
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className}>
       <dt>
         <PropertyLabel
           label={label}

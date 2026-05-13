@@ -21,6 +21,7 @@ const Media = ({
   values,
   hideLabel,
   translationContext,
+  className,
   width = 500,
   height = 300,
 }: MediaProps) => {
@@ -39,7 +40,7 @@ const Media = ({
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className}>
       <dt>
         <PropertyLabel
           label={label}
@@ -59,7 +60,10 @@ const Media = ({
           return (
             // eslint-disable-next-line react/no-array-index-key
             <div key={index} className="flex flex-col items-center gap-2">
-              <figure aria-labelledby={figId} className="w-full bg-gray-100 rounded-md">
+              <figure
+                aria-labelledby={figId}
+                className="w-full bg-(--color-theme-surface-warm) rounded-md"
+              >
                 <MediaPlayer
                   className="m-auto"
                   playerRef={playerRef}

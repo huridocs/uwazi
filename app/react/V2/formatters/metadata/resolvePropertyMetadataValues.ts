@@ -63,6 +63,11 @@ const resolvePropertyType = (
   }
 
   const metadataValues = (metadata?.[property.name] ?? []) as MetadataValue[];
+
+  if (metadataValues.length > 0 && !hasInheritedChildren(metadataValues)) {
+    return 'relationship';
+  }
+
   const inheritedRelationship = resolveInheritedRelationship(
     metadataValues,
     property.inheritedType

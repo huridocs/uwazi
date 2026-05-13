@@ -21,13 +21,13 @@ const formatSelectValue = (
   return displayValue;
 };
 
-const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => {
+const Select = ({ label, translationContext, values, hideLabel, className }: SelectProps) => {
   if (!values?.values?.length) {
     return null;
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className}>
       <dt>
         <PropertyLabel
           label={label}
@@ -39,7 +39,7 @@ const Select = ({ label, translationContext, values, hideLabel }: SelectProps) =
         {values.values.map(value => {
           const formatted = formatSelectValue(value);
           return (
-            <span key={formatted} className="font-medium text-gray-900">
+            <span key={formatted} className="font-medium text-ink">
               {formatted}
             </span>
           );

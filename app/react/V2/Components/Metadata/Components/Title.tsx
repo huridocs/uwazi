@@ -13,10 +13,12 @@ const Title = ({ title, label, iconId, translationContext }: TitleProps) => (
     <dt>
       <PropertyLabel label={label} translationContext={translationContext} hideLabel />
     </dt>
-    <dd className="font-bold text-gray-900">
-      <span className="flex flex-row flex-nowrap gap-2 align-middle">
-        {iconId && <CountryFlag id={iconId} />}
-        {title}
+    <dd className="min-w-0 flex-1 text-sm font-bold text-ink">
+      <span className="flex min-w-0 flex-1 flex-row flex-nowrap items-center gap-2">
+        {iconId ? <CountryFlag id={iconId} /> : null}
+        <span className="min-w-0 truncate" no-translate="true">
+          {title}
+        </span>
       </span>
     </dd>
   </>
