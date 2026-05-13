@@ -47,7 +47,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         <Modal.CloseButton onClick={() => close()} />
       </Modal.Header>
       <Modal.Body>
-        <div className="border p-4 [background-color:var(--color-theme-info-banner-bg)] [border-color:var(--color-theme-info-banner-border)] [color:var(--color-theme-info-banner-fg)]">
+        <div className="border p-4 bg-(--color-theme-info-banner-bg) border-(--color-theme-info-banner-border) text-(--color-theme-info-banner-fg)">
           <Translate translationKey="Train model description">
             Training machine learning models may take from minutes up to a couple of hours depending
             on the amount of labeled data and the difficulty of the task.
@@ -61,10 +61,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               control={control}
               render={({ field }) => (
                 <div>
-                  <label
-                    htmlFor={field.name}
-                    className="pb-4 [color:var(--color-theme-text-primary)]"
-                  >
+                  <label htmlFor={field.name} className="pb-4 text-ink">
                     <Tooltip
                       content={
                         <div>
@@ -132,7 +129,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               disabled={disableAmountField}
               render={({ field }) => (
                 <div className="flex gap-2 items-center">
-                  <label htmlFor={field.name} className="[color:var(--color-theme-text-primary)]">
+                  <label htmlFor={field.name} className="text-ink">
                     <Translate>Amount</Translate> :
                   </label>
                   <InputField

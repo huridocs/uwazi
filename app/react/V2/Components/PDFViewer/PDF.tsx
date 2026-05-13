@@ -5,7 +5,8 @@ import {
   HandleTextSelection,
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
-import { t, Translate } from '#app/I18N/index.js';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
@@ -14,8 +15,9 @@ import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
-import { ProgressBar } from '../UI/index.js';
+import { BlankState, ProgressBar } from '../UI/index.js';
 import 'pdfjs-dist/web/pdf_viewer.css';
+import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
 const BORDER_WIDTH: number = 1;
@@ -60,7 +62,7 @@ const PDF = ({
   const intersectionObserverRef = useRef<IntersectionObserver | null>();
   const [currentScale, setCurrentScale] = useState(1);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<React.ReactNode>();
   const containerWidth = useContainerWidth(pdfContainerRef, {
     borderWidth: BORDER_WIDTH,
     safetyBuffer: WIDTH_SAFETY_BUFFER,
@@ -188,20 +190,23 @@ const PDF = ({
       })
       .catch(e => {
         if (e.status === 404) {
-          setError(t('System', 'This file is no longer available.', null, false));
+          setError(
+            <Translate>
+              This file is currently unavailable. Please contact your administrator if the issue
+              persists.
+            </Translate>
+          );
         } else if (e.name === 'InvalidPDFException') {
           setError(
-            t(
-              'System',
-              'This file could not be opened. It may be corrupted or not a valid PDF.',
-              null,
-              false
-            )
+            <Translate>
+              This file could not be opened. It may be corrupted or not a valid PDF.
+            </Translate>
           );
         } else {
           setError(
-            t('System', 'This file could not be displayed. Try refreshing the page.', null, false)
+            <Translate>This file could not be displayed. Try refreshing the page.</Translate>
           );
+          reportErrorToSentry(e, 'pdf-error');
         }
       });
 
@@ -284,12 +289,15 @@ const PDF = ({
 
   if (error) {
     return (
-      <p
-        data-testid="errorInfo"
-        className="mb-4 text-lg font-light [color:var(--color-theme-text-muted)]"
-      >
-        {error}
-      </p>
+      <div data-testid="errorInfo" className="h-full">
+        <BlankState
+          icon={
+            <ExclamationTriangleIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+          }
+          title={error}
+          description=""
+        />
+      </div>
     );
   }
 
@@ -299,12 +307,10 @@ const PDF = ({
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">
-              <div className="font-medium [color:var(--color-theme-text-muted)]">
+              <div className="font-medium text-ink-muted">
                 <Translate>Loading</Translate> ...
               </div>
-              <span className="text-sm font-medium [color:var(--color-theme-text-muted)]">
-                {loading.progress}%
-              </span>
+              <span className="text-sm font-medium text-ink-muted">{loading.progress}%</span>
             </div>
             <ProgressBar progress={loading.progress} color="gray" />
           </div>
@@ -325,7 +331,7 @@ const PDF = ({
                     className={[
                       'relative mb-4 border-solid',
                       `[border-width:${BORDER_WIDTH}px]`,
-                      '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
+                      'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
                     ].join(' ')}
                   >
                     <SelectionRegion regionId={regionId.toString()}>

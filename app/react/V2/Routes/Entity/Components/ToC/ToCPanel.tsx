@@ -157,7 +157,7 @@ const ToCPanel = ({
         <div className="flex flex-col gap-2 h-full">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 py-2">
-              <p className="text-sm font-bold [color:var(--color-theme-text-primary)]">
+              <p className="text-sm font-bold text-ink">
                 <Translate>Table of contents</Translate>
               </p>
               {generatedToc && (
@@ -180,7 +180,7 @@ const ToCPanel = ({
                   type="button"
                   onClick={expandAll}
                   disabled={isAllExpanded}
-                  className="text-sm font-medium transition [color:var(--color-theme-text-primary)] hover:[color:var(--color-theme-text-secondary)] disabled:cursor-not-allowed disabled:[color:var(--color-theme-text-muted)]"
+                  className="text-sm font-medium transition text-ink hover:text-ink-secondary disabled:cursor-not-allowed disabled:text-ink-muted"
                 >
                   <Translate>Expand All</Translate>
                 </button>
@@ -188,7 +188,7 @@ const ToCPanel = ({
                   type="button"
                   onClick={collapseAll}
                   disabled={isAllCollapsed}
-                  className="text-sm font-medium transition [color:var(--color-theme-text-primary)] hover:[color:var(--color-theme-text-secondary)] disabled:cursor-not-allowed disabled:[color:var(--color-theme-text-muted)]"
+                  className="text-sm font-medium transition text-ink hover:text-ink-secondary disabled:cursor-not-allowed disabled:text-ink-muted"
                 >
                   <Translate>Collapse All</Translate>
                 </button>
@@ -210,7 +210,7 @@ const ToCPanel = ({
           ) : (
             <BlankState
               icon={
-                <ListBulletIcon className="h-7 w-7 rounded-full p-1 [background-color:color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] [color:var(--color-theme-text-primary)]" />
+                <ListBulletIcon className="h-7 w-7 rounded-full p-1 bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] text-ink" />
               }
               title={<Translate>No Table of contents</Translate>}
               description={

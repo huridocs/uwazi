@@ -9,15 +9,15 @@ interface ProgressBarProps {
 }
 
 const fillClass: Record<NonNullable<ProgressBarProps['color']>, string> = {
-  gray: '[background-color:var(--color-theme-text-muted)]',
-  primary: '[background-color:var(--color-theme-action-primary)]',
-  success: '[background-color:var(--color-theme-feedback-success)]',
-  error: '[background-color:var(--color-theme-feedback-danger)]',
-  warning: '[background-color:var(--color-theme-feedback-warning)]',
+  gray: 'bg-(--color-theme-text-muted)',
+  primary: 'bg-(--color-theme-action-primary)',
+  success: 'bg-(--color-theme-feedback-success)',
+  error: 'bg-(--color-theme-feedback-danger)',
+  warning: 'bg-(--color-theme-feedback-warning)',
 };
 
 const trackClass =
-  'h-2.5 w-full rounded-full [background-color:color-mix(in_srgb,var(--color-theme-border-default,var(--color-theme-border-primary))_60%,transparent)]';
+  'h-2.5 w-full rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default,var(--color-theme-border-primary))_60%,transparent)]';
 
 export const ProgressBar = ({
   progress,

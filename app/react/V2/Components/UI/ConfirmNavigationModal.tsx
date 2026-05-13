@@ -14,7 +14,7 @@ const ConfirmNavigationModal = ({
 }: confirmationModalType) => (
   <Modal size="md">
     <Modal.Header>
-      <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
+      <h1 className="text-xl font-medium text-ink">
         <Translate>Discard changes?</Translate>
       </h1>
       <Modal.CloseButton onClick={() => setShowModal(false)} />

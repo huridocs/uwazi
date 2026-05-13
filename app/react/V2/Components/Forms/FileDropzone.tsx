@@ -69,9 +69,9 @@ const FileDropzone = ({
         <section
           className={[
             'rounded-sm border border-dashed p-4',
-            '[background-color:var(--color-theme-control-bg)]',
-            '[border-color:var(--color-theme-control-border)]',
-            '[color:var(--color-theme-control-text)]',
+            'bg-(--color-theme-control-bg)',
+            'border-(--color-theme-control-border)',
+            'text-(--color-theme-control-text)',
             className,
           ].join(' ')}
         >
@@ -81,7 +81,7 @@ const FileDropzone = ({
             </label>
             <input {...getInputProps()} id={inputId} />
             <div className="flex flex-col gap-4">
-              <CloudArrowUpIcon className="m-auto w-auto max-w-14 [color:var(--color-theme-control-text)]" />
+              <CloudArrowUpIcon className="m-auto w-auto max-w-14 text-(--color-theme-control-text)" />
               <div className="leading-6 text-center">
                 <Translate className="font-semibold border-b-2 border-black cursor-pointer">
                   Browse files to upload
@@ -99,8 +99,8 @@ const FileDropzone = ({
                 key={`${file.name}-${index}`}
                 className={[
                   'flex flex-nowrap gap-1 rounded-sm border border-solid px-0.5 text-sm align-middle',
-                  '[border-color:var(--color-theme-control-border)]',
-                  '[background-color:var(--color-theme-surface-muted)]',
+                  'border-(--color-theme-control-border)',
+                  'bg-(--color-theme-surface-muted)',
                 ].join(' ')}
               >
                 <span className="truncate max-w-32">{file.name}</span>
