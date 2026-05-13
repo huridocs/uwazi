@@ -3,7 +3,7 @@ import { Entity } from '#api/core/domain/entity/Entity.js';
 import {
   EntityPermissionChecker,
   Specification,
-} from '#api/core/domain/entity/EntityPermissionChecker.js';
+} from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AbstractUseCase } from '../libs/UseCase.js';

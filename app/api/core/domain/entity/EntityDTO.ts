@@ -1,5 +1,4 @@
 import { EntityIcon } from './Entity.js';
-import { AccessGrant } from './EntityPermission.js';
 import { EntityTranslationProps } from './EntityTranslation.js';
 
 /**s
@@ -13,8 +12,6 @@ type EntityDTO = {
   sharedId: string;
   translations: EntityTranslationProps[];
   templateId: string;
-  permissions: AccessGrant[];
-  published: boolean;
   userId?: string;
   icon?: EntityIcon;
   generatedToc?: boolean;

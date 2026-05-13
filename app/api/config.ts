@@ -150,6 +150,7 @@ export const config = {
       v2ElasticSearch: false,
       v2DeleteEntity: defaultFeatureFlagActivation(),
       v2Languages: false,
+      v2EntityPermission: false,
       newHeader: NEW_HEADER === 'true' || false,
     },
   },
