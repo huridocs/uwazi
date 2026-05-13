@@ -1017,7 +1017,12 @@ This entity is restricted from public view.,이 엔티티는 공개 모드에서
 This field is required,This field is required
 This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
 This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
-This file is no longer available.,This file is no longer available.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
