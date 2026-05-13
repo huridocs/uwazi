@@ -172,6 +172,7 @@ Collection,Collection
 Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
+Config,Config
 Configuration,Configuration
 Configure filters,Configure filters
 Configure templates,Configure templates
@@ -234,7 +235,7 @@ Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
-Current Value/Suggestion,Current Value/Suggestion
+CSS,CSS
 Custom component error,Custom component markup error: unsupported values! Please check your configuration
 Custom CSS,Custom CSS
 Custom Favicon,Custom Favicon
@@ -439,6 +440,7 @@ Header bar background,Header bar background
 Header bar divider,Header bar divider
 Header bar hover background,Header bar hover background
 Header bar text,Header bar text
+HTML,HTML
 help,help
 here,here
 Hide,Hide
@@ -565,6 +567,7 @@ Maps,Maps
 Mark as Reviewed,Mark as Reviewed
 Mark as reviewed,Mark as reviewed
 Markdown,Markdown
+Markdown support in custom pages will be discontinued starting in 2027. New pages already use the HTML-only format. Upgrade this page when its content no longer relies on Markdown syntax.,"Markdown support in custom pages will be discontinued starting in 2027. New pages already use the HTML-only format. Upgrade this page when its content no longer relies on Markdown syntax."
 marked and labeled,marked and labeled
 marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
@@ -1025,6 +1028,8 @@ This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity lists, and other components."
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,This property will appear in the library cards as part of the basic info.
 This property will be shown using all the width available.,This property will be shown using all the width available.

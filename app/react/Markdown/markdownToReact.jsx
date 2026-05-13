@@ -84,7 +84,7 @@ const getNodeTypeAndConfig = (_config, node, isCustomComponentPlaceholder, isCus
   return { type, config };
 };
 
-const markdownToReact = (_markdown, callback, withHtml = false) => {
+const markdownToReact = (_markdown, callback, withHtml = false, parseMarkdown = true) => {
   let renderer = markdownIt;
   if (withHtml) {
     renderer = markdownItWithHtml;
@@ -92,13 +92,16 @@ const markdownToReact = (_markdown, callback, withHtml = false) => {
 
   const markdown = _markdown.replace(new RegExp(`(${customComponentMatcher})`, 'g'), '$1\n');
 
+  const afterPlaceholderReplace = md =>
+    md.replace(
+      new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'),
+      '<placeholder>$1</placeholder>'
+    );
+
   const html = removeWhitespacesInsideTableTags(
-    renderer
-      .render(markdown)
-      .replace(
-        new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'),
-        '<placeholder>$1</placeholder>'
-      )
+    parseMarkdown
+      ? afterPlaceholderReplace(renderer.render(markdown))
+      : afterPlaceholderReplace(markdown)
   );
 
   const isValidNode = node => {

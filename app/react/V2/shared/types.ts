@@ -48,9 +48,11 @@ type Page = {
     _id?: string;
     content?: string;
     script?: string;
+    css?: string;
   };
   user?: string;
   entityView?: boolean;
+  version?: number;
 };
 
 enum ItemTypes {

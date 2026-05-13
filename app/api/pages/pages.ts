@@ -33,8 +33,13 @@ const entityViewSyncing = async (page: PageType) => {
 export default {
   // eslint-disable-next-line max-statements
   async save(_page: PageType, user?: User, language?: string) {
-    await validatePage(_page);
-    let page = { ..._page };
+    let page: PageType = { ..._page };
+
+    if (!page.sharedId) {
+      page = { ...page, version: 2 };
+    }
+
+    await validatePage(page);
 
     if (!page.sharedId) {
       page = assignUserAndDate(page, user);

@@ -41,6 +41,7 @@ Object {
   ],
   "pageView": Object {
     "_id": "abc2",
+    "cssRendered": false,
     "metadata": Object {
       "content": "originalContent",
     },

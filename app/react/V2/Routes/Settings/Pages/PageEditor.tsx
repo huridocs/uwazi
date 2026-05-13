@@ -23,7 +23,11 @@ import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable.js';
-import { HTMLNotification, JSNotification } from './components/PageEditorComponents.js';
+import {
+  HTMLNotification,
+  JSNotification,
+  MarkdownDeprecationBanner,
+} from './components/PageEditorComponents.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const pageEditorLoader =
@@ -45,6 +49,22 @@ const PageEditor = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const { notify } = useRequestStatus();
 
+  const formValues: Page = useMemo(() => {
+    const p = page as Page;
+    const isNew = !p.sharedId;
+    return {
+      ...p,
+      title: p.title ?? t('System', 'New page', null, false),
+      metadata: {
+        content: '',
+        script: '',
+        css: '',
+        ...p.metadata,
+      },
+      version: isNew ? 2 : p.version,
+    };
+  }, [page]);
+
   const debouncedChangeHandler = useMemo(
     () => (handler: () => void) => _.debounce(handler, 500),
     []
@@ -58,10 +78,19 @@ const PageEditor = () => {
     setValue,
     handleSubmit,
   } = useForm({
-    defaultValues: { title: t('System', 'New page', null, false) },
-    values: page,
+    values: formValues,
   });
 
+  const rawVersion = watch('version');
+  const versionNum = (() => {
+    if (rawVersion === undefined || rawVersion === null) {
+      return undefined;
+    }
+    const n = Number(rawVersion);
+    return Number.isNaN(n) ? undefined : n;
+  })();
+  const useLegacyMarkdown = versionNum == null || Number.isNaN(versionNum) || versionNum < 2;
+  const showMarkdownDeprecation = !!watch('sharedId') && useLegacyMarkdown;
   const isDirty = !!Object.keys(dirtyFields).length;
   const blocker = useBlocker(isDirty && !isSubmitting);
 
@@ -95,8 +124,29 @@ const PageEditor = () => {
     }
   };
 
+  const buildSavePayload = (data: Page): Page => {
+    const payload: Page = { ...data };
+    if (!payload.sharedId) {
+      payload.version = 2;
+    } else if (
+      payload.version === undefined ||
+      payload.version === null ||
+      Number.isNaN(Number(payload.version))
+    ) {
+      delete (payload as { version?: number }).version;
+    } else {
+      const n = Number(payload.version);
+      if (!Number.isNaN(n)) {
+        payload.version = n;
+      } else {
+        delete (payload as { version?: number }).version;
+      }
+    }
+    return payload;
+  };
+
   const save = async (data: Page) => {
-    const response = await pagesAPI.save(data);
+    const response = await pagesAPI.save(buildSavePayload(data));
 
     return response;
   };
@@ -135,10 +185,15 @@ const PageEditor = () => {
 
         <SettingsContent.Body>
           <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full">
-            <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
+            <Tabs.Tab id="Config" label={<Translate>Config</Translate>}>
               <form>
                 <input className="hidden" {...register('sharedId')} />
                 <div className="flex flex-col max-w-2xl gap-4">
+                  {showMarkdownDeprecation && (
+                    <MarkdownDeprecationBanner
+                      onUpgrade={() => setValue('version', 2, { shouldDirty: true })}
+                    />
+                  )}
                   <div className="flex items-center gap-4">
                     <Translate className="font-bold">
                       Enable this page to be used as an entity view page:
@@ -185,9 +240,9 @@ const PageEditor = () => {
               </form>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Code" key="html" label={<Translate>Markdown</Translate>}>
+            <Tabs.Tab id="HTML" key="html" label={<Translate>HTML</Translate>}>
               <div className="flex flex-col h-full gap-2">
-                <HTMLNotification />
+                <HTMLNotification useLegacyMarkdown={useLegacyMarkdown} />
                 <div className="h-full pt-2">
                   <CodeEditor
                     language="html"
@@ -207,7 +262,7 @@ const PageEditor = () => {
               </div>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Advanced" label={<Translate>Javascript</Translate>}>
+            <Tabs.Tab id="Javascript" label={<Translate>Javascript</Translate>}>
               <div className="flex flex-col h-full gap-2">
                 <JSNotification />
                 <div className="h-full pt-2">
@@ -223,6 +278,27 @@ const PageEditor = () => {
                     }}
                     fallbackElement={
                       <textarea {...register('metadata.script')} className="w-full h-full" />
+                    }
+                  />
+                </div>
+              </div>
+            </Tabs.Tab>
+
+            <Tabs.Tab id="CSS" label={<Translate>CSS</Translate>}>
+              <div className="flex flex-col h-full gap-2">
+                <div className="h-full pt-2">
+                  <CodeEditor
+                    language="css"
+                    intialValue={page.metadata?.css}
+                    onMount={(editor: any) => {
+                      editor.getModel()?.onDidChangeContent(
+                        debouncedChangeHandler(() => {
+                          setValue('metadata.css', editor.getValue(), { shouldDirty: true });
+                        })
+                      );
+                    }}
+                    fallbackElement={
+                      <textarea {...register('metadata.css')} className="w-full h-full" />
                     }
                   />
                 </div>

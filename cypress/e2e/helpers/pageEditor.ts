@@ -1,10 +1,18 @@
-const getTextareaSelector = (mode: 'html' | 'javascript') =>
-  mode === 'javascript'
-    ? 'textarea[name="metadata.script"]'
-    : 'textarea[name="metadata.markdown"], textarea[name="metadata.content"]';
+const getTextareaSelector = (mode: 'html' | 'javascript' | 'css') => {
+  if (mode === 'javascript') {
+    return 'textarea[name="metadata.script"]';
+  }
+  if (mode === 'css') {
+    return 'textarea[name="metadata.css"]';
+  }
+  return 'textarea[name="metadata.markdown"], textarea[name="metadata.content"]';
+};
 
-const getMonacoSelector = (mode: 'html' | 'javascript') =>
-  `#panel-${mode === 'html' ? 'Code' : 'Advanced'} .monaco-editor textarea`;
+const getMonacoSelector = (mode: 'html' | 'javascript' | 'css') => {
+  const panelId =
+    mode === 'html' ? 'HTML' : mode === 'javascript' ? 'Javascript' : 'CSS';
+  return `#panel-${panelId} .monaco-editor textarea`;
+};
 
 const escapeRealType = (s: string) => s.replace(/\{/g, '{{}');
 
@@ -18,8 +26,15 @@ const pasteMonaco = (selector: string, value: string) => {
   cy.get(selector).first().realPress(['Control', 'v']);
 };
 
-const getPanelFromSelector = (selector: string) =>
-  selector.includes('panel-Advanced') ? 'Advanced' : 'Code';
+const getPanelFromSelector = (selector: string) => {
+  if (selector.includes('panel-Javascript')) {
+    return 'Javascript';
+  }
+  if (selector.includes('panel-CSS')) {
+    return 'CSS';
+  }
+  return 'HTML';
+};
 
 const selectedPanelSelector = '[data-headlessui-state="selected"]';
 
@@ -31,11 +46,11 @@ const typeMonaco = (selector: string, value: string, blurAndVerify?: string, pas
     cy.get(selector).first().realClick().realType(escapeRealType(value), { delay: typeDelay });
   }
   if (blurAndVerify) {
-    cy.contains('[role="tab"]', 'Basic').realClick();
+    cy.contains('[role="tab"]', 'Config').realClick();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(600);
     const panel = getPanelFromSelector(selector);
-    const tabLabel = panel === 'Advanced' ? 'Javascript' : 'Markdown';
+    const tabLabel = panel === 'Javascript' ? 'Javascript' : panel === 'CSS' ? 'CSS' : 'HTML';
     cy.contains('[role="tab"]', tabLabel).click();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
@@ -76,7 +91,7 @@ export const dismissModalIfVisible = () => {
 };
 
 export const typeInEditor = (
-  mode: 'html' | 'javascript',
+  mode: 'html' | 'javascript' | 'css',
   value: string,
   clear = false,
   blurAndVerify?: string,
@@ -96,11 +111,18 @@ export const typeInEditor = (
       return;
     }
     let selector = 'textarea[name="metadata.content"]';
-    if (mode === 'javascript' || $body.find('textarea[name="metadata.markdown"]').length) {
-      selector =
-        mode === 'javascript'
-          ? 'textarea[name="metadata.script"]'
-          : 'textarea[name="metadata.markdown"]';
+    if (
+      mode === 'javascript' ||
+      mode === 'css' ||
+      $body.find('textarea[name="metadata.markdown"]').length
+    ) {
+      if (mode === 'javascript') {
+        selector = 'textarea[name="metadata.script"]';
+      } else if (mode === 'css') {
+        selector = 'textarea[name="metadata.css"]';
+      } else {
+        selector = 'textarea[name="metadata.markdown"]';
+      }
     }
     if (clear) {
       clearTarget(selector);

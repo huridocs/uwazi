@@ -13,8 +13,10 @@ export interface PageType {
     _id?: ObjectIdSchema;
     content?: string;
     script?: string;
+    css?: string;
   };
   user?: ObjectIdSchema;
   entityView?: boolean;
+  version?: number;
   __v?: number;
 }
