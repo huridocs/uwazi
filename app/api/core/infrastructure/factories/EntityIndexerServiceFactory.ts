@@ -14,10 +14,18 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 export class EntityIndexerServiceFactory {
   static default(overrides?: Partial<EntityIndexerServiceDeps>): EntityIndexerService {
-    const { tenant } = ExecutionContext;
+    const { tenant, transactionManager } = ExecutionContext;
+    if (!tenant.featureFlags?.v2ElasticSearch) {
+      return TestUtils.mockClass<EntityIndexerService>({
+        index: async () => Promise.resolve(),
+        sync: async () => Promise.resolve(),
+        syncAll: async () => Promise.resolve(),
+        remove: async () => Promise.resolve(),
+        removeByTemplateIds: async () => Promise.resolve(),
+      });
+    }
 
     const db = getConnection();
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
     const settingsDS = SettingsDataSourceFactory.default();
     const entityDAO = new MongoEntityDAO(
@@ -27,7 +35,7 @@ export class EntityIndexerServiceFactory {
     );
     const slotsDAO = new MongoSlotsDAO({
       db,
-      transactionManager,
+      transactionManager: transactionManager as MongoTransactionManager,
       tenantName: tenant.name,
       settingsDS,
     });
