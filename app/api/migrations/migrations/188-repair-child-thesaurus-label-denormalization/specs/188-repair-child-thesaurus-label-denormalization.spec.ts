@@ -6,6 +6,7 @@ import {
   allAlreadyDenormalizedFixtures,
   childrenButUnusedFixtures,
   noChildrenFixtures,
+  noDefaultAndMissingLanguageFixtures,
   noDefaultLanguageInSettingsFixtures,
   noEntitiesFixtures,
   noLanguagesInSettingsFixtures,
@@ -97,6 +98,7 @@ describe('migration repair_child_thesaurus_label_denormalization', () => {
 
     const entities = await db!.collection('entities').find({}).toArray();
     const directEn = getEntityByTitle(entities, 'direct_en');
+    const missingLanguage = getEntityByTitle(entities, 'missing_language_uses_default');
 
     expect(directEn.metadata.status).toEqual([
       {
@@ -105,7 +107,32 @@ describe('migration repair_child_thesaurus_label_denormalization', () => {
         parent: { value: 'in_court', label: 'in court' },
       },
     ]);
+    expect(missingLanguage.metadata.status).toEqual([
+      {
+        value: 'no_in_court',
+        label: 'old_no',
+        parent: { value: 'wrong_parent', label: 'old_parent' },
+      },
+    ]);
     expect(migration.reindex).toBe(true);
+  });
+
+  it('should skip entities without language when default language is missing', async () => {
+    await setUpAndRun(noDefaultAndMissingLanguageFixtures);
+
+    const [entity] = await db!
+      .collection('entities')
+      .find({ title: 'missing_language_skipped_without_default' })
+      .toArray();
+
+    expect(entity.metadata.status).toEqual([
+      {
+        value: 'yes_in_court',
+        label: 'old_yes',
+        parent: { value: 'wrong_parent', label: 'wrong_parent' },
+      },
+    ]);
+    expect(migration.reindex).toBe(false);
   });
 
   it('should repair child labels and parent info in direct and inherited metadata', async () => {
@@ -118,6 +145,7 @@ describe('migration repair_child_thesaurus_label_denormalization', () => {
     const alreadyCorrect = getEntityByTitle(entities, 'already_correct');
     const unknownValueKept = getEntityByTitle(entities, 'unknown_value_kept');
     const inheritedNonArrayKept = getEntityByTitle(entities, 'inherited_non_array_kept');
+    const missingLanguageUsesDefault = getEntityByTitle(entities, 'missing_language_uses_default');
     const withoutMetadata = getEntityByTitle(entities, 'without_metadata');
     const unrelated = getEntityByTitle(entities, 'unrelated');
 
@@ -187,6 +215,13 @@ describe('migration repair_child_thesaurus_label_denormalization', () => {
         label: 'direct_en',
         inheritedType: 'select',
         inheritedValue: 'not_an_array',
+      },
+    ]);
+    expect(missingLanguageUsesDefault.metadata.status).toEqual([
+      {
+        value: 'no_in_court',
+        label: 'no',
+        parent: { value: 'in_court', label: 'in court' },
       },
     ]);
     expect(withoutMetadata.metadata).toBeUndefined();

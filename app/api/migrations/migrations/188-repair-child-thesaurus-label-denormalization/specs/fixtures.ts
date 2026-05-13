@@ -206,6 +206,21 @@ const entitiesNeedingRepair: DBFixture['entities'] = [
   },
   {
     _id: new ObjectId(),
+    title: 'missing_language_uses_default',
+    sharedId: 'missing_language_uses_default_shared',
+    template: ids.directTemplate,
+    metadata: {
+      status: [
+        {
+          value: 'no_in_court',
+          label: 'old_no',
+          parent: { value: 'wrong_parent', label: 'old_parent' },
+        },
+      ],
+    },
+  },
+  {
+    _id: new ObjectId(),
     title: 'inherited_en',
     sharedId: 'inherited_shared',
     language: 'en',
@@ -546,6 +561,43 @@ const noDefaultLanguageInSettingsFixtures: DBFixture = {
   entities: entitiesNeedingRepair,
 };
 
+const noDefaultAndMissingLanguageFixtures: DBFixture = {
+  settings: noDefaultLanguageSettings,
+  dictionaries: [hierarchicalDictionary],
+  templates: [
+    {
+      _id: ids.directTemplate,
+      name: 'direct',
+      properties: [
+        {
+          _id: ids.statusProp,
+          name: 'status',
+          label: 'Status',
+          type: 'select',
+          content: ids.hierarchicalDict.toString(),
+        },
+      ],
+    },
+  ],
+  entities: [
+    {
+      _id: new ObjectId(),
+      title: 'missing_language_skipped_without_default',
+      sharedId: 'missing_language_skipped_without_default_shared',
+      template: ids.directTemplate,
+      metadata: {
+        status: [
+          {
+            value: 'yes_in_court',
+            label: 'old_yes',
+            parent: { value: 'wrong_parent', label: 'wrong_parent' },
+          },
+        ],
+      },
+    },
+  ],
+};
+
 export {
   noChildrenFixtures,
   childrenButUnusedFixtures,
@@ -554,5 +606,6 @@ export {
   noEntitiesFixtures,
   noLanguagesInSettingsFixtures,
   noDefaultLanguageInSettingsFixtures,
+  noDefaultAndMissingLanguageFixtures,
   allAlreadyDenormalizedFixtures,
 };

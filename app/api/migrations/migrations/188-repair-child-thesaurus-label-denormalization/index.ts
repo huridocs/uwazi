@@ -50,6 +50,10 @@ type TranslationDocument = {
   value?: string;
 };
 
+type SettingsDocument = {
+  languages?: { key: string; default?: boolean }[];
+};
+
 type ExpectedValue = {
   label: string;
   parent?: { value: string; label: string };
@@ -350,6 +354,9 @@ export default {
       return;
     }
 
+    const settings = await db.collection<SettingsDocument>('settings').findOne({});
+    const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
+
     let operations: AnyBulkWriteOperation<EntityDocument>[] = [];
     let writesOccurred = false;
     let processedEntities = 0;
@@ -375,7 +382,11 @@ export default {
 
         let entityChanged = false;
         const updatedMetadata = { ...entity.metadata };
-        const language = entity.language || 'en';
+        const language = entity.language || defaultLanguage;
+        if (!language) {
+          // eslint-disable-next-line no-continue
+          continue;
+        }
 
         Object.entries(propertyMap).forEach(([propertyKey, thesaurusId]) => {
           const values = updatedMetadata[propertyKey];
