@@ -12,9 +12,11 @@ import { Dispatcher } from './contracts/Dispatcher.js';
 import {
   EntityPermissionChecker,
   Specification,
-} from '../domain/entity/EntityPermissionChecker.js';
+} from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
 import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
+import { EntityAccessPolicy } from '../domain/entityAccessPolicy/EntityAccessPolicy.js';
+import { EntityAccessPolicyDataSource } from './contracts/EntityAccessPolicyDataSource.js';
 
 type CreateInput = {
   icon?: EntityIcon;
@@ -31,6 +33,7 @@ type Deps = {
   dispatcher: Dispatcher;
   entityPermissionChecker: EntityPermissionChecker;
   eventEmitter: EventEmitter;
+  entityAccessPolicyDS: EntityAccessPolicyDataSource;
 };
 
 type InsertContext = {
@@ -74,8 +77,11 @@ class EntitiesService {
 
   async insert(entity: Entity, context: InsertContext) {
     this.ensureTransaction();
-
     await this.deps.entitiesDS.create(entity);
+
+    await this.deps.entityAccessPolicyDS.create(
+      EntityAccessPolicy.createForNewEntity(entity.sharedId, context.actorId)
+    );
 
     await this.deps.dispatcher.syncRelationships([
       {
@@ -89,6 +95,34 @@ class EntitiesService {
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage));
+    });
+  }
+
+  async bulkInsert(entities: Entity[], context: InsertContext) {
+    this.ensureTransaction();
+
+    await this.deps.entitiesDS.bulkInsert(entities);
+
+    await this.deps.entityAccessPolicyDS.bulkCreate(
+      entities.map(e => EntityAccessPolicy.createForNewEntity(e.sharedId, context.actorId))
+    );
+
+    await this.deps.dispatcher.syncRelationships(
+      entities.map(entity => ({
+        sharedId: entity.sharedId,
+        targetLanguage: context.targetLanguage,
+        templateId: entity.template.id,
+        tenantName: context.tenantName,
+        userId: context.actorId,
+      }))
+    );
+
+    this.deps.transactionManager.onCommitted(async () => {
+      await Promise.all(
+        entities.map(async entity =>
+          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage))
+        )
+      );
     });
   }
 
@@ -127,30 +161,6 @@ class EntitiesService {
         )
       )
     );
-  }
-
-  async bulkInsert(entities: Entity[], context: InsertContext) {
-    this.ensureTransaction();
-
-    await this.deps.entitiesDS.bulkInsert(entities);
-
-    await this.deps.dispatcher.syncRelationships(
-      entities.map(entity => ({
-        sharedId: entity.sharedId,
-        targetLanguage: context.targetLanguage,
-        templateId: entity.template.id,
-        tenantName: context.tenantName,
-        userId: context.actorId,
-      }))
-    );
-
-    this.deps.transactionManager.onCommitted(async () => {
-      await Promise.all(
-        entities.map(async entity =>
-          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage))
-        )
-      );
-    });
   }
 
   async bulkDelete(sharedIds: string[], context: DeleteContext): Promise<string[]> {
