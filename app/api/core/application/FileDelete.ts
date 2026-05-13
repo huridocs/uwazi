@@ -2,7 +2,7 @@ import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTyp
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { createError } from '#api/utils/index.js';
 import { z } from 'zod';
-import { EntityPermissionChecker } from '../domain/entity/EntityPermissionChecker.js';
+import { EntityPermissionChecker } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';

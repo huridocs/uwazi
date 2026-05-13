@@ -52,15 +52,6 @@ export class RelationshipTemplateMismatchError extends DomainError {
   }
 }
 
-export class DuplicatePermissionsError extends DomainError {
-  constructor() {
-    super(
-      'Permissions should be unique by person/group',
-      'entity.entity.duplicate_permissions_error'
-    );
-  }
-}
-
 export class PropertyDoesNotExistError extends DomainError {
   constructor(propertyName: string) {
     super(

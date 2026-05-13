@@ -1,16 +1,14 @@
+/* eslint-disable max-statements */
 import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { AccessLevels } from '#shared/types/permissionSchema.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import {
   EntityPermissionChecker,
   Specification,
-} from '../domain/entity/EntityPermissionChecker.js';
+} from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
-import { AccessLevel } from '../domain/entity/AccessLevel.js';
-import { PermissionType } from '../domain/entity/PermissionType.js';
 import { Template } from '../domain/template/Template.js';
 import {
   EntityWithFiles,
@@ -19,6 +17,8 @@ import {
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
+import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
+import { GrantType } from '../domain/entityAccessPolicy/GrantType.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -125,7 +125,7 @@ class EntitiesQueryService {
       Array.isArray(entity.permissions) &&
       entity.permissions.some((p: any) => {
         const refId = p.refId?.toString?.() ?? p.refId;
-        return p.level === AccessLevels.WRITE && userIds.includes(refId);
+        return p.level === AccessLevel.Write && userIds.includes(refId);
       });
 
     if (!hasWrite) delete entity.permissions;
@@ -195,7 +195,7 @@ class EntitiesQueryService {
     }
 
     const spec = new Specification({
-      type: PermissionType.User,
+      type: GrantType.User,
       level: AccessLevel.Read,
       actor: user,
     });
