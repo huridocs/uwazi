@@ -13,24 +13,29 @@ import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
+import { EntityAccessPolicyDataSourceFactory } from './EntityAccessPolicyDataSourceFactory.js';
 
 class EntitiesServiceFactory {
   static default(deps?: Partial<EntitiesServiceDeps>) {
-    const { transactionManager } = ExecutionContext;
-    const eventEmitter = ExecutionContext.eventEmitter;
+    const transactionManager = deps?.transactionManager ?? ExecutionContext.transactionManager;
+
+    const { eventEmitter, jobsDispatcher } = ExecutionContext;
 
     return new EntitiesService({
       eventEmitter,
-      dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
-      entitiesDS: EntitiesDataSourceFactory.default(),
+      dispatcher: new DispatcherAdapter(jobsDispatcher),
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
       entityPermissionChecker: new MongoEntityPermissionChecker(
         getConnection(),
         transactionManager as MongoTransactionManager
       ),
       eventBus: applicationEventsBus,
-      settingsDS: SettingsDataSourceFactory.default(),
-      templatesDS: TemplatesDataSourceFactory.default(),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       transactionManager,
+      entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
+        transactionManager: transactionManager as MongoTransactionManager,
+      }),
       ...deps,
     });
   }
@@ -56,6 +61,7 @@ class EntitiesServiceFactory {
       }),
       settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
       transactionManager,
+      entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default(),
       ..._deps,
     };
 

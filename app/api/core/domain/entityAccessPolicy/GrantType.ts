@@ -1,7 +1,7 @@
-enum PermissionType {
+enum GrantType {
   User = 'user',
   Group = 'group',
   Public = 'public',
 }
 
-export { PermissionType };
+export { GrantType };
