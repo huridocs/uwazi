@@ -24018,6 +24018,7 @@ __metadata:
     tsx: "npm:^4.21.0"
     typescript: "npm:5.9.3"
     url-join: "npm:^4.0.1"
+    uuid: "npm:^8.3.2"
     wait-for-expect: "npm:^3.0.2"
     webpack: "npm:^5.105.4"
     webpack-bundle-analyzer: "npm:^4.10.2"
