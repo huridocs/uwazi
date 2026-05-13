@@ -2,6 +2,7 @@ import React from 'react';
 import { SelectMetadataProperty, MultiSelectMetadataProperty } from '#V2/formatters/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 
 type SelectProps = MetadataFieldProps & {
@@ -27,7 +28,7 @@ const Select = ({ label, translationContext, values, hideLabel, className }: Sel
   }
 
   return (
-    <MetadataCard className={className}>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}

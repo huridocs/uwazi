@@ -184,7 +184,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         <>
           <MetadataHeaderStrip entity={entity} />
 
-          <dl className="grid min-w-0 gap-(--spacing-theme-3) grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))]">
+          <dl className="flex min-w-0 flex-wrap gap-(--spacing-theme-3)">
             {typeof entity.creationDate === 'number' && (
               <Date
                 values={[

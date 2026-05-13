@@ -5,6 +5,7 @@ import { Translate } from '#app/I18N/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import {
   DateMetadataProperty,
@@ -54,7 +55,7 @@ const Date = ({
   }
 
   return (
-    <MetadataCard className={className}>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}

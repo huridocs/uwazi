@@ -6,18 +6,15 @@ const LONG_TEXT_CHAR_THRESHOLD = 160;
 
 const FULL_ROW_FIELD_NAME = /^(description|body|abstract|summary|content|notes)$/i;
 
-const METADATA_GRID_CLASS_BY_TYPE: Partial<Record<MetadataProperty['type'], string>> = {
-  markdown: 'col-span-full',
-  geolocation: 'col-span-full',
-};
+const COMPACT_METADATA_FIELD_LAYOUT = 'min-w-0 grow basis-[min(100%,18rem)]';
+
+const FULL_ROW_METADATA_FIELD_LAYOUT = 'min-w-0 w-full basis-full shrink-0';
 
 const TEMPLATE_FULL_WIDTH_GRID_TYPES: ReadonlyArray<MetadataProperty['type']> = [
   'image',
   'preview',
   'media',
 ];
-
-const FULL_ROW_GRID_CLASS = 'col-span-full';
 
 const fieldNamePrefersFullRow = (name: string) => FULL_ROW_FIELD_NAME.test(name);
 
@@ -38,19 +35,22 @@ const usesTemplateFullWidthGrid = (
 const metadataGridClassForProperty = (
   data: MetadataProperty,
   templateField: MetadataTemplateField
-): string | undefined => {
+): string => {
   if (usesTemplateFullWidthGrid(data, templateField)) {
-    return FULL_ROW_GRID_CLASS;
+    return FULL_ROW_METADATA_FIELD_LAYOUT;
   }
-  const byType = METADATA_GRID_CLASS_BY_TYPE[data.type];
-  if (byType) {
-    return byType;
+  if (data.type === 'markdown' || data.type === 'geolocation') {
+    return FULL_ROW_METADATA_FIELD_LAYOUT;
   }
   if (isLongTextProperty(data)) {
-    return FULL_ROW_GRID_CLASS;
+    return FULL_ROW_METADATA_FIELD_LAYOUT;
   }
-  return undefined;
+  return COMPACT_METADATA_FIELD_LAYOUT;
 };
 
-export { metadataGridClassForProperty };
+export {
+  metadataGridClassForProperty,
+  COMPACT_METADATA_FIELD_LAYOUT,
+  FULL_ROW_METADATA_FIELD_LAYOUT,
+};
 export type { MetadataTemplateField };

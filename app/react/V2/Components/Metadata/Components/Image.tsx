@@ -4,6 +4,7 @@ import { ImageMetadataProperty } from '#V2/formatters/types.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type ImageProps = MetadataFieldProps & {
   values: ImageMetadataProperty['values'];
@@ -29,7 +30,7 @@ const Image = ({
   }
 
   return (
-    <MetadataCard className={className}>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}

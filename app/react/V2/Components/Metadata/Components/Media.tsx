@@ -6,6 +6,7 @@ import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MediaPlayer } from '../../UI/index.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type MediaProps = MetadataFieldProps & {
   values: MediaMetadataProperty['values'];
@@ -40,7 +41,7 @@ const Media = ({
   }
 
   return (
-    <MetadataCard className={className}>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}

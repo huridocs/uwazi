@@ -3,6 +3,7 @@ import { LinkMetadataProperty } from '#V2/formatters/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type LinkPropertyProps = MetadataFieldProps & {
   values: LinkMetadataProperty['values'];
@@ -25,7 +26,7 @@ const LinkProperty = ({
   }
 
   return (
-    <MetadataCard className={className}>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}
