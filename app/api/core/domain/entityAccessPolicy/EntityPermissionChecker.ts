@@ -1,18 +1,17 @@
-/* eslint-disable max-classes-per-file */
 import { User } from '#api/users.v2/model/User.js';
 import { ResultType } from '#api/core/libs/Result.js';
-import { AccessLevel } from './AccessLevel.js';
-import { PermissionType } from './PermissionType.js';
 import { BaseFile } from '../files/BaseFile.js';
+import { AccessLevel } from './AccessLevel.js';
+import { GrantType } from './GrantType.js';
 
 type SpecificationProps = {
-  type: PermissionType;
+  type: GrantType;
   level: AccessLevel;
   actor: User;
 };
 
 class Specification {
-  type: PermissionType;
+  type: GrantType;
 
   level: AccessLevel;
 
@@ -37,7 +36,7 @@ class Specification {
   }
 
   static createDeleteSpecification(actor: User) {
-    return new Specification({ type: PermissionType.User, level: AccessLevel.Write, actor });
+    return new Specification({ type: GrantType.User, level: AccessLevel.Write, actor });
   }
 }
 
