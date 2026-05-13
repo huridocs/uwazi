@@ -69,7 +69,6 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
         eventBus,
         eventEmitter,
         dispatcher,
-
         ...deps,
       }),
       transactionManager: ExecutionContext.transactionManager,
@@ -122,11 +121,13 @@ describe('EntitiesService', () => {
   };
 
   beforeAll(async () => {
-    jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined);
     await testingEnvironment.setUp({});
   });
 
-  beforeEach(async () => testingEnvironment.setFixtures(fixtures));
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+    jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined);
+  });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
