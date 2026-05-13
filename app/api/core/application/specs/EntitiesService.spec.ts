@@ -121,12 +121,12 @@ describe('EntitiesService', () => {
   };
 
   beforeAll(async () => {
+    jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined);
     await testingEnvironment.setUp({});
   });
 
   beforeEach(async () => {
     await testingEnvironment.setFixtures(fixtures);
-    jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined);
   });
 
   afterAll(async () => {
