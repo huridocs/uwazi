@@ -8,11 +8,13 @@ import { EntityIndexerService } from '../../elasticSearch/entities/EntityIndexer
 import { EntityAccessPolicyDBO } from './EntityAccessPolicyDBO.js';
 import { EntityAccessPolicyMapper } from './EntityAccessPolicyMapper.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
+import { search } from '#api/search/search.js';
 
 type Deps = {
   db: Db;
   transactionManager: MongoTransactionManager;
   entityIndexerService: EntityIndexerService;
+  searchV1: typeof search;
 };
 
 class MongoEntityAccessPolicyDataSource
@@ -23,17 +25,21 @@ class MongoEntityAccessPolicyDataSource
 
   private readonly entityIndexerService: EntityIndexerService;
 
+  private readonly searchV1: typeof search;
+
   private readonly updatedSharedIds = new Set<string>();
 
-  constructor({ db, transactionManager, entityIndexerService }: Deps) {
+  constructor({ db, transactionManager, entityIndexerService, searchV1 }: Deps) {
     super(db, transactionManager);
     this.entityIndexerService = entityIndexerService;
+    this.searchV1 = searchV1;
 
     transactionManager.onCommitted(async () => {
       if (this.updatedSharedIds.size === 0) return;
       const sharedIds = Array.from(this.updatedSharedIds);
       this.updatedSharedIds.clear();
       await this.entityIndexerService.sync(sharedIds);
+      await this.searchV1.indexEntities({ sharedId: { $in: sharedIds } });
     });
   }
 
@@ -125,15 +131,3 @@ class MongoEntityAccessPolicyDataSource
 
 export { MongoEntityAccessPolicyDataSource };
 export type { Deps as MongoEntityAccessPolicyDataSourceDeps };
-
-/**
- * entity aggregation have its own transaction (gets created) and event is emitted
- *
- * I react  to the entity created event, initate another transaction AND execute the use case, which is create the permissions.
- *
- *
- * entity aggregation and permission aggregation they share the same transaction
- * 1. call entity data source
- * 2. call permission data source
- *
- */

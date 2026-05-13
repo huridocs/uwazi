@@ -7,6 +7,7 @@ import {
 } from '../mongodb/entityAccessPolicy/MongoEntityAccessPolicyDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
+import { search } from '#api/search/search.js';
 
 export class EntityAccessPolicyDataSourceFactory {
   static default(
@@ -22,6 +23,7 @@ export class EntityAccessPolicyDataSourceFactory {
       db,
       transactionManager,
       entityIndexerService,
+      searchV1: search,
       ...overrides,
     });
   }
