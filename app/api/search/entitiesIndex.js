@@ -1,11 +1,10 @@
 import PromisePoolModule from '@supercharge/promise-pool';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { detectLanguage } from '#shared/detectLanguage.js';
 import entities from '#api/entities/index.js';
 import { legacyLogger } from '#api/log/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
@@ -19,9 +18,8 @@ const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
 class IndexError extends Error {}
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
-  const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+  const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
     return entitiesToIndex;
