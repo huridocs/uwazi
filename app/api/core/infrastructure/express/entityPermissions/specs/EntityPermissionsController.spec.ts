@@ -9,6 +9,7 @@ import {
 } from '../EntityPermissionsController.js';
 import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
 type CreateSutProps = {
   v2EntityPermissionEnabled?: boolean;
@@ -25,7 +26,9 @@ const createSut = (props?: CreateSutProps) => {
     tenant: {
       featureFlags: { v2EntityPermission: props?.v2EntityPermissionEnabled ?? true },
     } as any,
-    factories: {} as any,
+    factories: {
+      logger: () => TestUtils.mockClass<Logger>({ info: jest.fn() }),
+    } as any,
   });
 
   return { sut, request, response };
