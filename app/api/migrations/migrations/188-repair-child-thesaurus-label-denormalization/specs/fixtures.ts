@@ -358,6 +358,151 @@ const repairFixtures: DBFixture = {
   entities: entitiesNeedingRepair,
 };
 
+const allAlreadyDenormalizedFixtures: DBFixture = {
+  settings: baseSettings,
+  dictionaries: [hierarchicalDictionary, flatDictionary],
+  templates,
+  relationtypes: [{ _id: ids.relationshipType, name: 'related' }],
+  translationsV2,
+  entities: [
+    {
+      _id: new ObjectId(),
+      title: 'direct_en',
+      sharedId: 'direct_shared',
+      language: 'en',
+      template: ids.directTemplate,
+      metadata: {
+        status: [
+          { value: 'yes_in_court', label: 'yes', parent: { value: 'in_court', label: 'in court' } },
+        ],
+        status_multi: [
+          {
+            value: 'yes_in_court',
+            label: 'yes',
+            parent: { value: 'in_court', label: 'in court' },
+          },
+          {
+            value: 'yes_in_government',
+            label: 'yes',
+            parent: { value: 'in_government', label: 'in government' },
+          },
+        ],
+        flat_status: [{ value: 'flat_yes', label: 'flat_old_yes' }],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      title: 'direct_es',
+      sharedId: 'direct_shared',
+      language: 'es',
+      template: ids.directTemplate,
+      metadata: {
+        status: [
+          {
+            value: 'yes_in_government',
+            label: 'si',
+            parent: { value: 'in_government', label: 'en gobierno' },
+          },
+        ],
+        status_multi: [
+          {
+            value: 'maybe_in_court',
+            label: 'maybe',
+            parent: { value: 'in_court', label: 'en corte' },
+          },
+        ],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      title: 'inherited_en',
+      sharedId: 'inherited_shared',
+      language: 'en',
+      template: ids.inheritedTemplate,
+      metadata: {
+        inherited_status: [
+          {
+            value: 'direct_shared',
+            label: 'direct_en',
+            inheritedType: 'select',
+            inheritedValue: [
+              {
+                value: 'no_in_government',
+                label: 'no',
+                parent: { value: 'in_government', label: 'in government' },
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      title: 'already_correct',
+      sharedId: 'already_correct_shared',
+      language: 'en',
+      template: ids.directTemplate,
+      metadata: {
+        status: [
+          { value: 'no_in_court', label: 'no', parent: { value: 'in_court', label: 'in court' } },
+        ],
+        status_multi: [
+          {
+            value: 'yes_in_government',
+            label: 'yes',
+            parent: { value: 'in_government', label: 'in government' },
+          },
+        ],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      title: 'unknown_value_kept',
+      sharedId: 'unknown_value_shared',
+      language: 'en',
+      template: ids.directTemplate,
+      metadata: {
+        status: [{ value: 'unknown_value_id', label: 'custom label' }],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      title: 'inherited_non_array_kept',
+      sharedId: 'inherited_non_array_shared',
+      language: 'en',
+      template: ids.inheritedTemplate,
+      metadata: {
+        inherited_status: [
+          {
+            value: 'direct_shared',
+            label: 'direct_en',
+            inheritedType: 'select',
+            // @ts-ignore intentional malformed shape
+            inheritedValue: 'not_an_array',
+          },
+        ],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      title: 'without_metadata',
+      sharedId: 'without_metadata_shared',
+      language: 'en',
+      template: ids.directTemplate,
+    },
+    {
+      _id: new ObjectId(),
+      title: 'unrelated',
+      sharedId: 'unrelated_shared',
+      language: 'en',
+      template: ids.unusedTemplate,
+      metadata: {
+        title: [{ value: 'leave me as is' }],
+      },
+    },
+  ],
+};
+
 const noTemplatesFixtures: DBFixture = {
   settings: baseSettings,
   dictionaries: [hierarchicalDictionary],
@@ -409,4 +554,5 @@ export {
   noEntitiesFixtures,
   noLanguagesInSettingsFixtures,
   noDefaultLanguageInSettingsFixtures,
+  allAlreadyDenormalizedFixtures,
 };

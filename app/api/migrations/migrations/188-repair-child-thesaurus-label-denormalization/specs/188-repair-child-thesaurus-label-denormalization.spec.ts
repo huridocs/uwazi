@@ -3,6 +3,7 @@ import { Db } from 'mongodb';
 import testingDB from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import {
+  allAlreadyDenormalizedFixtures,
   childrenButUnusedFixtures,
   noChildrenFixtures,
   noDefaultLanguageInSettingsFixtures,
@@ -198,6 +199,19 @@ describe('migration repair_child_thesaurus_label_denormalization', () => {
     expect(migration.reindex).toBe(true);
 
     await migration.up(db!);
+    expect(migration.reindex).toBe(false);
+  });
+
+  it('should not update or reindex when all denormalized values already match expected translations', async () => {
+    await testingDB.setupFixturesAndContext(allAlreadyDenormalizedFixtures);
+    db = testingDB.mongodb;
+    migration.reindex = false;
+
+    const before = await db!.collection('entities').find({}).sort({ title: 1 }).toArray();
+    await migration.up(db!);
+    const after = await db!.collection('entities').find({}).sort({ title: 1 }).toArray();
+
+    expect(after).toEqual(before);
     expect(migration.reindex).toBe(false);
   });
 });
