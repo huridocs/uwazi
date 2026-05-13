@@ -26,14 +26,17 @@ describe('pages', () => {
       const result = await pages.save(page, user, 'es');
       const sharedId = result.sharedId || '';
       const [es, en, pt] = await Promise.all([
-        pages.getById(sharedId, 'es', 'title creationDate user'),
-        pages.getById(sharedId, 'en', 'title creationDate user'),
-        pages.getById(sharedId, 'pt', 'title creationDate user'),
+        pages.getById(sharedId, 'es', 'title creationDate user version'),
+        pages.getById(sharedId, 'en', 'title creationDate user version'),
+        pages.getById(sharedId, 'pt', 'title creationDate user version'),
       ]);
 
       expect([es.title, en.title, pt.title]).toEqual([page.title, page.title, page.title]);
       expect(es.user?.toString()).toBe(user._id.toString());
       expect(es.creationDate).toEqual(1);
+      expect(es.version).toBe(2);
+      expect(en.version).toBe(2);
+      expect(pt.version).toBe(2);
     });
 
     it('should fail if new page saved but no user passed', async () => {

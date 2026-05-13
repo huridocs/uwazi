@@ -102,6 +102,7 @@ const getPageAssets = async (
     [any, ListsData['params'], ListsData['options'], Promise<any>, ListsData['searchs']]
   >([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
   pageView.scriptRendered = false;
+  pageView.cssRendered = false;
 
   const itemLists = searchParams.map((p, index) => ({
     params: p,

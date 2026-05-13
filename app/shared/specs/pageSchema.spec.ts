@@ -44,5 +44,11 @@ describe('pageSchema', () => {
         expect(e.errors[0].message).toContain('This page is in use');
       }
     });
+
+    it('should accept optional version', async () => {
+      page.version = 2;
+      const validated = await validatePage(page);
+      expect(validated.version).toBe(2);
+    });
   });
 });

@@ -35,6 +35,7 @@ describe('PageViewer', () => {
           script: 'JSScript',
         },
         scriptRendered: false,
+        cssRendered: false,
       }),
       datasets: Immutable.fromJS({ key: 'value' }),
       itemLists: Immutable.fromJS([{ item: 'item' }]),
@@ -357,6 +358,58 @@ describe('PageViewer', () => {
         'var datasets = window.store.getState().page.datasets.toJS();'
       );
       expect(decodedScript).toContain('JSScript');
+    });
+  });
+
+  describe('page version and Markdown', () => {
+    it('does not parse Markdown when page version is 2 or higher', async () => {
+      const customState = {
+        page: {
+          pageView: Immutable.fromJS({
+            title: 'V2 page',
+            version: 2,
+            metadata: { content: '**notbold**' },
+            scriptRendered: false,
+            cssRendered: false,
+          }),
+          datasets: Immutable.fromJS({}),
+          itemLists: Immutable.fromJS([]),
+          error: Immutable.fromJS({}),
+        },
+      };
+
+      const { container } = renderComponent(customState);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      expect(container.textContent).toMatch(/\*\*notbold\*\*/);
+      expect(container.querySelector('.markdown-viewer strong')).not.toBeInTheDocument();
+    });
+
+    it('parses Markdown when page has no version', async () => {
+      const customState = {
+        page: {
+          pageView: Immutable.fromJS({
+            title: 'V1 page',
+            metadata: { content: '**shouldbold**' },
+            scriptRendered: false,
+            cssRendered: false,
+          }),
+          datasets: Immutable.fromJS({}),
+          itemLists: Immutable.fromJS([]),
+          error: Immutable.fromJS({}),
+        },
+      };
+
+      const { container } = renderComponent(customState);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      expect(container.querySelector('.markdown-viewer strong')).toBeInTheDocument();
     });
   });
 
