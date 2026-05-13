@@ -1,12 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { advancedSort } from '#app/utils/advancedSort.js';
+import { Translate } from '#app/I18N/index.js';
 import { PDFPage } from '#app/PDF/index.js';
+import { BlankState } from '#app/V2/Components/UI/index.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { PDFJS, CMAP_URL } from '#V2/Components/PDFViewer/pdfjs.js';
 import { isClient } from '../../utils/index.js';
 import 'pdfjs-dist/web/pdf_viewer.css';
+import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
 
 const cMapPacked = true;
 
@@ -23,7 +27,7 @@ class PDF extends Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { pdf: { numPages: 0 }, filename: props.filename, scale: 1 };
+    this.state = { pdf: { numPages: 0 }, filename: props.filename, scale: 1, error: null };
     this.pagesLoaded = {};
     this.loadDocument(props.file);
     this.currentPage = '1';
@@ -56,7 +60,8 @@ class PDF extends Component {
       nextProps.filename !== this.props.filename ||
       nextProps.style !== this.props.style ||
       nextState.pdf !== this.state.pdf ||
-      nextState.scale !== this.state.scale
+      nextState.scale !== this.state.scale ||
+      nextState.error !== this.state.error
     );
   }
 
@@ -102,16 +107,51 @@ class PDF extends Component {
 
   loadDocument(file) {
     if (isClient) {
+      if (this._isMounted) {
+        this.setState({ error: null });
+      }
       PDFJS.getDocument({
         url: file,
         cMapUrl: CMAP_URL,
         cMapPacked,
         isEvalSupported: false,
-      }).promise.then(pdf => {
-        if (this._isMounted) {
-          this.setState({ pdf });
-        }
-      });
+      })
+        .promise.then(pdf => {
+          if (this._isMounted) {
+            this.setState({ pdf });
+          }
+        })
+        .catch(e => {
+          if (!this._isMounted) {
+            return;
+          }
+
+          if (e.status === 404) {
+            this.setState({
+              error: (
+                <Translate>
+                  This file is currently unavailable. Please contact your administrator if the issue
+                  persists.
+                </Translate>
+              ),
+            });
+          } else if (e.name === 'InvalidPDFException') {
+            this.setState({
+              error: (
+                <Translate>
+                  This file could not be opened. It may be corrupted or not a valid PDF.
+                </Translate>
+              ),
+            });
+          } else {
+            this.setState({
+              error: (
+                <Translate>This file could not be displayed. Try refreshing the page.</Translate>
+              ),
+            });
+            reportErrorToSentry(e, 'pdf-error');
+          }
+        });
     }
   }
 
@@ -158,7 +198,7 @@ class PDF extends Component {
   }
 
   render() {
-    const { scale } = this.state;
+    const { scale, error } = this.state;
     const handleSelect = selection => {
       const normalized = selectionHandlers.adjustSelectionsToScale(selection, scale, true);
       this.props.onTextSelection(normalized);
@@ -168,6 +208,19 @@ class PDF extends Component {
       '--page-border': 'none',
       '--page-margin': '0',
     };
+    if (error) {
+      return (
+        <div className="tw-content" data-testid="errorInfo">
+          <BlankState
+            icon={
+              <ExclamationTriangleIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+            }
+            title={error}
+            description=""
+          />
+        </div>
+      );
+    }
     return (
       <HandleTextSelection onSelect={handleSelect} onDeselect={this.props.onTextDeselection}>
         <div

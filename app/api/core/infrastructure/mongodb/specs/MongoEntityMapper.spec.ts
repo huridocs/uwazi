@@ -89,11 +89,9 @@ describe('TemplateMapper', () => {
       {
         creationDate: 1000000,
         editDate: 2000000,
-        published: true,
         icon: { _id: 'icon_id', label: 'Icon Label', type: 'icon' },
         user: factory.id('user_id'),
         obsoleteMetadata: [],
-        permissions: [],
         generatedToc: true,
       }
     );
@@ -409,7 +407,6 @@ describe('TemplateMapper', () => {
 
     expect(result.sharedId).toBe('sample_entity');
     expect(result.userId).toBe(factory.id('user_id').toString());
-    expect(result.published).toBe(true);
     expect(result.generatedToc).toBe(true);
     expect(result.icon).toEqual({ id: 'icon_id', label: 'Icon Label', type: 'icon' });
 
@@ -436,139 +433,6 @@ describe('TemplateMapper', () => {
       { _id: null, label: undefined, type: 'Empty' },
       { _id: null, label: undefined, type: 'Empty' },
     ]);
-  });
-
-  describe('Permissions mapping', () => {
-    it('should map permissions from DBO to domain', () => {
-      const userId = factory.id('user1');
-      const groupId = factory.id('group1');
-
-      const entitiesWithPermissions = factory.entityInMultipleLanguages(
-        ['en'],
-        'entity_with_permissions',
-        'sample_template',
-        {},
-        {
-          creationDate: 1000000,
-          editDate: 2000000,
-          published: false,
-          user: userId,
-          permissions: [
-            { refId: userId, type: 'user', level: 'write' },
-            { refId: groupId, type: 'group', level: 'read' },
-          ],
-        }
-      );
-
-      const result = MongoEntityMapper.toDomain(
-        entitiesWithPermissions as any[],
-        templateDbo as any
-      );
-
-      expect(result.permissions.accessGrants).toHaveLength(2);
-      expect(result.permissions.accessGrants[0]).toEqual({
-        refId: userId.toHexString(),
-        type: 'user',
-        level: 'write',
-      });
-      expect(result.permissions.accessGrants[1]).toEqual({
-        refId: groupId.toHexString(),
-        type: 'group',
-        level: 'read',
-      });
-    });
-
-    it('should handle entities without permissions', () => {
-      const entitiesWithoutPermissions = factory.entityInMultipleLanguages(
-        ['en'],
-        'entity_without_permissions',
-        'sample_template',
-        {},
-        {
-          creationDate: 1000000,
-          editDate: 2000000,
-          published: true,
-        }
-      );
-
-      const result = MongoEntityMapper.toDomain(
-        entitiesWithoutPermissions as any[],
-        templateDbo as any
-      );
-
-      expect(result.permissions.accessGrants).toEqual([]);
-    });
-
-    it('should map permissions from domain to DBO', () => {
-      const userId = factory.id('user1');
-      const groupId = factory.id('group1');
-
-      const entitiesWithPermissions = factory.entityInMultipleLanguages(
-        ['en', 'es'],
-        'entity_with_permissions',
-        'sample_template',
-        {},
-        {
-          creationDate: 1000000,
-          editDate: 2000000,
-          published: false,
-          user: userId,
-          permissions: [
-            { refId: userId, type: 'user', level: 'write' },
-            { refId: groupId, type: 'group', level: 'read' },
-          ],
-        }
-      );
-
-      const entity = MongoEntityMapper.toDomain(
-        entitiesWithPermissions as any[],
-        templateDbo as any
-      );
-      const mappedDbo = MongoEntityMapper.toDBO(entity);
-
-      expect(mappedDbo[0].permissions).toHaveLength(2);
-      expect(mappedDbo[0].permissions![0]).toEqual({
-        refId: userId.toHexString(),
-        type: 'user',
-        level: 'write',
-      });
-      expect(mappedDbo[0].permissions![1]).toEqual({
-        refId: groupId.toHexString(),
-        type: 'group',
-        level: 'read',
-      });
-
-      // Both language variants should have the same permissions
-      expect(mappedDbo[1].permissions).toEqual(mappedDbo[0].permissions);
-    });
-
-    it('should round-trip permissions correctly', () => {
-      const userId = factory.id('user1');
-      const groupId = factory.id('group1');
-
-      const originalEntities = factory.entityInMultipleLanguages(
-        ['en', 'es'],
-        'entity_roundtrip',
-        'sample_template',
-        {},
-        {
-          creationDate: 1000000,
-          editDate: 2000000,
-          published: false,
-          user: userId,
-          permissions: [
-            { refId: userId.toHexString(), type: 'user', level: 'write' },
-            { refId: groupId.toHexString(), type: 'group', level: 'read' },
-          ],
-        }
-      );
-
-      const entity = MongoEntityMapper.toDomain(originalEntities as any[], templateDbo as any);
-      const mappedBack = MongoEntityMapper.toDBO(entity);
-
-      expect(mappedBack[0].permissions).toEqual(originalEntities[0].permissions);
-      expect(mappedBack[1].permissions).toEqual(originalEntities[1].permissions);
-    });
   });
 
   describe('preview field mapping', () => {

@@ -1,8 +1,8 @@
+import { ObjectId } from 'mongodb';
 import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();
 
@@ -274,6 +274,8 @@ const fixtures: DBFixture = {
             preview: [],
             media: [factory.metadataValue('https://example.com/video.mp4')],
           },
+          permissions: [],
+          published: false,
         },
         pt: {
           title: 'Full Entity PT',
@@ -316,6 +318,8 @@ const fixtures: DBFixture = {
             preview: [],
             media: [factory.metadataValue('https://example.com/video.mp4')],
           },
+          permissions: [],
+          published: false,
         },
       }
     ),

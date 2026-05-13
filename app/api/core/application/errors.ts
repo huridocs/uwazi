@@ -32,3 +32,12 @@ export class EntityNotFoundError extends ValidationError {
     };
   }
 }
+
+export class InsufficientPermissionsToPublishError extends DomainError {
+  constructor() {
+    super(
+      'Insufficient permissions to change the published status of this entity',
+      'entity_access_policy.insufficient_permissions_to_publish'
+    );
+  }
+}
