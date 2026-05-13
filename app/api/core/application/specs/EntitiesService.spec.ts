@@ -24,6 +24,7 @@ import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
+import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();
 
@@ -68,6 +69,7 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
         eventBus,
         eventEmitter,
         dispatcher,
+
         ...deps,
       }),
       transactionManager: ExecutionContext.transactionManager,
@@ -120,6 +122,7 @@ describe('EntitiesService', () => {
   };
 
   beforeAll(async () => {
+    jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined);
     await testingEnvironment.setUp({});
   });
 
@@ -172,7 +175,7 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).toHaveBeenCalled();
     });
 
-    it('should provision access to the entity', async () => {
+    it('should provision grant access to the entity', async () => {
       const { sut, transactionManager } = createSut();
       const entity = createEntitySample();
 
