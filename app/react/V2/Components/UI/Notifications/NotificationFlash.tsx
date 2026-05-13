@@ -47,6 +47,12 @@ const NotificationFlash = ({
     info: <InformationCircleIcon className="w-4 h-4 bg-white rounded-full text-blue-500" />,
   };
 
+  const buttonBaseClass =
+    'relative flex h-full min-h-0 cursor-pointer appearance-none overflow-hidden border-0 ' +
+    'bg-transparent p-0 text-left transition-[max-width,opacity] duration-500 ease-out ' +
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300';
+  const buttonWidthClass = isIn ? 'max-w-[12rem] opacity-100' : 'max-w-0 opacity-0';
+
   return (
     // Outer: animates max-width and opacity (the "container grow" effect); full height for bar strip
     <button
@@ -56,9 +62,7 @@ const NotificationFlash = ({
       aria-label={`Open notifications — ${title}`}
       aria-controls={controlsId}
       aria-expanded={isPanelExpanded}
-      className={`relative flex h-full min-h-0 cursor-pointer appearance-none overflow-hidden border-0 bg-transparent p-0 text-left transition-[max-width,opacity] duration-500 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 ${
-        isIn ? 'max-w-[12rem] opacity-100' : 'max-w-0 opacity-0'
-      }`}
+      className={`${buttonBaseClass} ${buttonWidthClass}`}
     >
       {/* Fade from transparent (outer / away from status dot) into bar color; mirror in RTL */}
       <div
