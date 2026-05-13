@@ -185,5 +185,47 @@ describe('formatMetadataFields ', () => {
         },
       ]);
     });
+
+    it('should group contiguous own and inherited geolocation properties in a single group', () => {
+      const template = {
+        properties: [
+          { _id: 'geo-b', name: 'locationB', label: 'Location B', type: 'geolocation' },
+          {
+            _id: 'rel1',
+            type: 'relationship',
+            label: 'Rel 1',
+            name: 'rel_1',
+            content: '69f0a4ac62c282d87ef5970f',
+            inherit: {
+              property: 'x',
+              type: 'geolocation',
+            },
+          },
+          { _id: 'geo-a', name: 'locationA', label: 'Location A', type: 'geolocation' },
+        ],
+      } as ClientTemplateSchema;
+
+      expect(formatMetadataFields(template, { groupGeolocationProperties: true })).toEqual([
+        {
+          _id: 'group1',
+          name: '__group1',
+          label: '__group1',
+          type: 'geolocation',
+          propertyGroup: [
+            { name: 'locationB', label: 'Location B' },
+            {
+              name: 'rel_1',
+              label: 'Rel 1',
+              inherited: true,
+              content: '69f0a4ac62c282d87ef5970f',
+              property: 'x',
+            },
+            { name: 'locationA', label: 'Location A' },
+          ],
+          inherited: false,
+          inheritedType: undefined,
+        },
+      ]);
+    });
   });
 });

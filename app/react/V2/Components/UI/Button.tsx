@@ -95,18 +95,18 @@ const Button = ({
   const hoverClassByVariant: Record<ButtonVariant, string> = {
     primary: 'enabled:hover:opacity-90',
     secondary:
-      'enabled:hover:[background-color:var(--color-theme-button-secondary-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-secondary-border)]',
+      'enabled:hover:bg-(--color-theme-button-secondary-hover-bg) enabled:hover:border-(--color-theme-button-secondary-border)',
     danger: 'enabled:hover:opacity-90',
     ghost:
-      'enabled:hover:[background-color:var(--color-theme-button-ghost-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-ghost-hover-border)] enabled:hover:[color:var(--color-theme-button-ghost-hover-fg)]',
+      'enabled:hover:bg-(--color-theme-button-ghost-hover-bg) enabled:hover:border-(--color-theme-button-ghost-hover-border) enabled:hover:text-(--color-theme-button-ghost-hover-fg)',
     compact:
-      'enabled:hover:[background-color:var(--color-theme-bg-muted)] enabled:hover:[border-color:var(--color-theme-button-compact-border)]',
+      'enabled:hover:bg-(--color-theme-bg-muted) enabled:hover:border-(--color-theme-button-compact-border)',
     success:
-      'enabled:hover:[background-color:var(--color-theme-button-success-hover-bg)] enabled:hover:[border-color:var(--color-theme-button-success-hover-bg)]',
+      'enabled:hover:bg-(--color-theme-button-success-hover-bg) enabled:hover:border-(--color-theme-button-success-hover-bg)',
     dangerSecondary:
-      'enabled:hover:[background-color:var(--color-theme-button-danger-subtle-bg)] enabled:hover:[border-color:var(--color-theme-button-danger-secondary-border)]',
+      'enabled:hover:bg-(--color-theme-button-danger-subtle-bg) enabled:hover:border-(--color-theme-button-danger-secondary-border)',
     successSecondary:
-      'enabled:hover:[background-color:var(--color-theme-button-success-subtle-bg)] enabled:hover:[border-color:var(--color-theme-button-success-secondary-border)]',
+      'enabled:hover:bg-(--color-theme-button-success-subtle-bg) enabled:hover:border-(--color-theme-button-success-secondary-border)',
     dangerSubtle: 'enabled:hover:opacity-90',
     successSubtle: 'enabled:hover:opacity-90',
   };

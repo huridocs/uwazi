@@ -9,6 +9,26 @@ describe('formatSimpleProperty', () => {
     multi_text: [{ value: 'First value' }, { value: 'Second value' }, { value: '' }],
     empty_text: [{ value: '' }],
     empty_array: [],
+    inherited_simple: [
+      {
+        value: 'entity-1',
+        inheritedType: 'text',
+        inheritedValue: [{ value: 'Inherited text value' }],
+      },
+    ],
+    inherited_nested_markdown: [
+      {
+        value: 'entity-1',
+        inheritedType: 'relationship',
+        inheritedValue: [
+          {
+            value: 'entity-2',
+            inheritedType: 'markdown',
+            inheritedValue: [{ value: '**nested markdown**' }],
+          },
+        ],
+      },
+    ],
   } as Entity['metadata'];
 
   it('should prepare simple properties with value, label and template id', () => {
@@ -131,6 +151,46 @@ describe('formatSimpleProperty', () => {
       label: 'Multiple text values',
       inherited: undefined,
       inheritedType: undefined,
+    });
+  });
+
+  it('should format inherited relationship values when they resolve to a simple type', () => {
+    const inheritedTextProperty = {
+      _id: 'p8',
+      name: 'inherited_simple',
+      label: 'Inherited text',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'text',
+    } as BaseMetadataProperty;
+
+    const nestedMarkdownProperty = {
+      _id: 'p9',
+      name: 'inherited_nested_markdown',
+      label: 'Inherited markdown',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'relationship',
+    } as BaseMetadataProperty;
+
+    expect(formatSimpleProperty(inheritedTextProperty, metadata)).toEqual({
+      _id: 'p8',
+      name: 'inherited_simple',
+      type: 'text',
+      values: [{ value: 'Inherited text value' }],
+      label: 'Inherited text',
+      inherited: true,
+      inheritedType: 'text',
+    });
+
+    expect(formatSimpleProperty(nestedMarkdownProperty, metadata)).toEqual({
+      _id: 'p9',
+      name: 'inherited_nested_markdown',
+      type: 'markdown',
+      values: [{ value: '**nested markdown**' }],
+      label: 'Inherited markdown',
+      inherited: true,
+      inheritedType: 'relationship',
     });
   });
 });

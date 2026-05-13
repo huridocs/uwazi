@@ -3,7 +3,7 @@ import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getStore } from '#shared/atomStore/index.js';
 import { isClient } from '#app/utils/index.js';
-import { localeAtom } from '#app/V2/atoms/index.js';
+import { localeAtom, settingsAtom } from '#app/V2/atoms/index.js';
 import { getPagePlaintext } from '#V2/api/files/index.js';
 import { snippets } from '#V2/api/search/index.js';
 import { SnippetsSearchResponse } from '#V2/api/types.js';
@@ -20,6 +20,7 @@ const entityLoader =
     const entitySharedId = params.sharedId;
     const atomStore = getStore();
     const language = params.lang || atomStore.get(localeAtom);
+    const defaultLanguage = atomStore.get(settingsAtom)?.languages?.find(l => l.default)?.key;
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';
     const currentSearchTerm = searchParams.get(SEARCH_PARAM);
@@ -53,7 +54,7 @@ const entityLoader =
     }
 
     if (!mainDocument && entity?.sharedId) {
-      mainDocument = getMainDocument(entity.documents, language);
+      mainDocument = getMainDocument(entity.documents, language, defaultLanguage);
       if (mainDocument) {
         entityLoaderCache.setMainDocument(entity.sharedId, language, mainDocument);
       }

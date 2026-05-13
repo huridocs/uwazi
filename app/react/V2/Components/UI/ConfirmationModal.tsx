@@ -24,10 +24,10 @@ type FeedbackStyle = React.CSSProperties;
 
 const confirmFieldClass = [
   'block w-full rounded-lg border p-2.5 text-sm',
-  '[background-color:var(--color-theme-control-bg)]',
-  '[border-color:var(--color-theme-control-border)]',
-  '[color:var(--color-theme-control-text)]',
-  'focus:[border-color:var(--color-theme-control-border-focus)]',
+  'bg-(--color-theme-control-bg)',
+  'border-(--color-theme-control-border)',
+  'text-(--color-theme-control-text)',
+  'focus:border-(--color-theme-control-border-focus)',
   'focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]',
   'focus:outline-hidden',
 ].join(' ');
@@ -68,9 +68,7 @@ const ConfirmationModal = ({
   return (
     <Modal size={size}>
       <Modal.Header className="border-b-0">
-        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
-          {renderChild(header)}
-        </h1>
+        <h1 className="text-xl font-medium text-ink">{renderChild(header)}</h1>
         <Modal.CloseButton onClick={onCancelClick} disabled={disabled} />
       </Modal.Header>
       {warningText && (
@@ -79,10 +77,10 @@ const ConfirmationModal = ({
         </div>
       )}
       <Modal.Body>
-        <span className="[color:var(--color-theme-text-secondary)]">{renderChild(body)}</span>
+        <span className="text-ink-secondary">{renderChild(body)}</span>
         {confirmWord && (
           <div className="py-4">
-            <span className="block mb-2 text-md font-medium [color:var(--color-theme-text-primary)]">
+            <span className="block mb-2 text-md font-medium text-ink">
               <label htmlFor="confirm-input">
                 <Translate>Please type in</Translate>&nbsp;
               </label>
@@ -100,7 +98,7 @@ const ConfirmationModal = ({
 
         {usePassword && (
           <div className="py-4">
-            <span className="block mb-2 text-md font-medium [color:var(--color-theme-text-primary)]">
+            <span className="block mb-2 text-md font-medium text-ink">
               <label htmlFor="confirm-password">
                 <Translate>Enter your current password to confirm</Translate>&nbsp;
               </label>

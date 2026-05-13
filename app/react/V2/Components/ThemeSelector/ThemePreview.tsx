@@ -72,7 +72,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
       >
         <div className="flex min-w-0 items-center gap-3">
           {siteLogo ? (
-            <img src={siteLogo} alt="" className="logo-img h-7 max-w-[7.5rem] object-contain" />
+            <img src={siteLogo} alt="" className="logo-img h-7 max-w-24 object-contain" />
           ) : (
             <div
               className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold"

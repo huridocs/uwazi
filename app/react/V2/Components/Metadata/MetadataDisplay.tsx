@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
@@ -20,18 +20,8 @@ import {
   Image,
   Media,
 } from './Components/index.js';
-import { BaseMetadataProperty, MetadataProperty } from '#V2/formatters/types.js';
-import {
-  formatRelationshipProperty,
-  formatSimpleProperty,
-  formatDateProperty,
-  formatGeolocationProperty,
-  formatLinkProperty,
-  formatMediaProperty,
-  formatImageProperty,
-  formatMetadataFields,
-  formatSelectProperty,
-} from '#V2/formatters/index.js';
+import { MetadataProperty } from '#V2/formatters/types.js';
+import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
@@ -39,67 +29,10 @@ type MetadataDisplayProps = {
 
 const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   const templates = useAtomValue(templatesAtom);
-  const entityTemplate = useMemo(
-    () => templates.find(template => template._id === entity.template),
-    [entity.template, templates]
-  );
 
-  const metadataFields: BaseMetadataProperty[] = useMemo(
-    () => formatMetadataFields(entityTemplate, { groupGeolocationProperties: true }),
-    [entityTemplate]
-  );
-
-  const metadata: MetadataProperty[] = useMemo(
-    () =>
-      metadataFields
-        .map(field => {
-          if (field.type === 'relationship') {
-            return formatRelationshipProperty(field, entity.metadata);
-          }
-
-          if (
-            field.type === 'text' ||
-            field.type === 'generatedid' ||
-            field.type === 'numeric' ||
-            field.type === 'markdown'
-          ) {
-            return formatSimpleProperty(field, entity.metadata);
-          }
-
-          if (
-            field.type === 'date' ||
-            field.type === 'daterange' ||
-            field.type === 'multidate' ||
-            field.type === 'multidaterange'
-          ) {
-            return formatDateProperty(field, entity.metadata);
-          }
-
-          if (field.type === 'geolocation') {
-            return formatGeolocationProperty(field, entity, templates);
-          }
-
-          if (field.type === 'select' || field.type === 'multiselect') {
-            return formatSelectProperty(field, entity.metadata);
-          }
-
-          if (field.type === 'link') {
-            return formatLinkProperty(field, entity.metadata);
-          }
-
-          if (field.type === 'media') {
-            return formatMediaProperty(field, entity.metadata);
-          }
-
-          if (field.type === 'image' || field.type === 'preview') {
-            return formatImageProperty(field, entity.metadata, entityTemplate);
-          }
-
-          return undefined;
-        })
-        .filter(m => m) as MetadataProperty[],
-    [entity, metadataFields, entityTemplate, templates]
-  );
+  const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
+    groupGeolocationProperties: true,
+  });
 
   const renderMetadataFields = useCallback(
     (fields: MetadataProperty[]) => {

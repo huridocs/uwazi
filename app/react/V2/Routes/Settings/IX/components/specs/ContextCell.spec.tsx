@@ -44,10 +44,10 @@ describe('ContextCell', () => {
     );
 
     expect(screen.getAllByText('Some primary text', { exact: false })[0].className).toBe(
-      'ix_matching_paragraph px-1 [color:var(--color-theme-text-primary)]'
+      'ix_matching_paragraph px-1 text-ink'
     );
     expect(screen.getAllByText('with matching')[0].className).toBe(
-      'ix_match bg-[#FFE29A] [color:var(--color-theme-text-primary)]'
+      'ix_match bg-[#FFE29A] text-ink'
     );
   });
 
@@ -71,7 +71,7 @@ describe('ContextCell', () => {
       render(<ContextCell text={noMatching} />);
       expect(
         screen.getByText('Duis volutpat leo eu interdum euismod. Maecenas lu...').className
-      ).toBe('ix_paragraph [color:var(--color-theme-text-muted)]');
+      ).toBe('ix_paragraph text-ink-muted');
     });
   });
 
