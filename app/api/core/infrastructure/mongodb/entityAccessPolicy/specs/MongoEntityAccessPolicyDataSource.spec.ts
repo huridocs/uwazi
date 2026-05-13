@@ -232,7 +232,7 @@ describe('MongoEntityAccessPolicyDataSource', () => {
       expect(doc2!.published).toBe(true);
     });
 
-    it('adds all created sharedIds to the indexer on commit', async () => {
+    it('should not add created sharedIds to the indexer on commit', async () => {
       const { sut, transactionManager, entityIndexerService } = createSut();
 
       await transactionManager.run(async () => {
@@ -242,7 +242,7 @@ describe('MongoEntityAccessPolicyDataSource', () => {
         ]);
       });
 
-      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+      expect(entityIndexerService.sync).not.toHaveBeenCalledWith(
         expect.arrayContaining([sharedId, 'other-entity'])
       );
     });
