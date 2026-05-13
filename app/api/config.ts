@@ -67,6 +67,15 @@ const getDefaultTenantPaths = () => {
 
 const defaultTenantPaths = getDefaultTenantPaths();
 
+const ENV = ENVIRONMENT || 'development';
+
+const defaultFeatureFlagActivation = () => {
+  if (process.env.NODE_ENV === 'test' || ENV !== 'development') {
+    return false;
+  }
+  return true;
+};
+
 export const config = {
   VERSION: ENVIRONMENT ? version : `development-${version}`,
 
@@ -133,13 +142,13 @@ export const config = {
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       themeCustomization: FEATURE_FLAG_THEME_CUSTOMIZATION === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,
-      v2UpdateEntity: false,
+      v2UpdateEntity: defaultFeatureFlagActivation(),
       v2CSVImport: false,
-      v2UpdateThesaurus: false,
-      v2GetEntity: false,
-      v2MultipleUpdateEntity: false,
+      v2UpdateThesaurus: defaultFeatureFlagActivation(),
+      v2GetEntity: defaultFeatureFlagActivation(),
+      v2MultipleUpdateEntity: defaultFeatureFlagActivation(),
       v2ElasticSearch: false,
-      v2DeleteEntity: false,
+      v2DeleteEntity: defaultFeatureFlagActivation(),
       v2Languages: false,
       newHeader: NEW_HEADER === 'true' || false,
     },
