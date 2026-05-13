@@ -1018,7 +1018,12 @@ This entity is restricted from public view.,Αυτή η οντότητα δεν 
 This field is required,Αυτό το πεδίο είναι υποχρεωτικό
 This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
 This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
-This file is no longer available.,This file is no longer available.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,Αυτός ο τύπος αρχείου δεν υποστηρίζεται σε πεδία πολυμέσων
 This group is empty,Αυτή η ομάδα είναι κενή
 This import is waiting in queue.,This import is waiting in queue.
