@@ -24,9 +24,10 @@ import { metadataGridClassForProperty } from './metadataPropertyLayout.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
+  headerLayout?: 'inline' | 'stacked';
 };
 
-const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
+const MetadataDisplay = ({ entity, headerLayout = 'inline' }: MetadataDisplayProps) => {
   const templates = useAtomValue(templatesAtom);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
@@ -182,7 +183,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
     <Panel>
       <Panel.Body>
         <>
-          <MetadataHeaderStrip entity={entity} />
+          <MetadataHeaderStrip entity={entity} headerLayout={headerLayout} />
 
           <dl className="flex min-w-0 flex-wrap gap-(--spacing-theme-3)">
             {typeof entity.creationDate === 'number' && (

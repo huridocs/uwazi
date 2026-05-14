@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useId, useMemo } from 'react';
 import { Tab as HeadlessTab } from '@headlessui/react';
 
 type TabProps = {
@@ -22,6 +22,7 @@ interface TabsProps {
   className?: string;
   tabListClassName?: string;
   tabListAriaLabel?: string;
+  domIdPrefix?: string;
 }
 
 const Tabs = ({
@@ -32,16 +33,16 @@ const Tabs = ({
   tabListClassName,
   tabListAriaLabel,
   unmountTabs = true,
+  domIdPrefix,
 }: TabsProps) => {
+  const generatedPrefix = useId().replace(/:/g, '');
+  const domPrefix = domIdPrefix ?? generatedPrefix;
   const tabChildren = useMemo(() => (Array.isArray(children) ? children : [children]), [children]);
   const totalTabs = tabChildren.length;
-  const initialIndex = tabChildren.findIndex(child => child.props.id === initialTabId);
-  const [selectedIndex, setSelectedIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
-  useEffect(() => {
-    const newIndex = tabChildren.findIndex(child => child.props.id === initialTabId);
-    if (newIndex !== -1) {
-      setSelectedIndex(newIndex);
-    }
+  const selectedIndex = useMemo(() => {
+    if (tabChildren.length === 0) return 0;
+    const idx = tabChildren.findIndex(child => child.props.id === initialTabId);
+    return idx !== -1 ? idx : 0;
   }, [initialTabId, tabChildren]);
 
   const activeClass = 'text-ink bg-vellum';
@@ -53,15 +54,11 @@ const Tabs = ({
   ].join(' ');
 
   const handleChange = (index: number) => {
-    setSelectedIndex(index);
-
-    if (onTabSelected) {
-      onTabSelected(tabChildren[index].props.id);
-    }
+    onTabSelected?.(tabChildren[index].props.id);
   };
 
   return (
-    <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange} manual>
+    <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange}>
       <div className={`flex min-h-0 min-w-0 w-full flex-col h-full ${className ?? ''}`}>
         <div className={`${tabScrollWrapClass} ${tabListClassName || ''}`} data-testid="tabs-comp">
           <HeadlessTab.List className={tabListChromeClass} aria-label={tabListAriaLabel}>
@@ -85,7 +82,7 @@ const Tabs = ({
               return (
                 <HeadlessTab
                   key={child.props.id}
-                  id={`tab-${child.props.id}`}
+                  id={`${domPrefix}-tab-${child.props.id}`}
                   as="button"
                   type="button"
                   className={({ selected }) =>
@@ -106,11 +103,11 @@ const Tabs = ({
             })}
           </HeadlessTab.List>
         </div>
-        <HeadlessTab.Panels className="grow overflow-y-auto min-h-0 min-w-0">
+        <HeadlessTab.Panels className="grow overflow-y-auto">
           {tabChildren.map(child => (
             <HeadlessTab.Panel
               key={child.props.id}
-              id={`panel-${child.props.id}`}
+              id={`${domPrefix}-panel-${child.props.id}`}
               className="w-full h-full focus:outline-hidden"
               unmount={unmountTabs}
             >

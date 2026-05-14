@@ -183,8 +183,12 @@ describe('Entity view', () => {
       await waitFor(() => {
         tablists = screen.getAllByTestId('tabs-comp');
         const sideTabs = within(tablists[1]);
+        expect(sideTabs.getByRole('tab', { name: 'Document' })).toBeInTheDocument();
         expect(sideTabs.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+        expect(sideTabs.queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
+        expect(sideTabs.queryByRole('tab', { name: 'References' })).not.toBeInTheDocument();
         expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
       });
 
       fireEvent.click(relsMainTab);
@@ -244,11 +248,10 @@ describe('Entity view', () => {
       });
     });
 
-    it('should clear side tab when switching to a main tab that does not support it', async () => {
+    it('should reset side tab when switching main tab drops an unsupported side id', async () => {
       render(
         <TestRouterContext
           loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-          initialEntries={['/?main=document&side=metadata']}
         >
           <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
             <Entity />
@@ -266,11 +269,16 @@ describe('Entity view', () => {
         'aria-selected',
         'true'
       );
-      expect(sideTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
-        'aria-selected',
-        'true'
-      );
 
+      fireEvent.click(sideTabs.getByRole('tab', { name: 'ToC' }));
+
+      await waitFor(() => {
+        tablists = screen.getAllByTestId('tabs-comp');
+        sideTabs = within(tablists[1]);
+        expect(sideTabs.getByRole('tab', { name: 'ToC' })).toHaveAttribute('aria-selected', 'true');
+      });
+
+      mainTabs = within(screen.getAllByTestId('tabs-comp')[0]);
       const metadataMainTab = mainTabs.getByRole('tab', { name: 'Metadata' });
       fireEvent.click(metadataMainTab);
 
@@ -284,8 +292,8 @@ describe('Entity view', () => {
           'true'
         );
 
-        expect(sideTabs.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+        expect(sideTabs.queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: 'Document' })).toHaveAttribute(
           'aria-selected',
           'true'
         );

@@ -46,6 +46,11 @@ const getContrastRatio = (hex1: string, hex2: string): number => {
   return contrastRatio(L1, L2);
 };
 
+const getRelativeLuminanceFromHex = (hex: string): number => {
+  const [r, g, b] = hexToRgb(hex);
+  return relativeLuminance(r, g, b);
+};
+
 const WCAG_AA = 4.5;
 const WCAG_AAA = 7;
 
@@ -191,4 +196,5 @@ export {
   getAccessibleColorPair,
   getAccessibleForegroundOnBackground,
   getTemplatePillColors,
+  getRelativeLuminanceFromHex,
 };

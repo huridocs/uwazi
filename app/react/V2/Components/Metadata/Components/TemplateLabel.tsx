@@ -3,9 +3,14 @@ import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { effectiveThemeModeAtom, settingsAtom } from '#V2/atoms/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { getTemplatePillColors } from '#shared/utils/contrast.js';
+import { getTemplatePillColors, hexToRgb } from '#shared/utils/contrast.js';
 import { appliedThemeAsInProvider } from '#V2/theme/themes.js';
-import { getTemplatePillThemeAnchors, parseThemeColorHex } from '#V2/theme/templatePillTheme.js';
+import { getTemplatePillThemeAnchors } from '#V2/theme/templatePillTheme.js';
+
+const accentRgba = (hex: string, alpha: number): string => {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${alpha})`;
+};
 
 const TemplateLabel = ({ templateId }: { templateId?: string }) => {
   const templates = useAtomValue(templatesAtom);
@@ -21,30 +26,28 @@ const TemplateLabel = ({ templateId }: { templateId?: string }) => {
       appliedThemeAsInProvider(settings.themeVars ?? undefined, themeMode, {
         customizationOn: Boolean(settings.themeCustomization),
       }),
-    [settings.themeCustomization, settings.themeVars, themeMode]
+    [settings, themeMode]
   );
-
-  const { pillStyle, swatchStyle } = useMemo(() => {
-    const { tintBase, defaultAccent } = getTemplatePillThemeAnchors(themeColors, themeMode);
-    const templateColorHex = template?.color
-      ? (parseThemeColorHex(template.color) ?? defaultAccent)
-      : defaultAccent;
-    const { background, foreground } = getTemplatePillColors(templateColorHex, tintBase);
-    return {
-      pillStyle: {
-        backgroundColor: background,
-        color: foreground,
-        borderStyle: 'none' as const,
-        borderWidth: 0,
-        outline: 'none',
-      } as const,
-      swatchStyle: { backgroundColor: templateColorHex } as const,
-    };
-  }, [template?.color, themeColors, themeMode]);
 
   if (!template) {
     return undefined;
   }
+
+  const { tintBase, accentHex } = getTemplatePillThemeAnchors(
+    themeColors,
+    themeMode,
+    template.color
+  );
+  const { background, foreground } = getTemplatePillColors(accentHex, tintBase);
+  const pillStyle = {
+    backgroundColor: background,
+    color: foreground,
+    outline: 'none',
+    borderWidth: 1,
+    borderStyle: 'solid' as const,
+    borderColor: accentRgba(accentHex, 0.25),
+  } as const;
+  const swatchStyle = { backgroundColor: accentHex } as const;
 
   return (
     <span

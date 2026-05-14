@@ -6,8 +6,8 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
 import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
-import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js';
+import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
+import { NeedAuthorization, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
@@ -21,11 +21,19 @@ import { pdfController } from './atoms.js';
 
 type PDFViewProps = {
   mainDocument: FileType;
-  templateId?: string;
+  templateId: string;
   pagePlaintext?: string;
+  entityTitle: string;
+  entityIconId?: string;
 };
 
-const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
+const PDFView = ({
+  mainDocument,
+  templateId,
+  pagePlaintext,
+  entityTitle,
+  entityIconId,
+}: PDFViewProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
@@ -159,9 +167,8 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
     setHydrated(true);
   }, []);
 
-  const { filename, originalname, totalPages } = mainDocument || {
+  const { filename, totalPages } = mainDocument || {
     filename: '',
-    originalname: '',
     totalPages: 0,
   };
   const prevPage = Math.max(1, pageNumber - 1);
@@ -170,12 +177,13 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
   return (
     <Panel>
       <Panel.Body>
-        <div className="flex h-full min-h-0 flex-col gap-(--spacing-theme-3)">
-          <div className="w-full rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_65%,transparent)] bg-(--color-theme-surface-warm) p-(--spacing-theme-3)">
-            <div className="flex flex-row justify-between gap-(--spacing-theme-2)">
-              <div className="min-w-0">
-                <TemplateLabel templateId={templateId} />
-              </div>
+        <div className="flex flex-col gap-(--spacing-theme-3)">
+          <MetadataEntityHeader
+            templateId={templateId}
+            title={entityTitle}
+            iconId={entityIconId}
+            layout="inline"
+            trailing={
               <div className="shrink-0">
                 <label htmlFor="render-mode" className="sr-only">
                   <Translate>View</Translate>
@@ -190,15 +198,10 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
                   <option value="normal">{t('System', 'PDF', null, false)}</option>
                 </select>
               </div>
-            </div>
-            <Truncate maxLength={80}>
-              <h2 className="mt-(--spacing-theme-2) text-base font-bold text-ink">
-                {originalname}
-              </h2>
-            </Truncate>
-          </div>
+            }
+          />
           <div
-            className={`flex-1 min-h-0 overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
+            className={`flex-1 min-h-0 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
           >
             <PDF
               fileUrl={`/api/files/${filename}`}
@@ -258,7 +261,7 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
                 type="button"
                 onClick={() => handlePageNavigation('prev')}
                 disabled={pageNumber <= 1}
-                className="text-ink-secondary hover:text-ink disabled:text-ink-muted disabled:hover:text-ink-muted"
+                className="text-ink hover:text-ink-secondary disabled:text-ink-muted disabled:hover:text-ink-muted"
               >
                 <Translate>Previous</Translate>
               </button>
@@ -269,7 +272,7 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
                 type="button"
                 onClick={() => handlePageNavigation('next')}
                 disabled={totalPages ? nextPage > totalPages : false}
-                className="text-ink-secondary hover:text-ink disabled:text-ink-muted disabled:hover:text-ink-muted"
+                className="text-ink hover:text-ink-secondary disabled:text-ink-muted disabled:hover:text-ink-muted"
               >
                 <Translate>Next</Translate>
               </button>
