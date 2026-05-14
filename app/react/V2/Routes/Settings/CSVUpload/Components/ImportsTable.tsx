@@ -21,6 +21,40 @@ import { Progress } from './Progress.js';
 
 type TableData = CsvImportListRow & { rowId: string; templateName: string };
 
+enum ConsolidatedStatus {
+  Processing = 'processing',
+  Completed = 'completed',
+  Failed = 'failed',
+  Other = 'other',
+}
+
+const consolidateStatus = (status: CsvImportStatus): ConsolidatedStatus => {
+  switch (status) {
+    case CsvImportStatus.Queued:
+    case CsvImportStatus.Validating:
+    case CsvImportStatus.ExtractingFiles:
+    case CsvImportStatus.ExtractingFilesDone:
+    case CsvImportStatus.PreflightScan:
+    case CsvImportStatus.PreflightScanDone:
+    case CsvImportStatus.PreflightThesauriCreate:
+    case CsvImportStatus.PreflightThesauriCreateDone:
+    case CsvImportStatus.PreflightRelationshipsCreate:
+    case CsvImportStatus.PreflightRelationshipsCreateDone:
+    case CsvImportStatus.ImportEntities:
+    case CsvImportStatus.Processing:
+    case CsvImportStatus.Retrying:
+      return ConsolidatedStatus.Processing;
+    case CsvImportStatus.ImportEntitiesDone:
+    case CsvImportStatus.Completed:
+      return ConsolidatedStatus.Completed;
+    case CsvImportStatus.Failed:
+    case CsvImportStatus.Cancelled:
+      return ConsolidatedStatus.Failed;
+    default:
+      return ConsolidatedStatus.Other;
+  }
+};
+
 const columnHelper = createColumnHelper<TableData>();
 
 const StatusHeader = () => <Translate>Status</Translate>;
@@ -130,23 +164,29 @@ const ImportsTable = () => {
   );
 
   const { completed, processing, failed } = useMemo(() => {
-    let entriesInProccessing = 0;
-    let entriesCompleted: number = 0;
-    let entriesFailed: number = 0;
+    let entriesInProcessing = 0;
+    let entriesCompleted = 0;
+    let entriesFailed = 0;
 
     tableData.forEach(entry => {
-      if (entry.status === CsvImportStatus.Completed) {
-        entriesCompleted += 1;
-      } else if (entry.status === CsvImportStatus.Processing) {
-        entriesInProccessing += 1;
-      } else if (entry.status === CsvImportStatus.Failed) {
-        entriesFailed += 1;
+      switch (consolidateStatus(entry.status)) {
+        case ConsolidatedStatus.Completed:
+          entriesCompleted += 1;
+          break;
+        case ConsolidatedStatus.Processing:
+          entriesInProcessing += 1;
+          break;
+        case ConsolidatedStatus.Failed:
+          entriesFailed += 1;
+          break;
+        default:
+          break;
       }
     });
 
     return {
       completed: entriesCompleted,
-      processing: entriesInProccessing,
+      processing: entriesInProcessing,
       failed: entriesFailed,
     };
   }, [tableData]);
