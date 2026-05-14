@@ -57,8 +57,13 @@ const Tabs = ({
     onTabSelected?.(tabChildren[index].props.id);
   };
 
+  const groupProps = onTabSelected
+    ? { selectedIndex, onChange: handleChange }
+    : { defaultIndex: selectedIndex, onChange: handleChange };
+
   return (
-    <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange}>
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <HeadlessTab.Group {...groupProps}>
       <div className={`flex min-h-0 min-w-0 w-full flex-col h-full ${className ?? ''}`}>
         <div className={`${tabScrollWrapClass} ${tabListClassName || ''}`} data-testid="tabs-comp">
           <HeadlessTab.List className={tabListChromeClass} aria-label={tabListAriaLabel}>
