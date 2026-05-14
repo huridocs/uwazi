@@ -68,6 +68,20 @@ const ActionHeader = () => <Translate>Action</Translate>;
 
 const StatusCell = ({ cell }: CellContext<TableData, TableData['status']>) => {
   const status = cell.getValue();
+
+  if (status === CsvImportStatus.ImportEntitiesDone) {
+    const hasFailed = Boolean(cell.row.original.stats?.rowsFailed);
+    const entitiesCrated = cell.row.original.stats?.entitiesCreated;
+
+    if (hasFailed) {
+      return <span>{statusMessages.failed.title}</span>;
+    }
+
+    if (entitiesCrated === 0) {
+      return <span>{statusMessages.completed.title}</span>;
+    }
+  }
+
   return <span>{statusMessages[status].title}</span>;
 };
 

@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { Provider } from 'jotai';
+import { Settings } from 'luxon';
 import { act, render, screen, within } from '@testing-library/react';
 import * as reactRouter from 'react-router';
 import { socket } from '#app/socket.js';
@@ -22,6 +23,7 @@ describe('CSV imports list table', () => {
 
   beforeEach(() => {
     locale = 'en';
+    Settings.defaultZone = 'UTC';
     revalidateMock = jest.fn();
     listeners = {};
 
@@ -91,9 +93,9 @@ describe('CSV imports list table', () => {
     };
 
     expectStatistic('Total imports', '4');
-    expectStatistic('Processing', '1');
+    expectStatistic('Processing', '2');
     expectStatistic('Completed', '1');
-    expectStatistic('Failed jobs', '1');
+    expectStatistic('Failed', '1');
   });
 
   it('should render the data in the tables', async () => {

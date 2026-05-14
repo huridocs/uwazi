@@ -35,11 +35,27 @@ const UploadStatus = () => {
     [entry, templates]
   );
 
-  const statusMessage = entry ? statusMessages[entry.status] : undefined;
   const progressTotal = entry?.progress?.totalRows || 0;
   const progressCurrent = entry?.progress?.processedRows || 0;
   const completionPercent =
     progressTotal > 0 ? Math.round((progressCurrent / progressTotal) * 100) : 0;
+
+  const statusMessage = useMemo(() => {
+    if (entry?.status === CsvImportStatus.ImportEntitiesDone) {
+      const hasFailed = Boolean(entry?.stats?.rowsFailed);
+      const entitiesCreated = entry?.stats?.entitiesCreated;
+
+      if (hasFailed) {
+        return statusMessages.failed;
+      }
+
+      if (entitiesCreated === 0) {
+        return statusMessages.completed;
+      }
+    }
+
+    return entry ? statusMessages[entry.status] : undefined;
+  }, [entry]);
 
   useEffect(() => {
     const doRevalidation = throttle(async (payload: { importId: string }) => {
@@ -110,8 +126,8 @@ const UploadStatus = () => {
                     {statusMessage?.title}
                   </span>
                 </div>
-                <p className="text-(--color-theme-text-secondary)">{statusMessage?.description}</p>
-                <div className="flex flex-row items-center gap-10 text-(--color-theme-text-muted)">
+                <p className="text-ink-secondary">{statusMessage?.description}</p>
+                <div className="flex flex-row items-center gap-10 text-ink-muted">
                   <div>
                     <Translate>Template</Translate>:{' '}
                     <Translate context={entry.templateId}>{templateName}</Translate>
@@ -174,7 +190,7 @@ const UploadStatus = () => {
                   <Card>
                     <div className="flex flex-col gap-3">
                       <div className="font-medium text-ink">{entry.failure.message}</div>
-                      <div className="flex flex-wrap gap-6 text-sm text-(--color-theme-text-secondary)">
+                      <div className="flex flex-wrap gap-6 text-sm text-ink-secondary">
                         <div>
                           <Translate>Stage</Translate>: {entry.failure.stage}
                         </div>
@@ -202,7 +218,7 @@ const UploadStatus = () => {
                   status={entry.status}
                   stats={entry.stats}
                 />
-                <p className="pt-2 text-sm text-(--color-theme-text-secondary)">
+                <p className="pt-2 text-sm text-ink-secondary">
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
               </div>

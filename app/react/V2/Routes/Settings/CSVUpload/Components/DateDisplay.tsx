@@ -9,7 +9,7 @@ const DateDisplay = ({ value }: { value: number }) => {
     return '-';
   }
 
-  let luxonInstance = DateTime.fromMillis(value, { zone: 'local' });
+  let luxonInstance = DateTime.fromMillis(value);
 
   luxonInstance = luxonInstance.setLocale(locale || 'en');
 
