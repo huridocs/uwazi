@@ -121,9 +121,10 @@ describe('translations', () => {
 
     describe('when saving a dictionary context', () => {
       it('should propagate translation changes to entities denormalized label', async () => {
-        jest
+        const renameSpy = jest
           .spyOn(thesauri, 'renameThesaurusInMetadata')
           .mockImplementation(async () => Promise.resolve());
+        renameSpy.mockClear();
 
         await translations.save({
           locale: 'en',
@@ -148,6 +149,121 @@ describe('translations', () => {
           dictionaryId.toString(),
           'en'
         );
+      });
+
+      it('should propagate child thesaurus translation changes to entities denormalized label', async () => {
+        await testingEnvironment.db.getCollection('dictionaries')?.updateOne(
+          { _id: dictionaryId },
+          {
+            $set: {
+              values: [
+                {
+                  id: 'parent_id',
+                  label: 'Parent',
+                  values: [{ id: 'child_id', label: 'Age' }],
+                },
+              ],
+            },
+          }
+        );
+
+        const renameSpy = jest
+          .spyOn(thesauri, 'renameThesaurusInMetadata')
+          .mockImplementation(async () => Promise.resolve());
+        renameSpy.mockClear();
+
+        await translations.save({
+          locale: 'en',
+          contexts: [
+            {
+              id: dictionaryId.toString(),
+              type: 'Thesaurus',
+              values: {
+                Age: 'Age changed in child',
+              },
+            },
+          ],
+        });
+
+        expect(thesauri.renameThesaurusInMetadata).toHaveBeenCalledWith(
+          'child_id',
+          'Age changed in child',
+          dictionaryId.toString(),
+          'en'
+        );
+      });
+
+      it('should propagate duplicated child labels across different parents', async () => {
+        await testingEnvironment.db.getCollection('dictionaries')?.updateOne(
+          { _id: dictionaryId },
+          {
+            $set: {
+              values: [
+                {
+                  id: 'in_court',
+                  label: 'in court',
+                  values: [
+                    { id: 'yes_in_court', label: 'Age' },
+                    { id: 'no_in_court', label: 'Email' },
+                  ],
+                },
+                {
+                  id: 'in_government',
+                  label: 'in government',
+                  values: [
+                    { id: 'yes_in_government', label: 'Age' },
+                    { id: 'no_in_government', label: 'Email' },
+                  ],
+                },
+              ],
+            },
+          }
+        );
+
+        const renameSpy = jest
+          .spyOn(thesauri, 'renameThesaurusInMetadata')
+          .mockImplementation(async () => Promise.resolve());
+        renameSpy.mockClear();
+
+        await translations.save({
+          locale: 'en',
+          contexts: [
+            {
+              id: dictionaryId.toString(),
+              type: 'Thesaurus',
+              values: {
+                Age: 'Yes changed',
+                Email: 'No changed',
+              },
+            },
+          ],
+        });
+
+        expect(renameSpy).toHaveBeenCalledWith(
+          'yes_in_court',
+          'Yes changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledWith(
+          'yes_in_government',
+          'Yes changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledWith(
+          'no_in_court',
+          'No changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledWith(
+          'no_in_government',
+          'No changed',
+          dictionaryId.toString(),
+          'en'
+        );
+        expect(renameSpy).toHaveBeenCalledTimes(4);
       });
     });
   });
