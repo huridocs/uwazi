@@ -8,6 +8,9 @@ import { TablePage } from '../PagesList.js';
 
 const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
 
+const getPageDraftUrl = (sharedId: string, title: string) =>
+  `page-draft/${sharedId}/${kebabCase(title)}`;
+
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
 const UrlHeader = () => <Translate>URL</Translate>;
@@ -65,5 +68,6 @@ export {
   ActionHeader,
   UrlCell,
   getPageUrl,
+  getPageDraftUrl,
   List,
 };
