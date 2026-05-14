@@ -46,7 +46,32 @@ export const PageSchema = {
   validatePageIsNotEntityView: true,
   additionalProperties: false,
   title: 'PageType',
-  definitions: { objectIdSchema },
+  definitions: {
+    objectIdSchema,
+    pageDraft: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        content: { type: 'string' },
+        script: { type: 'string' },
+        css: { type: 'string' },
+      },
+    },
+    pageRelease: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        version: { type: 'integer', minimum: 1 },
+        content: { type: 'string' },
+        script: { type: 'string' },
+        css: { type: 'string' },
+        release_message: { type: 'string' },
+        user: objectIdSchema,
+        date: { type: 'number' },
+      },
+      required: ['version', 'content', 'date'],
+    },
+  },
   properties: {
     _id: objectIdSchema,
     title: { type: 'string' },
@@ -64,8 +89,14 @@ export const PageSchema = {
         css: { type: 'string' },
       },
     },
+    draft: { $ref: '#/definitions/pageDraft' },
+    releases: {
+      type: 'array',
+      items: { $ref: '#/definitions/pageRelease' },
+    },
     user: objectIdSchema,
     entityView: { type: 'boolean' },
+    disableMarkdown: { type: 'boolean' },
     version: { type: 'integer', minimum: 1 },
     __v: { type: 'number' },
   },

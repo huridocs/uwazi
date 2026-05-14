@@ -1,4 +1,3 @@
-import { createError } from '#api/utils/index.js';
 import { PageType } from '#shared/types/pageType.js';
 
 export type PageContentMode = 'published' | 'draft';
@@ -54,7 +53,13 @@ export const resolvePageForClient = (page: PageType, mode: PageContentMode): Pag
     return next;
   }
   if (Array.isArray(releases) && releases.length === 0) {
-    throw createError('Page not found', 404);
+    next.metadata = {
+      ...next.metadata,
+      content: draft.content,
+      script: draft.script,
+      css: draft.css,
+    };
+    return next;
   }
 
   next.metadata = {

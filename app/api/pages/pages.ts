@@ -67,7 +67,10 @@ export default {
 
   async getById(sharedId: string, language?: string, select?: string) {
     const results = await this.get({ sharedId, language }, select);
-    return results[0] ? results[0] : Promise.reject(createError('Page not found', 404));
+    if (!results[0]) {
+      return Promise.reject(createError('Page not found', 404));
+    }
+    return results[0];
   },
 
   async delete(sharedId: string) {

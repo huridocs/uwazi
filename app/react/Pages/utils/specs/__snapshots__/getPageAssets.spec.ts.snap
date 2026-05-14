@@ -44,6 +44,8 @@ Object {
     "cssRendered": false,
     "metadata": Object {
       "content": "originalContent",
+      "css": "",
+      "script": "",
     },
     "scriptRendered": false,
     "title": "Page 1",

@@ -50,5 +50,11 @@ describe('pageSchema', () => {
       const validated = await validatePage(page);
       expect(validated.version).toBe(2);
     });
+
+    it('should accept disableMarkdown', async () => {
+      page.disableMarkdown = true;
+      const validated = await validatePage(page);
+      expect(validated.disableMarkdown).toBe(true);
+    });
   });
 });

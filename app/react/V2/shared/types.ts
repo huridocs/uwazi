@@ -1,3 +1,4 @@
+import type { PageDraft, PageRelease } from '#shared/types/pageType.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { SettingsLinkSchema } from '#shared/types/settingsType.js';
 import { Property, Template } from '#app/apiResponseTypes.js';
@@ -50,8 +51,11 @@ type Page = {
     script?: string;
     css?: string;
   };
+  draft?: PageDraft;
+  releases?: PageRelease[];
   user?: string;
   entityView?: boolean;
+  disableMarkdown?: boolean;
   version?: number;
 };
 
