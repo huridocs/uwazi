@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Icon } from '#app/UI/index.js';
-import { t, Translate } from '#app/I18N/index.js';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
+import { Icon } from '#app/UI/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { exportDocuments } from '#app/Library/actions/exportActions.js';
 import { User } from '#api/users/usersModel.js';
