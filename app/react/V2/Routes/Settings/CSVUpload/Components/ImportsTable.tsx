@@ -74,7 +74,7 @@ const StatusCell = ({ cell }: CellContext<TableData, TableData['status']>) => {
     const entitiesCrated = cell.row.original.stats?.entitiesCreated;
 
     if (hasFailed) {
-      return <span>{statusMessages.failed.title}</span>;
+      return <span>{statusMessages.completedWithErrors.title}</span>;
     }
 
     if (entitiesCrated === 0) {

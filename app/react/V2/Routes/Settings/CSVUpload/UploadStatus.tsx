@@ -46,7 +46,7 @@ const UploadStatus = () => {
       const entitiesCreated = entry?.stats?.entitiesCreated;
 
       if (hasFailed) {
-        return statusMessages.failed;
+        return statusMessages.completedWithErrors;
       }
 
       if (entitiesCreated === 0) {
