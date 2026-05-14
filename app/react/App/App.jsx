@@ -41,12 +41,14 @@ const App = ({ customParams }) => {
 
   const shouldShowNewHeader = Boolean(settings.features?.newHeader);
 
-  const confirm = options => {
-    setConfirmOptions(options);
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const appContext = useMemo(() => ({ confirm }));
+  const appContext = useMemo(
+    () => ({
+      confirm: options => {
+        setConfirmOptions(options);
+      },
+    }),
+    []
+  );
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
