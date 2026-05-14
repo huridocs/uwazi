@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
 
+import { PAGE_STYLE_ELEMENT_ID } from '#app/Pages/components/PageStyle.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
 
@@ -114,8 +115,13 @@ const safeHelmet = result => {
   return result;
 };
 
-const headTag = (head, CSS, reduxData) => (
-  <head>
+const headTag = (head, CSS, reduxData, documentHeadPageCss) => {
+  const ssrPageCss =
+    typeof documentHeadPageCss === 'string' && documentHeadPageCss.trim()
+      ? documentHeadPageCss
+      : null;
+  return (
+    <head>
     {safeHelmet(head.title?.toComponent?.())}
     {safeHelmet(head.meta?.toComponent?.())}
     {safeHelmet(head.link?.toComponent?.())}
@@ -127,13 +133,23 @@ const headTag = (head, CSS, reduxData) => (
       type="text/css"
       dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
     />
+    {ssrPageCss != null && (
+      <style
+        id={PAGE_STYLE_ELEMENT_ID}
+        key="uwazi-page-custom-css"
+        type="text/css"
+        data-uwazi-page-style="true"
+        dangerouslySetInnerHTML={{ __html: ssrPageCss }}
+      />
+    )}
     {reduxData.settings.collection.get('allowcustomJS') && (
       <script dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }} />
     )}
     {googelFonts}
     {getFaviconLinks(reduxData)}
-  </head>
-);
+    </head>
+  );
+};
 
 class Root extends Component {
   renderInitialData() {
@@ -160,7 +176,7 @@ class Root extends Component {
 
   render() {
     const isHotReload = process.env.HOT;
-    const { head, language, assets, reduxData, content } = this.props;
+    const { head, language, assets, reduxData, content, documentHeadPageCss } = this.props;
 
     const languageData = availableLanguages.find(l => l.key === language);
     const query = languageData && languageData.rtl ? '?rtl=true' : '';
@@ -171,7 +187,7 @@ class Root extends Component {
 
     return (
       <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'} style={{ fontSize: 'unset' }}>
-        {headTag(head, CSS, reduxData)}
+        {headTag(head, CSS, reduxData, documentHeadPageCss)}
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
           <script
@@ -203,6 +219,8 @@ Root.propTypes = {
   user: PropTypes.object,
   children: PropTypes.object,
   reduxData: PropTypes.object,
+  /** Custom page CSS for first paint (set by SSR from route data, not read from reduxData here). */
+  documentHeadPageCss: PropTypes.string,
   head: PropTypes.object,
   content: PropTypes.string,
   language: PropTypes.string,

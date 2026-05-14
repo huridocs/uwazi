@@ -1,10 +1,9 @@
-import { actions } from '#app/BasicReducer/index.js';
-
 import { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const STYLE_ATTR = 'data-uwazi-page-style';
+/** Same id as SSR inline page style in Root — replaced on client when CSS updates. */
+const PAGE_STYLE_ELEMENT_ID = 'uwazi-page-style-inline';
 
 class PageStyle extends Component {
   constructor(props) {
@@ -28,19 +27,30 @@ class PageStyle extends Component {
 
   componentWillUnmount() {
     this.removeStyle();
+    document.getElementById(PAGE_STYLE_ELEMENT_ID)?.remove();
   }
 
   appendStyle() {
-    const { children, cssRendered } = this.props;
-    if (children && cssRendered === false) {
-      const el = document.createElement('style');
-      el.type = 'text/css';
-      el.setAttribute(STYLE_ATTR, 'true');
-      el.textContent = children;
-      document.head.appendChild(el);
-      this.styleElement = el;
-      this.props.dispatch(actions.setIn('page/pageView', 'cssRendered', true));
+    const { children } = this.props;
+    if (!children) {
+      return;
     }
+
+    const existingById = document.getElementById(PAGE_STYLE_ELEMENT_ID);
+    if (existingById && existingById.textContent === children) {
+      this.styleElement = existingById;
+      return;
+    }
+
+    document.getElementById(PAGE_STYLE_ELEMENT_ID)?.remove();
+
+    const el = document.createElement('style');
+    el.id = PAGE_STYLE_ELEMENT_ID;
+    el.type = 'text/css';
+    el.setAttribute(STYLE_ATTR, 'true');
+    el.textContent = children;
+    document.head.appendChild(el);
+    this.styleElement = el;
   }
 
   removeStyle() {
@@ -57,14 +67,13 @@ class PageStyle extends Component {
 
 PageStyle.defaultProps = {
   children: '',
-  cssRendered: null,
 };
 
 PageStyle.propTypes = {
   children: PropTypes.string,
-  cssRendered: PropTypes.bool,
-  dispatch: PropTypes.func.isRequired,
 };
 
-const PageStyleConnected = connect()(PageStyle);
-export { PageStyle, PageStyleConnected };
+/** @deprecated Use `PageStyle`; kept for a single import site in PageViewer. */
+const PageStyleConnected = PageStyle;
+
+export { PageStyle, PageStyleConnected, PAGE_STYLE_ELEMENT_ID };

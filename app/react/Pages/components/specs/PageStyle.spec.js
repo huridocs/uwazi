@@ -14,8 +14,7 @@ describe('PageStyle', () => {
   let props;
 
   beforeEach(() => {
-    const dispatch = jasmine.createSpy('dispatch');
-    props = { cssRendered: false, dispatch };
+    props = {};
     document.head.querySelectorAll('style[data-uwazi-page-style]').forEach(el => el.remove());
     component = null;
   });
@@ -42,8 +41,36 @@ describe('PageStyle', () => {
       render();
       const styles = uwaziStyles();
       expect(styles).toHaveLength(1);
+      expect(styles[0].id).toBe('uwazi-page-style-inline');
       expect(styles[0].textContent).toBe('.page-test { color: red; }');
-      expect(props.dispatch).toHaveBeenCalled();
+    });
+
+    it('should adopt SSR inline style when content matches', () => {
+      const existing = document.createElement('style');
+      existing.id = 'uwazi-page-style-inline';
+      existing.setAttribute('data-uwazi-page-style', 'true');
+      existing.textContent = '.same { }';
+      document.head.appendChild(existing);
+
+      props.children = '.same { }';
+      render();
+      const styles = uwaziStyles();
+      expect(styles).toHaveLength(1);
+      expect(styles[0].textContent).toBe('.same { }');
+    });
+
+    it('should replace SSR inline style when content differs', () => {
+      const existing = document.createElement('style');
+      existing.id = 'uwazi-page-style-inline';
+      existing.setAttribute('data-uwazi-page-style', 'true');
+      existing.textContent = 'old { }';
+      document.head.appendChild(existing);
+
+      props.children = '.page-test { color: blue; }';
+      render();
+      const styles = uwaziStyles();
+      expect(styles).toHaveLength(1);
+      expect(styles[0].textContent).toBe('.page-test { color: blue; }');
     });
   });
 

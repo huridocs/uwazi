@@ -416,6 +416,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
 
+  const pageCssRaw = initialState.page?.pageView?.getIn?.(['metadata', 'css']);
+  const documentHeadPageCss =
+    typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined;
+
   if (req.aborted) {
     logSSRAborted(req, 'Component HTML', ssrStart, routeName);
     return;
@@ -450,6 +454,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       head={Helmet.rewind()}
       user={req.user}
       reduxData={initialState}
+      documentHeadPageCss={documentHeadPageCss}
       assets={assets}
       loadingError={loadingError || ssrError}
       featureFlags={clientFeatureFlags}
