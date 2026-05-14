@@ -88,7 +88,6 @@ class PageViewer extends Component {
     const parseMarkdown = !Number.isFinite(pageVersion) || pageVersion < 2;
     const originalText = page.getIn(['metadata', 'content']) || '';
     const scriptRendered = page.getIn(['scriptRendered']);
-    const cssRendered = page.getIn(['cssRendered']);
     const pageCss = page.getIn(['metadata', 'css']) || '';
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
@@ -112,7 +111,7 @@ class PageViewer extends Component {
               )}
               <main className="page-viewer document-viewer">
                 <div className="main-wrapper">
-                  <PageStyleConnected cssRendered={cssRendered}>{pageCss}</PageStyleConnected>
+                  <PageStyleConnected>{pageCss}</PageStyleConnected>
                   {this.state.customPageError && this.renderErrorWarning()}
                   <Context.Provider value={datasets}>
                     <ErrorBoundary>
