@@ -1,15 +1,12 @@
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
 async function checkFeatureEnabled() {
-  const db = getConnection();
-
   const transactionManager = TransactionManagerFactory.default();
-  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+  const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   return settingsDataSource.readNewRelationshipsAllowed();
 }
@@ -114,7 +111,7 @@ export {
   checkFeatureEnabled,
   createResponseProcessors,
   deducePropertyContent,
-  getAggregatedIndexedPropertyPath,
   findDenormalizedProperty,
+  getAggregatedIndexedPropertyPath,
   getTypeToAggregate,
 };

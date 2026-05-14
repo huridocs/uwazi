@@ -2,7 +2,6 @@ import { Db } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -13,6 +12,7 @@ import { DenormalizationService } from '../DenormalizationService.js';
 import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -350,14 +350,14 @@ beforeEach(async () => {
   const entitiesDataSource = new MongoEntitiesDataSource(
     db,
     templatesDataSource,
-    new MongoSettingsDataSource(db, transactionManager),
+    SettingsDataSourceFactory.default({ transactionManager }),
     transactionManager
   );
   service = new DenormalizationService(
     relationshipsDataSource,
     entitiesDataSource,
     templatesDataSource,
-    new MongoSettingsDataSource(db, transactionManager),
+    SettingsDataSourceFactory.default({ transactionManager }),
     transactionManager,
     indexMock,
     partialImplementation<RelationshipPropertyUpdateStrategy>({
