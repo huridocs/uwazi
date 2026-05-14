@@ -71,7 +71,7 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
 
     const handleSuggestionSuccess: AcceptSuggestionSuccessCallback = async () => {
       await revalidate();
-      notify('success', t('System', 'Suggestions have been updated', null, false));
+      notify('success', t('System', 'Suggestions updated', null, false));
     };
 
     const handleSuggestionError: AcceptSuggestionErrorCallback = async message => {
