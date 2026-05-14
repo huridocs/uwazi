@@ -2,7 +2,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import testingDB from '#api/utils/testing_db.js';
@@ -10,6 +9,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { EntityRelationshipsUpdateService } from '../EntityRelationshipsUpdateService.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -139,27 +139,32 @@ afterAll(async () => {
 
 function buildService() {
   const transactionManager = TransactionManagerFactory.default();
-  const settingsDataSource = new MongoSettingsDataSource(getConnection(), transactionManager);
-  const templateDataSource = new MongoTemplatesDataSource({
-    db: getConnection(),
-    transactionManager,
-    slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
-  });
-  const entityDataSource = new MongoEntitiesDataSource(
-    getConnection(),
-    templateDataSource,
-    settingsDataSource,
-    transactionManager
-  );
-  const relationshipsDataSource = new MongoRelationshipsDataSource(
-    getConnection(),
-    transactionManager
-  );
+  return testingEnvironment.runWithContext(
+    () => {
+      const settingsDataSource = SettingsDataSourceFactory.default();
+      const templateDataSource = new MongoTemplatesDataSource({
+        db: getConnection(),
+        transactionManager,
+        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+      });
+      const entityDataSource = new MongoEntitiesDataSource(
+        getConnection(),
+        templateDataSource,
+        settingsDataSource,
+        transactionManager
+      );
+      const relationshipsDataSource = new MongoRelationshipsDataSource(
+        getConnection(),
+        transactionManager
+      );
 
-  return new EntityRelationshipsUpdateService(
-    entityDataSource,
-    templateDataSource,
-    relationshipsDataSource
+      return new EntityRelationshipsUpdateService(
+        entityDataSource,
+        templateDataSource,
+        relationshipsDataSource
+      );
+    },
+    { factories: { transactionManager: () => transactionManager } }
   );
 }
 
