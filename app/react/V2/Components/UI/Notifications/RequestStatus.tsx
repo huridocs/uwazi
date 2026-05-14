@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import type { NotificationType } from '#V2/atoms/requestStatusAtom.js';
 import { useContrastColor } from '#V2/CustomHooks/useContrastColor.js';
+import { useResolvedBackgroundColor } from '#V2/CustomHooks/useResolvedBackgroundColor.js';
 import { StatusDot } from './StatusDot.js';
 import { NotificationFlash } from './NotificationFlash.js';
 
@@ -40,6 +41,7 @@ const RequestStatus = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contrastColor = useContrastColor(containerRef);
+  const barBackground = useResolvedBackgroundColor(containerRef);
 
   const [flash, setFlash] = useState<FlashState | null>(null);
   const lastFlashId = useRef<string | null>(null);
@@ -117,7 +119,10 @@ const RequestStatus = () => {
   }, [hasRunningTasks, isLoading, overallStatus]);
 
   return (
-    <div ref={containerRef} className="flex items-center p-1 rounded-xl gap-1.5">
+    <div
+      ref={containerRef}
+      className="relative inline-flex min-h-13 items-center gap-1.5 rounded-xl p-1"
+    >
       {flash && (
         <div
           key={`announcement-${flash.id}`}
@@ -130,24 +135,32 @@ const RequestStatus = () => {
         </div>
       )}
       {flash && (
-        <NotificationFlash
-          key={flash.id}
-          title={flash.title}
-          type={flash.type}
-          phase={flash.phase}
-          color={contrastColor}
-        />
+        <div className="absolute inset-y-0 end-4 z-10 flex items-stretch justify-end">
+          <NotificationFlash
+            key={flash.id}
+            title={flash.title}
+            type={flash.type}
+            phase={flash.phase}
+            color={contrastColor}
+            barBackground={barBackground}
+            onOpenPanel={togglePanel}
+            controlsId={PANEL_ID}
+            isPanelExpanded={isPanelOpen}
+          />
+        </div>
       )}
-      <StatusDot
-        overallStatus={overallStatus}
-        isConnected={isConnected}
-        hasRunningTasks={hasRunningTasks}
-        onClick={togglePanel}
-        popKey={popKey}
-        color={contrastColor}
-        controlsId={PANEL_ID}
-        isExpanded={isPanelOpen}
-      />
+      <span className="relative z-20 inline-flex shrink-0">
+        <StatusDot
+          overallStatus={overallStatus}
+          isConnected={isConnected}
+          hasRunningTasks={hasRunningTasks}
+          onClick={togglePanel}
+          popKey={popKey}
+          color={contrastColor}
+          controlsId={PANEL_ID}
+          isExpanded={isPanelOpen}
+        />
+      </span>
     </div>
   );
 };

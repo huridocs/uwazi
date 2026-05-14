@@ -1,15 +1,13 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { RelationshipPropertyMappingFactory } from '#api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { propertyMappings } from './mappings.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 const createNewRelationshipMappingFactory = async () => {
-  const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+  const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
     return null;
