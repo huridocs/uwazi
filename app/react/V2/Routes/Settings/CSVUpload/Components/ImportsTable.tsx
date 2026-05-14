@@ -303,7 +303,7 @@ const ImportsTable = () => {
               <span className="text-lg font-semibold text-(--color-theme-feedback-danger)">
                 {failed}
               </span>
-              <Translate>Failed jobs</Translate>
+              <Translate>Failed</Translate>
             </div>
           </div>
         </div>
