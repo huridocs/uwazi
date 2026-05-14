@@ -390,6 +390,7 @@ File updated,Файл оновлено
 Files,Файли
 Files and database usage,Використання файлів і баз даних
 Fill,Заповнити
+Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
 Filters,Фільтри
 Filters AND operator,І
 Filters configuration,Фільтри
@@ -421,6 +422,7 @@ General Information,Загальна інформація
 Generated ID,Згенерований ідентифікатор
 Global CSS,Глобальні CSS
 Global CSS & JS,Глобальний CSS та JS
+Global JS,Global JS
 Google,Google
 Google Analytics,Google Аналітики
 Google Analytics ID,ID Google Аналітики
@@ -442,6 +444,7 @@ here,тут.
 Hide,Hide
 Hide actions,Приховати дії
 Hide label,Приховати мітку
+Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Приховати панель інструментів
 https://yourdomain,https://вашдомен
 hubs,хаби
@@ -650,6 +653,7 @@ No Value,Немає значення
 "No, cancel","Ні, скасуй."
 Non processed,Не оброблений
 Non-labeled,Без маркування
+Non-latin characters support,Non-latin characters support
 Normal view,Нормальний вигляд
 Not already been use as source template in another extractor,Не використовувався як вихідний шаблон в іншому екстракторі
 Not already been use as target template,Ще не використовувався як цільовий шаблон
@@ -769,6 +773,7 @@ Public form settings description,Тут ви можете налаштувати
 Public Form submit URL,Публічна форма надсилання URL-адреси
 Public form URL description,"Якщо ви налаштували публічну форму і хочете, щоб інша колекція Uwazi отримувала заявки, введіть URL-адресу цієї колекції тут."
 Public form whitelist description,"Якщо ви хочете включити публічні форми на свої сторінки, ви повинні додати ідентифікатори шаблонів, для яких очікуються публічні форми, до білого списку."
+Public instance,Public instance
 Publish,Опублікувати
 Published,У відкритому доступі
 QR Code,QR-код
@@ -1014,7 +1019,12 @@ This entity is restricted from public view.,Цей об'єкт обмежени�
 This field is required,Це поле обов'язкове для заповнення
 This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
 This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
-This file is no longer available.,This file is no longer available.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,Цей тип файлів не підтримується на медіа-полях
 This group is empty,Ця група порожня
 This import is waiting in queue.,This import is waiting in queue.

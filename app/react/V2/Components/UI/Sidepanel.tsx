@@ -219,7 +219,7 @@ const Sidepanel = ({
         <Transition.Child
           as="div"
           data-testid="sidepanel-overlay"
-          className="w-full transition-opacity duration-200 ease-in md:grow [background-color:var(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))]"
+          className="w-full transition-opacity duration-200 ease-in md:grow bg-[var(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))]"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
@@ -301,9 +301,7 @@ Sidepanel.Footer = ({
   children: React.ReactNode;
   className?: String;
 }) => (
-  <div
-    className={`bottom-0 left-0 z-1 w-full [background-color:var(--color-theme-surface-page)] ${className}`}
-  >
+  <div className={`bottom-0 left-0 z-1 w-full bg-(--color-theme-surface-page) ${className}`}>
     {children}
   </div>
 );

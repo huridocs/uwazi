@@ -10,9 +10,8 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { EntityIndexerService } from '#api/core/infrastructure/elasticSearch/entities/EntityIndexerService.js';
 import { search } from '#api/search/index.js';
+import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 
 const factory = getFixturesFactory();
 const fixtures = {
@@ -78,10 +77,7 @@ const createEntity = (languages: string[], template: Template, userId?: string) 
 const createSut = () => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const entityIndexerService = TestUtils.mockClass<EntityIndexerService>({
-    index: jest.fn().mockResolvedValue(undefined),
-    deleteBySharedIds: jest.fn().mockResolvedValue(undefined),
-  });
+  const entityIndexerService = EntityIndexerServiceFactory.forTests();
 
   const sut = new MongoMultiLanguageEntityDataSource({
     db,
@@ -357,12 +353,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.create(entity);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -375,13 +368,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkInsert([entity1, entity2]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity1.sharedId }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });
 
@@ -393,12 +382,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.update(entity);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -411,13 +397,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkUpdate([entity1, entity2]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity1.sharedId }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity2.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });
 
@@ -433,12 +415,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.deleteMetadataProperties(['text'], [entity.sharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -454,12 +433,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.renameMetadataProperties({ text: 'newText' }, [entity.sharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -489,9 +465,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.deleteReferencesToSharedIds([targetSharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.objectContaining({ sharedId: affectedSharedId })])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([affectedSharedId])
       );
     });
 
@@ -507,12 +483,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkUpdateDeprecated([entity]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 
@@ -529,8 +502,8 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       await sut.bulkDelete([entity1.sharedId, entity2.sharedId]);
       await transactionManager.executeOnCommitHandlers(undefined);
 
-      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.deleteBySharedIds).toHaveBeenCalledWith(
+      expect(entityIndexerService.remove).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.remove).toHaveBeenCalledWith(
         expect.arrayContaining([entity1.sharedId, entity2.sharedId])
       );
     });
@@ -557,6 +530,94 @@ describe('MongoMultiLanguageEntityDataSource', () => {
       );
 
       bulkDeleteBySharedIdSpy.mockRestore();
+    });
+  });
+
+  describe('bulkUpdate', () => {
+    it('should not overwrite permissions or published when updating entity content', async () => {
+      const { sut, transactionManager } = createSut();
+      const template = createSampleTemplate();
+      const entity = createEntity(['en', 'es'], template);
+
+      const existingPermissions = [{ refId: 'user-abc', type: 'user', level: 'write' }];
+
+      // Insert with permissions and published set directly, bypassing the domain mapper
+      const templateObjectId = new ObjectId(template.id);
+      await testingEnvironment.db.getCollection('entities')!.insertMany([
+        {
+          _id: new ObjectId(entity.getTranslation('en').id.value),
+          sharedId: entity.sharedId,
+          language: 'en',
+          template: templateObjectId,
+          title: 'Original Title',
+          metadata: {},
+          obsoleteMetadata: [],
+          published: true,
+          permissions: existingPermissions,
+          creationDate: Date.now(),
+          editDate: Date.now(),
+        },
+        {
+          _id: new ObjectId(entity.getTranslation('es').id.value),
+          sharedId: entity.sharedId,
+          language: 'es',
+          template: templateObjectId,
+          title: 'Original Title',
+          metadata: {},
+          obsoleteMetadata: [],
+          published: true,
+          permissions: existingPermissions,
+          creationDate: Date.now(),
+          editDate: Date.now(),
+        },
+      ]);
+
+      // Update content via bulkUpdate
+      entity.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Updated Title' }] }),
+      ]);
+
+      await transactionManager.run(async () => {
+        await sut.bulkUpdate([entity]);
+      });
+
+      const stored = await testingEnvironment.db.getAllFrom('entities');
+      const entityDocs = stored.filter(e => e.sharedId === entity.sharedId);
+
+      entityDocs.forEach(doc => {
+        expect(doc.title).toBe('Updated Title'); // content was updated
+        expect(doc.published).toBe(true); // not erased
+        expect(doc.permissions).toEqual(existingPermissions); // not erased
+      });
+    });
+
+    it('should unset preview when the entity has no preview', async () => {
+      const { sut, transactionManager } = createSut();
+      const template = createSampleTemplate();
+      const entity = createEntity(['en'], template);
+
+      await testingEnvironment.db.getCollection('entities')!.insertOne({
+        _id: new ObjectId(entity.getTranslation('en').id.value),
+        sharedId: entity.sharedId,
+        language: 'en',
+        template: new ObjectId(template.id),
+        title: 'Title',
+        metadata: {},
+        obsoleteMetadata: [],
+        published: false,
+        permissions: [],
+        preview: 'some-thumbnail.jpg', // preview was previously set
+        creationDate: Date.now(),
+        editDate: Date.now(),
+      });
+
+      // entity domain object has no preview set (undefined)
+      await transactionManager.run(async () => {
+        await sut.bulkUpdate([entity]);
+      });
+
+      const [stored] = await testingEnvironment.db.getAllFrom('entities');
+      expect(stored.preview).toBeUndefined();
     });
   });
 });

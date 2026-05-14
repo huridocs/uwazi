@@ -14,7 +14,7 @@ const dependenciesContextMiddleware = (
   _response: Response,
   next: NextFunction
 ) => {
-  if (!/^\/(api|files|assets)(\/|$)/.test(request.path)) {
+  if (!/^\/(api|files|assets)(\/|$)/i.test(request.path)) {
     return next();
   }
 
@@ -28,12 +28,11 @@ const dependenciesContextMiddleware = (
       factories: {
         transactionManager: TransactionManagerFactory.default,
         jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
-        eventEmitter: () => EventEmitterFactory.default(),
+        eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,
-        elasticClient: () => ElasticSearchClientFactory.tenantAware(tenant.name),
-        authorizedEntityESClient: () =>
-          ElasticSearchClientFactory.authorizedEntityClient(tenant.name, actor),
+        elasticClient: ElasticSearchClientFactory.tenantAware,
+        authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
       },
     },
     next

@@ -33,6 +33,7 @@ describe('formatRelationshipProperty', () => {
         value: 'entity5',
         label: 'Fire Incident - Downtown',
         icon: '',
+        authorized: false,
       },
     ],
     hierarchical_relationships: [
@@ -76,7 +77,7 @@ describe('formatRelationshipProperty', () => {
     expect(formatRelationshipProperty(property, metadata)).toBeNull();
   });
 
-  it('should resolve inherited relationships', () => {
+  it('should return null when inheritance resolves to non-relationship types', () => {
     const property = {
       _id: '1.10',
       name: 'related_people',
@@ -87,25 +88,10 @@ describe('formatRelationshipProperty', () => {
       relationShipTarget: 'template-people',
     } as BaseMetadataProperty;
 
-    expect(formatRelationshipProperty(property, metadata)).toEqual({
-      _id: '1.10',
-      name: 'related_people',
-      label: 'Related people',
-      type: 'multiselect',
-      values: [
-        {
-          value: 'thes1.2',
-          label: 'Again',
-        },
-        {
-          value: 'thes1.1',
-          label: 'Acknowledging',
-        },
-      ],
-    });
+    expect(formatRelationshipProperty(property, metadata)).toBeNull();
   });
 
-  it('should resolve nested relationship inheritance chains to terminal inherited values', () => {
+  it('should return null for deeply nested inheritance ending in non-relationship types', () => {
     const property = {
       _id: '1.20',
       name: 'hierarchical_relationships',
@@ -116,22 +102,7 @@ describe('formatRelationshipProperty', () => {
       relationShipTarget: 'template-people',
     } as BaseMetadataProperty;
 
-    expect(formatRelationshipProperty(property, metadata)).toEqual({
-      _id: '1.20',
-      name: 'hierarchical_relationships',
-      label: 'Hierarchical relationships',
-      type: 'multiselect',
-      values: [
-        {
-          value: 'thes1.2',
-          label: 'Again',
-        },
-        {
-          value: 'thes1.1',
-          label: 'Acknowledging',
-        },
-      ],
-    });
+    expect(formatRelationshipProperty(property, metadata)).toBeNull();
   });
 
   it('should format regular relationship entities', () => {
@@ -157,6 +128,7 @@ describe('formatRelationshipProperty', () => {
         },
         {
           _id: 'entity5',
+          authorized: false,
           title: 'Fire Incident - Downtown',
         },
       ],

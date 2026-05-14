@@ -52,14 +52,13 @@ export class MongoMultiLanguageEntityDataSource
     this.transactionManager.onCommitted(async () => {
       const entities = [...this.mutatedEntities.values()];
       this.mutatedEntities.clear();
-      return this.entityIndexerService.index(entities);
+      return this.entityIndexerService.sync(entities.map(e => e.sharedId));
     });
 
     this.transactionManager.onCommitted(async () => {
       const entities = [...this.deletedEntities.values()];
       this.deletedEntities.clear();
-      if (entities.length === 0) return;
-      return this.entityIndexerService.deleteBySharedIds(entities);
+      return this.entityIndexerService.remove(entities);
     });
   }
 
@@ -96,15 +95,21 @@ export class MongoMultiLanguageEntityDataSource
   async bulkUpdate(entities: Entity[]): Promise<void> {
     const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
 
-    const updates = allDbos.map(dbo => ({
-      replaceOne: {
-        filter: { _id: dbo._id },
-        replacement: dbo,
-      },
-    }));
+    const updates = allDbos.map(dbo => {
+      const { published, permissions, ...contentDbo } = dbo;
+      return {
+        updateOne: {
+          filter: { _id: dbo._id },
+          update: {
+            $set: contentDbo,
+            ...(dbo.preview === undefined ? { $unset: { preview: '' } } : {}),
+          },
+        },
+      };
+    });
 
     if (updates.length > 0) {
-      await this.getCollection().bulkWrite(updates, { ignoreUndefined: true });
+      await this.getCollection().bulkWrite(updates as any, { ignoreUndefined: true });
     }
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));

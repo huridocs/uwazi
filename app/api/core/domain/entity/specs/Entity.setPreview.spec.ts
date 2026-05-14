@@ -10,7 +10,6 @@ const createEntity = (languages: string[]) =>
     sharedId: 'shared-1',
     template: createTemplate(),
     translations: languages.map(l => ({ language: l as any })),
-    published: false,
   });
 
 describe('Entity.setPreview', () => {

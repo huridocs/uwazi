@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import mimetypes from 'mime-types';
 import { ObjectId } from 'mongodb';
 import path from 'path';
@@ -237,7 +238,6 @@ const preserveSync = {
   },
 
   async sync(preserveConfig: PreserveConfig) {
-    // eslint-disable-next-line no-restricted-syntax
     await preserveConfig.config.reduce(async (promise, config) => {
       await promise;
       const preservationSync = await preserveSyncModel.db.findOne({ token: config.token }, {});

@@ -1,13 +1,11 @@
 /* eslint-disable max-classes-per-file */
+import { ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { ObjectId } from 'mongodb';
 import { Template } from '#api/core/domain/template/Template.js';
 import { EntityTranslationProps } from '#api/core/domain/entity/EntityTranslation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
-import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
-import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
 import { TemplateDBO } from '../template/DBOs/TemplateDBO.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { MongoTemplateMapper } from '../template/MongoTemplateMapper.js';
@@ -57,14 +55,8 @@ class MongoEntityMapper {
   static toDBO(entity: Entity): EntityDBO[] {
     let icon: EntityDBO['icon'] = { _id: null, type: 'Empty' };
     let user: EntityDBO['user'];
-    const { published, sharedId } = entity;
+    const { sharedId } = entity;
     const template = ObjectId.createFromHexString(entity.template.id);
-
-    const permissions = entity.permissions.accessGrants.map(grant => ({
-      refId: grant.refId,
-      type: grant.type,
-      level: grant.level,
-    }));
 
     if (entity.icon) {
       icon = {
@@ -93,8 +85,6 @@ class MongoEntityMapper {
       generatedToc: entity.generatedToc,
 
       icon,
-      published,
-      permissions,
       preview: translation.preview,
       metadata: Object.entries(translation.properties).reduce(
         (acc, [key, propertyValue]) => ({ ...acc, [key]: propertyValue.value }),
@@ -102,18 +92,14 @@ class MongoEntityMapper {
       ),
 
       obsoleteMetadata: [], // Todo: handle obsolete metadata
+      published: undefined as any,
     }));
   }
 
   static toDomain(entityDbo: EntityDBO[], templateDbo: TemplateDBO): Entity {
     const template = MongoTemplateMapper.toDomain(templateDbo);
     const userId = entityDbo[0].user?.toHexString();
-    const { sharedId, published, generatedToc } = entityDbo[0];
-    const permissions = entityDbo[0].permissions?.map(permission => ({
-      refId: permission.refId.toString(),
-      type: permission.type as PermissionType,
-      level: permission.level as AccessLevel,
-    }));
+    const { sharedId, generatedToc } = entityDbo[0];
 
     let icon: EntityIcon | undefined;
 
@@ -129,10 +115,8 @@ class MongoEntityMapper {
       generatedToc,
       template,
       sharedId,
-      published,
       icon,
       userId,
-      permissions,
       translations: entityDbo.map(dbo => MongoEntityLanguageMapper.toDomain(dbo, template)),
     });
   }

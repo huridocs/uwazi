@@ -17,7 +17,6 @@ import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
@@ -25,13 +24,14 @@ import { FileType } from '#shared/types/fileType.js';
 import { ThemeSelectionCard } from './Theming/ThemeSelectionCard.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { faviconImageSizeRule } from './Theming/brandImageUploadRules.js';
+import { isClient } from '#app/utils/index.js';
 
 type SettingsWithThemeFlag = ClientSettings & { themeCustomization?: boolean };
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const raw = await SettingsAPI.get(headers);
+    const [raw] = await SettingsAPI.get(headers);
     const { themeCustomization: themeCustomizationFlag, ...settings } =
       raw as SettingsWithThemeFlag;
     const [templates, customFilesRaw] = await Promise.all([
@@ -127,13 +127,13 @@ const Collection = () => {
     }
     data.private = !data.private;
     const { themeCustomization: _, ...rest } = data as SettingsWithThemeFlag;
-    const response = await SettingsAPI.save(rest);
-    if (response instanceof FetchResponseError) {
+    const [response, error] = await SettingsAPI.save(rest);
+    if (error) {
       notify(
         'error',
         t('System', 'An error occurred', null, false),
         undefined,
-        response.message || undefined
+        error.message || undefined
       );
     } else {
       setSettings(prev => mergeClientSettings(prev, response));
@@ -146,7 +146,7 @@ const Collection = () => {
     <span className="flex gap-4">
       {label}
       <Tooltip content={tip} placement="right">
-        <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
+        <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
       </Tooltip>
     </span>
   );
@@ -204,7 +204,7 @@ const Collection = () => {
                     selectButtonTitle={<Translate>Select favicon image</Translate>}
                     recommendedSize="16x16 to 512x512 px (square)"
                     sizeRule={faviconImageSizeRule}
-                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 [background-color:color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] [border-color:color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]"
+                    previewWrapperClassName="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded border p-2 bg-[color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px] border-[color-mix(in_srgb,var(--color-theme-text-primary)_30%,var(--color-theme-border-default))]"
                   />
                 ) : null}
                 {themeCustomization && (
@@ -251,21 +251,40 @@ const Collection = () => {
                 </div>
                 <CollectionOptionToggle
                   valueKey="private"
-                  label="Public instance"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">Public instance</Translate>
+                  }
                   tip={tips.publicSharing}
                   register={register}
                   defaultChecked={formData.private}
                 />
+                {isClient && window.__featureFlags__?.v2GetEntity && (
+                  <CollectionOptionToggle
+                    valueKey="filterUnauthorizedRelated"
+                    label={
+                      <Translate className="text-sm font-medium text-ink">
+                        Hide restricted relationships from public
+                      </Translate>
+                    }
+                    tip={tips.filterUnauthorizedRelated}
+                    register={register}
+                    defaultChecked={formData.filterUnauthorizedRelated}
+                  />
+                )}
                 <CollectionOptionToggle
                   valueKey="cookiepolicy"
-                  label="Show cookie policy"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Show cookie policy
+                    </Translate>
+                  }
                   tip={tips.cookiePolicy}
                   register={register}
                   defaultChecked={formData.cookiepolicy}
                 />
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
-                  label="Global JS"
+                  label={<Translate className="text-sm font-medium text-ink">Global JS</Translate>}
                   tip={tips.globalJS}
                   register={register}
                   defaultChecked={formData.allowcustomJS}
@@ -273,7 +292,11 @@ const Collection = () => {
                 {!settings.newNameGeneration && (
                   <CollectionOptionToggle
                     valueKey="newNameGeneration"
-                    label="Non-latin characters support"
+                    label={
+                      <Translate className="text-sm font-medium text-ink">
+                        Non-latin characters support
+                      </Translate>
+                    }
                     tip={tips.characterSupport}
                     register={register}
                     defaultChecked={formData.newNameGeneration}
@@ -287,7 +310,7 @@ const Collection = () => {
                 <span className="flex gap-4">
                   <Translate>Analytics</Translate>
                   <Tooltip content={tips.analytics} placement="right">
-                    <QuestionMarkCircleIcon className="h-5 w-5 [color:var(--color-theme-text-muted)]" />
+                    <QuestionMarkCircleIcon className="h-5 w-5 text-ink-muted" />
                   </Tooltip>
                 </span>
               }
@@ -313,7 +336,11 @@ const Collection = () => {
               <Card className="mb-4" title={<Translate>Services</Translate>}>
                 <CollectionOptionToggle
                   valueKey="ocrServiceEnabled"
-                  label="Document OCR trigger"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Document OCR trigger
+                    </Translate>
+                  }
                   tip={tips.ocrTrigger}
                   register={register}
                   defaultChecked={formData.ocrServiceEnabled}
@@ -351,7 +378,11 @@ const Collection = () => {
                 </div>
                 <CollectionOptionToggle
                   valueKey="openPublicEndpoint"
-                  label="Allow captcha bypass"
+                  label={
+                    <Translate className="text-sm font-medium text-ink">
+                      Allow captcha bypass
+                    </Translate>
+                  }
                   tip={tips.openPublicForm}
                   register={register}
                   defaultChecked={formData.openPublicEndpoint}

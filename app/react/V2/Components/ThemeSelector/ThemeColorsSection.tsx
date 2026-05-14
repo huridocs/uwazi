@@ -3,8 +3,13 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Button, SurfacePanel } from '#V2/Components/UI/index.js';
 import { THEME_EDITOR_MODE_KEY, recomputeSimpleThemeVarsFromAnchors } from '#V2/theme/index.js';
-import type { ResolvedThemeVars, ThemeMode, ThemePresetId } from '#V2/theme/index.js';
-import type { ChromeOverrideVarKey, SemanticVarKey } from '#V2/theme/index.js';
+import type {
+  ResolvedThemeVars,
+  ThemeMode,
+  ThemePresetId,
+  ChromeOverrideVarKey,
+  SemanticVarKey,
+} from '#V2/theme/index.js';
 import { ThemeAdvancedColorsSection } from './ThemeAdvancedColorsSection.js';
 import { ThemeSimpleColorsSection } from './ThemeSimpleColorsSection.js';
 
@@ -62,12 +67,12 @@ const ThemeColorsSection = ({
       <div className="flex w-full flex-wrap items-center justify-end px-4 py-3">
         <button
           type="button"
-          className="inline-flex min-w-0 max-w-full items-center gap-1.5 text-sm font-medium [color:var(--color-theme-text-secondary)] underline decoration-from-font underline-offset-2 transition-colors hover:[color:var(--color-theme-text-primary)]"
+          className="inline-flex min-w-0 max-w-full items-center gap-1.5 text-sm font-medium text-ink-secondary underline decoration-from-font underline-offset-2 transition-colors hover:text-ink"
           aria-expanded={open}
           onClick={() => setOpen(v => !v)}
         >
           <ChevronDownIcon
-            className={`h-4 w-4 shrink-0 transition-transform duration-200 [color:var(--color-theme-text-secondary)] ${open ? 'rotate-180' : ''}`}
+            className={`h-4 w-4 shrink-0 transition-transform duration-200 text-ink-secondary ${open ? 'rotate-180' : ''}`}
             aria-hidden
           />
           <Translate>Advanced colors</Translate>
@@ -76,7 +81,7 @@ const ThemeColorsSection = ({
 
       {open ? (
         <>
-          <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] px-4 py-4">
+          <div className="border-t border-[color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] px-4 py-4">
             <div className="flex flex-wrap items-center gap-2">
               <input
                 ref={fileInputRef}

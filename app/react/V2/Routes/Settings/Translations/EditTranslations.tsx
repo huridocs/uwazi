@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-lines */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -13,14 +14,21 @@ import {
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
+import RenderIfVisibleModule from 'react-render-if-visible';
 import { t, Translate } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { ClientTranslationSchema } from '#app/istore.js';
-import { InputField } from '#app/V2/Components/Forms/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import RenderIfVisibleModule from 'react-render-if-visible';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, ToggleButton, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
+import * as translationsAPI from '#V2/api/translations/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { availableLanguages } from '#shared/language/index.js';
+import { Settings } from '#shared/types/settingsType.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { LanguagePill } from './components/LanguagePill.js';
 
 // eslint-disable-next-line react/prop-types -- typed via ComponentType<>
 const Fallback: React.ComponentType<{ children: React.ReactNode }> = ({ children }) => (
@@ -31,20 +39,12 @@ const RenderIfVisible = resolveDefaultExport<React.ComponentType<{ children: Rea
   Fallback,
   c => typeof c === 'function'
 );
-import * as translationsAPI from '#V2/api/translations/index.js';
-import * as settingsAPI from '#V2/api/settings/index.js';
-import { availableLanguages } from '#shared/language/index.js';
-import { Settings } from '#shared/types/settingsType.js';
-import { FetchResponseError } from '#shared/JSONRequest.js';
-import { LanguagePill } from './components/LanguagePill.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }: { params: Params }) => {
     const translations = await translationsAPI.get(headers, params);
-    const settings = await settingsAPI.get(headers);
-
+    const [settings] = await settingsAPI.get(headers);
     const sortedTranslations = translations.map(language => {
       const sortedContexts = language.contexts.map(context => {
         const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
@@ -65,7 +65,6 @@ const editTranslationsLoader =
 
 const editTranslationsAction =
   (): ActionFunction =>
-  // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
     const formData = await request.formData();
     const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
@@ -185,7 +184,6 @@ const calculateTableData = (terms: string[], formValues: formValuesType, hideTra
     })
     .filter(v => v);
 
-// eslint-disable-next-line max-statements
 const EditTranslations = () => {
   const { translations, settings } = useLoaderData() as {
     translations: ClientTranslationSchema[];
@@ -295,7 +293,7 @@ const EditTranslations = () => {
                 className="px-5 pt-5"
                 onToggle={() => setHideTranslated(!hideTranslated)}
               >
-                <div className="pl-1 text-sm [color:var(--color-theme-text-secondary)]">
+                <div className="pl-1 text-sm text-ink-secondary">
                   <Translate>Untranslated Terms</Translate>
                 </div>
               </ToggleButton>
@@ -310,14 +308,14 @@ const EditTranslations = () => {
                   const values = tableData[title];
                   return (
                     <RenderIfVisible key={title}>
-                      <div className="relative mb-4 w-full rounded-md border shadow-md [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
+                      <div className="relative mb-4 w-full rounded-md border shadow-md border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)]">
                         <table className="w-full text-sm text-left" data-testid="table">
                           {title && (
-                            <caption className="p-4 text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
+                            <caption className="p-4 text-left text-base font-semibold text-ink">
                               {title}
                             </caption>
                           )}
-                          <thead className="text-xs uppercase [color:var(--color-theme-text-tertiary)] [background-color:var(--color-theme-surface-muted)]">
+                          <thead className="text-xs uppercase text-ink-tertiary bg-(--color-theme-surface-muted)">
                             <tr className="border-b">
                               <th scope="col" className="px-6 py-3">
                                 <div className="inline-flex">
@@ -379,9 +377,9 @@ const EditTranslations = () => {
                   );
                 })
               ) : (
-                <div className="flex items-center gap-2 rounded-md border p-4 [border-color:color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] [background-color:var(--color-theme-feedback-info-tint)]">
-                  <InformationCircleIcon className="w-10 [color:var(--color-theme-action-primary)]" />
-                  <span className="[color:var(--color-theme-action-primary)]">
+                <div className="flex items-center gap-2 rounded-md border p-4 border-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-feedback-info-tint)">
+                  <InformationCircleIcon className="w-10 text-(--color-theme-action-primary)" />
+                  <span className="text-(--color-theme-action-primary)">
                     <Translate>There are no untranslated terms</Translate>
                   </span>
                 </div>

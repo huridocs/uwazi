@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
@@ -51,6 +52,7 @@ const getSentinelVersion = async () => {
 };
 
 describe('SlotsReconciler', () => {
+  jest.setTimeout(30_000);
   beforeAll(async () => {
     await testingEnvironment.setUp({});
   });

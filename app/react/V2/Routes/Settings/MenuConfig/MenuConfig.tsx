@@ -1,15 +1,13 @@
 /* eslint-disable max-statements */
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, useEffect } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import cloneDeep from 'lodash/cloneDeep.js';
 import isEqual from 'lodash/isEqual.js';
-
+import { useSetAtom } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import * as SettingsAPI from '#V2/api/settings/index.js';
-import { useSetAtom } from 'jotai';
 import { mergeClientSettings } from '#V2/atoms/mergeClientSettings.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
@@ -22,7 +20,9 @@ import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
+    const [links] = await SettingsAPI.getLinks(headers);
+
+    const tableRows = (links || []).map(link => {
       const linkWithRowId: Link = { ...link, rowId: link._id! };
       if (link.sublinks) {
         linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
@@ -69,7 +69,17 @@ const MenuConfig = () => {
   };
 
   const save = async () => {
-    const settings = await SettingsAPI.saveLinks(linkState.map(sanitizeIds));
+    const [settings, error] = await SettingsAPI.saveLinks(linkState.map(sanitizeIds));
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.message || undefined
+      );
+      return;
+    }
+
     setSettings(prev => mergeClientSettings(prev, settings));
     await revalidator.revalidate();
     notify('success', t('System', 'Updated', null, false));
@@ -123,9 +133,7 @@ const MenuConfig = () => {
               setLinkState(rows);
             }}
             header={
-              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
-                Menu
-              </Translate>
+              <Translate className="text-left text-base font-semibold text-ink">Menu</Translate>
             }
           />
         </SettingsContent.Body>

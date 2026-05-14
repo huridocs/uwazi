@@ -41,7 +41,7 @@ const ThemeAdvancedColorsSection = ({
   updateModeVar,
   updateChromeModeVar,
 }: ThemeAdvancedColorsSectionProps) => (
-  <div className="border-t [border-color:color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] px-4 py-4">
+  <div className="border-t border-[color-mix(in_srgb,var(--color-theme-border-primary)_40%,transparent)] px-4 py-4">
     <div className="space-y-3">
       {SEMANTIC_VAR_KEYS.map(key => {
         const storageKey = themeStorageKey(previewMode, key);

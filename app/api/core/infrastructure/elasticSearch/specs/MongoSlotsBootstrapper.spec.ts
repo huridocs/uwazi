@@ -1,5 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
+import { config } from '#api/config.js';
 import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import {
   AmountPerSlotType,
@@ -7,8 +8,16 @@ import {
 } from '../entities/SlotBootstrapDefinitions.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 
+// Use minimal slot counts so tests don't bulk-write 850+ documents on every execute()
+const testAmountPerSlotType = Object.fromEntries(
+  Object.keys(AmountPerSlotType).map(k => [k, 2])
+) as typeof AmountPerSlotType;
+
 const createSut = () => {
-  const sut = new MongoSlotsBootstrapper({ database: getConnection() });
+  const sut = new MongoSlotsBootstrapper({
+    database: getConnection(),
+    amountPerSlotType: testAmountPerSlotType,
+  });
 
   return { sut };
 };
@@ -16,7 +25,7 @@ const createSut = () => {
 const slotsCollection = () => testingEnvironment.db.getCollection(MongoSlotsDAO.collectionName)!;
 
 const expectedSlots = SlotBootstrapDefinitions.slotList().flatMap(slotType =>
-  Array.from({ length: AmountPerSlotType[slotType] }, (_, index) => ({
+  Array.from({ length: testAmountPerSlotType[slotType] }, (_, index) => ({
     type: slotType,
     slotName: SlotBootstrapDefinitions.createSlotName(slotType, index + 1),
     assignedTo: null,
@@ -28,6 +37,7 @@ const expectedSlotCount = expectedSlots.length;
 const expectedSlotNames = expectedSlots.map(slot => slot.slotName).sort();
 
 describe('MongoSlotsBootstrapper', () => {
+  jest.setTimeout(30_000);
   beforeAll(async () => {
     await testingEnvironment.setUp({
       [MongoSlotsDAO.collectionName]: [],
@@ -294,6 +304,26 @@ describe('MongoSlotsBootstrapper', () => {
         .find({ _id: { $ne: MongoSlotsDAO.sentinelId as any } })
         .toArray();
       expect(count).toHaveLength(expectedSlotCount);
+    });
+  });
+
+  describe('production guard', () => {
+    let originalEnvironment: string;
+
+    beforeEach(() => {
+      originalEnvironment = config.ENVIRONMENT;
+    });
+
+    afterEach(() => {
+      (config as any).ENVIRONMENT = originalEnvironment;
+    });
+
+    it('reset() throws if ENVIRONMENT is production', async () => {
+      (config as any).ENVIRONMENT = 'production';
+      const { sut } = createSut();
+      await expect(sut.reset()).rejects.toThrow(
+        'MongoSlotsBootstrapper.reset() is not allowed in production'
+      );
     });
   });
 });

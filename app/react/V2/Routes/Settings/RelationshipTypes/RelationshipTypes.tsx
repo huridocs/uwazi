@@ -113,7 +113,7 @@ const RelationshipTypes = () => {
             columns={columns({ edit })}
             data={tableRelationshipTypes}
             header={
-              <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
+              <Translate className="text-left text-base font-semibold text-ink">
                 Relationship types
               </Translate>
             }

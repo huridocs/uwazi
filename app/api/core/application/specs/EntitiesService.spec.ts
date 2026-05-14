@@ -22,6 +22,9 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
+import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
+import { search } from '#api/search/index.js';
 
 const factory = getFixturesFactory();
 
@@ -47,6 +50,9 @@ const fixtures: DBFixture = {
 const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
   testingEnvironment.runWithContext(() => {
     const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
+    const eventEmitter = TestUtils.mockClass<EventEmitter>({
+      emit: jest.fn().mockResolvedValue(undefined),
+    });
     const dispatcher = TestUtils.mockClass<Dispatcher>({
       syncRelationships: jest.fn().mockResolvedValue(undefined),
       cleanupEntities: jest.fn().mockResolvedValue(undefined),
@@ -61,12 +67,14 @@ const createSut = (deps?: Partial<EntitiesServiceDeps>) =>
     return {
       sut: EntitiesServiceFactory.default({
         eventBus,
+        eventEmitter,
         dispatcher,
         ...deps,
       }),
       transactionManager: ExecutionContext.transactionManager,
       dispatcher,
       eventBus,
+      eventEmitter,
     };
   });
 
@@ -97,9 +105,9 @@ const createEntitySample = () => {
 };
 
 const loadEntities = async (sharedIds: string[]) => {
-  const ds = EntitiesDataSourceFactory.default({
-    transactionManager: TransactionManagerFactory.default(),
-  });
+  const ds = testingEnvironment.runWithContext(() =>
+    EntitiesDataSourceFactory.default({ transactionManager: TransactionManagerFactory.default() })
+  );
   return (await ds.getEntitiesBySharedIds(sharedIds)).all();
 };
 
@@ -113,10 +121,13 @@ describe('EntitiesService', () => {
   };
 
   beforeAll(async () => {
+    jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined);
     await testingEnvironment.setUp({});
   });
 
-  beforeEach(async () => testingEnvironment.setFixtures(fixtures));
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+  });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
@@ -165,6 +176,30 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).toHaveBeenCalled();
     });
 
+    it('should provision grant access to the entity', async () => {
+      const { sut, transactionManager } = createSut();
+      const entity = createEntitySample();
+
+      await transactionManager.run(async () =>
+        sut.insert(entity, {
+          targetLanguage: 'en',
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        })
+      );
+
+      const entityCreated = await testingEnvironment.db
+        .getCollection('entities')
+        ?.findOne({ sharedId: entity.sharedId });
+
+      expect(entityCreated).toMatchObject({
+        language: 'en',
+        sharedId: entity.sharedId,
+        permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+        published: false,
+      });
+    });
+
     it('should dispatch a RelationshipSyncJob', async () => {
       const { sut, dispatcher, transactionManager } = createSut();
       const entity = createEntitySample();
@@ -196,13 +231,13 @@ describe('EntitiesService', () => {
       const entity2 = createEntitySample();
       const entity3 = createEntitySample();
 
-      await transactionManager.run(async () => {
-        await sut.bulkInsert([entity1, entity2, entity3], {
+      await transactionManager.run(async () =>
+        sut.bulkInsert([entity1, entity2, entity3], {
           actorId: 'actorId',
           tenantName: 'tenantName',
           targetLanguage: 'en',
-        });
-      });
+        })
+      );
 
       const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
 
@@ -301,6 +336,43 @@ describe('EntitiesService', () => {
 
       expect(emitCalledDuringTransaction).toBe(false);
       expect(eventBus.emit).toHaveBeenCalledTimes(2);
+    });
+
+    it('should provision access to all entities', async () => {
+      const { sut, transactionManager } = createSut();
+      const entity1 = createEntitySample();
+      const entity2 = createEntitySample();
+      const entity3 = createEntitySample();
+
+      await transactionManager.run(async () =>
+        sut.bulkInsert([entity1, entity2, entity3], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+          targetLanguage: 'en',
+        })
+      );
+
+      const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
+
+      expect(entitiesCreated).toMatchObject([
+        {
+          language: 'en',
+          sharedId: entity1.sharedId,
+          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+          published: false,
+        },
+        {
+          language: 'en',
+          sharedId: entity2.sharedId,
+          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+          published: false,
+        },
+        {
+          sharedId: entity3.sharedId,
+          permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+          published: false,
+        },
+      ]);
     });
 
     it('should handle empty array gracefully', async () => {

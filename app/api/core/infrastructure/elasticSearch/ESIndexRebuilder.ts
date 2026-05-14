@@ -1,49 +1,43 @@
-/* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
 import { Client } from '@elastic/elasticsearch';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { ProcessedPDFDBO } from '../mongodb/files/schemas/filesTypes.js';
 import { ElasticSearchBootstrapper } from './provision/ElasticSearchBootstrapper.js';
 import { MongoSlotsBootstrapper } from './entities/MongoSlotsBootstrapper.js';
 import { SlotsReconciler } from './entities/SlotsReconciler.js';
 import { EntityIndexerService } from './entities/EntityIndexerService.js';
 import { FullTextIndexerService } from './entities/FullTextIndexerService.js';
-import { MongoEntityDAO } from '../mongodb/entity/MongoEntityDAO.js';
-import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 import { IndexDefinition } from './Types.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { config } from '#api/config.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type ProgressEvent =
   | { stage: 'reset-indexes' }
   | { stage: 'reset-slots' }
   | { stage: 'reconcile-slots' }
-  | { stage: 'index-entities'; indexed: number }
-  | { stage: 'index-fulltext'; indexed: number }
+  | {
+      stage: 'indexing';
+      entitiesIndexed: number;
+      fullTextIndexed: number;
+      entitiesToIndex: number;
+      fullTextToIndex: number;
+    }
   | { stage: 'done' };
 
 type Deps = {
   esClient: Client;
+  transactionManager: TransactionManager;
   esBootstrapper: ElasticSearchBootstrapper;
   entityIndexer: EntityIndexerService;
   fullTextIndexer: FullTextIndexerService;
   slotsBootstrapper: MongoSlotsBootstrapper;
   slotsReconciler: SlotsReconciler;
-  entityDAO: MongoEntityDAO;
-  filesDAO: MongoFilesDAO;
   registry: Record<string, IndexDefinition>;
   logger: Logger;
-  batchSize?: number;
   onProgress?: (e: ProgressEvent) => void;
 };
 
 class ESIndexRebuilder {
-  private static BATCH_SIZE = 500;
-
   constructor(private deps: Deps) {}
-
-  private get batchSize() {
-    return this.deps.batchSize || ESIndexRebuilder.BATCH_SIZE;
-  }
 
   private notify(event: ProgressEvent): void {
     if (!this.deps.onProgress) return;
@@ -52,6 +46,10 @@ class ESIndexRebuilder {
   }
 
   async execute(): Promise<void> {
+    if (config.ENVIRONMENT === 'production') {
+      throw new Error('ESIndexRebuilder.execute() is not allowed in production');
+    }
+
     this.notify({ stage: 'reset-indexes' });
     await this.deps.esBootstrapper.reset();
 
@@ -59,61 +57,37 @@ class ESIndexRebuilder {
     await this.deps.slotsBootstrapper.reset();
 
     this.notify({ stage: 'reconcile-slots' });
-    await this.deps.slotsReconciler.execute();
+    await this.deps.transactionManager.run(async () => this.deps.slotsReconciler.execute());
 
     let entitiesIndexed = 0;
-    const entityCursor = this.deps.entityDAO.streamAll();
-    let entityBatch: EntityDBO[] = [];
-    let prevSharedId: string | undefined;
+    let fullTextIndexed = 0;
+    let entitiesToIndex = 0;
+    let fullTextToIndex = 0;
+    const notifyIndexing = () =>
+      this.notify({
+        stage: 'indexing',
+        entitiesIndexed,
+        fullTextIndexed,
+        entitiesToIndex,
+        fullTextToIndex,
+      });
 
-    try {
-      while (await entityCursor.hasNext()) {
-        const entity = (await entityCursor.next())!;
-
-        if (entity.sharedId !== prevSharedId && entityBatch.length >= this.batchSize) {
-          await this.deps.entityIndexer.index(entityBatch);
-          entitiesIndexed += entityBatch.length;
-          this.notify({ stage: 'index-entities', indexed: entitiesIndexed });
-          entityBatch = [];
-        }
-
-        entityBatch.push(entity);
-        prevSharedId = entity.sharedId;
-      }
-
-      if (entityBatch.length > 0) {
-        await this.deps.entityIndexer.index(entityBatch);
-        entitiesIndexed += entityBatch.length;
-        this.notify({ stage: 'index-entities', indexed: entitiesIndexed });
-      }
-    } finally {
-      await entityCursor.close();
-    }
-
-    let fulltextIndexed = 0;
-    const fileCursor = this.deps.filesDAO.streamProcessedDocs();
-    let fileBatch: ProcessedPDFDBO[] = [];
-
-    try {
-      while (await fileCursor.hasNext()) {
-        fileBatch.push((await fileCursor.next())!);
-
-        if (fileBatch.length >= this.batchSize) {
-          await this.deps.fullTextIndexer.index(fileBatch);
-          fulltextIndexed += fileBatch.length;
-          this.notify({ stage: 'index-fulltext', indexed: fulltextIndexed });
-          fileBatch = [];
-        }
-      }
-
-      if (fileBatch.length > 0) {
-        await this.deps.fullTextIndexer.index(fileBatch);
-        fulltextIndexed += fileBatch.length;
-        this.notify({ stage: 'index-fulltext', indexed: fulltextIndexed });
-      }
-    } finally {
-      await fileCursor.close();
-    }
+    await Promise.all([
+      this.deps.entityIndexer.syncAll({
+        onBatch: ({ indexed, total }) => {
+          entitiesIndexed = indexed;
+          entitiesToIndex = total;
+          notifyIndexing();
+        },
+      }),
+      this.deps.fullTextIndexer.syncAll({
+        onBatch: ({ indexed, total }) => {
+          fullTextIndexed = indexed;
+          fullTextToIndex = total;
+          notifyIndexing();
+        },
+      }),
+    ]);
 
     this.notify({ stage: 'done' });
   }

@@ -14,9 +14,7 @@ const ExtractorsTable = ({ paragraphExtractorData, onSelectionChange }: Extracto
     data={paragraphExtractorData}
     columns={columns}
     header={
-      <Translate className="text-left text-base font-semibold [color:var(--color-theme-text-primary)]">
-        Extractors
-      </Translate>
+      <Translate className="text-left text-base font-semibold text-ink">Extractors</Translate>
     }
     enableSelections
     onSelect={({ selectedRows }) => {

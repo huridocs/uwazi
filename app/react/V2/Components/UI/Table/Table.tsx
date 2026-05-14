@@ -257,7 +257,7 @@ const Table = <T extends TableRow<T>>({
           </div>
         </div>
         <table className={`w-full ${className || ''}`}>
-          <thead style={{ backgroundColor: 'var(--color-theme-section-header-bg)' }}>
+          <thead className="bg-(--color-theme-section-header-bg)">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(hdr => {

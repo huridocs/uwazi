@@ -32,6 +32,7 @@ describe('FormatMetadata', () => {
       settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
       entity: {
         template: 'template',
+        preview: 'docId.jpg',
         documents: [{ _id: 'docId' }],
       },
       additionalMetadata: [{ more: 'data' }, { and: 'more' }],

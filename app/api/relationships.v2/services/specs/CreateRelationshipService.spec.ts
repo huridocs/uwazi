@@ -65,7 +65,7 @@ const createService = () => {
     new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default(), {
       fullTextIndexer: TestUtils.mockClass<FullTextIndexerService>({
         index: jest.fn().mockResolvedValue(undefined),
-        deleteByFilenames: jest.fn().mockResolvedValue(undefined),
+        remove: jest.fn().mockResolvedValue(undefined),
       }),
     }),
     transactionManager,

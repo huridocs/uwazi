@@ -94,7 +94,11 @@ const PropertySidepanel = ({
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
-    if (dirtyFields.field) {
+    const fieldDirty = dirtyFields.field;
+    const trainingSetDirty = dirtyFields.inTrainingSet;
+    const inTrainingSet = formContext.getValues().inTrainingSet || false;
+
+    if (fieldDirty) {
       const [savedEntity, error] = await handleEntitySave(entity, property, value.field, template);
 
       if (error) {
@@ -102,16 +106,13 @@ const PropertySidepanel = ({
 
         notify('error', t('System', 'An error occurred', null, false), undefined, details);
       } else if (savedEntity) {
-        if (savedEntity) {
-          setEntity(savedEntity);
-        }
-
+        setEntity(savedEntity);
         notify('success', t('System', 'Saved successfully.', null, false));
       }
     }
 
-    if (suggestion?._id && dirtyFields.inTrainingSet) {
-      onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
+    if (suggestion?._id && (trainingSetDirty || fieldDirty)) {
+      onEntitySave([suggestion?._id], inTrainingSet);
     }
 
     handleClose();
@@ -156,7 +157,7 @@ const PropertySidepanel = ({
           }}
         />
       </Sidepanel.Body>
-      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] ![background-color:var(--color-theme-surface-raised)]">
+      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] !bg-(--color-theme-surface-raised)">
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...formContext}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -165,7 +166,7 @@ const PropertySidepanel = ({
               title={
                 <div className="flex gap-4 items-center">
                   <Translate
-                    className={`font-semibold uppercase ${selectionError ? '[color:var(--color-theme-feedback-danger)]' : '[color:var(--color-theme-text-muted)]'}`}
+                    className={`font-semibold uppercase ${selectionError ? 'text-(--color-theme-feedback-danger)' : 'text-ink-muted'}`}
                     context={templateId}
                   >
                     {property?.label}
@@ -175,15 +176,13 @@ const PropertySidepanel = ({
                       size="small"
                       onToggle={() => setSelectAndSearch(!selectAndSearch)}
                     >
-                      <Translate className="text-xs font-medium [color:var(--color-theme-text-primary)]">
+                      <Translate className="text-xs font-medium text-ink">
                         Select & Search
                       </Translate>
                     </ToggleButton>
                   )}
                   {selectionError && (
-                    <span className="[color:var(--color-theme-feedback-danger)]">
-                      {selectionError}
-                    </span>
+                    <span className="text-(--color-theme-feedback-danger)">{selectionError}</span>
                   )}
                 </div>
               }
