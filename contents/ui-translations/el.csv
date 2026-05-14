@@ -170,6 +170,7 @@ Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Common sources,Κοινές πηγές
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Διαμόρφωση
 Configure filters,Διαμόρφωση φίλτρων
 Configure templates,Διαμόρφωση προτύπων
@@ -461,6 +462,7 @@ Import completed,Η εισαγωγή ολοκληρώθηκε. Αριθμός δ
 Import CSV,Εισαγωγή CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Οδηγίες εισαγωγής
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.

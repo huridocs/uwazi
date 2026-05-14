@@ -171,6 +171,7 @@ Collection,Колекція
 Collection Name,Назва колекції
 Common sources,Загальні джерела
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Конфігурація
 Configure filters,Налаштувати фільтри
 Configure templates,Налаштування шаблонів
@@ -462,6 +463,7 @@ Import completed,Імпорт завершено. Кількість створ�
 Import CSV,Імпортувати CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Інструкції з імпортування
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.

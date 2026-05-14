@@ -169,6 +169,7 @@ Collection,Koleksiyon
 Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Configuration
 Configure filters,Filtreleri yapılandır
 Configure templates,Configure templates
@@ -460,6 +461,7 @@ Import completed,Import completed. Number of entities created:
 Import CSV,CSV'yi içe aktar
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Talimatları içe aktar
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.

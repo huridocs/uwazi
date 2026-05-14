@@ -166,6 +166,7 @@ Collection,Коллекция
 Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Configuration
 Configure filters,Настроить фильтры
 Configure templates,Configure templates
@@ -457,6 +458,7 @@ Import completed,Import completed. Number of entities created:
 Import CSV,Импортировать CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Инструкции по импорту
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
