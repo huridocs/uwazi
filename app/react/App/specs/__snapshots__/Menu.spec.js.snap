@@ -84,6 +84,7 @@ exports[`Menu Links returns the expected HTML 1`] = `
       Object {
         "alignItems": "center",
         "display": "flex",
+        "minWidth": "48px",
         "padding": "0 8px",
       }
     }

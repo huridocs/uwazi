@@ -35,27 +35,23 @@ jobs:
       is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
       sha: ${{ github.sha }}
 
-  build_cypress_image:
-    needs: precheck
-    if: needs.precheck.outputs.should_run == 'true'
-    uses: ./.github/workflows/ci_build_cypress_image.yml
-
   build:
     needs: precheck
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_build.yml
 
-  e2e_cypress:
-    needs: [precheck, build_cypress_image, build]
-    if: needs.precheck.outputs.should_run == 'true'
-    uses: ./.github/workflows/ci_e2e_cypress.yml
-
-  e2e_puppeteer:
+  e2e_playwright_core:
     needs: [precheck, build]
     if: needs.precheck.outputs.should_run == 'true'
-    uses: ./.github/workflows/ci_e2e_puppeteer.yml
+    uses: ./.github/workflows/ci_e2e_playwright_core.yml
 
-  check_translations:
+  e2e_playwright_data:
     needs: [precheck, build]
     if: needs.precheck.outputs.should_run == 'true'
-    uses: ./.github/workflows/ci_check_translations.yml
+    uses: ./.github/workflows/ci_e2e_playwright_data.yml
+
+  e2e_playwright_ix:
+    needs: [precheck, build]
+    if: needs.precheck.outputs.should_run == 'true'
+    uses: ./.github/workflows/ci_e2e_playwright_ix.yml
+

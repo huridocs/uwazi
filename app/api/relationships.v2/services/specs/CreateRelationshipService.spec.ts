@@ -9,7 +9,6 @@ import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/Mon
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -21,6 +20,7 @@ import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFa
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 import { FullTextIndexerService } from '#api/core/infrastructure/elasticSearch/entities/FullTextIndexerService.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 
@@ -44,7 +44,9 @@ const denormalizationServiceMock = partialImplementation<DenormalizationService>
 const createService = () => {
   const connection = getConnection();
   const transactionManager = TransactionManagerFactory.default();
-  const SettingsDataSource = new MongoSettingsDataSource(connection, transactionManager);
+  const settingsDS = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default(), {
+    factories: { transactionManager: () => transactionManager },
+  });
 
   validateAccessMock.mockReset();
   denormalizeAfterCreatingRelationshipsMock.mockReset();
@@ -59,7 +61,7 @@ const createService = () => {
         transactionManager,
         slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
       }),
-      SettingsDataSource,
+      settingsDS,
       transactionManager
     ),
     new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default(), {

@@ -4,6 +4,15 @@ import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/ty
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../../application/contracts/SettingsDataSource.js';
 import { DefaultLanguageMissingError } from './errors/settingsErrors.js';
+import { SlotsReconciler } from '../elasticSearch/entities/SlotsReconciler.js';
+import { Db } from 'mongodb';
+import { MongoTransactionManager } from './common/MongoTransactionManager.js';
+
+export type MongoSettingsDataSourceDeps = {
+  db: Db;
+  transactionManager: MongoTransactionManager;
+  slotsReconciler: () => SlotsReconciler;
+};
 
 export class MongoSettingsDataSource
   extends MongoDataSource<SettingsType>
@@ -11,11 +20,19 @@ export class MongoSettingsDataSource
 {
   protected collectionName = 'settings';
 
+  private slotsReconciler: () => SlotsReconciler;
+
+  constructor(deps: MongoSettingsDataSourceDeps) {
+    super(deps.db, deps.transactionManager);
+    this.slotsReconciler = deps.slotsReconciler;
+  }
+
   async addLanguage(language: LanguageSchema): Promise<void> {
     await this.getCollection().updateOne(
       { languages: { $not: { $elemMatch: { key: language.key } } } },
       { $push: { languages: language } }
     );
+    await this.slotsReconciler().execute();
   }
 
   async setLanguageInstalling(key: LanguageISO6391, installing: boolean): Promise<void> {
@@ -27,6 +44,7 @@ export class MongoSettingsDataSource
 
   async deleteLanguage(key: LanguageISO6391): Promise<void> {
     await this.getCollection().updateOne({}, { $pull: { languages: { key } } });
+    await this.slotsReconciler().execute();
   }
 
   async getInstalledLanguages(): Promise<LanguagesListSchema> {

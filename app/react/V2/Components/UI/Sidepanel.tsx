@@ -16,6 +16,7 @@ interface SidePanelProps {
   withOverlay?: boolean;
   size?: 'small' | 'medium' | 'large';
   panelId?: string;
+  testId?: string;
 }
 
 const sidepanelHeader = (
@@ -56,6 +57,7 @@ const Sidepanel = ({
   withOverlay,
   size = 'medium',
   panelId,
+  testId,
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
   const titleId = useId();
@@ -241,6 +243,7 @@ const Sidepanel = ({
           <aside
             ref={panelRef}
             id={panelId}
+            data-testid={testId}
             tabIndex={-1}
             className="h-full"
             aria-labelledby={title ? titleId : undefined}
@@ -271,6 +274,7 @@ const Sidepanel = ({
       <aside
         ref={panelRef}
         id={panelId}
+        data-testid={testId}
         tabIndex={-1}
         className="h-full"
         aria-labelledby={title ? titleId : undefined}
