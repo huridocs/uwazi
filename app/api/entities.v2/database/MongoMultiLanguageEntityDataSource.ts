@@ -318,6 +318,18 @@ export class MongoMultiLanguageEntityDataSource
     return Result.ok(entities);
   }
 
+  async touchEntitiesBySharedIds(sharedIds: string[]): Promise<void> {
+    await this.getCollection().updateMany(
+      { sharedId: { $in: sharedIds } },
+      { $set: { editDate: Date.now() } }
+    );
+    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+    const updatedDocs = await this.getCollection()
+      .find({ sharedId: { $in: sharedIds } })
+      .toArray();
+    updatedDocs.forEach(dbo => this.mutatedEntities.set(dbo._id.toString(), dbo));
+  }
+
   async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {
     await this.getCollection().updateMany(
       { sharedId: { $in: sharedIds } },

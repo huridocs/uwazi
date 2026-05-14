@@ -23,6 +23,7 @@ type Input = {
   renamedProperties: { [oldName: string]: string };
   templateId: string;
   fullReindex: boolean;
+  resaveForFilterChange: boolean;
   onAllEntitiesDenormalized: () => void;
   onProgress: (progress: { active: boolean; totalJobs: number; completedJobs: number }) => void;
 };
@@ -49,6 +50,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
     renamedProperties,
     templateId,
     fullReindex,
+    resaveForFilterChange,
     onAllEntitiesDenormalized,
     onProgress,
   }: Input) {
@@ -56,6 +58,9 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
       await search.indexEntities({ sharedId: { $in: entitiesIds } }, '+fullText', 10);
     }
     await this.dependencies.transactionManager.run(async () => {
+      if (resaveForFilterChange) {
+        await this.dependencies.entitiesDS.touchEntitiesBySharedIds(entitiesIds);
+      }
       if (Object.keys(renamedProperties).length) {
         await this.dependencies.filesDS.renameExtractedMetadata(renamedProperties, entitiesIds);
         await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
