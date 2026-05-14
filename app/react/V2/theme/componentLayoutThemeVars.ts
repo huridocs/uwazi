@@ -1,7 +1,8 @@
 const COMPONENT_LAYOUT_THEME_VARS = {
   '--layout-tab-padding-inline': 'var(--spacing-theme-3)',
   '--layout-tab-padding-inline-sm': 'var(--spacing-theme-2-5)',
-  '--layout-tab-padding-block': 'var(--spacing-theme-1-5)',
+  '--layout-tab-padding-block': 'var(--spacing-theme-2)',
+  '--layout-tab-padding-block-md': 'var(--spacing-theme-2-5)',
   '--layout-segmented-border': '1px solid var(--color-theme-border-default)',
   '--layout-segmented-shadow': 'var(--color-theme-shadow-sm)',
   '--layout-segmented-divider': 'var(--color-theme-border-default)',

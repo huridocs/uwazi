@@ -347,6 +347,7 @@
 @media (min-width: 48rem) {
   .tabs-segmented-trigger {
     padding-inline: var(--layout-tab-padding-inline);
+    padding-block: var(--layout-tab-padding-block-md);
   }
 }
 
