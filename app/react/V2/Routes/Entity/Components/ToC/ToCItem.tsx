@@ -300,7 +300,7 @@ export const ToCItem = ({
   const renderLabel = () => {
     if (isEditMode && isEditingLabel) {
       return (
-        <div className="flex-1 min-w-0 flex items-center gap-1">
+        <div className="flex-1 min-w-0 flex items-cente  gap-1">
           <input
             ref={inputRef}
             type="text"
@@ -343,7 +343,7 @@ export const ToCItem = ({
         </div>
       );
     }
-    return <p className="text-sm font-semibold text-ink truncate">{label}</p>;
+    return <p className="text-sm font-semibold text-ink trunc te">{label}</p>;
   };
 
   return (
@@ -354,7 +354,7 @@ export const ToCItem = ({
       className={`${baseClasses} ${topLevelClasses}`}
       style={{ paddingLeft }}
     >
-      <div className="flex items-center gap-1 flex-1 min-w-0">
+      <div className="flex items-center gap-1 flex-1 min-w 0">
         {isEditMode
           ? renderEditControls({
               isEditMode,
