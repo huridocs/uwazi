@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { getStore } from '#shared/atomStore/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { deleteEntities } from '#app/Entities/actions/actions.js';
@@ -15,6 +17,8 @@ import { TemplateLabel } from '#app/Layout/TemplateLabel.js';
 import { SidePanel } from '#app/Layout/SidePanel.js';
 import { Icon } from '#app/UI/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
+import { userAtom } from '#V2/atoms/userAtom.js';
+import { checkWritePermissions, hasWritePermission } from '#V2/shared/checkWritePermissions.js';
 import { MetadataForm } from './MetadataForm.js';
 import comonTemplate from '../helpers/comonTemplate.js';
 
@@ -37,6 +41,9 @@ class SelectMultiplePanel extends Component {
     this.save = this.save.bind(this);
     this.edit = this.edit.bind(this);
     this.changeTemplate = this.changeTemplate.bind(this);
+    this.state = {
+      currentUser: getStore().get(userAtom),
+    };
   }
 
   close() {
@@ -186,8 +193,18 @@ class SelectMultiplePanel extends Component {
 
   renderList() {
     const { entitiesSelected, getAndSelectDocument } = this.props;
+    const hasWritePermissionsOnAll = checkWritePermissions(
+      entitiesSelected,
+      this.state.currentUser
+    );
+
     return (
       <ul className="entities-list">
+        {!hasWritePermissionsOnAll && (
+          <li key="permissions-warning" className="permissions-warning">
+            <Translate>You do not have write permission on all entities</Translate>
+          </li>
+        )}
         {entitiesSelected.map((entity, index) => {
           const onClick = getAndSelectDocument.bind(this, entity.get('sharedId'));
           return (
@@ -195,6 +212,10 @@ class SelectMultiplePanel extends Component {
               <span className="entity-title">
                 {entity.get('title')}
                 <TemplateLabel template={entity.get('template')} />
+                {!hasWritePermissionsOnAll &&
+                  !hasWritePermission(entity.get('permissions'), this.state.currentUser) && (
+                    <ExclamationCircleIcon style={{ width: '20px', height: '20px' }} />
+                  )}
               </span>
             </li>
           );
