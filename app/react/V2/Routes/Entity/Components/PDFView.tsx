@@ -1,12 +1,14 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useSearchParams } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
 import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
 import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
+import { metadataHeaderStripShellClass } from '#V2/Components/Metadata/MetadataHeaderStrip.js';
 import { NeedAuthorization, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
@@ -25,6 +27,7 @@ type PDFViewProps = {
   pagePlaintext?: string;
   entityTitle: string;
   entityIconId?: string;
+  showEntityHeader?: boolean;
 };
 
 const PDFView = ({
@@ -33,7 +36,9 @@ const PDFView = ({
   pagePlaintext,
   entityTitle,
   entityIconId,
+  showEntityHeader = true,
 }: PDFViewProps) => {
+  const renderModeSelectId = useId();
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
@@ -174,32 +179,44 @@ const PDFView = ({
   const prevPage = Math.max(1, pageNumber - 1);
   const nextPage = Math.min(pageNumber + 1, totalPages || 0);
 
+  const renderModeControl = (
+    <div className="relative inline-flex shrink-0 items-center">
+      <label htmlFor={renderModeSelectId} className="sr-only">
+        <Translate>View</Translate>
+      </label>
+      <select
+        id={renderModeSelectId}
+        className={`appearance-none rounded-md border border-[color-mix(in_srgb,var(--color-theme-action-primary)_42%,transparent)] bg-warm py-(--spacing-theme-1) pl-(--spacing-theme-2) text-xs font-medium text-ink transition-colors hover:bg-parchment focus:border-(--color-theme-control-border-focus) focus:outline-hidden ${isRaw ? 'pr-6 min-w-[6.25rem]' : 'pr-6 w-[4.25rem]'}`}
+        value={isRaw ? 'raw' : 'normal'}
+        onChange={onDisplayModeChange}
+      >
+        <option value="raw">{t('System', 'Plain text', null, false)}</option>
+        <option value="normal">{t('System', 'PDF', null, false)}</option>
+      </select>
+      <ChevronDownIcon
+        className="pointer-events-none absolute right-1.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-secondary"
+        aria-hidden
+      />
+    </div>
+  );
+
   return (
     <Panel>
       <Panel.Body>
         <div className="flex flex-col gap-(--spacing-theme-3)">
-          <MetadataEntityHeader
-            templateId={templateId}
-            title={entityTitle}
-            iconId={entityIconId}
-            layout="inline"
-            trailing={
-              <div className="shrink-0">
-                <label htmlFor="render-mode" className="sr-only">
-                  <Translate>View</Translate>
-                </label>
-                <select
-                  id="render-mode"
-                  className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_80%,transparent)] bg-(--color-theme-surface-raised) px-(--spacing-theme-3) py-(--spacing-theme-1) text-xs font-medium text-ink focus:border-(--color-theme-control-border-focus) focus:outline-hidden"
-                  value={isRaw ? 'raw' : 'normal'}
-                  onChange={onDisplayModeChange}
-                >
-                  <option value="raw">{t('System', 'Plain text', null, false)}</option>
-                  <option value="normal">{t('System', 'PDF', null, false)}</option>
-                </select>
-              </div>
-            }
-          />
+          {showEntityHeader ? (
+            <div className={metadataHeaderStripShellClass(true)}>
+              <MetadataEntityHeader
+                templateId={templateId}
+                title={entityTitle}
+                iconId={entityIconId}
+                layout="inline"
+                trailing={renderModeControl}
+              />
+            </div>
+          ) : (
+            <div className="mb-(--spacing-theme-1) flex justify-end">{renderModeControl}</div>
+          )}
           <div
             className={`flex-1 min-h-0 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
           >

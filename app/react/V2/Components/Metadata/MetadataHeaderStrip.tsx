@@ -2,8 +2,11 @@ import React from 'react';
 import { Entity } from '#V2/api/entities/types.js';
 import { MetadataEntityHeader } from './MetadataEntityHeader.js';
 
-const HEADER_SHELL_CLASS =
-  'sticky top-0 z-20 -mx-(--spacing-theme-4) mb-(--spacing-theme-2) border-b border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised) px-(--spacing-theme-4) pb-(--spacing-theme-3) pt-(--spacing-theme-2)';
+const METADATA_HEADER_STRIP_BASE =
+  '-mx-(--spacing-theme-4) mb-(--spacing-theme-2) border-b border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised) px-(--spacing-theme-4) pb-(--spacing-theme-3) pt-(--spacing-theme-2)';
+
+const metadataHeaderStripShellClass = (sticky: boolean) =>
+  sticky ? `sticky top-0 z-20 ${METADATA_HEADER_STRIP_BASE}` : METADATA_HEADER_STRIP_BASE;
 
 type MetadataHeaderStripProps = {
   entity: Entity;
@@ -11,7 +14,7 @@ type MetadataHeaderStripProps = {
 };
 
 const MetadataHeaderStrip = ({ entity, headerLayout = 'inline' }: MetadataHeaderStripProps) => (
-  <div className={HEADER_SHELL_CLASS}>
+  <div className={metadataHeaderStripShellClass(headerLayout !== 'stacked')}>
     <MetadataEntityHeader
       templateId={entity.template}
       title={entity.title}
@@ -21,4 +24,4 @@ const MetadataHeaderStrip = ({ entity, headerLayout = 'inline' }: MetadataHeader
   </div>
 );
 
-export { MetadataHeaderStrip };
+export { MetadataHeaderStrip, metadataHeaderStripShellClass };

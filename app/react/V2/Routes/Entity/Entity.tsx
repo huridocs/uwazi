@@ -185,6 +185,7 @@ const Entity = () => {
                     pagePlaintext={pagePlaintext}
                     entityTitle={entity.title}
                     entityIconId={entity.icon?._id}
+                    showEntityHeader={false}
                   />
                 ),
               },

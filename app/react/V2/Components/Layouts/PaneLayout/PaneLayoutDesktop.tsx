@@ -37,7 +37,6 @@ const setRatiosToLocalStorage = (ratios: number[], localStorageKey?: string) => 
   }
 };
 
-// eslint-disable-next-line max-statements
 const PaneLayoutDesktop = ({
   children,
   localStorageKey,
@@ -51,7 +50,6 @@ const PaneLayoutDesktop = ({
   const initialWidths = useRef(defaultRatios?.map(ratio => `${ratio * 100}%`));
 
   const handleResize = useCallback(
-    // eslint-disable-next-line max-statements
     (event: Event) => {
       if (draggingIndex.current === null || !containerRef.current) return;
 
@@ -65,7 +63,8 @@ const PaneLayoutDesktop = ({
 
       if (leftIndex < 0 || rightIndex >= children.length) return;
 
-      const leftStart = currentWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0);
+      const leftStart =
+        currentWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0) + leftIndex * SEPARATOR_PX;
       const currentLeft = xValue - containerRect.left - leftStart;
       const totalPair = currentWidths[leftIndex] + currentWidths[rightIndex];
       const rightNew = totalPair - currentLeft;
@@ -86,7 +85,6 @@ const PaneLayoutDesktop = ({
     widthsRef.current = widths;
   }, [widths]);
 
-  // eslint-disable-next-line max-statements
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -178,18 +176,12 @@ const PaneLayoutDesktop = ({
 
           {index < children.length - 1 && (
             <div
-              aria-hidden
               role="separator"
+              aria-orientation="vertical"
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="cursor-col-resize shrink-0 group transition-colors hover:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_18%,transparent)]"
-              style={{ width: SEPARATOR_PX }}
-            >
-              <div
-                className="h-full border-r border-[color-mix(in_srgb,var(--color-theme-border-default)_80%,transparent)] group-hover:border-[color-mix(in_srgb,var(--color-theme-action-primary)_35%,transparent)]"
-                style={{ width: SEPARATOR_PX / 2 }}
-              />
-            </div>
+              className="w-1 shrink-0 cursor-col-resize self-stretch bg-transparent touch-none transition-colors hover:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_30%,transparent)]"
+            />
           )}
         </Fragment>
       ))}
