@@ -79,6 +79,6 @@ const statusMessages = {
     title: t('System', 'Completed with errors', null, false),
     description: t('System', 'Import finished with errors. Review details below.', null, false),
   },
-} as const satisfies Record<CsvImportStatus & 'completedWithErrors', StatusMessage>;
+} as const satisfies Record<CsvImportStatus | 'completedWithErrors', StatusMessage>;
 
 export { statusMessages };

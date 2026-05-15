@@ -9,7 +9,7 @@ import * as reactRouter from 'react-router';
 import { socket } from '#app/socket.js';
 import { getStore } from '#shared/atomStore/index.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
-import { CsvImportListRow } from '#V2/api/csv/index.js';
+import type { CsvImportListRow } from '#V2/api/csv/index.js';
 import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
 import { ImportsTable } from '../ImportsTable.js';

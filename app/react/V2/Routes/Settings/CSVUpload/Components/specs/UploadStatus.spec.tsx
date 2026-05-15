@@ -117,7 +117,7 @@ describe('CSV import status view', () => {
       expectedErrorMessage: 'Failed',
     },
     {
-      case: 'completed with herrors',
+      case: 'completed with errors',
       data: csvImportsListWithErrors[0],
       expectedErrorMessage: 'Completed with errors',
     },
