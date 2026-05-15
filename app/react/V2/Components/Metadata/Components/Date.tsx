@@ -5,6 +5,7 @@ import { Translate } from '#app/I18N/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import {
   DateMetadataProperty,
@@ -44,6 +45,7 @@ const Date = ({
   label,
   translationContext,
   hideLabel,
+  className,
   format = DateTime.DATE_MED,
 }: DateProps) => {
   const locale = useAtomValue(localeAtom);
@@ -53,7 +55,7 @@ const Date = ({
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}
@@ -72,7 +74,7 @@ const Date = ({
 
             return (
               // eslint-disable-next-line react/no-array-index-key
-              <span key={index} className="font-medium text-gray-900">
+              <span key={index} className="font-medium text-ink">
                 {formattedValue}
               </span>
             );
@@ -91,7 +93,7 @@ const Date = ({
             <div
               // eslint-disable-next-line react/no-array-index-key
               key={index}
-              className="font-medium text-gray-900"
+              className="font-medium text-ink"
             >
               <span className="sr-only">
                 <Translate>From</Translate>

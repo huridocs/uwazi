@@ -130,7 +130,7 @@ const MenuComponent = ({
       </li>
       <li
         className="menuNav-item only-desktop"
-        style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}
+        style={{ display: 'flex', alignItems: 'center', padding: '0 8px', minWidth: '48px' }}
       >
         {!isMobile && (
           <div className="tw-content">

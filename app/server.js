@@ -160,7 +160,8 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
 
   if (!config.multiTenant && !config.clusterMode) {
     await tenants.run(async () => {
-      const shouldMigrate = await migrator.shouldMigrate();
+      const skipMigrationCheck = process.env.SKIP_MIGRATION_CHECK === 'true';
+      const shouldMigrate = skipMigrationCheck ? false : await migrator.shouldMigrate();
       if (shouldMigrate) {
         console.error(
           '\x1b[33m%s\x1b[0m',

@@ -805,7 +805,6 @@ const DocumentSidePanelWithRouter = withContext(withRouter(DocumentSidePanel));
 const DocumentSidePanelConnected = connect(mapStateToProps)(DocumentSidePanelWithRouter);
 export {
   DocumentSidePanel as DocumentSidePanelView,
-  DocumentSidePanelWithRouter,
   DocumentSidePanelConnected as DocumentSidePanel,
   mapStateToProps,
 };

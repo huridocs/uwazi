@@ -109,7 +109,6 @@ Authentication code,Código de autenticación
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,autogenerado
-Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Tabla de contenidos automática.
 Automatically generated,Se genera automáticamente
 Available default translation,Traducción predeterminada disponible
@@ -168,6 +167,7 @@ Collection,Colección
 Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Configuración
 Configure filters,Configurar filtros
 Configure templates,Configurar plantillas
@@ -368,7 +368,6 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
-Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
@@ -460,6 +459,7 @@ Import completed,Importación completada. Número de entidades creadas:
 Import CSV,Importar CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Instrucciones de importación
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
@@ -941,8 +941,8 @@ Suggestion,Sugerencia
 Suggestion:,Suggestion:
 Suggestions,Sugerencias
 suggestions,suggestions
-Suggestions have been updated,Suggestions have been updated
 Suggestions sent,Suggestions sent
+Suggestions updated,Suggestions updated
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 Synced Template,Synced Template

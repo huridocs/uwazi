@@ -20,12 +20,17 @@ class Confirm extends Component {
       isOpen: props.isOpen,
       isLoading: props.isLoading,
       confirmInputValue: '',
+      accept: props.accept,
     };
 
     this.accept = this.accept.bind(this);
     this.cancel = this.cancel.bind(this);
     this.close = this.close.bind(this);
     this.handleInput = this.handleInput.bind(this);
+  }
+
+  handleInput(e) {
+    this.setState({ confirmInputValue: e.target.value });
   }
 
   close() {
@@ -50,10 +55,6 @@ class Confirm extends Component {
       this.props.cancel();
     }
     this.close();
-  }
-
-  handleInput(e) {
-    this.setState({ confirmInputValue: e.target.value });
   }
 
   renderExtraConfirm() {
