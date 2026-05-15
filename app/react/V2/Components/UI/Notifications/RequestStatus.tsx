@@ -3,6 +3,7 @@ import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import type { NotificationType } from '#V2/atoms/requestStatusAtom.js';
 import { useContrastColor } from '#V2/CustomHooks/useContrastColor.js';
 import { useResolvedBackgroundColor } from '#V2/CustomHooks/useResolvedBackgroundColor.js';
+import { CsvImportTasksSubscriber } from '#V2/Routes/Settings/CSVUpload/CsvImportTasksSubscriber.js';
 import { StatusDot } from './StatusDot.js';
 import { NotificationFlash } from './NotificationFlash.js';
 
@@ -119,7 +120,9 @@ const RequestStatus = () => {
   }, [hasRunningTasks, isLoading, overallStatus]);
 
   return (
-    <div
+    <>
+      <CsvImportTasksSubscriber />
+      <div
       ref={containerRef}
       className="relative inline-flex min-h-13 items-center gap-1.5 rounded-xl p-1"
     >
@@ -162,6 +165,7 @@ const RequestStatus = () => {
         />
       </span>
     </div>
+    </>
   );
 };
 

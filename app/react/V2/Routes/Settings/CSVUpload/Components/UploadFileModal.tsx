@@ -19,7 +19,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   const [templateId, setTemplateId] = useState<string | undefined>();
   const [uploading, setIsUploading] = useState(false);
   const templates = useAtomValue(templatesAtom);
-  const { notify } = useRequestStatus();
+  const { notify, registerTask } = useRequestStatus();
 
   const onProgress = (completed: number) => {
     setProgress(completed);
@@ -39,6 +39,13 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       if ('error' in response) {
         reportErrorToSentry(new Error(response.error), 'Error uploading file (CSV V2)');
         notify('error', t('System', 'An error occurred', null, false));
+      } else {
+        registerTask(
+          response.id,
+          `${t('System', 'Importing CSV', null, false)}: ${fileToUpload.name}`,
+          undefined,
+          0
+        );
       }
       handleClose();
     }
