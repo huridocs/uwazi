@@ -4,6 +4,7 @@ import {
   buildTaskLabel,
   computeProgressFromRow,
   handleCsvImportSocketEvent,
+  mergeTaskLabel,
 } from '../csvImportTaskProgress.js';
 
 describe('csvImportTaskProgress', () => {
@@ -28,7 +29,6 @@ describe('csvImportTaskProgress', () => {
         notifySuccess,
         notifyError,
         notifyCancelled,
-        getMeta: () => ({ fileName }),
       },
       ensureTask,
       updateTask,
@@ -40,8 +40,38 @@ describe('csvImportTaskProgress', () => {
     };
   };
 
-  it('builds task label with stage and file name', () => {
-    expect(buildTaskLabel('data.csv', 'Scanning')).toBe('Scanning: data.csv');
+  it('builds task label with CSV Import prefix and file name', () => {
+    expect(buildTaskLabel('Scanning', 'data.csv')).toContain('CSV Import');
+    expect(buildTaskLabel('Scanning', 'data.csv')).toContain('Scanning');
+    expect(buildTaskLabel('Scanning', 'data.csv')).toContain('data.csv');
+  });
+
+  it('builds generic task label without file name', () => {
+    const label = buildTaskLabel('Creating entities');
+    expect(label).toContain('CSV Import');
+    expect(label).toContain('Creating entities');
+    expect(label).not.toMatch(/[a-f0-9]{24}/);
+  });
+
+  it('merges file name from an existing task label', () => {
+    expect(
+      mergeTaskLabel(
+        'CSV Import: Queued — report.csv',
+        'CSV Import: Creating entities'
+      )
+    ).toBe('CSV Import: Creating entities — report.csv');
+  });
+
+  it('uses generic label when there is no existing task', () => {
+    const { handlers, ensureTask } = createHandlers();
+
+    handleCsvImportSocketEvent(csvImportEvents.importStart, { importId }, handlers);
+
+    expect(ensureTask).toHaveBeenCalledWith(
+      importId,
+      expect.stringMatching(/^CSV Import: Creating entities$/),
+      undefined
+    );
   });
 
   it('computes progress from import row', () => {
@@ -69,7 +99,7 @@ describe('csvImportTaskProgress', () => {
 
     expect(ensureTask).toHaveBeenCalledWith(
       importId,
-      expect.stringContaining(fileName),
+      expect.stringMatching(/CSV Import: Extracting files/),
       undefined
     );
   });
@@ -103,7 +133,7 @@ describe('csvImportTaskProgress', () => {
     );
 
     expect(completeTask).toHaveBeenCalledWith(importId);
-    expect(notifySuccess).toHaveBeenCalledWith(fileName);
+    expect(notifySuccess).toHaveBeenCalledWith();
   });
 
   it('fails task and notifies on import error', () => {
@@ -116,7 +146,28 @@ describe('csvImportTaskProgress', () => {
     );
 
     expect(failTask).toHaveBeenCalledWith(importId);
-    expect(notifyError).toHaveBeenCalledWith(fileName, 'Something went wrong');
+    expect(notifyError).toHaveBeenCalledWith(undefined, 'Something went wrong');
+  });
+
+  it('uses next-stage label on intermediate success, not Done stage title', () => {
+    const { handlers, ensureTask } = createHandlers();
+
+    handleCsvImportSocketEvent(
+      csvImportEvents.preflightRelationshipsCreateSuccess,
+      { importId },
+      handlers
+    );
+
+    expect(ensureTask).toHaveBeenCalledWith(
+      importId,
+      expect.stringMatching(/CSV Import: Creating entities/),
+      undefined
+    );
+    expect(ensureTask).not.toHaveBeenCalledWith(
+      importId,
+      expect.stringMatching(/Done creating/),
+      undefined
+    );
   });
 
   it('completes task and notifies on import cancelled', () => {
@@ -129,6 +180,6 @@ describe('csvImportTaskProgress', () => {
     );
 
     expect(completeTask).toHaveBeenCalledWith(importId);
-    expect(notifyCancelled).toHaveBeenCalledWith(fileName);
+    expect(notifyCancelled).toHaveBeenCalledWith();
   });
 });

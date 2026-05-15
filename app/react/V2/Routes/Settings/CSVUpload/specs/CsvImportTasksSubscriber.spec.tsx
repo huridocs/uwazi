@@ -100,6 +100,33 @@ describe('CsvImportTasksSubscriber', () => {
     expect(mockOn).not.toHaveBeenCalled();
   });
 
+  it('does not hydrate imports in stage-done status', async () => {
+    mockGet.mockResolvedValue([
+      {
+        id: 'import-done-stage',
+        status: CsvImportStatus.ImportEntitiesDone,
+        templateId: 'template-1',
+        file: { originalName: 'done-stage.csv', mimeType: 'text/csv', size: 10 },
+        createdAt: 0,
+        updatedAt: 0,
+      },
+    ]);
+
+    const store = createStore();
+    render(
+      <TestWrapper role="admin" store={store}>
+        <CsvImportTasksSubscriber />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalled();
+    });
+
+    const state = store.get(requestStatusAtom);
+    expect(state.tasks).toEqual([]);
+  });
+
   it('hydrates running imports on mount', async () => {
     mockGet.mockResolvedValue([
       {

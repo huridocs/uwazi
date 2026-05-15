@@ -1,18 +1,20 @@
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
+import { getStore } from '#shared/atomStore/index.js';
 import { t } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
 import type { CsvImportEventPayloads } from '#V2/api/csv/events.js';
 import { get, CsvImportStatus, type CsvImportListRow } from '#V2/api/csv/index.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { requestStatusAtom, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { userAtom } from '#V2/atoms/userAtom.js';
 import {
   buildHydrationLabel,
   computeProgressFromRow,
   handleCsvImportSocketEvent,
-  isTerminalImportStatus,
-  type CsvImportMeta,
+  isActiveImportForTask,
+  mergeTaskLabel,
+  shouldCloseTaskForImportStatus,
   type CsvImportTaskHandlers,
 } from './csvImportTaskProgress.js';
 
@@ -22,7 +24,6 @@ const isV2CsvImportEnabled = () =>
 const CsvImportTasksSubscriber = () => {
   const user = useAtomValue(userAtom);
   const { registerTask, updateTask, endTask, notify } = useRequestStatus();
-  const metaCacheRef = useRef<Map<string, CsvImportMeta>>(new Map());
   const registeredTaskIdsRef = useRef<Set<string>>(new Set());
   const isHydratingRef = useRef(false);
 
@@ -37,19 +38,24 @@ const CsvImportTasksSubscriber = () => {
     notifySuccess: () => {},
     notifyError: () => {},
     notifyCancelled: () => {},
-    getMeta: () => undefined,
   });
+
+  const getExistingTaskLabel = (importId: string) =>
+    getStore()
+      .get(requestStatusAtom)
+      .tasks.find(task => task.id === importId)?.label;
 
   handlersRef.current = {
     ensureTask: (importId: string, label: string, progress?: number) => {
       const { registerTask: register, updateTask: update } = requestStatusRef.current;
+      const mergedLabel = mergeTaskLabel(getExistingTaskLabel(importId), label);
       if (!registeredTaskIdsRef.current.has(importId)) {
-        register(importId, label, undefined, progress);
+        register(importId, mergedLabel, undefined, progress);
         registeredTaskIdsRef.current.add(importId);
         return;
       }
       update(importId, {
-        label,
+        label: mergedLabel,
         ...(progress !== undefined && { progress }),
       });
     },
@@ -57,34 +63,30 @@ const CsvImportTasksSubscriber = () => {
       requestStatusRef.current.updateTask(importId, updates);
     },
     completeTask: importId => {
+      registeredTaskIdsRef.current.delete(importId);
       requestStatusRef.current.endTask(importId, 'completed');
     },
     failTask: importId => {
+      registeredTaskIdsRef.current.delete(importId);
       requestStatusRef.current.endTask(importId, 'failed');
     },
-    notifySuccess: fileName => {
+    notifySuccess: () => {
       requestStatusRef.current.notify(
         'success',
-        t('System', 'CSV import completed', null, false),
-        fileName
+        t('System', 'CSV import completed', null, false)
       );
     },
-    notifyError: (fileName, message) => {
+    notifyError: (_fileName, message) => {
       requestStatusRef.current.notify(
         'error',
         t('System', 'CSV import failed', null, false),
-        fileName,
+        undefined,
         message
       );
     },
-    notifyCancelled: fileName => {
-      requestStatusRef.current.notify(
-        'info',
-        t('System', 'CSV import cancelled', null, false),
-        fileName
-      );
+    notifyCancelled: () => {
+      requestStatusRef.current.notify('info', t('System', 'CSV import cancelled', null, false));
     },
-    getMeta: importId => metaCacheRef.current.get(importId),
   };
 
   const hydrateAndReconcileRef = useRef(async () => {
@@ -99,16 +101,15 @@ const CsvImportTasksSubscriber = () => {
       }
 
       const rowsById = new Map(rows.map(row => [row.id, row]));
-      rows.forEach(row => {
-        metaCacheRef.current.set(row.id, { fileName: row.file.originalName });
-      });
 
       const { registerTask: register, updateTask: update, endTask: end } =
         requestStatusRef.current;
 
-      rows
-        .filter(row => !isTerminalImportStatus(row.status))
-        .forEach(row => {
+      const activeImportIds = new Set<string>();
+
+      rows.forEach(row => {
+        if (isActiveImportForTask(row.status)) {
+          activeImportIds.add(row.id);
           const label = buildHydrationLabel(row);
           const progress = computeProgressFromRow(row);
           if (!registeredTaskIdsRef.current.has(row.id)) {
@@ -120,24 +121,25 @@ const CsvImportTasksSubscriber = () => {
             label,
             ...(progress !== undefined && { progress }),
           });
-        });
+          return;
+        }
+
+        if (shouldCloseTaskForImportStatus(row.status)) {
+          registeredTaskIdsRef.current.delete(row.id);
+        }
+      });
 
       registeredTaskIdsRef.current.forEach(importId => {
         const row = rowsById.get(importId);
-        if (!row) {
+        if (!row || activeImportIds.has(importId)) {
           return;
         }
-        if (row.status === CsvImportStatus.Cancelled) {
-          end(importId, 'completed');
-          return;
-        }
+        registeredTaskIdsRef.current.delete(importId);
         if (row.status === CsvImportStatus.Failed) {
           end(importId, 'failed');
           return;
         }
-        if (row.status === CsvImportStatus.Completed) {
-          end(importId, 'completed');
-        }
+        end(importId, 'completed');
       });
     } finally {
       isHydratingRef.current = false;

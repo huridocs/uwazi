@@ -4,19 +4,14 @@ import type { CsvImportEventPayloads } from '#V2/api/csv/events.js';
 import { CsvImportStatus, type CsvImportListRow } from '#V2/api/csv/index.js';
 import { statusMessages } from './Components/statusMessages.js';
 
-type CsvImportMeta = {
-  fileName: string;
-};
-
 type CsvImportTaskHandlers = {
   ensureTask: (importId: string, label: string, progress?: number) => void;
   updateTask: (importId: string, updates: { label?: string; progress?: number }) => void;
   completeTask: (importId: string) => void;
   failTask: (importId: string) => void;
-  notifySuccess: (fileName: string) => void;
-  notifyError: (fileName: string, message: string) => void;
-  notifyCancelled: (fileName: string) => void;
-  getMeta: (importId: string) => CsvImportMeta | undefined;
+  notifySuccess: (fileName?: string) => void;
+  notifyError: (fileName: string | undefined, message: string) => void;
+  notifyCancelled: (fileName?: string) => void;
 };
 
 const TERMINAL_IMPORT_STATUSES = new Set<CsvImportStatus>([
@@ -25,9 +20,50 @@ const TERMINAL_IMPORT_STATUSES = new Set<CsvImportStatus>([
   CsvImportStatus.Cancelled,
 ]);
 
+/** Statuses where pipeline work is still in progress (show as running task). */
+const ACTIVE_IMPORT_STATUSES = new Set<CsvImportStatus>([
+  CsvImportStatus.Queued,
+  CsvImportStatus.Validating,
+  CsvImportStatus.ExtractingFiles,
+  CsvImportStatus.PreflightScan,
+  CsvImportStatus.PreflightThesauriCreate,
+  CsvImportStatus.PreflightRelationshipsCreate,
+  CsvImportStatus.ImportEntities,
+  CsvImportStatus.Retrying,
+  CsvImportStatus.Processing,
+]);
+
 const isTerminalImportStatus = (status: CsvImportStatus) => TERMINAL_IMPORT_STATUSES.has(status);
 
-const buildTaskLabel = (fileName: string, stageTitle: string) => `${stageTitle}: ${fileName}`;
+const isActiveImportForTask = (status: CsvImportStatus) => ACTIVE_IMPORT_STATUSES.has(status);
+
+/** Import finished a stage or the whole pipeline — do not show as a new running task on hydrate. */
+const shouldCloseTaskForImportStatus = (status: CsvImportStatus) =>
+  isTerminalImportStatus(status) || !isActiveImportForTask(status);
+
+const FILE_SUFFIX_SEPARATOR = ' — ';
+
+const buildTaskLabel = (stageTitle: string, fileName?: string) => {
+  const prefix = t('System', 'CSV Import', null, false);
+  if (fileName) {
+    return `${prefix}: ${stageTitle}${FILE_SUFFIX_SEPARATOR}${fileName}`;
+  }
+  return `${prefix}: ${stageTitle}`;
+};
+
+/** Keeps the file name from an existing task label when socket events only send a stage title. */
+const mergeTaskLabel = (existingLabel: string | undefined, nextLabel: string) => {
+  if (!existingLabel) {
+    return nextLabel;
+  }
+  const suffixMatch = existingLabel.match(/ — (.+)$/);
+  if (suffixMatch && !nextLabel.includes(FILE_SUFFIX_SEPARATOR)) {
+    return `${nextLabel}${FILE_SUFFIX_SEPARATOR}${suffixMatch[1]}`;
+  }
+  return nextLabel;
+};
+
+const fileNameFromTaskLabel = (label: string | undefined) => label?.match(/ — (.+)$/)?.[1];
 
 const computeProgressFromRow = (row: CsvImportListRow): number | undefined => {
   const { totalRows, processedRows } = row.progress ?? { totalRows: 0, processedRows: 0 };
@@ -71,19 +107,19 @@ const getStageTitleForEvent = (event: string): string => {
     case csvImportEvents.extractStart:
       return statusMessages[CsvImportStatus.ExtractingFiles].title;
     case csvImportEvents.extractSuccess:
-      return statusMessages[CsvImportStatus.ExtractingFilesDone].title;
+      return statusMessages[CsvImportStatus.PreflightScan].title;
     case csvImportEvents.preflightScanStart:
       return statusMessages[CsvImportStatus.PreflightScan].title;
     case csvImportEvents.preflightScanSuccess:
-      return statusMessages[CsvImportStatus.PreflightScanDone].title;
+      return statusMessages[CsvImportStatus.PreflightThesauriCreate].title;
     case csvImportEvents.preflightThesauriCreateStart:
       return statusMessages[CsvImportStatus.PreflightThesauriCreate].title;
     case csvImportEvents.preflightThesauriCreateSuccess:
-      return statusMessages[CsvImportStatus.PreflightThesauriCreateDone].title;
+      return statusMessages[CsvImportStatus.PreflightRelationshipsCreate].title;
     case csvImportEvents.preflightRelationshipsCreateStart:
       return statusMessages[CsvImportStatus.PreflightRelationshipsCreate].title;
     case csvImportEvents.preflightRelationshipsCreateSuccess:
-      return statusMessages[CsvImportStatus.PreflightRelationshipsCreateDone].title;
+      return statusMessages[CsvImportStatus.ImportEntities].title;
     case csvImportEvents.importStart:
       return statusMessages[CsvImportStatus.ImportEntities].title;
     default:
@@ -108,61 +144,58 @@ const getStageTitleForEvent = (event: string): string => {
   }
 };
 
-const resolveFileName = (importId: string, handlers: CsvImportTaskHandlers) =>
-  handlers.getMeta(importId)?.fileName ?? importId;
-
 const handleCsvImportSocketEvent = (
   event: string,
   payload: CsvImportEventPayloads[keyof CsvImportEventPayloads],
   handlers: CsvImportTaskHandlers
 ) => {
   const importId = payload.importId;
-  const fileName = resolveFileName(importId, handlers);
 
   if (event === csvImportEvents.importCancelled) {
-    const label = buildTaskLabel(fileName, statusMessages[CsvImportStatus.Cancelled].title);
+    const label = buildTaskLabel(statusMessages[CsvImportStatus.Cancelled].title);
     handlers.ensureTask(importId, label);
     handlers.updateTask(importId, { label });
     handlers.completeTask(importId);
-    handlers.notifyCancelled(fileName);
+    handlers.notifyCancelled();
     return;
   }
 
   if (event.endsWith(':error')) {
     const message = 'message' in payload ? payload.message : '';
-    const label = buildTaskLabel(fileName, statusMessages[CsvImportStatus.Failed].title);
+    const label = buildTaskLabel(statusMessages[CsvImportStatus.Failed].title);
     handlers.ensureTask(importId, label);
     handlers.failTask(importId);
-    handlers.notifyError(fileName, message);
+    handlers.notifyError(undefined, message);
     return;
   }
 
   if (event === csvImportEvents.importSuccess) {
-    const label = buildTaskLabel(fileName, statusMessages[CsvImportStatus.Completed].title);
+    const label = buildTaskLabel(statusMessages[CsvImportStatus.Completed].title);
     handlers.ensureTask(importId, label, 100);
     handlers.completeTask(importId);
-    handlers.notifySuccess(fileName);
+    handlers.notifySuccess();
     return;
   }
 
   const stageTitle = getStageTitleForEvent(event);
-  const label = buildTaskLabel(fileName, stageTitle);
+  const label = buildTaskLabel(stageTitle);
   const progress = computeProgressFromPayload(event, payload);
   handlers.ensureTask(importId, label, progress);
-
-  if (event.endsWith(':success')) {
-    handlers.updateTask(importId, { label, ...(progress !== undefined && { progress }) });
-  }
 };
 
 const buildHydrationLabel = (row: CsvImportListRow) =>
-  buildTaskLabel(row.file.originalName, statusMessages[row.status].title);
+  buildTaskLabel(statusMessages[row.status].title, row.file.originalName);
 
-export type { CsvImportMeta, CsvImportTaskHandlers };
+export type { CsvImportTaskHandlers };
 export {
   TERMINAL_IMPORT_STATUSES,
+  ACTIVE_IMPORT_STATUSES,
   isTerminalImportStatus,
+  isActiveImportForTask,
+  shouldCloseTaskForImportStatus,
   buildTaskLabel,
+  mergeTaskLabel,
+  fileNameFromTaskLabel,
   buildHydrationLabel,
   computeProgressFromRow,
   handleCsvImportSocketEvent,

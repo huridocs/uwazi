@@ -3,7 +3,9 @@ import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import { FileDropzone, Select } from '#V2/Components/Forms/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
-import { create } from '#V2/api/csv/index.js';
+import { create, CsvImportStatus } from '#V2/api/csv/index.js';
+import { buildTaskLabel } from '../csvImportTaskProgress.js';
+import { statusMessages } from './statusMessages.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
@@ -42,7 +44,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       } else {
         registerTask(
           response.id,
-          `${t('System', 'Importing CSV', null, false)}: ${fileToUpload.name}`,
+          buildTaskLabel(statusMessages[CsvImportStatus.Queued].title, fileToUpload.name),
           undefined,
           0
         );

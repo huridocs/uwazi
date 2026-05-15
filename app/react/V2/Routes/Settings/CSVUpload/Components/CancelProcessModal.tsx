@@ -5,7 +5,9 @@ import { Button, Modal } from '#V2/Components/UI/index.js';
 import { cancel, CsvImportStatus } from '#V2/api/csv/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { statusMessages } from './statusMessages.js';
-import { buildTaskLabel } from '../csvImportTaskProgress.js';
+import { getStore } from '#shared/atomStore/index.js';
+import { requestStatusAtom } from '#V2/atoms/requestStatusAtom.js';
+import { buildTaskLabel, fileNameFromTaskLabel } from '../csvImportTaskProgress.js';
 
 type DropzoneModalProps = {
   isOpen: boolean;
@@ -24,17 +26,15 @@ const CancelProcessModal = ({ isOpen, onClose, entryId }: DropzoneModalProps) =>
   const handleCancel = async () => {
     const response = await cancel(entryId);
     if (!('error' in response) && response.cancelled) {
-      const cancelledLabel = buildTaskLabel(
-        entryId,
-        statusMessages[CsvImportStatus.Cancelled].title
-      );
-      updateTask(entryId, { label: cancelledLabel });
+      const existingLabel = getStore()
+        .get(requestStatusAtom)
+        .tasks.find(task => task.id === entryId)?.label;
+      const fileName = fileNameFromTaskLabel(existingLabel);
+      updateTask(entryId, {
+        label: buildTaskLabel(statusMessages[CsvImportStatus.Cancelled].title, fileName),
+      });
       endTask(entryId, 'completed');
-      notify(
-        'info',
-        t('System', 'CSV import cancelled', null, false),
-        entryId
-      );
+      notify('info', t('System', 'CSV import cancelled', null, false), fileName);
     }
     await revalidator.revalidate();
     handleClose();
