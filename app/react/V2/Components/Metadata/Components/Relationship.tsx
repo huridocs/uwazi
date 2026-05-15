@@ -7,6 +7,7 @@ import {
 import { CountryFlag } from '../../CustomIcons/index.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 
 const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
@@ -19,13 +20,19 @@ const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
 ): value is RelatedRelationshipMetadataProperty['values'][number] => 'title' in value;
 
-const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => {
+const Relationship = ({
+  label,
+  translationContext,
+  hideLabel,
+  values,
+  className,
+}: RelationshipProps) => {
   if (!Array.isArray(values) || !values.length || !values.every(isEntityRelationshipValue)) {
     return null;
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}
