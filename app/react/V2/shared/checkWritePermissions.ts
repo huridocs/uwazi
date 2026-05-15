@@ -3,7 +3,7 @@ import { Entity } from '../api/entities/types';
 
 type CheckFor = 'all' | 'some';
 
-//hasWritePermissions is used in V1 were permissions could be an immutable
+//hasWritePermissions is used in V1 where permissions could be an immutable
 const getValue = (item: any, key: string) =>
   typeof item?.get === 'function' ? item.get(key) : item?.[key];
 
@@ -28,7 +28,7 @@ const checkWritePermissions = (
   user?: ClientUserSchema,
   checkFor: CheckFor = 'all'
 ) => {
-  //checkWritePermissions is used in V1 were entities could be an immutable
+  //checkWritePermissions is used in V1 where entities could be an immutable
   const count = 'size' in entities ? (entities.size as number) : entities.length;
 
   if (!user?._id || !user.role || count === 0) {

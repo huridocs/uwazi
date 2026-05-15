@@ -38,7 +38,6 @@ describe('checkWritePermissions', () => {
       ];
 
       expect(checkWritePermissions(entities, user)).toBe(true);
-      expect(checkWritePermissions(entities, user)).toBe(true);
     });
 
     it('returns true (some) when at least one entity grants write access', () => {
