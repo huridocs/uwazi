@@ -109,7 +109,6 @@ Authentication code,인증 코드
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,자동 생성 완료
-Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,자동 생성 목차
 Automatically generated,자동 생성됨
 Available default translation,Available default translation
@@ -170,6 +169,7 @@ Collection,컬렉션
 Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Configuration
 Configure filters,필터 구성
 Configure templates,Configure templates
@@ -370,7 +370,6 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
-Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
@@ -462,6 +461,7 @@ Import completed,Import completed. Number of entities created:
 Import CSV,CSV 업로드
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,업로드 가이드라인
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.

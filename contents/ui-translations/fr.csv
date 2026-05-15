@@ -109,7 +109,6 @@ Authentication code,Code d'authentification
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,créé automatiquement
-Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Table des matières automatique
 Automatically generated,Généré automatiquement
 Available default translation,Available default translation
@@ -169,6 +168,7 @@ Collection,Collection
 Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Configuration
 Configure filters,Configurer les filtres
 Configure templates,Configure templates
@@ -369,7 +369,6 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
-Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
 Failure details,Détails de l'échec
 Favicon description,"Un favicon est une petite icône qui représente votre collection dans les onglets et les favoris du navigateur. Le favicon par défaut est le logo Uwazi. Pour utiliser le vôtre :
@@ -461,6 +460,7 @@ Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Instructions d'importation
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
