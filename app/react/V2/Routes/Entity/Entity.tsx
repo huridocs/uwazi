@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
@@ -35,6 +35,7 @@ const MAIN_TABS = {
 };
 
 const SIDE_TABS = {
+  DOCUMENT: 'document',
   METADATA: 'metadata',
   TOC: 'toc',
   REFERENCES: 'references',
@@ -74,20 +75,24 @@ const Entity = () => {
             mainDocument={mainDocument}
             templateId={entity.template}
             pagePlaintext={pagePlaintext}
+            entityTitle={entity.title}
+            entityIconId={entity.icon?._id}
           />
         </Tabs.Tab>
       );
     }
 
-    tabs.push(
-      <Tabs.Tab
-        id={MAIN_TABS.METADATA}
-        key={MAIN_TABS.METADATA}
-        label={<TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />}
-      >
-        <MetadataDisplay entity={entity as any} />
-      </Tabs.Tab>
-    );
+    if (entity) {
+      tabs.push(
+        <Tabs.Tab
+          id={MAIN_TABS.METADATA}
+          key={MAIN_TABS.METADATA}
+          label={<TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />}
+        >
+          <MetadataDisplay entity={entity} />
+        </Tabs.Tab>
+      );
+    }
 
     tabs.push(
       <Tabs.Tab
@@ -115,6 +120,11 @@ const Entity = () => {
     return tabs;
   }, [entity, mainDocument, pagePlaintext]);
 
+  const mainTabIds = useMemo(
+    () => new Set(mainTabElements.map(tab => tab.props.id as MainTabId)),
+    [mainTabElements]
+  );
+
   const sideTabsByMain: Record<
     MainTabId,
     { id: SideTabId; label: React.ReactNode; content: React.ReactNode }[]
@@ -124,7 +134,11 @@ const Entity = () => {
         {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
-          content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
+          content: entity ? (
+            <MetadataDisplay entity={entity} headerLayout="stacked" />
+          ) : (
+            <Translate>Loading</Translate>
+          ),
         },
         {
           id: SIDE_TABS.TOC,
@@ -159,6 +173,24 @@ const Entity = () => {
         },
       ],
       [MAIN_TABS.METADATA]: [
+        ...(entity && mainDocument?.filename
+          ? [
+              {
+                id: SIDE_TABS.DOCUMENT,
+                label: <TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />,
+                content: (
+                  <PDFView
+                    mainDocument={mainDocument}
+                    templateId={entity.template}
+                    pagePlaintext={pagePlaintext}
+                    entityTitle={entity.title}
+                    entityIconId={entity.icon?._id}
+                    showEntityHeader={false}
+                  />
+                ),
+              },
+            ]
+          : []),
         {
           id: SIDE_TABS.RELATIONSHIPS,
           label: (
@@ -179,30 +211,34 @@ const Entity = () => {
         {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
-          content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
+          content: entity ? (
+            <MetadataDisplay entity={entity} headerLayout="stacked" />
+          ) : (
+            <Translate>Loading</Translate>
+          ),
         },
       ],
       [MAIN_TABS.FILES]: [],
     }),
-    [entity, mainDocument]
+    [entity, mainDocument, pagePlaintext]
   );
 
   const activeMainTab = useMemo<MainTabId>(() => {
     const mainTab = searchParams.get(MAIN_TAB_PARAM);
-    if (isValidMainTab(mainTab)) {
+    if (isValidMainTab(mainTab) && mainTabIds.has(mainTab)) {
       return mainTab;
     }
     if (mainDocument?.filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
-  }, [searchParams, mainDocument]);
+  }, [searchParams, mainDocument, mainTabIds]);
 
   const activeSideTab = useMemo<SideTabId | undefined>(() => {
     const availableTabs = sideTabsByMain[activeMainTab] || [];
     const sideTab = searchParams.get(SIDE_TAB_PARAM);
 
-    if (isValidSideTab(sideTab)) {
+    if (isValidSideTab(sideTab) && availableTabs.some(tab => tab.id === sideTab)) {
       return sideTab;
     }
 
@@ -212,6 +248,25 @@ const Entity = () => {
 
     return availableTabs[0]?.id;
   }, [searchParams, activeMainTab, sideTabsByMain]);
+
+  useEffect(() => {
+    const raw = searchParams.get(SIDE_TAB_PARAM);
+    if (!raw || !isValidSideTab(raw)) return;
+    const available = sideTabsByMain[activeMainTab] ?? [];
+    if (available.some(tab => tab.id === raw)) return;
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete(SIDE_TAB_PARAM);
+    setSearchParams(next, { replace: true, preventScrollReset: true });
+  }, [searchParams, activeMainTab, sideTabsByMain, setSearchParams]);
+
+  useEffect(() => {
+    const raw = searchParams.get(MAIN_TAB_PARAM);
+    if (!raw || !isValidMainTab(raw)) return;
+    if (mainTabIds.has(raw)) return;
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete(MAIN_TAB_PARAM);
+    setSearchParams(next, { replace: true, preventScrollReset: true });
+  }, [searchParams, mainTabIds, setSearchParams]);
 
   const sideTabElements = useMemo(
     () =>
@@ -225,24 +280,29 @@ const Entity = () => {
 
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
+      if (!isValidMainTab(selectedMainTab)) return;
+
       const next = new URLSearchParams(searchParams.toString());
-      next.set(MAIN_TAB_PARAM, selectedMainTab);
-
-      const currentSideTab = next.get(SIDE_TAB_PARAM);
-      const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
-      const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
-
-      if (currentSideTab && !isSideTabAvailable) {
-        next.delete(SIDE_TAB_PARAM);
+      if (selectedMainTab !== activeMainTab) {
+        const nextAvailable = sideTabsByMain[selectedMainTab] ?? [];
+        const rawS = next.get(SIDE_TAB_PARAM);
+        const sStillValid =
+          Boolean(rawS) && isValidSideTab(rawS) && nextAvailable.some(t => t.id === rawS);
+        if (!sStillValid) {
+          next.delete(SIDE_TAB_PARAM);
+        }
       }
+      next.set(MAIN_TAB_PARAM, selectedMainTab);
 
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
-    [searchParams, setSearchParams, sideTabsByMain]
+    [activeMainTab, searchParams, setSearchParams, sideTabsByMain]
   );
 
   const onSideTabChange = useCallback(
     (selectedSideTab: string) => {
+      if (!isValidSideTab(selectedSideTab)) return;
+
       const next = new URLSearchParams(searchParams.toString());
       next.set(SIDE_TAB_PARAM, selectedSideTab);
       if (!next.get(MAIN_TAB_PARAM)) {
@@ -259,16 +319,24 @@ const Entity = () => {
 
   return (
     <>
-      <PaneLayout defaultRatios={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="h-full">
-          <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
+      <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-(--color-theme-surface-page) text-ink">
+        <PaneLayout.Pane>
+          <Tabs
+            unmountTabs={false}
+            domIdPrefix="entity-main"
+            initialTabId={activeMainTab}
+            onTabSelected={onMainTabChange}
+            tabListAriaLabel="Entity primary"
+          >
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
-        <PaneLayout.Pane className="h-full">
+        <PaneLayout.Pane>
           <Tabs
-            className="min-w-75 overflow-x-auto"
+            key={activeMainTab}
+            className="min-w-0 w-full border-l border-[color-mix(in_srgb,var(--color-theme-border-default)_65%,transparent)]"
             unmountTabs={false}
+            domIdPrefix="entity-side"
             initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}
             tabListAriaLabel="Side panel tabs"

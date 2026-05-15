@@ -3,12 +3,19 @@ import { LinkMetadataProperty } from '#V2/formatters/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type LinkPropertyProps = MetadataFieldProps & {
   values: LinkMetadataProperty['values'];
 };
 
-const LinkProperty = ({ values, label, translationContext, hideLabel }: LinkPropertyProps) => {
+const LinkProperty = ({
+  values,
+  label,
+  translationContext,
+  hideLabel,
+  className,
+}: LinkPropertyProps) => {
   const noValues = useMemo(
     () => values.length === 0 || values.every(value => !value.value || value.value === ''),
     [values]
@@ -19,7 +26,7 @@ const LinkProperty = ({ values, label, translationContext, hideLabel }: LinkProp
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}
@@ -28,7 +35,7 @@ const LinkProperty = ({ values, label, translationContext, hideLabel }: LinkProp
         />
       </dt>
       {values.map(value => (
-        <dd className="font-medium text-gray-900 underline">
+        <dd className="font-medium text-ink underline">
           <a href={value.value} target="_blank" rel="noreferrer">
             {value.label || value.value}
           </a>

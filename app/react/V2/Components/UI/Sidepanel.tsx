@@ -181,7 +181,7 @@ const Sidepanel = ({
 
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
-    const activeElement = document.activeElement;
+    const { activeElement } = document;
 
     if (event.shiftKey && activeElement === firstElement) {
       event.preventDefault();
@@ -219,7 +219,7 @@ const Sidepanel = ({
         <Transition.Child
           as="div"
           data-testid="sidepanel-overlay"
-          className="w-full transition-opacity duration-200 ease-in md:grow bg-[var(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))]"
+          className="w-full transition-opacity duration-200 ease-in md:grow bg-(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"

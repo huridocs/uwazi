@@ -29,16 +29,24 @@ const FileList = ({ entity }: FileListProps) => {
 
   if (files.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500">
+      <div className="flex items-center justify-center h-full text-ink-muted">
         <Translate>No files available</Translate>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full" role="region" aria-label="Files list">
-      <div className="flex-1 overflow-y-auto p-4" role="list" aria-label="Available files">
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 w-full">
+    <div
+      className="flex flex-col h-full bg-(--color-theme-surface-raised)"
+      role="region"
+      aria-label="Files list"
+    >
+      <div
+        className="flex-1 overflow-y-auto p-(--spacing-theme-4)"
+        role="list"
+        aria-label="Available files"
+      >
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-(--spacing-theme-4) w-full">
           {files.map((file, index) => (
             <FileCard key={`${file._id || file.filename || index}`} file={file} index={index} />
           ))}

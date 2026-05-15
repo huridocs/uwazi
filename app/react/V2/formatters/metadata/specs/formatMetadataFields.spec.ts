@@ -228,4 +228,31 @@ describe('formatMetadataFields ', () => {
       ]);
     });
   });
+
+  it('should pass denormalizedProperty for newRelationship template fields', () => {
+    const template = {
+      properties: [
+        {
+          _id: 'nr1',
+          name: 'refs',
+          label: 'Refs',
+          type: 'newRelationship',
+          denormalizedProperty: 'target_prop',
+        },
+      ],
+    } as ClientTemplateSchema;
+
+    expect(formatMetadataFields(template)).toEqual([
+      {
+        _id: 'nr1',
+        name: 'refs',
+        label: 'Refs',
+        type: 'newRelationship',
+        inherited: false,
+        inheritedType: undefined,
+        denormalizedProperty: 'target_prop',
+        hideLabel: undefined,
+      },
+    ]);
+  });
 });

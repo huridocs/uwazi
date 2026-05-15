@@ -167,9 +167,9 @@ const PDF = ({
   }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet, pdf]);
 
   useEffect(() => {
-    const handleLoading = (taksData: { loaded: number; total: number; percent: number }) => {
-      if (taksData.percent < 100) {
-        setLoading({ isLoading: true, progress: taksData.percent });
+    const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
+      if (taskData.percent < 100) {
+        setLoading({ isLoading: true, progress: taskData.percent });
       } else {
         setLoading({ isLoading: false, progress: 0 });
       }
