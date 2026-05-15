@@ -436,7 +436,6 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
           {
-            icon: undefined,
             value: 'B2',
             label: 'B2 EN',
             inheritedType: 'text',
@@ -460,7 +459,6 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
           {
-            icon: undefined,
             value: 'B2',
             label: 'B2 PT',
             inheritedType: 'text',
@@ -493,7 +491,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'Text EN' }],
             inheritedType: 'text',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -513,7 +511,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'Text PT' }],
             inheritedType: 'text',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -589,7 +587,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 1761935443 }],
             inheritedType: 'date',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -637,7 +635,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: { from: 1761935443, to: 1862021843 } }],
             inheritedType: 'daterange',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -657,7 +655,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: { from: 1761935443, to: 1862021843 } }],
             inheritedType: 'daterange',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -689,7 +687,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: { from: 1761935443, to: 1862021843 } }],
             inheritedType: 'daterange',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -709,7 +707,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: { from: 1761935443, to: 1862021843 } }],
             inheritedType: 'daterange',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -741,7 +739,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: { lat: 10, lon: 20 } }],
             inheritedType: 'geolocation',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -761,7 +759,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: { lat: 10, lon: 20 } }],
             inheritedType: 'geolocation',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -793,7 +791,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'Markdown EN' }],
             inheritedType: 'markdown',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -813,7 +811,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'Markdown PT' }],
             inheritedType: 'markdown',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -845,7 +843,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 1761935443 }, { value: 1862021843 }],
             inheritedType: 'multidate',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -865,7 +863,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 1761935443 }, { value: 1862021843 }],
             inheritedType: 'multidate',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -948,7 +946,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'apple_id', label: 'Apple' }],
             inheritedType: 'select',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -999,7 +997,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             ],
             inheritedType: 'multiselect',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1022,7 +1020,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             ],
             inheritedType: 'multiselect',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1054,7 +1052,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'http://example.com', label: 'Example EN' }],
             inheritedType: 'link',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1074,7 +1072,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'http://example.com', label: 'Example PT' }],
             inheritedType: 'link',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1106,7 +1104,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: '#api/files/image.png' }],
             inheritedType: 'image',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1126,7 +1124,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: '#api/files/image.png' }],
             inheritedType: 'image',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1158,7 +1156,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'TIJ5481-7165' }],
             inheritedType: 'generatedid',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1178,7 +1176,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             inheritedValue: [{ value: 'TIJ5481-7165' }],
             inheritedType: 'generatedid',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
@@ -1255,13 +1253,13 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             value: 'B1',
             label: 'B1 EN',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 EN', icon: undefined, type: 'entity' },
+          { value: 'B2', label: 'B2 EN', type: 'entity' },
         ],
       },
       {
@@ -1274,13 +1272,13 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             value: 'B1',
             label: 'B1 PT',
             icon: {
-              id: 'iconB1',
+              _id: 'iconB1',
               label: 'iconB1',
               type: 'img',
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 PT', icon: undefined, type: 'entity' },
+          { value: 'B2', label: 'B2 PT', type: 'entity' },
         ],
       },
     ]);
