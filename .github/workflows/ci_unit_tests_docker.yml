@@ -197,7 +197,7 @@ jobs:
           DBHOST: localhost:27017
           REDIS_HOST: redis
           REDIS_PORT: 6379
-        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/4
+        run: node --expose-gc --no-compilation-cache --experimental-vm-modules ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/4
 
   api_unit_tests_aggregate:
     name: api_unit_tests
@@ -246,6 +246,6 @@ jobs:
       - name: install dependencies
         run: corepack enable && yarn install
       - name: Run tests
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --forceExit --maxWorkers=3
+        run: node --max-http-header-size 20000 --experimental-vm-modules ./node_modules/.bin/jest app/react --forceExit --maxWorkers=3
 
   
