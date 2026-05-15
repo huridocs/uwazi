@@ -125,6 +125,7 @@ describe('CSV imports list table', () => {
 
     const expectedRows = [
       ['Completed with errors', 'thesaurus.csv', 'Cases', '3/3', '0', '3', '4/7/2024, 1:20:00 PM'],
+      ['Completed with errors', 'persons.csv', 'Cases', '5/5', '3', '2', '4/7/2024, 1:20:00 PM'],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);

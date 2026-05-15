@@ -14,6 +14,15 @@ import { UploadStatus } from '../../UploadStatus.js';
 import type { CsvImportListRow } from '#app/V2/api/csv/index.js';
 import { csvImportEvents } from '#app/V2/api/csv/events.js';
 
+const expectStatistic = (label: string, value: string) => {
+  const labelNode = screen.getByText(label);
+  const statContainer = labelNode.parentElement;
+
+  expect(statContainer).not.toBeNull();
+  expect(statContainer).toHaveTextContent(value);
+  expect(statContainer).toHaveTextContent(label);
+};
+
 describe('CSV import status view', () => {
   let locale: 'en' | 'ar' = 'en';
   let revalidateMock: jest.Mock;
@@ -70,15 +79,6 @@ describe('CSV import status view', () => {
   it('should display the current status', async () => {
     await renderComponent(csvImportsList[1]);
 
-    const expectStatistic = (label: string, value: string) => {
-      const labelNode = screen.getByText(label);
-      const statContainer = labelNode.parentElement;
-
-      expect(statContainer).not.toBeNull();
-      expect(statContainer).toHaveTextContent(value);
-      expect(statContainer).toHaveTextContent(label);
-    };
-
     expectStatistic('Entities created', '44');
     expectStatistic('Rows processed', '48');
     expectStatistic('Rows failed', '1');
@@ -115,16 +115,33 @@ describe('CSV import status view', () => {
       case: 'failed',
       data: csvImportsList[3],
       expectedErrorMessage: 'Failed',
+      entitiesCreated: '15',
+      entitiesFailed: '2',
     },
     {
       case: 'completed with errors',
       data: csvImportsListWithErrors[0],
       expectedErrorMessage: 'Completed with errors',
+      entitiesCreated: '-',
+      entitiesFailed: '3',
     },
-  ])('should display the correct message for $case', async ({ data, expectedErrorMessage }) => {
-    await renderComponent(data);
-    expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
-  });
+    {
+      case: 'completed with errors and some sucess',
+      data: csvImportsListWithErrors[1],
+      expectedErrorMessage: 'Completed with errors',
+      entitiesCreated: '3',
+      entitiesFailed: '2',
+    },
+  ])(
+    'should display the correct message for $case',
+    async ({ data, expectedErrorMessage, entitiesCreated, entitiesFailed }) => {
+      await renderComponent(data);
+      expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
+
+      expectStatistic('Entities created', entitiesCreated);
+      expectStatistic('Rows failed', entitiesFailed);
+    }
+  );
 
   it('should revalidate once on different events', async () => {
     const onSpy = jest.spyOn(socket, 'on');
