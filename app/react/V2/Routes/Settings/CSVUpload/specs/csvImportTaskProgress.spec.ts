@@ -50,16 +50,13 @@ describe('csvImportTaskProgress', () => {
     const label = buildTaskLabel('Creating entities');
     expect(label).toContain('CSV Import');
     expect(label).toContain('Creating entities');
-    expect(label).not.toMatch(/[a-f0-9]{24}/);
+    expect(/[a-f0-9]{24}/.test(label)).toBe(false);
   });
 
   it('merges file name from an existing task label', () => {
-    expect(
-      mergeTaskLabel(
-        'CSV Import: Queued — report.csv',
-        'CSV Import: Creating entities'
-      )
-    ).toBe('CSV Import: Creating entities — report.csv');
+    expect(mergeTaskLabel('CSV Import: Queued — report.csv', 'CSV Import: Creating entities')).toBe(
+      'CSV Import: Creating entities — report.csv'
+    );
   });
 
   it('uses generic label when there is no existing task', () => {
@@ -91,11 +88,7 @@ describe('csvImportTaskProgress', () => {
   it('updates task on extract start', () => {
     const { handlers, ensureTask } = createHandlers();
 
-    handleCsvImportSocketEvent(
-      csvImportEvents.extractStart,
-      { importId },
-      handlers
-    );
+    handleCsvImportSocketEvent(csvImportEvents.extractStart, { importId }, handlers);
 
     expect(ensureTask).toHaveBeenCalledWith(
       importId,
@@ -126,11 +119,7 @@ describe('csvImportTaskProgress', () => {
   it('completes task and notifies on import success', () => {
     const { handlers, completeTask, notifySuccess } = createHandlers();
 
-    handleCsvImportSocketEvent(
-      csvImportEvents.importSuccess,
-      { importId },
-      handlers
-    );
+    handleCsvImportSocketEvent(csvImportEvents.importSuccess, { importId }, handlers);
 
     expect(completeTask).toHaveBeenCalledWith(importId);
     expect(notifySuccess).toHaveBeenCalledWith();
@@ -173,11 +162,7 @@ describe('csvImportTaskProgress', () => {
   it('completes task and notifies on import cancelled', () => {
     const { handlers, completeTask, notifyCancelled } = createHandlers();
 
-    handleCsvImportSocketEvent(
-      csvImportEvents.importCancelled,
-      { importId },
-      handlers
-    );
+    handleCsvImportSocketEvent(csvImportEvents.importCancelled, { importId }, handlers);
 
     expect(completeTask).toHaveBeenCalledWith(importId);
     expect(notifyCancelled).toHaveBeenCalledWith();

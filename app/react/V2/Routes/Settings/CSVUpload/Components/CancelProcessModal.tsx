@@ -3,10 +3,9 @@ import { useRevalidator } from 'react-router';
 import { Translate, t } from '#app/I18N/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { cancel, CsvImportStatus } from '#V2/api/csv/index.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useRequestStatus, requestStatusAtom } from '#V2/atoms/requestStatusAtom.js';
 import { statusMessages } from './statusMessages.js';
 import { getStore } from '#shared/atomStore/index.js';
-import { requestStatusAtom } from '#V2/atoms/requestStatusAtom.js';
 import { buildTaskLabel, fileNameFromTaskLabel } from '../csvImportTaskProgress.js';
 
 type DropzoneModalProps = {
@@ -25,7 +24,7 @@ const CancelProcessModal = ({ isOpen, onClose, entryId }: DropzoneModalProps) =>
 
   const handleCancel = async () => {
     const response = await cancel(entryId);
-    if (!('error' in response) && response.cancelled) {
+    if ('cancelled' in response && response.cancelled) {
       const existingLabel = getStore()
         .get(requestStatusAtom)
         .tasks.find(task => task.id === entryId)?.label;

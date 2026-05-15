@@ -36,10 +36,7 @@ const setConnected = (connected: boolean) => {
 const registerTask = (id: string, label: string) => {
   getStore().set(requestStatusAtom, prev => ({
     ...prev,
-    tasks: [
-      ...prev.tasks.filter(task => task.id !== id),
-      { id, label, status: 'running' },
-    ],
+    tasks: [...prev.tasks.filter(task => task.id !== id), { id, label, status: 'running' }],
   }));
 };
 

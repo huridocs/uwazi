@@ -5,7 +5,7 @@ import { t } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
 import type { CsvImportEventPayloads } from '#V2/api/csv/events.js';
-import { get, CsvImportStatus, type CsvImportListRow } from '#V2/api/csv/index.js';
+import { get, CsvImportStatus } from '#V2/api/csv/index.js';
 import { requestStatusAtom, useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { userAtom } from '#V2/atoms/userAtom.js';
 import {
@@ -71,10 +71,7 @@ const CsvImportTasksSubscriber = () => {
       requestStatusRef.current.endTask(importId, 'failed');
     },
     notifySuccess: () => {
-      requestStatusRef.current.notify(
-        'success',
-        t('System', 'CSV import completed', null, false)
-      );
+      requestStatusRef.current.notify('success', t('System', 'CSV import completed', null, false));
     },
     notifyError: (_fileName, message) => {
       requestStatusRef.current.notify(
@@ -102,8 +99,7 @@ const CsvImportTasksSubscriber = () => {
 
       const rowsById = new Map(rows.map(row => [row.id, row]));
 
-      const { registerTask: register, updateTask: update, endTask: end } =
-        requestStatusRef.current;
+      const { registerTask: register, updateTask: update, endTask: end } = requestStatusRef.current;
 
       const activeImportIds = new Set<string>();
 

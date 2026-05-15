@@ -2,10 +2,9 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { createStore } from 'jotai';
-import { Provider } from 'jotai';
-import { useHydrateAtoms } from 'jotai/utils';
+import { createStore, Provider } from 'jotai';
 import { render, waitFor } from '@testing-library/react';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
 import { userAtom } from '#V2/atoms/userAtom.js';
 import { requestStatusAtom } from '#V2/atoms/requestStatusAtom.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
@@ -39,27 +38,18 @@ const initialRequestStatus = {
 };
 
 const TestWrapper = ({
-  role,
+  userRole,
   store,
   children,
 }: {
-  role: string;
+  userRole: string;
   store: ReturnType<typeof createStore>;
   children: React.ReactNode;
 }) => {
-  const Hydrate = () => {
-    useHydrateAtoms([
-      [userAtom, { _id: 'user-1', role }],
-      [requestStatusAtom, initialRequestStatus],
-    ]);
-    return children;
-  };
+  store.set(userAtom, { _id: 'user-1', role: userRole } as ClientUserSchema);
+  store.set(requestStatusAtom, initialRequestStatus);
 
-  return (
-    <Provider store={store}>
-      <Hydrate />
-    </Provider>
-  );
+  return <Provider store={store}>{children}</Provider>;
 };
 
 describe('CsvImportTasksSubscriber', () => {
@@ -78,7 +68,7 @@ describe('CsvImportTasksSubscriber', () => {
   it('subscribes to csv import socket events for admins', async () => {
     const store = createStore();
     render(
-      <TestWrapper role="admin" store={store}>
+      <TestWrapper userRole="admin" store={store}>
         <CsvImportTasksSubscriber />
       </TestWrapper>
     );
@@ -93,7 +83,7 @@ describe('CsvImportTasksSubscriber', () => {
   it('does not subscribe when user is not admin', () => {
     const store = createStore();
     render(
-      <TestWrapper role="editor" store={store}>
+      <TestWrapper userRole="editor" store={store}>
         <CsvImportTasksSubscriber />
       </TestWrapper>
     );
@@ -114,7 +104,7 @@ describe('CsvImportTasksSubscriber', () => {
 
     const store = createStore();
     render(
-      <TestWrapper role="admin" store={store}>
+      <TestWrapper userRole="admin" store={store}>
         <CsvImportTasksSubscriber />
       </TestWrapper>
     );
@@ -142,7 +132,7 @@ describe('CsvImportTasksSubscriber', () => {
 
     const store = createStore();
     render(
-      <TestWrapper role="admin" store={store}>
+      <TestWrapper userRole="admin" store={store}>
         <CsvImportTasksSubscriber />
       </TestWrapper>
     );

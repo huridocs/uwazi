@@ -149,7 +149,7 @@ const handleCsvImportSocketEvent = (
   payload: CsvImportEventPayloads[keyof CsvImportEventPayloads],
   handlers: CsvImportTaskHandlers
 ) => {
-  const importId = payload.importId;
+  const { importId } = payload;
 
   if (event === csvImportEvents.importCancelled) {
     const label = buildTaskLabel(statusMessages[CsvImportStatus.Cancelled].title);
