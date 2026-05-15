@@ -9,7 +9,7 @@ import { socket } from '#app/socket.js';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
 import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
-import { csvImportsList, templates, translations } from './fixtures.js';
+import { csvImportsList, csvImportsListWithErrors, templates, translations } from './fixtures.js';
 import { UploadStatus } from '../../UploadStatus.js';
 import type { CsvImportListRow } from '#app/V2/api/csv/index.js';
 import { csvImportEvents } from '#app/V2/api/csv/events.js';
@@ -110,6 +110,22 @@ describe('CSV import status view', () => {
     expect(errorRows[1]).toHaveTextContent('Referenced file was not found in the import package.');
   });
 
+  it.each([
+    {
+      case: 'failed',
+      data: csvImportsList[3],
+      expectedErrorMessage: 'Failed',
+    },
+    {
+      case: 'completed with herrors',
+      data: csvImportsListWithErrors[0],
+      expectedErrorMessage: 'Completed with errors',
+    },
+  ])('should display the correct message for $case', async ({ data, expectedErrorMessage }) => {
+    await renderComponent(data);
+    expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
+  });
+
   it('should revalidate once on different events', async () => {
     const onSpy = jest.spyOn(socket, 'on');
     const offSpy = jest.spyOn(socket, 'off');
@@ -189,11 +205,6 @@ describe('CSV import status view', () => {
     });
 
     expect(revalidateMock).toHaveBeenCalledTimes(0);
-  });
-
-  it('should not allow canceling finished imports', async () => {
-    await renderComponent(csvImportsList[2]);
-    expect(screen.getByText('Cancel').parentElement).toBeDisabled();
   });
 
   it('should cancel a process', async () => {

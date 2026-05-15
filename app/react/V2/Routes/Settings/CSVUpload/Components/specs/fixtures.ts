@@ -153,6 +153,35 @@ const csvImportsList: CsvImportListRow[] = [
   },
 ];
 
+const csvImportsListWithErrors: CsvImportListRow[] = [
+  {
+    id: '6a0614d8a005c55eb66ad19a',
+    templateId: 'template-cases',
+    file: { originalName: 'thesaurus.csv', mimeType: 'text/csv', size: 24 },
+    status: CsvImportStatus.ImportEntitiesDone,
+    createdAt: 1712496000000,
+    updatedAt: 1712496000000,
+    rowErrors: [],
+    stats: {
+      thesaurusValuesObserved: 0,
+      thesaurusValuesCreated: 0,
+      thesauriTouched: 0,
+      relationshipValuesObserved: 0,
+      relationshipValuesCreated: 0,
+      rowsProcessed: 3,
+      rowsFailed: 3,
+      entitiesCreated: 0,
+    },
+    progress: { totalRows: 3, processedRows: 3, lastProcessedRow: 2, batchSize: 10 },
+    extraction: {
+      sourceType: 'csv',
+      originalUploadSizeBytes: 24,
+      extractedFilesCount: 1,
+      files: [{ filename: 'thesaurus.csv', sizeBytes: 24 }],
+    },
+  },
+];
+
 const templates: Template[] = [
   {
     _id: 'template-people',
@@ -197,4 +226,4 @@ const translations: ClientTranslationSchema[] = [
   },
 ];
 
-export { csvImportsList, templates, translations };
+export { csvImportsList, csvImportsListWithErrors, templates, translations };

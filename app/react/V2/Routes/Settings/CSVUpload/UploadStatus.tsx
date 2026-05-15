@@ -41,17 +41,9 @@ const UploadStatus = () => {
     progressTotal > 0 ? Math.round((progressCurrent / progressTotal) * 100) : 0;
 
   const statusMessage = useMemo(() => {
-    if (entry?.status === CsvImportStatus.ImportEntitiesDone) {
-      const hasFailed = Boolean(entry?.stats?.rowsFailed);
-      const entitiesCreated = entry?.stats?.entitiesCreated;
-
-      if (hasFailed) {
-        return statusMessages.completedWithErrors;
-      }
-
-      if (entitiesCreated === 0) {
-        return statusMessages.completed;
-      }
+    const hasFailed = Boolean(entry?.stats?.rowsFailed);
+    if (entry?.status === CsvImportStatus.ImportEntitiesDone && hasFailed) {
+      return statusMessages.completedWithErrors;
     }
 
     return entry ? statusMessages[entry.status] : undefined;
