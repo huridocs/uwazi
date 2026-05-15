@@ -22,6 +22,10 @@ describe('PaneLayout', () => {
     it('should be accessible', () => {
       render();
       cy.injectAxe();
+      cy.get('div[role="separator"]')
+        .first()
+        .should('have.attr', 'aria-orientation', 'vertical')
+        .and('have.class', 'w-1');
       cy.checkA11y();
     });
 

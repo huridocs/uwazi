@@ -201,6 +201,27 @@ describe('Entity view', () => {
       });
     });
 
+    it('should hide the entity header when Document is shown in the side panel', async () => {
+      let tablists = screen.getAllByTestId('tabs-comp');
+      const mainTabs = within(tablists[0]);
+
+      fireEvent.click(mainTabs.getByRole('tab', { name: 'Metadata' }));
+
+      await waitFor(() => {
+        tablists = screen.getAllByTestId('tabs-comp');
+        expect(within(tablists[1]).getByRole('tab', { name: 'Document' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+
+      const sideDocumentPanel = document.getElementById('entity-side-panel-document');
+      expect(sideDocumentPanel).not.toBeNull();
+      expect(within(sideDocumentPanel as HTMLElement).queryByText('Sample Entity')).toBeNull();
+      expect(within(sideDocumentPanel as HTMLElement).getByRole('combobox')).toBeInTheDocument();
+      expect(within(sideDocumentPanel as HTMLElement).getByTestId('mock-pdf')).toBeInTheDocument();
+    });
+
     it('should preserve active side tab when switching to a main tab that supports it', async () => {
       render(
         <TestRouterContext
