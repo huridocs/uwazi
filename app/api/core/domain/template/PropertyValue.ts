@@ -2,7 +2,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { PropertyType } from './PropertyType.js';
 
 type Icon = {
-  id: string;
+  _id: string;
   label: string;
   type: string;
 };
