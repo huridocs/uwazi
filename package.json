@@ -73,8 +73,8 @@
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
     "migrate": "node ./scripts/runner.js ./scripts/migrate.js",
     "migrate-and-reindex": "node ./scripts/runner.js ./scripts/migrate_and_reindex.js",
-    "test-debug": "node --no-experimental-fetch --experimental-vm-modules --inspect ./node_modules/.bin/jest --watch --no-cache -i",
-    "test": "node --no-experimental-fetch --experimental-vm-modules ./node_modules/.bin/jest -w=50%",
+    "test-debug": "node --no-experimental-fetch --inspect ./node_modules/.bin/jest --watch --no-cache -i",
+    "test": "node --no-experimental-fetch ./node_modules/.bin/jest -w=50%",
     "e2e-puppeteer-all": "echo 'MAKE SURE UWAZI IS RUNNING WITH uwazi_e2e DATABASE AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
     "e2e-puppeteer": "yarn e2e-puppeteer-all --roots '<rootDir>/suite1' '<rootDir>/suite2'",
     "e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
@@ -118,7 +118,7 @@
     "pbkdf2": "^3.1.5"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.1045.0",
+    "@aws-sdk/client-s3": "3.1007.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
@@ -140,7 +140,7 @@
     "@sentry/node-core": "10.52.0",
     "@sentry/profiling-node": "10.52.0",
     "@sentry/react": "10.52.0",
-    "@smithy/node-http-handler": "^4.7.1",
+    "@smithy/node-http-handler": "^4.4.15",
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.1.0",
     "@supercharge/promise-pool": "^3.3.0",
