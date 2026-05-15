@@ -8,7 +8,7 @@ const getTemplatePillThemeAnchors = (
   themeColors: ResolvedThemeVars,
   mode: ThemeMode,
   templateColorRaw?: string | null
-): { tintBase: string; defaultAccent: string; accentHex: string } => {
+): { tintBase: string; accentHex: string } => {
   const presetFallback = PRESET_DEFINITIONS.default.modes[mode];
 
   const defaultAccent =
@@ -43,7 +43,7 @@ const getTemplatePillThemeAnchors = (
   const safeTintBase =
     mode === 'light' && getRelativeLuminanceFromHex(tintBase) < 0.45 ? lightPrimary : tintBase;
 
-  return { tintBase: safeTintBase, defaultAccent, accentHex };
+  return { tintBase: safeTintBase, accentHex };
 };
 
-export { getTemplatePillThemeAnchors, parseThemeColorHex };
+export { getTemplatePillThemeAnchors };

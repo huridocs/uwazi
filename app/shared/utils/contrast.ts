@@ -65,19 +65,19 @@ const checkContrast = (bgHex: string, fgHex: string): ContrastCheck => {
   return { ratio, passesAA: ratio >= WCAG_AA, passesAAA: ratio >= WCAG_AAA };
 };
 
-const hexRe = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+const hexRe = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const rgbRe = /^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/;
 
 const parseColorToHex = (value: string): string | null => {
   const s = value.trim();
   if (hexRe.test(s)) {
-    return s.length === 4
-      ? `#${s
-          .slice(1)
+    const h = s.replace('#', '');
+    return h.length === 3
+      ? `#${h
           .split('')
           .map(c => c + c)
           .join('')}`
-      : s;
+      : `#${h}`;
   }
   const rgb = rgbRe.exec(s);
   if (rgb) {

@@ -43,30 +43,47 @@ const SELECT_INNER = new Set<BaseMetadataProperty['type']>(['select', 'multisele
 
 const IMAGE_INNER = new Set<BaseMetadataProperty['type']>(['image', 'preview']);
 
+const INNER_TYPES = new Set<string>([
+  'date',
+  'daterange',
+  'generatedid',
+  'geolocation',
+  'image',
+  'link',
+  'markdown',
+  'media',
+  'multidate',
+  'multidaterange',
+  'multiselect',
+  'numeric',
+  'preview',
+  'relationship',
+  'select',
+  'text',
+]);
+
+const isInnerType = (type: string): type is BaseMetadataProperty['type'] => INNER_TYPES.has(type);
+
 function findPropertyTypeByName(
   propertyName: string,
   templates: ClientTemplateSchema[]
 ): BaseMetadataProperty['type'] | undefined {
   for (const template of templates) {
     const match = template.properties?.find(p => p.name === propertyName);
-    if (match?.type) {
-      return match.type as BaseMetadataProperty['type'];
+    if (match?.type && isInnerType(match.type)) {
+      return match.type;
     }
   }
   return undefined;
 }
 
-type LooseMetaRow = {
-  value?: unknown;
-  label?: string;
-  inheritedValue?: LooseMetaRow[];
-};
+type DenormalizedMetadataValue = NonNullable<NonNullable<Entity['metadata']>[string]>[number];
 
 function flattenInheritedValues(
   metadata: Entity['metadata'] | undefined,
   propertyName: string
-): LooseMetaRow[] {
-  const rows = ((metadata ?? {}) as Record<string, LooseMetaRow[]>)[propertyName] ?? [];
+): DenormalizedMetadataValue[] {
+  const rows = metadata?.[propertyName] ?? [];
   return rows.flatMap(row => row.inheritedValue ?? []);
 }
 
@@ -109,7 +126,8 @@ function formatInnerLinkGeoMedia(
     return formatLinkProperty(field, d.meta);
   }
   if (t === 'geolocation') {
-    return formatGeolocationProperty(field, d.entity, d.templates);
+    const entity = { ...d.entity, metadata: d.meta };
+    return formatGeolocationProperty({ ...field, propertyGroup: undefined }, entity, d.templates);
   }
   if (t === 'media') {
     return formatMediaProperty(field, d.meta);
@@ -152,8 +170,9 @@ function formatDenormalizedNewRelationship(ctx: DenormCtx): MetadataProperty | n
   if (flat.length === 0) {
     return null;
   }
+  const denormalizedMetadata: Entity['metadata'] = { [field.name]: flat };
   return formatByInnerType(innerField(field, innerType), {
-    meta: { [field.name]: flat } as Entity['metadata'],
+    meta: denormalizedMetadata,
     entity,
     templates,
     entityTemplate,

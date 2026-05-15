@@ -9,6 +9,7 @@ const ids = {
   },
   property: {
     statusMultiselect: '64b1636e2e6f8a001f9ad010',
+    locationGeolocation: '64b1636e2e6f8a001f9ad011',
     composerRefsNewRel: '64b1636e2e6f8a001f9ad020',
     wrongTypeText: '64b1636e2e6f8a001f9ad099',
   },
@@ -33,6 +34,12 @@ describe('formatDenormalizedNewRelationship', () => {
           name: 'status',
           label: 'Status',
           type: 'multiselect',
+        },
+        {
+          _id: ids.property.locationGeolocation,
+          name: 'location',
+          label: 'Location',
+          type: 'geolocation',
         },
       ],
     },
@@ -157,6 +164,40 @@ describe('formatDenormalizedNewRelationship', () => {
         { value: ids.thesaurus.optionB, label: 'Option B' },
         { value: ids.thesaurus.optionC, label: 'Option C' },
       ],
+    });
+  });
+
+  it('formats denormalized geolocation values from flattened inherited metadata', () => {
+    const field = {
+      _id: ids.property.composerRefsNewRel,
+      name: 'composer_refs',
+      label: 'Refs',
+      type: 'newRelationship',
+      denormalizedProperty: 'location',
+    } as BaseMetadataProperty;
+
+    const result = formatDenormalizedNewRelationship({
+      field,
+      metadata: {
+        composer_refs: [
+          {
+            value: ids.entity.linkedSourceA,
+            label: 'Source entity A',
+            inheritedValue: [{ value: { lat: 10, lon: 20 }, label: 'Source location' }],
+          },
+        ],
+      } as Entity['metadata'],
+      entity,
+      templates,
+      entityTemplate: templates[0],
+    });
+
+    expect(result).toMatchObject({
+      _id: ids.property.composerRefsNewRel,
+      name: 'composer_refs',
+      label: 'Refs',
+      type: 'geolocation',
+      values: [{ value: { latitude: 10, longitude: 20 }, label: 'Source location' }],
     });
   });
 });
