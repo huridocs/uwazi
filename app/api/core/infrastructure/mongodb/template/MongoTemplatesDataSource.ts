@@ -51,7 +51,9 @@ export class MongoTemplatesDataSource
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
       this.templatesMutated.clear();
-      await updateMapping(templates);
+      if (templates.length > 0) {
+        await updateMapping(templates);
+      }
     });
   }
 

@@ -1,14 +1,12 @@
-import { Db } from 'mongodb';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { MongoTransactionManager } from './common/MongoTransactionManager.js';
-import { MongoSettingsDataSource } from './MongoSettingsDataSource.js';
+import { MongoSettingsDataSource, MongoSettingsDataSourceDeps } from './MongoSettingsDataSource.js';
 
 export class CachedMongoSettingsDataSource extends MongoSettingsDataSource {
   private cache = new Map<string, any>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
-    super(db, transactionManager);
-    transactionManager.onCommitted(async () => {
+  constructor(deps: MongoSettingsDataSourceDeps) {
+    super(deps);
+    deps.transactionManager.onCommitted(async () => {
       this.cache.clear();
     });
   }

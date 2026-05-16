@@ -47,6 +47,7 @@ interface BaseMetadataProperty {
   readonly inherited?: boolean;
   readonly inheritedType?: PropertyTypeSchema;
   readonly relationShipTarget?: string;
+  readonly denormalizedProperty?: string;
   readonly hideLabel?: boolean;
 }
 

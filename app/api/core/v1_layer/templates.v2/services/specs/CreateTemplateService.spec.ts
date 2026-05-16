@@ -5,7 +5,6 @@ import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/templ
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
@@ -14,6 +13,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { CreateTemplateService } from '../CreateTemplateService.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -52,7 +52,9 @@ function setUpService() {
     slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
   });
   const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
-  const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
+  const settingsDS = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default(), {
+    factories: { transactionManager: () => transactionManager },
+  });
   const entityDS = new MongoEntitiesDataSource(
     connection,
     templatesDS,

@@ -1,7 +1,8 @@
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
+import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
+import { getConnection } from '../common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { MongoSettingsDataSource } from '../MongoSettingsDataSource.js';
 
 const fixtures: DBFixture = {
@@ -24,7 +25,7 @@ afterAll(async () => {
 });
 
 const createSut = () =>
-  new MongoSettingsDataSource(getConnection(), TransactionManagerFactory.default());
+  testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default());
 
 describe('MongoSettingsDataSource', () => {
   describe('addLanguage()', () => {
@@ -34,6 +35,22 @@ describe('MongoSettingsDataSource', () => {
 
       const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
       expect(settings?.languages?.map((l: any) => l.key)).toContain('fr');
+    });
+
+    it('should call the slots reconciler', async () => {
+      const execute = jest.fn().mockResolvedValue(undefined);
+      const sut = testingEnvironment.runWithContext(
+        () =>
+          new MongoSettingsDataSource({
+            db: getConnection(),
+            transactionManager: TransactionManagerFactory.fake(),
+            slotsReconciler: () => ({ execute }) as any,
+          })
+      );
+
+      await sut.addLanguage({ key: 'fr', label: 'French' });
+
+      expect(execute).toHaveBeenCalledTimes(1);
     });
 
     it('should be idempotent: concurrent calls for the same key produce exactly one entry', async () => {
@@ -77,6 +94,24 @@ describe('MongoSettingsDataSource', () => {
       const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
       const enLanguage = settings?.languages?.find((l: any) => l.key === 'en');
       expect(enLanguage?.installing).toBeUndefined();
+    });
+  });
+
+  describe('deleteLanguage()', () => {
+    it('should call the slots reconciler', async () => {
+      const execute = jest.fn().mockResolvedValue(undefined);
+      const sut = testingEnvironment.runWithContext(
+        () =>
+          new MongoSettingsDataSource({
+            db: getConnection(),
+            transactionManager: TransactionManagerFactory.fake(),
+            slotsReconciler: () => ({ execute }) as any,
+          })
+      );
+
+      await sut.deleteLanguage('es');
+
+      expect(execute).toHaveBeenCalledTimes(1);
     });
   });
 });

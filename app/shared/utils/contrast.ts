@@ -46,6 +46,11 @@ const getContrastRatio = (hex1: string, hex2: string): number => {
   return contrastRatio(L1, L2);
 };
 
+const getRelativeLuminanceFromHex = (hex: string): number => {
+  const [r, g, b] = hexToRgb(hex);
+  return relativeLuminance(r, g, b);
+};
+
 const WCAG_AA = 4.5;
 const WCAG_AAA = 7;
 
@@ -60,19 +65,19 @@ const checkContrast = (bgHex: string, fgHex: string): ContrastCheck => {
   return { ratio, passesAA: ratio >= WCAG_AA, passesAAA: ratio >= WCAG_AAA };
 };
 
-const hexRe = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+const hexRe = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const rgbRe = /^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/;
 
 const parseColorToHex = (value: string): string | null => {
   const s = value.trim();
   if (hexRe.test(s)) {
-    return s.length === 4
-      ? `#${s
-          .slice(1)
+    const h = s.replace('#', '');
+    return h.length === 3
+      ? `#${h
           .split('')
           .map(c => c + c)
           .join('')}`
-      : s;
+      : `#${h}`;
   }
   const rgb = rgbRe.exec(s);
   if (rgb) {
@@ -159,6 +164,25 @@ const getAccessibleForegroundOnBackground = (
   return { foreground: target, ratio: checkContrast(backgroundHex, target).ratio };
 };
 
+const getTemplatePillColors = (
+  accentHex: string,
+  tintBaseHex: string,
+  minimumRatio = WCAG_AA
+): { background: string; foreground: string; ratio: number } => {
+  for (let step = 1; step <= 100; step += 1) {
+    const w = step / 100;
+    const background = mixHex(tintBaseHex, accentHex, w);
+    const next = checkContrast(background, accentHex);
+    if (next.ratio >= minimumRatio) {
+      return { background, foreground: accentHex, ratio: next.ratio };
+    }
+  }
+
+  const background = mixHex(tintBaseHex, accentHex, 0.22);
+  const adjusted = getAccessibleForegroundOnBackground(background, accentHex, minimumRatio);
+  return { background, foreground: adjusted.foreground, ratio: adjusted.ratio };
+};
+
 export {
   hexToRgb,
   rgbToHex,
@@ -171,4 +195,6 @@ export {
   getContrastTextColor,
   getAccessibleColorPair,
   getAccessibleForegroundOnBackground,
+  getTemplatePillColors,
+  getRelativeLuminanceFromHex,
 };

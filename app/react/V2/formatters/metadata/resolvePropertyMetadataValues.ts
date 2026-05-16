@@ -17,7 +17,7 @@ const getInheritedChildren = (values: MetadataValue[]) =>
   values.flatMap(item => (Array.isArray(item?.inheritedValue) ? item.inheritedValue : []));
 
 const hasInheritedChildren = (values: MetadataValue[]) =>
-  values.some(item => Array.isArray(item?.inheritedValue));
+  values.some(item => Array.isArray(item?.inheritedValue) && item.inheritedValue.length > 0);
 
 const resolveInheritedRelationship = (
   metadataValues: MetadataValue[],
@@ -63,6 +63,11 @@ const resolvePropertyType = (
   }
 
   const metadataValues = (metadata?.[property.name] ?? []) as MetadataValue[];
+
+  if (metadataValues.length > 0 && !hasInheritedChildren(metadataValues)) {
+    return 'relationship';
+  }
+
   const inheritedRelationship = resolveInheritedRelationship(
     metadataValues,
     property.inheritedType

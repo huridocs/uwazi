@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"importId":{"$numberInt":"1"},"thesaurusId":{"$numberInt":"1"}},"name":"importId_thesaurusId_unique","background":true,"unique":true}],"uuid":"5923ccaae6054d638194bb3a4bd97f32","collectionName":"csv_import_thesauri_values","type":"collection"}
