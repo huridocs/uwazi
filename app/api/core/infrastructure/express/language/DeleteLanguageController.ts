@@ -51,6 +51,7 @@ class DeleteLanguageController extends AbstractController<RequestDto> {
           success: false,
           key,
           error: JSON.stringify(error),
+          notify: true,
         }
       );
 
