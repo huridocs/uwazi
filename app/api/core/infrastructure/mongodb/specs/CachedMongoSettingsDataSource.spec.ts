@@ -1,8 +1,7 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { CachedMongoSettingsDataSource } from '../CachedMongoSettingsDataSource.js';
+import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
 
 const fixtures: DBFixture = {
   settings: [
@@ -27,8 +26,9 @@ afterAll(async () => {
 describe('CachedMongoSettingsDataSource', () => {
   describe('getLanguageKeys()', () => {
     it('should cache the result on first call', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoSettingsDataSource(getConnection(), transactionManager);
+      const dataSource = testingEnvironment.runWithContext(() =>
+        SettingsDataSourceFactory.cached()
+      );
 
       const result1 = await dataSource.getLanguageKeys();
       const result2 = await dataSource.getLanguageKeys();
@@ -40,7 +40,10 @@ describe('CachedMongoSettingsDataSource', () => {
 
     it('should clear cache after transaction commit', async () => {
       const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoSettingsDataSource(getConnection(), transactionManager);
+      const dataSource = testingEnvironment.runWithContext(
+        () => SettingsDataSourceFactory.cached(),
+        { factories: { transactionManager: () => transactionManager } }
+      );
 
       const result1 = await dataSource.getLanguageKeys();
 
@@ -60,8 +63,9 @@ describe('CachedMongoSettingsDataSource', () => {
     });
 
     it('should return correct language keys from cache', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoSettingsDataSource(getConnection(), transactionManager);
+      const dataSource = testingEnvironment.runWithContext(() =>
+        SettingsDataSourceFactory.cached()
+      );
 
       const result = await dataSource.getLanguageKeys();
 
@@ -80,8 +84,9 @@ describe('CachedMongoSettingsDataSource', () => {
         ],
       });
 
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = new CachedMongoSettingsDataSource(getConnection(), transactionManager);
+      const dataSource = testingEnvironment.runWithContext(() =>
+        SettingsDataSourceFactory.cached()
+      );
 
       const result = await dataSource.getLanguageKeys();
 

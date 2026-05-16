@@ -4,6 +4,7 @@ import MarkdownIt from 'markdown-it';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type MarkdownProps = MetadataFieldProps & {
   values: {
@@ -22,7 +23,7 @@ const sanitizeOptions = {
   },
 };
 
-const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProps) => {
+const Markdown = ({ label, translationContext, values, hideLabel, className }: MarkdownProps) => {
   const safeHtmlList = useMemo(
     () =>
       (values ?? [])
@@ -36,7 +37,7 @@ const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProp
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}
