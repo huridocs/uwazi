@@ -24,7 +24,6 @@ module.exports = {
     '^shared/(.*)': '<rootDir>/shared/$1',
     '^app/(.*)': '<rootDir>/react/$1',
     '^app/UI/(.*)': '<rootDir>/react/UI/$1',
-    '^uuid$': require.resolve('uuid'),
   },
   transformIgnorePatterns: [
     '/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd|@huridocs/react-text-selection-handler)',
