@@ -15,7 +15,7 @@ export const fixtures: DBFixture = {
       version: 2,
       metadata: {
         content: '<p>hi</p>',
-        script: 'console.log(1)',
+        script: '/* page script */',
         css: 'body{}',
       },
     } as any,
