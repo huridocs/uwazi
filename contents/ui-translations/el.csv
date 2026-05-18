@@ -234,6 +234,7 @@ Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
+Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Σφάλμα σήμανσης προσαρμοσμένου στοιχείου: μη υποστηριζόμενες τιμές! Ελέγξτε τις ρυθμίσεις σας.
 Custom CSS,Προσαρμοσμένο CSS
 Custom Favicon,Προσαρμοσμένο Favicon
@@ -309,6 +310,7 @@ Done scanning,Done scanning
 Download,Λήψη
 Download a third-party authenticator app from your mobile store.,Κατεβάστε μια εφαρμογή πιστοποίησης ταυτότητας από το το κατάστημα εφαρμογών της συσκευής σας.
 Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Σύρετε και αποθέστε αρχείο σε αυτό το παράθυρο για μεταφόρτωση
 Drag row,Σύρετε γραμμή
 Drop your files here to upload or,Αποθέστε τα αρχεία σας εδώ για μεταφόρτωση ή
@@ -564,6 +566,9 @@ Maps,Χάρτες
 Mark as Reviewed,Σήμανση ως επιθεωρημένο
 Mark as reviewed,Σήμανση ως επιθεωρημένο
 Markdown,Markdown
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,επισημασμένο και με ετικέτα
 marked for training,επισημασμένο για εκπαίδευση
 Marked for training + all labeled entries,Επισημασμένα για εκπαίδευση + όλες οι καταχωρίσεις με ετικέτα
@@ -638,6 +643,7 @@ No References description,Οι αναφορές είναι τμήματα αυτ
 No relationship types available,No relationship types available
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
 No Table of contents,No Table of contents
@@ -693,6 +699,7 @@ Other users will be affected by this action!,Αυτή η ενέργεια θα �
 Others,Άλλοι
 Page,Σελίδα
 Page not found,Η σελίδα δεν βρέθηκε
+Page published successfully.,Page published successfully.
 Pages,Σελίδες
 Paragrap number extraction property (numeric),Ιδιότητα εξαγωγής αριθμού παραγράφου (αριθμός)
 Paragraph,Παράγραφος
@@ -774,6 +781,7 @@ Public form URL description,"Εάν έχετε διαμορφώσει μια δ�
 Public form whitelist description,"Εάν επιθυμείτε να συμπεριλάβετε δημόσιες φόρμες στις σελίδες σας, πρέπει να προσθέσετε στη λίστα επιτρεπόμενων προτύπων τα αναγνωριστικά προτύπων για τα οποία αναμένεται η χρήση δημόσιων φορμών."
 Public instance,Public instance
 Publish,Δημοσίευση
+Publish release,Publish release
 Published,Δημοσιευμένα
 QR Code,Κωδικός QR
 Query,Ερώτημα
@@ -799,6 +807,7 @@ relationships,σχέσεις
 Relationships,Σχέσεις
 Relationships saved,Οι σχέσεις αποθηκεύτηκαν
 RelationType saved,Ο τύπος σχέσης αποθηκεύτηκε
+Release message,Release message
 remaining files,υπόλοιπα αρχεία
 Remote Server Unreachable,Απομακρυσμένος διακομιστής μη προσβάσιμος
 Remove,Αφαίρεση
@@ -820,6 +829,8 @@ Reset default translation,Επαναφορά προεπιλεγμένης μετ
 Reset language,Επαναφορά γλώσσας
 Reset Password,Επαναφορά κωδικού πρόσβασης
 Reset passwords,Επαναφορά κωδικών πρόσβασης
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,Περιορισμένα
 Retryable,Retryable
 Retrying,Retrying
@@ -950,7 +961,6 @@ Supporting files,Υποστηρικτικά αρχεία
 Synced template,Συγχρονισμένο πρότυπο
 Synced Template,Συγχρονισμένο πρότυπο
 Synced templates cannot be deleted.,Τα συγχρονισμένα πρότυπα δεν μπορούν να διαγραφούν.
-syntax to create page content,σύνταξη για τη δημιουργία περιεχομένου σελίδας
 System translations,Μεταφράσεις συστήματος
 Table,Πίνακας
 Table of Contents,Πίνακας περιεχομένων
@@ -1143,6 +1153,7 @@ Value cannot be transformed to the correct type,Η τιμή δεν μπορεί 
 values,τιμές
 Verify,Επαλήθευση
 Verifying...,Επαλήθευση...
+Version not found,Version not found
 View,Προβολή
 view,προβολή
 View entities,Προβολή οντοτήτων
@@ -1165,9 +1176,9 @@ x more,περισσότερα
 Year,Έτος
 Yes,Ναι
 You can add one or many items in this form.,Μπορείτε να προσθέσετε ένα ή πολλά στοιχεία σε αυτή τη φόρμα.
-"You can also embed advanced components like maps, charts and entity lists in your page.","Μπορείτε επίσης να ενσωματώσετε προηγμένα στοιχεία όπως χάρτες, διαγράμματα και λίστες οντοτήτων στη σελίδα σας."
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."

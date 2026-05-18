@@ -17,11 +17,11 @@ describe('migration pages-draft-releases', () => {
     await testingDB.tearDown();
   });
 
-  it('should have delta 188', () => {
-    expect(migration.delta).toBe(188);
+  it('should have delta 189', () => {
+    expect(migration.delta).toBe(189);
   });
 
-  it('should set draft, releases, disableMarkdown and unset legacy fields', async () => {
+  it('should set draft, releases, markdownSupport and unset legacy fields', async () => {
     const page = await db!.collection('pages').findOne({ _id: pageId });
     expect(page).not.toBeNull();
     expect(page!.draft).toEqual({
@@ -35,7 +35,8 @@ describe('migration pages-draft-releases', () => {
     expect(page!.releases[0].release_message).toContain('migration');
     expect(page!.releases[0].user?.toString()).toBe(userId.toString());
     expect(page!.releases[0].date).toBe(1000);
-    expect(page!.disableMarkdown).toBe(true);
+    expect(page!.markdownSupport).toBe(true);
+    expect(page!.disableMarkdown).toBeUndefined();
     expect(page!.version).toBeUndefined();
     expect(page!.metadata?.content).toBeUndefined();
   });

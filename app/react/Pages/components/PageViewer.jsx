@@ -84,8 +84,7 @@ class PageViewer extends Component {
       };
     }
     const lists = itemLists.toJS();
-    const pageVersion = Number(page.get('version'));
-    const parseMarkdown = !Number.isFinite(pageVersion) || pageVersion < 2;
+    const parseMarkdown = page.get('markdownSupport') === true;
     const originalText = page.getIn(['metadata', 'content']) || '';
     const scriptRendered = page.getIn(['scriptRendered']);
     const pageCss = page.getIn(['metadata', 'css']) || '';

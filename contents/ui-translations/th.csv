@@ -233,6 +233,7 @@ Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
+Current Value/Suggestion,Current Value/Suggestion
 Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
 Custom CSS,CSS ที่กำหนดเอง
 Custom Favicon,Custom Favicon
@@ -308,6 +309,7 @@ Done scanning,Done scanning
 Download,ดาวน์โหลด
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
 Drag row,Drag row
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
@@ -563,6 +565,9 @@ Maps,แผนที่
 Mark as Reviewed,ได้ตรวจสอบแล้ว
 Mark as reviewed,Mark as reviewed
 Markdown,การทำเครื่องหมาย
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,marked and labeled
 marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
@@ -637,6 +642,7 @@ No References description,References are parts of this document related with oth
 No relationship types available,No relationship types available
 No Relationships,ไม่มีความสัมพันธ์
 No Relationships description,Relationships are bonds between entities.
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,ไม่มีสารบัญ
 No Table of contents,No Table of contents
@@ -692,6 +698,7 @@ Other users will be affected by this action!,Other users will be affected by thi
 Others,Others
 Page,หน้า
 Page not found,Page not found
+Page published successfully.,Page published successfully.
 Pages,หน้า
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -773,6 +780,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Public instance,Public instance
 Publish,เผยแพร่
+Publish release,Publish release
 Published,ตีพิมพ์แล้ว
 QR Code,QR Code
 Query,สืบค้น
@@ -798,6 +806,7 @@ relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
 RelationType saved,บันทึกประเภทความสัมพันธ์
+Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,ลบ
@@ -819,6 +828,8 @@ Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,สร้าง รหัสผ่าน ใหม่
 Reset passwords,Reset passwords
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,ถูก จำกัด
 Retryable,Retryable
 Retrying,Retrying
@@ -949,7 +960,6 @@ Supporting files,รองรับไฟล์
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syntax to create page content,ไวยากรณ์เพื่อสร้างเนื้อหาของหน้า
 System translations,System translations
 Table,ตาราง
 Table of Contents,สารบัญ
@@ -1142,6 +1152,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,ตรวจสอบ
 Verifying...,กำลังตรวจสอบ....
+Version not found,Version not found
 View,ดู
 view,ดู
 View entities,View entities
@@ -1164,9 +1175,9 @@ x more,เพิ่มขนาดขึ้น
 Year,ปี
 Yes,Yes
 You can add one or many items in this form.,You can add one or many items in this form.
-"You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."

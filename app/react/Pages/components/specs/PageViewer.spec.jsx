@@ -30,6 +30,7 @@ describe('PageViewer', () => {
       pageView: Immutable.fromJS({
         _id: 1,
         title: 'Page 1',
+        markdownSupport: true,
         metadata: {
           content: '# Test Page\n\nThis is test content with **bold text**.',
           script: 'JSScript',
@@ -360,13 +361,13 @@ describe('PageViewer', () => {
     });
   });
 
-  describe('page version and Markdown', () => {
-    it('does not parse Markdown when page version is 2 or higher', async () => {
+  describe('markdownSupport and Markdown', () => {
+    it('does not parse Markdown when markdownSupport is not true', async () => {
       const customState = {
         page: {
           pageView: Immutable.fromJS({
-            title: 'V2 page',
-            version: 2,
+            title: 'HTML page',
+            markdownSupport: false,
             metadata: { content: '**notbold**' },
             scriptRendered: false,
           }),
@@ -386,11 +387,12 @@ describe('PageViewer', () => {
       expect(container.querySelector('.markdown-viewer strong')).not.toBeInTheDocument();
     });
 
-    it('parses Markdown when page has no version', async () => {
+    it('parses Markdown when markdownSupport is true', async () => {
       const customState = {
         page: {
           pageView: Immutable.fromJS({
-            title: 'V1 page',
+            title: 'Legacy page',
+            markdownSupport: true,
             metadata: { content: '**shouldbold**' },
             scriptRendered: false,
           }),

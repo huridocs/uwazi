@@ -232,6 +232,7 @@ Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
+Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Erreur de composant personnalisé
 Custom CSS,CSS personnalisé
 Custom Favicon,Custom Favicon
@@ -307,6 +308,7 @@ Done scanning,Done scanning
 Download,Télécharger
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Faites glisser et déposez le fichier dans cette fenêtre pour le télécharger
 Drag row,Drag row
 Drop your files here to upload or,Déposez vos fichiers ici pour les télécharger ou
@@ -562,6 +564,9 @@ Maps,Maps
 Mark as Reviewed,Mark as Reviewed
 Mark as reviewed,Mark as reviewed
 Markdown,Markdown
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,marked and labeled
 marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
@@ -636,6 +641,7 @@ No References description,References are parts of this document related with oth
 No relationship types available,No relationship types available
 No Relationships,Aucune relation
 No Relationships description,Relationships are bonds between entities.
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,Aucune table des matières
 No Table of contents,No Table of contents
@@ -691,6 +697,7 @@ Other users will be affected by this action!,Other users will be affected by thi
 Others,Others
 Page,Page
 Page not found,Page non trouvée
+Page published successfully.,Page published successfully.
 Pages,Pages
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -772,6 +779,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Public instance,Public instance
 Publish,Publier
+Publish release,Publish release
 Published,Publié
 QR Code,QR Code
 Query,Requête
@@ -797,6 +805,7 @@ relationships,Relations
 Relationships,Relations
 Relationships saved,Relationships saved
 RelationType saved,Type de relation sauvegardé
+Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Supprimer
@@ -818,6 +827,8 @@ Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,Réinitialiser le mot de passe
 Reset passwords,Reset passwords
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,Limité
 Retryable,Retryable
 Retrying,Retrying
@@ -948,7 +959,6 @@ Supporting files,Fichiers de support
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syntax to create page content,Syntaxe pour créer du contenu sur une page
 System translations,System translations
 Table,Tableau
 Table of Contents,Table des matières
@@ -1141,6 +1151,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,Vérifier
 Verifying...,En cours de vérification...
+Version not found,Version not found
 View,Vue
 view,Vue
 View entities,View entities
@@ -1163,9 +1174,9 @@ x more,x en plus
 Year,Année
 Yes,Oui
 You can add one or many items in this form.,You can add one or many items in this form.
-"You can also embed advanced components like maps, charts and entity lists in your page.","Vous pouvez également intégrer des composants avancés tels que des cartes, des graphiques et des listes d'entités dans votre page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
