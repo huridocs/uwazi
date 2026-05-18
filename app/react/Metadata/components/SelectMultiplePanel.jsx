@@ -236,7 +236,7 @@ class SelectMultiplePanel extends Component {
   renderList() {
     const { entitiesSelected, getAndSelectDocument, user } = this.props;
 
-    if (['admin', 'editor'].includes(user.get('role'))) {
+    if (!user?.get('_id') || ['admin', 'editor'].includes(user.get('role'))) {
       return (
         <ul className="entities-list">
           {entitiesSelected.map((entity, index) => {
