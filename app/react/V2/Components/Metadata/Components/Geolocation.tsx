@@ -4,6 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { MapProps } from '#app/Map/MapContainer.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { GeolocationMetadataProperty } from '#V2/formatters/types.js';
 
@@ -35,6 +36,7 @@ const Geolocation = ({
   markers,
   translationContext,
   hideLabel,
+  className,
   clickOnMarker,
   onClick,
   showControls,
@@ -49,10 +51,10 @@ const Geolocation = ({
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         {isGroup ? (
-          <Translate className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}>
+          <Translate className={`${hideLabel ? 'sr-only' : 'font-bold text-ink'}`}>
             Grouped geolocation properties
           </Translate>
         ) : (

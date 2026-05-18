@@ -143,4 +143,48 @@ describe('resolvePropertyMetadataValues', () => {
     expect(resolvePropertyMetadataValues(property, metadata)).toEqual([{ value: 'raw text' }]);
     expect(resolvePropertyType(property, metadata)).toBe('text');
   });
+
+  it('should resolve as relationship when template is inherited but rows are only top-level links', () => {
+    const property = {
+      _id: 'p6',
+      name: 'related_docs',
+      label: 'Related docs',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'multiselect',
+    } as BaseMetadataProperty;
+
+    const relatedDocs = [
+      { value: '64b1636e2e6f8a001f9a0001', label: 'Doc A' },
+      { value: '64b1636e2e6f8a001f9a0002', label: 'Doc B' },
+    ];
+    const metadata = {
+      related_docs: relatedDocs,
+    } as Entity['metadata'];
+
+    expect(resolvePropertyMetadataValues(property, metadata)).toEqual(relatedDocs);
+    expect(resolvePropertyType(property, metadata)).toBe('relationship');
+  });
+
+  it('should resolve as relationship when inherited rows have empty inherited values', () => {
+    const property = {
+      _id: 'p7',
+      name: 'related_docs',
+      label: 'Related docs',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'multiselect',
+    } as BaseMetadataProperty;
+
+    const relatedDocs = [
+      { value: '64b1636e2e6f8a001f9a0001', label: 'Doc A', inheritedValue: [] },
+      { value: '64b1636e2e6f8a001f9a0002', label: 'Doc B', inheritedValue: [] },
+    ];
+    const metadata = {
+      related_docs: relatedDocs,
+    } as Entity['metadata'];
+
+    expect(resolvePropertyMetadataValues(property, metadata)).toEqual(relatedDocs);
+    expect(resolvePropertyType(property, metadata)).toBe('relationship');
+  });
 });

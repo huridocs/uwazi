@@ -41,6 +41,10 @@ const formatMetadataFields = (
         ...(property.type === 'relationship' && {
           relationShipTarget: property.content || '',
         }),
+        ...(property.type === 'newRelationship' &&
+          property.denormalizedProperty && {
+            denormalizedProperty: property.denormalizedProperty,
+          }),
         hideLabel: property.noLabel,
       };
 
