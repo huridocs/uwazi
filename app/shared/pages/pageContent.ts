@@ -71,9 +71,5 @@ export const resolvePageForClient = (page: PageType, mode: PageContentMode): Pag
   return next;
 };
 
-export const legacyVersionToDisableMarkdown = (version: number | undefined): boolean => {
-  if (version === undefined || version === null || Number.isNaN(Number(version))) {
-    return false;
-  }
-  return Number(version) >= 2;
-};
+export const pageParsesMarkdown = (page: { markdownSupport?: boolean }) =>
+  page.markdownSupport === true;

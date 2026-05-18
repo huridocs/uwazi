@@ -235,6 +235,7 @@ CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
+Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
 Custom Favicon,Custom Favicon
@@ -310,6 +311,7 @@ Done scanning,Done scanning
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Download failed rows,Download failed rows
+Draft restored from release.,Draft restored from release.
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
 Drag row,Drag row
 Drop your files here to upload or,Suelta los archivos aquí para cargar o
@@ -565,6 +567,9 @@ Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Mark as reviewed,Mark as reviewed
 Markdown,Markdown
+"Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax."
 marked and labeled,marked and labeled
 marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
@@ -639,6 +644,7 @@ No References description,Las referencias son partes de este documento relaciona
 No relationship types available,No relationship types available
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
+No releases yet,No releases yet
 No results found,No results found
 No table of contents,Sin Tabla de Contenidos
 No Table of contents,No Table of contents
@@ -694,6 +700,7 @@ Other users will be affected by this action!,Otros usuarios pueden resultar afec
 Others,Others
 Page,Página
 Page not found,Página no encontrada
+Page published successfully.,Page published successfully.
 Pages,Páginas
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -775,6 +782,7 @@ Public form URL description,"Si has configurado un formulario público y deseas 
 Public form whitelist description,"Si deseas incluir formularios públicos en tus páginas, debes incluir en la lista blanca los identificadores de las plantillas para los que se esperan formularios públicos"
 Public instance,Public instance
 Publish,Publicar
+Publish release,Publish release
 Published,Publicado
 QR Code,QR Code
 Query,Consulta
@@ -800,6 +808,7 @@ relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
 RelationType saved,Tipo de Relación guardada
+Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
@@ -821,6 +830,8 @@ Reset default translation,Resetear traducción predeterminada
 Reset language,Reset language
 Reset Password,Restablecer contraseña
 Reset passwords,Reset passwords
+Restore,Restore
+Restore previous version,Restore previous version
 Restricted,Restringido
 Retryable,Retryable
 Retrying,Retrying
@@ -951,7 +962,6 @@ Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syntax to create page content,sintaxis para crear el contenido de la página
 System translations,Traducciones del sistema
 Table,Tabla
 Table of Contents,Tabla de Contenidos
@@ -1143,6 +1153,7 @@ Value cannot be transformed to the correct type,Value cannot be transformed to t
 values,values
 Verify,Verificar
 Verifying...,Verificando
+Version not found,Version not found
 View,Ver
 view,Ver
 View entities,Ver entidades
@@ -1165,9 +1176,9 @@ x more,más
 Year,Año
 Yes,Sí
 You can add one or many items in this form.,You can add one or many items in this form.
-"You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
+"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."

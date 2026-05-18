@@ -55,8 +55,7 @@ type Page = {
   releases?: PageRelease[];
   user?: string;
   entityView?: boolean;
-  disableMarkdown?: boolean;
-  version?: number;
+  markdownSupport?: boolean;
 };
 
 enum ItemTypes {

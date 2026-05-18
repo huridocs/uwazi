@@ -35,10 +35,6 @@ export default {
   async save(_page: PageType, user?: User, language?: string) {
     let page: PageType = { ..._page };
 
-    if (!page.sharedId) {
-      page = { ...page, version: 2 };
-    }
-
     await validatePage(page);
 
     if (!page.sharedId) {

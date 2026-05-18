@@ -74,9 +74,8 @@ const MarkdownDeprecationBanner = ({ onUpgrade }: { onUpgrade: () => void }) => 
       <ExclamationTriangleIcon className="w-7 h-7 shrink-0" />
       <div>
         <Translate>
-          Markdown support in custom pages will be discontinued starting in 2027. New pages already
-          use the HTML-only format. Upgrade this page when its content no longer relies on Markdown
-          syntax.
+          Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
+          when its content no longer relies on Markdown syntax.
         </Translate>
       </div>
     </div>

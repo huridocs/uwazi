@@ -19,7 +19,6 @@ export interface PageType {
   releases?: PageRelease[];
   user?: ObjectIdSchema;
   entityView?: boolean;
-  disableMarkdown?: boolean;
-  version?: number;
+  markdownSupport?: boolean;
   __v?: number;
 }

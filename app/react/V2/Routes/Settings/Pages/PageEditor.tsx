@@ -59,7 +59,6 @@ const PageEditor = () => {
 
   const formValues: Page = useMemo(() => {
     const p = page as Page;
-    const isNew = !p.sharedId;
     const draftContent = p.draft?.content ?? p.metadata?.content ?? '';
     const draftScript = p.draft?.script ?? p.metadata?.script ?? '';
     const draftCss = p.draft?.css ?? p.metadata?.css ?? '';
@@ -78,7 +77,6 @@ const PageEditor = () => {
         css: draftCss,
       },
       releases: p.releases ?? [],
-      version: isNew ? 2 : p.version,
     };
   }, [page]);
 
@@ -112,16 +110,8 @@ const PageEditor = () => {
     values: formValues,
   });
 
-  const rawVersion = watch('version');
-  const versionNum = (() => {
-    if (rawVersion === undefined || rawVersion === null) {
-      return undefined;
-    }
-    const n = Number(rawVersion);
-    return Number.isNaN(n) ? undefined : n;
-  })();
-  const useLegacyMarkdown = versionNum == null || Number.isNaN(versionNum) || versionNum < 2;
-  const showMarkdownDeprecation = !!watch('sharedId') && useLegacyMarkdown;
+  const markdownSupport = watch('markdownSupport') === true;
+  const showMarkdownDeprecation = !!watch('sharedId') && markdownSupport;
   const isDirty = !!Object.keys(dirtyFields).length;
   const blocker = useBlocker(isDirty && !isSubmitting);
 
@@ -168,21 +158,8 @@ const PageEditor = () => {
       css,
     };
     payload.draft = { content, script, css };
-    if (!payload.sharedId) {
-      payload.version = 2;
-    } else if (
-      payload.version === undefined ||
-      payload.version === null ||
-      Number.isNaN(Number(payload.version))
-    ) {
-      delete (payload as { version?: number }).version;
-    } else {
-      const n = Number(payload.version);
-      if (!Number.isNaN(n)) {
-        payload.version = n;
-      } else {
-        delete (payload as { version?: number }).version;
-      }
+    if (!payload.sharedId && payload.markdownSupport !== false) {
+      delete (payload as { markdownSupport?: boolean }).markdownSupport;
     }
     return payload;
   };
@@ -324,7 +301,7 @@ const PageEditor = () => {
                 <div className="flex flex-col max-w-2xl gap-4">
                   {showMarkdownDeprecation && (
                     <MarkdownDeprecationBanner
-                      onUpgrade={() => setValue('version', 2, { shouldDirty: true })}
+                      onUpgrade={() => setValue('markdownSupport', false, { shouldDirty: true })}
                     />
                   )}
                   <div className="flex items-center gap-4">
@@ -375,7 +352,7 @@ const PageEditor = () => {
 
             <Tabs.Tab id="HTML" key="html" label={<Translate>HTML</Translate>}>
               <div className="flex flex-col h-full gap-2">
-                <HTMLNotification useLegacyMarkdown={useLegacyMarkdown} />
+                <HTMLNotification useLegacyMarkdown={markdownSupport} />
                 <div className="h-full pt-2">
                   <CodeEditor
                     key={`html-${editorLayoutKey}`}

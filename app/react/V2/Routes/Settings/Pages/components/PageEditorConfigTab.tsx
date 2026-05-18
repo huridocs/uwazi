@@ -40,18 +40,9 @@ const PageEditorConfigTab = ({
       <div className="flex flex-col max-w-2xl gap-4">
         {showMarkdownDeprecation && (
           <MarkdownDeprecationBanner
-            onUpgrade={() => setValue('disableMarkdown', true, { shouldDirty: true })}
+            onUpgrade={() => setValue('markdownSupport', false, { shouldDirty: true })}
           />
         )}
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            {...register('disableMarkdown', {
-              setValueAs: (v: unknown) => v === true || v === 'on',
-            })}
-          />
-          <Translate>Render page as HTML only (disable Markdown)</Translate>
-        </label>
         <div className="flex items-center gap-4">
           <Translate className="font-bold">
             Enable this page to be used as an entity view page:

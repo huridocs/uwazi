@@ -45,16 +45,10 @@ describe('pageSchema', () => {
       }
     });
 
-    it('should accept optional version', async () => {
-      page.version = 2;
+    it('should accept markdownSupport', async () => {
+      page.markdownSupport = true;
       const validated = await validatePage(page);
-      expect(validated.version).toBe(2);
-    });
-
-    it('should accept disableMarkdown', async () => {
-      page.disableMarkdown = true;
-      const validated = await validatePage(page);
-      expect(validated.disableMarkdown).toBe(true);
+      expect(validated.markdownSupport).toBe(true);
     });
   });
 });

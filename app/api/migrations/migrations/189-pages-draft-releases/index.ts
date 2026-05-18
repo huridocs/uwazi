@@ -15,14 +15,14 @@ const releaseUserId = (user: unknown): ObjectId => {
 };
 
 export default {
-  delta: 188,
+  delta: 189,
 
   reindex: false,
 
   name: 'pages-draft-releases',
 
   description:
-    'Adds draft and an initial release from legacy page metadata, sets disableMarkdown from legacy version, removes legacy fields.',
+    'Adds draft and an initial release from legacy page metadata, sets markdownSupport on existing pages, removes legacy fields.',
 
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
@@ -40,12 +40,6 @@ export default {
       const content = draft?.content ?? meta.content ?? '';
       const script = draft?.script ?? meta.script ?? '';
       const css = draft?.css ?? meta.css ?? '';
-
-      const legacyVersion = (doc as { version?: number }).version;
-      const disableMarkdown =
-        typeof legacyVersion === 'number' && legacyVersion >= 2
-          ? true
-          : (doc as { disableMarkdown?: boolean }).disableMarkdown === true;
 
       const dateVal =
         typeof (doc as { creationDate?: number }).creationDate === 'number'
@@ -68,10 +62,11 @@ export default {
                 date: dateVal,
               },
             ],
-            disableMarkdown,
+            markdownSupport: true,
           },
           $unset: {
             version: '',
+            disableMarkdown: '',
             'metadata.content': '',
             'metadata.script': '',
             'metadata.css': '',
