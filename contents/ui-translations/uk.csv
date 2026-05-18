@@ -233,6 +233,10 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+CSV Import,CSV Import
+CSV import cancelled,CSV import cancelled
+CSV import completed,CSV import completed
+CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
@@ -1172,6 +1176,7 @@ You can create metadata templates in,Ви можете створювати ша
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
+You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Do you want to continue?,У вас є незбережені зміни. Ви хочете продовжити?
 You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.

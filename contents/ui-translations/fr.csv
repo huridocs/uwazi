@@ -230,6 +230,10 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+CSV Import,CSV Import
+CSV import cancelled,CSV import cancelled
+CSV import completed,CSV import completed
+CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Erreur de composant personnalisé
@@ -1169,6 +1173,7 @@ You can create metadata templates in,Vous pouvez créer des modèles de métadon
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
+You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Vous devriez activer cette fonction pour renforcer la sécurité du compte
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

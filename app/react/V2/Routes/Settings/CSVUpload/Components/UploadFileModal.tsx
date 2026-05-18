@@ -3,7 +3,9 @@ import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
 import { FileDropzone, Select } from '#V2/Components/Forms/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
-import { create } from '#V2/api/csv/index.js';
+import { create, CsvImportStatus } from '#V2/api/csv/index.js';
+import { buildTaskLabel } from '../csvImportTaskProgress.js';
+import { statusMessages } from './statusMessages.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
@@ -19,7 +21,7 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
   const [templateId, setTemplateId] = useState<string | undefined>();
   const [uploading, setIsUploading] = useState(false);
   const templates = useAtomValue(templatesAtom);
-  const { notify } = useRequestStatus();
+  const { notify, registerTask } = useRequestStatus();
 
   const onProgress = (completed: number) => {
     setProgress(completed);
@@ -39,6 +41,13 @@ const UploadFileModal = ({ isOpen, onClose }: DropzoneModalProps) => {
       if ('error' in response) {
         reportErrorToSentry(new Error(response.error), 'Error uploading file (CSV V2)');
         notify('error', t('System', 'An error occurred', null, false));
+      } else {
+        registerTask(
+          response.id,
+          buildTaskLabel(statusMessages[CsvImportStatus.Queued].title, fileToUpload.name),
+          undefined,
+          0
+        );
       }
       handleClose();
     }

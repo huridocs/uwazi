@@ -1,3 +1,4 @@
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
@@ -116,6 +117,7 @@ export class CSVImportEntitiesFactories {
 
     return new CancelCsvImportEntitiesImportUseCase({
       csvImportEntitiesImportsDS,
+      sockets: new V1WebSocketsWrapper(),
     });
   }
 
