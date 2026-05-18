@@ -3,15 +3,17 @@
  */
 import React from 'react';
 import { Provider } from 'jotai';
+import { Settings } from 'luxon';
 import { act, render, screen, within } from '@testing-library/react';
 import * as reactRouter from 'react-router';
 import { socket } from '#app/socket.js';
 import { getStore } from '#shared/atomStore/index.js';
 import { csvImportEvents } from '#V2/api/csv/events.js';
+import type { CsvImportListRow } from '#V2/api/csv/index.js';
 import { templatesAtom, localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { TestRouterContext } from '#V2/testing/TestRouterContext.js';
 import { ImportsTable } from '../ImportsTable.js';
-import { csvImportsList, templates, translations } from './fixtures.js';
+import { csvImportsList, csvImportsListWithErrors, templates, translations } from './fixtures.js';
 
 describe('CSV imports list table', () => {
   const atomStore = getStore();
@@ -22,6 +24,7 @@ describe('CSV imports list table', () => {
 
   beforeEach(() => {
     locale = 'en';
+    Settings.defaultZone = 'UTC';
     revalidateMock = jest.fn();
     listeners = {};
 
@@ -48,12 +51,12 @@ describe('CSV imports list table', () => {
     jest.restoreAllMocks();
   });
 
-  const renderComponent = async () => {
+  const renderComponent = async (data: CsvImportListRow[] = csvImportsList) => {
     atomStore.set(localeAtom, locale);
 
     await act(() => {
       render(
-        <TestRouterContext loaderData={{ list: csvImportsList }}>
+        <TestRouterContext loaderData={{ list: data }}>
           <Provider store={atomStore}>
             <ImportsTable />
           </Provider>
@@ -91,9 +94,9 @@ describe('CSV imports list table', () => {
     };
 
     expectStatistic('Total imports', '4');
-    expectStatistic('Processing', '1');
+    expectStatistic('Processing', '2');
     expectStatistic('Completed', '1');
-    expectStatistic('Failed jobs', '1');
+    expectStatistic('Failed', '1');
   });
 
   it('should render the data in the tables', async () => {
@@ -104,6 +107,25 @@ describe('CSV imports list table', () => {
       ['Completed', 'events.csv', 'Events', '86/86', '84', '0', '4/9/2024, 1:20:00 PM'],
       ['Processing', 'cases.zip', 'Cases', '48/120', '44', '1', '4/8/2024, 1:20:00 PM'],
       ['Queued', 'people.csv', 'People', '0/0', '0', '0', '4/7/2024, 1:20:00 PM'],
+    ];
+
+    const rows = screen.getAllByRole('row').slice(1);
+    expect(rows).toHaveLength(expectedRows.length);
+
+    expectedRows.forEach((expectedCells, index) => {
+      const cells = within(rows[index]).getAllByRole('cell');
+      expectedCells.forEach((value, cellIndex) => {
+        expect(cells[cellIndex]).toHaveTextContent(value);
+      });
+    });
+  });
+
+  it('should print the correct message for failed jobs', async () => {
+    await renderComponent(csvImportsListWithErrors);
+
+    const expectedRows = [
+      ['Completed with errors', 'thesaurus.csv', 'Cases', '3/3', '0', '3', '4/7/2024, 1:20:00 PM'],
+      ['Completed with errors', 'persons.csv', 'Cases', '5/5', '3', '2', '4/7/2024, 1:20:00 PM'],
     ];
 
     const rows = screen.getAllByRole('row').slice(1);

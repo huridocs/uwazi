@@ -10,3 +10,5 @@ export { formatSelectProperty } from './metadata/formatSelectProperty.js';
 export { formatEntityFiles } from './files/formatEntityFiles.js';
 export { getMainDocument } from './files/getMainDocument.js';
 export { formatReferences } from './relationships/formatReferences.js';
+export { formatNestedProperty } from './metadata/formatNestedProperty.js';
+export { formatDenormalizedNewRelationship } from './metadata/formatDenormalizedNewRelationship.js';

@@ -1,13 +1,15 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useSearchParams } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { t, Translate } from '#app/I18N/index.js';
 import { PDF, PDFControls } from '#V2/Components/PDFViewer/index.js';
-import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js';
+import { MetadataEntityHeader } from '#V2/Components/Metadata/MetadataEntityHeader.js';
+import { metadataHeaderStripShellClass } from '#V2/Components/Metadata/MetadataHeaderStrip.js';
+import { NeedAuthorization, Button } from '#V2/Components/UI/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
@@ -21,11 +23,22 @@ import { pdfController } from './atoms.js';
 
 type PDFViewProps = {
   mainDocument: FileType;
-  templateId?: string;
+  templateId: string;
   pagePlaintext?: string;
+  entityTitle: string;
+  entityIconId?: string;
+  showEntityHeader?: boolean;
 };
 
-const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
+const PDFView = ({
+  mainDocument,
+  templateId,
+  pagePlaintext,
+  entityTitle,
+  entityIconId,
+  showEntityHeader = true,
+}: PDFViewProps) => {
+  const renderModeSelectId = useId();
   const [searchParams, setSearchParams] = useSearchParams();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
@@ -159,43 +172,54 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
     setHydrated(true);
   }, []);
 
-  const { filename, originalname, totalPages } = mainDocument || {
+  const { filename, totalPages } = mainDocument || {
     filename: '',
-    originalname: '',
     totalPages: 0,
   };
   const prevPage = Math.max(1, pageNumber - 1);
   const nextPage = Math.min(pageNumber + 1, totalPages || 0);
 
+  const renderModeControl = (
+    <div className="relative inline-flex shrink-0 items-center">
+      <label htmlFor={renderModeSelectId} className="sr-only">
+        <Translate>View</Translate>
+      </label>
+      <select
+        id={renderModeSelectId}
+        className={`appearance-none rounded-md border border-[color-mix(in_srgb,var(--color-theme-action-primary)_42%,transparent)] bg-warm py-(--spacing-theme-1) pl-(--spacing-theme-2) text-xs font-medium text-ink transition-colors hover:bg-parchment focus:border-(--color-theme-control-border-focus) focus:outline-hidden ${isRaw ? 'pr-6 min-w-[6.25rem]' : 'pr-6 w-[4.25rem]'}`}
+        value={isRaw ? 'raw' : 'normal'}
+        onChange={onDisplayModeChange}
+      >
+        <option value="raw">{t('System', 'Plain text', null, false)}</option>
+        <option value="normal">{t('System', 'PDF', null, false)}</option>
+      </select>
+      <ChevronDownIcon
+        className="pointer-events-none absolute right-1.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-secondary"
+        aria-hidden
+      />
+    </div>
+  );
+
   return (
-    <Panel className="gap-2">
+    <Panel>
       <Panel.Body>
-        <div className="flex flex-col gap-2">
-          <div className="w-full rounded-md p-4 bg-(--color-theme-surface-muted)">
-            <div className="flex flex-row justify-between gap-2">
-              <div>
-                <TemplateLabel templateId={templateId} />
-              </div>
-              <div>
-                <label htmlFor="render-mode" className="sr-only">
-                  <Translate>View</Translate>
-                </label>
-                <select
-                  id="render-mode"
-                  className="rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800 bg-(--color-theme-surface-raised)"
-                  value={isRaw ? 'raw' : 'normal'}
-                  onChange={onDisplayModeChange}
-                >
-                  <option value="raw">{t('System', 'Plain text', null, false)}</option>
-                  <option value="normal">{t('System', 'PDF', null, false)}</option>
-                </select>
-              </div>
+        <div className="flex flex-col gap-(--spacing-theme-3)">
+          {showEntityHeader ? (
+            <div className={metadataHeaderStripShellClass(true)}>
+              <MetadataEntityHeader
+                templateId={templateId}
+                title={entityTitle}
+                iconId={entityIconId}
+                layout="inline"
+                trailing={renderModeControl}
+              />
             </div>
-            <Truncate maxLength={80}>
-              <h2 className="mt-2 text-lg font-bold text-ink">{originalname}</h2>
-            </Truncate>
-          </div>
-          <div className={`flex-1 min-h-0 ${isRaw ? 'hidden' : 'block'}`}>
+          ) : (
+            <div className="mb-(--spacing-theme-1) flex justify-end">{renderModeControl}</div>
+          )}
+          <div
+            className={`flex-1 min-h-0 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
+          >
             <PDF
               fileUrl={`/api/files/${filename}`}
               size={{ height: '100%', width: '90%' }}
@@ -212,13 +236,15 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
               }}
             />
           </div>
-          <div className={`flex-1 min-h-0 ${isRaw ? 'block' : 'hidden'}`}>
+          <div
+            className={`flex-1 min-h-0 overflow-auto rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'block' : 'hidden'}`}
+          >
             <PlainText text={pagePlaintext || ''} />
           </div>
         </div>
       </Panel.Body>
 
-      <Panel.Footer highlighted={selectedText && userIsAdminOrEditor}>
+      <Panel.Footer highlighted={Boolean(selectedText && userIsAdminOrEditor)}>
         {selectedText && userIsAdminOrEditor ? (
           <NeedAuthorization roles={['admin', 'editor']}>
             <div className="flex flex-row gap-2 items-center w-full">
@@ -239,7 +265,7 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
             </div>
           </NeedAuthorization>
         ) : (
-          <div className="flex flex-row items-center w-full">
+          <div className="flex flex-row items-center w-full gap-(--spacing-theme-3)">
             <div className="justify-self-start grow">
               {ocrServiceEnabled && mainDocument && (
                 <NeedAuthorization roles={['admin', 'editor']}>
@@ -247,23 +273,23 @@ const PDFView = ({ mainDocument, templateId, pagePlaintext }: PDFViewProps) => {
                 </NeedAuthorization>
               )}
             </div>
-            <div className="justify-self-end flex items-center gap-2 font-medium">
+            <div className="justify-self-end flex items-center gap-(--spacing-theme-2) text-xs font-medium">
               <button
                 type="button"
                 onClick={() => handlePageNavigation('prev')}
                 disabled={pageNumber <= 1}
-                className="text-primary-700 disabled:text-ink-muted"
+                className="text-ink hover:text-ink-secondary disabled:text-ink-muted disabled:hover:text-ink-muted"
               >
                 <Translate>Previous</Translate>
               </button>
-              <div className="text-base text-primary-900">
+              <div className="rounded bg-(--color-theme-surface-warm) px-(--spacing-theme-2) py-(--spacing-theme-1) text-ink">
                 {pageNumber} / {totalPages}
               </div>
               <button
                 type="button"
                 onClick={() => handlePageNavigation('next')}
                 disabled={totalPages ? nextPage > totalPages : false}
-                className="text-primary-700 disabled:text-ink-muted"
+                className="text-ink hover:text-ink-secondary disabled:text-ink-muted disabled:hover:text-ink-muted"
               >
                 <Translate>Next</Translate>
               </button>

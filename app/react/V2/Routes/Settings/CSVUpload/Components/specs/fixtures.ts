@@ -153,6 +153,80 @@ const csvImportsList: CsvImportListRow[] = [
   },
 ];
 
+const csvImportsListWithErrors: CsvImportListRow[] = [
+  {
+    id: '1',
+    templateId: 'template-cases',
+    file: { originalName: 'thesaurus.csv', mimeType: 'text/csv', size: 24 },
+    status: CsvImportStatus.ImportEntitiesDone,
+    createdAt: 1712496000000,
+    updatedAt: 1712496000000,
+    rowErrors: [],
+    stats: {
+      thesaurusValuesObserved: 0,
+      thesaurusValuesCreated: 0,
+      thesauriTouched: 0,
+      relationshipValuesObserved: 0,
+      relationshipValuesCreated: 0,
+      rowsProcessed: 3,
+      rowsFailed: 3,
+      entitiesCreated: 0,
+    },
+    progress: { totalRows: 3, processedRows: 3, lastProcessedRow: 2, batchSize: 10 },
+    extraction: {
+      sourceType: 'csv',
+      originalUploadSizeBytes: 24,
+      extractedFilesCount: 1,
+      files: [{ filename: 'thesaurus.csv', sizeBytes: 24 }],
+    },
+  },
+  {
+    id: '2',
+    templateId: 'template-cases',
+    file: { originalName: 'persons.csv', mimeType: 'text/csv', size: 130 },
+    status: CsvImportStatus.ImportEntitiesDone,
+    createdAt: 1712496000000,
+    updatedAt: 1712496000000,
+    rowErrors: [
+      {
+        importId: '2',
+        rowIndex: 2,
+        message: 'Invalid value for "dob". Expected number, received nan',
+        code: 'VALUE_INVALID_FORMAT',
+        property: 'dob',
+        rawValue: 'aldakjshdksaljd',
+        createdAt: 1712496000000,
+      },
+      {
+        importId: '2',
+        rowIndex: 4,
+        message: 'Invalid value for "dob". Expected number, received nan',
+        code: 'VALUE_INVALID_FORMAT',
+        property: 'dob',
+        rawValue: 'aldakjshdksaljd',
+        createdAt: 1712496000000,
+      },
+    ],
+    stats: {
+      thesaurusValuesObserved: 0,
+      thesaurusValuesCreated: 0,
+      thesauriTouched: 0,
+      relationshipValuesObserved: 0,
+      relationshipValuesCreated: 0,
+      rowsProcessed: 5,
+      rowsFailed: 2,
+      entitiesCreated: 3,
+    },
+    progress: { totalRows: 5, processedRows: 5, lastProcessedRow: 4, batchSize: 10 },
+    extraction: {
+      sourceType: 'csv',
+      originalUploadSizeBytes: 130,
+      extractedFilesCount: 1,
+      files: [{ filename: 'persons.csv', sizeBytes: 130 }],
+    },
+  },
+];
+
 const templates: Template[] = [
   {
     _id: 'template-people',
@@ -197,4 +271,4 @@ const translations: ClientTranslationSchema[] = [
   },
 ];
 
-export { csvImportsList, templates, translations };
+export { csvImportsList, csvImportsListWithErrors, templates, translations };
