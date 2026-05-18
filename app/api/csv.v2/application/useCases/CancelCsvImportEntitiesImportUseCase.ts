@@ -1,9 +1,12 @@
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportStatus } from '../../domain/CsvImport.js';
 import { CsvImportEntitiesImportsDataSource } from '../contracts/CsvImportEntitiesImportsDataSource.js';
 
 type Deps = {
   csvImportEntitiesImportsDS: CsvImportEntitiesImportsDataSource;
+  sockets: V1WebSocketsWrapper;
 };
 
 type Input = {
@@ -45,6 +48,12 @@ class CancelCsvImportEntitiesImportUseCase extends AbstractUseCase<Input, Output
     const refreshed = (
       await this.deps.csvImportEntitiesImportsDS.getById(input.id)
     ).getDataOrThrow();
+
+    if (refreshed.status === CsvImportStatus.Cancelled) {
+      this.deps.sockets.emitToTenantAdmins(tenants.current().name, 'csvImport:import:cancelled', {
+        importId: refreshed.id,
+      });
+    }
 
     return {
       id: refreshed.id,
