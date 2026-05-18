@@ -19,6 +19,7 @@ const csvImportEvents = {
   importProgress: 'csvImport:import:progress',
   importSuccess: 'csvImport:import:success',
   importError: 'csvImport:import:error',
+  importCancelled: 'csvImport:import:cancelled',
 } as const;
 
 type CsvImportEventPayloads = {
@@ -108,6 +109,9 @@ type CsvImportEventPayloads = {
   [csvImportEvents.importError]: {
     importId: string;
     message: string;
+  };
+  [csvImportEvents.importCancelled]: {
+    importId: string;
   };
 };
 
