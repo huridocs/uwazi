@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-statements */
 /* eslint-disable no-await-in-loop */
 import { ObjectId } from 'mongodb';

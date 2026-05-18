@@ -26,7 +26,7 @@ import { Segmentation } from '../../../domain/files/Segmentation.js';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors.js';
 import { FileMappers } from './FilesMappers.js';
 import { SegmentationMapper } from './SegmentationMapper.js';
-import { ProcessedPDFDBO, fileDBO } from './schemas/filesTypes.js';
+import { fileDBO } from './schemas/filesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type GetDocumentsForEntityQuery = {

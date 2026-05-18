@@ -8,12 +8,11 @@ import { FileDeleteController } from '#api/core/infrastructure/express/files/Fil
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import entities from '#api/entities/index.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { fileSchema } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { createError, validation } from '../utils/index.js';
+import { validation } from '../utils/index.js';
 import { files } from './files.js';
 import { UpdateFileController } from '#api/core/infrastructure/express/files/UpdateFileController.js';
 

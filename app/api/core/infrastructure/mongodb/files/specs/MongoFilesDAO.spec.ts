@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

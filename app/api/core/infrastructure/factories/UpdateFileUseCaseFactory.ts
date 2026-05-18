@@ -1,4 +1,4 @@
-import { UpdateFile, UpdateFileDeps, UpdateFileInput } from '#api/core/application/UpdateFile.js';
+import { UpdateFile, UpdateFileDeps } from '#api/core/application/UpdateFile.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
