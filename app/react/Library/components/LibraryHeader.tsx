@@ -105,7 +105,7 @@ const LibraryHeaderComponent = ({
                 <Translate>sorted by</Translate>
               </span>
               <SortDropdown selectedTemplates={filters.get('documentTypes')} />
-              <NeedAuthorization>
+              <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
                 <div className="select-all-documents">
                   <button
                     type="button"

@@ -259,6 +259,14 @@ const appliedTheme = (
     : PRESET_DEFINITIONS[presetId].modes[mode];
 };
 
+/** Same `appliedTheme` inputs as `ThemeProvider` (third arg = `customizationOn && !legacyChrome`). */
+const appliedThemeAsInProvider = (
+  themeVars: ThemeVarsInput,
+  mode: ThemeMode,
+  opts: { customizationOn: boolean; legacyChrome?: boolean }
+): ResolvedThemeVars =>
+  appliedTheme(themeVars, mode, opts.customizationOn && !(opts.legacyChrome ?? false));
+
 const getPresetVars = (presetId: ThemePresetId): Record<string, string> => ({
   [THEME_PRESET_KEY]: presetId,
 });
@@ -398,6 +406,7 @@ export {
   sortPaletteHexColors,
   NAMED_THEMES,
   appliedTheme,
+  appliedThemeAsInProvider,
   getPresetPair,
   getPresetVars,
   getCustomThemeVars,

@@ -11,7 +11,7 @@ const PropertyLabel = ({
   hideLabel?: boolean;
 }) => (
   <Translate
-    className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}
+    className={`${hideLabel ? 'sr-only' : 'font-bold text-ink'}`}
     context={translationContext}
   >
     {label}
