@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -5,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
-import { getStore } from '#shared/atomStore/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { deleteEntities } from '#app/Entities/actions/actions.js';
@@ -17,8 +17,6 @@ import { TemplateLabel } from '#app/Layout/TemplateLabel.js';
 import { SidePanel } from '#app/Layout/SidePanel.js';
 import { Icon } from '#app/UI/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { userAtom } from '#V2/atoms/userAtom.js';
-import { checkWritePermissions, hasWritePermission } from '#V2/shared/checkWritePermissions.js';
 import { MetadataForm } from './MetadataForm.js';
 import comonTemplate from '../helpers/comonTemplate.js';
 
@@ -32,6 +30,53 @@ const sortedTemplates = createSelector(
 
 const commonTemplate = createSelector(sortedTemplates, s => s.entitiesSelected, comonTemplate);
 
+const hasUserWriteAccess = (permissions, user) => {
+  if (!permissions || !user?.get('_id')) {
+    return false;
+  }
+
+  return permissions.some(permission => {
+    const level = permission.get('level');
+    const refId = permission.get('refId');
+    const userId = user.get('_id');
+    const userGroups = user.get('groups');
+
+    return (
+      level === 'write' &&
+      (refId === userId || userGroups?.find(group => group.get('_id') === refId))
+    );
+  });
+};
+
+const getEntitiesWithPermissionStatus = (entitiesSelected, currentUser) => {
+  const entitiesWithPermissions = [];
+  let hasAccessCount = 0;
+  let withoutAccessCount = 0;
+
+  entitiesSelected.forEach(entity => {
+    const permissions = entity.get('permissions') || [];
+    const hasWritePermission = hasUserWriteAccess(permissions, currentUser);
+
+    entitiesWithPermissions.push({
+      entity,
+      hasWritePermission,
+    });
+
+    if (hasWritePermission) {
+      hasAccessCount += 1;
+    } else {
+      withoutAccessCount += 1;
+    }
+  });
+
+  const hasMixedPermissions = hasAccessCount > 0 && withoutAccessCount > 0;
+
+  return {
+    hasMixedPermissions,
+    entitiesWithPermissions,
+  };
+};
+
 class SelectMultiplePanel extends Component {
   constructor(props) {
     super(props);
@@ -41,9 +86,6 @@ class SelectMultiplePanel extends Component {
     this.save = this.save.bind(this);
     this.edit = this.edit.bind(this);
     this.changeTemplate = this.changeTemplate.bind(this);
-    this.state = {
-      currentUser: getStore().get(userAtom),
-    };
   }
 
   close() {
@@ -192,30 +234,50 @@ class SelectMultiplePanel extends Component {
   }
 
   renderList() {
-    const { entitiesSelected, getAndSelectDocument } = this.props;
-    const hasWritePermissionsOnAll = checkWritePermissions(
+    const { entitiesSelected, getAndSelectDocument, user } = this.props;
+
+    if (['admin', 'editor'].includes(user.get('role'))) {
+      return (
+        <ul className="entities-list">
+          {entitiesSelected.map((entity, index) => {
+            const onClick = getAndSelectDocument.bind(this, entity.get('sharedId'));
+            return (
+              <li key={index} onClick={onClick}>
+                <span className="entity-title">
+                  {entity.get('title')}
+                  <TemplateLabel template={entity.get('template')} />
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+
+    const { hasMixedPermissions, entitiesWithPermissions } = getEntitiesWithPermissionStatus(
       entitiesSelected,
-      this.state.currentUser
+      user
     );
 
     return (
       <ul className="entities-list">
-        {!hasWritePermissionsOnAll && (
+        {hasMixedPermissions && (
           <li key="permissions-warning" className="permissions-warning">
             <Translate>You do not have write permission on all entities</Translate>
           </li>
         )}
-        {entitiesSelected.map((entity, index) => {
+        {entitiesWithPermissions.map(({ entity, hasWritePermission }, index) => {
           const onClick = getAndSelectDocument.bind(this, entity.get('sharedId'));
+          const showWarningIcon = hasMixedPermissions && !hasWritePermission;
+
           return (
             <li key={index} onClick={onClick}>
               <span className="entity-title">
                 {entity.get('title')}
                 <TemplateLabel template={entity.get('template')} />
-                {!hasWritePermissionsOnAll &&
-                  !hasWritePermission(entity.get('permissions'), this.state.currentUser) && (
-                    <ExclamationCircleIcon style={{ width: '20px', height: '20px' }} />
-                  )}
+                {showWarningIcon && (
+                  <ExclamationCircleIcon style={{ width: '20px', height: '20px' }} />
+                )}
               </span>
             </li>
           );
@@ -277,11 +339,13 @@ SelectMultiplePanel.propTypes = {
   mainContext: PropTypes.shape({
     confirm: PropTypes.func,
   }).isRequired,
+  user: PropTypes.instanceOf(Immutable.Map),
 };
 const mapStateToProps = (_state, props) => ({
   template: commonTemplate(props),
   open: props.entitiesSelected.size > 1,
   editing: Object.keys(props.state || {}).length > 0,
+  user: _state.user,
 });
 
 function mapDispatchToProps(dispatch, props) {
