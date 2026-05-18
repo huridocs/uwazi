@@ -416,7 +416,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
 
-  const pageCssRaw = initialState.page?.pageView?.getIn?.(['metadata', 'css']);
+  const pageCssRaw = initialState.page?.pageView?.toJS?.()?.metadata?.css;
   const documentHeadPageCss =
     typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined;
 

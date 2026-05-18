@@ -67,7 +67,7 @@ describe('Root component', () => {
 
       const pageStyle = component.find(`#${PAGE_STYLE_ELEMENT_ID}`);
       expect(pageStyle).toHaveLength(1);
-      expect(pageStyle.prop('dangerouslySetInnerHTML').__html).toBe('header { display: none }');
+      expect(pageStyle.prop('dangerouslySetInnerHTML')!.__html).toBe('header { display: none }');
     });
 
     it('should not emit page style when documentHeadPageCss is empty', () => {

@@ -7,6 +7,7 @@ import * as search from '#V2/api/search/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { getStore } from '#shared/atomStore/index.js';
+import type { LoaderFunctionArgs } from 'react-router';
 import { entityLoader } from '../loader.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 
@@ -47,10 +48,9 @@ describe('Entity loader with cache integration', () => {
     return entityLoader()({
       params: { sharedId, ...(lang ? { lang } : {}) },
       request: new Request(fullUrl),
-      url: fullUrl,
-      pattern: '',
-      context: undefined,
-    });
+      unstable_pattern: '',
+      context: {},
+    } as LoaderFunctionArgs);
   };
 
   describe('Entity loading', () => {

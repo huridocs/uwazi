@@ -94,13 +94,15 @@ const getPageAssets = async (
   const rawPage = await PagesAPI.getById(pageParams);
   const mode = contentMode === 'draft' ? 'draft' : 'published';
   const page = resolvePageForClient(rawPage, mode);
+  const metadata = page.metadata ?? { content: '', script: '', css: '' };
+  page.metadata = metadata;
 
-  const { content, errors } = replaceDynamicProperties(page.metadata?.content, localDatasets);
-  page.metadata.content = content;
+  const { content, errors } = replaceDynamicProperties(metadata.content, localDatasets);
+  metadata.content = content;
 
-  const listsData = prepareLists(page.metadata.content, requestParams);
+  const listsData = prepareLists(metadata.content ?? '', requestParams);
 
-  const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders(), {
+  const dataSets = markdownDatasets.fetch(metadata.content ?? '', requestParams.onlyHeaders(), {
     additionalDatasets,
   });
 
