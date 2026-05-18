@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+    {
+      "path": "../pdf-test",
+    },
+    {
+      "path": "../dummy_extractor_services",
+    },
+  ],
+  "settings": {},
+}

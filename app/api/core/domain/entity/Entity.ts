@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import stringify from 'fast-json-stable-stringify';
 import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
@@ -17,10 +18,6 @@ import {
   EntityTranslationProps,
 } from '#api/core/domain/entity/EntityTranslation.js';
 import date from '#api/utils/date.js';
-import stringify from 'fast-json-stable-stringify';
-import { AccessGrant, EntityPermission } from './EntityPermission.js';
-import { PermissionType } from './PermissionType.js';
-import { AccessLevel } from './AccessLevel.js';
 import { EntityTranslationDoesNotExistError } from './errors.js';
 import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
 import { EntityDTO } from './EntityDTO.js';
@@ -44,10 +41,8 @@ type Props = {
   template: Template;
 
   userId?: string;
-  published?: boolean;
   sharedId?: string;
   icon?: Icon;
-  permissions?: AccessGrant[];
   generatedToc?: boolean;
 };
 
@@ -63,15 +58,11 @@ class Entity {
 
   userId?: string;
 
-  published: boolean;
-
   template: Template;
 
   icon?: Icon;
 
   generatedToc?: boolean;
-
-  permissions: EntityPermission;
 
   constructor(private props: Props) {
     this.userId = props.userId;
@@ -79,8 +70,6 @@ class Entity {
     this.icon = props.icon;
 
     this.sharedId = props.sharedId || SharedId.create().value;
-    this.published = props.published || false;
-    this.permissions = new EntityPermission(props.permissions);
 
     this.generatedToc = props?.generatedToc;
     this.translations = this.createTranslations(props.translations);
@@ -138,25 +127,16 @@ class Entity {
       language,
     }));
 
-    const instance = new Entity({ userId, translations, template, icon });
-
-    if (userId) {
-      instance.addGrantForCreator(userId);
-    }
-
-    return instance;
+    return new Entity({ userId, translations, template, icon });
   }
 
   get asDTO(): EntityDTO {
     return {
       sharedId: this.sharedId,
       templateId: this.template.id,
-      published: this.published,
       userId: this.userId,
       icon: this.icon,
       generatedToc: this.generatedToc,
-
-      permissions: this.permissions.accessGrants,
       translations: this.translationsList.map(([_language, translation]) => translation.asDTO),
     };
   }
@@ -225,12 +205,6 @@ class Entity {
     return selectProperties.map(property =>
       this.getTranslation(language).getValue<SelectionEntry>(property.name)
     );
-  }
-
-  addGrantForCreator(creatorId: string) {
-    this.permissions = new EntityPermission([
-      { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
-    ]);
   }
 
   setPropertyAssignments(

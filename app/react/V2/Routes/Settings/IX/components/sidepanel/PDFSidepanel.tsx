@@ -190,6 +190,7 @@ const PDFSidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       size="large"
+      testId="ix-pdf-sidepanel"
       title={<Truncate maxLength={80}>{entity?.title}</Truncate>}
       closeSidepanelFunction={handleClose}
     >
@@ -221,7 +222,7 @@ const PDFSidepanel = ({
           />
         )}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] ![background-color:var(--color-theme-surface-raised)]">
+      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] !bg-(--color-theme-surface-raised)">
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...formContext}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -230,7 +231,7 @@ const PDFSidepanel = ({
               title={
                 <div className="flex gap-4 items-center">
                   <Translate
-                    className={`font-semibold uppercase ${selectionError ? '[color:var(--color-theme-feedback-danger)]' : '[color:var(--color-theme-text-muted)]'}`}
+                    className={`font-semibold uppercase ${selectionError ? 'text-(--color-theme-feedback-danger)' : 'text-ink-muted'}`}
                     context={templateId}
                   >
                     {property?.label}
@@ -240,15 +241,13 @@ const PDFSidepanel = ({
                       size="small"
                       onToggle={() => setSelectAndSearch(!selectAndSearch)}
                     >
-                      <Translate className="text-xs font-medium [color:var(--color-theme-text-primary)]">
+                      <Translate className="text-xs font-medium text-ink">
                         Select & Search
                       </Translate>
                     </ToggleButton>
                   )}
                   {selectionError && (
-                    <span className="[color:var(--color-theme-feedback-danger)]">
-                      {selectionError}
-                    </span>
+                    <span className="text-(--color-theme-feedback-danger)">{selectionError}</span>
                   )}
                 </div>
               }

@@ -19,8 +19,6 @@ import { NestedProperty } from '../../template/NestedProperty.js';
 import { V1RelationshipProperty } from '../../template/V1RelationshipProperty.js';
 import { EntityTranslation } from '../EntityTranslation.js';
 import { GenerateIdProperty } from '../../template/GenerateIdProperty.js';
-import { PermissionType } from '../PermissionType.js';
-import { AccessLevel } from '../AccessLevel.js';
 
 const createSampleTemplate = () =>
   TemplateBuilder.aTemplate({ id: 'template-123' })
@@ -132,7 +130,6 @@ describe('Entity', () => {
     });
 
     expect(entity.sharedId).toEqual(expect.any(String));
-    expect(entity.published).toBe(false);
     expect(entity.getTranslation('en').creationDate.value[0].value).toEqual(expect.any(Number));
 
     expect(entity.translations).toEqual({
@@ -140,20 +137,6 @@ describe('Entity', () => {
       es: { ...entityLanguage, id: { value: expect.any(String) }, language: 'es' },
       fr: { ...entityLanguage, id: { value: expect.any(String) }, language: 'fr' },
     });
-  });
-
-  it('should grant access for Entity creator when present', () => {
-    const template = createSampleTemplate();
-
-    const entity = Entity.create({
-      languages: ['en', 'fr', 'es'],
-      template,
-      userId: 'user-456',
-    });
-
-    expect(entity.permissions.accessGrants).toEqual([
-      { refId: 'user-456', type: PermissionType.User, level: AccessLevel.Write },
-    ]);
   });
 
   it('should sync values in all languages when no language is specified', () => {
@@ -1638,10 +1621,8 @@ describe('Entity', () => {
         template: createSampleTemplate(),
         icon: { id: 'id', label: 'label', type: 'emoji' },
         generatedToc: true,
-        published: true,
         sharedId: 'sharedId',
         userId: 'userId',
-        permissions: [],
         translations: [
           { language: 'en', id: 'id_1', metadata: {} },
           { language: 'es', id: 'id_1', metadata: {} },
@@ -1774,16 +1755,6 @@ describe('Entity', () => {
       expect(entity.hasChanged).toBe(false);
 
       entity.changeTemplate(template2);
-
-      expect(entity.hasChanged).toBe(true);
-    });
-
-    it('should return TRUE when permissions are added', () => {
-      const entity = createTestEntity();
-
-      expect(entity.hasChanged).toBe(false);
-
-      entity.addGrantForCreator('user-999');
 
       expect(entity.hasChanged).toBe(true);
     });

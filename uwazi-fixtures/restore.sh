@@ -2,17 +2,18 @@
 
 [[ -f ".env" ]] && source ".env"
 
-DB=${1:-${DATABASE_NAME:-uwazi_development}}
+DB=${1:-${DATABASE_NAME:-uwazi_e2e}}
 HOST=${2:-${DBHOST:-127.0.0.1}}
 TRANSPILED=${3:-${TRANSPILED:-false}}
 
 echo -e "\n\nDeleting $DB database"
 mongosh --quiet -host "$HOST" "$DB" --eval "db.dropDatabase()"
-mongorestore -h "$HOST" uwazi-fixtures/dump/uwazi_development/ --db="$DB"
+mongorestore -h "$HOST" "uwazi-fixtures/dump/seeded_e2e/uwazi_e2e/" --db="$DB"
 
 echo "Restoring pdfs..."
-rm ./uploaded_documents/*
-cp ./uwazi-fixtures/uploaded_documents/* ./uploaded_documents/
+mkdir -p ./uploaded_documents
+rm -rf ./uploaded_documents/*
+cp ./uwazi-fixtures/uploaded_documents/seeded_e2e/* ./uploaded_documents/
 
 echo "Running migrations..."
 if [ "$TRANSPILED" = true ]; then

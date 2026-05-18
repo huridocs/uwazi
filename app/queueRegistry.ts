@@ -185,12 +185,14 @@ export function registerJobs(register: Register) {
     });
   });
 
-  register(PDFPostProcessJobHandler, async (_tenantName: string) => {
-    return new PDFPostProcessJobHandler({
-      useCase: PDFPostProcessJobFactory.default(),
-      wSockets: new V1WebSocketsWrapper(),
-    });
-  });
+  register(
+    PDFPostProcessJobHandler,
+    async (_tenantName: string) =>
+      new PDFPostProcessJobHandler({
+        useCase: PDFPostProcessJobFactory.default(),
+        wSockets: new V1WebSocketsWrapper(),
+      })
+  );
 
   register(AcceptSuggestionsJob, async (tenantName: string) => {
     const { job } = await AcceptSuggestionsFactory.createDefault({

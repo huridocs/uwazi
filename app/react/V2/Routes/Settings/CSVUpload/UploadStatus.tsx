@@ -35,11 +35,19 @@ const UploadStatus = () => {
     [entry, templates]
   );
 
-  const statusMessage = entry ? statusMessages[entry.status] : undefined;
   const progressTotal = entry?.progress?.totalRows || 0;
   const progressCurrent = entry?.progress?.processedRows || 0;
   const completionPercent =
     progressTotal > 0 ? Math.round((progressCurrent / progressTotal) * 100) : 0;
+
+  const statusMessage = useMemo(() => {
+    const hasFailed = Boolean(entry?.stats?.rowsFailed);
+    if (entry?.status === CsvImportStatus.ImportEntitiesDone && hasFailed) {
+      return statusMessages.completedWithErrors;
+    }
+
+    return entry ? statusMessages[entry.status] : undefined;
+  }, [entry]);
 
   useEffect(() => {
     const doRevalidation = throttle(async (payload: { importId: string }) => {
@@ -110,13 +118,8 @@ const UploadStatus = () => {
                     {statusMessage?.title}
                   </span>
                 </div>
-                <p style={{ color: 'var(--color-theme-text-secondary)' }}>
-                  {statusMessage?.description}
-                </p>
-                <div
-                  className="flex flex-row items-center gap-10"
-                  style={{ color: 'var(--color-theme-text-muted)' }}
-                >
+                <p className="text-ink-secondary">{statusMessage?.description}</p>
+                <div className="flex flex-row items-center gap-10 text-ink-muted">
                   <div>
                     <Translate>Template</Translate>:{' '}
                     <Translate context={entry.templateId}>{templateName}</Translate>
@@ -133,7 +136,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Entities created</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-ink">
                       {entry.stats?.entitiesCreated || '-'}
                     </span>
                   </div>
@@ -141,7 +144,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Rows processed</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-ink">
                       {entry.stats?.rowsProcessed || '-'}
                     </span>
                   </div>
@@ -149,7 +152,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Rows failed</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-ink">
                       {entry.stats?.rowsFailed || '-'}
                     </span>
                   </div>
@@ -157,7 +160,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Thesauri values created</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-ink">
                       {entry.stats?.thesaurusValuesCreated || '-'}
                     </span>
                   </div>
@@ -165,7 +168,7 @@ const UploadStatus = () => {
                 <Card className="grow">
                   <div className="flex flex-col gap-4">
                     <Translate>Related entities created</Translate>
-                    <span className="text-2xl font-bold [color:var(--color-theme-text-primary)]">
+                    <span className="text-2xl font-bold text-ink">
                       {entry.stats?.relationshipValuesCreated || '-'}
                     </span>
                   </div>
@@ -178,13 +181,8 @@ const UploadStatus = () => {
                   </Translate>
                   <Card>
                     <div className="flex flex-col gap-3">
-                      <div className="font-medium [color:var(--color-theme-text-primary)]">
-                        {entry.failure.message}
-                      </div>
-                      <div
-                        className="flex flex-wrap gap-6 text-sm"
-                        style={{ color: 'var(--color-theme-text-secondary)' }}
-                      >
+                      <div className="font-medium text-ink">{entry.failure.message}</div>
+                      <div className="flex flex-wrap gap-6 text-sm text-ink-secondary">
                         <div>
                           <Translate>Stage</Translate>: {entry.failure.stage}
                         </div>
@@ -212,7 +210,7 @@ const UploadStatus = () => {
                   status={entry.status}
                   stats={entry.stats}
                 />
-                <p className="pt-2 text-sm" style={{ color: 'var(--color-theme-text-secondary)' }}>
+                <p className="pt-2 text-sm text-ink-secondary">
                   <Translate>Processed rows</Translate>: {completionPercent}%
                 </p>
               </div>

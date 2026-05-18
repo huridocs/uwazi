@@ -64,8 +64,9 @@ type SectionHeadingProps = {
 
 const SectionHeading = ({ children, className = '' }: SectionHeadingProps) => (
   <p
-    className={['text-sm font-medium', className].filter(Boolean).join(' ')}
-    style={{ color: 'var(--color-theme-text-secondary)' }}
+    className={['text-sm font-medium text-(--color-theme-text-secondary)', className]
+      .filter(Boolean)
+      .join(' ')}
   >
     {children}
   </p>

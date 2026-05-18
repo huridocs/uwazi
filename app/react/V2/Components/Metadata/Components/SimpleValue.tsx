@@ -3,12 +3,19 @@ import { SimpleMetadataProperty } from '#V2/formatters/types.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type SimpleValueProps = MetadataFieldProps & {
   values: SimpleMetadataProperty['values'];
 };
 
-const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleValueProps) => {
+const SimpleValue = ({
+  label,
+  translationContext,
+  values,
+  hideLabel,
+  className,
+}: SimpleValueProps) => {
   const nonEmptyValues =
     values?.filter(v => v.value !== '' && v.value !== undefined && v.value !== null) ?? [];
 
@@ -17,7 +24,7 @@ const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleVal
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}
@@ -28,7 +35,7 @@ const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleVal
       <dd className="flex flex-col gap-1">
         {nonEmptyValues.map((v, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <span key={index} className="font-medium text-sm text-gray-900">
+          <span key={index} className="font-medium text-sm text-ink">
             {v.value}
           </span>
         ))}

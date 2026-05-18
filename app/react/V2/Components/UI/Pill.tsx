@@ -12,8 +12,7 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
 
   switch (color) {
     case 'gray':
-      pillColors =
-        '[background-color:var(--color-theme-surface-warm)] [color:var(--color-theme-text-secondary)]';
+      pillColors = 'bg-(--color-theme-surface-warm) text-ink-secondary';
       break;
 
     case 'yellow':

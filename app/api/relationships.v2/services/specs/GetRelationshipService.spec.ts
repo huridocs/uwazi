@@ -1,19 +1,19 @@
 import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { User } from '#api/users.v2/model/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { GetRelationshipService } from '../GetRelationshipService.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -59,7 +59,7 @@ const createService = (_user?: User) => {
     transactionManager,
     slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
   });
-  const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
+  const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
   const authService = new AuthorizationService(
     new MongoPermissionsDataSource(connection, transactionManager),
     user

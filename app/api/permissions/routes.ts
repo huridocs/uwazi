@@ -4,6 +4,7 @@ import { validation } from '#api/utils/index.js';
 import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { collaborators } from '#api/permissions/collaborators.js';
 import { permissionsDataSchema } from '#shared/types/permissionSchema.js';
+import { EntityPermissionsController } from '#api/core/infrastructure/express/entityPermissions/EntityPermissionsController.js';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
@@ -17,14 +18,7 @@ export const permissionRoutes = (app: Application) => {
         },
       },
     }),
-    async (req, res, next) => {
-      try {
-        await entitiesPermissions.set(req.body);
-        res.json(req.body);
-      } catch (err) {
-        next(err);
-      }
-    }
+    EntityPermissionsController.createHandler()
   );
 
   app.put(

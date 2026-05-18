@@ -14,9 +14,7 @@ const EntityCountCell = ({ cell }: CellContext<PXTable, PXTable['statusCount']>)
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-normal [color:var(--color-theme-text-secondary)]">
-        {values.total}
-      </span>
+      <span className="text-sm font-normal text-ink-secondary">{values.total}</span>
       {Boolean(newCount) && <DisplayPill count={newCount} />}
     </div>
   );

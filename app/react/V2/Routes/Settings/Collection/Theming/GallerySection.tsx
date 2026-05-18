@@ -3,7 +3,7 @@ import { Translate } from '#app/I18N/index.js';
 import { CustomUploadImagePickerModalProps } from './CustomUploadImagePickerModal.js';
 import { assetUrl, fileMatchesAssetUrl } from './customUploadImagePickerLib.js';
 
-const muted = 'text-sm [color:var(--color-theme-text-secondary)]';
+const muted = 'text-sm text-ink-secondary';
 
 const GallerySection = ({
   images,
@@ -47,7 +47,7 @@ const GallerySection = ({
 
   return (
     <>
-      <p className="text-sm font-medium [color:var(--color-theme-text-primary)]">
+      <p className="text-sm font-medium text-ink">
         <Translate>Select an existing image</Translate>
       </p>
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -69,14 +69,14 @@ const GallerySection = ({
                   boxShadow: selected ? '0 0 0 2px var(--color-theme-action-primary)' : undefined,
                 }}
               >
-                <span className="flex h-24 items-center justify-center p-2 [background-color:color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px]">
+                <span className="flex h-24 items-center justify-center p-2 bg-[color-mix(in_srgb,var(--color-theme-surface-warm)_70%,var(--color-theme-text-primary))] [background-image:linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)_75%,color-mix(in_srgb,var(--color-theme-text-primary)_28%,transparent)),linear-gradient(45deg,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_25%,transparent_25%,transparent_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent)_75%,color-mix(in_srgb,var(--color-theme-surface-muted)_88%,transparent))] [background-size:8px_8px] [background-position:0_0,4px_4px]">
                   <img
                     src={url}
                     alt=""
                     className="max-h-full max-w-full rounded object-contain [box-shadow:0_0_0_1px_color-mix(in_srgb,var(--color-theme-text-primary)_45%,transparent),0_0_0_2px_color-mix(in_srgb,var(--color-theme-surface-raised,var(--color-theme-bg-surface))_92%,transparent)]"
                   />
                 </span>
-                <span className="truncate border-t px-2 py-1.5 text-xs [color:var(--color-theme-text-secondary)] [border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
+                <span className="truncate border-t px-2 py-1.5 text-xs text-ink-secondary border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]">
                   {file.originalname || file.filename}
                 </span>
               </button>

@@ -32,18 +32,21 @@ const mapRelationshipValue = (metadataValue: MetadataValue) => {
   };
 };
 
+const isRelationshipLike = (t: BaseMetadataProperty['type']) =>
+  t === 'relationship' || t === 'newRelationship';
+
 const formatRelationshipProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata']
 ): RelationshipMetadataProperty | null => {
-  if (property.type !== 'relationship') {
+  if (!isRelationshipLike(property.type)) {
     return null;
   }
 
   const resolvedValues = resolvePropertyMetadataValues(property, metadata);
   const type = resolvePropertyType(property, metadata);
 
-  if (property.inherited && type !== 'relationship') {
+  if (property.inherited && !isRelationshipLike(type)) {
     return null;
   }
 

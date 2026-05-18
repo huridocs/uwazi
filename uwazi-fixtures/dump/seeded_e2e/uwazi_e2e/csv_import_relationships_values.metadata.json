@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"importId":{"$numberInt":"1"},"templateId":{"$numberInt":"1"}},"name":"importId_templateId_unique","background":true,"unique":true}],"uuid":"5fdb72343fd749b783a2463866b44c3c","collectionName":"csv_import_relationships_values","type":"collection"}

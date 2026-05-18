@@ -16,14 +16,21 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
   const entityTitle = reference.targetEntity.title || '-';
   const referenceText = reference.reference.text || '';
 
-  const surface = '[background-color:var(--color-theme-surface-raised)]';
+  const surface = 'bg-(--color-theme-surface-raised)';
   const borderIdle =
-    '[border-color:color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
-  const borderClass = isSelected ? 'border-2 border-primary-400' : borderIdle;
+    'border-[color-mix(in_srgb,var(--color-theme-border-default)_40%,transparent)]';
+  const borderClass = isSelected ? 'border-2 border-(--color-theme-action-primary)' : borderIdle;
+  const cardClass = [
+    'flex w-full cursor-pointer flex-col gap-(--spacing-theme-3) rounded-md border',
+    'p-(--spacing-theme-3) shadow-(--color-theme-shadow-sm) transition-colors',
+    'hover:bg-(--color-theme-surface-warm)',
+    surface,
+    borderClass,
+  ].join(' ');
 
   return (
     <div
-      className={`flex w-full cursor-pointer flex-col gap-3 rounded-xl border p-4 shadow-sm transition-colors ${surface} ${borderClass}`}
+      className={cardClass}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -44,7 +51,7 @@ const Reference = ({ reference, isSelected, onClick, onView, onDelete }: Referen
 
       <TemplateLabel templateId={reference.targetEntity.templateId} />
 
-      <div className="flex justify-end gap-2 mt-2">
+      <div className="flex justify-end gap-(--spacing-theme-2) mt-(--spacing-theme-2)">
         <Button
           variant="secondary"
           size="small"

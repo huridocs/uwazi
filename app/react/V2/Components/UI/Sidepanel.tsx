@@ -16,6 +16,7 @@ interface SidePanelProps {
   withOverlay?: boolean;
   size?: 'small' | 'medium' | 'large';
   panelId?: string;
+  testId?: string;
 }
 
 const sidepanelHeader = (
@@ -56,6 +57,7 @@ const Sidepanel = ({
   withOverlay,
   size = 'medium',
   panelId,
+  testId,
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
   const titleId = useId();
@@ -179,7 +181,7 @@ const Sidepanel = ({
 
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
-    const activeElement = document.activeElement;
+    const { activeElement } = document;
 
     if (event.shiftKey && activeElement === firstElement) {
       event.preventDefault();
@@ -217,7 +219,7 @@ const Sidepanel = ({
         <Transition.Child
           as="div"
           data-testid="sidepanel-overlay"
-          className="w-full transition-opacity duration-200 ease-in md:grow [background-color:var(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))]"
+          className="w-full transition-opacity duration-200 ease-in md:grow bg-(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
@@ -241,6 +243,7 @@ const Sidepanel = ({
           <aside
             ref={panelRef}
             id={panelId}
+            data-testid={testId}
             tabIndex={-1}
             className="h-full"
             aria-labelledby={title ? titleId : undefined}
@@ -271,6 +274,7 @@ const Sidepanel = ({
       <aside
         ref={panelRef}
         id={panelId}
+        data-testid={testId}
         tabIndex={-1}
         className="h-full"
         aria-labelledby={title ? titleId : undefined}
@@ -297,9 +301,7 @@ Sidepanel.Footer = ({
   children: React.ReactNode;
   className?: String;
 }) => (
-  <div
-    className={`bottom-0 left-0 z-1 w-full [background-color:var(--color-theme-surface-page)] ${className}`}
-  >
+  <div className={`bottom-0 left-0 z-1 w-full bg-(--color-theme-surface-page) ${className}`}>
     {children}
   </div>
 );

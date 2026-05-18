@@ -109,7 +109,7 @@ class TenantAwareESClient {
 
     const now = new Date().toISOString();
     const body = options.operations.flatMap(op => [
-      { update: { _index, _id: this.buildDocumentId(op.id) } },
+      { update: { _index, _id: this.buildDocumentId(op.id), retry_on_conflict: 3 } },
       {
         script: {
           source: this.indexScript,
@@ -132,9 +132,7 @@ class TenantAwareESClient {
 
     if (response.body.errors) {
       // Todo: Inject logger here.
-      console.log('Bulk indexing errors', {
-        failedItems: response.body.items.filter((item: any) => item.update?.error),
-      });
+      console.log('Bulk indexing errors', JSON.stringify(response.body.items));
 
       throw new BulkIndexingError();
     }
