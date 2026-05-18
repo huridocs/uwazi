@@ -89,12 +89,12 @@ describe('UpdateFileController', () => {
     const sut5 = createSut({ request: { body: { _id: null } } });
     const sut6 = createSut({ request: { body: { _id: 'file1', language: '', originalname: '' } } });
 
-    expect(sut1.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    expect(sut2.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    expect(sut3.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    expect(sut4.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    expect(sut5.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
-    expect(sut6.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
+    await expect(sut1.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
+    await expect(sut2.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
+    await expect(sut3.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
+    await expect(sut4.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
+    await expect(sut5.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
+    await expect(sut6.sut.handleAsync()).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('should execute v1 use case when feature flag is off', async () => {
