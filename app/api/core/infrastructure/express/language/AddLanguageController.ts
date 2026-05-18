@@ -50,6 +50,7 @@ class AddLanguageController extends AbstractController<RequestDto> {
           success: false,
           dto: JSON.stringify(this.request?.body || {}),
           error: JSON.stringify(error),
+          notify: true,
         }
       );
 
