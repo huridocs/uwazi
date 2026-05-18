@@ -78,7 +78,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
         .filter(f => f instanceof ProcessedPDF && f.pendingFullTextIndexing)
         .map(f => FileMappers.toDBO(f));
 
-      await this.fullTextIndexer.index(processedPDFs as ProcessedPDFDBO[]);
+      await this.fullTextIndexer.sync(processedPDFs.map(f => f._id));
 
       this.filesToReindex = new Set<BaseFile>();
     });

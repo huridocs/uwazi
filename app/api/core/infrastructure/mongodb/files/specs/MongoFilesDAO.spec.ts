@@ -154,4 +154,97 @@ describe('MongoFilesDAO', () => {
       expect(count).toBe(0);
     });
   });
+
+  describe('streamProcessedDocsByIds()', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('returns only files whose _id is in the given array', async () => {
+      const sut = createSut();
+      const allIndexable = await sut.streamProcessedDocs().toArray();
+      const ids = allIndexable.map(f => f._id as unknown as ObjectId);
+
+      const result = await sut.streamProcessedDocsByIds(ids).toArray();
+
+      const filenames = result.map(f => f.filename).sort();
+      expect(filenames).toEqual(['ready_doc_1', 'ready_doc_3']);
+    });
+
+    it('skips files whose _id is not in the given array', async () => {
+      const sut = createSut();
+      const allIndexable = await sut.streamProcessedDocs().toArray();
+      const firstId = allIndexable[0]._id as unknown as ObjectId;
+
+      const result = await sut.streamProcessedDocsByIds([firstId]).toArray();
+
+      expect(result).toHaveLength(1);
+      expect(result[0]._id).toEqual(firstId);
+    });
+
+    it('applies the processed-PDF filter — excludes processing documents', async () => {
+      const sut = createSut();
+      const allFiles = await getConnection()
+        .collection('files')
+        .find({ filename: 'processing_doc' })
+        .toArray();
+      const processingId = allFiles[0]._id as unknown as ObjectId;
+
+      const result = await sut.streamProcessedDocsByIds([processingId]).toArray();
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('applies the processed-PDF filter — excludes whitespace-only fullText documents', async () => {
+      const sut = createSut();
+      const allFiles = await getConnection()
+        .collection('files')
+        .find({ filename: 'whitespace_doc' })
+        .toArray();
+      const whitespaceId = allFiles[0]._id as unknown as ObjectId;
+
+      const result = await sut.streamProcessedDocsByIds([whitespaceId]).toArray();
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('returns an empty cursor when ids array is empty', async () => {
+      const sut = createSut();
+      const result = await sut.streamProcessedDocsByIds([]).toArray();
+      expect(result).toHaveLength(0);
+    });
+
+    it('returns an empty cursor when all provided ids are non-existent', async () => {
+      const sut = createSut();
+      const result = await sut.streamProcessedDocsByIds([new ObjectId(), new ObjectId()]).toArray();
+      expect(result).toHaveLength(0);
+    });
+
+    it('includes the fullText field in returned documents', async () => {
+      const sut = createSut();
+      const allIndexable = await sut.streamProcessedDocs().toArray();
+      const doc1 = allIndexable.find(f => f.filename === 'ready_doc_1')!;
+
+      const result = await sut
+        .streamProcessedDocsByIds([doc1._id as unknown as ObjectId])
+        .toArray();
+
+      expect(result[0].fullText).toEqual({ 1: 'page content here' });
+    });
+
+    it('returns results sorted by _id ascending', async () => {
+      const sut = createSut();
+      const allIndexable = await sut.streamProcessedDocs().toArray();
+      const ids = allIndexable.map(f => f._id as unknown as ObjectId);
+
+      const result = await sut.streamProcessedDocsByIds(ids).toArray();
+
+      for (let i = 1; i < result.length; i++) {
+        expect(
+          (result[i]._id as unknown as ObjectId).toString() >
+            (result[i - 1]._id as unknown as ObjectId).toString()
+        ).toBe(true);
+      }
+    });
+  });
 });

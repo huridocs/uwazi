@@ -1,10 +1,11 @@
+import { z } from 'zod';
 import {
   ProcessedPDFDBO,
   ProcessedPDFDTO,
 } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile.js';
+import { BaseFile, BaseFileProps, FileContentLoader, UpdateProps } from './BaseFile.js';
 import { FileContents } from './FileContents.js';
 import { FileWithContents } from './FileWithContents.js';
 
@@ -20,6 +21,13 @@ type Props = BaseFileProps & {
   generatedToc: boolean;
   fullText: fullTextLoader;
 };
+
+const SpecializedSchema = z.object({
+  entity: z.string().min(1),
+  language: z.string().min(1).default('other') as z.ZodType<LanguageISO6391>,
+  totalPages: z.number().int().min(0).optional().default(0),
+  generatedToc: z.boolean().optional().default(false),
+});
 
 export class ProcessedPDF extends FileWithContents {
   readonly entity: string;
@@ -48,6 +56,7 @@ export class ProcessedPDF extends FileWithContents {
 
   constructor(props: Props) {
     const { entity, language, totalPages, fullText, generatedToc, ...baseProps } = props;
+    SpecializedSchema.parse({ entity, language, totalPages, generatedToc });
     super(baseProps);
     this.language = language;
     this.totalPages = totalPages;
@@ -58,7 +67,25 @@ export class ProcessedPDF extends FileWithContents {
       this.fullText = fullText;
     }
 
-    this.props = { ...this.props, entity, language, totalPages, fullText, generatedToc } as Props;
+    this.props = {
+      ...this.props,
+      entity,
+      language,
+      totalPages,
+      fullText,
+      generatedToc,
+      content: this.content,
+    } as Props;
+  }
+
+  update(props: UpdateProps): ProcessedPDF {
+    const changed = this.clone(props) as ProcessedPDF;
+
+    if (this.language !== changed.language) {
+      changed.markForFullTextIndexing();
+    }
+
+    return changed;
   }
 
   async getFullText() {

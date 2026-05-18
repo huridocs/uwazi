@@ -26,6 +26,13 @@ export class Thumbnail extends FileWithContents {
     super({ ...baseProps, mimetype: baseProps.mimetype ?? 'image/jpeg' });
     this.entity = entity;
     this.language = language;
+
+    this.props = {
+      ...this.props,
+      entity: this.entity,
+      language: this.language,
+      content: this.content,
+    } as Props;
   }
 
   toDTO(): ThumbnailDTO {

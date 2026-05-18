@@ -1,6 +1,7 @@
 import { FileAttachment } from '../FileAttachment.js';
 import { CustomUpload } from '../CustomUpload.js';
 import { FileContents } from '../FileContents.js';
+import { ProcessingPDF } from '../ProcessingPDF.js';
 import { Thumbnail } from '../Thumbnail.js';
 import { URLAttachment } from '../URLAttachment.js';
 
@@ -450,6 +451,189 @@ describe('BaseFile', () => {
         const file = build();
         const updated = file.update({ originalname: sameName });
         expect(updated.hasChanged).toBe(false);
+      });
+    });
+  });
+
+  describe('update() — specialized field preservation', () => {
+    describe('FileAttachment', () => {
+      it('update({ originalname }) preserves entity', () => {
+        const file = new FileAttachment(validFileProps);
+        const updated = file.update({ originalname: 'new.pdf' });
+
+        expect(updated).toBeInstanceOf(FileAttachment);
+        expect(updated.entity).toBe(validFileProps.entity);
+        expect(updated.originalname).toBe('new.pdf');
+      });
+
+      it('update({ language }) is silently ignored; entity preserved; hasChanged is false', () => {
+        const file = new FileAttachment(validFileProps);
+        const updated = file.update({ language: 'es' });
+
+        expect(updated).toBeInstanceOf(FileAttachment);
+        expect(updated.entity).toBe(validFileProps.entity);
+        expect(updated.hasChanged).toBe(false);
+      });
+
+      it('update({}) returns a clone where hasChanged is false', () => {
+        const file = new FileAttachment(validFileProps);
+        expect(file.update({}).hasChanged).toBe(false);
+      });
+
+      it('previousVersion.originalname holds the old value after a rename', () => {
+        const file = new FileAttachment(validFileProps);
+        const updated = file.update({ originalname: 'new.pdf' });
+
+        expect(updated.previousVersion?.originalname).toBe(validFileProps.originalname);
+      });
+    });
+
+    describe('CustomUpload', () => {
+      const customProps = { ...validFileProps, entity: undefined as any };
+
+      it('update({ originalname }) returns a CustomUpload with updated name', () => {
+        const file = new CustomUpload(customProps);
+        const updated = file.update({ originalname: 'new.pdf' });
+
+        expect(updated).toBeInstanceOf(CustomUpload);
+        expect(updated.originalname).toBe('new.pdf');
+      });
+
+      it('update({ language }) is silently ignored; hasChanged is false', () => {
+        const file = new CustomUpload(customProps);
+        const updated = file.update({ language: 'es' });
+
+        expect(updated).toBeInstanceOf(CustomUpload);
+        expect(updated.hasChanged).toBe(false);
+      });
+
+      it('update({}) returns a clone where hasChanged is false', () => {
+        const file = new CustomUpload(customProps);
+        expect(file.update({}).hasChanged).toBe(false);
+      });
+    });
+
+    describe('ProcessingPDF', () => {
+      const processingProps = {
+        ...validFileProps,
+        entity: 'entity1',
+        status: 'processing' as const,
+      };
+
+      it('update({ originalname }) preserves entity and status', () => {
+        const file = new ProcessingPDF(processingProps);
+        const updated = file.update({ originalname: 'new.pdf' });
+
+        expect(updated).toBeInstanceOf(ProcessingPDF);
+        expect(updated.entity).toBe(processingProps.entity);
+        expect((updated as ProcessingPDF).status).toBe(processingProps.status);
+        expect(updated.originalname).toBe('new.pdf');
+      });
+
+      it('update({ language }) is silently ignored; entity and status preserved; hasChanged is false', () => {
+        const file = new ProcessingPDF(processingProps);
+        const updated = file.update({ language: 'es' });
+
+        expect(updated).toBeInstanceOf(ProcessingPDF);
+        expect(updated.entity).toBe(processingProps.entity);
+        expect((updated as ProcessingPDF).status).toBe(processingProps.status);
+        expect(updated.hasChanged).toBe(false);
+      });
+
+      it('update({}) returns a clone where hasChanged is false', () => {
+        const file = new ProcessingPDF(processingProps);
+        expect(file.update({}).hasChanged).toBe(false);
+      });
+    });
+
+    describe('URLAttachment', () => {
+      const urlProps = {
+        id: 'url1',
+        entity: 'entity1',
+        url: 'http://example.com/file.pdf',
+        mimetype: 'application/pdf',
+        filename: 'file.pdf',
+        size: 10,
+        creationDate: 1234567890,
+        originalname: 'file.pdf',
+      };
+
+      it('update({ originalname }) returns a URLAttachment; url and entity are preserved', () => {
+        const file = new URLAttachment(urlProps);
+        const updated = file.update({ originalname: 'renamed.pdf' });
+
+        expect(updated).toBeInstanceOf(URLAttachment);
+        expect((updated as URLAttachment).url).toBe(urlProps.url);
+        expect(updated.entity).toBe(urlProps.entity);
+        expect(updated.originalname).toBe('renamed.pdf');
+      });
+
+      it('update({ language }) is silently ignored; url and entity preserved; hasChanged is false', () => {
+        const file = new URLAttachment(urlProps);
+        const updated = file.update({ language: 'es' });
+
+        expect(updated).toBeInstanceOf(URLAttachment);
+        expect((updated as URLAttachment).url).toBe(urlProps.url);
+        expect(updated.entity).toBe(urlProps.entity);
+        expect(updated.hasChanged).toBe(false);
+      });
+
+      it('update({}) returns a clone where hasChanged is false', () => {
+        const file = new URLAttachment(urlProps);
+        expect(file.update({}).hasChanged).toBe(false);
+      });
+
+      it('previousVersion.originalname holds the old value after a rename', () => {
+        const file = new URLAttachment(urlProps);
+        const updated = file.update({ originalname: 'renamed.pdf' });
+        expect(updated.previousVersion?.originalname).toBe(urlProps.originalname);
+      });
+    });
+
+    describe('Thumbnail', () => {
+      const thumbProps = {
+        id: 'thumb1',
+        entity: 'entity1',
+        language: 'en' as const,
+        filename: 'thumb.jpg',
+        originalname: 'thumb.jpg',
+        mimetype: 'image/jpeg',
+        size: 512,
+        creationDate: 1234567890,
+        content: validFileProps.content,
+      };
+
+      it('update({ originalname }) returns a Thumbnail; entity, language, and content are preserved', () => {
+        const file = new Thumbnail(thumbProps);
+        const updated = file.update({ originalname: 'new-thumb.jpg' });
+
+        expect(updated).toBeInstanceOf(Thumbnail);
+        expect(updated.entity).toBe(thumbProps.entity);
+        expect((updated as Thumbnail).language).toBe(thumbProps.language);
+        expect(updated.content).toBe(thumbProps.content);
+        expect(updated.originalname).toBe('new-thumb.jpg');
+      });
+
+      it('update({ language }) applies the new language; entity and content are preserved', () => {
+        const file = new Thumbnail(thumbProps);
+        const updated = file.update({ language: 'es' });
+
+        expect(updated).toBeInstanceOf(Thumbnail);
+        expect(updated.entity).toBe(thumbProps.entity);
+        expect((updated as Thumbnail).language).toBe('es');
+        expect(updated.content).toBe(thumbProps.content);
+        expect(updated.hasChanged).toBe(true);
+      });
+
+      it('update({}) returns a clone where hasChanged is false', () => {
+        const file = new Thumbnail(thumbProps);
+        expect(file.update({}).hasChanged).toBe(false);
+      });
+
+      it('previousVersion.originalname holds the old value after a rename', () => {
+        const file = new Thumbnail(thumbProps);
+        const updated = file.update({ originalname: 'new-thumb.jpg' });
+        expect(updated.previousVersion?.originalname).toBe(thumbProps.originalname);
       });
     });
   });

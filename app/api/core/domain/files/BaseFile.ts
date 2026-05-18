@@ -3,6 +3,7 @@ import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas
 import { FileTypes } from '#api/files/storage.js';
 import { z } from 'zod';
 import stringify from 'fast-json-stable-stringify';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FileContents } from './FileContents.js';
 
 type Props = {
@@ -21,6 +22,7 @@ type FileContentLoader = (options: { type: fileDBO['type']; filename: string }) 
 
 type UpdateProps = {
   originalname?: string;
+  language?: LanguageISO6391;
 };
 
 const sanitizeFilename = (filename: string) => {
@@ -94,7 +96,7 @@ export abstract class BaseFile {
 
   protected props: Props;
 
-  private previousProps?: Props;
+  protected previousProps?: Props;
 
   constructor(props: Props) {
     const _props = Schema.parse({
@@ -121,21 +123,15 @@ export abstract class BaseFile {
     return this._type;
   }
 
-  private clone(props: Partial<Props>): BaseFile {
-    const newProps: Props = {
-      id: this.id,
-      creationDate: this.creationDate,
+  protected clone(overrides: Partial<Props>): BaseFile {
+    const cleanOverrides = Object.fromEntries(
+      Object.entries(overrides).filter(([, v]) => v !== undefined)
+    );
 
-      filename: props.filename ?? this.filename,
-      mimetype: props.mimetype ?? this.mimetype,
-      originalname: props.originalname ?? this.originalname,
-      size: props.size ?? this.size,
-      uploaded: props.uploaded ?? this.uploaded,
-      content: props.content ?? this.content,
-      entity: props.entity ?? this.entity,
-    };
-
-    const instance = new (this.constructor as any)(newProps) as BaseFile;
+    const instance = new (this.constructor as any)({
+      ...this.props,
+      ...cleanOverrides,
+    }) as BaseFile;
 
     instance.previousProps = this.props;
 
@@ -195,4 +191,4 @@ export abstract class BaseFile {
   static fromDBO?(dbo: fileDBO, contentLoader: FileContentLoader): BaseFile;
 }
 
-export type { Props as BaseFileProps, FileContentLoader };
+export type { Props as BaseFileProps, FileContentLoader, UpdateProps };

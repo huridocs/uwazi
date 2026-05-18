@@ -3,6 +3,8 @@ import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers
 import { config } from '#api/config.js';
 import { DevelopmentWritter } from '#api/core/libs/logger/infrastructure/writers/DevelopmentWriter.js';
 import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
 export class LoggerFactory {
   static default(_writer = StandardJSONWriter) {
@@ -35,6 +37,16 @@ export class LoggerFactory {
       indexName: 'N/a',
       uploadedDocuments: 'N/a',
       domain: 'N/a',
+    });
+  }
+
+  static forTests() {
+    return TestUtils.mockClass<Logger>({
+      critical: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      info: jest.fn(),
+      warning: jest.fn(),
     });
   }
 

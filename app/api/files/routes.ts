@@ -15,6 +15,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { createError, validation } from '../utils/index.js';
 import { files } from './files.js';
+import { UpdateFileController } from '#api/core/infrastructure/express/files/UpdateFileController.js';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -64,6 +65,8 @@ const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType
   return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
 };
 
+export { checkEntityPermission };
+
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
@@ -103,15 +106,7 @@ export default (app: Application) => {
         body: fileSchema,
       },
     }),
-    async (req, res) => {
-      if (
-        !(await checkEntityPermission(req.body, permissionsContext.getUserInContext(), 'write'))
-      ) {
-        throw createError('file not found', 404);
-      }
-      const result = await files.save(req.body);
-      res.json(result);
-    }
+    UpdateFileController.createHandler()
   );
 
   app.post(

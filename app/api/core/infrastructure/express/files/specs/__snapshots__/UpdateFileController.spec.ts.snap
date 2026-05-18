@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpdateFileController should validate request before calling use case 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"object\\",
+    \\"received\\": \\"undefined\\",
+    \\"path\\": [],
+    \\"message\\": \\"Required\\"
+  }
+]"
+`;
+
+exports[`UpdateFileController should validate request before calling use case 2`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"string\\",
+    \\"received\\": \\"undefined\\",
+    \\"path\\": [
+      \\"_id\\"
+    ],
+    \\"message\\": \\"Required\\"
+  }
+]"
+`;
+
+exports[`UpdateFileController should validate request before calling use case 3`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at least 1 character(s)\\",
+    \\"path\\": [
+      \\"_id\\"
+    ]
+  }
+]"
+`;
+
+exports[`UpdateFileController should validate request before calling use case 4`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"string\\",
+    \\"received\\": \\"undefined\\",
+    \\"path\\": [
+      \\"_id\\"
+    ],
+    \\"message\\": \\"Required\\"
+  }
+]"
+`;
+
+exports[`UpdateFileController should validate request before calling use case 5`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"string\\",
+    \\"received\\": \\"null\\",
+    \\"path\\": [
+      \\"_id\\"
+    ],
+    \\"message\\": \\"Expected string, received null\\"
+  }
+]"
+`;
+
+exports[`UpdateFileController should validate request before calling use case 6`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at least 1 character(s)\\",
+    \\"path\\": [
+      \\"originalname\\"
+    ]
+  },
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 3,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"String must contain at least 3 character(s)\\",
+    \\"path\\": [
+      \\"language\\"
+    ]
+  }
+]"
+`;

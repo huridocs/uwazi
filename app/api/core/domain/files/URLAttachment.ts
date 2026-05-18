@@ -31,6 +31,8 @@ export class URLAttachment extends BaseFile {
     this.entity = entity;
     // keeping this since it still possible to pass content with prop spread
     this.content = undefined;
+
+    this.props = { ...this.props, entity: this.entity, url: this.url } as Props;
   }
 
   static fromDBO(dbo: URLAttachmentDBO) {
