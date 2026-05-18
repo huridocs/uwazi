@@ -170,6 +170,7 @@ Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Configuration
 Configure filters,Filtreleri yapılandır
 Configure templates,Configure templates
@@ -230,13 +231,13 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
-Current Value/Suggestion,Current Value/Suggestion
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Özel Yüklemeler
 Custom CSS,Özel CSS
@@ -449,6 +450,7 @@ Hide actions,Hide actions
 Hide label,Etiketi Gizle
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
+HTML,HTML
 https://yourdomain,https://yourdomain
 hubs,hubs
 Hybrid,Hybrid
@@ -1042,6 +1044,10 @@ This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,"Bu özellik, temel bilgilerin bir parçası olarak kütüphane fişlerinde görünecektir."
 This property will be shown using all the width available.,"Bu özellik, mevcut tüm genişlik kullanılarak gösterilecektir."

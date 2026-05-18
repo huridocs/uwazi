@@ -172,6 +172,7 @@ Collection Name,Назва колекції
 Common sources,Загальні джерела
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Конфігурація
 Configure filters,Налаштувати фільтри
 Configure templates,Налаштування шаблонів
@@ -232,6 +233,7 @@ Created user group,Створена група користувачів
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
@@ -239,7 +241,6 @@ CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Поточне значення/пропозиція
-Current Value/Suggestion,Current Value/Suggestion
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
 Custom CSS,Персональні CSS
 Custom Favicon,Користувацька іконка
@@ -451,6 +452,7 @@ Hide actions,Приховати дії
 Hide label,Приховати мітку
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Приховати панель інструментів
+HTML,HTML
 https://yourdomain,https://вашдомен
 hubs,хаби
 Hybrid,Гібридний
@@ -1044,6 +1046,10 @@ This group is empty,Ця група порожня
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Ця мітка вже існує в цьому шаблоні
 This option will show a notification about the use of cookies in your instance.,Ця опція покаже повідомлення про використання файлів cookie у вашій базі даних.
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,Цю властивість не можна видалити
 This property will appear in the library cards as part of the basic info.,Цей об'єкт з'явиться в картках бібліотеки у складі основної інформації.
 This property will be shown using all the width available.,Ця властивість буде відображатися за допомогою всієї доступної ширини.

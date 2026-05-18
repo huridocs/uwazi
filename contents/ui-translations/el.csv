@@ -171,6 +171,7 @@ Collection Name,Όνομα συλλογής
 Common sources,Κοινές πηγές
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Διαμόρφωση
 Configure filters,Διαμόρφωση φίλτρων
 Configure templates,Διαμόρφωση προτύπων
@@ -231,6 +232,7 @@ Created user group,Δημιουργήθηκε ομάδα χρηστών
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
@@ -238,7 +240,6 @@ CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
-Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Σφάλμα σήμανσης προσαρμοσμένου στοιχείου: μη υποστηριζόμενες τιμές! Ελέγξτε τις ρυθμίσεις σας.
 Custom CSS,Προσαρμοσμένο CSS
 Custom Favicon,Προσαρμοσμένο Favicon
@@ -450,6 +451,7 @@ Hide actions,Απόκρυψη ενεργειών
 Hide label,Απόκρυψη ετικέτας
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
+HTML,HTML
 https://yourdomain,https://yourdomain
 hubs,κόμβοι
 Hybrid,Υβριδικό
@@ -1043,6 +1045,10 @@ This group is empty,Αυτή η ομάδα είναι κενή
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Αυτή η ετικέτα υπάρχει ήδη σε αυτό το πρότυπο
 This option will show a notification about the use of cookies in your instance.,Αυτή η επιλογή θα εμφανίσει μια ειδοποίηση σχετικά με τη χρήση cookies στην εγκατάστασή σας.
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,Αυτή η ιδιότητα δεν μπορεί να διαγραφεί
 This property will appear in the library cards as part of the basic info.,Αυτή η ιδιότητα θα εμφανίζεται στις κάρτες βιβλιοθήκης ως μέρος των βασικών πληροφοριών.
 This property will be shown using all the width available.,Αυτή η ιδιότητα θα εμφανίζεται χρησιμοποιώντας όλο το διαθέσιμο πλάτος.

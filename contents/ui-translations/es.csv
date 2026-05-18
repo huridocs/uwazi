@@ -168,6 +168,7 @@ Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Configuración
 Configure filters,Configurar filtros
 Configure templates,Configurar plantillas
@@ -228,13 +229,13 @@ Created user group,Grupo de usuarios creado
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
 CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
-Current Value/Suggestion,Current Value/Suggestion
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
@@ -447,6 +448,7 @@ Hide actions,Ocultar acciones
 Hide label,Ocultar etiqueta
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Ocultar barra de herramientas
+HTML,HTML
 https://yourdomain,https://tudominio
 hubs,nodos
 Hybrid,Híbrido
@@ -1039,6 +1041,10 @@ This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,Esta opción mostrará una notificación sobre el uso de cookies en la instancia.
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,Esta propiedad aparecerá en las tarjetas de la biblioteca como parte de la información básica.
 This property will be shown using all the width available.,Esta propiedad se mostrará utilizando todo el espacio disponible.
