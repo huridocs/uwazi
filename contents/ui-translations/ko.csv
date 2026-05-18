@@ -170,6 +170,7 @@ Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
+Config,Config
 Configuration,Configuration
 Configure filters,필터 구성
 Configure templates,Configure templates
@@ -230,9 +231,9 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+CSS,CSS
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
-Current Value/Suggestion,Current Value/Suggestion
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
@@ -445,6 +446,7 @@ Hide actions,Hide actions
 Hide label,라벨 숨기기
 Hide restricted relationships from public,Hide restricted relationships from public
 Hide toolbar,Hide toolbar
+HTML,HTML
 https://yourdomain,전체경로: https://yourdomain
 hubs,허브
 Hybrid,Hybrid
@@ -1038,6 +1040,10 @@ This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.
+This page does not need Markdown,This page does not need Markdown
+"This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
+          lists, and other components."
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,이 속성은 카드의 기본 정보에 포함되며 라이브러리에서 볼 수 있습니다.
 This property will be shown using all the width available.,디스플레이 가능한 너비 내에서 이 속성을 표시합니다.
