@@ -192,12 +192,15 @@ export interface IStore {
   users: IImmutable<ClientUserSchema[]>;
   userGroups: IImmutable<ClientUserGroupSchema[]>;
   page: {
+    pageView: IImmutable<PageType & { scriptRendered?: boolean }>;
+    itemLists: IImmutable<unknown[]>;
+    error: IImmutable<Record<string, unknown>>;
+    datasets: IImmutable<{
+      [name: string]: { rows: any[]; totalRows: number; aggregations: any };
+    }>;
     data: PageType;
     uiState: IImmutable<{ savingPage: boolean }>;
     formState: any;
-    datasets?: IImmutable<{
-      [name: string]: { rows: any[]; totalRows: number; aggregations: any };
-    }>;
   };
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;

@@ -3,6 +3,22 @@
 
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
+export interface PageDraft {
+  content?: string;
+  script?: string;
+  css?: string;
+}
+
+export interface PageRelease {
+  version: number;
+  content: string;
+  script?: string;
+  css?: string;
+  release_message?: string;
+  user?: ObjectIdSchema;
+  date: number;
+}
+
 export interface PageType {
   _id?: ObjectIdSchema;
   title: string;

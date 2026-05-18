@@ -41,10 +41,8 @@ export default {
       const script = draft?.script ?? meta.script ?? '';
       const css = draft?.css ?? meta.css ?? '';
 
-      const dateVal =
-        typeof (doc as { creationDate?: number }).creationDate === 'number'
-          ? (doc as { creationDate: number }).creationDate
-          : Date.now();
+      const creationDate = (doc as { creationDate?: number }).creationDate;
+      const dateVal = typeof creationDate === 'number' ? creationDate : Date.now();
 
       await db.collection('pages').updateOne(
         { _id: (doc as { _id: ObjectId })._id },
