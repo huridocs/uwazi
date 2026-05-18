@@ -26,7 +26,7 @@ describe('migration pages-draft-releases', () => {
     expect(page).not.toBeNull();
     expect(page!.draft).toEqual({
       content: '<p>hi</p>',
-      script: 'console.log(1)',
+      script: '/* page script */',
       css: 'body{}',
     });
     expect(page!.releases).toHaveLength(1);
