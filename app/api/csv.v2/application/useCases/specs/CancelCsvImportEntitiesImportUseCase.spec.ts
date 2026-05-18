@@ -1,6 +1,12 @@
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CancelCsvImportEntitiesImportUseCase } from '../CancelCsvImportEntitiesImportUseCase.js';
 
+jest.mock('#api/tenants/tenantContext.js', () => ({
+  tenants: {
+    current: () => ({ name: 'test-tenant' }),
+  },
+}));
+
 describe('CancelCsvImportEntitiesImportUseCase', () => {
   it('cancels a non-terminal import and is idempotent', async () => {
     const csvImport = CsvImportDomain.withStatus(
@@ -21,8 +27,10 @@ describe('CancelCsvImportEntitiesImportUseCase', () => {
         .mockResolvedValueOnce({ getDataOrThrow: () => cancelledImport }),
       cancel: jest.fn().mockResolvedValue(undefined),
     };
+    const sockets = { emitToTenantAdmins: jest.fn() };
     const useCase = new CancelCsvImportEntitiesImportUseCase({
       csvImportEntitiesImportsDS: csvImportEntitiesImportsDS as any,
+      sockets: sockets as any,
     });
 
     const first = await useCase.execute({ id: csvImport.id });
@@ -35,6 +43,12 @@ describe('CancelCsvImportEntitiesImportUseCase', () => {
       cancelled: true,
     });
     expect(csvImportEntitiesImportsDS.cancel).toHaveBeenCalledTimes(1);
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
+      'test-tenant',
+      'csvImport:import:cancelled',
+      { importId: csvImport.id }
+    );
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledTimes(1);
   });
 
   it('returns no-op for terminal imports without rewriting status', async () => {
@@ -51,8 +65,10 @@ describe('CancelCsvImportEntitiesImportUseCase', () => {
       getById: jest.fn().mockResolvedValue({ getDataOrThrow: () => csvImport }),
       cancel: jest.fn().mockResolvedValue(undefined),
     };
+    const sockets = { emitToTenantAdmins: jest.fn() };
     const useCase = new CancelCsvImportEntitiesImportUseCase({
       csvImportEntitiesImportsDS: csvImportEntitiesImportsDS as any,
+      sockets: sockets as any,
     });
 
     const response = await useCase.execute({ id: csvImport.id });
