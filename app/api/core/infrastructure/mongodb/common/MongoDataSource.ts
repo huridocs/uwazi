@@ -13,7 +13,7 @@ export interface MongoDSOptions {
 export abstract class MongoDataSource<TSchema extends Document = Document> {
   protected documentTracker: DocumentTracker;
 
-  protected db: Db;
+  private db: Db;
 
   protected abstract collectionName: string;
 
