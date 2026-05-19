@@ -30,6 +30,18 @@ import {
   upsertTranslationsV2,
 } from './v2_support.js';
 
+type ThesaurusOption = {
+  id?: string;
+  label?: string;
+  values?: ThesaurusOption[];
+};
+
+const flattenThesaurusValues = (values: ThesaurusOption[] = []): ThesaurusOption[] =>
+  values.reduce<ThesaurusOption[]>(
+    (allValues, value) => [...allValues, value, ...flattenThesaurusValues(value.values)],
+    []
+  );
+
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
   translation: WithId<TranslationType>,
@@ -117,6 +129,9 @@ const propagateTranslationInMetadata = async (
 
   if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
     const thesaurus = await thesauri.getById(context.id);
+    const flattenedThesaurusValues = flattenThesaurusValues(
+      (thesaurus?.values || []) as ThesaurusOption[]
+    );
 
     const valuesChanged: IndexedContextValues = (isPresentInTheComingData.values || []).reduce(
       (changes, value) => {
@@ -129,18 +144,24 @@ const propagateTranslationInMetadata = async (
       {} as IndexedContextValues
     );
 
-    const changesMatchingDictionaryId = Object.keys(valuesChanged)
-      .map(valueChanged => {
-        const valueFound = (thesaurus?.values || []).find(v => v.label === valueChanged);
-        if (valueFound?.id) {
-          return { id: valueFound.id, value: valuesChanged[valueChanged] };
-        }
-        return null;
-      })
-      .filter(a => a) as { id: string; value: string }[];
+    const changesMatchingDictionaryId = Object.keys(valuesChanged).reduce(
+      (changes, valueChanged) => {
+        const matchingValues = flattenedThesaurusValues.filter(v => v.label === valueChanged);
+        const nextChanges = matchingValues
+          .filter(value => value.id)
+          .map(value => ({ id: value.id as string, value: valuesChanged[valueChanged] }));
+
+        return changes.concat(nextChanges);
+      },
+      [] as { id: string; value: string }[]
+    );
+
+    const uniqueChanges = changesMatchingDictionaryId.filter(
+      (change, index, allChanges) => allChanges.findIndex(c => c.id === change.id) === index
+    );
 
     return Promise.all(
-      changesMatchingDictionaryId.map(async change =>
+      uniqueChanges.map(async change =>
         thesauri.renameThesaurusInMetadata(change.id, change.value, context.id, translation.locale)
       )
     );

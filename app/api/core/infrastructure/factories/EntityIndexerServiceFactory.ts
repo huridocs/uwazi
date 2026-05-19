@@ -10,13 +10,22 @@ import { User } from '#api/users.v2/model/User.js';
 import { MongoSlotsDAO } from '../elasticSearch/entities/MongoSlotsDAO.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { EntityESWriterFactory } from './EntityESWriterFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 export class EntityIndexerServiceFactory {
   static default(overrides?: Partial<EntityIndexerServiceDeps>): EntityIndexerService {
-    const { tenant } = ExecutionContext;
+    const { tenant, transactionManager } = ExecutionContext;
+    if (!tenant.featureFlags?.v2ElasticSearch) {
+      return TestUtils.mockClass<EntityIndexerService>({
+        index: async () => Promise.resolve(),
+        sync: async () => Promise.resolve(),
+        syncAll: async () => Promise.resolve(),
+        remove: async () => Promise.resolve(),
+        removeByTemplateIds: async () => Promise.resolve(),
+      });
+    }
 
     const db = getConnection();
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
     const settingsDS = SettingsDataSourceFactory.default();
     const entityDAO = new MongoEntityDAO(
@@ -26,7 +35,7 @@ export class EntityIndexerServiceFactory {
     );
     const slotsDAO = new MongoSlotsDAO({
       db,
-      transactionManager,
+      transactionManager: transactionManager as MongoTransactionManager,
       tenantName: tenant.name,
       settingsDS,
     });
@@ -36,5 +45,15 @@ export class EntityIndexerServiceFactory {
     const entityESWriter = new EntityIndexerService({ entityDAO, slotsDAO, writer, ...overrides });
 
     return entityESWriter;
+  }
+
+  static forTests(): EntityIndexerService {
+    return TestUtils.mockClass<EntityIndexerService>({
+      index: jest.fn(),
+      sync: jest.fn(),
+      syncAll: jest.fn(),
+      remove: jest.fn(),
+      removeByTemplateIds: jest.fn(),
+    });
   }
 }

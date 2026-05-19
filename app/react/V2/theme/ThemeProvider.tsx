@@ -82,7 +82,12 @@ const ThemeProvider = ({
       className={mergedClassName}
       data-theme-custom={useCustomizationPipeline ? true : undefined}
       data-theme-mode={effectiveThemeMode}
-      style={{ colorScheme: effectiveThemeMode, ...themeVarsStyle, ...style }}
+      style={{
+        colorScheme: effectiveThemeMode,
+        fontFamily: 'var(--font-theme-sans)',
+        ...themeVarsStyle,
+        ...style,
+      }}
     >
       {children}
     </div>

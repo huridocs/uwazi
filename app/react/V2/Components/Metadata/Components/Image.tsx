@@ -4,13 +4,21 @@ import { ImageMetadataProperty } from '#V2/formatters/types.js';
 import { MetadataFieldProps } from './MetadataFieldPropsType.js';
 import { PropertyLabel } from './PropertyLabel.js';
 import { MetadataCard } from './MetadataCard.js';
+import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
 type ImageProps = MetadataFieldProps & {
   values: ImageMetadataProperty['values'];
   imageStyle?: 'contain' | 'cover';
 };
 
-const Image = ({ label, hideLabel, translationContext, values, imageStyle }: ImageProps) => {
+const Image = ({
+  label,
+  hideLabel,
+  translationContext,
+  values,
+  imageStyle,
+  className,
+}: ImageProps) => {
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
 
   if (!values?.length) {
@@ -22,7 +30,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
   }
 
   return (
-    <MetadataCard>
+    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
       <dt>
         <PropertyLabel
           label={label}
@@ -43,7 +51,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
         }
 
         return (
-          <dd className="w-full rounded-md bg-gray-100">
+          <dd className="w-full rounded-md bg-(--color-theme-surface-warm)">
             <img
               className="m-auto max-h-96"
               style={{

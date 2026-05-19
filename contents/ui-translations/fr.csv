@@ -109,7 +109,6 @@ Authentication code,Code d'authentification
 auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,créé automatiquement
-Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Table des matières automatique
 Automatically generated,Généré automatiquement
 Available default translation,Available default translation
@@ -169,6 +168,7 @@ Collection,Collection
 Collection Name,Collection Name
 Common sources,Common sources
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Configuration
 Configure filters,Configurer les filtres
 Configure templates,Configure templates
@@ -230,6 +230,10 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+CSV Import,CSV Import
+CSV import cancelled,CSV import cancelled
+CSV import completed,CSV import completed
+CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,Erreur de composant personnalisé
@@ -369,7 +373,6 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
-Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
 Failure details,Détails de l'échec
 Favicon description,"Un favicon est une petite icône qui représente votre collection dans les onglets et les favoris du navigateur. Le favicon par défaut est le logo Uwazi. Pour utiliser le vôtre :
@@ -461,6 +464,7 @@ Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Instructions d'importation
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
@@ -942,8 +946,8 @@ Suggestion,Suggestion
 Suggestion:,Suggestion:
 Suggestions,Suggestions
 suggestions,suggestions
-Suggestions have been updated,Suggestions have been updated
 Suggestions sent,Suggestions sent
+Suggestions updated,Suggestions updated
 Supporting files,Fichiers de support
 Synced template,Synced template
 Synced Template,Synced Template
@@ -1016,7 +1020,12 @@ This entity is restricted from public view.,Cette entité n'est pas accessible a
 This field is required,This field is required
 This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
 This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
-This file is no longer available.,This file is no longer available.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
@@ -1164,6 +1173,7 @@ You can create metadata templates in,Vous pouvez créer des modèles de métadon
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
+You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Vous devriez activer cette fonction pour renforcer la sécurité du compte
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

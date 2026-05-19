@@ -39,10 +39,38 @@ export function exportEnd() {
   };
 }
 
+function extractUtf8FileName(contentDisposition: string) {
+  const utf8FileNameMatch = contentDisposition.match(/filename\*\s*=\s*([^;]+)/i);
+  if (!utf8FileNameMatch) {
+    return null;
+  }
+
+  const removeDoubleQuotes = utf8FileNameMatch[1].trim().replace(/^"|"$/g, '');
+  const removeUTF8Lang = removeDoubleQuotes.replace(/^[^']*'[^']*'/, '');
+  try {
+    return decodeURIComponent(removeUTF8Lang);
+  } catch (_error) {
+    return null;
+  }
+}
+
+function extractAsciiFileName(contentDisposition: string) {
+  const getFilename = contentDisposition.match(/filename\s*=\s*"?([^";]+)"?/i);
+  return getFilename?.[1].trim() || null;
+}
+
 function extractFileName(contentDisposition: string) {
-  const startIndex = contentDisposition.indexOf('filename="') + 10;
-  const endIndex = contentDisposition.length - 1;
-  return contentDisposition.substring(startIndex, endIndex);
+  if (!contentDisposition) {
+    return 'export.csv';
+  }
+
+  const hasUtf8FileName = /filename\*/i.test(contentDisposition);
+
+  if (hasUtf8FileName) {
+    return extractUtf8FileName(contentDisposition) || 'export.csv';
+  }
+
+  return extractAsciiFileName(contentDisposition) || 'export.csv';
 }
 
 const requestHandler = (

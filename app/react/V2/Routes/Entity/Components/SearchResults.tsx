@@ -93,7 +93,7 @@ const SearchResults = () => {
   return (
     <Panel>
       <Panel.Body>
-        <div className="flex flex-col gap-2 h-full">
+        <div className="flex flex-col gap-(--spacing-theme-3) h-full">
           <form onSubmit={handleSubmit(onSubmit)}>
             <label htmlFor="entity-search" className="sr-only">
               <Translate>Search</Translate>
@@ -110,7 +110,7 @@ const SearchResults = () => {
                     placeholder={t('System', 'Search', null, false)}
                     // eslint-disable-next-line react/jsx-props-no-spreading
                     {...field}
-                    className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 p-2"
+                    className="w-full rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] bg-(--color-theme-surface-warm) p-(--spacing-theme-2) text-sm text-ink shadow-(--color-theme-shadow-sm) placeholder:text-ink-muted focus:border-(--color-theme-control-border-focus) focus:outline-hidden"
                   />
                 )}
               />
@@ -118,9 +118,9 @@ const SearchResults = () => {
               <button
                 type="submit"
                 aria-label="Search"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                className="absolute right-(--spacing-theme-3) top-1/2 transform -translate-y-1/2"
               >
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+                <MagnifyingGlassIcon className="h-5 w-5 text-ink" aria-hidden="true" />
               </button>
             </div>
           </form>
@@ -129,7 +129,7 @@ const SearchResults = () => {
             {searchResults?.data && searchResults.data.length < 1 ? (
               <NoResults />
             ) : (
-              <div className="flex flex-col gap-4 pt-1">
+              <div className="flex flex-col gap-(--spacing-theme-3) pt-1">
                 {searchResults?.data.map((entry, i) => {
                   const { metadata, fullText } = entry.snippets;
 
@@ -145,18 +145,15 @@ const SearchResults = () => {
                             {metadata.map((m, j) => (
                               <div
                                 key={`metadata-${i}-${j}`}
-                                className="p-2 border border-gray-100 shadow-md rounded-lg"
+                                className="rounded-md border border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised) p-(--spacing-theme-2) shadow-(--color-theme-shadow-sm)"
                               >
-                                <dt className="text-sm font-semibold text-gray-900">
-                                  <Translate context={entity!.template}>
+                                <dt className="text-sm font-semibold text-ink">
+                                  <Translate context={entity?.template || ''}>
                                     {getFieldName(m.field, template)}
                                   </Translate>
                                 </dt>
                                 {m.texts.map((text, k) => (
-                                  <dd
-                                    key={`metadata-${i}-${j}-${k}`}
-                                    className="text-sm text-gray-900"
-                                  >
+                                  <dd key={`metadata-${i}-${j}-${k}`} className="text-sm text-ink">
                                     {parseSnippetToNodes(text)}
                                   </dd>
                                 ))}
@@ -171,6 +168,16 @@ const SearchResults = () => {
                         ? fullText.map((pageText, j) => {
                             const snippetKey = `${i}-${j}`;
                             const isActive = activeSnippet === snippetKey;
+
+                            const activeClass = isActive
+                              ? 'border-(--color-theme-action-primary) bg-(--color-theme-surface-selected)'
+                              : 'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)] bg-(--color-theme-surface-raised)';
+                            const snippetClass = [
+                              'rounded-md border p-(--spacing-theme-3)',
+                              'shadow-(--color-theme-shadow-sm) cursor-pointer',
+                              'hover:bg-(--color-theme-surface-warm) transition',
+                              activeClass,
+                            ].join(' ');
 
                             return (
                               <div
@@ -205,10 +212,11 @@ const SearchResults = () => {
                                     }
                                   }
                                 }}
-                                className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition
-                              ${isActive ? 'border-primary-400' : 'border-gray-100'}`}
+                                className={snippetClass}
                               >
-                                <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                                <p className="mb-(--spacing-theme-4) px-(--spacing-theme-2)">
+                                  {parseSnippetToNodes(pageText.text)}
+                                </p>
                                 <p className="font-bold float-right">
                                   {t('System', 'Page', null, false)} {pageText.page}
                                 </p>
@@ -227,7 +235,7 @@ const SearchResults = () => {
 
       <Panel.Footer>
         <button type="button" onClick={() => openHints(true)}>
-          <Translate className="text-gray-600 underline font-bold">Search Tips</Translate>
+          <Translate className="text-ink-secondary underline font-bold">Search Tips</Translate>
         </button>
       </Panel.Footer>
     </Panel>

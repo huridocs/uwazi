@@ -109,7 +109,6 @@ Authentication code,Κωδικός πιστοποίησης
 auto created,αυτόματα δημιουργημένος
 Auto-accept suggestions,Αυτόματη αποδοχή προτάσεων
 auto-created,αυτόματα δημιουργημένος
-Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Αυτόματος πίνακας περιεχομένων
 Automatically generated,Δημιουργήθηκε αυτόματα
 Available default translation,Διαθέσιμη προεπιλεγμένη μετάφραση
@@ -171,6 +170,7 @@ Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Common sources,Κοινές πηγές
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Διαμόρφωση
 Configure filters,Διαμόρφωση φίλτρων
 Configure templates,Διαμόρφωση προτύπων
@@ -232,6 +232,10 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+CSV Import,CSV Import
+CSV import cancelled,CSV import cancelled
+CSV import completed,CSV import completed
+CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
 Custom component error,Σφάλμα σήμανσης προσαρμοσμένου στοιχείου: μη υποστηριζόμενες τιμές! Ελέγξτε τις ρυθμίσεις σας.
@@ -371,7 +375,6 @@ Extractor name,Όνομα εξαγωγέα
 Extractor/s deleted,Εξαγωγέας/εις διαγράφηκε/καν
 Extractors,Εξαγωγείς
 Failed,Failed
-Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
@@ -463,6 +466,7 @@ Import completed,Η εισαγωγή ολοκληρώθηκε. Αριθμός δ
 Import CSV,Εισαγωγή CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Οδηγίες εισαγωγής
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
@@ -944,8 +948,8 @@ Suggestion,Πρόταση
 Suggestion:,Πρόταση:
 Suggestions,Προτάσεις
 suggestions,προτάσεις
-Suggestions have been updated,Οι προτάσεις έχουν ενημερωθεί
 Suggestions sent,Οι προτάσεις στάλθηκαν
+Suggestions updated,Suggestions updated
 Supporting files,Υποστηρικτικά αρχεία
 Synced template,Συγχρονισμένο πρότυπο
 Synced Template,Συγχρονισμένο πρότυπο
@@ -1018,7 +1022,12 @@ This entity is restricted from public view.,Αυτή η οντότητα δεν 
 This field is required,Αυτό το πεδίο είναι υποχρεωτικό
 This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
 This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
-This file is no longer available.,This file is no longer available.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,Αυτός ο τύπος αρχείου δεν υποστηρίζεται σε πεδία πολυμέσων
 This group is empty,Αυτή η ομάδα είναι κενή
 This import is waiting in queue.,This import is waiting in queue.
@@ -1166,6 +1175,7 @@ You can create metadata templates in,Μπορείτε να δημιουργήσ�
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
+You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.

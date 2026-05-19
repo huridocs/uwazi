@@ -4,10 +4,10 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { Specification } from '#api/core/domain/entity/EntityPermissionChecker.js';
-import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
-import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
+import { Specification } from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { MongoEntityPermissionChecker } from '../MongoEntityPermissionChecker.js';
+import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 
 const factory = getFixturesFactory();
 
@@ -20,7 +20,7 @@ const otherCollaborator = new User(factory.id('other_collab').toString(), 'colla
 const anonymousUser = User.createFrom(null);
 
 const readSpec = (actor: User) =>
-  new Specification({ type: PermissionType.User, level: AccessLevel.Read, actor });
+  new Specification({ type: GrantType.User, level: AccessLevel.Read, actor });
 
 const writeSpec = (actor: User) => Specification.createDeleteSpecification(actor);
 

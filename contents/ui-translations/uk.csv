@@ -109,7 +109,6 @@ Authentication code,Код автентифікації
 auto created,автоматично створено
 Auto-accept suggestions,Автоматичне прийняття пропозицій
 auto-created,автоматично створено
-Auto-refreshing,Auto-refreshing
 Automatic Table of Contents,Автоматичний зміст
 Automatically generated,Генерується автоматично
 Available default translation,Доступний переклад за замовчуванням
@@ -172,6 +171,7 @@ Collection,Колекція
 Collection Name,Назва колекції
 Common sources,Загальні джерела
 Completed,Completed
+Completed with errors,Completed with errors
 Configuration,Конфігурація
 Configure filters,Налаштувати фільтри
 Configure templates,Налаштування шаблонів
@@ -233,6 +233,10 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+CSV Import,CSV Import
+CSV import cancelled,CSV import cancelled
+CSV import completed,CSV import completed
+CSV import failed,CSV import failed
 CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
 Current Value/Suggestion,Поточне значення/пропозиція
 Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
@@ -372,7 +376,6 @@ Extractor name,Ім'я екстрактора
 Extractor/s deleted,Видалено розпакувальник(и)
 Extractors,Екстрактори
 Failed,Failed
-Failed jobs,Failed jobs
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Іконка - це невелика піктограма, яка представляє вашу колекцію у вкладках та закладках браузера. За замовчуванням це логотип Uwazi. Ви можете використовувати свій власний:
@@ -464,6 +467,7 @@ Import completed,Імпорт завершено. Кількість створ�
 Import CSV,Імпортувати CSV
 Import failed. Review details below.,Import failed. Review details below.
 Import finished successfully.,Import finished successfully.
+Import finished with errors. Review details below.,Import finished with errors. Review details below.
 Import instructions,Інструкції з імпортування
 Import is currently processing rows.,Import is currently processing rows.
 Import is retrying after an error.,Import is retrying after an error.
@@ -945,8 +949,8 @@ Suggestion,Пропозиція
 Suggestion:,Пропозиція:
 Suggestions,Запропоновані варіанти
 suggestions,пропозиції
-Suggestions have been updated,Пропозиції були оновлені
 Suggestions sent,Пропозиції надіслані
+Suggestions updated,Suggestions updated
 Supporting files,Супровідні файли
 Synced template,Синхронізований шаблон
 Synced Template,Синхронізований шаблон
@@ -1019,7 +1023,12 @@ This entity is restricted from public view.,Цей об'єкт обмежени�
 This field is required,Це поле обов'язкове для заповнення
 This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
 This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
-This file is no longer available.,This file is no longer available.
+"This file is currently unavailable. Please contact your administrator if the issue
+                  persists.","This file is currently unavailable. Please contact your administrator if the issue
+                  persists."
+"This file is currently unavailable. Please contact your administrator if the issue
+              persists.","This file is currently unavailable. Please contact your administrator if the issue
+              persists."
 This file type is not supported on media fields,Цей тип файлів не підтримується на медіа-полях
 This group is empty,Ця група порожня
 This import is waiting in queue.,This import is waiting in queue.
@@ -1167,6 +1176,7 @@ You can create metadata templates in,Ви можете створювати ша
 "You can start by selecting text in the document and clicking the ""Add to ToC""
                   button.","You can start by selecting text in the document and clicking the ""Add to ToC""
                   button."
+You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Do you want to continue?,У вас є незбережені зміни. Ви хочете продовжити?
 You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.
