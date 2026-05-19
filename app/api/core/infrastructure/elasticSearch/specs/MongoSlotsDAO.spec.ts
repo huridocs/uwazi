@@ -30,7 +30,10 @@ describe('MongoSlotsDAO', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({});
 
-    const bootstrapper = new MongoSlotsBootstrapper({ database: getConnection() });
+    const bootstrapper = new MongoSlotsBootstrapper({
+      database: getConnection(),
+      transactionManager: TransactionManagerFactory.default(),
+    });
     await bootstrapper.createIndexes();
   });
 

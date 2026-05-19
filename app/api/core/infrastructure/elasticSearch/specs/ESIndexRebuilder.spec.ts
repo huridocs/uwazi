@@ -123,6 +123,7 @@ const createSut = (deps?: Partial<ESIndexRebuilderDeps>) => {
 
   const slotsBootstrapper = new MongoSlotsBootstrapper({
     database: db,
+    transactionManager,
     amountPerSlotType: testAmountPerSlotType,
   });
   const slotsReconciler = new SlotsReconciler({ slotsDAO, templatesDAO });

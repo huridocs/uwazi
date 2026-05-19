@@ -111,7 +111,10 @@ describe('Templates Update', () => {
     });
 
     if (testingTenants.current().featureFlags?.v2ElasticSearch) {
-      await new MongoSlotsBootstrapper({ database: getConnection() }).reset();
+      await new MongoSlotsBootstrapper({
+        database: getConnection(),
+        transactionManager: TransactionManagerFactory.default(),
+      }).reset();
     }
   }
   const fixtures: DBFixture = {
@@ -258,7 +261,9 @@ describe('Templates Update', () => {
         );
         const editDateBefore = entitiesBefore[0].editDate as number;
 
-        await new Promise(r => setTimeout(r, 10));
+        await new Promise(r => {
+          setTimeout(r, 10);
+        });
 
         await updateTemplate(
           f.template('templateA', [f.property('text_property', 'text', { filter: true })])

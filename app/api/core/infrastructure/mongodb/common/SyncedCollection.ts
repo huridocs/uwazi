@@ -146,6 +146,9 @@ export class SyncedCollection<TSchema extends Document = Document>
   ): Promise<UpdateResult<TSchema>> {
     await this.upsertSyncLogs([filter]);
     const result = await this.collection.updateOne(filter, update, options);
+    if (result.upsertedId) {
+      await this.insertSyncLogs([result.upsertedId]);
+    }
     return result;
   }
 
@@ -166,6 +169,9 @@ export class SyncedCollection<TSchema extends Document = Document>
   ): Promise<UpdateResult<TSchema>> {
     await this.upsertSyncLogs([filter]);
     const result = await this.collection.updateMany(filter, update, options);
+    if (result.upsertedId) {
+      await this.insertSyncLogs([result.upsertedId]);
+    }
     return result;
   }
 

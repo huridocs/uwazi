@@ -462,12 +462,9 @@ describe('MongoMultiLanguageEntityDataSource', () => {
         expect(doc.editDate).toBeGreaterThanOrEqual(before);
       });
 
-      expect(entityIndexerService.index).toHaveBeenCalledTimes(1);
-      expect(entityIndexerService.index).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'en' }),
-          expect.objectContaining({ sharedId: entity.sharedId, language: 'es' }),
-        ])
+      expect(entityIndexerService.sync).toHaveBeenCalledTimes(1);
+      expect(entityIndexerService.sync).toHaveBeenCalledWith(
+        expect.arrayContaining([entity.sharedId])
       );
     });
 

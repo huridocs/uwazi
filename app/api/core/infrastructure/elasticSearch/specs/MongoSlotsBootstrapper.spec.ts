@@ -7,6 +7,7 @@ import {
   SlotBootstrapDefinitions,
 } from '../entities/SlotBootstrapDefinitions.js';
 import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 
 // Use minimal slot counts so tests don't bulk-write 850+ documents on every execute()
 const testAmountPerSlotType = Object.fromEntries(
@@ -16,6 +17,7 @@ const testAmountPerSlotType = Object.fromEntries(
 const createSut = () => {
   const sut = new MongoSlotsBootstrapper({
     database: getConnection(),
+    transactionManager: TransactionManagerFactory.default(),
     amountPerSlotType: testAmountPerSlotType,
   });
 
