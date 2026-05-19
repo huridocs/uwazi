@@ -75,6 +75,7 @@ describe('TemplateMapper', () => {
             value: 'shared_id',
             type: 'entity',
             label: 'Related Entity',
+            icon: { _id: 'related_icon_id', label: 'Related Icon', type: 'icon' },
             inheritedType: 'text',
             inheritedValue: [{ value: 'Some text' }],
           },
@@ -220,6 +221,7 @@ describe('TemplateMapper', () => {
                 value: 'shared_id',
                 type: 'entity',
                 label: 'Related Entity',
+                icon: { id: 'related_icon_id', label: 'Related Icon', type: 'icon' },
                 inheritedType: 'text',
                 inheritedValue: [{ value: 'Some text' }],
               },
@@ -371,6 +373,7 @@ describe('TemplateMapper', () => {
                 value: 'shared_id',
                 type: 'entity',
                 label: 'Related Entity',
+                icon: { id: 'related_icon_id', label: 'Related Icon', type: 'icon' },
                 inheritedType: 'text',
                 inheritedValue: [{ value: 'Some text' }],
               },
@@ -432,6 +435,29 @@ describe('TemplateMapper', () => {
     expect(resultNoIcon.map(e => e.icon)).toEqual([
       { _id: null, label: undefined, type: 'Empty' },
       { _id: null, label: undefined, type: 'Empty' },
+    ]);
+  });
+
+  it('should map relationship metadata icon id to _id on persistence', () => {
+    const entities = createEntitiesDBO();
+    const entitiesDomain = MongoEntityMapper.toDomain(entities as any[], templateDbo as any);
+    entitiesDomain.translations.en.metadata.relationship.value = [
+      {
+        value: 'shared_id',
+        type: 'entity',
+        label: 'Related Entity',
+        icon: { id: 're_mapped_id', label: 'Related Icon', type: 'icon' },
+      },
+    ] as any;
+
+    const [englishDbo] = MongoEntityMapper.toDBO(entitiesDomain).filter(dbo => dbo.language === 'en');
+    expect(englishDbo.metadata.relationship).toEqual([
+      {
+        value: 'shared_id',
+        type: 'entity',
+        label: 'Related Entity',
+        icon: { _id: 're_mapped_id', label: 'Related Icon', type: 'icon' },
+      },
     ]);
   });
 

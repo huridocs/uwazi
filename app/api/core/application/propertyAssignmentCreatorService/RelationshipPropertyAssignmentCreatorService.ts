@@ -77,11 +77,7 @@ export class RelationshipPropertyAssignmentCreatorService extends AbstractProper
         };
 
         if (related.icon) {
-          base.icon = {
-            _id: related.icon.id,
-            label: related.icon.label,
-            type: related.icon.type,
-          };
+          base.icon = related.icon;
         }
 
         if (property.inheritedPropertyId) {

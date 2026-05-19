@@ -297,15 +297,7 @@ class Entity {
             type: 'entity',
             value: item.value,
             label: related.getTitle(language),
-            ...(related.icon
-              ? {
-                  icon: {
-                    _id: related.icon.id,
-                    label: related.icon.label,
-                    type: related.icon.type,
-                  },
-                }
-              : {}),
+            ...(related.icon ? { icon: related.icon } : {}),
             ...(inheritedProp
               ? {
                   inheritedValue: related.getValue(inheritedProp.name, language).value,
