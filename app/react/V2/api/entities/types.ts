@@ -35,6 +35,7 @@ interface Entity extends Omit<
     type: string;
     label: string;
   };
+  permissions?: EntityWithFilesSchema['permissions'];
 }
 
 export type { Entity, FileType, MetadataSchema, MetadataObjectSchema };

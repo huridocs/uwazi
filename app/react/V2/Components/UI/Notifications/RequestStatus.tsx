@@ -3,6 +3,7 @@ import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import type { NotificationType } from '#V2/atoms/requestStatusAtom.js';
 import { useContrastColor } from '#V2/CustomHooks/useContrastColor.js';
 import { useResolvedBackgroundColor } from '#V2/CustomHooks/useResolvedBackgroundColor.js';
+import { CsvImportTasksSubscriber } from '#V2/Routes/Settings/CSVUpload/CsvImportTasksSubscriber.js';
 import { StatusDot } from './StatusDot.js';
 import { NotificationFlash } from './NotificationFlash.js';
 
@@ -101,7 +102,6 @@ const RequestStatus = () => {
     if (latest.id === lastPopId.current) return;
     lastPopId.current = latest.id;
     setPopKey(k => k + 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notifications]);
 
   useEffect(() => {
@@ -119,49 +119,52 @@ const RequestStatus = () => {
   }, [hasRunningTasks, isLoading, overallStatus]);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative inline-flex min-h-13 items-center gap-1.5 rounded-xl p-1"
-    >
-      {flash && (
-        <div
-          key={`announcement-${flash.id}`}
-          className="sr-only"
-          role={flash.type === 'error' ? 'alert' : 'status'}
-          aria-live={flash.type === 'error' ? 'assertive' : 'polite'}
-          aria-atomic="true"
-        >
-          {liveAnnouncement}
-        </div>
-      )}
-      {flash && (
-        <div className="absolute inset-y-0 end-4 z-10 flex items-stretch justify-end">
-          <NotificationFlash
-            key={flash.id}
-            title={flash.title}
-            type={flash.type}
-            phase={flash.phase}
+    <>
+      <CsvImportTasksSubscriber />
+      <div
+        ref={containerRef}
+        className="relative inline-flex min-h-13 items-center gap-1.5 rounded-xl p-1"
+      >
+        {flash && (
+          <div
+            key={`announcement-${flash.id}`}
+            className="sr-only"
+            role={flash.type === 'error' ? 'alert' : 'status'}
+            aria-live={flash.type === 'error' ? 'assertive' : 'polite'}
+            aria-atomic="true"
+          >
+            {liveAnnouncement}
+          </div>
+        )}
+        {flash && (
+          <div className="absolute inset-y-0 end-4 z-10 flex items-stretch justify-end">
+            <NotificationFlash
+              key={flash.id}
+              title={flash.title}
+              type={flash.type}
+              phase={flash.phase}
+              color={contrastColor}
+              barBackground={barBackground}
+              onOpenPanel={togglePanel}
+              controlsId={PANEL_ID}
+              isPanelExpanded={isPanelOpen}
+            />
+          </div>
+        )}
+        <span className="relative z-20 inline-flex shrink-0">
+          <StatusDot
+            overallStatus={overallStatus}
+            isConnected={isConnected}
+            hasRunningTasks={hasRunningTasks}
+            onClick={togglePanel}
+            popKey={popKey}
             color={contrastColor}
-            barBackground={barBackground}
-            onOpenPanel={togglePanel}
             controlsId={PANEL_ID}
-            isPanelExpanded={isPanelOpen}
+            isExpanded={isPanelOpen}
           />
-        </div>
-      )}
-      <span className="relative z-20 inline-flex shrink-0">
-        <StatusDot
-          overallStatus={overallStatus}
-          isConnected={isConnected}
-          hasRunningTasks={hasRunningTasks}
-          onClick={togglePanel}
-          popKey={popKey}
-          color={contrastColor}
-          controlsId={PANEL_ID}
-          isExpanded={isPanelOpen}
-        />
-      </span>
-    </div>
+        </span>
+      </div>
+    </>
   );
 };
 
