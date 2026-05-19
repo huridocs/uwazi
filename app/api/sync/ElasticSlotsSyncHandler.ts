@@ -26,6 +26,7 @@ export class ElasticSlotsSyncHandler
     await this.getCollection().replaceOne({ _id: id }, { _id: id, ...rest } as SlotDocument, {
       upsert: true,
     });
+    MongoSlotsDAO.clearCache();
     return this.getCollection().findOne({ _id: id }) as Promise<SlotDocument>;
   }
 
@@ -45,6 +46,7 @@ export class ElasticSlotsSyncHandler
         };
       })
     );
+    MongoSlotsDAO.clearCache();
 
     const ids = documents.map(doc => {
       const id = (doc as SlotDocument)._id;
