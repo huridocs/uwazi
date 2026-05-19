@@ -14,7 +14,7 @@ type Props = BaseFileProps & {
   status: 'processing' | 'failed';
 };
 
-export class ProcessingPDF extends FileWithContents {
+export class ProcessingPDF extends FileWithContents<Props> {
   status: 'processing' | 'failed';
 
   protected _type = 'document' as const;
@@ -22,12 +22,13 @@ export class ProcessingPDF extends FileWithContents {
   readonly entity: string;
 
   constructor(props: Props) {
-    const { entity, status, ...baseProps } = props;
-    super(baseProps);
-    this.status = status;
-    this.entity = entity;
+    super(props);
+    this.status = props.status;
+    this.entity = props.entity;
+  }
 
-    this.props = { ...this.props, entity, status } as Props;
+  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
+    return true;
   }
 
   failed() {
@@ -35,7 +36,20 @@ export class ProcessingPDF extends FileWithContents {
   }
 
   asProcessed(pdfInfo: { language: LanguageISO6391; totalPages: number; fullText: fullTextProp }) {
-    return new ProcessedPDF({ ...this, ...pdfInfo, generatedToc: false });
+    return new ProcessedPDF({
+      id: this.id,
+      originalname: this.originalname,
+      filename: this.filename,
+      mimetype: this.mimetype,
+      size: this.size,
+      creationDate: this.creationDate,
+      entity: this.entity,
+      content: this.content,
+      language: pdfInfo.language,
+      totalPages: pdfInfo.totalPages,
+      fullText: pdfInfo.fullText,
+      generatedToc: false,
+    });
   }
 
   static fromDBO(dbo: ProcessingPDFDBO, contentLoader: FileContentLoader) {

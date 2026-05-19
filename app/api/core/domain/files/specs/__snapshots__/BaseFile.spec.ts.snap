@@ -1,0 +1,201 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BaseFile constructor validation throws on empty filename 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"Filename is required\\",
+    \\"path\\": [
+      \\"filename\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on empty id 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"File ID is required\\",
+    \\"path\\": [
+      \\"id\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on empty mimetype 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"MIME type is required\\",
+    \\"path\\": [
+      \\"mimetype\\"
+    ]
+  },
+  {
+    \\"validation\\": \\"regex\\",
+    \\"code\\": \\"invalid_string\\",
+    \\"message\\": \\"Invalid MIME type format\\",
+    \\"path\\": [
+      \\"mimetype\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on empty originalname 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"Original filename is required\\",
+    \\"path\\": [
+      \\"originalname\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on filename too long 1`] = `
+"[
+  {
+    \\"code\\": \\"too_big\\",
+    \\"maximum\\": 255,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"Filename is too long\\",
+    \\"path\\": [
+      \\"filename\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on mimetype ends with slash 1`] = `
+"[
+  {
+    \\"validation\\": \\"regex\\",
+    \\"code\\": \\"invalid_string\\",
+    \\"message\\": \\"Invalid MIME type format\\",
+    \\"path\\": [
+      \\"mimetype\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on mimetype missing slash 1`] = `
+"[
+  {
+    \\"validation\\": \\"regex\\",
+    \\"code\\": \\"invalid_string\\",
+    \\"message\\": \\"Invalid MIME type format\\",
+    \\"path\\": [
+      \\"mimetype\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on mimetype starts with slash 1`] = `
+"[
+  {
+    \\"validation\\": \\"regex\\",
+    \\"code\\": \\"invalid_string\\",
+    \\"message\\": \\"Invalid MIME type format\\",
+    \\"path\\": [
+      \\"mimetype\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on mimetype with invalid semicolon format 1`] = `
+"[
+  {
+    \\"validation\\": \\"regex\\",
+    \\"code\\": \\"invalid_string\\",
+    \\"message\\": \\"Invalid MIME type format\\",
+    \\"path\\": [
+      \\"mimetype\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on non-integer creationDate 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"integer\\",
+    \\"received\\": \\"float\\",
+    \\"message\\": \\"Creation date must be an integer\\",
+    \\"path\\": [
+      \\"creationDate\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on non-integer size 1`] = `
+"[
+  {
+    \\"code\\": \\"invalid_type\\",
+    \\"expected\\": \\"integer\\",
+    \\"received\\": \\"float\\",
+    \\"message\\": \\"File size must be an integer\\",
+    \\"path\\": [
+      \\"size\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile constructor validation throws on originalname too long 1`] = `
+"[
+  {
+    \\"code\\": \\"too_big\\",
+    \\"maximum\\": 255,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"Original filename is too long\\",
+    \\"path\\": [
+      \\"originalname\\"
+    ]
+  }
+]"
+`;
+
+exports[`BaseFile update() validates the updated value 1`] = `
+"[
+  {
+    \\"code\\": \\"too_small\\",
+    \\"minimum\\": 1,
+    \\"type\\": \\"string\\",
+    \\"inclusive\\": true,
+    \\"exact\\": false,
+    \\"message\\": \\"Original filename is required\\",
+    \\"path\\": [
+      \\"originalname\\"
+    ]
+  }
+]"
+`;

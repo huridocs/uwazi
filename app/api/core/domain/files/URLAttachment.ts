@@ -6,7 +6,7 @@ import { BaseFile, BaseFileProps } from './BaseFile.js';
 
 type Props = Omit<BaseFileProps, 'content'> & { entity: string; url: string };
 
-export class URLAttachment extends BaseFile {
+export class URLAttachment extends BaseFile<Props> {
   readonly url: string;
 
   readonly entity: string;
@@ -16,21 +16,23 @@ export class URLAttachment extends BaseFile {
   readonly content: undefined;
 
   constructor(props: Props) {
-    const { entity, url, ...baseProps } = props;
-    const filename = baseProps?.filename ?? url;
-    const originalname = baseProps?.originalname ?? url;
+    const filename = props.filename ?? props.url;
+    const originalname = props.originalname ?? props.url;
 
-    super({
-      ...baseProps,
-      filename,
-      originalname,
-    });
+    super({ ...props, filename, originalname });
     this.filename = filename;
     this.originalname = originalname;
-    this.url = url;
-    this.entity = entity;
-    // keeping this since it still possible to pass content with prop spread
+    this.url = props.url;
+    this.entity = props.entity;
     this.content = undefined;
+  }
+
+  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
+    return true;
+  }
+
+  hasContent(): this is this {
+    return false;
   }
 
   static fromDBO(dbo: URLAttachmentDBO) {

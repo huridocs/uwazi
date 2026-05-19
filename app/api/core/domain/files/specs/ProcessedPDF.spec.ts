@@ -1,9 +1,94 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { ProcessedPDF } from '../ProcessedPDF.js';
 import { FileBuilder } from './FileBuilder.js';
 
 const f = getFixturesFactory();
 
 describe('ProcessedPDF', () => {
+  describe('update', () => {
+    it('should rename and preserve all properties', () => {
+      const content = FileBuilder.content('page contents');
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        originalname: 'original.pdf',
+        language: 'fr',
+        totalPages: 42,
+        generatedToc: true,
+        entity: 'sharedId1',
+        fullText: { 1: 'page one' },
+        content,
+      });
+      const updated = file.update({ originalname: 'renamed.pdf' });
+
+      expect(updated).toBeInstanceOf(ProcessedPDF);
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'renamed.pdf' });
+      expect(updated.content).toBe(content);
+      expect(updated.hasChanged).toBe(true);
+      expect(updated.previousVersion?.originalname).toBe('original.pdf');
+    });
+
+    it('should update toc and generatedToc', () => {
+      const toc = [{ label: 'Chapter 1', indentation: 0 }];
+      const file = FileBuilder.processedDocument(f.idString('doc'), {
+        generatedToc: true,
+        toc: [{ label: 'Auto Chapter', indentation: 0 }],
+      });
+      const updated = file.update({ toc, generatedToc: false });
+
+      expect(updated).toBeInstanceOf(ProcessedPDF);
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), toc, generatedToc: false });
+      expect(updated.hasChanged).toBe(true);
+      expect(updated.previousVersion?.toc).toEqual([{ label: 'Auto Chapter', indentation: 0 }]);
+    });
+
+    it('should not mark as changed when the name is unchanged', () => {
+      const file = FileBuilder.processedDocument(f.idString('doc'), { originalname: 'same.pdf' });
+      expect(file.update({ originalname: 'same.pdf' }).hasChanged).toBe(false);
+    });
+  });
+
+  describe('toDTO', () => {
+    it('should include all base and specialized properties', () => {
+      const id = f.idString('doc');
+      const file = FileBuilder.processedDocument(id, {
+        originalname: 'report.pdf',
+        filename: 'abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 5000,
+        creationDate: 1000000000,
+        entity: 'sharedId1',
+        language: 'fr',
+        totalPages: 42,
+        generatedToc: true,
+        fullText: { 1: 'page one' },
+        toc: [{ label: 'Chapter 1', indentation: 0 }],
+      });
+
+      expect(file.toDTO()).toEqual({
+        _id: id,
+        originalname: 'report.pdf',
+        filename: 'abc123.pdf',
+        mimetype: 'application/pdf',
+        size: 5000,
+        creationDate: 1000000000,
+        entity: 'sharedId1',
+        language: 'fra',
+        totalPages: 42,
+        generatedToc: true,
+        fullText: { 1: 'page one' },
+        toc: [{ label: 'Chapter 1', indentation: 0 }],
+        type: 'document',
+        status: 'ready',
+      });
+    });
+
+    it('should omit toc when not set', () => {
+      const id = f.idString('doc2');
+      const file = FileBuilder.processedDocument(id, { fullText: { 1: 'page' } });
+      const dto = file.toDTO();
+      expect(dto).not.toHaveProperty('toc');
+    });
+  });
+
   describe('getFullText', () => {
     describe('when not passing a fullText loader', () => {
       it('should return fullText', async () => {
