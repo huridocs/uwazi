@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { MongoEntityMapper } from '../entity/MongoEntityMapper.js';
@@ -450,7 +449,9 @@ describe('TemplateMapper', () => {
       },
     ] as any;
 
-    const [englishDbo] = MongoEntityMapper.toDBO(entitiesDomain).filter(dbo => dbo.language === 'en');
+    const [englishDbo] = MongoEntityMapper.toDBO(entitiesDomain).filter(
+      dbo => dbo.language === 'en'
+    );
     expect(englishDbo.metadata.relationship).toEqual([
       {
         value: 'shared_id',
