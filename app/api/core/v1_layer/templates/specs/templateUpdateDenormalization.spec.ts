@@ -23,6 +23,7 @@ import * as idGenerator from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import templates from '../templates.js';
+import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
 
 const f = getFixturesFactory();
 
@@ -108,6 +109,10 @@ describe('Templates Update', () => {
       dbName: testingDB.dbName,
       indexName: elasticIndex,
     });
+
+    if (testingTenants.current().featureFlags?.v2ElasticSearch) {
+      await new MongoSlotsBootstrapper({ database: getConnection() }).reset();
+    }
   }
   const fixtures: DBFixture = {
     settings: [
@@ -244,6 +249,31 @@ describe('Templates Update', () => {
   });
 
   describe('templates denormalization scenarios', () => {
+    describe('when toggling filter on a property (no other changes)', () => {
+      it('should update editDate on all entities of that template', async () => {
+        await setUpFixtures(fixtures);
+
+        const entitiesBefore = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
+        );
+        const editDateBefore = entitiesBefore[0].editDate as number;
+
+        await new Promise(r => setTimeout(r, 10));
+
+        await updateTemplate(
+          f.template('templateA', [f.property('text_property', 'text', { filter: true })])
+        );
+
+        const entitiesAfter = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
+        );
+
+        entitiesAfter.forEach(entity => {
+          expect(entity.editDate as number).toBeGreaterThan(editDateBefore);
+        });
+      });
+    });
+
     describe('when changing a property name and template contains relationship properties', () => {
       it('should change the name on all entities and reindex', async () => {
         const propertyWithNameChanged = f.property('text_property_b', 'text', {
