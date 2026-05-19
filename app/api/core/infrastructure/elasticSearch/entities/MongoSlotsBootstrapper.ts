@@ -15,15 +15,12 @@ type Deps = {
 class MongoSlotsBootstrapper extends MongoDataSource<SlotDocument> {
   protected collectionName = MongoSlotsDAO.collectionName;
 
-  private rawDb: Db;
-
   private get amounts(): Record<SlotType, number> {
     return this.deps.amountPerSlotType ?? AmountPerSlotType;
   }
 
   constructor(private deps: Deps) {
     super(deps.database, deps.transactionManager);
-    this.rawDb = deps.database;
   }
 
   async execute() {
@@ -33,11 +30,7 @@ class MongoSlotsBootstrapper extends MongoDataSource<SlotDocument> {
   }
 
   private get rawCollection() {
-    return this.rawDb.collection(MongoSlotsBootstrapper.collectionName);
-  }
-
-  private static get collectionName() {
-    return MongoSlotsDAO.collectionName;
+    return this.db.collection(MongoSlotsDAO.collectionName);
   }
 
   async createSlots() {
