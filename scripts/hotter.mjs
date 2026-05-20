@@ -8,6 +8,7 @@ const END_WEBPACK_PORT = 8180;
 const START_INSPECT_PORT = 9229;
 const END_INSPECT_PORT = 9329;
 const DB_PREFIX = 'uwazi_development';
+const requestedOffset = process.argv[2];
 
 const isPortFree = port =>
   new Promise(resolve => {
@@ -34,6 +35,31 @@ const findFreePort = async (start, end) => {
     }
   }
   return null;
+};
+
+const parsePreferredPort = offsetArg => {
+  if (!offsetArg) {
+    return null;
+  }
+  const offset = Number.parseInt(offsetArg, 10);
+  if (Number.isNaN(offset) || offset < 0) {
+    throw new Error('Invalid hotter offset. Use `yarn hotter <n>` with n >= 0 (example: `yarn hotter 3`).');
+  }
+  const preferredPort = START_PORT + offset;
+  if (preferredPort > END_PORT) {
+    throw new Error(`Requested port ${preferredPort} is outside allowed range ${START_PORT}-${END_PORT}.`);
+  }
+  return preferredPort;
+};
+
+const findMainPort = async preferredPort => {
+  if (!preferredPort) {
+    return findFreePort(START_PORT, END_PORT);
+  }
+  if (await isPortFree(preferredPort)) {
+    return preferredPort;
+  }
+  throw new Error('Requested offset is occupied. Please choose another offset.');
 };
 
 const runCommand = (command, args, env) =>
@@ -106,7 +132,8 @@ const databaseExists = async (dbName, env) => {
 };
 
 const main = async () => {
-  const port = await findFreePort(START_PORT, END_PORT);
+  const preferredPort = parsePreferredPort(requestedOffset);
+  const port = await findMainPort(preferredPort);
   const webpackPort = await findFreePort(START_WEBPACK_PORT, END_WEBPACK_PORT);
   const inspectPort = await findFreePort(START_INSPECT_PORT, END_INSPECT_PORT);
 
@@ -115,6 +142,9 @@ const main = async () => {
       `No free ports available in range ${START_PORT}-${END_PORT}. Stop another Uwazi instance and retry.`
     );
     process.exit(1);
+  }
+  if (preferredPort) {
+    console.log(`Preferred main port: ${preferredPort}`);
   }
   if (!webpackPort) {
     console.error(
