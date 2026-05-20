@@ -5,7 +5,6 @@ import { detectLanguage } from './detectLanguage.js';
 
 const BATCH_SIZE = 500;
 const SAMPLE_CHARS = 2048;
-const SAMPLE_PAGES = 5;
 
 const pageAnnotationRegex = /\[\[\d+\]\]/g;
 
@@ -15,12 +14,10 @@ type FileDocument = {
 };
 
 const extractSampleText = (fullText: { [k: string]: string }): string => {
+  const pages = Object.keys(fullText).sort((a, b) => Number(a) - Number(b));
   let combined = '';
-  for (let page = 1; page <= SAMPLE_PAGES; page += 1) {
-    const pageText = fullText[String(page)];
-    if (pageText) {
-      combined += pageText.replace(pageAnnotationRegex, ' ');
-    }
+  for (const pageKey of pages) {
+    combined += fullText[pageKey].replace(pageAnnotationRegex, ' ');
     if (combined.length >= SAMPLE_CHARS) break;
   }
   return combined.slice(0, SAMPLE_CHARS);
