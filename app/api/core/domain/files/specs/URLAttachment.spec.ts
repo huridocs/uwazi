@@ -7,6 +7,18 @@ import { FileBuilder } from './FileBuilder.js';
 const f = getFixturesFactory();
 
 describe('URLAttachment', () => {
+  it('should fallback filename and originalname to url if not provided', () => {
+    const file = new URLAttachment({
+      id: 'id',
+      url: 'https://example.com/document.pdf',
+      mimetype: 'application/pdf',
+    } as any);
+
+    expect(file.filename).toBe('https://example.com/document.pdf');
+    expect(file.originalname).toBe('https://example.com/document.pdf');
+    expect(file.url).toBe('https://example.com/document.pdf');
+  });
+
   describe('toDTO', () => {
     it('should include all base and specialized properties', () => {
       const id = f.idString('att');
