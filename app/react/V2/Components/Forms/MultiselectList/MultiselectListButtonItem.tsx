@@ -28,7 +28,7 @@ const MultiselectListButtonItem = ({
         onClick={onClick}
       >
         <span className="grow">{item.label}</span>
-        <div>
+        <div className="flex-1">
           <Pill className="float-right" color={selected ? 'green' : 'primary'}>
             {selected ? <Translate>Selected</Translate> : <Translate>Select</Translate>}
           </Pill>
