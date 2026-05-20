@@ -13,6 +13,7 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const webpackPort = Number(process.env.WEBPACK_PORT || 8080);
 
 (async () => {
   // Load webpack config dynamically since it's CommonJS
@@ -81,5 +82,5 @@ const __dirname = path.dirname(__filename);
   });
   app.use(webpackHotMiddleware(compiler));
 
-  http.listen(8080);
+  http.listen(webpackPort);
 })();
