@@ -345,6 +345,83 @@ describe('UpdateEntityUseCase', () => {
       ]);
     });
 
+    it('should denormalize relationship icons correctly for mixed related entities', async () => {
+      const { sut } = createSut();
+
+      await sut.execute({
+        sharedId: 'full_entity',
+        language: 'en',
+        propertyAssignments: [
+          {
+            name: 'relationship',
+            value: [{ value: 'related_entity' }, { value: 'related_entity_2' }],
+          },
+        ],
+      });
+
+      const entities = await getAllEntities('full_entity');
+
+      expect(entities).toMatchObject([
+        {
+          sharedId: 'full_entity',
+          language: 'en',
+          metadata: {
+            relationship: [
+              {
+                value: 'related_entity',
+                label: 'Related Entity EN',
+                type: 'entity',
+                icon: {
+                  _id: 'related_entity_icon',
+                  label: 'Related Entity Icon',
+                  type: 'img',
+                },
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Related Text EN' }],
+              },
+              {
+                value: 'related_entity_2',
+                label: 'Related Entity 2 EN',
+                type: 'entity',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Related Text 2 EN' }],
+              },
+            ],
+          },
+        },
+        {
+          sharedId: 'full_entity',
+          language: 'pt',
+          metadata: {
+            relationship: [
+              {
+                value: 'related_entity',
+                label: 'Related Entity PT',
+                type: 'entity',
+                icon: {
+                  _id: 'related_entity_icon',
+                  label: 'Related Entity Icon',
+                  type: 'img',
+                },
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Related Text PT' }],
+              },
+              {
+                value: 'related_entity_2',
+                label: 'Related Entity 2 PT',
+                type: 'entity',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Related Text 2 PT' }],
+              },
+            ],
+          },
+        },
+      ]);
+
+      expect(entities[0].metadata.relationship[1].icon).toBeUndefined();
+      expect(entities[1].metadata.relationship[1].icon).toBeUndefined();
+    });
+
     it('should clear metadata when given empty or nullable values', async () => {
       const { sut } = createSut();
 
