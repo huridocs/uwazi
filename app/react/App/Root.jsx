@@ -5,17 +5,14 @@ import serialize from 'serialize-javascript';
 import { availableLanguages } from '#shared/language/index.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
 
-const determineHotAssets = query => ({
-  JS: [
-    'http://localhost:8080/nprogress.js',
-    'http://localhost:8080/main.js',
-    'http://localhost:8080/vendor.js',
-  ],
-  CSS: [
-    `http://localhost:8080/CSS/vendor.css${query}`,
-    `http://localhost:8080/CSS/main.css${query}`,
-  ],
-});
+const determineHotAssets = query => {
+  const webpackPort = process.env.WEBPACK_PORT || 8080;
+  const webpackHost = `http://localhost:${webpackPort}`;
+  return {
+    JS: [`${webpackHost}/nprogress.js`, `${webpackHost}/main.js`, `${webpackHost}/vendor.js`],
+    CSS: [`${webpackHost}/CSS/vendor.css${query}`, `${webpackHost}/CSS/main.css${query}`],
+  };
+};
 
 const determineAssets = (assets, languageData) => {
   if (!assets) {
