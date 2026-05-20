@@ -436,7 +436,6 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
           {
-            icon: undefined,
             value: 'B2',
             label: 'B2 EN',
             inheritedType: 'text',
@@ -460,7 +459,6 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
           {
-            icon: undefined,
             value: 'B2',
             label: 'B2 PT',
             inheritedType: 'text',
@@ -1261,7 +1259,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 EN', icon: undefined, type: 'entity' },
+          { value: 'B2', label: 'B2 EN', type: 'entity' },
         ],
       },
       {
@@ -1280,7 +1278,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 PT', icon: undefined, type: 'entity' },
+          { value: 'B2', label: 'B2 PT', type: 'entity' },
         ],
       },
     ]);
