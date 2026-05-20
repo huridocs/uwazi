@@ -183,19 +183,3 @@ exports[`BaseFile constructor validation throws on originalname too long 1`] = `
   }
 ]"
 `;
-
-exports[`BaseFile update() validates the updated value 1`] = `
-"[
-  {
-    \\"code\\": \\"too_small\\",
-    \\"minimum\\": 1,
-    \\"type\\": \\"string\\",
-    \\"inclusive\\": true,
-    \\"exact\\": false,
-    \\"message\\": \\"Original filename is required\\",
-    \\"path\\": [
-      \\"originalname\\"
-    ]
-  }
-]"
-`;

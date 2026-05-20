@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
-import { TableOfContent } from '#api/core/domain/files/ProcessedPDF.js';
+import type { TableOfContent } from '#api/core/domain/files/ProcessedPDF.js';
 
 /**
  * Transforms DBO types (with ObjectId _id) to DTO types (with string _id).

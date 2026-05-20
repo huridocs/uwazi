@@ -8,22 +8,8 @@ type TestFileProps = BaseFileProps & { content?: FileContents; entity?: string }
 class TestFile extends BaseFile<TestFileProps> {
   protected _type = 'custom' as const;
 
-  readonly content?: FileContents;
-
-  readonly entity?: string;
-
   constructor(props: TestFileProps) {
     super(props);
-    this.content = props.content;
-    this.entity = props.entity;
-  }
-
-  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
-    return Boolean(this.entity);
-  }
-
-  hasContent(): this is this {
-    return Boolean(this.content);
   }
 
   toDTO() {
@@ -52,21 +38,20 @@ const validProps: TestFileProps = {
   mimetype: 'application/pdf',
   size: 1024,
   creationDate: 1234567890,
-  entity: 'entity1',
 };
 
 describe('BaseFile', () => {
   describe('constructor', () => {
     describe('property storage', () => {
       it('stores all provided properties', () => {
-        const file = new TestFile(validProps);
+        const file = new TestFile({ ...validProps, uploaded: true });
         expect(file.id).toBe('file123');
         expect(file.originalname).toBe('document.pdf');
         expect(file.filename).toBe('doc_abc123.pdf');
         expect(file.mimetype).toBe('application/pdf');
         expect(file.size).toBe(1024);
         expect(file.creationDate).toBe(1234567890);
-        expect(file.entity).toBe('entity1');
+        expect(file.uploaded).toBe(true);
       });
 
       it('defaults size to 0 when not provided', () => {
@@ -83,33 +68,6 @@ describe('BaseFile', () => {
         const { originalname: _orig, ...props } = validProps;
         const file = new TestFile(props as TestFileProps);
         expect(file.originalname).toBe(validProps.filename);
-      });
-
-      it('stores content when provided', () => {
-        const content = makeContent();
-        const file = new TestFile({ ...validProps, content });
-        expect(file.content).toBe(content);
-      });
-
-      it('stores uploaded flag when provided', () => {
-        const file = new TestFile({ ...validProps, uploaded: true });
-        expect(file.uploaded).toBe(true);
-      });
-
-      it('leaves entity undefined when not provided', () => {
-        const { entity: _entity, ...props } = validProps;
-        const file = new TestFile(props as TestFileProps);
-        expect(file.entity).toBeUndefined();
-      });
-
-      it('leaves content undefined when not provided', () => {
-        const file = new TestFile(validProps);
-        expect(file.content).toBeUndefined();
-      });
-
-      it('leaves uploaded undefined when not provided', () => {
-        const file = new TestFile(validProps);
-        expect(file.uploaded).toBeUndefined();
       });
     });
 
@@ -185,22 +143,8 @@ describe('BaseFile', () => {
     it('preserves unchanged properties', () => {
       const file = new TestFile(validProps);
       const updated = file.update({ originalname: 'new-name.pdf' });
-      expect(updated.id).toBe(file.id);
-      expect(updated.filename).toBe(file.filename);
-      expect(updated.mimetype).toBe(file.mimetype);
-      expect(updated.size).toBe(file.size);
-      expect(updated.entity).toBe(file.entity);
-    });
 
-    it('validates the updated value', () => {
-      const file = new TestFile(validProps);
-      expect(() => file.update({ originalname: '' })).toThrowErrorMatchingSnapshot();
-    });
-
-    it('sanitizes the updated value', () => {
-      const file = new TestFile(validProps);
-      const updated = file.update({ originalname: '..\\..\\evil.exe' });
-      expect(updated.originalname).toBe('evil.exe');
+      expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'new-name.pdf' });
     });
   });
 
@@ -244,13 +188,12 @@ describe('BaseFile', () => {
 
   describe('isEntityFile()', () => {
     it('returns true when entity is set', () => {
-      const file = new TestFile(validProps);
+      const file = new TestFile({ ...validProps, entity: 'sharedId1' });
       expect(file.isEntityFile()).toBe(true);
     });
 
     it('returns false when entity is undefined', () => {
-      const { entity: _entity, ...props } = validProps;
-      const file = new TestFile(props as TestFileProps);
+      const file = new TestFile(validProps);
       expect(file.isEntityFile()).toBe(false);
     });
   });

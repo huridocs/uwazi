@@ -1,4 +1,6 @@
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { CustomDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { CustomUpload } from '../CustomUpload.js';
 import { FileBuilder } from './FileBuilder.js';
 
@@ -25,6 +27,35 @@ describe('CustomUpload', () => {
         creationDate: 1000000000,
         type: 'custom',
       });
+    });
+  });
+
+  describe('fromDBO', () => {
+    it('should map all fields including the content loader', () => {
+      const _id = new ObjectId();
+      const dbo: CustomDBO = {
+        _id,
+        originalname: 'asset.png',
+        filename: 'abc123.png',
+        mimetype: 'image/png',
+        size: 4096,
+        creationDate: 1000000000,
+        type: 'custom',
+      };
+      const content = FileBuilder.content('custom bytes');
+      const contentLoader = jest.fn().mockReturnValue(content);
+
+      const file = CustomUpload.fromDBO(dbo, contentLoader);
+
+      expect(file).toBeInstanceOf(CustomUpload);
+      expect(file.id).toBe(_id.toString());
+      expect(file.originalname).toBe('asset.png');
+      expect(file.filename).toBe('abc123.png');
+      expect(file.mimetype).toBe('image/png');
+      expect(file.size).toBe(4096);
+      expect(file.creationDate).toBe(1000000000);
+      expect(file.content).toBe(content);
+      expect(contentLoader).toHaveBeenCalledWith({ type: 'custom', filename: 'abc123.png' });
     });
   });
 

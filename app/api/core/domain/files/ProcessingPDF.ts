@@ -27,10 +27,6 @@ export class ProcessingPDF extends FileWithContents<Props> {
     this.entity = props.entity;
   }
 
-  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
-    return true;
-  }
-
   failed() {
     this.status = 'failed';
   }

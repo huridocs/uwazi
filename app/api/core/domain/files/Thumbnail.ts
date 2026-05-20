@@ -27,10 +27,6 @@ export class Thumbnail extends FileWithContents<Props> {
     this.language = props.language;
   }
 
-  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
-    return true;
-  }
-
   toDTO(): ThumbnailDTO {
     return {
       ...this.dtoBaseFields(),

@@ -7,10 +7,6 @@ type Props = BaseDocumentProps;
 export class CustomUpload extends FileWithContents<Props> {
   protected _type = 'custom' as const;
 
-  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
-    return false;
-  }
-
   static fromDBO(dbo: CustomDBO, contentLoader: FileContentLoader) {
     return new CustomUpload({
       ...BaseFile.dboCommonFields(dbo),

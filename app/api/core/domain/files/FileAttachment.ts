@@ -17,10 +17,6 @@ export class FileAttachment extends FileWithContents<Props> {
     this.entity = props.entity;
   }
 
-  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
-    return true;
-  }
-
   static fromDBO(dbo: FileAttachmentDBO, contentLoader: FileContentLoader) {
     return new FileAttachment({
       ...BaseFile.dboCommonFields(dbo),

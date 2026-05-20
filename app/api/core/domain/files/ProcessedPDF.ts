@@ -81,10 +81,6 @@ export class ProcessedPDF extends FileWithContents<Props> {
     return this.fullText;
   }
 
-  override isEntityFile(): this is Omit<this, 'entity'> & { entity: string } {
-    return true;
-  }
-
   toDTO(): ProcessedPDFDTO {
     return {
       ...this.dtoBaseFields(),

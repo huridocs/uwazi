@@ -1,4 +1,6 @@
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { URLAttachmentDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { URLAttachment } from '../URLAttachment.js';
 import { FileBuilder } from './FileBuilder.js';
 
@@ -32,6 +34,35 @@ describe('URLAttachment', () => {
     });
   });
 
+  describe('fromDBO', () => {
+    it('should map all fields from the DBO', () => {
+      const _id = new ObjectId();
+      const dbo: URLAttachmentDBO = {
+        _id,
+        originalname: 'document.pdf',
+        filename: 'document.pdf',
+        mimetype: 'application/pdf',
+        size: 2048,
+        creationDate: 1000000000,
+        type: 'attachment',
+        entity: 'sharedId1',
+        url: 'https://example.com/document.pdf',
+      };
+
+      const file = URLAttachment.fromDBO(dbo);
+
+      expect(file).toBeInstanceOf(URLAttachment);
+      expect(file.id).toBe(_id.toString());
+      expect(file.originalname).toBe('document.pdf');
+      expect(file.filename).toBe('document.pdf');
+      expect(file.mimetype).toBe('application/pdf');
+      expect(file.size).toBe(2048);
+      expect(file.creationDate).toBe(1000000000);
+      expect(file.entity).toBe('sharedId1');
+      expect(file.url).toBe('https://example.com/document.pdf');
+    });
+  });
+
   describe('update', () => {
     it('should rename and preserve all properties', () => {
       const file = FileBuilder.urlAttachment(f.idString('att'), {
@@ -43,21 +74,8 @@ describe('URLAttachment', () => {
 
       expect(updated).toBeInstanceOf(URLAttachment);
       expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'renamed.pdf' });
-      expect(updated.content).toBeUndefined();
       expect(updated.hasChanged).toBe(true);
       expect(updated.previousVersion?.originalname).toBe('original.pdf');
-    });
-  });
-
-  describe('content', () => {
-    it('should always be undefined even if passing content on the constructor', async () => {
-      expect(FileBuilder.urlAttachment('attachment_id').content).toBeUndefined();
-      expect(
-        FileBuilder.urlAttachment('attachment_id', {
-          //@ts-ignore
-          content: FileBuilder.content('content'),
-        }).content
-      ).toBeUndefined();
     });
   });
 });

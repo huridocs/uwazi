@@ -14,8 +14,4 @@ export abstract class FileWithContents<
     super(props);
     this.content = props.content;
   }
-
-  hasContent(): this is this {
-    return Boolean(this.content);
-  }
 }

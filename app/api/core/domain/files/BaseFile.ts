@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import stringify from 'fast-json-stable-stringify';
 import { fileDBO, fileDTO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import { FileTypes } from '#api/files/storage.js';
-import { FileContents } from './FileContents.js';
+import type { FileTypes } from '#api/files/storage.js';
+import type { FileContents } from './FileContents.js';
 
 type BaseFileProps = {
   id: string;
@@ -137,9 +137,13 @@ export abstract class BaseFile<TProps extends BaseFileProps = BaseFileProps> {
     return this.clone(updateProps);
   }
 
-  abstract isEntityFile(): this is Omit<this, 'entity'> & { entity: string };
+  isEntityFile(): this is this & { entity: string } {
+    return 'entity' in this.props && Boolean(this.props.entity);
+  }
 
-  abstract hasContent(): this is this;
+  hasContent(): this is this & { content: FileContents } {
+    return 'content' in this.props && Boolean(this.props.content);
+  }
 
   protected dtoBaseFields() {
     return {
