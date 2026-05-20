@@ -295,7 +295,7 @@ const PageEditor = () => {
 
         <SettingsContent.Body>
           <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full">
-            <Tabs.Tab id="Config" label={<Translate>Config</Translate>}>
+            <Tabs.Tab id="Configuration" label={<Translate>Configuration</Translate>}>
               <form>
                 <input className="hidden" {...register('sharedId')} />
                 <div className="flex flex-col max-w-2xl gap-4">
@@ -345,6 +345,33 @@ const PageEditor = () => {
                         </Translate>
                       </div>
                     </Link>
+                  )}
+
+                  {canUsePageActions && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <Button
+                        variant="secondary"
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={() => {
+                          setRestoreSelected([]);
+                          setRestoreModalOpen(true);
+                        }}
+                      >
+                        <Translate>Restore</Translate>
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={() => {
+                          setReleaseMessage('');
+                          setReleaseModalOpen(true);
+                        }}
+                      >
+                        <Translate>Publish</Translate>
+                      </Button>
+                    </div>
                   )}
                 </div>
               </form>
@@ -427,34 +454,6 @@ const PageEditor = () => {
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
-
-            {canUsePageActions && (
-              <Button
-                variant="secondary"
-                type="button"
-                disabled={isSubmitting}
-                onClick={() => {
-                  setRestoreSelected([]);
-                  setRestoreModalOpen(true);
-                }}
-              >
-                <Translate>Restore</Translate>
-              </Button>
-            )}
-
-            {canUsePageActions && (
-              <Button
-                variant="secondary"
-                type="button"
-                disabled={isSubmitting}
-                onClick={() => {
-                  setReleaseMessage('');
-                  setReleaseModalOpen(true);
-                }}
-              >
-                <Translate>Publish</Translate>
-              </Button>
-            )}
 
             <Button
               variant="primary"

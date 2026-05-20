@@ -34,7 +34,7 @@ const PageEditorConfigTab = ({
   errors,
   showMarkdownDeprecation,
 }: PageEditorConfigTabProps) => (
-  <Tabs.Tab id="Config" label={<Translate>Config</Translate>}>
+  <Tabs.Tab id="Configuration" label={<Translate>Configuration</Translate>}>
     <form>
       <input className="hidden" {...register('sharedId')} />
       <div className="flex flex-col max-w-2xl gap-4">
