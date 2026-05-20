@@ -4,10 +4,10 @@ import { MongoSlotsBootstrapper } from '../elasticSearch/entities/MongoSlotsBoot
 import { ESIndexRebuilder, ESIndexRebuilderDeps } from '../elasticSearch/ESIndexRebuilder.js';
 import { IndexMappingRegistry } from '../elasticSearch/IndexMappingRegistry.js';
 import { ElasticSearchBootstrapper } from '../elasticSearch/provision/ElasticSearchBootstrapper.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 import { FullTextIndexerServiceFactory } from './FullTextIndexerServiceFactory.js';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
 
 export class ESIndexRebuilderFactory {
@@ -16,7 +16,7 @@ export class ESIndexRebuilderFactory {
 
     const slotsBootstrapper = new MongoSlotsBootstrapper({
       database,
-      transactionManager: ExecutionContext.transactionManager as MongoTransactionManager,
+      slotsDAO: MongoSlotsDAOFactory.default(),
     });
     const slotsReconciler = SlotsReconcilerFactory.default();
 

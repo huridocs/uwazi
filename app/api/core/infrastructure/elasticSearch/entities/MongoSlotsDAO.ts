@@ -52,6 +52,10 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
 
   protected collectionName = MongoSlotsDAO.collectionName;
 
+  public getCollection() {
+    return super.getCollection();
+  }
+
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
     this.tenantName = deps.tenantName;

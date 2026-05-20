@@ -1,11 +1,11 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoSlotsBootstrapper } from '../elasticSearch/entities/MongoSlotsBootstrapper.js';
 import { TenantOnboarder, TenantOnboarderDeps } from '../elasticSearch/TenantOnboarder.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 import { FullTextIndexerServiceFactory } from './FullTextIndexerServiceFactory.js';
 import { LoggerFactory } from './LoggerFactory.js';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
 
 export class TenantOnboarderFactory {
@@ -15,7 +15,7 @@ export class TenantOnboarderFactory {
 
     const slotsBootstrapper = new MongoSlotsBootstrapper({
       database,
-      transactionManager: ExecutionContext.transactionManager as MongoTransactionManager,
+      slotsDAO: MongoSlotsDAOFactory.default(),
     });
     const slotsReconciler = SlotsReconcilerFactory.default();
 

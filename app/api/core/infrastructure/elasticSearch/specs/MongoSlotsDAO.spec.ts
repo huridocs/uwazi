@@ -32,7 +32,14 @@ describe('MongoSlotsDAO', () => {
 
     const bootstrapper = new MongoSlotsBootstrapper({
       database: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      slotsDAO: new MongoSlotsDAO({
+        db: getConnection(),
+        transactionManager: TransactionManagerFactory.default(),
+        tenantName: 'bootstrapper-tenant',
+        settingsDS: TestUtils.mockClass<SettingsDataSource>({
+          getInstalledLanguages: async () => [],
+        }),
+      }),
     });
     await bootstrapper.createIndexes();
   });

@@ -60,7 +60,14 @@ describe('SlotsReconciler', () => {
   beforeEach(async () => {
     const bootstrapper = new MongoSlotsBootstrapper({
       database: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      slotsDAO: new MongoSlotsDAO({
+        db: getConnection(),
+        transactionManager: TransactionManagerFactory.default(),
+        tenantName: 'tenant-a',
+        settingsDS: TestUtils.mockClass<SettingsDataSource>({
+          getInstalledLanguages: async () => [],
+        }),
+      }),
     });
     await testingEnvironment.setFixtures({
       templates: [],

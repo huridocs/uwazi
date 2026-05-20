@@ -1,6 +1,4 @@
 import { Db } from 'mongodb';
-import { MongoDataSource } from '../../mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 import { MongoSlotsDAO, SlotDocument } from './MongoSlotsDAO.js';
 import { AmountPerSlotType, SlotBootstrapDefinitions } from './SlotBootstrapDefinitions.js';
 import { config } from '#api/config.js';
@@ -8,20 +6,16 @@ import type { SlotType } from './SlotType.js';
 
 type Deps = {
   database: Db;
-  transactionManager: MongoTransactionManager;
+  slotsDAO: MongoSlotsDAO;
   amountPerSlotType?: Record<SlotType, number>;
 };
 
-class MongoSlotsBootstrapper extends MongoDataSource<SlotDocument> {
-  protected collectionName = MongoSlotsDAO.collectionName;
-
+class MongoSlotsBootstrapper {
   private get amounts(): Record<SlotType, number> {
     return this.deps.amountPerSlotType ?? AmountPerSlotType;
   }
 
-  constructor(private deps: Deps) {
-    super(deps.database, deps.transactionManager);
-  }
+  constructor(private deps: Deps) {}
 
   async execute() {
     await this.createSlots();
@@ -30,7 +24,7 @@ class MongoSlotsBootstrapper extends MongoDataSource<SlotDocument> {
   }
 
   private get rawCollection() {
-    return this.db.collection(MongoSlotsDAO.collectionName);
+    return this.deps.database.collection(MongoSlotsDAO.collectionName);
   }
 
   async createSlots() {
@@ -44,7 +38,7 @@ class MongoSlotsBootstrapper extends MongoDataSource<SlotDocument> {
       }))
     ) as Omit<SlotDocument, '_id'>[];
 
-    await this.getCollection().bulkWrite(
+    await this.deps.slotsDAO.getCollection().bulkWrite(
       slotsToCreate.map(slot => ({
         updateOne: {
           filter: { slotName: slot.slotName },

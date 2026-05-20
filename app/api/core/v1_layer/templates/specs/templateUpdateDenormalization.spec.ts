@@ -24,6 +24,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import templates from '../templates.js';
 import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
+import { MongoSlotsDAOFactory } from '#api/core/infrastructure/factories/MongoSlotsDAOFactory.js';
 
 const f = getFixturesFactory();
 
@@ -113,7 +114,7 @@ describe('Templates Update', () => {
     if (testingTenants.current().featureFlags?.v2ElasticSearch) {
       await new MongoSlotsBootstrapper({
         database: getConnection(),
-        transactionManager: TransactionManagerFactory.default(),
+        slotsDAO: MongoSlotsDAOFactory.default(),
       }).reset();
     }
   }
