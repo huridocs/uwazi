@@ -218,26 +218,23 @@ const PDFView = ({
             <div className="mb-(--spacing-theme-1) flex justify-end">{renderModeControl}</div>
           )}
           <div
-            className={`flex-1 flex flex-row gap-2 min-h-0 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
+            className={`flex-1 min-h-0 rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'hidden' : 'block'}`}
           >
-            <div className="grow">
-              <PDF
-                fileUrl={`/api/files/${filename}`}
-                size={{ height: '100%', width: '90%' }}
-                onSelect={handleTextSelect}
-                onDeselect={handleTextDeselect}
-                onPageChange={handlePageChange}
-                onPdfReady={controls => {
-                  const targetPage = initialPage.current || 1;
-                  pdfControls.current = controls;
-                  setPDFControlsAtom(controls);
-                  if (targetPage !== 1) {
-                    controls.goToPage(targetPage);
-                  }
-                }}
-              />
-            </div>
-            <span>test</span>
+            <PDF
+              fileUrl={`/api/files/${filename}`}
+              size={{ height: '100%', width: '90%' }}
+              onSelect={handleTextSelect}
+              onDeselect={handleTextDeselect}
+              onPageChange={handlePageChange}
+              onPdfReady={controls => {
+                const targetPage = initialPage.current || 1;
+                pdfControls.current = controls;
+                setPDFControlsAtom(controls);
+                if (targetPage !== 1) {
+                  controls.goToPage(targetPage);
+                }
+              }}
+            />
           </div>
           <div
             className={`flex-1 min-h-0 overflow-auto rounded-md bg-(--color-theme-surface-warm) ${isRaw ? 'block' : 'hidden'}`}
