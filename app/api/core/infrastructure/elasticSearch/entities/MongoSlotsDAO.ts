@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 /* eslint-disable max-statements */
-import { Db, ObjectId } from 'mongodb';
+import { Db, Document, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../../mongodb/common/MongoDataSource.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
@@ -52,8 +52,8 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
 
   protected collectionName = MongoSlotsDAO.collectionName;
 
-  public getCollection() {
-    return super.getCollection();
+  public getCollection<Collection extends Document = SlotDocument>(collectionName?: string) {
+    return super.getCollection<Collection>(collectionName);
   }
 
   constructor(deps: Deps) {
