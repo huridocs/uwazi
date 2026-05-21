@@ -25,6 +25,7 @@ type CollectPostProcessJobProps = {
   userId: string;
   language: LanguageISO6391;
   fullReindex: boolean;
+  resaveForFilterChange: boolean;
 };
 
 class TemplatePostProcessService {
@@ -41,6 +42,19 @@ class TemplatePostProcessService {
             userId: context!.userId,
             language: context!.language,
             fullReindex: false,
+            resaveForFilterChange: false,
+            diff,
+          },
+          dispatch
+        );
+      } else if (diff.hasFilterablePropertyChanges()) {
+        await this.collectPostProcessJobParams(
+          {
+            tenantName: context!.tenantName,
+            userId: context!.userId,
+            language: context!.language,
+            fullReindex: false,
+            resaveForFilterChange: true,
             diff,
           },
           dispatch
@@ -58,6 +72,7 @@ class TemplatePostProcessService {
             {
               language: context.language,
               fullReindex: true,
+              resaveForFilterChange: false,
               userId: context.userId,
               tenantName: context.tenantName,
               diff: new TemplateDiff(template, template),
@@ -70,7 +85,14 @@ class TemplatePostProcessService {
   }
 
   private async collectPostProcessJobParams(
-    { diff, language, fullReindex, userId, tenantName }: CollectPostProcessJobProps,
+    {
+      diff,
+      language,
+      fullReindex,
+      resaveForFilterChange,
+      userId,
+      tenantName,
+    }: CollectPostProcessJobProps,
     dispatch: (params: TemplatePostProcessParams) => void
   ) {
     const limit = 50;
@@ -94,6 +116,7 @@ class TemplatePostProcessService {
         deletedProperties: diff.deletedPropertyNames,
         renamedProperties: diff.renamedProperties,
         fullReindex,
+        resaveForFilterChange,
         tenantName,
         userId,
       });

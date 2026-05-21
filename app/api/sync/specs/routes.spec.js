@@ -10,6 +10,23 @@ import { LanguageUtils } from '#shared/language/index.js';
 import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import syncRoutes from '../routes.js';
 
+const mockIndexerSync = jest.fn().mockResolvedValue(undefined);
+const mockIndexerRemove = jest.fn().mockResolvedValue(undefined);
+jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
+  EntityIndexerServiceFactory: {
+    default: () => ({ sync: mockIndexerSync, remove: mockIndexerRemove }),
+  },
+}));
+
+jest.mock('#api/sync/ElasticSlotsSyncHandler.js', () => ({
+  ElasticSlotsSyncHandler: jest.fn().mockImplementation(() => ({
+    save: jest.fn().mockResolvedValue(undefined),
+    saveMultiple: jest.fn().mockResolvedValue(undefined),
+    getById: jest.fn().mockResolvedValue(null),
+    delete: jest.fn().mockResolvedValue(undefined),
+  })),
+}));
+
 describe('sync', () => {
   let routes;
   let req;
@@ -39,6 +56,8 @@ describe('sync', () => {
     jest.spyOn(search, 'delete').mockImplementation(() => {});
     jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
     jest.spyOn(storage, 'removeFile').mockImplementation(() => {});
+
+    mockIndexerSync.mockClear();
   });
 
   describe('POST', () => {
@@ -142,11 +161,12 @@ describe('sync', () => {
 
         req.body = {
           namespace: 'entities',
-          data: { _id: 'id' },
+          data: { _id: 'id', sharedId: 'sharedId' },
         };
 
         await routes.post('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ _id: 'id' }, '+fullText');
+        expect(mockIndexerSync).toHaveBeenCalledWith(['sharedId']);
       });
     });
 
@@ -162,6 +182,7 @@ describe('sync', () => {
 
         await routes.post('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
+        expect(mockIndexerSync).toHaveBeenCalledWith(['shared']);
       });
     });
 
@@ -306,6 +327,7 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'entityId' });
+        expect(mockIndexerSync).toHaveBeenCalledWith(['entityId']);
       });
 
       it('should delete it from the file system', async () => {
@@ -316,7 +338,11 @@ describe('sync', () => {
 
     describe('when namespace is entities', () => {
       beforeEach(() => {
-        const entities = { save: jest.fn(), delete: jest.fn() };
+        const entities = {
+          save: jest.fn(),
+          delete: jest.fn(),
+          getById: jest.fn().mockResolvedValue({ _id: 'id', sharedId: 'sharedId1' }),
+        };
         models.entities = () => entities;
 
         req.query = {
@@ -328,6 +354,7 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.delete).toHaveBeenCalledWith({ _id: 'id' });
+        expect(mockIndexerRemove).toHaveBeenCalledWith(['sharedId1']);
       });
 
       it('should not fail if elastic path has already been deleted (statusCode 404)', async () => {
@@ -337,6 +364,19 @@ describe('sync', () => {
         search.delete.mockReturnValue(Promise.reject(error));
         const response = await routes.delete('/api/sync', req);
         expect(response).toBe('ok');
+      });
+    });
+
+    describe('when namespace is elasticSlots', () => {
+      it('should return ok and not attempt model deletion', async () => {
+        req.query = {
+          namespace: 'elasticSlots',
+          data: JSON.stringify({ _id: 'slotId' }),
+        };
+
+        const response = await routes.delete('/api/sync', req);
+        expect(response).toBe('ok');
+        expect(mockIndexerSync).not.toHaveBeenCalled();
       });
     });
   });

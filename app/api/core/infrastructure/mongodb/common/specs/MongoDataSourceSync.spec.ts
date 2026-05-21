@@ -646,8 +646,8 @@ describe('collection with automatic log to updatelogs', () => {
         expectedDBState: [
           updateLog({ mongoId: id('data 1'), timestamp: updatedTimestamp }),
           updateLog({ mongoId: id('data 2'), timestamp: updatedTimestamp }),
-          updateLog({ mongoId: id('upserted'), timestamp: updatedTimestamp }),
           { ...updateLogsBlankState[0], timestamp: updatedTimestamp, _id: expect.any(ObjectId) },
+          updateLog({ mongoId: id('upserted'), timestamp: updatedTimestamp }),
         ],
         expectedResult: {
           matchedCount: 3,
