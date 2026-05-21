@@ -66,7 +66,7 @@ const deleteFromIndex = async (
 ) => {
   if (req.query.namespace === 'entities') {
     await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
-    await EntityIndexerServiceFactory.default().sync([entitySharedId]);
+    await EntityIndexerServiceFactory.default().remove([entitySharedId]);
   }
 };
 

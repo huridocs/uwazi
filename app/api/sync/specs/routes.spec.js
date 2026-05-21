@@ -11,8 +11,11 @@ import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import syncRoutes from '../routes.js';
 
 const mockIndexerSync = jest.fn().mockResolvedValue(undefined);
+const mockIndexerRemove = jest.fn().mockResolvedValue(undefined);
 jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
-  EntityIndexerServiceFactory: { default: () => ({ sync: mockIndexerSync }) },
+  EntityIndexerServiceFactory: {
+    default: () => ({ sync: mockIndexerSync, remove: mockIndexerRemove }),
+  },
 }));
 
 jest.mock('#api/sync/ElasticSlotsSyncHandler.js', () => ({
@@ -351,7 +354,7 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.delete).toHaveBeenCalledWith({ _id: 'id' });
-        expect(mockIndexerSync).toHaveBeenCalledWith(['sharedId1']);
+        expect(mockIndexerRemove).toHaveBeenCalledWith(['sharedId1']);
       });
 
       it('should not fail if elastic path has already been deleted (statusCode 404)', async () => {
