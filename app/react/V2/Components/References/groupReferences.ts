@@ -18,7 +18,7 @@ type ReferenceGroups = ReferenceGroup[];
 
 type DocumentReferenceGroup = {
   type: 'single' | 'cluster';
-  position: number;
+  page: number;
   references: EntityReference[];
   startPage: number;
   endPage: number;
@@ -36,18 +36,35 @@ type PositionedReference = {
 type PositionedGroup = {
   group: ReferenceGroup;
   page: number;
-  position: number;
 };
+const getGroupReferences = (group: ReferenceGroup): EntityReference[] =>
+  group.type === 'cluster' ? group.references : [group.reference];
 
-const DEFAULT_PROXIMITY_THRESHOLD = 48;
-
+const toClusterGroup = (
+  page: number,
+  top: number,
+  references: EntityReference[]
+): ReferenceGroup => ({
+  type: 'cluster',
+  page: String(page),
+  top,
+  references,
+});
+// Maximum vertical distance (in px) to merge references on the same page.
+const PAGE_CLUSTER_PROXIMITY = 100;
+// Minimum number of pages to enable multi-page document clustering.
+const DOCUMENT_MULTIPAGE_MIN_PAGES = 50;
+// Minimum average references per page to enable multi-page document clustering.
+const DOCUMENT_MULTIPAGE_MIN_REFS_PER_PAGE = 2;
+// Document-level merge window as a fraction of total pages when multi-page clustering is enabled.
+const DOCUMENT_CLUSTER_RATIO = 0.03;
+// Minimum document-level merge window (in pages) when multi-page clustering is enabled.
+const DOCUMENT_CLUSTER_MIN_PAGES = 1;
 const getPositionedReference = (reference: EntityReference): PositionedReference | null => {
   const firstRectangle = reference.reference.selectionRectangles?.[0];
-
   if (!firstRectangle?.page || typeof firstRectangle.top !== 'number') {
     return null;
   }
-
   return {
     reference,
     page: firstRectangle.page,
@@ -62,11 +79,9 @@ const appendReferenceCluster = (
   cluster: PositionedReference[]
 ): ReferenceGroups => {
   const { page, top, reference } = cluster[0];
-
   if (cluster.length === 1) {
     return [...grouped, { type: 'single', page, top, reference }];
   }
-
   return [
     ...grouped,
     {
@@ -82,21 +97,52 @@ const appendDocumentCluster = (
   grouped: DocumentReferenceGroups,
   cluster: PositionedGroup[]
 ): DocumentReferenceGroups => {
-  const references = cluster.flatMap(item =>
-    item.group.type === 'cluster' ? item.group.references : [item.group.reference]
-  );
+  const references = cluster.flatMap(item => getGroupReferences(item.group));
   const pages = cluster.map(item => item.page);
-
   return [
     ...grouped,
     {
       type: references.length > 1 ? 'cluster' : 'single',
-      position: cluster[0].position,
+      page: cluster[0].page,
       references,
       startPage: Math.min(...pages),
       endPage: Math.max(...pages),
     },
   ];
+};
+
+const collapseToSingleGroupPerPage = (positionedGroups: PositionedGroup[]): PositionedGroup[] =>
+  positionedGroups.reduce<PositionedGroup[]>((grouped, current) => {
+    const last = grouped[grouped.length - 1];
+    const currentReferences = getGroupReferences(current.group);
+    if (last && last.page === current.page) {
+      const merged: PositionedGroup = {
+        page: current.page,
+        group: toClusterGroup(current.page, last.group.top, [
+          ...getGroupReferences(last.group),
+          ...currentReferences,
+        ]),
+      };
+      return [...grouped.slice(0, -1), merged];
+    }
+    return [
+      ...grouped,
+      {
+        page: current.page,
+        group: toClusterGroup(current.page, current.group.top, currentReferences),
+      },
+    ];
+  }, []);
+
+const countGroupedReferences = (groups: ReferenceGroups): number =>
+  groups.reduce((count, group) => count + getGroupReferences(group).length, 0);
+
+const shouldAllowMultiPageClustering = (groups: ReferenceGroups, safePages: number): boolean => {
+  const referencesPerPage = countGroupedReferences(groups) / safePages;
+  return (
+    safePages >= DOCUMENT_MULTIPAGE_MIN_PAGES &&
+    referencesPerPage >= DOCUMENT_MULTIPAGE_MIN_REFS_PER_PAGE
+  );
 };
 
 const groupReferences = (references: EntityReference[]): ReferenceGroups => {
@@ -116,7 +162,7 @@ const groupReferences = (references: EntityReference[]): ReferenceGroups => {
     (state, current) => {
       if (
         current.page === state.cluster[0].page &&
-        current.top <= state.clusterBottom + DEFAULT_PROXIMITY_THRESHOLD
+        current.top <= state.clusterBottom + PAGE_CLUSTER_PROXIMITY
       ) {
         return {
           grouped: state.grouped,
@@ -146,6 +192,7 @@ const groupDocumentReferences = (
   totalPages: number = 1
 ): DocumentReferenceGroups => {
   const safePages = Math.max(totalPages, 1);
+  const allowMultiPageClustering = shouldAllowMultiPageClustering(perPageGroups, safePages);
   const positionedGroups = perPageGroups
     .map(group => {
       const parsedPage = Number.parseInt(group.page, 10);
@@ -154,36 +201,42 @@ const groupDocumentReferences = (
       return {
         group,
         page,
-        position: (page - 1 + Math.max(group.top, 0) / 1000) / safePages,
       };
     })
-    .sort((a, b) => a.position - b.position);
+    .sort((a, b) => {
+      const pageDiff = a.page - b.page;
+      return pageDiff !== 0 ? pageDiff : a.group.top - b.group.top;
+    });
 
-  if (!positionedGroups.length) {
+  const perPageGroupsOnly = collapseToSingleGroupPerPage(positionedGroups);
+
+  if (!perPageGroupsOnly.length) {
     return [];
   }
 
-  const threshold = 2 / safePages;
-  const finalState = positionedGroups.slice(1).reduce(
+  const thresholdPages = allowMultiPageClustering
+    ? Math.max(DOCUMENT_CLUSTER_MIN_PAGES, Math.ceil(safePages * DOCUMENT_CLUSTER_RATIO))
+    : 0;
+  const finalState = perPageGroupsOnly.slice(1).reduce(
     (state, current) => {
-      if (current.position <= state.clusterEnd + threshold) {
+      if (current.page <= state.clusterStartPage + thresholdPages) {
         return {
           grouped: state.grouped,
           cluster: [...state.cluster, current],
-          clusterEnd: Math.max(state.clusterEnd, current.position),
+          clusterStartPage: state.clusterStartPage,
         };
       }
 
       return {
         grouped: appendDocumentCluster(state.grouped, state.cluster),
         cluster: [current],
-        clusterEnd: current.position,
+        clusterStartPage: current.page,
       };
     },
     {
       grouped: [] as DocumentReferenceGroups,
-      cluster: [positionedGroups[0]],
-      clusterEnd: positionedGroups[0].position,
+      cluster: [perPageGroupsOnly[0]],
+      clusterStartPage: perPageGroupsOnly[0].page,
     }
   );
 

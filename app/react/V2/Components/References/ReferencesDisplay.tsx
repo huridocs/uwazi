@@ -48,8 +48,8 @@ const ReferencesDisplay = ({
   const referencesGroups = useMemo(() => groupReferences(formatReferences(entity)), [entity]);
 
   const documentClusters = useMemo(
-    () => groupDocumentReferences(referencesGroups, document.totalPages),
-    [document, referencesGroups]
+    () => groupDocumentReferences(referencesGroups, document.totalPages ?? 1),
+    [document.totalPages, referencesGroups]
   );
 
   const pageClusters = useMemo(
@@ -82,7 +82,8 @@ const ReferencesDisplay = ({
           {fullMode
             ? documentClusters.map((element, index) => {
                 const key = `doc-${element.startPage}-${element.endPage}-${index}`;
-                const position = element.position * markerLayerHeight;
+                const normalizedPosition = element.page / (document.totalPages ?? 1) || 0;
+                const position = normalizedPosition * markerLayerHeight;
 
                 if (element.type === 'cluster') {
                   return (
@@ -115,7 +116,7 @@ const ReferencesDisplay = ({
                   return (
                     <Cluster
                       key={key}
-                      position={element.top}
+                      position={element.top / markerLayerHeight}
                       references={element.references}
                       onPointClick={reference => {
                         onPointClick?.(reference);
@@ -127,7 +128,7 @@ const ReferencesDisplay = ({
                 return (
                   <Point
                     key={key}
-                    position={element.top}
+                    position={element.top / markerLayerHeight}
                     reference={element.reference}
                     onClick={reference => {
                       onPointClick?.(reference);
