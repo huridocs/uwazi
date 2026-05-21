@@ -7,6 +7,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const rootPath = `${__dirname}/../`;
 const RtlCssPlugin = require('rtlcss-webpack-plugin');
+const webpackPort = process.env.WEBPACK_PORT || 8080;
+const webpackHost = `http://localhost:${webpackPort}`;
 
 config['infrastructureLogging'] = {
   level: 'error',
@@ -33,12 +35,12 @@ config.optimization.emitOnErrors = false;
 
 config.output = {
   path: path.join(rootPath, 'dist'),
-  publicPath: 'http://localhost:8080/',
+  publicPath: `${webpackHost}/`,
   filename: '[name].js',
 };
 
 config.entry.main = [
-  'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
+  `webpack-hot-middleware/client?path=//localhost:${webpackPort}/__webpack_hmr`,
   path.join(rootPath, 'app/react/entry-client.tsx'),
 ];
 

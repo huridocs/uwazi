@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 /* eslint-disable max-statements */
-import { Db, ObjectId, UpdateFilter } from 'mongodb';
+import { Db, Document, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../../mongodb/common/MongoDataSource.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
@@ -51,6 +51,10 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
   private readonly settingsDS: SettingsDataSource;
 
   protected collectionName = MongoSlotsDAO.collectionName;
+
+  public getCollection<Collection extends Document = SlotDocument>(collectionName?: string) {
+    return super.getCollection<Collection>(collectionName);
+  }
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
@@ -238,6 +242,10 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
     return language !== null ? `${assignedTo}::${language}` : assignedTo;
   }
 
+  private get rawCollection() {
+    return this.db.collection(MongoSlotsDAO.collectionName);
+  }
+
   private async getAssignedSlots() {
     return this.getCollection()
       .find({ assignedTo: { $type: 'string' } })
@@ -245,17 +253,14 @@ class MongoSlotsDAO extends MongoDataSource<SlotDocument> {
   }
 
   async getSentinelVersion(): Promise<number> {
-    const doc = await this.getCollection().findOne({
-      _id: MongoSlotsDAO.sentinelId,
-    });
-
+    const doc = await this.rawCollection.findOne({ _id: MongoSlotsDAO.sentinelId });
     return (doc as any)?.version ?? 0;
   }
 
   async touchSentinel(expectedVersion: number): Promise<void> {
-    const result = await this.getCollection().updateOne(
+    const result = await this.rawCollection.updateOne(
       { _id: MongoSlotsDAO.sentinelId, version: expectedVersion } as any,
-      { $inc: { version: 1 } } as UpdateFilter<SlotDocument>
+      { $inc: { version: 1 } }
     );
 
     if (result.modifiedCount === 0) {

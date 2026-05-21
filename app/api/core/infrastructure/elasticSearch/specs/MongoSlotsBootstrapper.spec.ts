@@ -1,21 +1,31 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
 import { config } from '#api/config.js';
+import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
 import { MongoSlotsDAO } from '../entities/MongoSlotsDAO.js';
 import {
   AmountPerSlotType,
   SlotBootstrapDefinitions,
 } from '../entities/SlotBootstrapDefinitions.js';
-import { MongoSlotsBootstrapper } from '../entities/MongoSlotsBootstrapper.js';
+import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 
 // Use minimal slot counts so tests don't bulk-write 850+ documents on every execute()
 const testAmountPerSlotType = Object.fromEntries(
   Object.keys(AmountPerSlotType).map(k => [k, 2])
 ) as typeof AmountPerSlotType;
 
+const createSlotsDAO = () =>
+  new MongoSlotsDAO({
+    db: getConnection(),
+    transactionManager: TransactionManagerFactory.default(),
+    tenantName: 'tenant-a',
+    settingsDS: { getInstalledLanguages: async () => [] } as any,
+  });
+
 const createSut = () => {
   const sut = new MongoSlotsBootstrapper({
     database: getConnection(),
+    slotsDAO: createSlotsDAO(),
     amountPerSlotType: testAmountPerSlotType,
   });
 
