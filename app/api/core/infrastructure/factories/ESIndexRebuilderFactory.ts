@@ -7,13 +7,17 @@ import { ElasticSearchBootstrapper } from '../elasticSearch/provision/ElasticSea
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 import { FullTextIndexerServiceFactory } from './FullTextIndexerServiceFactory.js';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
 
 export class ESIndexRebuilderFactory {
   static default(overrides?: Partial<ESIndexRebuilderDeps>): ESIndexRebuilder {
     const database = getConnection();
 
-    const slotsBootstrapper = new MongoSlotsBootstrapper({ database });
+    const slotsBootstrapper = new MongoSlotsBootstrapper({
+      database,
+      slotsDAO: MongoSlotsDAOFactory.default(),
+    });
     const slotsReconciler = SlotsReconcilerFactory.default();
 
     const esClient = ElasticSearchClientFactory.getInstance();

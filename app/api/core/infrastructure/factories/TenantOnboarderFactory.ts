@@ -5,6 +5,7 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.j
 import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 import { FullTextIndexerServiceFactory } from './FullTextIndexerServiceFactory.js';
 import { LoggerFactory } from './LoggerFactory.js';
+import { MongoSlotsDAOFactory } from './MongoSlotsDAOFactory.js';
 import { SlotsReconcilerFactory } from './SlotsReconcilerFactory.js';
 
 export class TenantOnboarderFactory {
@@ -12,7 +13,10 @@ export class TenantOnboarderFactory {
     const database = getConnection();
     const logger = LoggerFactory.default();
 
-    const slotsBootstrapper = new MongoSlotsBootstrapper({ database });
+    const slotsBootstrapper = new MongoSlotsBootstrapper({
+      database,
+      slotsDAO: MongoSlotsDAOFactory.default(),
+    });
     const slotsReconciler = SlotsReconcilerFactory.default();
 
     const entityIndexer = EntityIndexerServiceFactory.default();

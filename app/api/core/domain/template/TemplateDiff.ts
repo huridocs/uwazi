@@ -2,6 +2,7 @@ import { Template } from '#api/core/domain/template/Template.js';
 import { Property, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { GenerateIdProperty } from './GenerateIdProperty.js';
+import { FilterableProperty } from './FilterableProperty.js';
 
 type RenamedMap = { [oldName: string]: string };
 
@@ -124,6 +125,16 @@ class TemplateDiff {
       Object.keys(this.renamedProperties).length > 0 ||
       this.deletedProperties.length > 0
     );
+  }
+
+  hasFilterablePropertyChanges() {
+    const newPropsById = new Map(this.newTemplate.properties.map(p => [p.id, p]));
+    return this.oldTemplate.properties.some(oldProp => {
+      if (!(oldProp instanceof FilterableProperty)) return false;
+      const newProp = newPropsById.get(oldProp.id);
+      if (!(newProp instanceof FilterableProperty)) return false;
+      return oldProp.filter !== newProp.filter;
+    });
   }
 }
 export { TemplateDiff };
